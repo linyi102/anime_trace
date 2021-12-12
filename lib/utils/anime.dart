@@ -1,14 +1,14 @@
-import 'package:flutter_test_future/utils/episode_info.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 
-class AnimeInfo {
+class Anime {
   String name;
-  List<EpisodeInfo> episodes = [EpisodeInfo(0)]; // 第0集。使得episodes[1]表示第1集
+  List<Episode> episodes = [Episode(0)]; // 第0集。使得episodes[1]表示第1集
   int curEpisodeCnt = 0;
 
-  AnimeInfo(this.name);
+  Anime(this.name);
 
-  void addEpisodeInfo() {
-    episodes.add(EpisodeInfo(++curEpisodeCnt));
+  void addEpisode() {
+    episodes.add(Episode(++curEpisodeCnt));
   }
 
   void setEpisodeDateTimeNow(int number) {
