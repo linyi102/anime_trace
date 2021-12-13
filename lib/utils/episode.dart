@@ -15,6 +15,10 @@ class Episode {
   int get number => _number;
   DateTime? get dateTime => _dateTime;
 
+  bool isChecked() {
+    return _dateTime == null ? false : true;
+  }
+
   String getDate() {
     if (_dateTime == null) return "";
     return "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}";

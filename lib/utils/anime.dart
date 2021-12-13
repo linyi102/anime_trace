@@ -3,16 +3,22 @@ import 'package:flutter_test_future/utils/episode.dart';
 class Anime {
   String name;
   List<Episode> episodes = [];
-  late int endEpisode;
-
+  int endEpisode = 0;
   Anime(this.name);
 
-  void setEndEpisode(int endEpisode) {
-    this.endEpisode = endEpisode;
-    // 每次更改最后一集时，是在原来集数+1的基础上开始
-    for (int i = episodes.length + 1; i <= endEpisode; ++i) {
-      episodes.add(Episode(i)); // 添加第i集
+  void setEndEpisode(int newEndEpisode) {
+    // 如果新设置的最后一集<原最后一集，则删除后面多余的集数
+    if (newEndEpisode < endEpisode) {
+      for (int i = 0; i < endEpisode - newEndEpisode; ++i) {
+        episodes.removeLast();
+      }
+    } else {
+      // 每次更改最后一集时，是在原来集数+1的基础上开始
+      for (int i = endEpisode + 1; i <= newEndEpisode; ++i) {
+        episodes.add(Episode(i)); // 添加第i集
+      }
     }
+    endEpisode = newEndEpisode;
   }
 
   // 设置第number集的时间
@@ -29,6 +35,11 @@ class Anime {
   String getEpisodeDate(int number) {
     number--;
     return episodes[number].getDate().toString();
+  }
+
+  bool isChecked(int number) {
+    number--;
+    return episodes[number].isChecked();
   }
 
   /*

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/animal_detail_page.dart';
+import 'package:flutter_test_future/scaffolds/tabs.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,12 +28,6 @@ class MyHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Flutter Test"),
-      ),
-      body: AnimalDetail(),
-    );
+    return const Tabs();
   }
 }
