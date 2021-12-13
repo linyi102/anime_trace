@@ -1,15 +1,22 @@
 class Episode {
-  int number; // 第几集
-  DateTime? dateTime; // 完成日期，若未完成，则是null
+  final int _number; // 第几集
+  DateTime? _dateTime; // 完成日期，若未完成，则是null
 
-  Episode(this.number);
+  Episode(this._number);
 
   void setDateTimeNow() {
-    dateTime = DateTime.now();
+    _dateTime = DateTime.now();
   }
 
+  void cancelDateTime() {
+    _dateTime = null;
+  }
+
+  int get number => _number;
+  DateTime? get dateTime => _dateTime;
+
   String getDate() {
-    if (dateTime == null) return "";
-    return "${dateTime!.year}/${dateTime!.month}/${dateTime!.day}";
+    if (_dateTime == null) return "";
+    return "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}";
   }
 }
