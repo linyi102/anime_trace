@@ -16,6 +16,7 @@ class _TabsState extends State<Tabs> {
     const HistoryPage(),
     const SettingPage(),
   ];
+  final List _listName = ["书架", "历史", "更多"];
   int _currentIndex = 0;
 
   @override
@@ -23,7 +24,14 @@ class _TabsState extends State<Tabs> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Flutter Test"),
+        title: Text(
+          _listName[_currentIndex],
+          style: const TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.white,
       ),
       body: _list[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

@@ -2,26 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/utils/anime.dart';
+import 'package:flutter_test_future/utils/anime_list_util.dart';
+import 'package:flutter_test_future/utils/history_util.dart';
+import 'package:flutter_test_future/utils/tags.dart';
 
 class AnimalDetail extends StatefulWidget {
-  const AnimalDetail({Key? key}) : super(key: key);
+  final Anime anime;
+  const AnimalDetail(this.anime, {Key? key}) : super(key: key);
 
   @override
   _AnimalDetailState createState() => _AnimalDetailState();
 }
 
 class _AnimalDetailState extends State<AnimalDetail> {
-  Anime anime = Anime("JOJO的奇妙冒险第六部 石之海");
-
   @override
   void initState() {
     super.initState();
-    anime.setEndEpisode(6);
+    // widget.anime.setEndEpisode(6);
     // debugPrint(episodes.toString());
   }
 
   List<Widget> _getEpisodesListTile() {
-    var tmpList = anime.episodes.map((e) {
+    var tmpList = widget.anime.episodes.map((e) {
       return Card(
         margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         shadowColor: Colors.transparent,
@@ -39,8 +41,9 @@ class _AnimalDetailState extends State<AnimalDetail> {
                   "第${e.number}话",
                   style: TextStyle(
                     fontSize: 16,
-                    color:
-                        anime.isChecked(e.number) ? Colors.grey : Colors.black,
+                    color: widget.anime.isChecked(e.number)
+                        ? Colors.grey
+                        : Colors.black,
                   ),
                 ),
               ),
@@ -49,11 +52,12 @@ class _AnimalDetailState extends State<AnimalDetail> {
                 bottom: 3,
                 child: Text(
                   // 没有完成日期时，返回空字符串""
-                  anime.getEpisodeDate(e.number),
+                  widget.anime.getEpisodeDate(e.number),
                   style: TextStyle(
                     fontSize: 13,
-                    color:
-                        anime.isChecked(e.number) ? Colors.grey : Colors.black,
+                    color: widget.anime.isChecked(e.number)
+                        ? Colors.grey
+                        : Colors.black,
                   ),
                 ),
               ),
@@ -61,12 +65,17 @@ class _AnimalDetailState extends State<AnimalDetail> {
                 right: 10,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (!anime.isChecked(e.number)) {
+                    if (!widget.anime.isChecked(e.number)) {
                       setState(() {
-                        anime.setEpisodeDateTimeNow(e.number);
+                        widget.anime.setEpisodeDateTimeNow(e.number);
                       });
+                      HistoryUtil.getInstance().addRecord(
+                          widget.anime.getEpisodeDate(e.number),
+                          widget.anime,
+                          e.number);
+                      // HistoryUtil.getInstance().showHistory();
                     } else {
-                      showCancelDate(e.number);
+                      _alertCancelDate(e.number);
                     }
                   },
                   style: ButtonStyle(
@@ -80,7 +89,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
                       const Size(20, 20),
                     ),
                   ),
-                  child: anime.isChecked(e.number)
+                  child: widget.anime.isChecked(e.number)
                       ? const Icon(
                           Icons.check_box_outlined,
                           color: Colors.grey,
@@ -101,6 +110,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(),
       body: Column(
         children: [
           const SizedBox(
@@ -115,7 +125,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
               Expanded(
                 flex: 10,
                 child: Text(
-                  anime.name,
+                  widget.anime.name,
                   style: const TextStyle(
                     fontSize: 20,
                     // Row溢出部分省略号...表示，需要外套Expanded
@@ -131,17 +141,34 @@ class _AnimalDetailState extends State<AnimalDetail> {
           Row(
             children: [
               Expanded(
-                child: AnimalPageButton(Icons.label_important_outline_rounded,
-                    onPressed: () {}),
+                child: AnimalPageButton(
+                  Icons.mode_edit_outline_outlined,
+                  onPressed: () {
+                    _alertModifyName();
+                  },
+                ),
               ),
               Expanded(
-                child: AnimalPageButton(Icons.star_border, onPressed: () {}),
+                child: AnimalPageButton(
+                  Icons.label_important_outline_rounded,
+                  onPressed: () {
+                    _alertSelectTag();
+                  },
+                ),
               ),
               Expanded(
-                child:
-                    AnimalPageButton(Icons.add_circle_outline, onPressed: () {
-                  showInputEpisode();
-                }),
+                child: AnimalPageButton(
+                  Icons.star_border,
+                  onPressed: () {},
+                ),
+              ),
+              Expanded(
+                child: AnimalPageButton(
+                  Icons.add_circle_outline,
+                  onPressed: () {
+                    _alertInputEpisode();
+                  },
+                ),
               ),
             ],
           ),
@@ -155,7 +182,103 @@ class _AnimalDetailState extends State<AnimalDetail> {
     );
   }
 
-  void showInputEpisode() {
+  void _alertSelectTag() {
+    int groupValue = tags.indexOf(widget.anime.getTag()); // 默认选择
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, tagState) {
+          List<Widget> radioList = [];
+          for (int i = 0; i < tags.length; ++i) {
+            radioList.add(
+              Row(
+                children: [
+                  Radio(
+                    value: i,
+                    groupValue: groupValue,
+                    onChanged: (v) {
+                      tagState(() {
+                        groupValue = int.parse(v.toString());
+                      });
+                      String oldTag = widget.anime.getTag();
+                      String newTag = tags[i];
+                      // 改变该动漫的标签
+                      widget.anime.setTag(newTag);
+                      // 同时把该动漫移到新标签所对应的列表
+                      AnimeListUtil.getInstance()
+                          .moveAnime(widget.anime, oldTag, newTag);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(tags[i]),
+                ],
+              ),
+            );
+          }
+
+          return AlertDialog(
+            title: const Text('选择标签'),
+            content: AspectRatio(
+              aspectRatio: 1.47 / 1,
+              child: Column(
+                children: radioList,
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  void _alertModifyName() {
+    var inputController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('修改动漫名'),
+          content: AspectRatio(
+            aspectRatio: 6 / 1,
+            child: Card(
+              elevation: 0.0,
+              child: Column(
+                children: [
+                  TextField(
+                    // inputController监听输入内容，同时设置初始值(即在原来动漫名字上改动)
+                    controller: inputController..text = widget.anime.name,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // 实时更新该页面的动漫名字
+                setState(() {
+                  widget.anime.modifyName(inputController.text);
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('确认'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _alertInputEpisode() {
     const int maxAllowedEpisode = 200;
     var endEpisodeController = TextEditingController();
     showDialog(
@@ -164,7 +287,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
         return AlertDialog(
           title: const Text('最终话'),
           content: AspectRatio(
-            aspectRatio: 3 / 1,
+            aspectRatio: 6 / 1,
             child: Card(
               elevation: 0.0,
               child: Column(
@@ -180,6 +303,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
                       hintText: "0-$maxAllowedEpisode",
                       filled: true,
                       fillColor: Colors.white,
+                      border: InputBorder.none,
                     ),
                   ),
                 ],
@@ -198,7 +322,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
                   return;
                 }
                 setState(() {
-                  anime.setEndEpisode(endEpisode);
+                  widget.anime.setEndEpisode(endEpisode);
                 });
                 Navigator.pop(context);
               },
@@ -216,7 +340,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
     );
   }
 
-  void showCancelDate(int episodeNumber) {
+  void _alertCancelDate(int episodeNumber) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -227,8 +351,12 @@ class _AnimalDetailState extends State<AnimalDetail> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  anime.cancelEpisodeDateTime(episodeNumber);
+                  widget.anime.cancelEpisodeDateTime(episodeNumber);
                 });
+                HistoryUtil.getInstance().removeRecord(
+                    widget.anime.getEpisodeDate(episodeNumber),
+                    widget.anime,
+                    episodeNumber);
                 Navigator.pop(context);
               },
               child: const Text('是'),

@@ -2,9 +2,12 @@ import 'package:flutter_test_future/utils/episode.dart';
 
 class Anime {
   String name;
+  String tag;
   List<Episode> episodes = [];
   int endEpisode = 0;
-  Anime(this.name);
+  int lastCheckedEpisode = 0;
+
+  Anime(this.name, {required this.tag});
 
   void setEndEpisode(int newEndEpisode) {
     // 如果新设置的最后一集<原最后一集，则删除后面多余的集数
@@ -23,8 +26,15 @@ class Anime {
 
   // 设置第number集的时间
   void setEpisodeDateTimeNow(int number) {
+    // 更新最后观看的第几集(注意先设置，然后number--)
+    if (number > lastCheckedEpisode) lastCheckedEpisode = number;
+
     number--; // number--后才是数组对应的索引
     episodes[number].setDateTimeNow();
+  }
+
+  void modifyName(String newName) {
+    name = newName;
   }
 
   void cancelEpisodeDateTime(int number) {
@@ -35,6 +45,18 @@ class Anime {
   String getEpisodeDate(int number) {
     number--;
     return episodes[number].getDate().toString();
+  }
+
+  String getPace() {
+    return "$lastCheckedEpisode/${episodes.length}";
+  }
+
+  void setTag(String newTag) {
+    tag = newTag;
+  }
+
+  String getTag() {
+    return tag;
   }
 
   bool isChecked(int number) {
