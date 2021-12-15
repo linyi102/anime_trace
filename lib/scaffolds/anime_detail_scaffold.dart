@@ -91,7 +91,8 @@ class _AnimalDetailState extends State<AnimalDetail> {
                   ),
                   child: widget.anime.isChecked(e.number)
                       ? const Icon(
-                          Icons.check_box_outlined,
+                          // Icons.check_box_outlined,
+                          Icons.check_rounded,
                           color: Colors.grey,
                         )
                       : const Icon(Icons.check_box_outline_blank_rounded),
@@ -112,11 +113,15 @@ class _AnimalDetailState extends State<AnimalDetail> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        shadowColor: Colors.transparent,
+        iconTheme: const IconThemeData(
+          color: Colors.black,
+        ),
       ),
       body: Column(
         children: [
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -352,13 +357,14 @@ class _AnimalDetailState extends State<AnimalDetail> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                setState(() {
-                  widget.anime.cancelEpisodeDateTime(episodeNumber);
-                });
+                // 必须在取消日期之前取消记录，否则不会获取到日期
                 HistoryUtil.getInstance().removeRecord(
                     widget.anime.getEpisodeDate(episodeNumber),
                     widget.anime,
                     episodeNumber);
+                setState(() {
+                  widget.anime.cancelEpisodeDateTime(episodeNumber);
+                });
                 Navigator.pop(context); // bug：没有弹出
               },
               child: const Text('是'),

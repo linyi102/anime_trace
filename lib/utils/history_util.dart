@@ -23,6 +23,11 @@ class HistoryUtil {
   }
 
   void removeRecord(String date, Anime anime, int episodeNumber) {
+    if (dayRecords[date] == null) {
+      print("👉date=$date");
+      print("👉不可能：dayRecords[date] == null");
+      return;
+    }
     dayRecords[date]!.removeRecord(anime, episodeNumber);
   }
 
