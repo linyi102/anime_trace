@@ -110,7 +110,9 @@ class _AnimalDetailState extends State<AnimalDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
       body: Column(
         children: [
           const SizedBox(
@@ -220,7 +222,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
           return AlertDialog(
             title: const Text('选择标签'),
             content: AspectRatio(
-              aspectRatio: 1.47 / 1,
+              aspectRatio: 1 / 1,
               child: Column(
                 children: radioList,
               ),
@@ -239,7 +241,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
         return AlertDialog(
           title: const Text('修改动漫名'),
           content: AspectRatio(
-            aspectRatio: 6 / 1,
+            aspectRatio: 3 / 1,
             child: Card(
               elevation: 0.0,
               child: Column(
@@ -266,12 +268,12 @@ class _AnimalDetailState extends State<AnimalDetail> {
               },
               child: const Text('确认'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('取消'),
-            ),
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.pop(context);
+            //   },
+            //   child: const Text('取消'),
+            // ),
           ],
         );
       },
@@ -287,7 +289,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
         return AlertDialog(
           title: const Text('最终话'),
           content: AspectRatio(
-            aspectRatio: 6 / 1,
+            aspectRatio: 3 / 1,
             child: Card(
               elevation: 0.0,
               child: Column(
@@ -328,12 +330,12 @@ class _AnimalDetailState extends State<AnimalDetail> {
               },
               child: const Text('确定'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('取消'),
-            ),
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.pop(context);
+            //   },
+            //   child: const Text('取消'),
+            // ),
           ],
         );
       },
@@ -357,7 +359,7 @@ class _AnimalDetailState extends State<AnimalDetail> {
                     widget.anime.getEpisodeDate(episodeNumber),
                     widget.anime,
                     episodeNumber);
-                Navigator.pop(context);
+                Navigator.pop(context); // bug：没有弹出
               },
               child: const Text('是'),
             ),

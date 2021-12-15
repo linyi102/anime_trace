@@ -37,7 +37,10 @@ class _AnimeListPageState extends State<AnimeListPage>
           ListTile(
             title: Text(
               e.name,
-              style: const TextStyle(fontSize: 15),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.normal,
+              ),
               overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
             ),
             trailing: Text(
@@ -107,11 +110,15 @@ class _AnimeListPageState extends State<AnimeListPage>
     // );
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 2,
+        toolbarHeight: 8, // 太小容易导致底部不够，从而溢出
         backgroundColor: Colors.white,
         shadowColor: Colors.transparent,
         bottom: TabBar(
-          labelColor: Colors.black, // 标签颜色
+          unselectedLabelColor: Colors.black54,
+          labelColor: Colors.blue, // 标签字体颜色
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
           indicatorColor: Colors.blue, // 指示器颜色
           indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
           indicatorWeight: 3, // 指示器高度
@@ -150,9 +157,7 @@ class _AnimeListPageState extends State<AnimeListPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _alertAddAnime();
-          });
+          _alertAddAnime();
         },
         child: const Icon(Icons.add),
       ),
@@ -170,7 +175,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           return AlertDialog(
             title: const Text('添加漫画'),
             content: AspectRatio(
-              aspectRatio: 2.5 / 1,
+              aspectRatio: 2 / 1,
               child: Column(
                 children: [
                   TextField(

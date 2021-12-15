@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/anime.dart';
 import 'package:flutter_test_future/utils/anime_list_util.dart';
-// import 'package:flutter_test_future/utils/history_util.dart';
+import 'package:flutter_test_future/utils/history_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
 void main() {
@@ -13,10 +14,12 @@ void main() {
   animeListUtil.addAnime(Anime("刀剑神域第一季", tag: tags[1]));
   animeListUtil.addAnime(Anime("进击的巨人第二季", tag: tags[1]));
   animeListUtil.addAnime(Anime("在下坂本，有何贵干？", tag: tags[1]));
-  // Anime anime = Anime("在下坂本，有何贵干？？？", tag: tags[1]);
-  // HistoryUtil historyUtil = HistoryUtil.getInstance();
-  // historyUtil.addRecord("2021/4/7", anime, 1);
+  Anime anime = Anime("在下坂本，有何贵干？？？", tag: tags[1]);
+  HistoryUtil historyUtil = HistoryUtil.getInstance();
+  historyUtil.addRecord("2021/4/7", anime, 1);
 
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   runApp(const MyApp());
 }
 

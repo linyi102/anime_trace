@@ -28,6 +28,7 @@ class _TabsState extends State<Tabs> {
           _listName[_currentIndex],
           style: const TextStyle(
             color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
         ),
         shadowColor: Colors.transparent,
