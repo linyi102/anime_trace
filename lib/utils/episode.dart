@@ -1,26 +1,27 @@
 class Episode {
   final int _number; // 第几集
-  DateTime? _dateTime; // 完成日期，若未完成，则是null
+  String? dateTime; // 完成日期，若未完成，则是null
 
-  Episode(this._number);
+  Episode(this._number, {this.dateTime});
 
-  void setDateTimeNow() {
-    _dateTime = DateTime.now();
-  }
+  // void setDateTimeNow() {
+  //   dateTime = DateTime.now();
+  // }
 
   void cancelDateTime() {
-    _dateTime = null;
+    dateTime = null;
   }
 
   int get number => _number;
-  DateTime? get dateTime => _dateTime;
 
   bool isChecked() {
-    return _dateTime == null ? false : true;
+    return dateTime == null ? false : true;
   }
 
   String getDate() {
-    if (_dateTime == null) return "";
-    return "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}";
+    // if (dateTime == null) return "";
+    // return "${dateTime!.year}/${dateTime!.month}/${dateTime!.day}";
+    if (dateTime == null) return "";
+    return dateTime!.split(' ')[0];
   }
 }

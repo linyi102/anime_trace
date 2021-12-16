@@ -57,11 +57,11 @@ class _HistoryPageState extends State<HistoryPage> {
         title: Text(e.anime.name),
         trailing: Text("第${e.episodeNumber}话"),
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AnimalDetail(e.anime),
-            ),
-          );
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => AnimalDetail(e.anime),
+          //   ),
+          // );
         },
       ));
     }

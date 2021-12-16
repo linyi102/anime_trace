@@ -30,7 +30,7 @@ class Anime {
     if (number > lastCheckedEpisode) lastCheckedEpisode = number;
 
     number--; // number--后才是数组对应的索引
-    episodes[number].setDateTimeNow();
+    // episodes[number].setDateTimeNow();
   }
 
   void modifyName(String newName) {

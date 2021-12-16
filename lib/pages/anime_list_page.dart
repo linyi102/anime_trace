@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail_scaffold.dart';
-import 'package:flutter_test_future/utils/anime.dart';
+import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
+import 'package:flutter_test_future/sql/anime_sql.dart';
+import 'package:flutter_test_future/sql/sqlite_helper.dart';
 import 'package:flutter_test_future/utils/anime_list_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
@@ -16,7 +17,8 @@ class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   AnimeListUtil animeListUtil = AnimeListUtil.getInstance();
   late TabController _tabController;
-  String addAnimeTag = tags[0];
+  String addDefaultTag = tags[0];
+  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
 
   @override
   void initState() {
@@ -30,77 +32,64 @@ class _AnimeListPageState extends State<AnimeListPage>
     super.dispose();
   }
 
-  List<Widget> _getAnimeList(String tag) {
-    var tmpList = animeListUtil.getAnimeListByTag(tag)!.map((e) {
-      return Column(
-        children: [
-          ListTile(
-            title: Text(
-              e.name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-              ),
-              overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-            ),
-            trailing: Text(
-              e.getPace(),
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-            ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => AnimalDetail(e),
-                ),
+  List<Widget> _getAnimeList() {
+    List<Widget> list = [];
+    for (int i = 0; i < tags.length; ++i) {
+      list.add(
+        FutureBuilder(
+          future: sqliteHelper.getAllAnimeBytag(tags[i]),
+          // future结束后会通知builder重新渲染画面，因此stateless也可以
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasError) {
+              debugPrint(snapshot.error.toString());
+              return const Icon(
+                Icons.error,
+                size: 80,
               );
-            },
-          ),
-          // const Divider(),
-        ],
+            }
+            if (snapshot.hasData) {
+              List<Widget> _getList() {
+                var tmpList = (snapshot.data as List<AnimeSql>).map((e) {
+                  return ListTile(
+                    title: Text(
+                      e.animeName,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+                    ),
+                    trailing: Text(
+                      "${e.checkedEpisodeCnt}/${e.animeEpisodeCnt}",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AnimeDetailPlus(e.animeId),
+                        ),
+                      );
+                    },
+                  );
+                });
+                return tmpList.toList();
+              }
+
+              return ListView(
+                children: _getList(),
+              );
+            }
+            // 等待数据时显示加载画面
+            // return const CircularProgressIndicator();
+            return const Text("");
+          },
+        ),
       );
-      // return Card(
-      //   // shadowColor: Colors.grey,
-      //   // shadowColor: Colors.transparent,
-      //   child: MaterialButton(
-      //     // highlightColor: Colors.white,
-      //     onPressed: () {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => AnimalDetail(e),
-      //         ),
-      //       );
-      //     },
-      //     child: AspectRatio(
-      //       aspectRatio: 10 / 1,
-      //       child: Stack(
-      //         children: [
-      //           Positioned(
-      //             left: 10,
-      //             top: 20,
-      //             child: Text(
-      //               e.name,
-      //               style: const TextStyle(fontSize: 18),
-      //             ),
-      //           ),
-      //           Positioned(
-      //             top: 20,
-      //             right: 10,
-      //             child: Text(
-      //               e.getPace(),
-      //               style: const TextStyle(fontSize: 15),
-      //             ),
-      //             // child: Text("${e.lastCheckedEpisode}/${e.episodes.length}"),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // );
-    });
-    return tmpList.toList();
+    }
+    return list;
   }
 
   @override
@@ -136,35 +125,19 @@ class _AnimeListPageState extends State<AnimeListPage>
         color: Colors.white, // 使用函数设置颜色没有效果，很奇怪
         child: TabBarView(
           controller: _tabController,
-          children: [
-            ListView(
-              children: _getAnimeList(tags[0]),
-            ),
-            ListView(
-              children: _getAnimeList(tags[1]),
-            ),
-            ListView(
-              children: _getAnimeList(tags[2]),
-            ),
-            ListView(
-              children: _getAnimeList(tags[3]),
-            ),
-            ListView(
-              children: _getAnimeList(tags[4]),
-            ),
-          ],
+          children: _getAnimeList(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _alertAddAnime();
+          _dialogAddAnime();
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _alertAddAnime() {
+  void _dialogAddAnime() {
     var inputNameController = TextEditingController();
     var inputEndEpisodeController = TextEditingController();
     showDialog(
@@ -206,7 +179,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             actions: [
               TextButton.icon(
                 onPressed: () {
-                  _alertSelectTag(setTagStateOnAddAnime);
+                  _dialogSelectTag(setTagStateOnAddAnime);
                 },
                 icon: const Icon(
                   Icons.new_label,
@@ -214,7 +187,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   color: Colors.blue,
                 ),
                 label: Text(
-                  addAnimeTag,
+                  addDefaultTag,
                   style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 16,
@@ -232,13 +205,12 @@ class _AnimeListPageState extends State<AnimeListPage>
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  // 设置动漫的名称、标签和集数
-                  Anime anime = Anime(name, tag: addAnimeTag);
-                  anime.setEndEpisode(endEpisode);
                   // 改变状态
-                  setState(() {
-                    animeListUtil.addAnime(anime);
-                  });
+                  sqliteHelper.insertAnime(AnimeSql(
+                      animeName: name,
+                      animeEpisodeCnt: endEpisode,
+                      tagName: addDefaultTag));
+                  setState(() {});
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.send),
@@ -252,8 +224,8 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   // 传入动漫对话框的状态，选择好标签后，就会更新该状态
-  void _alertSelectTag(setTagStateOnAddAnime) {
-    int groupValue = tags.indexOf(addAnimeTag); // 默认选择
+  void _dialogSelectTag(setTagStateOnAddAnime) {
+    int groupValue = tags.indexOf(addDefaultTag); // 默认选择
     // String selectTag = tags[0];
 
     showDialog(
@@ -273,7 +245,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                         groupValue = int.parse(v.toString());
                       });
                       setTagStateOnAddAnime(() {
-                        addAnimeTag = tags[i];
+                        addDefaultTag = tags[i];
                       });
                       Navigator.pop(context);
                     },

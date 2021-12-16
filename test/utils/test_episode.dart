@@ -4,6 +4,6 @@ import 'package:flutter_test_future/utils/episode.dart';
 
 main(List<String> args) {
   Episode episodeInfo = Episode(1);
-  episodeInfo.setDateTimeNow();
+  episodeInfo.dateTime = DateTime.now().toString();
   print(episodeInfo.getDate());
 }
