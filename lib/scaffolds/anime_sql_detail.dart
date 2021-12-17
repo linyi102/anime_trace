@@ -25,7 +25,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   void _getInitAnime() async {
-    anime = await sqliteHelper.getAnimeById(widget.animeId);
+    // anime = await sqliteHelper.getAnimeByAnimeId(widget.animeId);
   }
 
   @override
@@ -41,8 +41,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-              onPressed: () => _dialogUpdateAnime(), child: const Text("更新")),
           const SizedBox(
             height: 10,
           ),
@@ -58,7 +56,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayAnimeName() {
     return FutureBuilder(
-      future: sqliteHelper.getAnimeById(widget.animeId),
+      future: sqliteHelper.getAnimeByAnimeId(widget.animeId),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasError) {
           debugPrint(snapshot.error.toString());
@@ -70,13 +68,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         if (snapshot.hasData) {
           anime = snapshot.data as AnimeSql; // 设置获取的动漫
           return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
                 width: 20,
               ),
               Expanded(
-                flex: 10,
                 child: Text(
                   anime.animeName,
                   style: const TextStyle(
@@ -85,6 +82,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+              ),
+              IconButton(
+                onPressed: () {
+                  _dialogUpdateAnime();
+                },
+                icon: const Icon(Icons.mode),
+              ),
+              const SizedBox(
+                width: 15,
               ),
             ],
           );
@@ -113,44 +119,39 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           // }
           List<Widget> list = [];
           for (int i = 0; i < episodes.length; ++i) {
-            list.add(ListTile(
-              title: Text("第${episodes[i].number}集"),
-              subtitle: Text(episodes[i].getDate()),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  if (episodes[i].isChecked()) {
-                    _dialogRemoveDate(
-                      episodes[i].number,
-                      episodes[i].dateTime,
-                    ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
-                  } else {
-                    sqliteHelper.insertHistoryItem(
-                      widget.animeId,
-                      episodes[i].number,
-                    );
-                    setState(() {});
-                  }
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.white),
-                  foregroundColor: MaterialStateProperty.all(Colors.black),
-                  shadowColor: MaterialStateProperty.all(Colors.transparent),
-                  minimumSize: MaterialStateProperty.all(
-                    const Size(0, 0),
-                  ),
-                  maximumSize: MaterialStateProperty.all(
-                    const Size(20, 20),
-                  ),
+            list.add(
+              ListTile(
+                onLongPress: () {},
+                title: Text("第${episodes[i].number}集"),
+                subtitle: Text(episodes[i].getDate()),
+                trailing: IconButton(
+                  onPressed: () {
+                    if (episodes[i].isChecked()) {
+                      _dialogRemoveDate(
+                        episodes[i].number,
+                        episodes[i].dateTime,
+                      ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+                    } else {
+                      sqliteHelper.insertHistoryItem(
+                        widget.animeId,
+                        episodes[i].number,
+                      );
+                      setState(() {});
+                    }
+                  },
+                  icon: episodes[i].isChecked()
+                      ? const Icon(
+                          // Icons.check_box_outlined,
+                          Icons.check_rounded,
+                          color: Colors.grey,
+                        )
+                      : const Icon(
+                          Icons.check_box_outline_blank_rounded,
+                          color: Colors.black,
+                        ),
                 ),
-                child: episodes[i].isChecked()
-                    ? const Icon(
-                        // Icons.check_box_outlined,
-                        Icons.check_rounded,
-                        color: Colors.grey,
-                      )
-                    : const Icon(Icons.check_box_outline_blank_rounded),
               ),
-            ));
+            );
           }
           return Expanded(
               child: ListView(
@@ -220,6 +221,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     controller: inputEndEpisodeController
                       ..text = "${anime.animeEpisodeCnt}",
                     decoration: const InputDecoration(
+                      labelText: "动漫集数",
                       border: InputBorder.none,
                     ),
                   ),

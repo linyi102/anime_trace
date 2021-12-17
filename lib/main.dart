@@ -7,9 +7,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   WidgetsFlutterBinding.ensureInitialized();
-
-  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
-  sqliteHelper.open();
+  SqliteHelper.getInstance().open();
 
   runApp(const MyApp());
 }

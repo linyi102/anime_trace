@@ -19,9 +19,9 @@ class Episode {
   }
 
   String getDate() {
-    // if (dateTime == null) return "";
-    // return "${dateTime!.year}/${dateTime!.month}/${dateTime!.day}";
     if (dateTime == null) return "";
-    return dateTime!.split(' ')[0];
+    // 2022-09-04 00:00:00.000Z
+    String date = dateTime!.split(' ')[0]; // 2022-09-04
+    return date.replaceAll("-", "/"); // 2022/09/04
   }
 }

@@ -7,40 +7,45 @@ class SqliteHelper {
   // 单例模式
   static SqliteHelper? _single;
 
-  SqliteHelper._();
+  SqliteHelper._() {
+    // open();
+  }
 
   static SqliteHelper getInstance() {
     return _single ??= SqliteHelper._();
   }
 
   final sqlFileName = 'mydb1.db';
-  late Database database;
+  late Database _database;
 
-  void open() async {
+  open() async {
     String path = "${await getDatabasesPath()}/$sqlFileName";
-    database = await openDatabase(path);
-    // ''' 多行字符串 '''
-    await database.execute('''
-      DROP TABLE tag;
-      ''');
-    await database.execute('''
-      DROP TABLE anime;
-      ''');
-    await database.execute('''
-      DROP TABLE history;
-      ''');
-    _createTable();
-    _insertInitData();
+    print("👉path=$path");
+    // await deleteDatabase(path); // 删除数据库
+    _database = await openDatabase(
+      path,
+      onCreate: (Database db, int version) {
+        _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
+        _insertInitData(db);
+      },
+      version: 1, // onCreate must be null if no version is specified
+    );
   }
 
-  void _createTable() async {
-    await database.execute('''
+  close() async {
+    print(_database.isOpen);
+    await _database.close();
+    print(_database.isOpen);
+  }
+
+  void _createInitTable(Database db) async {
+    await db.execute('''
       CREATE TABLE tag (
           tag_id   INTEGER PRIMARY KEY AUTOINCREMENT,
           tag_name TEXT    NOT NULL
       );
       ''');
-    await database.execute('''
+    await db.execute('''
       CREATE TABLE anime (
           anime_id          INTEGER PRIMARY KEY AUTOINCREMENT,
           anime_name        TEXT    NOT NULL,
@@ -52,9 +57,10 @@ class SqliteHelper {
           REFERENCES tag (tag_id) 
       );
       ''');
-    await database.execute('''
+    await db.execute('''
       CREATE TABLE history (
-          date           TEXT    PRIMARY KEY,
+          history_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+          date           TEXT,
           anime_id       INTEGER NOT NULL,
           episode_number INTEGER NOT NULL,
           FOREIGN KEY (
@@ -65,12 +71,12 @@ class SqliteHelper {
       ''');
   }
 
-  void _insertInitData() async {
-    await database.rawInsert('''
+  void _insertInitData(Database db) async {
+    await db.rawInsert('''
       insert into tag(tag_name)
       values('拾'), ('途'), ('终'), ('搁'), ('弃');
     ''');
-    await database.rawInsert('''
+    await db.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, tag_id)
       values('进击的巨人第一季', '24', 1),
           ('JOJO的奇妙冒险第六季 石之海', '12', 1),
@@ -78,7 +84,7 @@ class SqliteHelper {
           ('进击的巨人第二季', '12', 1),
           ('在下坂本，有何贵干？', '12', 3);
     ''');
-    await database.rawInsert('''
+    await db.rawInsert('''
       insert into history(date, anime_id, episode_number)
       values('2021-12-15 20:17:58', 2, 1),
           ('2021-12-15 20:23:22', 2, 3),
@@ -90,7 +96,7 @@ class SqliteHelper {
   }
 
   getTagIdByTagName(String tagName) async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select tag_id from tag
     where tag_name = '$tagName';
     ''');
@@ -103,7 +109,7 @@ class SqliteHelper {
     ); // 一定要await
 
     // int count =
-    await database.rawUpdate('''
+    await _database.rawUpdate('''
     update anime
     set anime_name = '${newAnime.animeName}',
         anime_episode_cnt = ${newAnime.animeEpisodeCnt},
@@ -115,13 +121,13 @@ class SqliteHelper {
 
   void insertAnime(AnimeSql anime) async {
     // 先根据tag_name获取到tag_id
-    int tagId = (await database.rawQuery('''
+    int tagId = (await _database.rawQuery('''
     select tag_id from tag
     where tag_name = '${anime.tagName}';
     '''))[0]['tag_id'] as int;
     // 解释：返回List<Map<String, Object?>>，[0]代表取第一个元素，['tag_id']通过key得到value。
 
-    await database.rawInsert('''
+    await _database.rawInsert('''
     insert into anime(anime_name, anime_episode_cnt, tag_id)
     values('${anime.animeName}', '${anime.animeEpisodeCnt}', $tagId);
     ''');
@@ -130,21 +136,21 @@ class SqliteHelper {
   void insertHistoryItem(int animeId, int episodeNumber) async {
     String date = DateTime.now().toString();
 
-    await database.rawInsert('''
+    await _database.rawInsert('''
     insert into history(date, anime_id, episode_number)
     values('$date', $animeId, $episodeNumber);
     ''');
   }
 
   void removeHistoryItem(String? date) async {
-    await database.rawDelete('''
+    await _database.rawDelete('''
     delete from history
     where date = '$date';
     ''');
   }
 
-  getAnimeById(int animeId) async {
-    var list = await database.rawQuery('''
+  getAnimeByAnimeId(int animeId) async {
+    var list = await _database.rawQuery('''
     select anime_name, anime_episode_cnt, tag_name
     from anime inner join tag
         on anime_id = $animeId and anime.tag_id = tag.tag_id;
@@ -157,7 +163,7 @@ class SqliteHelper {
   }
 
   getTagNameByAnimeId(int animeId) async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select tag_name
     from anime inner join tag
         on anime_id = $animeId and anime.tag_id = tag.tag_id;
@@ -166,10 +172,10 @@ class SqliteHelper {
   }
 
   getAnimeEpisodeHistoryById(int animeId) async {
-    AnimeSql anime = await getAnimeById(animeId);
+    AnimeSql anime = await getAnimeByAnimeId(animeId);
     int animeEpisodeCnt = anime.animeEpisodeCnt;
 
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select date, episode_number
     from anime inner join history
         on anime.anime_id = $animeId and anime.anime_id = history.anime_id;
@@ -190,15 +196,16 @@ class SqliteHelper {
   }
 
   getAllAnimeBytag(String tag) async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt
     from anime inner join tag
-      on tag.tag_name = '$tag' and anime.tag_id = tag.tag_id;
-    ''');
+        on tag.tag_name = '$tag' and anime.tag_id = tag.tag_id
+    order by anime_id desc;
+    '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
     List<AnimeSql> res = [];
     for (var element in list) {
-      var checkedEpisodeCntList = await database.rawQuery('''
+      var checkedEpisodeCntList = await _database.rawQuery('''
       select count(anime.anime_id) cnt
       from anime inner join history
           on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
@@ -215,8 +222,23 @@ class SqliteHelper {
     return res;
   }
 
+  getAnimeCntPerTag() async {
+    var list = await _database.rawQuery('''
+    select count(anime_id) as anime_cnt, tag.tag_name
+    from tag left outer join anime -- sqlite只支持左外联结
+        on anime.tag_id = tag.tag_id
+    group by tag.tag_id; -- 应该按照tag的tag_id分组
+    ''');
+
+    List<int> res = [];
+    for (var item in list) {
+      res.add(item['anime_cnt'] as int);
+    }
+    return res;
+  }
+
   getAllTag() async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select tag_name from tag;
     ''');
     // 得到的是一个数组，每个元素是一个Map：List<Map<String, Object?>>
@@ -231,7 +253,7 @@ class SqliteHelper {
   }
 
   getAllAnime() async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
     select anime_name from anime;
     ''');
     var res = list.map((e) {
@@ -241,7 +263,7 @@ class SqliteHelper {
   }
 
   getAllHistory() async {
-    var list = await database.rawQuery('''
+    var list = await _database.rawQuery('''
       select date, anime_name, episode_number
       from history;
       ''');

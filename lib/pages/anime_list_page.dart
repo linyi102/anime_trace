@@ -24,12 +24,30 @@ class _AnimeListPageState extends State<AnimeListPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    // Future(() {
+    //   return SqliteHelper.getInstance().open();
+    // }).then((value) {
+    //   debugPrint("👉value=${value.toString()}");
+    //   setState(() {});
+    // }); // 每次切换底部tab，会出现DatabaseException(error database_closed)
+
+    // Future(() {
+    //   return SqliteHelper.getInstance().open(); // 必须return，尽管该函数没有返回
+    // }).then((value) {
+    //   setState(() {});
+    // });
+
+    // Future.delayed(const Duration(seconds: 1), () {
+    //   setState(() {});
+    // });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+    // print("👉close");
+    // SqliteHelper.getInstance().close();
   }
 
   List<Widget> _getAnimeList() {
@@ -42,10 +60,12 @@ class _AnimeListPageState extends State<AnimeListPage>
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasError) {
               debugPrint(snapshot.error.toString());
-              return const Icon(
-                Icons.error,
-                size: 80,
-              );
+              // return const Text("");
+              return Text(snapshot.error.toString());
+              // return const Icon(
+              //   Icons.error,
+              //   size: 80,
+              // );
             }
             if (snapshot.hasData) {
               List<Widget> _getList() {
@@ -55,7 +75,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       e.animeName,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.normal,
+                        fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
                     ),
@@ -64,6 +84,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       style: const TextStyle(
                         fontSize: 15,
                         color: Colors.black,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     onTap: () {
@@ -73,6 +94,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                         ),
                       );
                     },
+                    onLongPress: () {},
                   );
                 });
                 return tmpList.toList();
@@ -111,13 +133,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           indicatorColor: Colors.blue, // 指示器颜色
           indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
           indicatorWeight: 3, // 指示器高度
-          tabs: [
-            TagTab(tags[0]),
-            TagTab(tags[1]),
-            TagTab(tags[2]),
-            TagTab(tags[3]),
-            TagTab(tags[4]),
-          ],
+          tabs: _showTagAndCnt(),
           controller: _tabController,
         ),
       ),
@@ -146,12 +162,13 @@ class _AnimeListPageState extends State<AnimeListPage>
         String _labelTextInEpisodeField = "动漫集数：12";
         return StatefulBuilder(builder: (context, setTagStateOnAddAnime) {
           return AlertDialog(
-            title: const Text('添加漫画'),
+            title: const Text('添加动漫'),
             content: AspectRatio(
               aspectRatio: 2 / 1,
               child: Column(
                 children: [
                   TextField(
+                    autofocus: true,
                     controller: inputNameController,
                     decoration: const InputDecoration(
                       labelText: "动漫名称",
@@ -259,8 +276,8 @@ class _AnimeListPageState extends State<AnimeListPage>
           return AlertDialog(
             title: const Text('选择标签'),
             content: AspectRatio(
-              aspectRatio: 1.47 / 1,
-              child: Column(
+              aspectRatio: 1.2 / 1,
+              child: ListView(
                 children: radioList,
               ),
             ),
@@ -269,24 +286,34 @@ class _AnimeListPageState extends State<AnimeListPage>
       },
     );
   }
-}
 
-class TagTab extends StatelessWidget {
-  final String _tabName;
-  const TagTab(this._tabName, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 15,
-        ),
-        Text(_tabName),
-        const SizedBox(
-          height: 15,
-        ),
-      ],
-    );
+  List<Widget> _showTagAndCnt() {
+    List<Widget> list = [];
+    for (int i = 0; i < tags.length; ++i) {
+      list.add(Column(
+        children: [
+          const SizedBox(
+            height: 15,
+          ),
+          FutureBuilder(
+            future: SqliteHelper.getInstance().getAnimeCntPerTag(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasError) {
+                return const Icon(Icons.error);
+              }
+              if (snapshot.hasData) {
+                List<int> animeCntPerTag = snapshot.data;
+                return Text("${tags[i]} (${animeCntPerTag[i]})");
+              }
+              return const Text("");
+            },
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+        ],
+      ));
+    }
+    return list;
   }
 }
