@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:flutter_test_future/sql/anime_sql.dart';
+import 'package:flutter_test_future/sql/history_sql.dart';
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -7,9 +8,7 @@ class SqliteHelper {
   // 单例模式
   static SqliteHelper? _single;
 
-  SqliteHelper._() {
-    // open();
-  }
+  SqliteHelper._();
 
   static SqliteHelper getInstance() {
     return _single ??= SqliteHelper._();
@@ -29,7 +28,8 @@ class SqliteHelper {
   _initDatabase() async {
     String path = "${await getDatabasesPath()}/$sqlFileName";
     // print("👉path=$path");
-    // await deleteDatabase(path); // 删除数据库
+    await deleteDatabase(path); // 删除数据库，不知道为什么一定要加await
+    // 否则会出现Unhandled Exception: DatabaseException(database_closed 31)
     return await openDatabase(
       path,
       onCreate: (Database db, int version) {
@@ -39,8 +39,6 @@ class SqliteHelper {
       version: 1, // onCreate must be null if no version is specified
     );
   }
-
-  close() async {}
 
   void _createInitTable(Database db) async {
     await db.execute('''
@@ -80,7 +78,8 @@ class SqliteHelper {
       insert into tag(tag_name)
       values('拾'), ('途'), ('终'), ('搁'), ('弃');
     ''');
-    await db.rawInsert('''
+    for (int i = 0; i < 1; ++i) {
+      await db.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, tag_id)
       values('进击的巨人第一季', '24', 1),
           ('JOJO的奇妙冒险第六季 石之海', '12', 1),
@@ -88,6 +87,7 @@ class SqliteHelper {
           ('进击的巨人第二季', '12', 1),
           ('在下坂本，有何贵干？', '12', 3);
     ''');
+    }
     await db.rawInsert('''
       insert into history(date, anime_id, episode_number)
       values('2021-12-15 20:17:58', 2, 1),
@@ -208,13 +208,15 @@ class SqliteHelper {
   }
 
   getAllAnimeBytag(String tag) async {
+    print("sql: getAllAnimeBytag");
     Database database = await getInstance().database; // 必须要await，不能直接使用！
 
     var list = await database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt
     from anime inner join tag
         on tag.tag_name = '$tag' and anime.tag_id = tag.tag_id
-    order by anime_id desc;
+    order by anime_id desc
+    limit 100 offset 0;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
     List<AnimeSql> res = [];
@@ -252,42 +254,50 @@ class SqliteHelper {
     return res;
   }
 
-  getAllTag() async {
-    Database database = await getInstance().database;
-    var list = await database.rawQuery('''
-    select tag_name from tag;
-    ''');
-    // 得到的是一个数组，每个元素是一个Map：List<Map<String, Object?>>
-    // 需要通过key获取到对应的值，得到List<Object?>
-    var res = list.map((e) {
-      return e['tag_name'];
-    });
-    // toList： (...)-->[...]
-    // cast<String>：List<Object?>-->List<String>
-    // return res.toList().cast<String>();
-    return res.toList().cast<String>();
-  }
+  // getAllTag() async {
+  //   Database database = await getInstance().database;
+  //   var list = await database.rawQuery('''
+  //   select tag_name from tag;
+  //   ''');
+  //   // 得到的是一个数组，每个元素是一个Map：List<Map<String, Object?>>
+  //   // 需要通过key获取到对应的值，得到List<Object?>
+  //   var res = list.map((e) {
+  //     return e['tag_name'];
+  //   });
+  //   // toList： (...)-->[...]
+  //   // cast<String>：List<Object?>-->List<String>
+  //   // return res.toList().cast<String>();
+  //   return res.toList().cast<String>();
+  // }
 
-  getAllAnime() async {
-    Database database = await getInstance().database;
-    var list = await database.rawQuery('''
-    select anime_name from anime;
-    ''');
-    var res = list.map((e) {
-      return e['anime_name'];
-    });
-    return res.toList().cast<String>();
-  }
+  // getAllAnime() async {
+  //   Database database = await getInstance().database;
+  //   var list = await database.rawQuery('''
+  //   select anime_name from anime;
+  //   ''');
+  //   var res = list.map((e) {
+  //     return e['anime_name'];
+  //   });
+  //   return res.toList().cast<String>();
+  // }
 
-  getAllHistory() async {
+  Future<List<HistorySql>> getAllHistory() async {
+    print("sql: getAllHistory");
     Database database = await getInstance().database;
     var list = await database.rawQuery('''
-      select date, anime_name, episode_number
-      from history;
+      select date, history.anime_id, anime_name, episode_number
+      from history inner join anime
+          on history.anime_id = anime.anime_id
+      order by date desc; -- 倒序
       ''');
-    var res = list.map((e) {
-      return e['date'];
-    });
-    return res.toList().cast<String>();
+    List<HistorySql> history = [];
+    for (var item in list) {
+      history.add(HistorySql(
+          date: item['date'] as String,
+          animeId: item['anime_id'] as int,
+          animeName: item['anime_name'] as String,
+          episodeNumber: item['episode_number'] as int));
+    }
+    return history;
   }
 }

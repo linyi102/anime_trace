@@ -12,7 +12,7 @@ class Tabs extends StatefulWidget {
 }
 
 class _TabsState extends State<Tabs> {
-  final List _list = [
+  final List<Widget> _list = [
     const AnimeListPage(),
     const HistoryPage(),
     const SettingPage(),
@@ -35,7 +35,12 @@ class _TabsState extends State<Tabs> {
         shadowColor: Colors.transparent,
         backgroundColor: Colors.white,
       ),
-      body: _list[_currentIndex],
+      body: _list[_currentIndex], // 原始方法
+      // body: IndexedStack(
+      //   // 新方法，可以保持页面状态
+      //   index: _currentIndex,
+      //   children: _list,
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: const Color.fromRGBO(254, 254, 254, 1),

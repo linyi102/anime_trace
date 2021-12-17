@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail_scaffold.dart';
-import 'package:flutter_test_future/utils/day_record.dart';
-import 'package:flutter_test_future/utils/history_util.dart';
+import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
+import 'package:flutter_test_future/sql/history_sql.dart';
+import 'package:flutter_test_future/sql/sqlite_helper.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -11,74 +11,90 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  HistoryUtil historyUtil = HistoryUtil.getInstance();
-
-  List<Widget> _getHistoryList() {
-    // 获取所有日期
-    List<String> dates = historyUtil.getAllDate();
-    // debugPrint(dates.toString());
-
-    List<Widget> historyList = [];
-    // 获取该日期的所有动漫记录
-    for (int i = 0; i < (dates.length > 10 ? 10 : dates.length); ++i) {
-      int index = dates.length - 1 - i; // 倒序
-      historyList.add(
-        ListTile(
-          title: Row(
-            children: [
-              const Icon(Icons.calendar_today),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                dates[index],
-                style: const TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-            ],
-          ),
-          subtitle: Column(
-            children: _getDayHistoryList(dates[index]),
-          ),
-        ),
-      );
-    }
-    return historyList;
-  }
-
-  List<Widget> _getDayHistoryList(String date) {
-    List<Widget> dayHistoryList = [];
-    List<AnimeAndEpisode> animeRecord =
-        historyUtil.dayRecords[date]!.animeRecord;
-    for (int i = animeRecord.length - 1; i >= 0; --i) {
-      AnimeAndEpisode e = animeRecord[i];
-      dayHistoryList.add(ListTile(
-        title: Text(e.anime.name),
-        trailing: Text("第${e.episodeNumber}话"),
-        onTap: () {
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => AnimalDetail(e.anime),
-          //   ),
-          // );
-        },
-      ));
-    }
-    return dayHistoryList;
-    // var tmpList = .map((e) {
-    //   return ListTile(
-    //     title: Text(e.anime.name),
-    //     subtitle: Text("第${e.episodeNumber}话"),
-    //   );
-    // });
-    // return tmpList.toList();
-  }
+  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: _getHistoryList(),
+    return RefreshIndicator(
+      // 下拉刷新
+      onRefresh: () async {
+        setState(() {});
+      },
+      child: FutureBuilder(
+        future: sqliteHelper.getAllHistory(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          // 有错误时显示
+          if (snapshot.hasError) {
+            return Text(snapshot.hasError.toString());
+          }
+          // 有数据时显示
+          if (snapshot.hasData) {
+            List<HistorySql> history = [];
+
+            history = snapshot.data;
+            Map<String, List<HistorySql>> map = {}; // 不能作为全局，否则r重载后，会在原来基础上再次添加
+
+            for (int i = 0; i < history.length; ++i) {
+              String ymd = history[i].getDate();
+              // debugPrint("ymd=$ymd");
+              if (!map.containsKey(ymd)) {
+                // 必须要先为List<>创建空间，才能添加元素
+                // 必须要先判断是否包含key，否则会清空之前刚添加的数据
+                map[ymd] = [];
+              }
+              map[ymd]!.add(history[i]);
+            }
+            // map.forEach((key, value) {
+            //   debugPrint(key);
+            //   for (var item in value) {
+            //     debugPrint(item.toString());
+            //   }
+            // });
+
+            List<Widget> list = [];
+            map.forEach((key, value) {
+              list.add(
+                ListTile(
+                  title: Text(
+                    key,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Column(
+                    children: _getDayHistoryList(value),
+                  ),
+                ),
+              );
+            });
+            return ListView(
+              children: list,
+            );
+          }
+          // 加载时显示
+          return const Text("");
+        },
+      ),
     );
+  }
+
+  List<Widget> _getDayHistoryList(List<HistorySql> history) {
+    List<Widget> list = [];
+    for (int i = 0; i < history.length; ++i) {
+      list.add(
+        ListTile(
+          title: Text(history[i].animeName),
+          trailing: Text("第${history[i].episodeNumber}集"),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AnimeDetailPlus(history[i].animeId),
+              ),
+            );
+          },
+        ),
+      );
+    }
+    return list;
   }
 }

@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
 import 'package:flutter_test_future/sql/anime_sql.dart';
 import 'package:flutter_test_future/sql/sqlite_helper.dart';
-import 'package:flutter_test_future/utils/anime_list_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
+
+int lastTopTabIndex = 0;
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -14,8 +15,7 @@ class AnimeListPage extends StatefulWidget {
 }
 
 class _AnimeListPageState extends State<AnimeListPage>
-    with SingleTickerProviderStateMixin {
-  AnimeListUtil animeListUtil = AnimeListUtil.getInstance();
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
   String addDefaultTag = tags[0];
   SqliteHelper sqliteHelper = SqliteHelper.getInstance();
@@ -23,8 +23,22 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(
+      initialIndex: lastTopTabIndex, // 设置初始index
+      length: 5,
+      vsync: this,
+    );
+    // 添加监听器，记录最后一次的topTab的index
+    // _tabController.addListener(() {
+    //   if (_tabController.index == _tabController.animation!.value) {
+    //     lastTopTabIndex = _tabController.index;
+    //   }
+    // });
+    debugPrint("init");
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
@@ -57,7 +71,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       e.animeName,
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        // fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
                     ),
@@ -66,7 +80,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       style: const TextStyle(
                         fontSize: 15,
                         color: Colors.black,
-                        fontWeight: FontWeight.w400,
+                        // fontWeight: FontWeight.w400,
                       ),
                     ),
                     onTap: () {
@@ -86,9 +100,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                 children: _getList(),
               );
             }
+
             // 等待数据时显示加载画面
-            // return const CircularProgressIndicator();
-            return const Text("");
+            return const CircularProgressIndicator();
+            // return const Text("");
           },
         ),
       );
@@ -112,7 +127,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           indicatorColor: Colors.blue, // 指示器颜色
           indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
           indicatorWeight: 3, // 指示器高度
-          tabs: _showTagAndCnt(),
+          tabs: _showTagAndAnimeCnt(),
           controller: _tabController,
         ),
       ),
@@ -266,7 +281,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
   }
 
-  List<Widget> _showTagAndCnt() {
+  List<Widget> _showTagAndAnimeCnt() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
       list.add(Column(

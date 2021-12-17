@@ -19,16 +19,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late List<Episode> episodes;
 
   @override
-  void initState() {
-    super.initState();
-    _getInitAnime();
-  }
-
-  void _getInitAnime() async {
-    // anime = await sqliteHelper.getAnimeByAnimeId(widget.animeId);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
