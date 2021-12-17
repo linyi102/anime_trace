@@ -24,30 +24,12 @@ class _AnimeListPageState extends State<AnimeListPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    // Future(() {
-    //   return SqliteHelper.getInstance().open();
-    // }).then((value) {
-    //   debugPrint("👉value=${value.toString()}");
-    //   setState(() {});
-    // }); // 每次切换底部tab，会出现DatabaseException(error database_closed)
-
-    // Future(() {
-    //   return SqliteHelper.getInstance().open(); // 必须return，尽管该函数没有返回
-    // }).then((value) {
-    //   setState(() {});
-    // });
-
-    // Future.delayed(const Duration(seconds: 1), () {
-    //   setState(() {});
-    // });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-    // print("👉close");
-    // SqliteHelper.getInstance().close();
   }
 
   List<Widget> _getAnimeList() {
@@ -116,9 +98,6 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   @override
   Widget build(BuildContext context) {
-    // return ListView(
-    //   children: _getAnimeList(),
-    // );
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 8, // 太小容易导致底部不够，从而溢出
