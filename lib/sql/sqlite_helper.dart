@@ -2,32 +2,32 @@
 import 'package:flutter_test_future/sql/anime_sql.dart';
 import 'package:flutter_test_future/sql/history_sql.dart';
 import 'package:flutter_test_future/utils/episode.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SqliteHelper {
   // 单例模式
-  static SqliteHelper? _single;
+  static SqliteHelper? _instance;
 
   SqliteHelper._();
 
   static SqliteHelper getInstance() {
-    return _single ??= SqliteHelper._();
+    return _instance ??= SqliteHelper._();
   }
 
   final sqlFileName = 'mydb1.db';
   Database? _database;
 
   get database async {
-    if (_database != null) {
-      return _database;
-    }
-    _database = await _initDatabase();
+    _database ??= await _initDatabase();
     return _database;
   }
 
   _initDatabase() async {
-    String path = "${await getDatabasesPath()}/$sqlFileName";
-    // print("👉path=$path");
+    String path = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
+    // String path = "${await getDatabasesPath()}/$sqlFileName";
+
+    print("👉path=$path");
     await deleteDatabase(path); // 删除数据库，不知道为什么一定要加await
     // 否则会出现Unhandled Exception: DatabaseException(database_closed 31)
     return await openDatabase(
@@ -215,8 +215,8 @@ class SqliteHelper {
     select anime_id, anime_name, anime_episode_cnt
     from anime inner join tag
         on tag.tag_name = '$tag' and anime.tag_id = tag.tag_id
-    order by anime_id desc
-    limit 100 offset 0;
+    order by anime_id desc;
+    // limit 100 offset 0;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
     List<AnimeSql> res = [];
@@ -253,33 +253,6 @@ class SqliteHelper {
     }
     return res;
   }
-
-  // getAllTag() async {
-  //   Database database = await getInstance().database;
-  //   var list = await database.rawQuery('''
-  //   select tag_name from tag;
-  //   ''');
-  //   // 得到的是一个数组，每个元素是一个Map：List<Map<String, Object?>>
-  //   // 需要通过key获取到对应的值，得到List<Object?>
-  //   var res = list.map((e) {
-  //     return e['tag_name'];
-  //   });
-  //   // toList： (...)-->[...]
-  //   // cast<String>：List<Object?>-->List<String>
-  //   // return res.toList().cast<String>();
-  //   return res.toList().cast<String>();
-  // }
-
-  // getAllAnime() async {
-  //   Database database = await getInstance().database;
-  //   var list = await database.rawQuery('''
-  //   select anime_name from anime;
-  //   ''');
-  //   var res = list.map((e) {
-  //     return e['anime_name'];
-  //   });
-  //   return res.toList().cast<String>();
-  // }
 
   Future<List<HistorySql>> getAllHistory() async {
     print("sql: getAllHistory");

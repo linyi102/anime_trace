@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -32,7 +32,8 @@ dependencies:
   shared_preferences: ^2.0.9
   sqflite: ^2.0.1
   path_provider: ^2.0.8
-
+  # file: ^6.1.2
+  file_picker: ^4.2.8
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -54,7 +55,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -90,3 +90,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+fonts:
+  - family: NotoSans
+    fonts:
+      - asset: assets/fonts/NotoSerifCJKkr-Regular.otf
+      # - asset: assets/fonts/Schyler-Italic.ttf
+  - family: times
+    fonts:
+      - asset: assets/fonts/TIMES.TTF

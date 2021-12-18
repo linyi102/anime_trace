@@ -15,7 +15,7 @@ class AnimeListPage extends StatefulWidget {
 }
 
 class _AnimeListPageState extends State<AnimeListPage>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String addDefaultTag = tags[0];
   SqliteHelper sqliteHelper = SqliteHelper.getInstance();
@@ -29,16 +29,13 @@ class _AnimeListPageState extends State<AnimeListPage>
       vsync: this,
     );
     // 添加监听器，记录最后一次的topTab的index
-    // _tabController.addListener(() {
-    //   if (_tabController.index == _tabController.animation!.value) {
-    //     lastTopTabIndex = _tabController.index;
-    //   }
-    // });
+    _tabController.addListener(() {
+      if (_tabController.index == _tabController.animation!.value) {
+        lastTopTabIndex = _tabController.index;
+      }
+    });
     debugPrint("init");
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
@@ -50,61 +47,64 @@ class _AnimeListPageState extends State<AnimeListPage>
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
       list.add(
-        FutureBuilder(
-          future: sqliteHelper.getAllAnimeBytag(tags[i]),
-          // future结束后会通知builder重新渲染画面，因此stateless也可以
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasError) {
-              debugPrint(snapshot.error.toString());
-              // return const Text("");
-              return Text(snapshot.error.toString());
-              // return const Icon(
-              //   Icons.error,
-              //   size: 80,
-              // );
-            }
-            if (snapshot.hasData) {
-              List<Widget> _getList() {
-                var tmpList = (snapshot.data as List<AnimeSql>).map((e) {
-                  return ListTile(
-                    title: Text(
-                      e.animeName,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        // fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-                    ),
-                    trailing: Text(
-                      "${e.checkedEpisodeCnt}/${e.animeEpisodeCnt}",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        // fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => AnimeDetailPlus(e.animeId),
-                        ),
-                      );
-                    },
-                    onLongPress: () {},
-                  );
-                });
-                return tmpList.toList();
+        Scrollbar(
+          thickness: 5,
+          radius: const Radius.circular(10),
+          child: FutureBuilder(
+            future: sqliteHelper.getAllAnimeBytag(tags[i]),
+            // future结束后会通知builder重新渲染画面，因此stateless也可以
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.hasError) {
+                debugPrint(snapshot.error.toString());
+                // return const Text("");
+                return Text(snapshot.error.toString());
+                // return const Icon(
+                //   Icons.error,
+                //   size: 80,
+                // );
               }
-
-              return ListView(
-                children: _getList(),
-              );
-            }
-
-            // 等待数据时显示加载画面
-            return const CircularProgressIndicator();
-            // return const Text("");
-          },
+              if (snapshot.hasData) {
+                List<AnimeSql> list = snapshot.data as List<AnimeSql>;
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // debugPrint("index=${index.toString()}");
+                    AnimeSql e = list[index];
+                    return ListTile(
+                      title: Text(
+                        e.animeName,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'NotoSans',
+                          // fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+                      ),
+                      trailing: Text(
+                        "${e.checkedEpisodeCnt}/${e.animeEpisodeCnt}",
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                          // fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => AnimeDetailPlus(e.animeId),
+                          ),
+                        );
+                      },
+                      onLongPress: () {},
+                    );
+                  },
+                );
+              }
+              // 等待数据时显示加载画面
+              // return const CircularProgressIndicator();
+              return const Text("");
+            },
+          ),
         ),
       );
     }
@@ -221,7 +221,11 @@ class _AnimeListPageState extends State<AnimeListPage>
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
                       tagName: addDefaultTag));
-                  setState(() {});
+                  Future.delayed(const Duration(milliseconds: 10), () {
+                    setState(() {
+                      debugPrint("👉setState");
+                    });
+                  });
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.send),
