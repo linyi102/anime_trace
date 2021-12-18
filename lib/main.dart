@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/file_utils/sp_util.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
-import 'package:flutter_test_future/sql/sqlite_helper.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   WidgetsFlutterBinding.ensureInitialized();
   SPUtil.getInstance();
+  await SqliteUtil
+      .getInstance(); // 不知道为什么要加await，也不返回呀？await不就是自动获取Future包装的东西吗？
 
   runApp(const MyApp());
 }

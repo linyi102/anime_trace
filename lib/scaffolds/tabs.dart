@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:flutter_test_future/sql/sqlite_helper.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);

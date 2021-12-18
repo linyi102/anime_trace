@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
 import 'package:flutter_test_future/sql/anime_sql.dart';
-import 'package:flutter_test_future/sql/sqlite_helper.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
 int lastTopTabIndex = 0;
@@ -18,7 +18,6 @@ class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String addDefaultTag = tags[0];
-  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           thickness: 5,
           radius: const Radius.circular(10),
           child: FutureBuilder(
-            future: sqliteHelper.getAllAnimeBytag(tags[i]),
+            future: SqliteUtil.getAllAnimeBytag(tags[i]),
             // future结束后会通知builder重新渲染画面，因此stateless也可以
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasError) {
@@ -217,7 +216,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
                   // 改变状态
-                  sqliteHelper.insertAnime(AnimeSql(
+                  SqliteUtil.insertAnime(AnimeSql(
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
                       tagName: addDefaultTag));
@@ -294,7 +293,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             height: 15,
           ),
           FutureBuilder(
-            future: SqliteHelper.getInstance().getAnimeCntPerTag(),
+            future: SqliteUtil.getAnimeCntPerTag(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasError) {
                 return const Icon(Icons.error);

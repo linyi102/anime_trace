@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
 import 'package:flutter_test_future/sql/history_sql.dart';
-import 'package:flutter_test_future/sql/sqlite_helper.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -11,8 +11,6 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
-
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
@@ -24,7 +22,7 @@ class _HistoryPageState extends State<HistoryPage> {
           setState(() {});
         },
         child: FutureBuilder(
-          future: sqliteHelper.getAllHistory(),
+          future: SqliteUtil.getAllHistory(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             // 有错误时显示
             if (snapshot.hasError) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/sql/anime_sql.dart';
-import 'package:flutter_test_future/sql/sqlite_helper.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
@@ -14,7 +14,6 @@ class AnimeDetailPlus extends StatefulWidget {
 }
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
-  SqliteHelper sqliteHelper = SqliteHelper.getInstance();
   late AnimeSql anime;
   late List<Episode> episodes;
 
@@ -46,7 +45,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayAnimeName() {
     return FutureBuilder(
-      future: sqliteHelper.getAnimeByAnimeId(widget.animeId),
+      future: SqliteUtil.getAnimeByAnimeId(widget.animeId),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasError) {
           debugPrint(snapshot.error.toString());
@@ -93,7 +92,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayEpisode() {
     return FutureBuilder(
-      future: sqliteHelper.getAnimeEpisodeHistoryById(widget.animeId),
+      future: SqliteUtil.getAnimeEpisodeHistoryById(widget.animeId),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasError) {
           debugPrint(snapshot.error.toString());
@@ -122,7 +121,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         episodes[i].dateTime,
                       ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
                     } else {
-                      sqliteHelper.insertHistoryItem(
+                      SqliteUtil.insertHistoryItem(
                         widget.animeId,
                         episodes[i].number,
                       );
@@ -164,7 +163,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                sqliteHelper.removeHistoryItem(date);
+                SqliteUtil.removeHistoryItem(date);
                 setState(() {});
                 Navigator.pop(context); // bug：没有弹出
               },
@@ -184,7 +183,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   void _dialogUpdateAnime() async {
     // String anime.tagName =
-    //     (await sqliteHelper.getTagNameByAnimeId(widget.animeId) as String);
+    //     (await SqliteHelper.getTagNameByAnimeId(widget.animeId) as String);
     var inputNameController = TextEditingController();
     var inputEndEpisodeController = TextEditingController();
     showDialog(
@@ -247,7 +246,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  sqliteHelper.modifyAnime(
+                  SqliteUtil.modifyAnime(
                     // 不能传anime.animeId，因为没有数据
                     widget.animeId,
                     AnimeSql(
