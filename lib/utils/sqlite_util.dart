@@ -292,18 +292,19 @@ class SqliteUtil {
     return _instance ??= SqliteUtil._();
   }
 
-  static const sqlFileName = 'mydb1.db';
+  static const sqlFileName = 'mydb.db';
   static late Database _database;
+  static late String dbPath;
 
   static _initDatabase() async {
-    String path = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
+    dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
-    print("👉path=$path");
-    // await deleteDatabase(path); // 删除数据库，不知道为什么一定要加await
+    print("👉path=$dbPath");
+    // await deleteDatabase(dbPath); // 删除数据库，不知道为什么一定要加await
     // 否则会出现Unhandled Exception: DatabaseException(database_closed 31)
     return await openDatabase(
-      path,
+      dbPath,
       onCreate: (Database db, int version) {
         _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
         _insertInitData(db);
