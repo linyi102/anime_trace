@@ -3,7 +3,6 @@ class HistorySql {
   int animeId;
   String animeName;
   int episodeNumber;
-
   HistorySql(
       {required this.date,
       required this.animeId,

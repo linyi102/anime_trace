@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
-import 'package:flutter_test_future/sql/history_sql.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/classes/history.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -49,19 +49,24 @@ class _HistoryPageState extends State<HistoryPage> {
 
               List<Widget> list = [];
               map.forEach((key, value) {
-                list.add(
-                  ListTile(
-                    title: Text(
-                      key,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                list.add(Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        key,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black87,
+                          fontSize: 13,
+                        ),
+                      ),
+                      subtitle: Column(
+                        children: _getDayHistoryList(value),
                       ),
                     ),
-                    subtitle: Column(
-                      children: _getDayHistoryList(value),
-                    ),
-                  ),
-                );
+                    const Divider(),
+                  ],
+                ));
               });
               return ListView.builder(
                 itemCount: list.length,

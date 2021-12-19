@@ -1,4 +1,4 @@
-class AnimeSql {
+class Anime {
   int animeId;
   String animeName;
   int animeEpisodeCnt;
@@ -6,7 +6,7 @@ class AnimeSql {
 
   int checkedEpisodeCnt;
 
-  AnimeSql(
+  Anime(
       {this.animeId = 0,
       required this.animeName,
       required this.animeEpisodeCnt,

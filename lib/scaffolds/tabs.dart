@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -39,6 +40,20 @@ class _TabsState extends State<Tabs> {
       //   // 新方法，可以保持页面状态
       //   index: _currentIndex,
       //   children: _list,
+      // ),
+      // bottomNavigationBar: SalomonBottomBar(
+      //   currentIndex: _currentIndex,
+      //   onTap: (int index) {
+      //     setState(() => _currentIndex = index);
+      //   },
+      //   items: [
+      //     SalomonBottomBarItem(
+      //         icon: const Icon(Icons.book), title: const Text("书架")),
+      //     SalomonBottomBarItem(
+      //         icon: const Icon(Icons.history_rounded), title: const Text("历史")),
+      //     SalomonBottomBarItem(
+      //         icon: const Icon(Icons.more_horiz), title: const Text("更多")),
+      //   ],
       // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

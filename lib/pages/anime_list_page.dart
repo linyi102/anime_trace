@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/scaffolds/anime_sql_detail.dart';
-import 'package:flutter_test_future/sql/anime_sql.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
@@ -63,12 +63,12 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // );
               }
               if (snapshot.hasData) {
-                List<AnimeSql> list = snapshot.data as List<AnimeSql>;
+                List<Anime> list = snapshot.data as List<Anime>;
                 return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (BuildContext context, int index) {
                     // debugPrint("index=${index.toString()}");
-                    AnimeSql e = list[index];
+                    Anime e = list[index];
                     return ListTile(
                       title: Text(
                         e.animeName,
@@ -131,7 +131,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         ),
       ),
       body: Container(
-        color: Colors.white, // 使用函数设置颜色没有效果，很奇怪
+        color: const Color.fromRGBO(250, 250, 250, 1),
         child: TabBarView(
           controller: _tabController,
           children: _getAnimeList(),
@@ -216,7 +216,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
                   // 改变状态
-                  SqliteUtil.insertAnime(AnimeSql(
+                  SqliteUtil.insertAnime(Anime(
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
                       tagName: addDefaultTag));
@@ -239,47 +239,39 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   // 传入动漫对话框的状态，选择好标签后，就会更新该状态
   void _dialogSelectTag(setTagStateOnAddAnime) {
-    int groupValue = tags.indexOf(addDefaultTag); // 默认选择
-    // String selectTag = tags[0];
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, tagState) {
-          List<Widget> radioList = [];
-          for (int i = 0; i < tags.length; ++i) {
-            radioList.add(
-              Row(
-                children: [
-                  Radio(
-                    value: i,
-                    groupValue: groupValue,
-                    onChanged: (v) {
-                      tagState(() {
-                        groupValue = int.parse(v.toString());
-                      });
-                      setTagStateOnAddAnime(() {
-                        addDefaultTag = tags[i];
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Text(tags[i]),
-                ],
-              ),
-            );
-          }
-
-          return AlertDialog(
-            title: const Text('选择标签'),
-            content: AspectRatio(
-              aspectRatio: 1.2 / 1,
-              child: ListView(
-                children: radioList,
-              ),
+        List<Widget> radioList = [];
+        for (int i = 0; i < tags.length; ++i) {
+          radioList.add(
+            ListTile(
+              title: Text(tags[i]),
+              leading: tags[i] == addDefaultTag
+                  ? const Icon(
+                      Icons.radio_button_on_outlined,
+                      color: Colors.blue,
+                    )
+                  : const Icon(
+                      Icons.radio_button_off_outlined,
+                    ),
+              onTap: () {
+                addDefaultTag = tags[i];
+                setTagStateOnAddAnime(() {});
+                Navigator.pop(context);
+              },
             ),
           );
-        });
+        }
+        return AlertDialog(
+          title: const Text('选择标签'),
+          content: AspectRatio(
+            aspectRatio: 0.9 / 1,
+            child: ListView(
+              children: radioList,
+            ),
+          ),
+        );
       },
     );
   }

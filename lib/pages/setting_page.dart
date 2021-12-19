@@ -33,12 +33,16 @@ class _SettingPageState extends State<SettingPage> {
               // 拷贝数据库文件到备份目录下
               // final backupFilePath =
               //     "${(await getExternalStorageDirectory())!.path}/anime_trace_${DateTime.now()}.db";
-              // final backupFilePath =
-              //     "$backupDir/anime_trace_${DateTime.now()}.db";
               final backupFilePath =
-                  "/storage/emulated/0/Download/anime_trace_${DateTime.now().toString().split(".")[0]}.db";
-              await File(SqliteUtil.dbPath).copy(backupFilePath);
-              showToast("备份成功");
+                  "$backupDir/anime_trace_${DateTime.now()}.db";
+              // final backupFilePath =
+              //     "/storage/emulated/0/Download/anime_trace_${DateTime.now().toString().split(".")[0]}.db";
+              File result = await File(SqliteUtil.dbPath).copy(backupFilePath);
+              if (await result.exists()) {
+                showToast("备份成功");
+              } else {
+                showToast("备份失败");
+              }
             },
           ),
           ListTile(
@@ -71,22 +75,6 @@ class _SettingPageState extends State<SettingPage> {
                 setState(() {});
               }
             },
-          ),
-          FloatingActionButton(
-            onPressed: () async {
-              // final stream = Stream.fromIterable('Hello World!'.codeUnits);
-              // download(stream, 'hello.txt');
-              // final stream = Stream.fromIterable(File(SqliteUtil.dbPath).);
-              // download(stream, "anime_trace_${DateTime.now()}.db");
-            },
-            child: const Icon(Icons.download),
-          ),
-          FloatingActionButton(
-            onPressed: () async {
-              final dir = await getExternalStorageDirectory();
-              debugPrint(dir!.path);
-            },
-            child: const Icon(Icons.ac_unit),
           ),
         ],
       ),

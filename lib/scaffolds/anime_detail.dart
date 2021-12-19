@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/sql/anime_sql.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/episode.dart';
+import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
@@ -14,7 +14,7 @@ class AnimeDetailPlus extends StatefulWidget {
 }
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
-  late AnimeSql anime;
+  late Anime anime;
   late List<Episode> episodes;
 
   @override
@@ -55,7 +55,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
         }
         if (snapshot.hasData) {
-          anime = snapshot.data as AnimeSql; // 设置获取的动漫
+          anime = snapshot.data as Anime; // 设置获取的动漫
           return Row(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -221,6 +221,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               TextButton.icon(
                 onPressed: () {
                   _dialogSelectTag(setTagStateOnAddAnime);
+                  // // 没有效果
+                  // dialogSelectTag(
+                  //     setTagStateOnAddAnime, context, anime.tagName);
+                  // debugPrint(anime.tagName);
                 },
                 icon: const Icon(
                   Icons.new_label,
@@ -249,7 +253,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   SqliteUtil.modifyAnime(
                     // 不能传anime.animeId，因为没有数据
                     widget.animeId,
-                    AnimeSql(
+                    Anime(
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
                       tagName: anime.tagName,
@@ -270,45 +274,40 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   // 传入动漫对话框的状态，选择好标签后，就会更新该状态
   void _dialogSelectTag(setTagStateOnAddAnime) {
-    int groupValue = tags.indexOf(anime.tagName); // 默认选择
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, tagState) {
-          List<Widget> radioList = [];
-          for (int i = 0; i < tags.length; ++i) {
-            radioList.add(
-              Row(
-                children: [
-                  Radio(
-                    value: i,
-                    groupValue: groupValue,
-                    onChanged: (v) {
-                      tagState(() {
-                        groupValue = int.parse(v.toString());
-                      });
-                      setTagStateOnAddAnime(() {
-                        anime.tagName = tags[i];
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Text(tags[i]),
-                ],
-              ),
-            );
-          }
-
-          return AlertDialog(
-            title: const Text('选择标签'),
-            content: AspectRatio(
-              aspectRatio: 1.47 / 1,
-              child: Column(
-                children: radioList,
-              ),
+        List<Widget> radioList = [];
+        for (int i = 0; i < tags.length; ++i) {
+          radioList.add(
+            ListTile(
+              title: Text(tags[i]),
+              leading: tags[i] == anime.tagName
+                  ? const Icon(
+                      Icons.radio_button_on_outlined,
+                      color: Colors.blue,
+                    )
+                  : const Icon(
+                      Icons.radio_button_off_outlined,
+                    ),
+              onTap: () {
+                anime.tagName = tags[i];
+                // tagState(() {});
+                setTagStateOnAddAnime(() {});
+                Navigator.pop(context);
+              },
             ),
           );
-        });
+        }
+        return AlertDialog(
+          title: const Text('选择标签'),
+          content: AspectRatio(
+            aspectRatio: 0.9 / 1,
+            child: ListView(
+              children: radioList,
+            ),
+          ),
+        );
       },
     );
   }

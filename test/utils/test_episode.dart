@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter_test_future/utils/episode.dart';
+import 'package:flutter_test_future/classes/episode.dart';
 
 main(List<String> args) {
   Episode episodeInfo = Episode(1);
