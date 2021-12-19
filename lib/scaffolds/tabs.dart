@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:search_page/search_page.dart';
+
+late List<Anime> animes;
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -22,6 +26,32 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
+    List<List<Widget>> actions = [];
+    for (int i = 0; i < _listName.length; ++i) {
+      // error: actions[i] = []; 因为最外面的List为空，需要添加元素：空的List
+      actions.add([]);
+    }
+    actions[0].add(
+      IconButton(
+        onPressed: () => showSearch(
+          context: context,
+          delegate: SearchPage<Anime>(
+            items: animes,
+            searchLabel: "  Search",
+            builder: (anime) => AnimeItem(anime),
+            failure: const Center(
+              child: Text('No anime found :('),
+            ),
+            filter: (anime) => [
+              anime.animeName,
+            ],
+          ),
+        ),
+        icon: const Icon(Icons.search_outlined),
+        color: Colors.black,
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,13 +64,14 @@ class _TabsState extends State<Tabs> {
         ),
         shadowColor: Colors.transparent,
         backgroundColor: Colors.white,
+        actions: actions[_currentIndex],
       ),
-      body: _list[_currentIndex], // 原始方法
-      // body: IndexedStack(
-      //   // 新方法，可以保持页面状态
-      //   index: _currentIndex,
-      //   children: _list,
-      // ),
+      // body: _list[_currentIndex], // 原始方法
+      body: IndexedStack(
+        // 新方法，可以保持页面状态
+        index: _currentIndex,
+        children: _list,
+      ),
       // bottomNavigationBar: SalomonBottomBar(
       //   currentIndex: _currentIndex,
       //   onTap: (int index) {

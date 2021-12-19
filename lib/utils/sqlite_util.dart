@@ -49,8 +49,9 @@ class SqliteUtil {
           anime_id            INTEGER PRIMARY KEY AUTOINCREMENT,
           anime_name          TEXT    NOT NULL,
           anime_episode_cnt   INTEGER NOT NULL,
-          anime_premiere_time TEXT,
+          anime_premiere_time TEXT, -- 首播时间
           tag_id              INTEGER,
+          last_mode_tag_time  TEXT, -- 最后一次修改标签的时间，可以实现新移动的在列表上面
           FOREIGN KEY (
               tag_id
           )

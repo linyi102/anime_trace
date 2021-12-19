@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
@@ -63,39 +64,13 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // );
               }
               if (snapshot.hasData) {
-                List<Anime> list = snapshot.data as List<Anime>;
+                animes = snapshot.data as List<Anime>;
                 return ListView.builder(
-                  itemCount: list.length,
+                  itemCount: animes.length,
                   itemBuilder: (BuildContext context, int index) {
                     // debugPrint("index=${index.toString()}");
-                    Anime e = list[index];
-                    return ListTile(
-                      title: Text(
-                        e.animeName,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontFamily: 'NotoSans',
-                          // fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-                      ),
-                      trailing: Text(
-                        "${e.checkedEpisodeCnt}/${e.animeEpisodeCnt}",
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          // fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AnimeDetailPlus(e.animeId),
-                          ),
-                        );
-                      },
-                      onLongPress: () {},
-                    );
+                    Anime anime = animes[index];
+                    return AnimeItem(anime);
                   },
                 );
               }
@@ -137,6 +112,21 @@ class _AnimeListPageState extends State<AnimeListPage>
           children: _getAnimeList(),
         ),
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   child: const Icon(Icons.search_outlined),
+      //   onPressed: () => showSearch(
+      //       context: context,
+      //       delegate: SearchPage<Anime>(
+      //         items: animes,
+      //         builder: (anime) => AnimeItem(anime),
+      //         failure: const Center(
+      //           child: Text('No person found :('),
+      //         ),
+      //         filter: (anime) => [
+      //           anime.animeName,
+      //         ],
+      //       )),
+      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _dialogAddAnime();
@@ -304,5 +294,44 @@ class _AnimeListPageState extends State<AnimeListPage>
       ));
     }
     return list;
+  }
+}
+
+class AnimeItem extends StatelessWidget {
+  final Anime anime;
+  const AnimeItem(
+    this.anime, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        anime.animeName,
+        style: const TextStyle(
+          fontSize: 15,
+          fontFamily: 'NotoSans',
+          // fontWeight: FontWeight.w600,
+        ),
+        overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+      ),
+      trailing: Text(
+        "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+        style: const TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+          // fontWeight: FontWeight.w400,
+        ),
+      ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AnimeDetailPlus(anime.animeId),
+          ),
+        );
+      },
+      onLongPress: () {},
+    );
   }
 }
