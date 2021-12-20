@@ -20,7 +20,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         shadowColor: Colors.transparent,
@@ -63,12 +63,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 width: 20,
               ),
               Expanded(
-                child: Text(
-                  anime.animeName,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    // Row溢出部分省略号...表示，需要外套Expanded
-                    overflow: TextOverflow.ellipsis,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  child: Text(
+                    anime.animeName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      // Row溢出部分省略号...表示，需要外套Expanded
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
@@ -76,7 +79,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 onPressed: () {
                   _dialogUpdateAnime();
                 },
-                icon: const Icon(Icons.mode),
+                icon: const Icon(Icons.mode_edit_outline_outlined),
               ),
               const SizedBox(
                 width: 15,
@@ -102,7 +105,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
         }
         if (snapshot.hasData) {
-          episodes = snapshot.data as List<Episode>; // 设置获取的集状态
+          episodes = snapshot.data; // 设置获取的集状态
           // for (var item in episodes) {
           //   debugPrint(item.dateTime);
           // }
@@ -163,7 +166,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                SqliteUtil.removeHistoryItem(date);
+                SqliteUtil.deleteHistoryItem(date);
                 setState(() {});
                 Navigator.pop(context); // bug：没有弹出
               },
@@ -192,8 +195,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         return StatefulBuilder(builder: (context, setTagStateOnAddAnime) {
           return AlertDialog(
             title: const Text('修改动漫'),
-            content: AspectRatio(
-              aspectRatio: 2 / 1,
+            content: SingleChildScrollView(
               child: Column(
                 children: [
                   TextField(
@@ -250,7 +252,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  SqliteUtil.modifyAnime(
+                  SqliteUtil.updateAnime(
                     // 不能传anime.animeId，因为没有数据
                     widget.animeId,
                     Anime(
@@ -259,6 +261,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       tagName: anime.tagName,
                     ),
                   );
+                  // 需要手动改名称，因为不会从数据库获取信息
+                  anime.animeName = name;
                   setState(() {});
                   Navigator.pop(context);
                 },
@@ -301,9 +305,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         }
         return AlertDialog(
           title: const Text('选择标签'),
-          content: AspectRatio(
-            aspectRatio: 0.9 / 1,
-            child: ListView(
+          content: SingleChildScrollView(
+            child: Column(
               children: radioList,
             ),
           ),

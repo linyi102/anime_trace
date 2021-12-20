@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/tags.dart';
 import 'package:oktoast/oktoast.dart';
 
 void main() async {
@@ -11,6 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SPUtil.getInstance();
   await SqliteUtil.getInstance();
+  tags = await SqliteUtil.getAllTags();
 
   runApp(const MyApp());
 }
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         title: '漫迹', // 后台应用显示名称
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          fontFamily: 'NotoSans',
+          fontFamily: 'noto',
         ),
         home: const MyHome(),
       ),

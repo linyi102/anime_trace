@@ -37,7 +37,15 @@ class _TabsState extends State<Tabs> {
           context: context,
           delegate: SearchPage<Anime>(
             items: animes,
-            searchLabel: "  Search",
+            searchLabel: " Search",
+            barTheme: ThemeData(
+                appBarTheme: const AppBarTheme(
+                  backgroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  iconTheme: IconThemeData(color: Colors.black),
+                ),
+                textSelectionTheme:
+                    const TextSelectionThemeData(cursorColor: Colors.black)),
             builder: (anime) => AnimeItem(anime),
             failure: const Center(
               child: Text('No anime found :('),
@@ -66,12 +74,13 @@ class _TabsState extends State<Tabs> {
         backgroundColor: Colors.white,
         actions: actions[_currentIndex],
       ),
-      // body: _list[_currentIndex], // 原始方法
-      body: IndexedStack(
-        // 新方法，可以保持页面状态
-        index: _currentIndex,
-        children: _list,
-      ),
+      body: _list[_currentIndex], // 原始方法
+      // body: IndexedStack(
+      //   // 新方法，可以保持页面状态
+      //   index: _currentIndex,
+      //   children: _list,
+      // ),
+
       // bottomNavigationBar: SalomonBottomBar(
       //   currentIndex: _currentIndex,
       //   onTap: (int index) {

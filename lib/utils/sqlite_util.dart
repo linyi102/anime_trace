@@ -25,8 +25,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    await deleteDatabase(dbPath); // 删除数据库，不知道为什么一定要加await
-    // 否则会出现Unhandled Exception: DatabaseException(database_closed 31)
+    await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
@@ -40,8 +39,10 @@ class SqliteUtil {
   static void _createInitTable(Database db) async {
     await db.execute('''
       CREATE TABLE tag (
-          tag_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-          tag_name TEXT    NOT NULL
+          tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+          tag_name  TEXT    NOT NULL,
+          tag_order INTEGER,
+          UNIQUE(tag_name)
       );
       ''');
     await db.execute('''
@@ -75,7 +76,8 @@ class SqliteUtil {
   static void _insertInitData(Database db) async {
     await db.rawInsert('''
       insert into tag(tag_name)
-      values('拾'), ('途'), ('终'), ('搁'), ('弃');
+      -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
+      values('拾'), ('途'), ('终');
     ''');
     for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
@@ -106,7 +108,7 @@ class SqliteUtil {
     return list[0]['tag_id'].toString();
   }
 
-  static void modifyAnime(int animeId, Anime newAnime) async {
+  static void updateAnime(int animeId, Anime newAnime) async {
     int newTagId = int.parse(
       await getTagIdByTagName(newAnime.tagName),
     ); // 一定要await
@@ -145,14 +147,75 @@ class SqliteUtil {
     ''');
   }
 
-  static void removeHistoryItem(String? date) async {
+  static void deleteHistoryItem(String? date) async {
     await _database.rawDelete('''
     delete from history
     where date = '$date';
     ''');
   }
 
-  static getAnimeByAnimeId(int animeId) async {
+  static void deleteTagByTagId(int tagId) async {
+    print("sql: deleteTagByTagId");
+    await _database.rawDelete('''
+    delete from tag
+    where tag_id = $tagId;
+    ''');
+  }
+
+  static void insertTagName(String tagName, int tagOrder) async {
+    await _database.rawInsert('''
+    insert into tag(tag_name, tag_order)
+    values('$tagName', $tagOrder);
+    ''');
+  }
+
+  static void updateTagNameByTagName(
+      String oldTagName, String newTagName) async {
+    print("sql: updateTagNameByTagId");
+    await _database.rawUpdate('''
+    update tag
+    set tag_name = '$newTagName'
+    where tag_name = '$oldTagName';
+    ''');
+  }
+
+  static Future<bool> updateTagOrder(List<String> tagNames) async {
+    print("sql: updateTagOrder");
+    // 错误：把表中标签的名字和list中对应起来即可。这样会导致动漫标签不匹配
+    // 应该重建一个order列，从0开始
+    for (int i = 0; i < tagNames.length; ++i) {
+      await _database.rawUpdate('''
+      update tag
+      set tag_order = $i 
+      where tag_name = '${tagNames[i]}';
+      ''');
+    }
+    return true;
+  }
+
+  static void deleteTagByTagName(String tagName) async {
+    print("sql: deleteTagByTagName");
+    await _database.rawDelete('''
+    delete from tag
+    where tag_name = '$tagName';
+    ''');
+  }
+
+  static Future<List<String>> getAllTags() async {
+    print("sql: getAllTags");
+    var list = await _database.rawQuery('''
+    select tag_name
+    from tag
+    order by tag_order
+    ''');
+    List<String> res = [];
+    for (var item in list) {
+      res.add(item["tag_name"] as String);
+    }
+    return res;
+  }
+
+  static Future<Anime> getAnimeByAnimeId(int animeId) async {
     var list = await _database.rawQuery('''
     select anime_name, anime_episode_cnt, tag_name
     from anime inner join tag
@@ -165,16 +228,18 @@ class SqliteUtil {
     return anime;
   }
 
-  static getTagNameByAnimeId(int animeId) async {
+  static Future<String> getTagNameByAnimeId(int animeId) async {
+    print("sql: getTagNameByAnimeId");
     var list = await _database.rawQuery('''
     select tag_name
     from anime inner join tag
         on anime_id = $animeId and anime.tag_id = tag.tag_id;
     ''');
-    return list[0]['tag_name'];
+    return list[0]['tag_name'] as String;
   }
 
-  static getAnimeEpisodeHistoryById(int animeId) async {
+  static Future<List<Episode>> getAnimeEpisodeHistoryById(int animeId) async {
+    print("sql: getAnimeEpisodeHistoryById");
     Anime anime = await getAnimeByAnimeId(animeId);
     int animeEpisodeCnt = anime.animeEpisodeCnt;
 
@@ -198,13 +263,22 @@ class SqliteUtil {
     return episodes;
   }
 
-  static getAllAnimeBytag(String tag) async {
-    print("sql: getAllAnimeBytag"); // 必须要await，不能直接使用！
+  static Future<int> getAnimesCntBytagName(int tagId) async {
+    var list = await _database.rawQuery('''
+    select count(anime.anime_id) cnt
+    from anime
+    where anime.tag_id = $tagId;
+    ''');
+    return list[0]["cnt"] as int;
+  }
+
+  static getAllAnimeBytag(String tagName) async {
+    print("sql: getAllAnimeBytag");
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt
     from anime inner join tag
-        on tag.tag_name = '$tag' and anime.tag_id = tag.tag_id
+        on tag.tag_name = '$tagName' and anime.tag_id = tag.tag_id
     order by anime_id desc;
     // limit 100 offset 0;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
@@ -233,7 +307,8 @@ class SqliteUtil {
     select count(anime_id) as anime_cnt, tag.tag_name
     from tag left outer join anime -- sqlite只支持左外联结
         on anime.tag_id = tag.tag_id
-    group by tag.tag_id; -- 应该按照tag的tag_id分组
+    group by tag.tag_id -- 应该按照tag的tag_id分组
+    order by tag.tag_order; -- 按照用户调整的顺序排序，否则会导致数量与实际不符
     ''');
 
     List<int> res = [];

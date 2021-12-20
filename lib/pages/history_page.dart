@@ -47,32 +47,41 @@ class _HistoryPageState extends State<HistoryPage> {
                 map[ymd]!.add(history[i]);
               }
 
-              List<Widget> list = [];
+              List<Widget> listWidget = [];
               map.forEach((key, value) {
-                list.add(Column(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        key,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black87,
-                          fontSize: 13,
+                listWidget.add(
+                  Column(
+                    children: [
+                      ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                          child: Text(
+                            key,
+                            // style: Theme.of(context).textTheme.headline6,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                              // fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        subtitle: Column(
+                          children: _getDayHistoryList(value),
                         ),
                       ),
-                      subtitle: Column(
-                        children: _getDayHistoryList(value),
-                      ),
-                    ),
-                    const Divider(),
-                  ],
-                ));
+                      // const Divider(),
+                    ],
+                  ),
+                );
               });
-              return ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return list[index];
-                },
+              return Container(
+                color: const Color.fromRGBO(250, 250, 250, 1),
+                child: ListView.builder(
+                  itemCount: listWidget.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return listWidget[index];
+                  },
+                ),
               );
             }
             // 加载时显示
@@ -91,10 +100,16 @@ class _HistoryPageState extends State<HistoryPage> {
           title: Text(
             history[i].animeName,
             style: const TextStyle(
+              fontSize: 15,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          trailing: Text("第${history[i].episodeNumber}集"),
+          trailing: Text(
+            "第${history[i].episodeNumber}集",
+            style: const TextStyle(
+              fontSize: 15,
+            ),
+          ),
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(

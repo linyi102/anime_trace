@@ -1,4 +1,4 @@
-name: flutter_test_future
+name: flutter_test_future # 和包相关
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -101,13 +101,9 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+  - family: noto
+    fonts:
+      - asset: assets/fonts/未来圆SC Regular.ttf  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-fonts:
-  - family: NotoSans
-    fonts:
-      - asset: assets/fonts/NotoSerifCJKkr-Regular.otf
-      # - asset: assets/fonts/Schyler-Italic.ttf
-  - family: times
-    fonts:
-      - asset: assets/fonts/TIMES.TTF

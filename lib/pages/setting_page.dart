@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/scaffolds/tag_manage.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -64,7 +65,6 @@ class _SettingPageState extends State<SettingPage> {
               Share.shareFiles([SqliteUtil.dbPath], subject: "132");
             },
           ),
-          const Divider(),
           ListTile(
             title: const Text("备份路径"),
             subtitle: Text(SPUtil.getString("backup_path")),
@@ -76,6 +76,18 @@ class _SettingPageState extends State<SettingPage> {
               }
             },
           ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(
+              Icons.new_label_outlined,
+              color: Colors.blue,
+            ),
+            title: const Text("标签管理"),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => const TagManage()));
+            },
+          )
         ],
       ),
     );

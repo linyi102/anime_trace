@@ -1,0 +1,185 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/tags.dart';
+import 'package:oktoast/oktoast.dart';
+
+class TagManage extends StatefulWidget {
+  const TagManage({Key? key}) : super(key: key);
+
+  @override
+  _TagManageState createState() => _TagManageState();
+}
+
+// 在全局变量tags拖拽、修改、添加的基础上，改变数据库tag表信息
+class _TagManageState extends State<TagManage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "标签管理",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(
+          color: Colors.black,
+        ),
+      ),
+      body: ReorderableListView(
+        children: _getTagListWidget(),
+        onReorder: (int oldIndex, int newIndex) async {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          var child = tags.removeAt(oldIndex);
+          tags.insert(newIndex, child);
+          SqliteUtil.updateTagOrder(tags);
+          setState(() {});
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                var inputTagNameController = TextEditingController();
+                return AlertDialog(
+                  title: const Text("添加标签"),
+                  content: TextField(
+                    controller: inputTagNameController,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: "标签名称",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("取消")),
+                    TextButton(
+                        onPressed: () async {
+                          String tagName = inputTagNameController.text;
+                          if (tagName.isEmpty) return;
+
+                          // 重名
+                          if (tags.contains(tagName)) {
+                            showToast("重名，无法添加！");
+                            return;
+                          }
+                          SqliteUtil.insertTagName(tagName, tags.length);
+                          // 更新tag表后，不需要重新全部获取，只需要在全局变量中添加即可
+                          // tags = await SqliteUtil.getAllTags();
+                          tags.add(tagName);
+                          setState(() {}); // FutureBuilder会重新build
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("确认")),
+                  ],
+                );
+              });
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  _getTagListWidget() {
+    List<Widget> tagListWidget = [];
+    for (int i = 0; i < tags.length; ++i) {
+      tagListWidget.add(
+        ListTile(
+          key: ValueKey(i),
+          leading: const Icon(Icons.tag),
+          title: Text(tags[i]),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                var inputTagNameController = TextEditingController();
+                return AlertDialog(
+                  title: const Text("修改标签"),
+                  content: TextField(
+                    controller: inputTagNameController..text = tags[i],
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: "标签名称",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("取消")),
+                    TextButton(
+                        onPressed: () async {
+                          String newTagName = inputTagNameController.text;
+                          if (newTagName.isEmpty) return;
+
+                          // 重名
+                          if (tags.contains(newTagName)) {
+                            showToast("重名，无法修改！");
+                            return;
+                          }
+                          SqliteUtil.updateTagNameByTagName(
+                              tags[i], newTagName);
+                          // 更新tag表后，不需要重新全部获取，只需要修改全局变量即可
+                          // tags = await SqliteUtil.getAllTags();
+                          tags[i] = newTagName;
+                          setState(() {});
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("确认")),
+                  ],
+                );
+              },
+            );
+          },
+          trailing: IconButton(
+              onPressed: () {
+                _dialogDeleteTag(i + 1, tags[i]);
+              },
+              icon: const Icon(Icons.delete_outline)),
+        ),
+      );
+    }
+    return tagListWidget;
+  }
+
+  _dialogDeleteTag(int tagId, String tagName) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text("确认删除标签「$tagName」吗？"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("取消")),
+              TextButton(
+                  onPressed: () async {
+                    if (await SqliteUtil.getAnimesCntBytagName(tagId) > 0) {
+                      showToast("当前标签存在动漫，无法删除");
+                    } else {
+                      SqliteUtil.deleteTagByTagId(tagId);
+                      tags.remove(tagName);
+                      setState(() {});
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("确认")),
+            ],
+          );
+        });
+  }
+}

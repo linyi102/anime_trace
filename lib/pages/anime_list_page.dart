@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
@@ -23,9 +25,11 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void initState() {
     super.initState();
+
+    // 顶部tab控制器
     _tabController = TabController(
       initialIndex: lastTopTabIndex, // 设置初始index
-      length: 5,
+      length: tags.length,
       vsync: this,
     );
     // 添加监听器，记录最后一次的topTab的index
@@ -34,7 +38,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         lastTopTabIndex = _tabController.index;
       }
     });
-    debugPrint("init");
   }
 
   @override
@@ -69,8 +72,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   itemCount: animes.length,
                   itemBuilder: (BuildContext context, int index) {
                     // debugPrint("index=${index.toString()}");
-                    Anime anime = animes[index];
-                    return AnimeItem(anime);
+                    return AnimeItem(animes[index]);
                   },
                 );
               }
@@ -93,6 +95,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         backgroundColor: Colors.white,
         shadowColor: Colors.transparent,
         bottom: TabBar(
+          isScrollable: true, // 标签可以滑动，避免拥挤
           unselectedLabelColor: Colors.black54,
           labelColor: Colors.blue, // 标签字体颜色
           labelStyle: const TextStyle(
@@ -112,21 +115,6 @@ class _AnimeListPageState extends State<AnimeListPage>
           children: _getAnimeList(),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: const Icon(Icons.search_outlined),
-      //   onPressed: () => showSearch(
-      //       context: context,
-      //       delegate: SearchPage<Anime>(
-      //         items: animes,
-      //         builder: (anime) => AnimeItem(anime),
-      //         failure: const Center(
-      //           child: Text('No person found :('),
-      //         ),
-      //         filter: (anime) => [
-      //           anime.animeName,
-      //         ],
-      //       )),
-      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _dialogAddAnime();
@@ -146,8 +134,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         return StatefulBuilder(builder: (context, setTagStateOnAddAnime) {
           return AlertDialog(
             title: const Text('添加动漫'),
-            content: AspectRatio(
-              aspectRatio: 2 / 1,
+            content: SingleChildScrollView(
               child: Column(
                 children: [
                   TextField(
@@ -197,9 +184,8 @@ class _AnimeListPageState extends State<AnimeListPage>
               TextButton.icon(
                 onPressed: () {
                   String name = inputNameController.text;
-                  if (name.isEmpty) {
-                    return;
-                  }
+                  if (name.isEmpty) return;
+
                   String endEpisodeStr = inputEndEpisodeController.text;
                   int endEpisode = 12;
                   if (endEpisodeStr.isNotEmpty) {
@@ -211,9 +197,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       animeEpisodeCnt: endEpisode,
                       tagName: addDefaultTag));
                   Future.delayed(const Duration(milliseconds: 10), () {
-                    setState(() {
-                      debugPrint("👉setState");
-                    });
+                    setState(() {});
                   });
                   Navigator.pop(context);
                 },
@@ -255,9 +239,8 @@ class _AnimeListPageState extends State<AnimeListPage>
         }
         return AlertDialog(
           title: const Text('选择标签'),
-          content: AspectRatio(
-            aspectRatio: 0.9 / 1,
-            child: ListView(
+          content: SingleChildScrollView(
+            child: Column(
               children: radioList,
             ),
           ),
@@ -269,10 +252,11 @@ class _AnimeListPageState extends State<AnimeListPage>
   List<Widget> _showTagAndAnimeCnt() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
+      // debugPrint(tags[i]);
       list.add(Column(
         children: [
           const SizedBox(
-            height: 15,
+            height: 10,
           ),
           FutureBuilder(
             future: SqliteUtil.getAnimeCntPerTag(),
@@ -282,13 +266,16 @@ class _AnimeListPageState extends State<AnimeListPage>
               }
               if (snapshot.hasData) {
                 List<int> animeCntPerTag = snapshot.data;
-                return Text("${tags[i]} (${animeCntPerTag[i]})");
+                return Text(
+                  "${tags[i]} (${animeCntPerTag[i]})",
+                  style: const TextStyle(fontFamily: "noto"),
+                );
               }
-              return const Text("");
+              return Container();
             },
           ),
           const SizedBox(
-            height: 15,
+            height: 10,
           ),
         ],
       ));
@@ -311,7 +298,6 @@ class AnimeItem extends StatelessWidget {
         anime.animeName,
         style: const TextStyle(
           fontSize: 15,
-          fontFamily: 'NotoSans',
           // fontWeight: FontWeight.w600,
         ),
         overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
