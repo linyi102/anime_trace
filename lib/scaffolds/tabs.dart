@@ -21,13 +21,13 @@ class _TabsState extends State<Tabs> {
     const HistoryPage(),
     const SettingPage(),
   ];
-  final List _listName = ["书架", "历史", "更多"];
+  final List _listName = ["动漫", "历史", "更多"];
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     List<List<Widget>> actions = [];
-    for (int i = 0; i < _listName.length; ++i) {
+    for (int i = 0; i < _list.length; ++i) {
       // error: actions[i] = []; 因为最外面的List为空，需要添加元素：空的List
       actions.add([]);
     }
@@ -87,8 +87,24 @@ class _TabsState extends State<Tabs> {
       //     setState(() => _currentIndex = index);
       //   },
       //   items: [
+      //     // SalomonBottomBarItem(
+      //     //     icon: const SizedBox(
+      //     //       width: 50,
+      //     //       child: Icon(Icons.book),
+      //     //     ),
+      //     //     title: const Text("动漫")),
+      //     // SalomonBottomBarItem(
+      //     //     icon: const SizedBox(
+      //     //       width: 50,
+      //     //       child: Icon(Icons.history_rounded),
+      //     //     ),
+      //     //     title: const Text("历史")),
+      //     // SalomonBottomBarItem(
+      //     //   icon: const SizedBox(width: 50, child: Icon(Icons.more_horiz)),
+      //     //   title: const Text("更多"),
+      //     // ),
       //     SalomonBottomBarItem(
-      //         icon: const Icon(Icons.book), title: const Text("书架")),
+      //         icon: const Icon(Icons.book), title: const Text("动漫")),
       //     SalomonBottomBarItem(
       //         icon: const Icon(Icons.history_rounded), title: const Text("历史")),
       //     SalomonBottomBarItem(
@@ -106,7 +122,7 @@ class _TabsState extends State<Tabs> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: "书架",
+            label: "动漫",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history_rounded),

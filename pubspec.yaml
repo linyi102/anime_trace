@@ -35,9 +35,11 @@ dependencies:
   path_provider: ^2.0.8
   # file: ^6.1.2
   file_picker: ^4.2.8
-  # permission_handler: ^8.3.0
+  permission_handler: ^8.3.0
   # share: ^2.0.4
   share_plus: ^3.0.4
+  # flutter_share: ^2.0.0
+  webdav_client: ^1.1.2
   oktoast: ^3.1.5
   # download: any
   # search_app_bar_page: ^2.1.2 # 添加上导致出错：
@@ -102,8 +104,11 @@ flutter:
   #         weight: 700
   #
   fonts:
-  - family: noto
+  - family: hm
     fonts:
-      - asset: assets/fonts/未来圆SC Regular.ttf  
+      - asset: assets/fonts/HarmonyOS_Sans_SC_Regular.ttf
+  # - family: yuan
+  #   fonts:
+  #     - asset: assets/fonts/未来圆SC Regular.ttf  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

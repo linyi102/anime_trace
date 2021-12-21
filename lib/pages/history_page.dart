@@ -105,7 +105,7 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
           ),
           trailing: Text(
-            "第${history[i].episodeNumber}集",
+            "第 ${history[i].episodeNumber} 集",
             style: const TextStyle(
               fontSize: 15,
             ),

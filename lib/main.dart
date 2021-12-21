@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         title: '漫迹', // 后台应用显示名称
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          fontFamily: 'noto',
+          fontFamily: 'hm',
         ),
         home: const MyHome(),
       ),

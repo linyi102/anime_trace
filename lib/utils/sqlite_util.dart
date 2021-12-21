@@ -25,7 +25,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    await deleteDatabase(dbPath); // 删除数据库
+    // await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {

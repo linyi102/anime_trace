@@ -91,7 +91,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 8, // 太小容易导致底部不够，从而溢出
+        toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
         backgroundColor: Colors.white,
         shadowColor: Colors.transparent,
         bottom: TabBar(
@@ -268,7 +268,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 List<int> animeCntPerTag = snapshot.data;
                 return Text(
                   "${tags[i]} (${animeCntPerTag[i]})",
-                  style: const TextStyle(fontFamily: "noto"),
+                  style: const TextStyle(fontFamily: "hm"),
                 );
               }
               return Container();

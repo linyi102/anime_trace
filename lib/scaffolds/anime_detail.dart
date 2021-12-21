@@ -114,7 +114,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             list.add(
               ListTile(
                 onLongPress: () {},
-                title: Text("第${episodes[i].number}集"),
+                title: Text("第 ${episodes[i].number} 集"),
                 subtitle: Text(episodes[i].getDate()),
                 trailing: IconButton(
                   onPressed: () {
