@@ -113,6 +113,7 @@ class SqliteUtil {
   }
 
   static void insertAnime(Anime anime) async {
+    print("sql: insertAnime");
     await _database.rawInsert('''
     insert into anime(anime_name, anime_episode_cnt, tag_name)
     values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}');
@@ -201,6 +202,16 @@ class SqliteUtil {
         animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
         tagName: list[0]['tag_name'] as String);
     return anime;
+  }
+
+  static Future<int> getAnimeLastId() async {
+    var list = await _database.rawQuery('''
+    select last_insert_rowid() as last_id
+    from anime;
+    ''');
+    int lastId = list[0]["last_id"] as int;
+    print("sql: getAnimeLastId=$lastId");
+    return lastId;
   }
 
   static Future<String> getTagNameByAnimeId(int animeId) async {

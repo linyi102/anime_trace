@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 
@@ -21,11 +20,17 @@ class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String addDefaultTag = tags[0];
+  List<int> animeCntPerTag = [];
+  late List<List<Anime>> animesInTag = [];
+  bool loadOk = false;
 
   @override
   void initState() {
     super.initState();
-
+    for (int i = 0; i < tags.length; ++i) {
+      animesInTag.add([]); // 先添加元素List，然后才能用下标访问
+    }
+    _loadData();
     // 顶部tab控制器
     _tabController = TabController(
       initialIndex: lastTopTabIndex, // 设置初始index
@@ -36,8 +41,22 @@ class _AnimeListPageState extends State<AnimeListPage>
     _tabController.addListener(() {
       if (_tabController.index == _tabController.animation!.value) {
         lastTopTabIndex = _tabController.index;
-        addDefaultTag = tags[_tabController.index];
+        addDefaultTag = tags[_tabController.index]; // 切换顶层tab后，默认添加动漫标签为当前tab标签
       }
+    });
+  }
+
+  _loadData() async {
+    debugPrint("开始加载数据");
+    Future(() async {
+      animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
+      for (int i = 0; i < tags.length; ++i) {
+        animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(tags[i]);
+      }
+    }).then((value) {
+      debugPrint("数据加载完毕");
+      loadOk = true; // 放这里啊，之前干嘛放外面...
+      setState(() {}); // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
     });
   }
 
@@ -47,41 +66,15 @@ class _AnimeListPageState extends State<AnimeListPage>
     super.dispose();
   }
 
-  List<Widget> _getAnimeList() {
+  List<Widget> _getAnimesPlus() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
       list.add(
-        Scrollbar(
-          thickness: 5,
-          radius: const Radius.circular(10),
-          child: FutureBuilder(
-            future: SqliteUtil.getAllAnimeBytagName(tags[i]),
-            // future结束后会通知builder重新渲染画面，因此stateless也可以
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasError) {
-                debugPrint(snapshot.error.toString());
-                // return const Text("");
-                return Text(snapshot.error.toString());
-                // return const Icon(
-                //   Icons.error,
-                //   size: 80,
-                // );
-              }
-              if (snapshot.hasData) {
-                animes = snapshot.data as List<Anime>;
-                return ListView.builder(
-                  itemCount: animes.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // debugPrint("index=${index.toString()}");
-                    return AnimeItem(animes[index]);
-                  },
-                );
-              }
-              // 等待数据时显示加载画面
-              // return const CircularProgressIndicator();
-              return const Text("");
-            },
-          ),
+        ListView.builder(
+          itemCount: animesInTag[i].length,
+          itemBuilder: (BuildContext context, int index) {
+            return AnimeItem(animesInTag[i][index]);
+          },
         ),
       );
     }
@@ -91,29 +84,34 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-        backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
-        bottom: TabBar(
-          isScrollable: true, // 标签可以滑动，避免拥挤
-          unselectedLabelColor: Colors.black54,
-          labelColor: Colors.blue, // 标签字体颜色
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-          indicatorColor: Colors.blue, // 指示器颜色
-          indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
-          indicatorWeight: 3, // 指示器高度
-          tabs: _showTagAndAnimeCnt(),
-          controller: _tabController,
-        ),
-      ),
+      appBar: loadOk
+          ? AppBar(
+              toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
+              backgroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+              bottom: TabBar(
+                isScrollable: true, // 标签可以滑动，避免拥挤
+                unselectedLabelColor: Colors.black54,
+                labelColor: Colors.blue, // 标签字体颜色
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                indicatorColor: Colors.blue, // 指示器颜色
+                indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
+                indicatorWeight: 3, // 指示器高度
+                tabs: _showTagAndAnimeCntPlus(),
+                // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                controller: _tabController,
+              ),
+            )
+          : _waitDataAppBar(),
       body: Container(
         color: const Color.fromRGBO(250, 250, 250, 1),
         child: TabBarView(
           controller: _tabController,
-          children: _getAnimeList(),
+          // children: _getAnimeList(),
+          children: _getAnimesPlus(),
+          // children: loadOk ? _getAnimesPlus() : _waitDataPage(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -122,6 +120,23 @@ class _AnimeListPageState extends State<AnimeListPage>
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  AppBar _waitDataAppBar() {
+    return AppBar(
+      toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
+      backgroundColor: Colors.white,
+      shadowColor: Colors.transparent,
+      // bottom: TabBar(
+      //   tabs: const [],
+      //   indicatorWeight: 3,
+      //   controller: TabController(
+      //     initialIndex: 0, // 设置初始index
+      //     length: 1,
+      //     vsync: this,
+      //   ),
+      // ),
     );
   }
 
@@ -183,7 +198,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 ),
               ),
               TextButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   String name = inputNameController.text;
                   if (name.isEmpty) return;
 
@@ -192,14 +207,20 @@ class _AnimeListPageState extends State<AnimeListPage>
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  // 改变状态
-                  SqliteUtil.insertAnime(Anime(
+                  Anime newAnime = Anime(
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
-                      tagName: addDefaultTag));
-                  Future.delayed(const Duration(milliseconds: 10), () {
-                    setState(() {});
-                  });
+                      tagName: addDefaultTag);
+                  SqliteUtil.insertAnime(newAnime);
+                  int tagIndex = tags.indexOf(addDefaultTag);
+                  // 必须要得到在anime表中新插入的动漫的id，然后再添加到animesInTag[tagIndex]中，否则添加完后就无法根据id进入详细页面
+                  newAnime.animeId = await SqliteUtil.getAnimeLastId();
+                  animesInTag[tagIndex].insert(0, newAnime);
+                  setState(() {});
+                  // 改变状态
+                  // Future.delayed(const Duration(milliseconds: 10), () {
+                  //   setState(() {});
+                  // });
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.send),
@@ -250,30 +271,17 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
   }
 
-  List<Widget> _showTagAndAnimeCnt() {
+  List<Widget> _showTagAndAnimeCntPlus() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
-      // debugPrint(tags[i]);
       list.add(Column(
         children: [
           const SizedBox(
             height: 10,
           ),
-          FutureBuilder(
-            future: SqliteUtil.getAnimeCntPerTag(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasError) {
-                return const Icon(Icons.error);
-              }
-              if (snapshot.hasData) {
-                List<int> animeCntPerTag = snapshot.data;
-                return Text(
-                  "${tags[i]} (${animeCntPerTag[i]})",
-                  style: const TextStyle(fontFamily: "hm"),
-                );
-              }
-              return Container();
-            },
+          Text(
+            "${tags[i]}-${animeCntPerTag[i]}",
+            style: const TextStyle(fontFamily: "hm"),
           ),
           const SizedBox(
             height: 10,
