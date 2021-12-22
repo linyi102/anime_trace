@@ -73,7 +73,40 @@ class _AnimeListPageState extends State<AnimeListPage>
         ListView.builder(
           itemCount: animesInTag[i].length,
           itemBuilder: (BuildContext context, int index) {
-            return AnimeItem(animesInTag[i][index]);
+            // debugPrint("$index");
+            // return AnimeItem(animesInTag[i][index]);
+            Anime anime = animesInTag[i][index];
+            return ListTile(
+              title: Text(
+                anime.animeName,
+                style: const TextStyle(
+                  fontSize: 15,
+                  // fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+              ),
+              trailing: Text(
+                "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  // fontWeight: FontWeight.w400,
+                ),
+              ),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                  builder: (context) => AnimeDetailPlus(anime.animeId),
+                ))
+                    .then((value) {
+                  debugPrint(value.toString());
+                  // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
+                  animesInTag[i][index] = value;
+                  setState(() {});
+                });
+              },
+              onLongPress: () {},
+            );
           },
         ),
       );
@@ -293,18 +326,23 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 }
 
-class AnimeItem extends StatelessWidget {
-  final Anime anime;
-  const AnimeItem(
+class AnimeItem extends StatefulWidget {
+  Anime anime;
+  AnimeItem(
     this.anime, {
     Key? key,
   }) : super(key: key);
 
   @override
+  State<AnimeItem> createState() => _AnimeItemState();
+}
+
+class _AnimeItemState extends State<AnimeItem> {
+  @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        anime.animeName,
+        widget.anime.animeName,
         style: const TextStyle(
           fontSize: 15,
           // fontWeight: FontWeight.w600,
@@ -312,7 +350,7 @@ class AnimeItem extends StatelessWidget {
         overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
       ),
       trailing: Text(
-        "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+        "${widget.anime.checkedEpisodeCnt}/${widget.anime.animeEpisodeCnt}",
         style: const TextStyle(
           fontSize: 15,
           color: Colors.black,
@@ -320,11 +358,18 @@ class AnimeItem extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.of(context)
+            .push(
           MaterialPageRoute(
-            builder: (context) => AnimeDetailPlus(anime.animeId),
+            builder: (context) => AnimeDetailPlus(widget.anime.animeId),
           ),
-        );
+        )
+            .then((value) {
+          debugPrint(value.toString());
+          setState(() {
+            widget.anime = value;
+          });
+        });
       },
       onLongPress: () {},
     );

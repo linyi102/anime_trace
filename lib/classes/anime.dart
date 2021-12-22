@@ -12,4 +12,9 @@ class Anime {
       required this.animeEpisodeCnt,
       this.tagName = "",
       this.checkedEpisodeCnt = 0});
+
+  @override
+  String toString() {
+    return "animeId=$animeId, animeName=$animeName, animeEpisodeCnt=$animeEpisodeCnt, tagName=$tagName, checkedEpisodeCnt=$checkedEpisodeCnt";
+  }
 }

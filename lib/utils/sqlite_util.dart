@@ -101,6 +101,7 @@ class SqliteUtil {
   }
 
   static void updateAnime(int animeId, Anime newAnime) async {
+    print("sql: updateAnime");
     // int count =
     await _database.rawUpdate('''
     update anime
@@ -122,6 +123,7 @@ class SqliteUtil {
 
   static void insertHistoryItem(
       int animeId, int episodeNumber, String date) async {
+    print("sql: insertHistoryItem");
     await _database.rawInsert('''
     insert into history(date, anime_id, episode_number)
     values('$date', $animeId, $episodeNumber);
@@ -199,6 +201,7 @@ class SqliteUtil {
     where anime_id = $animeId;
     ''');
     Anime anime = Anime(
+        animeId: animeId,
         animeName: list[0]['anime_name'] as String,
         animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
         tagName: list[0]['tag_name'] as String);
@@ -206,6 +209,7 @@ class SqliteUtil {
   }
 
   static Future<int> getAnimeLastId() async {
+    print("sql: getAnimeLastId");
     var list = await _database.rawQuery('''
     select last_insert_rowid() as last_id
     from anime;
@@ -225,15 +229,14 @@ class SqliteUtil {
     return list[0]['tag_name'] as String;
   }
 
-  static Future<List<Episode>> getAnimeEpisodeHistoryById(int animeId) async {
+  static Future<List<Episode>> getAnimeEpisodeHistoryById(Anime anime) async {
     print("sql: getAnimeEpisodeHistoryById");
-    Anime anime = await getAnimeByAnimeId(animeId);
     int animeEpisodeCnt = anime.animeEpisodeCnt;
 
     var list = await _database.rawQuery('''
     select date, episode_number
     from anime inner join history
-        on anime.anime_id = $animeId and anime.anime_id = history.anime_id;
+        on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id;
     ''');
     // print("查询结果：$list");
     List<Episode> episodes = [];
@@ -251,6 +254,7 @@ class SqliteUtil {
   }
 
   static Future<int> getAnimesCntBytagName(String tagName) async {
+    print("sql: getAnimesCntBytagName");
     var list = await _database.rawQuery('''
     select count(anime.anime_id) cnt
     from anime

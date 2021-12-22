@@ -20,14 +20,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   @override
   void initState() {
-    loadData();
+    _loadData();
     super.initState();
   }
 
-  void loadData() async {
+  void _loadData() async {
     Future(() async {
-      anime = await SqliteUtil.getAnimeByAnimeId(widget.animeId);
-      episodes = await SqliteUtil.getAnimeEpisodeHistoryById(widget.animeId);
+      return await SqliteUtil.getAnimeByAnimeId(
+          widget.animeId); // 一定要return，value才有值
+    }).then((value) async {
+      anime = value;
+      debugPrint(value.toString());
+      episodes = await SqliteUtil.getAnimeEpisodeHistoryById(anime);
     }).then((value) {
       loadOk = true;
       setState(() {});
@@ -36,29 +40,46 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        debugPrint("按返回键，返回anime");
+        for (var episode in episodes) {
+          if (episode.isChecked()) anime.checkedEpisodeCnt++; // 用于传回
+        }
+        Navigator.pop(context, anime);
+        debugPrint("返回true");
+        return true;
+      },
+      child: Scaffold(
+        // backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          shadowColor: Colors.transparent,
+          iconTheme: const IconThemeData(
+            color: Colors.black,
+          ),
+          leading: IconButton(
+              onPressed: () {
+                debugPrint("按返回按钮，返回anime");
+                Navigator.pop(context, anime);
+              },
+              icon: const Icon(Icons.arrow_back_rounded)),
         ),
+        body: loadOk
+            ? Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  _displayAnimeName(),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _displayEpisode(),
+                ],
+              )
+            : _waitDataBody(),
       ),
-      body: loadOk
-          ? Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                _displayAnimeName(),
-                const SizedBox(
-                  height: 30,
-                ),
-                _displayEpisode(),
-              ],
-            )
-          : _waitDataBody(),
     );
   }
 
