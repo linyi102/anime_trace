@@ -101,16 +101,18 @@ class _AnimeListPageState extends State<AnimeListPage>
                     .then((value) {
                   debugPrint(value.toString());
                   // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
-                  Anime oldAnime = animesInTag[i][index];
                   Anime newAnime = value;
                   // 如果更换了标签，则还要移动到相应的标签
-                  if (oldAnime.tagName != newAnime.tagName) {
+                  if (anime.tagName != newAnime.tagName) {
+                    print("${anime.tagName}, ${newAnime.tagName}");
+                    print("old: ${anime.toString()}");
                     int newTagIndex = tags.indexOf(newAnime.tagName);
                     animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
                     animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
                     // 还要改变标签的数量
                     animeCntPerTag[i]--;
                     animeCntPerTag[newTagIndex]++;
+                    print("移动了标签");
                   } else {
                     animesInTag[i][index] = newAnime;
                   }

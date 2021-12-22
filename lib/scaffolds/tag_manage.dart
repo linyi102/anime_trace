@@ -130,8 +130,7 @@ class _TagManageState extends State<TagManage> {
                             showToast("重名，无法修改！");
                             return;
                           }
-                          SqliteUtil.updateTagNameByTagName(
-                              tags[i], newTagName);
+                          SqliteUtil.updateTagName(tags[i], newTagName);
                           // 更新tag表后，不需要重新全部获取，只需要修改全局变量即可
                           // tags = await SqliteUtil.getAllTags();
                           tags[i] = newTagName;

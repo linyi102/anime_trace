@@ -17,6 +17,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime anime;
   List<Episode> episodes = [];
   bool loadOk = false;
+  late String modifiedTagName; // 用于记录临时切换的标签，点击确认后才会更新anime的标签
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           widget.animeId); // 一定要return，value才有值
     }).then((value) async {
       anime = value;
+      modifiedTagName = anime.tagName;
       debugPrint(value.toString());
       episodes = await SqliteUtil.getAnimeEpisodeHistoryById(anime);
     }).then((value) {
@@ -234,10 +236,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               TextButton.icon(
                 onPressed: () {
                   _dialogSelectTag(setTagStateOnAddAnime);
-                  // // 没有效果
-                  // dialogSelectTag(
-                  //     setTagStateOnAddAnime, context, anime.tagName);
-                  // debugPrint(anime.tagName);
                 },
                 icon: const Icon(
                   Icons.new_label,
@@ -245,7 +243,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   color: Colors.blue,
                 ),
                 label: Text(
-                  anime.tagName,
+                  modifiedTagName,
                   style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 16,
@@ -263,18 +261,29 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  SqliteUtil.updateAnime(
-                    // 不能传anime.animeId，因为没有数据
-                    widget.animeId,
-                    Anime(
+                  Anime newAnime = Anime(
+                      animeId: anime.animeId,
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
-                      tagName: anime.tagName,
-                    ),
-                  );
-                  // 需要手动改名称，因为不会从数据库获取信息
-                  anime.animeName = name;
-                  setState(() {});
+                      tagName: modifiedTagName,
+                      checkedEpisodeCnt: anime.checkedEpisodeCnt);
+                  SqliteUtil.updateAnime(anime, newAnime); // 因为切换标签后
+
+                  if (anime.animeEpisodeCnt != endEpisode) {
+                    anime = newAnime; // 先判断，再检查
+                    Future(() async {
+                      // 获取新的集数
+                      return SqliteUtil.getAnimeEpisodeHistoryById(anime);
+                    }).then((value) {
+                      episodes = value;
+                      // 然后更新页面
+                      setState(() {});
+                    });
+                  } else {
+                    anime = newAnime;
+                    // 只是更新了名字，也需要更新页面
+                    setState(() {});
+                  }
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.send),
@@ -297,7 +306,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           radioList.add(
             ListTile(
               title: Text(tags[i]),
-              leading: tags[i] == anime.tagName
+              leading: tags[i] == modifiedTagName
                   ? const Icon(
                       Icons.radio_button_on_outlined,
                       color: Colors.blue,
@@ -306,8 +315,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       Icons.radio_button_off_outlined,
                     ),
               onTap: () {
-                anime.tagName = tags[i];
-                // tagState(() {});
+                modifiedTagName = tags[i];
                 setTagStateOnAddAnime(() {});
                 Navigator.pop(context);
               },

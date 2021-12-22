@@ -25,7 +25,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    // await deleteDatabase(dbPath); // 删除数据库
+    await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
@@ -81,12 +81,12 @@ class SqliteUtil {
     ''');
     for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
-      insert into anime(anime_name, anime_episode_cnt, tag_name)
-      values('进击的巨人第一季', '24', '拾'),
-          ('JOJO的奇妙冒险第六季 石之海', '12', '拾'),
-          ('刀剑神域第一季', '24', '拾'),
-          ('进击的巨人第二季', '12', '拾'),
-          ('在下坂本，有何贵干？', '12', '终');
+      insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
+      values('进击的巨人第一季', '24', '拾', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
+          ('JOJO的奇妙冒险第六季 石之海', '12', '拾', '2021-12-09 20:23:22'),
+          ('刀剑神域第一季', '24', '拾', '2021-12-08 20:23:22'),
+          ('进击的巨人第二季', '12', '拾', '2021-12-07 20:23:22'),
+          ('在下坂本，有何贵干？', '12', '终', '2021-12-06 20:23:22');
     ''');
     }
     await db.rawInsert('''
@@ -100,24 +100,37 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateAnime(int animeId, Anime newAnime) async {
+  static void updateAnime(Anime oldAnime, Anime newAnime) async {
     print("sql: updateAnime");
-    // int count =
-    await _database.rawUpdate('''
-    update anime
-    set anime_name = '${newAnime.animeName}',
-        anime_episode_cnt = ${newAnime.animeEpisodeCnt},
-        tag_name = '${newAnime.tagName}'
-    where anime_id = $animeId;
-    ''');
-    // print("count=$count");
+    String datetime = DateTime.now().toString();
+    print(
+        "oldAnime.tagName=${oldAnime.tagName}, newAnime.tagName=${newAnime.tagName}");
+    if (oldAnime.tagName != newAnime.tagName) {
+      await _database.rawUpdate('''
+      update anime
+      set anime_name = '${newAnime.animeName}',
+          anime_episode_cnt = ${newAnime.animeEpisodeCnt},
+          tag_name = '${newAnime.tagName}',
+          last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
+      where anime_id = ${oldAnime.animeId};
+      ''');
+      print("last_mode_tag_time: $datetime");
+    } else {
+      await _database.rawUpdate('''
+      update anime
+      set anime_name = '${newAnime.animeName}',
+          anime_episode_cnt = ${newAnime.animeEpisodeCnt}
+      where anime_id = ${oldAnime.animeId};
+      ''');
+    }
   }
 
   static void insertAnime(Anime anime) async {
     print("sql: insertAnime");
+    String datetime = DateTime.now().toString();
     await _database.rawInsert('''
-    insert into anime(anime_name, anime_episode_cnt, tag_name)
-    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}');
+    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
+    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime');
     ''');
   }
 
@@ -147,8 +160,7 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateTagNameByTagName(
-      String oldTagName, String newTagName) async {
+  static void updateTagName(String oldTagName, String newTagName) async {
     print("sql: updateTagNameByTagId");
     await _database.rawUpdate('''
     update tag
@@ -267,10 +279,10 @@ class SqliteUtil {
     print("sql: getAllAnimeBytagName");
 
     var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt
+    select anime_id, anime_name, anime_episode_cnt, tag_name
     from anime
     where tag_name = '$tagName'
-    order by anime_id desc;
+    order by last_mode_tag_time desc; -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
     // limit 100 offset 0;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
@@ -287,6 +299,7 @@ class SqliteUtil {
         animeId: element['anime_id'] as int, // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
         checkedEpisodeCnt: checkedEpisodeCnt,
       ));
     }
