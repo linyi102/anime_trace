@@ -29,7 +29,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    debugPrint("initState: MyApp");
     _autoBackup();
   }
 

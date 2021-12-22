@@ -169,10 +169,10 @@ class _TagManageState extends State<TagManage> {
                   child: const Text("取消")),
               TextButton(
                   onPressed: () async {
-                    if (await SqliteUtil.getAnimesCntBytagName(tagId) > 0) {
+                    if (await SqliteUtil.getAnimesCntBytagName(tagName) > 0) {
                       showToast("当前标签存在动漫，无法删除");
                     } else {
-                      SqliteUtil.deleteTagByTagId(tagId);
+                      SqliteUtil.deleteTagByTagName(tagName);
                       tags.remove(tagName);
                       setState(() {});
                     }

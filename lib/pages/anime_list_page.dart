@@ -54,7 +54,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           thickness: 5,
           radius: const Radius.circular(10),
           child: FutureBuilder(
-            future: SqliteUtil.getAllAnimeBytag(tags[i]),
+            future: SqliteUtil.getAllAnimeBytagName(tags[i]),
             // future结束后会通知builder重新渲染画面，因此stateless也可以
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasError) {

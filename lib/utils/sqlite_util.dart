@@ -25,7 +25,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    // await deleteDatabase(dbPath); // 删除数据库
+    await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
@@ -41,8 +41,8 @@ class SqliteUtil {
       CREATE TABLE tag (
           tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
           tag_name  TEXT    NOT NULL,
-          tag_order INTEGER,
-          UNIQUE(tag_name)
+          tag_order INTEGER
+          -- UNIQUE(tag_name)
       );
       ''');
     await db.execute('''
@@ -51,12 +51,12 @@ class SqliteUtil {
           anime_name          TEXT    NOT NULL,
           anime_episode_cnt   INTEGER NOT NULL,
           anime_desc          TEXT, -- 描述
-          tag_id              INTEGER,
+          tag_name            TEXT,
           last_mode_tag_time  TEXT, -- 最后一次修改标签的时间，可以实现新移动的在列表上面
           FOREIGN KEY (
-              tag_id
+              tag_name
           )
-          REFERENCES tag (tag_id) 
+          REFERENCES tag (tag_name) 
       );
       ''');
     await db.execute('''
@@ -75,18 +75,18 @@ class SqliteUtil {
 
   static void _insertInitData(Database db) async {
     await db.rawInsert('''
-      insert into tag(tag_name)
+      insert into tag(tag_name, tag_order)
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
-      values('拾'), ('途'), ('终');
+      values('拾', 1), ('途', 2), ('终', 3);
     ''');
     for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
-      insert into anime(anime_name, anime_episode_cnt, tag_id)
-      values('进击的巨人第一季', '24', 1),
-          ('JOJO的奇妙冒险第六季 石之海', '12', 1),
-          ('刀剑神域第一季', '24', 1),
-          ('进击的巨人第二季', '12', 1),
-          ('在下坂本，有何贵干？', '12', 3);
+      insert into anime(anime_name, anime_episode_cnt, tag_name)
+      values('进击的巨人第一季', '24', '拾'),
+          ('JOJO的奇妙冒险第六季 石之海', '12', '拾'),
+          ('刀剑神域第一季', '24', '拾'),
+          ('进击的巨人第二季', '12', '拾'),
+          ('在下坂本，有何贵干？', '12', '终');
     ''');
     }
     await db.rawInsert('''
@@ -100,41 +100,22 @@ class SqliteUtil {
     ''');
   }
 
-  static getTagIdByTagName(String tagName) async {
-    var list = await _database.rawQuery('''
-    select tag_id from tag
-    where tag_name = '$tagName';
-    ''');
-    return list[0]['tag_id'].toString();
-  }
-
   static void updateAnime(int animeId, Anime newAnime) async {
-    int newTagId = int.parse(
-      await getTagIdByTagName(newAnime.tagName),
-    ); // 一定要await
-
     // int count =
     await _database.rawUpdate('''
     update anime
     set anime_name = '${newAnime.animeName}',
         anime_episode_cnt = ${newAnime.animeEpisodeCnt},
-        tag_id = $newTagId
+        tag_name = '${newAnime.tagName}'
     where anime_id = $animeId;
     ''');
     // print("count=$count");
   }
 
   static void insertAnime(Anime anime) async {
-    // 先根据tag_name获取到tag_id
-    int tagId = (await _database.rawQuery('''
-    select tag_id from tag
-    where tag_name = '${anime.tagName}';
-    '''))[0]['tag_id'] as int;
-    // 解释：返回List<Map<String, Object?>>，[0]代表取第一个元素，['tag_id']通过key得到value。
-
     await _database.rawInsert('''
-    insert into anime(anime_name, anime_episode_cnt, tag_id)
-    values('${anime.animeName}', '${anime.animeEpisodeCnt}', $tagId);
+    insert into anime(anime_name, anime_episode_cnt, tag_name)
+    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}');
     ''');
   }
 
@@ -154,15 +135,8 @@ class SqliteUtil {
     ''');
   }
 
-  static void deleteTagByTagId(int tagId) async {
-    print("sql: deleteTagByTagId");
-    await _database.rawDelete('''
-    delete from tag
-    where tag_id = $tagId;
-    ''');
-  }
-
   static void insertTagName(String tagName, int tagOrder) async {
+    print("sql: insertTagName");
     await _database.rawInsert('''
     insert into tag(tag_name, tag_order)
     values('$tagName', $tagOrder);
@@ -216,10 +190,11 @@ class SqliteUtil {
   }
 
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
+    print("sql: getAnimeByAnimeId");
     var list = await _database.rawQuery('''
     select anime_name, anime_episode_cnt, tag_name
-    from anime inner join tag
-        on anime_id = $animeId and anime.tag_id = tag.tag_id;
+    from anime
+    where anime_id = $animeId;
     ''');
     Anime anime = Anime(
         animeName: list[0]['anime_name'] as String,
@@ -232,8 +207,8 @@ class SqliteUtil {
     print("sql: getTagNameByAnimeId");
     var list = await _database.rawQuery('''
     select tag_name
-    from anime inner join tag
-        on anime_id = $animeId and anime.tag_id = tag.tag_id;
+    from anime
+    where anime.anime_id = $animeId;
     ''');
     return list[0]['tag_name'] as String;
   }
@@ -263,22 +238,22 @@ class SqliteUtil {
     return episodes;
   }
 
-  static Future<int> getAnimesCntBytagName(int tagId) async {
+  static Future<int> getAnimesCntBytagName(String tagName) async {
     var list = await _database.rawQuery('''
     select count(anime.anime_id) cnt
     from anime
-    where anime.tag_id = $tagId;
+    where anime.tag_name = '$tagName';
     ''');
     return list[0]["cnt"] as int;
   }
 
-  static getAllAnimeBytag(String tagName) async {
-    print("sql: getAllAnimeBytag");
+  static getAllAnimeBytagName(String tagName) async {
+    print("sql: getAllAnimeBytagName");
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt
-    from anime inner join tag
-        on tag.tag_name = '$tagName' and anime.tag_id = tag.tag_id
+    from anime
+    where tag_name = '$tagName'
     order by anime_id desc;
     // limit 100 offset 0;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
@@ -306,8 +281,8 @@ class SqliteUtil {
     var list = await _database.rawQuery('''
     select count(anime_id) as anime_cnt, tag.tag_name
     from tag left outer join anime -- sqlite只支持左外联结
-        on anime.tag_id = tag.tag_id
-    group by tag.tag_id -- 应该按照tag的tag_id分组
+        on anime.tag_name = tag.tag_name
+    group by tag.tag_name -- 应该按照tag的tag_name分组
     order by tag.tag_order; -- 按照用户调整的顺序排序，否则会导致数量与实际不符
     ''');
 
