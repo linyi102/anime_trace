@@ -4,6 +4,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
+import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 void main() async {
@@ -17,10 +18,46 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    debugPrint("initState: MyApp");
+    _autoBackup();
+  }
+
+  _autoBackup() async {
+    // 之前登录过，因为关闭应用会导致连接关闭，所以下次重启应用时需要再次连接
+    if (SPUtil.getBool("login")) {
+      await WebDavUtil.initWebDav(
+        SPUtil.getString("webdav_uri"),
+        SPUtil.getString("webdav_user"),
+        SPUtil.getString("webdav_password"),
+      );
+      if (SPUtil.getBool("auto_backup")) {
+        String lastTimeBackup = SPUtil.getString("last_time_backup");
+        // 不为空串表示之前备份过
+        if (lastTimeBackup != "") {
+          debugPrint("上次备份的时间：$lastTimeBackup");
+          DateTime dateTime = DateTime.parse(lastTimeBackup);
+          DateTime now = DateTime.now();
+          // 距离上次备份超过1天，则进行备份
+          // if (now.difference(dateTime).inSeconds >= 10) {
+          if (now.difference(dateTime).inDays >= 1) {
+            WebDavUtil.backupData();
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return OKToast(

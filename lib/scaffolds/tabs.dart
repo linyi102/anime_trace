@@ -3,7 +3,6 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:search_page/search_page.dart';
 
 late List<Anime> animes;

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/scaffolds/tag_manage.dart';
-import 'package:flutter_test_future/scaffolds/webdav_setting.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -19,6 +18,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  String autoBackupState = SPUtil.getBool("auto_backup") ? "开启" : "关闭";
+
   @override
   void initState() {
     super.initState();
@@ -125,8 +126,6 @@ class _SettingPageState extends State<SettingPage> {
             color: SPUtil.getBool("login") ? Colors.greenAccent : Colors.grey,
           ),
           onTap: () {
-            // Navigator.of(context).push(MaterialPageRoute(
-            //     builder: (context) => const WebDavSetting()));
             _loginWebDav();
           },
         ),
@@ -138,32 +137,26 @@ class _SettingPageState extends State<SettingPage> {
               showToast("请先配置账号，再进行备份！");
               return;
             }
-            // 先判断是否有animetrace目录，没有则创建
-            String backupDir = "/animetrace";
-            var list = await WebDavUtil.client.readDir('/');
-            bool existBackupDir = false;
-            for (var file in list) {
-              if (file.name == "animetrace") {
-                existBackupDir = true;
-                break;
-              }
-            }
-            if (!existBackupDir) {
-              await WebDavUtil.client.mkdir(backupDir);
-            }
-
-            DateTime dateTime = DateTime.now();
-            String time =
-                "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-            String remotePath = '$backupDir/animetrace_$time.db';
-
-            WebDavUtil.upload(SqliteUtil.dbPath, remotePath);
+            String remotePath = await WebDavUtil.backupData();
             showToast("备份成功: $remotePath");
           },
         ),
         ListTile(
           title: const Text("自动备份"),
-          onTap: () async {},
+          subtitle: Text(autoBackupState),
+          onTap: () async {
+            if (SPUtil.getBool("auto_backup")) {
+              // 如果是开启，点击后则关闭
+              SPUtil.setBool("auto_backup", false);
+              autoBackupState = "关闭";
+            } else {
+              SPUtil.setBool("auto_backup", true);
+              // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
+              WebDavUtil.backupData();
+              autoBackupState = "开启";
+            }
+            setState(() {});
+          },
         ),
         const Divider(),
         ListTile(

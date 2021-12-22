@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 
 class WebDavUtil {
@@ -22,6 +22,7 @@ class WebDavUtil {
       debug: false,
     );
     if (!(await pingWebDav())) {
+      print("WebDav初始化失败！");
       return false;
     }
     // Set the public request headers
@@ -35,6 +36,7 @@ class WebDavUtil {
 
     // Set transfer data time in milliseconds.
     client.setReceiveTimeout(8000);
+    print("WebDav初始化成功！");
     return true;
   }
 
@@ -56,5 +58,32 @@ class WebDavUtil {
       localPath,
       remotePath,
     );
+  }
+
+  static Future<String> backupData() async {
+    // 先判断是否有animetrace目录，没有则创建
+    String backupDir = "/animetrace";
+    var list = await client.readDir('/');
+    bool existBackupDir = false;
+    for (var file in list) {
+      if (file.name == "animetrace") {
+        existBackupDir = true;
+        break;
+      }
+    }
+    if (!existBackupDir) {
+      await client.mkdir(backupDir);
+    }
+
+    DateTime dateTime = DateTime.now();
+    String time =
+        "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+    String remotePath = '$backupDir/animetrace_$time.db';
+
+    upload(SqliteUtil.dbPath, remotePath);
+    print("备份成功：$remotePath");
+    // 更新最后一次备份的时间
+    SPUtil.setString("last_time_backup", dateTime.toString());
+    return remotePath;
   }
 }
