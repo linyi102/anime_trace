@@ -49,6 +49,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   _loadData() async {
     debugPrint("开始加载数据");
     Future(() async {
+      print(tags);
       animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
       for (int i = 0; i < tags.length; ++i) {
         animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(tags[i]);
@@ -328,7 +329,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
           Text(
             "${tags[i]}-${animeCntPerTag[i]}",
-            style: const TextStyle(fontFamily: "hm"),
+            // style: const TextStyle(fontFamily: "hm"),
           ),
           const SizedBox(
             height: 10,

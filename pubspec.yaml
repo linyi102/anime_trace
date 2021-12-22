@@ -103,10 +103,11 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  fonts:
-  - family: hm
-    fonts:
-      - asset: assets/fonts/HarmonyOS_Sans_SC_Regular.ttf
+  
+  # fonts:
+  # - family: hm
+  #   fonts:
+  #     - asset: assets/fonts/HarmonyOS_Sans_SC_Regular.ttf
   # - family: yuan
   #   fonts:
   #     - asset: assets/fonts/未来圆SC Regular.ttf  

@@ -145,6 +145,10 @@ class _SettingPageState extends State<SettingPage> {
           title: const Text("自动备份"),
           subtitle: Text(autoBackupState),
           onTap: () async {
+            if (!SPUtil.getBool("login")) {
+              showToast("请先配置账号，再进行备份！");
+              return;
+            }
             if (SPUtil.getBool("auto_backup")) {
               // 如果是开启，点击后则关闭
               SPUtil.setBool("auto_backup", false);

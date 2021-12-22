@@ -77,7 +77,7 @@ class SqliteUtil {
     await db.rawInsert('''
       insert into tag(tag_name, tag_order)
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
-      values('拾', 1), ('途', 2), ('终', 3);
+      values('拾', 0), ('途', 1), ('终', 2);
     ''');
     for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
@@ -309,7 +309,7 @@ class SqliteUtil {
   static getAnimeCntPerTag() async {
     print("sql: getAnimeCntPerTag");
     var list = await _database.rawQuery('''
-    select count(anime_id) as anime_cnt, tag.tag_name
+    select count(anime_id) as anime_cnt, tag.tag_name, tag.tag_order
     from tag left outer join anime -- sqlite只支持左外联结
         on anime.tag_name = tag.tag_name
     group by tag.tag_name -- 应该按照tag的tag_name分组
@@ -318,6 +318,7 @@ class SqliteUtil {
 
     List<int> res = [];
     for (var item in list) {
+      print('${item['tag_name']}-${item['anime_cnt']}-${item['tag_order']}');
       res.add(item['anime_cnt'] as int);
     }
     return res;
