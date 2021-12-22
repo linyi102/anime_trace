@@ -36,6 +36,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     _tabController.addListener(() {
       if (_tabController.index == _tabController.animation!.value) {
         lastTopTabIndex = _tabController.index;
+        addDefaultTag = tags[_tabController.index];
       }
     });
   }

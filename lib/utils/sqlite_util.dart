@@ -278,6 +278,7 @@ class SqliteUtil {
   }
 
   static getAnimeCntPerTag() async {
+    print("sql: getAnimeCntPerTag");
     var list = await _database.rawQuery('''
     select count(anime_id) as anime_cnt, tag.tag_name
     from tag left outer join anime -- sqlite只支持左外联结
