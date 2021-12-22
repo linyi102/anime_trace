@@ -15,7 +15,24 @@ class AnimeDetailPlus extends StatefulWidget {
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime anime;
-  late List<Episode> episodes;
+  List<Episode> episodes = [];
+  bool loadOk = false;
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
+
+  void loadData() async {
+    Future(() async {
+      anime = await SqliteUtil.getAnimeByAnimeId(widget.animeId);
+      episodes = await SqliteUtil.getAnimeEpisodeHistoryById(widget.animeId);
+    }).then((value) {
+      loadOk = true;
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,131 +45,101 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           color: Colors.black,
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          _displayAnimeName(),
-          const SizedBox(
-            height: 30,
-          ),
-          _displayEpisode(),
-        ],
-      ),
+      body: loadOk
+          ? Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                _displayAnimeName(),
+                const SizedBox(
+                  height: 30,
+                ),
+                _displayEpisode(),
+              ],
+            )
+          : _waitDataBody(),
     );
   }
 
+  _waitDataBody() {
+    return Container();
+  }
+
   _displayAnimeName() {
-    return FutureBuilder(
-      future: SqliteUtil.getAnimeByAnimeId(widget.animeId),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.hasError) {
-          debugPrint(snapshot.error.toString());
-          return const Icon(
-            Icons.error,
-            size: 80,
-          );
-        }
-        if (snapshot.hasData) {
-          anime = snapshot.data as Anime; // 设置获取的动漫
-          return Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(
-                width: 20,
+    return Row(
+      // mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: 20,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text(
+              anime.animeName,
+              style: const TextStyle(
+                fontSize: 20,
+                // Row溢出部分省略号...表示，需要外套Expanded
+                overflow: TextOverflow.ellipsis,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  child: Text(
-                    anime.animeName,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      // Row溢出部分省略号...表示，需要外套Expanded
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  _dialogUpdateAnime();
-                },
-                icon: const Icon(Icons.mode_edit_outline_outlined),
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-            ],
-          );
-        }
-        return const CircularProgressIndicator();
-        // return const Text("");
-      },
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            _dialogUpdateAnime();
+          },
+          icon: const Icon(Icons.mode_edit_outline_outlined),
+        ),
+        const SizedBox(
+          width: 15,
+        ),
+      ],
     );
   }
 
   _displayEpisode() {
-    return FutureBuilder(
-      future: SqliteUtil.getAnimeEpisodeHistoryById(widget.animeId),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.hasError) {
-          debugPrint(snapshot.error.toString());
-          return const Icon(
-            Icons.error,
-            size: 80,
-          );
-        }
-        if (snapshot.hasData) {
-          episodes = snapshot.data; // 设置获取的集状态
-          // for (var item in episodes) {
-          //   debugPrint(item.dateTime);
-          // }
-          List<Widget> list = [];
-          for (int i = 0; i < episodes.length; ++i) {
-            list.add(
-              ListTile(
-                onLongPress: () {},
-                title: Text("第 ${episodes[i].number} 集"),
-                subtitle: Text(episodes[i].getDate()),
-                trailing: IconButton(
-                  onPressed: () {
-                    if (episodes[i].isChecked()) {
-                      _dialogRemoveDate(
-                        episodes[i].number,
-                        episodes[i].dateTime,
-                      ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
-                    } else {
-                      SqliteUtil.insertHistoryItem(
-                        widget.animeId,
-                        episodes[i].number,
-                      );
-                      setState(() {});
-                    }
-                  },
-                  icon: episodes[i].isChecked()
-                      ? const Icon(
-                          // Icons.check_box_outlined,
-                          Icons.check_rounded,
-                          color: Colors.grey,
-                        )
-                      : const Icon(
-                          Icons.check_box_outline_blank_rounded,
-                          color: Colors.black,
-                        ),
-                ),
-              ),
-            );
-          }
-          return Expanded(
-              child: ListView(
-            children: list,
-          ));
-        }
-        return const CircularProgressIndicator();
-        // return const Text("");
-      },
+    List<Widget> list = [];
+    for (int i = 0; i < episodes.length; ++i) {
+      list.add(
+        ListTile(
+          onLongPress: () {},
+          title: Text("第 ${episodes[i].number} 集"),
+          subtitle: Text(episodes[i].getDate()),
+          trailing: IconButton(
+            onPressed: () {
+              if (episodes[i].isChecked()) {
+                _dialogRemoveDate(
+                  episodes[i].number,
+                  episodes[i].dateTime,
+                ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+              } else {
+                String date = DateTime.now().toString();
+                SqliteUtil.insertHistoryItem(
+                    widget.animeId, episodes[i].number, date);
+                episodes[i].dateTime = date;
+                setState(() {});
+              }
+            },
+            icon: episodes[i].isChecked()
+                ? const Icon(
+                    // Icons.check_box_outlined,
+                    Icons.check_rounded,
+                    color: Colors.grey,
+                  )
+                : const Icon(
+                    Icons.check_box_outline_blank_rounded,
+                    color: Colors.black,
+                  ),
+          ),
+        ),
+      );
+    }
+    return Expanded(
+      child: ListView(
+        children: list,
+      ),
     );
   }
 
@@ -166,17 +153,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                SqliteUtil.deleteHistoryItem(date);
-                setState(() {});
-                Navigator.pop(context); // bug：没有弹出
-              },
-              child: const Text('是'),
-            ),
-            TextButton(
-              onPressed: () {
                 Navigator.pop(context);
               },
               child: const Text('否'),
+            ),
+            TextButton(
+              onPressed: () {
+                SqliteUtil.deleteHistoryItem(
+                    date, widget.animeId, episodeNumber);
+                // 注意第1集是下标0
+                episodes[episodeNumber - 1].cancelDateTime();
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: const Text('是'),
             ),
           ],
         );

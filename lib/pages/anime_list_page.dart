@@ -21,7 +21,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   late TabController _tabController;
   String addDefaultTag = tags[0];
   List<int> animeCntPerTag = [];
-  late List<List<Anime>> animesInTag = [];
+  List<List<Anime>> animesInTag = [];
   bool loadOk = false;
 
   @override
