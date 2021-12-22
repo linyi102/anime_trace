@@ -75,7 +75,7 @@ class _TabsState extends State<Tabs> {
       ),
       body: _list[_currentIndex], // 原始方法
       // body: IndexedStack(
-      //   // 新方法，可以保持页面状态
+      //   // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
       //   index: _currentIndex,
       //   children: _list,
       // ),

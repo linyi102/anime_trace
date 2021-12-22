@@ -111,11 +111,16 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
           ),
           onTap: () {
-            Navigator.of(context).push(
+            Navigator.of(context)
+                .push(
               MaterialPageRoute(
                 builder: (context) => AnimeDetailPlus(history[i].animeId),
               ),
-            );
+            )
+                .then((value) {
+              // 从动漫详细页面返回的是Anime，因此无法添加，只能全部更新
+              setState(() {});
+            });
           },
         ),
       );
