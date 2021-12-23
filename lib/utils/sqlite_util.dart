@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -311,6 +312,7 @@ class SqliteUtil {
 
   static getAnimeCntPerTag() async {
     print("sql: getAnimeCntPerTag");
+
     var list = await _database.rawQuery('''
     select count(anime_id) as anime_cnt, tag.tag_name, tag.tag_order
     from tag left outer join anime -- sqlite只支持左外联结
@@ -330,51 +332,74 @@ class SqliteUtil {
   static Future<List<HistoryPlus>> getAllHistoryPlus() async {
     print("sql: getAllHistoryPlus");
 
+    String earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
+    if (earliestDate.isEmpty) {
+      var list = await _database.rawQuery('''
+      select min(date) min_date
+      from history;
+      ''');
+      earliestDate = list[0]['min_date'] as String;
+      SPUtil.setString("earliest_date", earliestDate);
+    }
+    print("最早日期为：$earliestDate");
+    DateTime earliestDateTime = DateTime.parse(earliestDate);
+    int earliestYear = earliestDateTime.year;
+    int earliestMonth = earliestDateTime.month;
+
     // 先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
     List<HistoryPlus> history = [];
-    int curMonth = DateTime.now().month;
-    for (int month = curMonth; month > 0; --month) {
-      String date;
-      if (month >= 10) {
-        date = "2021-$month";
-      } else {
-        date = "2021-0$month";
-      }
-      var list = await _database.rawQuery('''
-      select distinct anime.anime_id, anime.anime_name
-      from history, anime
-      where date like '$date%' and history.anime_id = anime.anime_id
-      order by date desc; -- 倒序
-      ''');
-      List<Anime> animes = [];
-      for (var item in list) {
-        animes.add(Anime(
-            animeId: item['anime_id'] as int,
-            animeName: item['anime_name'] as String,
-            animeEpisodeCnt: 0));
-      }
+    DateTime now = DateTime.now();
+    int curMonth = now.month;
+    int curYear = now.year;
+    for (int year = curYear; year >= earliestYear; --year) {
+      int month = curMonth;
+      int border = 1;
+      if (year != curYear) month = 12;
+      if (year == earliestYear) border = earliestMonth;
+      for (; month >= border; --month) {
+        String date;
+        if (month >= 10) {
+          date = "$year-$month";
+        } else {
+          date = "$year-0$month";
+        }
+        var list = await _database.rawQuery('''
+        select distinct anime.anime_id, anime.anime_name
+        from history, anime
+        where date like '$date%' and history.anime_id = anime.anime_id
+        order by date desc; -- 倒序
+        ''');
+        List<Anime> animes = [];
+        for (var item in list) {
+          animes.add(Anime(
+              animeId: item['anime_id'] as int,
+              animeName: item['anime_name'] as String,
+              animeEpisodeCnt: 0));
+        }
+        if (animes.isEmpty) continue; // 没有观看记录时直接跳过
 
-      List<Record> records = [];
-      // 对于每个动漫，找到当月观看的最小值的最大值
-      for (var anime in animes) {
-        // print(anime);
-        list = await _database.rawQuery('''
-        select min(episode_number) as start
-        from history
-        where date like '$date%' and anime_id = ${anime.animeId};
-        ''');
-        int startEpisodeNumber = list[0]['start'] as int;
-        list = await _database.rawQuery('''
-        select max(episode_number) as end
-        from history
-        where date like '$date%' and anime_id = ${anime.animeId};
-        ''');
-        int endEpisodeNumber = list[0]['end'] as int;
-        Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
-        // print(record);
-        records.add(record);
+        List<Record> records = [];
+        // 对于每个动漫，找到当月观看的最小值的最大值
+        for (var anime in animes) {
+          // print(anime);
+          list = await _database.rawQuery('''
+          select min(episode_number) as start
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId};
+          ''');
+          int startEpisodeNumber = list[0]['start'] as int;
+          list = await _database.rawQuery('''
+          select max(episode_number) as end
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId};
+          ''');
+          int endEpisodeNumber = list[0]['end'] as int;
+          Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
+          // print(record);
+          records.add(record);
+        }
+        history.add(HistoryPlus(date, records));
       }
-      history.add(HistoryPlus(date, records));
     }
     // for (var item in history) {
     //   print(item);
