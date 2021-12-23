@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/history.dart';
 import 'package:flutter_test_future/classes/episode.dart';
+import 'package:flutter_test_future/classes/history_plus.dart';
+import 'package:flutter_test_future/classes/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -25,7 +26,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    // await deleteDatabase(dbPath); // 删除数据库
+    await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
@@ -79,7 +80,7 @@ class SqliteUtil {
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
       values('拾', 0), ('途', 1), ('终', 2);
     ''');
-    for (int i = 0; i < 500; ++i) {
+    for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
       values('进击的巨人第一季', '24', '拾', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
@@ -89,7 +90,7 @@ class SqliteUtil {
           ('在下坂本，有何贵干？', '12', '终', '2021-12-06 20:23:22');
     ''');
     }
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
       insert into history(date, anime_id, episode_number)
       values('2021-12-15 20:17:58', 2, 1),
@@ -326,22 +327,58 @@ class SqliteUtil {
     return res;
   }
 
-  static Future<List<HistorySql>> getAllHistory() async {
-    print("sql: getAllHistory");
-    var list = await _database.rawQuery('''
-      select date, history.anime_id, anime_name, episode_number
-      from history inner join anime
-          on history.anime_id = anime.anime_id
+  static Future<List<HistoryPlus>> getAllHistoryPlus() async {
+    print("sql: getAllHistoryPlus");
+
+    // 先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
+    List<HistoryPlus> history = [];
+    int curMonth = DateTime.now().month;
+    for (int month = curMonth; month > 0; --month) {
+      String date;
+      if (month >= 10) {
+        date = "2021-$month";
+      } else {
+        date = "2021-0$month";
+      }
+      var list = await _database.rawQuery('''
+      select distinct anime.anime_id, anime.anime_name
+      from history, anime
+      where date like '$date%' and history.anime_id = anime.anime_id
       order by date desc; -- 倒序
       ''');
-    List<HistorySql> history = [];
-    for (var item in list) {
-      history.add(HistorySql(
-          date: item['date'] as String,
-          animeId: item['anime_id'] as int,
-          animeName: item['anime_name'] as String,
-          episodeNumber: item['episode_number'] as int));
+      List<Anime> animes = [];
+      for (var item in list) {
+        animes.add(Anime(
+            animeId: item['anime_id'] as int,
+            animeName: item['anime_name'] as String,
+            animeEpisodeCnt: 0));
+      }
+
+      List<Record> records = [];
+      // 对于每个动漫，找到当月观看的最小值的最大值
+      for (var anime in animes) {
+        // print(anime);
+        list = await _database.rawQuery('''
+        select min(episode_number) as start
+        from history
+        where date like '$date%' and anime_id = ${anime.animeId};
+        ''');
+        int startEpisodeNumber = list[0]['start'] as int;
+        list = await _database.rawQuery('''
+        select max(episode_number) as end
+        from history
+        where date like '$date%' and anime_id = ${anime.animeId};
+        ''');
+        int endEpisodeNumber = list[0]['end'] as int;
+        Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
+        // print(record);
+        records.add(record);
+      }
+      history.add(HistoryPlus(date, records));
     }
+    // for (var item in history) {
+    //   print(item);
+    // }
     return history;
   }
 }

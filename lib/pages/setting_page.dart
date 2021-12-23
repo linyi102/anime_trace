@@ -44,7 +44,7 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
       children: [
         // ListTile(
         //   title: const Text("创建备份"),

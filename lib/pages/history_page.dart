@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/history_plus.dart';
+import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/classes/history.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -11,7 +12,7 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  List<HistorySql> history = [];
+  List<HistoryPlus> historyPlus = [];
   bool _loadOk = false;
   int _pageIndex = 1;
   final int _pageSize = 100;
@@ -23,106 +24,83 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   _loadData() async {
-    debugPrint("加载数据");
+    debugPrint("历史页面：加载数据");
     Future(() async {
-      return await SqliteUtil.getAllHistory();
+      return await SqliteUtil.getAllHistoryPlus();
     }).then((value) {
-      debugPrint("加载完成");
-      history = value;
+      debugPrint("历史页面：加载完成");
+      historyPlus = value;
+      _loadOk = true;
       setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      thickness: 5,
-      radius: const Radius.circular(10),
-      child: RefreshIndicator(
-        // 下拉刷新
-        onRefresh: () async {
-          setState(() {});
-        },
-        child: _getChild(),
-      ),
-    );
+    return !_loadOk
+        ? Container(
+            color: const Color.fromRGBO(250, 250, 250, 1),
+          )
+        : Scrollbar(
+            thickness: 5,
+            radius: const Radius.circular(10),
+            child: RefreshIndicator(
+              // 下拉刷新
+              onRefresh: () async {
+                Future(() async {
+                  return await SqliteUtil.getAllHistoryPlus();
+                }).then((value) {
+                  debugPrint("加载完成");
+                  historyPlus = value;
+                  setState(() {});
+                });
+              },
+              child: _getChildPlus(),
+            ),
+          );
   }
 
-  Widget _getChild() {
-    Map<String, List<HistorySql>> map = {}; // 不能作为全局，否则r重载后，会在原来基础上再次添加
-
-    for (int i = 0; i < history.length; ++i) {
-      String ymd = history[i].getDate();
-      // debugPrint("ymd=$ymd");
-      if (!map.containsKey(ymd)) {
-        // 必须要先为List<>创建空间，才能添加元素
-        // 必须要先判断是否包含key，否则会清空之前刚添加的数据
-        map[ymd] = [];
-      }
-      map[ymd]!.add(history[i]);
-    }
-
+  Widget _getChildPlus() {
     List<Widget> listWidget = [];
-    map.forEach((key, value) {
+    for (int i = 0; i < historyPlus.length; ++i) {
       listWidget.add(
-        Column(
-          children: [
-            ListTile(
-              title: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: Text(
-                  key,
-                  // style: Theme.of(context).textTheme.headline6,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    // fontSize: 15,
-                  ),
-                ),
-              ),
-              subtitle: Column(
-                children: _getDayHistoryList(value),
-              ),
-            ),
-            // const Divider(),
-          ],
+        ListTile(
+          contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+          title: ListTile(
+            title: Text(historyPlus[i].date),
+          ),
+          subtitle: Column(
+            children: _getColumn(i),
+          ),
         ),
       );
-    });
+      listWidget.add(const Divider());
+    }
     return Container(
       color: const Color.fromRGBO(250, 250, 250, 1),
-      child: ListView.builder(
-        itemCount: listWidget.length,
-        itemBuilder: (BuildContext context, int index) {
-          return listWidget[index];
-        },
+      child: ListView(
+        children: listWidget,
       ),
     );
   }
 
-  List<Widget> _getDayHistoryList(List<HistorySql> history) {
-    List<Widget> list = [];
-    for (int i = 0; i < history.length; ++i) {
-      list.add(
+  List<Widget> _getColumn(int index) {
+    List<Widget> listWidget = [];
+    List<Record> records = historyPlus[index].records;
+    for (var record in records) {
+      listWidget.add(
         ListTile(
           title: Text(
-            history[i].animeName,
-            style: const TextStyle(
-              fontSize: 15,
-              overflow: TextOverflow.ellipsis,
-            ),
+            record.anime.animeName,
+            overflow: TextOverflow.ellipsis,
           ),
-          trailing: Text(
-            "第 ${history[i].episodeNumber} 集",
-            style: const TextStyle(
-              fontSize: 15,
-            ),
-          ),
+          trailing:
+              Text("${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
           onTap: () {
             Navigator.of(context)
                 .push(
               MaterialPageRoute(
-                builder: (context) => AnimeDetailPlus(history[i].animeId),
+                builder: (context) => AnimeDetailPlus(record.anime.animeId),
               ),
             )
                 .then((value) {
@@ -133,6 +111,6 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       );
     }
-    return list;
+    return listWidget;
   }
 }

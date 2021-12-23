@@ -18,14 +18,13 @@ class AnimeListPage extends StatefulWidget {
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   String addDefaultTag = tags[0];
   List<int> _animeCntPerTag = [];
   List<List<Anime>> animesInTag = [];
 
   bool _loadOk = false;
   int _pageIndex = 1;
-  final int _pageSize = 100;
+  final int _pageSize = 50;
 
   @override
   void initState() {
@@ -33,6 +32,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     for (int i = 0; i < tags.length; ++i) {
       animesInTag.add([]); // 先添加元素List，然后才能用下标访问
     }
+
     _loadData();
     // 顶部tab控制器
     _tabController = TabController(
@@ -81,16 +81,16 @@ class _AnimeListPageState extends State<AnimeListPage>
           thickness: 5,
           radius: const Radius.circular(10),
           child: ListView.builder(
-            // itemCount: animesInTag[i].length,
-            itemCount: _animeCntPerTag[i], // 假装先有这么多
+            itemCount: animesInTag[i].length,
+            // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
             itemBuilder: (BuildContext context, int index) {
               // debugPrint("index=$index");
               // 直接使用index会导致重复请求
               // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
               // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
               // 当到达100(50*2)时，会再次请求50个数据
-              if (index + 30 == _pageSize * (_pageIndex)) {
-                // +30提前请求
+              if (index + 10 == _pageSize * (_pageIndex)) {
+                // +10提前请求
                 _pageIndex++;
                 debugPrint("再次请求$_pageSize个数据");
                 Future(() {

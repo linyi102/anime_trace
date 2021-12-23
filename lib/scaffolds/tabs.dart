@@ -73,12 +73,12 @@ class _TabsState extends State<Tabs> {
         backgroundColor: Colors.white,
         actions: actions[_currentIndex],
       ),
-      body: _list[_currentIndex], // 原始方法
-      // body: IndexedStack(
-      //   // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
-      //   index: _currentIndex,
-      //   children: _list,
-      // ),
+      // body: _list[_currentIndex], // 原始方法
+      body: IndexedStack(
+        // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
+        index: _currentIndex,
+        children: _list,
+      ),
 
       // bottomNavigationBar: SalomonBottomBar(
       //   currentIndex: _currentIndex,
@@ -112,6 +112,7 @@ class _TabsState extends State<Tabs> {
       // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        elevation: 0,
         backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
         onTap: (int index) {
           setState(() {
