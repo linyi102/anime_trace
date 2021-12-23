@@ -283,33 +283,6 @@ class SqliteUtil {
     return list[0]["cnt"] as int;
   }
 
-  static Future<List<Anime>> getAllAnime() async {
-    print("sql: getAllAnime");
-
-    var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt
-    from anime
-    '''); // 按anime_id倒序，保证最新添加的动漫在最上面
-
-    List<Anime> res = [];
-    for (var element in list) {
-      var checkedEpisodeCntList = await _database.rawQuery('''
-      select count(anime.anime_id) cnt
-      from anime inner join history
-          on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
-      ''');
-      int checkedEpisodeCnt = checkedEpisodeCntList[0]["cnt"] as int;
-
-      res.add(Anime(
-        animeId: element['anime_id'] as int, // 进入详细页面后需要该id
-        animeName: element['anime_name'] as String,
-        animeEpisodeCnt: element['anime_episode_cnt'] as int,
-        checkedEpisodeCnt: checkedEpisodeCnt,
-      ));
-    }
-    return res;
-  }
-
   static Future<List<Anime>> getAnimesBySearch(String keyWord) async {
     print("sql: getAnimesBySearch");
 

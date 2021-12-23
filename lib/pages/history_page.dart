@@ -61,31 +61,31 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Widget _getChildPlus() {
-    List<Widget> listWidget = [];
     // if (historyPlus.isEmpty) {
     //   return ListView(
     //     // 必须是ListView，不然向下滑不会有刷新
     //     children: const [],
     //   );
     // }
-    for (int i = 0; i < historyPlus.length; ++i) {
-      listWidget.add(
-        ListTile(
-          contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-          title: ListTile(
-            title: Text(historyPlus[i].date),
-          ),
-          subtitle: Column(
-            children: _getColumn(i),
-          ),
-        ),
-      );
-      listWidget.add(const Divider());
-    }
     return Container(
       color: const Color.fromRGBO(250, 250, 250, 1),
-      child: ListView(
-        children: listWidget,
+      child: ListView.separated(
+        itemCount: historyPlus.length,
+        itemBuilder: (BuildContext context, int index) {
+          // debugPrint("$index");
+          return ListTile(
+            contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+            title: ListTile(
+              title: Text(historyPlus[index].date),
+            ),
+            subtitle: Column(
+              children: _getColumn(index),
+            ),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider();
+        },
       ),
     );
   }

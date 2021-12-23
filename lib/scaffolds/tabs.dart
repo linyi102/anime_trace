@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:flutter_test_future/scaffolds/search.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:search_page/search_page.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -38,37 +35,6 @@ class _TabsState extends State<Tabs> {
               builder: (context) => const Search(),
             ),
           );
-          // List<Anime> animes = [];
-          // // animes = await SqliteUtil.getAllAnime();
-          // Future.delayed(const Duration(seconds: 3), () {
-          //   Future(() async {
-          //     return await SqliteUtil.getAllAnime();
-          //   }).then((value) {
-          //     animes = value;
-          //     showSearch(
-          //       context: context,
-          //       delegate: SearchPage<Anime>(
-          //         items: animes,
-          //         searchLabel: " Search",
-          //         barTheme: ThemeData(
-          //             appBarTheme: const AppBarTheme(
-          //               backgroundColor: Colors.white,
-          //               shadowColor: Colors.transparent,
-          //               iconTheme: IconThemeData(color: Colors.black),
-          //             ),
-          //             textSelectionTheme: const TextSelectionThemeData(
-          //                 cursorColor: Colors.black)),
-          //         builder: (anime) => AnimeItem(anime),
-          //         failure: const Center(
-          //           child: Text('No anime found :('),
-          //         ),
-          //         filter: (anime) => [
-          //           anime.animeName,
-          //         ],
-          //       ),
-          //     );
-          //   });
-          // });
         },
         icon: const Icon(Icons.search_outlined),
         color: Colors.black,
