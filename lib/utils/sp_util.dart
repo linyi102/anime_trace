@@ -21,6 +21,14 @@ class SPUtil {
     return _sharedPreferences.getString(key) ?? defaultValue;
   }
 
+  static Future<bool> setInt(String key, int value) {
+    return _sharedPreferences.setInt(key, value);
+  }
+
+  static int getInt(String key, {int defaultValue = 0}) {
+    return _sharedPreferences.getInt(key) ?? defaultValue;
+  }
+
   static Future<bool> setBool(String key, bool value) {
     return _sharedPreferences.setBool(key, value);
   }

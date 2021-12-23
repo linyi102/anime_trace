@@ -14,10 +14,10 @@ class AnimeDetailPlus extends StatefulWidget {
 }
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
-  late Anime anime;
-  List<Episode> episodes = [];
-  bool loadOk = false;
-  late String modifiedTagName; // 用于记录临时切换的标签，点击确认后才会更新anime的标签
+  late Anime _anime;
+  List<Episode> _episodes = [];
+  bool _loadOk = false;
+  late String _modifiedTagName; // 用于记录临时切换的标签，点击确认后才会更新anime的标签
 
   @override
   void initState() {
@@ -30,12 +30,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       return await SqliteUtil.getAnimeByAnimeId(
           widget.animeId); // 一定要return，value才有值
     }).then((value) async {
-      anime = value;
-      modifiedTagName = anime.tagName;
+      _anime = value;
+      _modifiedTagName = _anime.tagName;
       debugPrint(value.toString());
-      episodes = await SqliteUtil.getAnimeEpisodeHistoryById(anime);
+      _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
     }).then((value) {
-      loadOk = true;
+      _loadOk = true;
       setState(() {});
     });
   }
@@ -45,10 +45,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return WillPopScope(
       onWillPop: () async {
         debugPrint("按返回键，返回anime");
-        for (var episode in episodes) {
-          if (episode.isChecked()) anime.checkedEpisodeCnt++; // 用于传回
+        for (var episode in _episodes) {
+          if (episode.isChecked()) _anime.checkedEpisodeCnt++; // 用于传回
         }
-        Navigator.pop(context, anime);
+        Navigator.pop(context, _anime);
         debugPrint("返回true");
         return true;
       },
@@ -63,11 +63,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           leading: IconButton(
               onPressed: () {
                 debugPrint("按返回按钮，返回anime");
-                Navigator.pop(context, anime);
+                Navigator.pop(context, _anime);
               },
               icon: const Icon(Icons.arrow_back_rounded)),
         ),
-        body: loadOk
+        body: _loadOk
             ? Column(
                 children: [
                   const SizedBox(
@@ -100,7 +100,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
             child: Text(
-              anime.animeName,
+              _anime.animeName,
               style: const TextStyle(
                 fontSize: 20,
                 // Row溢出部分省略号...表示，需要外套Expanded
@@ -124,28 +124,28 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayEpisode() {
     List<Widget> list = [];
-    for (int i = 0; i < episodes.length; ++i) {
+    for (int i = 0; i < _episodes.length; ++i) {
       list.add(
         ListTile(
           onLongPress: () {},
-          title: Text("第 ${episodes[i].number} 集"),
-          subtitle: Text(episodes[i].getDate()),
+          title: Text("第 ${_episodes[i].number} 集"),
+          subtitle: Text(_episodes[i].getDate()),
           trailing: IconButton(
             onPressed: () {
-              if (episodes[i].isChecked()) {
+              if (_episodes[i].isChecked()) {
                 _dialogRemoveDate(
-                  episodes[i].number,
-                  episodes[i].dateTime,
+                  _episodes[i].number,
+                  _episodes[i].dateTime,
                 ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
               } else {
                 String date = DateTime.now().toString();
                 SqliteUtil.insertHistoryItem(
-                    widget.animeId, episodes[i].number, date);
-                episodes[i].dateTime = date;
+                    widget.animeId, _episodes[i].number, date);
+                _episodes[i].dateTime = date;
                 setState(() {});
               }
             },
-            icon: episodes[i].isChecked()
+            icon: _episodes[i].isChecked()
                 ? const Icon(
                     // Icons.check_box_outlined,
                     Icons.check_rounded,
@@ -185,7 +185,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 SqliteUtil.deleteHistoryItem(
                     date, widget.animeId, episodeNumber);
                 // 注意第1集是下标0
-                episodes[episodeNumber - 1].cancelDateTime();
+                _episodes[episodeNumber - 1].cancelDateTime();
                 setState(() {});
                 Navigator.pop(context);
               },
@@ -212,7 +212,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: Column(
                 children: [
                   TextField(
-                    controller: inputNameController..text = anime.animeName,
+                    controller: inputNameController..text = _anime.animeName,
                     decoration: const InputDecoration(
                       labelText: "动漫名称",
                       border: InputBorder.none,
@@ -223,7 +223,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                     controller: inputEndEpisodeController
-                      ..text = "${anime.animeEpisodeCnt}",
+                      ..text = "${_anime.animeEpisodeCnt}",
                     decoration: const InputDecoration(
                       labelText: "动漫集数",
                       border: InputBorder.none,
@@ -243,7 +243,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   color: Colors.blue,
                 ),
                 label: Text(
-                  modifiedTagName,
+                  _modifiedTagName,
                   style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 16,
@@ -262,25 +262,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
                   Anime newAnime = Anime(
-                      animeId: anime.animeId,
+                      animeId: _anime.animeId,
                       animeName: name,
                       animeEpisodeCnt: endEpisode,
-                      tagName: modifiedTagName,
-                      checkedEpisodeCnt: anime.checkedEpisodeCnt);
-                  SqliteUtil.updateAnime(anime, newAnime); // 因为切换标签后
+                      tagName: _modifiedTagName,
+                      checkedEpisodeCnt: _anime.checkedEpisodeCnt);
+                  SqliteUtil.updateAnime(_anime, newAnime); // 因为切换标签后
 
-                  if (anime.animeEpisodeCnt != endEpisode) {
-                    anime = newAnime; // 先判断，再检查
+                  if (_anime.animeEpisodeCnt != endEpisode) {
+                    _anime = newAnime; // 先判断，再检查
                     Future(() async {
                       // 获取新的集数
-                      return SqliteUtil.getAnimeEpisodeHistoryById(anime);
+                      return SqliteUtil.getAnimeEpisodeHistoryById(_anime);
                     }).then((value) {
-                      episodes = value;
+                      _episodes = value;
                       // 然后更新页面
                       setState(() {});
                     });
                   } else {
-                    anime = newAnime;
+                    _anime = newAnime;
                     // 只是更新了名字，也需要更新页面
                     setState(() {});
                   }
@@ -306,7 +306,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           radioList.add(
             ListTile(
               title: Text(tags[i]),
-              leading: tags[i] == modifiedTagName
+              leading: tags[i] == _modifiedTagName
                   ? const Icon(
                       Icons.radio_button_on_outlined,
                       color: Colors.blue,
@@ -315,7 +315,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       Icons.radio_button_off_outlined,
                     ),
               onTap: () {
-                modifiedTagName = tags[i];
+                _modifiedTagName = tags[i];
                 setTagStateOnAddAnime(() {});
                 Navigator.pop(context);
               },

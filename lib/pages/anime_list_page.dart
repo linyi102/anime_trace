@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
-
-int lastTopTabIndex = 0;
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -19,10 +18,14 @@ class AnimeListPage extends StatefulWidget {
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   String addDefaultTag = tags[0];
-  List<int> animeCntPerTag = [];
+  List<int> _animeCntPerTag = [];
   List<List<Anime>> animesInTag = [];
-  bool loadOk = false;
+
+  bool _loadOk = false;
+  int _pageIndex = 1;
+  final int _pageSize = 100;
 
   @override
   void initState() {
@@ -33,14 +36,16 @@ class _AnimeListPageState extends State<AnimeListPage>
     _loadData();
     // 顶部tab控制器
     _tabController = TabController(
-      initialIndex: lastTopTabIndex, // 设置初始index
+      initialIndex:
+          SPUtil.getInt("last_top_tab_index", defaultValue: 0), // 设置初始index
       length: tags.length,
       vsync: this,
     );
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
       if (_tabController.index == _tabController.animation!.value) {
-        lastTopTabIndex = _tabController.index;
+        // lastTopTabIndex = _tabController.index;
+        SPUtil.setInt("last_top_tab_index", _tabController.index);
         addDefaultTag = tags[_tabController.index]; // 切换顶层tab后，默认添加动漫标签为当前tab标签
       }
     });
@@ -49,14 +54,15 @@ class _AnimeListPageState extends State<AnimeListPage>
   _loadData() async {
     debugPrint("开始加载数据");
     Future(() async {
-      print(tags);
-      animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
+      _animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
       for (int i = 0; i < tags.length; ++i) {
-        animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(tags[i]);
+        animesInTag[i] =
+            await SqliteUtil.getAllAnimeBytagName(tags[i], 0, _pageSize);
+        // debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
       }
     }).then((value) {
       debugPrint("数据加载完毕");
-      loadOk = true; // 放这里啊，之前干嘛放外面...
+      _loadOk = true; // 放这里啊，之前干嘛放外面...
       setState(() {}); // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
     });
   }
@@ -71,58 +77,82 @@ class _AnimeListPageState extends State<AnimeListPage>
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
       list.add(
-        ListView.builder(
-          itemCount: animesInTag[i].length,
-          itemBuilder: (BuildContext context, int index) {
-            // debugPrint("$index");
-            // return AnimeItem(animesInTag[i][index]);
-            Anime anime = animesInTag[i][index];
-            return ListTile(
-              title: Text(
-                anime.animeName,
-                style: const TextStyle(
-                  fontSize: 15,
-                  // fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-              ),
-              trailing: Text(
-                "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.black,
-                  // fontWeight: FontWeight.w400,
-                ),
-              ),
-              onTap: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                  builder: (context) => AnimeDetailPlus(anime.animeId),
-                ))
-                    .then((value) {
-                  debugPrint(value.toString());
-                  // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
-                  Anime newAnime = value;
-                  // 如果更换了标签，则还要移动到相应的标签
-                  if (anime.tagName != newAnime.tagName) {
-                    print("${anime.tagName}, ${newAnime.tagName}");
-                    print("old: ${anime.toString()}");
-                    int newTagIndex = tags.indexOf(newAnime.tagName);
-                    animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
-                    animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
-                    // 还要改变标签的数量
-                    animeCntPerTag[i]--;
-                    animeCntPerTag[newTagIndex]++;
-                    print("移动了标签");
-                  } else {
-                    animesInTag[i][index] = newAnime;
-                  }
+        Scrollbar(
+          thickness: 5,
+          radius: const Radius.circular(10),
+          child: ListView.builder(
+            // itemCount: animesInTag[i].length,
+            itemCount: _animeCntPerTag[i], // 假装先有这么多
+            itemBuilder: (BuildContext context, int index) {
+              // debugPrint("index=$index");
+              // 直接使用index会导致重复请求
+              // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
+              // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
+              // 当到达100(50*2)时，会再次请求50个数据
+              if (index + 30 == _pageSize * (_pageIndex)) {
+                // +30提前请求
+                _pageIndex++;
+                debugPrint("再次请求$_pageSize个数据");
+                Future(() {
+                  return SqliteUtil.getAllAnimeBytagName(
+                      tags[i], animesInTag[i].length, _pageSize);
+                }).then((value) {
+                  debugPrint("请求结束");
+                  animesInTag[i].addAll(value);
+                  debugPrint("添加并更新状态");
                   setState(() {});
                 });
-              },
-              onLongPress: () {},
-            );
-          },
+              }
+              // debugPrint("$index");
+              // return AnimeItem(animesInTag[i][index]);
+              Anime anime = animesInTag[i][index];
+              return ListTile(
+                title: Text(
+                  anime.animeName,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    // fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+                ),
+                trailing: Text(
+                  "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    // fontWeight: FontWeight.w400,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                    builder: (context) => AnimeDetailPlus(anime.animeId),
+                  ))
+                      .then((value) {
+                    debugPrint(value.toString());
+                    // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
+                    Anime newAnime = value;
+                    // 如果更换了标签，则还要移动到相应的标签
+                    if (anime.tagName != newAnime.tagName) {
+                      // debugPrint("${anime.tagName}, ${newAnime.tagName}");
+                      // debugPrint("old: ${anime.toString()}");
+                      int newTagIndex = tags.indexOf(newAnime.tagName);
+                      animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
+                      animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
+                      // 还要改变标签的数量
+                      _animeCntPerTag[i]--;
+                      _animeCntPerTag[newTagIndex]++;
+                      // debugPrint("移动了标签");
+                    } else {
+                      animesInTag[i][index] = newAnime;
+                    }
+                    setState(() {});
+                  });
+                },
+                onLongPress: () {},
+              );
+            },
+          ),
         ),
       );
     }
@@ -131,9 +161,10 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: loadOk
-          ? AppBar(
+    return !_loadOk
+        ? _waitDataScaffold()
+        : Scaffold(
+            appBar: AppBar(
               toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
               backgroundColor: Colors.white,
               shadowColor: Colors.transparent,
@@ -151,40 +182,44 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
                 controller: _tabController,
               ),
-            )
-          : _waitDataAppBar(),
-      body: Container(
-        color: const Color.fromRGBO(250, 250, 250, 1),
-        child: TabBarView(
-          controller: _tabController,
-          // children: _getAnimeList(),
-          children: _getAnimesPlus(),
-          // children: loadOk ? _getAnimesPlus() : _waitDataPage(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _dialogAddAnime();
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
+            ),
+            body: Container(
+              color: const Color.fromRGBO(250, 250, 250, 1),
+              child: TabBarView(
+                controller: _tabController,
+                // children: _getAnimeList(),
+                children: _getAnimesPlus(),
+                // children: loadOk ? _getAnimesPlus() : _waitDataPage(),
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                _dialogAddAnime();
+              },
+              child: const Icon(Icons.add),
+            ),
+          );
   }
 
-  AppBar _waitDataAppBar() {
-    return AppBar(
-      toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-      backgroundColor: Colors.white,
-      shadowColor: Colors.transparent,
-      // bottom: TabBar(
-      //   tabs: const [],
-      //   indicatorWeight: 3,
-      //   controller: TabController(
-      //     initialIndex: 0, // 设置初始index
-      //     length: 1,
-      //     vsync: this,
-      //   ),
-      // ),
+  Scaffold _waitDataScaffold() {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
+        backgroundColor: Colors.white,
+        shadowColor: Colors.transparent,
+        // bottom: TabBar(
+        //   tabs: const [],
+        //   indicatorWeight: 3,
+        //   controller: TabController(
+        //     initialIndex: 0, // 设置初始index
+        //     length: 1,
+        //     vsync: this,
+        //   ),
+        // ),
+      ),
+      body: const Center(
+          // child: CircularProgressIndicator(),
+          ),
     );
   }
 
@@ -328,7 +363,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             height: 10,
           ),
           Text(
-            "${tags[i]}-${animeCntPerTag[i]}",
+            "${tags[i]}-${_animeCntPerTag[i]}",
             // style: const TextStyle(fontFamily: "hm"),
           ),
           const SizedBox(

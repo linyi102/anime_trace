@@ -11,6 +11,28 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  List<HistorySql> history = [];
+  bool _loadOk = false;
+  int _pageIndex = 1;
+  final int _pageSize = 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    debugPrint("加载数据");
+    Future(() async {
+      return await SqliteUtil.getAllHistory();
+    }).then((value) {
+      debugPrint("加载完成");
+      history = value;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
@@ -21,73 +43,59 @@ class _HistoryPageState extends State<HistoryPage> {
         onRefresh: () async {
           setState(() {});
         },
-        child: FutureBuilder(
-          future: SqliteUtil.getAllHistory(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            // 有错误时显示
-            if (snapshot.hasError) {
-              return Text(snapshot.hasError.toString());
-            }
-            // 有数据时显示
-            if (snapshot.hasData) {
-              List<HistorySql> history = [];
+        child: _getChild(),
+      ),
+    );
+  }
 
-              history = snapshot.data;
-              Map<String, List<HistorySql>> map =
-                  {}; // 不能作为全局，否则r重载后，会在原来基础上再次添加
+  Widget _getChild() {
+    Map<String, List<HistorySql>> map = {}; // 不能作为全局，否则r重载后，会在原来基础上再次添加
 
-              for (int i = 0; i < history.length; ++i) {
-                String ymd = history[i].getDate();
-                // debugPrint("ymd=$ymd");
-                if (!map.containsKey(ymd)) {
-                  // 必须要先为List<>创建空间，才能添加元素
-                  // 必须要先判断是否包含key，否则会清空之前刚添加的数据
-                  map[ymd] = [];
-                }
-                map[ymd]!.add(history[i]);
-              }
+    for (int i = 0; i < history.length; ++i) {
+      String ymd = history[i].getDate();
+      // debugPrint("ymd=$ymd");
+      if (!map.containsKey(ymd)) {
+        // 必须要先为List<>创建空间，才能添加元素
+        // 必须要先判断是否包含key，否则会清空之前刚添加的数据
+        map[ymd] = [];
+      }
+      map[ymd]!.add(history[i]);
+    }
 
-              List<Widget> listWidget = [];
-              map.forEach((key, value) {
-                listWidget.add(
-                  Column(
-                    children: [
-                      ListTile(
-                        title: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          child: Text(
-                            key,
-                            // style: Theme.of(context).textTheme.headline6,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                              // fontSize: 15,
-                            ),
-                          ),
-                        ),
-                        subtitle: Column(
-                          children: _getDayHistoryList(value),
-                        ),
-                      ),
-                      // const Divider(),
-                    ],
+    List<Widget> listWidget = [];
+    map.forEach((key, value) {
+      listWidget.add(
+        Column(
+          children: [
+            ListTile(
+              title: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Text(
+                  key,
+                  // style: Theme.of(context).textTheme.headline6,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    // fontSize: 15,
                   ),
-                );
-              });
-              return Container(
-                color: const Color.fromRGBO(250, 250, 250, 1),
-                child: ListView.builder(
-                  itemCount: listWidget.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return listWidget[index];
-                  },
                 ),
-              );
-            }
-            // 加载时显示
-            return const Text("");
-          },
+              ),
+              subtitle: Column(
+                children: _getDayHistoryList(value),
+              ),
+            ),
+            // const Divider(),
+          ],
         ),
+      );
+    });
+    return Container(
+      color: const Color.fromRGBO(250, 250, 250, 1),
+      child: ListView.builder(
+        itemCount: listWidget.length,
+        itemBuilder: (BuildContext context, int index) {
+          return listWidget[index];
+        },
       ),
     );
   }

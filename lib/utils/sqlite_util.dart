@@ -25,7 +25,7 @@ class SqliteUtil {
     // String path = "${await getDatabasesPath()}/$sqlFileName";
 
     print("👉path=$dbPath");
-    await deleteDatabase(dbPath); // 删除数据库
+    // await deleteDatabase(dbPath); // 删除数据库
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
@@ -79,7 +79,7 @@ class SqliteUtil {
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
       values('拾', 0), ('途', 1), ('终', 2);
     ''');
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 500; ++i) {
       await db.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
       values('进击的巨人第一季', '24', '拾', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
@@ -89,7 +89,8 @@ class SqliteUtil {
           ('在下坂本，有何贵干？', '12', '终', '2021-12-06 20:23:22');
     ''');
     }
-    await db.rawInsert('''
+    for (int i = 0; i < 20; ++i) {
+      await db.rawInsert('''
       insert into history(date, anime_id, episode_number)
       values('2021-12-15 20:17:58', 2, 1),
           ('2021-12-15 20:23:22', 2, 3),
@@ -98,6 +99,7 @@ class SqliteUtil {
           ('2021-11-07 13:13:13', 3, 1),
           ('2021-10-07 12:12:12', 5, 2);
     ''');
+    }
   }
 
   static void updateAnime(Anime oldAnime, Anime newAnime) async {
@@ -275,15 +277,15 @@ class SqliteUtil {
     return list[0]["cnt"] as int;
   }
 
-  static getAllAnimeBytagName(String tagName) async {
+  static getAllAnimeBytagName(String tagName, int offset, int number) async {
     print("sql: getAllAnimeBytagName");
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt, tag_name
     from anime
     where tag_name = '$tagName'
-    order by last_mode_tag_time desc; -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
-    // limit 100 offset 0;
+    order by last_mode_tag_time desc -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
+    limit $number offset $offset;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
     List<Anime> res = [];
