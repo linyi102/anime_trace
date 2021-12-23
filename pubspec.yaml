@@ -46,9 +46,12 @@ dependencies:
   #   * What went wrong:
   # Execution failed for task ':connectivity:compileDebugJavaWithJavac'.
   # > Compilation failed; see the compiler error output for details.
-  flutter_search_bar: ^2.1.0
+  # flutter_search_bar: ^2.1.0
   # search_page: ^2.0.0+1
   salomon_bottom_bar: ^3.2.0
+  # animations: ^2.0.2
+  proste_route_animation: ^2.0.2
+  scroll_bottom_navigation_bar: ^4.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

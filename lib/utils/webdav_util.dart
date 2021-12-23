@@ -60,7 +60,7 @@ class WebDavUtil {
     );
   }
 
-  static Future<String> backupData() async {
+  static Future<String> backupData(bool auto) async {
     // 先判断是否有animetrace目录，没有则创建
     String backupDir = "/animetrace";
     var list = await client.readDir('/');
@@ -78,8 +78,14 @@ class WebDavUtil {
     DateTime dateTime = DateTime.now();
     String time =
         "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-    String remotePath = '$backupDir/animetrace_$time.db';
 
+    if (auto) {
+      backupDir += "/automatic";
+      if (!existBackupDir) {
+        await client.mkdir(backupDir);
+      }
+    }
+    String remotePath = '$backupDir/animetrace_$time.db';
     upload(SqliteUtil.dbPath, remotePath);
     print("备份成功：$remotePath");
     // 更新最后一次备份的时间

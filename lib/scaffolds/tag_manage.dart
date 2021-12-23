@@ -23,11 +23,6 @@ class _TagManageState extends State<TagManage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
         actions: [
           IconButton(
               onPressed: () {

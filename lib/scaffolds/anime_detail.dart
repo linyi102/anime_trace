@@ -55,11 +55,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       child: Scaffold(
         // backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          shadowColor: Colors.transparent,
-          iconTheme: const IconThemeData(
-            color: Colors.black,
-          ),
           leading: IconButton(
               onPressed: () {
                 debugPrint("按返回按钮，返回anime");

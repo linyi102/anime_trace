@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           // 距离上次备份超过1天，则进行备份
           // if (now.difference(dateTime).inSeconds >= 10) {
           if (now.difference(dateTime).inDays >= 1) {
-            WebDavUtil.backupData();
+            WebDavUtil.backupData(true);
           }
         }
       }
@@ -62,11 +62,23 @@ class _MyAppState extends State<MyApp> {
     return OKToast(
       child: MaterialApp(
         title: '漫迹', // 后台应用显示名称
+        home: const MyHome(),
         theme: ThemeData(
           primarySwatch: Colors.blue,
           // fontFamily: 'hm',
+          appBarTheme: const AppBarTheme(
+            shadowColor: Colors.transparent,
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(
+              color: Colors.black,
+            ),
+          ),
+          // pageTransitionsTheme: const PageTransitionsTheme(
+          //   builders: <TargetPlatform, PageTransitionsBuilder>{
+          //     TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          //   },
+          // ),
         ),
-        home: const MyHome(),
       ),
     );
   }
@@ -80,6 +92,5 @@ class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Tabs();
-    // return const TestSQL();
   }
 }

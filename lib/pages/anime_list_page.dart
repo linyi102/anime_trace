@@ -7,6 +7,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
+import 'package:proste_route_animation/proste_route_animation.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -124,11 +125,26 @@ class _AnimeListPageState extends State<AnimeListPage>
                   ),
                 ),
                 onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(
-                    builder: (context) => AnimeDetailPlus(anime.animeId),
-                  ))
-                      .then((value) {
+                  // Navigator.push(
+                  //     context,
+                  //     ProsteRouteAnimation.sizeRoute(
+                  //       route: AnimeDetailPlus(anime.animeId),
+                  //       alignment: Alignment.center,
+                  //       duration: Duration(milliseconds: 300),
+                  //       reverseDuration: Duration(milliseconds: 300),
+                  //       useFade: true,
+                  //       axis: Axis.vertical,
+                  //       curve: Curves.linear,
+                  //     ));
+
+                  Navigator.push(
+                      context,
+                      ProsteRouteAnimation.fadeRoute(
+                        route: AnimeDetailPlus(anime.animeId),
+                        duration: const Duration(milliseconds: 0),
+                        reverseDuration: const Duration(milliseconds: 0),
+                        curve: Curves.linear,
+                      )).then((value) {
                     debugPrint(value.toString());
                     // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
                     Anime newAnime = value;
@@ -148,6 +164,31 @@ class _AnimeListPageState extends State<AnimeListPage>
                     }
                     setState(() {});
                   });
+
+                  // Navigator.of(context)
+                  //     .push(MaterialPageRoute(
+                  //   builder: (context) => AnimeDetailPlus(anime.animeId),
+                  // ))
+                  //     .then((value) {
+                  //   debugPrint(value.toString());
+                  //   // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
+                  //   Anime newAnime = value;
+                  //   // 如果更换了标签，则还要移动到相应的标签
+                  //   if (anime.tagName != newAnime.tagName) {
+                  //     // debugPrint("${anime.tagName}, ${newAnime.tagName}");
+                  //     // debugPrint("old: ${anime.toString()}");
+                  //     int newTagIndex = tags.indexOf(newAnime.tagName);
+                  //     animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
+                  //     animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
+                  //     // 还要改变标签的数量
+                  //     _animeCntPerTag[i]--;
+                  //     _animeCntPerTag[newTagIndex]++;
+                  //     // debugPrint("移动了标签");
+                  //   } else {
+                  //     animesInTag[i][index] = newAnime;
+                  //   }
+                  //   setState(() {});
+                  // });
                 },
                 onLongPress: () {},
               );
@@ -166,8 +207,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         : Scaffold(
             appBar: AppBar(
               toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-              backgroundColor: Colors.white,
-              shadowColor: Colors.transparent,
               bottom: TabBar(
                 isScrollable: true, // 标签可以滑动，避免拥挤
                 unselectedLabelColor: Colors.black54,
@@ -205,8 +244,6 @@ class _AnimeListPageState extends State<AnimeListPage>
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-        backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
         // bottom: TabBar(
         //   tabs: const [],
         //   indicatorWeight: 3,
@@ -298,6 +335,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   int tagIndex = tags.indexOf(addDefaultTag);
                   // 必须要得到在anime表中新插入的动漫的id，然后再添加到animesInTag[tagIndex]中，否则添加完后就无法根据id进入详细页面
                   newAnime.animeId = await SqliteUtil.getAnimeLastId();
+                  _animeCntPerTag[tagIndex]++; // 增加标签的显示数量
                   animesInTag[tagIndex].insert(0, newAnime);
                   setState(() {});
                   // 改变状态
@@ -408,12 +446,17 @@ class _AnimeItemState extends State<AnimeItem> {
         ),
       ),
       onTap: () {
+        // Navigator.of(context)
+        //     .push(RouteFade(AnimeDetailPlus(widget.anime.animeId)))
+        //     .then((value) {
+        //   debugPrint(value.toString());
+        //   setState(() {
+        //     widget.anime = value;
+        //   });
+        // });
         Navigator.of(context)
-            .push(
-          MaterialPageRoute(
-            builder: (context) => AnimeDetailPlus(widget.anime.animeId),
-          ),
-        )
+            .push(MaterialPageRoute(
+                builder: (context) => AnimeDetailPlus(widget.anime.animeId)))
             .then((value) {
           debugPrint(value.toString());
           setState(() {

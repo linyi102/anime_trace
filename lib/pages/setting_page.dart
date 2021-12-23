@@ -137,7 +137,7 @@ class _SettingPageState extends State<SettingPage> {
               showToast("请先配置账号，再进行备份！");
               return;
             }
-            String remotePath = await WebDavUtil.backupData();
+            String remotePath = await WebDavUtil.backupData(false);
             showToast("备份成功: $remotePath");
           },
         ),
@@ -162,7 +162,7 @@ class _SettingPageState extends State<SettingPage> {
             } else {
               SPUtil.setBool("auto_backup", true);
               // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
-              WebDavUtil.backupData();
+              WebDavUtil.backupData(true);
               autoBackupState = "开启";
             }
             setState(() {});

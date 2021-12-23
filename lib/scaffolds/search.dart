@@ -28,11 +28,6 @@ class _SearchState extends State<Search> {
     return Scaffold(
       // backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
         title: TextField(
           autofocus: true, // 自动弹出键盘
           controller: inputController,
