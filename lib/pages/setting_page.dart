@@ -143,7 +143,13 @@ class _SettingPageState extends State<SettingPage> {
         ),
         ListTile(
           title: const Text("自动备份"),
-          subtitle: Text(autoBackupState),
+          subtitle: const Text("每天会自动进行备份"),
+          trailing: SPUtil.getBool("auto_backup")
+              ? const Icon(
+                  Icons.toggle_on,
+                  color: Colors.blue,
+                )
+              : const Icon(Icons.toggle_off),
           onTap: () async {
             if (!SPUtil.getBool("login")) {
               showToast("请先配置账号，再进行备份！");

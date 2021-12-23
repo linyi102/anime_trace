@@ -37,31 +37,37 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return !_loadOk
-        ? Container(
-            color: const Color.fromRGBO(250, 250, 250, 1),
-          )
-        : Scrollbar(
-            thickness: 5,
-            radius: const Radius.circular(10),
-            child: RefreshIndicator(
-              // 下拉刷新
-              onRefresh: () async {
-                Future(() async {
-                  return await SqliteUtil.getAllHistoryPlus();
-                }).then((value) {
-                  debugPrint("加载完成");
-                  historyPlus = value;
-                  setState(() {});
-                });
-              },
-              child: _getChildPlus(),
-            ),
-          );
+    return Scrollbar(
+      thickness: 5,
+      radius: const Radius.circular(10),
+      child: RefreshIndicator(
+        // 下拉刷新
+        onRefresh: () async {
+          Future(() async {
+            return await SqliteUtil.getAllHistoryPlus();
+          }).then((value) {
+            debugPrint("加载完成");
+            historyPlus = value;
+            setState(() {});
+          });
+        },
+        child: !_loadOk
+            ? Container(
+                color: const Color.fromRGBO(250, 250, 250, 1),
+              )
+            : _getChildPlus(),
+      ),
+    );
   }
 
   Widget _getChildPlus() {
     List<Widget> listWidget = [];
+    // if (historyPlus.isEmpty) {
+    //   return ListView(
+    //     // 必须是ListView，不然向下滑不会有刷新
+    //     children: const [],
+    //   );
+    // }
     for (int i = 0; i < historyPlus.length; ++i) {
       listWidget.add(
         ListTile(
@@ -104,8 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
             )
                 .then((value) {
-              // 从动漫详细页面返回的是Anime，因此无法添加，只能全部更新
-              setState(() {});
+              _loadData();
             });
           },
         ),

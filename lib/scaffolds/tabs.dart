@@ -3,9 +3,9 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:flutter_test_future/scaffolds/search.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:search_page/search_page.dart';
-
-late List<Anime> animes;
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -32,28 +32,44 @@ class _TabsState extends State<Tabs> {
     }
     actions[0].add(
       IconButton(
-        onPressed: () => showSearch(
-          context: context,
-          delegate: SearchPage<Anime>(
-            items: animes,
-            searchLabel: " Search",
-            barTheme: ThemeData(
-                appBarTheme: const AppBarTheme(
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.transparent,
-                  iconTheme: IconThemeData(color: Colors.black),
-                ),
-                textSelectionTheme:
-                    const TextSelectionThemeData(cursorColor: Colors.black)),
-            builder: (anime) => AnimeItem(anime),
-            failure: const Center(
-              child: Text('No anime found :('),
+        onPressed: () async {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const Search(),
             ),
-            filter: (anime) => [
-              anime.animeName,
-            ],
-          ),
-        ),
+          );
+          // List<Anime> animes = [];
+          // // animes = await SqliteUtil.getAllAnime();
+          // Future.delayed(const Duration(seconds: 3), () {
+          //   Future(() async {
+          //     return await SqliteUtil.getAllAnime();
+          //   }).then((value) {
+          //     animes = value;
+          //     showSearch(
+          //       context: context,
+          //       delegate: SearchPage<Anime>(
+          //         items: animes,
+          //         searchLabel: " Search",
+          //         barTheme: ThemeData(
+          //             appBarTheme: const AppBarTheme(
+          //               backgroundColor: Colors.white,
+          //               shadowColor: Colors.transparent,
+          //               iconTheme: IconThemeData(color: Colors.black),
+          //             ),
+          //             textSelectionTheme: const TextSelectionThemeData(
+          //                 cursorColor: Colors.black)),
+          //         builder: (anime) => AnimeItem(anime),
+          //         failure: const Center(
+          //           child: Text('No anime found :('),
+          //         ),
+          //         filter: (anime) => [
+          //           anime.animeName,
+          //         ],
+          //       ),
+          //     );
+          //   });
+          // });
+        },
         icon: const Icon(Icons.search_outlined),
         color: Colors.black,
       ),
@@ -73,12 +89,12 @@ class _TabsState extends State<Tabs> {
         backgroundColor: Colors.white,
         actions: actions[_currentIndex],
       ),
-      // body: _list[_currentIndex], // 原始方法
-      body: IndexedStack(
-        // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
-        index: _currentIndex,
-        children: _list,
-      ),
+      body: _list[_currentIndex], // 原始方法
+      // body: IndexedStack(
+      //   // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
+      //   index: _currentIndex,
+      //   children: _list,
+      // ),
 
       // bottomNavigationBar: SalomonBottomBar(
       //   currentIndex: _currentIndex,

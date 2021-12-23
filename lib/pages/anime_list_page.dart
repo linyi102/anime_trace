@@ -363,7 +363,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             height: 10,
           ),
           Text(
-            "${tags[i]}-${_animeCntPerTag[i]}",
+            "${tags[i]} (${_animeCntPerTag[i]})",
             // style: const TextStyle(fontFamily: "hm"),
           ),
           const SizedBox(

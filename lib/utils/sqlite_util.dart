@@ -31,8 +31,9 @@ class SqliteUtil {
     return await openDatabase(
       dbPath,
       onCreate: (Database db, int version) {
-        _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
-        _insertInitData(db);
+        Future(() {
+          _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
+        }).then((value) => _insertInitData(db));
       },
       version: 1, // onCreate must be null if no version is specified
     );
@@ -73,22 +74,25 @@ class SqliteUtil {
           REFERENCES anime (anime_id) 
       );
       ''');
+    await db.execute('''
+      CREATE INDEX index_anime_name ON anime (anime_name);
+      '''); // 不知道为啥放在创建history语句前就会导致history表还没创建就插入数据，从而导致错误
   }
 
   static void _insertInitData(Database db) async {
     await db.rawInsert('''
       insert into tag(tag_name, tag_order)
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
-      values('拾', 0), ('途', 1), ('终', 2);
+      values('收集', 0), ('旅途', 1), ('终点', 2);
     ''');
     for (int i = 0; i < 1; ++i) {
       await db.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-      values('进击的巨人第一季', '24', '拾', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
-          ('JOJO的奇妙冒险第六季 石之海', '12', '拾', '2021-12-09 20:23:22'),
-          ('刀剑神域第一季', '24', '拾', '2021-12-08 20:23:22'),
-          ('进击的巨人第二季', '12', '拾', '2021-12-07 20:23:22'),
-          ('在下坂本，有何贵干？', '12', '终', '2021-12-06 20:23:22');
+      values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
+          ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
+          ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
+          ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
+          ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
     ''');
     }
     for (int i = 0; i < 1; ++i) {
@@ -279,6 +283,61 @@ class SqliteUtil {
     return list[0]["cnt"] as int;
   }
 
+  static Future<List<Anime>> getAllAnime() async {
+    print("sql: getAllAnime");
+
+    var list = await _database.rawQuery('''
+    select anime_id, anime_name, anime_episode_cnt
+    from anime
+    '''); // 按anime_id倒序，保证最新添加的动漫在最上面
+
+    List<Anime> res = [];
+    for (var element in list) {
+      var checkedEpisodeCntList = await _database.rawQuery('''
+      select count(anime.anime_id) cnt
+      from anime inner join history
+          on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
+      ''');
+      int checkedEpisodeCnt = checkedEpisodeCntList[0]["cnt"] as int;
+
+      res.add(Anime(
+        animeId: element['anime_id'] as int, // 进入详细页面后需要该id
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        checkedEpisodeCnt: checkedEpisodeCnt,
+      ));
+    }
+    return res;
+  }
+
+  static Future<List<Anime>> getAnimesBySearch(String keyWord) async {
+    print("sql: getAnimesBySearch");
+
+    var list = await _database.rawQuery('''
+    select anime_id, anime_name, anime_episode_cnt
+    from anime
+    where anime_name LIKE '%$keyWord%';
+    ''');
+
+    List<Anime> res = [];
+    for (var element in list) {
+      var checkedEpisodeCntList = await _database.rawQuery('''
+      select count(anime.anime_id) cnt
+      from anime inner join history
+          on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
+      ''');
+      int checkedEpisodeCnt = checkedEpisodeCntList[0]["cnt"] as int;
+
+      res.add(Anime(
+        animeId: element['anime_id'] as int, // 进入详细页面后需要该id
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        checkedEpisodeCnt: checkedEpisodeCnt,
+      ));
+    }
+    return res;
+  }
+
   static getAllAnimeBytagName(String tagName, int offset, int number) async {
     print("sql: getAllAnimeBytagName");
 
@@ -331,16 +390,17 @@ class SqliteUtil {
 
   static Future<List<HistoryPlus>> getAllHistoryPlus() async {
     print("sql: getAllHistoryPlus");
-
-    String earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
-    if (earliestDate.isEmpty) {
-      var list = await _database.rawQuery('''
+    String earliestDate;
+    // earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
+    // if (earliestDate.isEmpty) {
+    var list = await _database.rawQuery('''
       select min(date) min_date
       from history;
       ''');
-      earliestDate = list[0]['min_date'] as String;
-      SPUtil.setString("earliest_date", earliestDate);
-    }
+    if (list[0]['min_date'] == null) return []; // 还没有历史，直接返回，否则强制转为String会报错
+    earliestDate = list[0]['min_date'] as String;
+    //   SPUtil.setString("earliest_date", earliestDate);
+    // }
     print("最早日期为：$earliestDate");
     DateTime earliestDateTime = DateTime.parse(earliestDate);
     int earliestYear = earliestDateTime.year;
