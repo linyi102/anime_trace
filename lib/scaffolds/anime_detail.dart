@@ -58,6 +58,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           leading: IconButton(
               onPressed: () {
                 debugPrint("按返回按钮，返回anime");
+                for (var episode in _episodes) {
+                  if (episode.isChecked()) _anime.checkedEpisodeCnt++; // 用于传回
+                }
                 Navigator.pop(context, _anime);
               },
               icon: const Icon(Icons.arrow_back_rounded)),

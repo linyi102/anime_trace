@@ -68,6 +68,7 @@ class _MyAppState extends State<MyApp> {
           // fontFamily: 'hm',
           appBarTheme: const AppBarTheme(
             shadowColor: Colors.transparent,
+            elevation: 0,
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(
               color: Colors.black,
