@@ -84,12 +84,12 @@ class WebDavUtil {
       if (!existBackupDir) {
         await client.mkdir(backupDir);
       }
+      // 更新最后一次自动备份的时间
+      SPUtil.setString("last_time_backup", dateTime.toString());
     }
     String remotePath = '$backupDir/animetrace_$time.db';
     upload(SqliteUtil.dbPath, remotePath);
     print("备份成功：$remotePath");
-    // 更新最后一次备份的时间
-    SPUtil.setString("last_time_backup", dateTime.toString());
     return remotePath;
   }
 }
