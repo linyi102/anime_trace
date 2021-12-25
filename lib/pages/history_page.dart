@@ -90,7 +90,10 @@ class _HistoryPageState extends State<HistoryPage> {
           aspectRatio: 4.5 / 1,
           child: Card(
             elevation: 0,
-            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
+            clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+            color: const Color.fromRGBO(0, 118, 243, 0.1),
             margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
             child: Row(
               children: [
@@ -111,6 +114,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       icon: const Icon(
                         Icons.chevron_left_rounded,
                         size: 20,
+                        color: Colors.blueGrey,
                       )),
                 ),
                 Expanded(
@@ -120,8 +124,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       },
                       child: Text(
                         "$curYear",
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.blueGrey),
                       )),
                 ),
                 Expanded(
@@ -141,6 +145,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       icon: const Icon(
                         Icons.chevron_right_rounded,
                         size: 20,
+                        color: Colors.blueGrey,
                       )),
                 ),
               ],
