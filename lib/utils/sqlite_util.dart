@@ -172,6 +172,15 @@ class SqliteUtil {
     ''');
   }
 
+  static void updateEpisodeCntByAnimeId(int animeId, int episodeCnt) async {
+    print("sql: updateEpisodeCntByAnimeId");
+    await _database.rawUpdate('''
+    update anime
+    set anime_episode_cnt = $episodeCnt
+    where anime_id = $animeId;
+    ''');
+  }
+
   static void insertAnime(Anime anime) async {
     print("sql: insertAnime");
     String datetime = DateTime.now().toString();
@@ -200,12 +209,12 @@ class SqliteUtil {
     ''');
   }
 
-  static void deleteHistoryItem(
-      String? date, int animeId, int episodeNumber) async {
-    print("sql: deleteHistoryItem");
+  static void deleteHistoryItemByAnimeIdAndEpisodeNumber(
+      int animeId, int episodeNumber) async {
+    print("sql: deleteHistoryItemByAnimeIdAndEpisodeNumber");
     await _database.rawDelete('''
     delete from history
-    where date = '$date' and anime_id = $animeId and episode_number = $episodeNumber;
+    where anime_id = $animeId and episode_number = $episodeNumber;
     ''');
   }
 

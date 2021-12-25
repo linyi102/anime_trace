@@ -315,9 +315,9 @@ class _AnimeListPageState extends State<AnimeListPage>
         //   ),
         // ),
       ),
-      body: const Center(
-          // child: CircularProgressIndicator(),
-          ),
+      body: Container(
+        color: Colors.white,
+      ),
     );
   }
 

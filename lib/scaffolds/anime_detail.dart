@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
+import 'package:oktoast/oktoast.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
@@ -71,13 +74,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 Navigator.pop(context, _anime);
               },
               icon: const Icon(Icons.arrow_back_rounded)),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  _dialogRemoveAnime();
-                },
-                icon: const Icon(Icons.delete)),
-          ],
           title: !_loadOk
               ? Container()
               : ListTile(
@@ -94,6 +90,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     _dialogSelectTag(context);
                   },
                 ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _dialogUpdateEpisodeCnt();
+                },
+                icon: const Icon(Icons.add)),
+            IconButton(
+                onPressed: () {
+                  _dialogDeleteAnime();
+                },
+                icon: const Icon(Icons.delete)),
+          ],
         ),
         body: _loadOk
             ? ListView(
@@ -104,8 +112,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     height: 10,
                   ),
                   const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
-                    child: Divider(),
+                    padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+                    child: Divider(
+                      thickness: 1,
+                    ),
                   ),
                   _displayEpisode(),
                 ],
@@ -160,7 +170,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           hintText: "描述",
           border: InputBorder.none,
         ),
-        style: const TextStyle(height: 1.5),
+        style: const TextStyle(height: 1.5, fontSize: 16),
         onChanged: (value) {
           _anime.animeDesc = value;
         },
@@ -272,8 +282,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ),
             TextButton(
               onPressed: () {
-                SqliteUtil.deleteHistoryItem(
-                    date, widget.animeId, episodeNumber);
+                SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
+                    _anime.animeId, episodeNumber);
                 // 注意第1集是下标0
                 _episodes[episodeNumber - 1].cancelDateTime();
                 setState(() {});
@@ -328,13 +338,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _dialogRemoveAnime() {
+  _dialogDeleteAnime() {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('警告！'),
-            content: const Text('确认删除该动漫吗？'),
+            title: const Text("警告！"),
+            content: const Text("确认删除该动漫吗？"),
             actions: [
               TextButton(
                   onPressed: () {
@@ -353,6 +363,68 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     "确认",
                     style: TextStyle(color: Colors.red),
                   )),
+            ],
+          );
+        });
+  }
+
+  _dialogUpdateEpisodeCnt() {
+    var episodeCntTextEditingController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("修改动漫集数"),
+            content: TextField(
+              autofocus: true,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // 数字，只能是整数
+              ],
+              controller: episodeCntTextEditingController
+                ..text = _anime.animeEpisodeCnt.toString(),
+              decoration: const InputDecoration(
+                  border: InputBorder.none, labelText: "动漫集数"),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("取消")),
+              TextButton(
+                  onPressed: () {
+                    String content = episodeCntTextEditingController.text;
+                    if (content.isEmpty) {
+                      showToast("集数不能为空！");
+                      return;
+                    }
+                    int episodeCnt = int.parse(content);
+                    SqliteUtil.updateEpisodeCntByAnimeId(
+                        _anime.animeId, episodeCnt);
+
+                    setState(() {
+                      _anime.animeEpisodeCnt = episodeCnt;
+                      // 少了就删除，多了就添加
+                      var len = _episodes
+                          .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
+                      if (len > episodeCnt) {
+                        for (int i = 0; i < len - episodeCnt; ++i) {
+                          // 还应该删除history表里的记录，否则会误判完成过的集数
+                          SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
+                              _anime.animeId, _episodes.last.number);
+                          // 注意顺序
+                          _episodes.removeLast();
+                        }
+                      } else {
+                        int number = _episodes.last.number;
+                        for (int i = 0; i < episodeCnt - len; ++i) {
+                          _episodes.add(Episode(number + i + 1));
+                        }
+                      }
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: const Text("确认")),
             ],
           );
         });
