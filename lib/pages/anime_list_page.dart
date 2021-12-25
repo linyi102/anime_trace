@@ -111,7 +111,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 Anime anime = animesInTag[i][index];
                 return Container(
                   color: mapSelected.containsKey(index)
-                      ? Colors.blue.shade200
+                      ? const Color.fromRGBO(0, 118, 243, 0.1)
                       : Colors.white,
                   child: ListTile(
                     // 不管用
@@ -138,7 +138,11 @@ class _AnimeListPageState extends State<AnimeListPage>
                     onTap: () {
                       // 多选
                       if (multiSelected) {
-                        mapSelected[index] = true;
+                        if (mapSelected.containsKey(index)) {
+                          mapSelected.remove(index); // 选过，再选就会取消s
+                        } else {
+                          mapSelected[index] = true;
+                        }
                         setState(() {});
                         return;
                       }
@@ -184,31 +188,66 @@ class _AnimeListPageState extends State<AnimeListPage>
                 : Container(
                     alignment: Alignment.bottomCenter,
                     child: Card(
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15))), // 圆角
+                      clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+                      color: const Color.fromRGBO(0, 118, 243, 0.1),
                       margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
                       child: Row(
                         // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
                             child: IconButton(
-                                onPressed: () {
-                                  _dialogModifyTag(tags[i]);
-                                },
-                                icon: const Icon(Icons.label_outline_rounded)),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.delete_outline_rounded)),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                onPressed: () {
-                                  multiSelected = false;
-                                  // 记得清空选择的动漫
+                              onPressed: () {
+                                // i就是当前标签的索引
+                                if (mapSelected.length ==
+                                    animesInTag[i].length) {
+                                  // 全选了，点击则会取消全选
                                   mapSelected.clear();
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.exit_to_app_outlined)),
+                                } else {
+                                  // 其他情况下，全选
+                                  for (int j = 0;
+                                      j < animesInTag[i].length;
+                                      ++j) {
+                                    mapSelected[j] = true;
+                                  }
+                                }
+
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.select_all_rounded),
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              onPressed: () {
+                                _dialogModifyTag(tags[i]);
+                              },
+                              icon: const Icon(Icons.label_outline_rounded),
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                          // Expanded(
+                          //   child: IconButton(
+                          //     onPressed: () {},
+                          //     icon: const Icon(Icons.delete_outline_rounded),
+                          //     color: Colors.blueAccent,
+                          //   ),
+                          // ),
+                          Expanded(
+                            child: IconButton(
+                              onPressed: () {
+                                multiSelected = false;
+                                // 记得清空选择的动漫
+                                mapSelected.clear();
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.exit_to_app_outlined),
+                              color: Colors.blueAccent,
+                            ),
                           ),
                         ],
                       ),

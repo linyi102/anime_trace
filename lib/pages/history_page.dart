@@ -65,91 +65,99 @@ class _HistoryPageState extends State<HistoryPage> {
     return Stack(children: [
       Container(
         color: Colors.white,
-        child: ListView.separated(
-          itemCount: yearHistory[curYear]!.length,
-          itemBuilder: (BuildContext context, int index) {
-            // debugPrint("$index");
-            return ListTile(
-              contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              title: ListTile(
-                title: Text(yearHistory[curYear]![index].date),
+        child: yearHistory[curYear]!.isEmpty
+            ? const Center(
+                child: Text(
+                  "暂无相关记录",
+                  style: TextStyle(fontSize: 18),
+                ),
+              )
+            : ListView.separated(
+                itemCount: yearHistory[curYear]!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  // debugPrint("$index");
+                  return ListTile(
+                    contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    title: ListTile(
+                      title: Text(yearHistory[curYear]![index].date),
+                    ),
+                    subtitle: Column(
+                      children: _getRecord(index),
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
               ),
-              subtitle: Column(
-                children: _getRecord(index),
-              ),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return const Divider();
-          },
-        ),
       ),
       Container(
         alignment: Alignment.bottomCenter,
-        child: AspectRatio(
-          aspectRatio: 4.5 / 1,
-          child: Card(
-            elevation: 0,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
-            clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-            color: const Color.fromRGBO(0, 118, 243, 0.1),
-            margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: IconButton(
-                      onPressed: () {
-                        curYear--;
-                        // 没有加载过，才去查询数据库
-                        if (!yearLoadOk.containsKey(curYear)) {
-                          debugPrint("之前未查询过$curYear年，现查询");
-                          _loadData(curYear);
-                        } else {
-                          // 加载过，直接更新状态
-                          debugPrint("查询过$curYear年，直接更新状态");
-                          setState(() {});
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.chevron_left_rounded,
-                        size: 20,
-                        color: Colors.blueGrey,
-                      )),
-                ),
-                Expanded(
-                  child: TextButton(
-                      onPressed: () {
-                        _dialogSelectYear();
-                      },
-                      child: Text(
-                        "$curYear",
-                        style: const TextStyle(
-                            fontSize: 18, color: Colors.blueGrey),
-                      )),
-                ),
-                Expanded(
-                  child: IconButton(
-                      onPressed: () {
-                        curYear++;
-                        // 没有加载过，才去查询数据库
-                        if (!yearLoadOk.containsKey(curYear)) {
-                          debugPrint("之前未查询过$curYear年，现查询");
-                          _loadData(curYear);
-                        } else {
-                          // 加载过，直接更新状态
-                          debugPrint("查询过$curYear年，直接更新状态");
-                          setState(() {});
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.chevron_right_rounded,
-                        size: 20,
-                        color: Colors.blueGrey,
-                      )),
-                ),
-              ],
-            ),
+        child: Card(
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
+          clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+          color: const Color.fromRGBO(0, 118, 243, 0.1),
+          margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: IconButton(
+                    onPressed: () {
+                      curYear--;
+                      // 没有加载过，才去查询数据库
+                      if (!yearLoadOk.containsKey(curYear)) {
+                        debugPrint("之前未查询过$curYear年，现查询");
+                        _loadData(curYear);
+                      } else {
+                        // 加载过，直接更新状态
+                        debugPrint("查询过$curYear年，直接更新状态");
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.chevron_left_rounded,
+                      size: 20,
+                      color: Colors.blueAccent,
+                    )),
+              ),
+              Expanded(
+                child: TextButton(
+                    onPressed: () {
+                      _dialogSelectYear();
+                    },
+                    child: Text(
+                      "$curYear",
+                      style: const TextStyle(
+                          fontSize: 18, color: Colors.blueAccent),
+                    )),
+              ),
+              Expanded(
+                child: IconButton(
+                    onPressed: () {
+                      if (curYear + 1 > DateTime.now().year + 2) {
+                        showToast("前面的区域，以后再来探索吧！");
+                        return;
+                      }
+                      curYear++;
+                      // 没有加载过，才去查询数据库
+                      if (!yearLoadOk.containsKey(curYear)) {
+                        debugPrint("之前未查询过$curYear年，现查询");
+                        _loadData(curYear);
+                      } else {
+                        // 加载过，直接更新状态
+                        debugPrint("查询过$curYear年，直接更新状态");
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
+                      color: Colors.blueAccent,
+                    )),
+              ),
+            ],
           ),
         ),
       ),
@@ -235,6 +243,10 @@ class _HistoryPageState extends State<HistoryPage> {
                         String content = yearTextEditingController.text;
                         if (content.isEmpty) {
                           showToast("年份不能为空！");
+                          return;
+                        }
+                        if (tmpYear > DateTime.now().year + 2) {
+                          showToast("前面的区域以后再来探索吧！");
                           return;
                         }
                         curYear = int.parse(content);
