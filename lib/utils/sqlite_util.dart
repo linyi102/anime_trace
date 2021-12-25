@@ -40,12 +40,20 @@ class SqliteUtil {
   }
 
   static void _createInitTable(Database db) async {
+    // await db.execute('''
+    //   CREATE TABLE tag (
+    //       tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    //       tag_name  TEXT    NOT NULL,
+    //       tag_order INTEGER
+    //       -- UNIQUE(tag_name)
+    //   );
+    //   ''');
+    // 新增
     await db.execute('''
       CREATE TABLE tag (
-          tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-          tag_name  TEXT    NOT NULL,
+          -- tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+          tag_name  TEXT    PRIMARY KEY NOT NULL,
           tag_order INTEGER
-          -- UNIQUE(tag_name)
       );
       ''');
     await db.execute('''
@@ -77,6 +85,10 @@ class SqliteUtil {
     await db.execute('''
       CREATE INDEX index_anime_name ON anime (anime_name);
       '''); // 不知道为啥放在创建history语句前就会导致history表还没创建就插入数据，从而导致错误
+    // 新增
+    await db.execute('''
+      CREATE INDEX index_date ON history (date);
+      ''');
   }
 
   static void _insertInitData(Database db) async {
@@ -87,23 +99,23 @@ class SqliteUtil {
     ''');
     // for (int i = 0; i < 1; ++i) {
     //   await db.rawInsert('''
-    //   insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-    //   values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
-    //       ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
-    //       ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
-    //       ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
-    //       ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
+    // insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
+    // values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
+    //     ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
+    //     ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
+    //     ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
+    //     ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
     // ''');
     // }
     // for (int i = 0; i < 1; ++i) {
     //   await db.rawInsert('''
-    //   insert into history(date, anime_id, episode_number)
-    //   values('2021-12-15 20:17:58', 2, 1),
-    //       ('2021-12-15 20:23:22', 2, 3),
-    //       ('2020-06-24 15:20:12', 1, 1),
-    //       ('2021-12-04 14:11:27', 4, 2),
-    //       ('2021-11-07 13:13:13', 3, 1),
-    //       ('2021-10-07 12:12:12', 5, 2);
+    // insert into history(date, anime_id, episode_number)
+    // values('2021-12-15 20:17:58', 2, 1),
+    //     ('2021-12-15 20:23:22', 2, 3),
+    //     ('2020-06-24 15:20:12', 1, 1),
+    //     ('2021-12-04 14:11:27', 4, 2),
+    //     ('2021-11-07 13:13:13', 3, 1),
+    //     ('2021-10-07 12:12:12', 5, 2);
     // ''');
     // }
   }
@@ -131,6 +143,33 @@ class SqliteUtil {
       where anime_id = ${oldAnime.animeId};
       ''');
     }
+  }
+
+  static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
+    print("sql: updateAnimeNameByAnimeId");
+    await _database.rawUpdate('''
+    update anime
+    set anime_name = '$newAnimeName'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateTagNameByAnimeId(int animeId, String newTagName) async {
+    print("sql: updateTagNameByAnimeId");
+    await _database.rawUpdate('''
+    update anime
+    set tag_name = '$newTagName'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateDescByAnimeId(int animeId, String desc) async {
+    print("sql: updateDescByAnimeId");
+    await _database.rawUpdate('''
+    update anime
+    set anime_desc = '$desc'
+    where anime_id = $animeId;
+    ''');
   }
 
   static void insertAnime(Anime anime) async {
@@ -216,7 +255,7 @@ class SqliteUtil {
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
     print("sql: getAnimeByAnimeId");
     var list = await _database.rawQuery('''
-    select anime_name, anime_episode_cnt, tag_name
+    select anime_name, anime_episode_cnt, tag_name, anime_desc
     from anime
     where anime_id = $animeId;
     ''');
@@ -224,6 +263,7 @@ class SqliteUtil {
         animeId: animeId,
         animeName: list[0]['anime_name'] as String,
         animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
+        animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
         tagName: list[0]['tag_name'] as String);
     return anime;
   }

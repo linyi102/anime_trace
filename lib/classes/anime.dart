@@ -3,6 +3,7 @@ class Anime {
   String animeName;
   int animeEpisodeCnt;
   String tagName;
+  String animeDesc;
 
   int checkedEpisodeCnt;
 
@@ -11,7 +12,8 @@ class Anime {
       required this.animeName,
       required this.animeEpisodeCnt,
       this.tagName = "",
-      this.checkedEpisodeCnt = 0});
+      this.checkedEpisodeCnt = 0,
+      this.animeDesc = ""});
 
   @override
   String toString() {
