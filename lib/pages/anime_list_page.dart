@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
@@ -19,6 +20,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   String addDefaultTag = tags[0];
   List<int> _animeCntPerTag = [];
   List<List<Anime>> animesInTag = [];
+  Map<int, bool> mapSelected = {};
 
   bool _loadOk = false;
   int _pageIndex = 1;
@@ -108,10 +110,14 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // return AnimeItem(animesInTag[i][index]);
                 Anime anime = animesInTag[i][index];
                 return Container(
-                  // color: itemIsSelected
-                  //     ? const Color.fromRGBO(226, 235, 252, 1)
-                  //     : Colors.white,
+                  color: mapSelected.containsKey(index)
+                      ? Colors.blue.shade200
+                      : Colors.white,
                   child: ListTile(
+                    // 不管用
+                    // tileColor: isSelected.containsKey(index)
+                    //     ? Colors.grey
+                    //     : Colors.white,
                     visualDensity: const VisualDensity(vertical: -1),
                     title: Text(
                       anime.animeName,
@@ -130,7 +136,13 @@ class _AnimeListPageState extends State<AnimeListPage>
                       ),
                     ),
                     onTap: () {
-                      if (multiSelected) {}
+                      // 多选
+                      if (multiSelected) {
+                        mapSelected[index] = true;
+                        setState(() {});
+                        return;
+                      }
+                      // 非多选
                       Navigator.of(context)
                           .push(MaterialPageRoute(
                         builder: (context) => AnimeDetailPlus(anime.animeId),
@@ -159,6 +171,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     },
                     onLongPress: () {
                       multiSelected = true;
+                      mapSelected[index] = true;
                       setState(() {}); // 添加操作按钮
                     },
                   ),
@@ -177,7 +190,9 @@ class _AnimeListPageState extends State<AnimeListPage>
                         children: [
                           Expanded(
                             child: IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  _dialogModifyTag(tags[i]);
+                                },
                                 icon: const Icon(Icons.label_outline_rounded)),
                           ),
                           Expanded(
@@ -189,6 +204,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                             child: IconButton(
                                 onPressed: () {
                                   multiSelected = false;
+                                  // 记得清空选择的动漫
+                                  mapSelected.clear();
                                   setState(() {});
                                 },
                                 icon: const Icon(Icons.exit_to_app_outlined)),
@@ -403,6 +420,82 @@ class _AnimeListPageState extends State<AnimeListPage>
               onTap: () {
                 addDefaultTag = tags[i];
                 setTagStateOnAddAnime(() {});
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+        return AlertDialog(
+          title: const Text('选择标签'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: radioList,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _dialogModifyTag(String defaultTagName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        List<Widget> radioList = [];
+        for (int i = 0; i < tags.length; ++i) {
+          radioList.add(
+            ListTile(
+              title: Text(tags[i]),
+              leading: tags[i] == defaultTagName
+                  ? const Icon(
+                      Icons.radio_button_on_outlined,
+                      color: Colors.blue,
+                    )
+                  : const Icon(
+                      Icons.radio_button_off_outlined,
+                    ),
+              onTap: () {
+                // 先找到原来标签对应的下标
+                int oldTagindex = tags.indexOf(defaultTagName);
+                int newTagindex = i;
+                String newTagName = tags[newTagindex];
+                // 删除元素后，后面的元素也会向前移动
+                // 注意：map的key不是有序的，所以必须先转为有序的，否则先移动后面，在移动前面的元素就会出错(因为-j了)
+                List<int> list = [];
+                mapSelected.forEach((key, value) {
+                  list.add(key);
+                });
+                mergeSort(list); // 排序
+                // for (var item in list) {
+                //   debugPrint(item.toString());
+                // }
+
+                int j = 0;
+                for (int m = 0; m < list.length; ++m) {
+                  int pos = list[m] - j;
+
+                  animesInTag[oldTagindex][pos].tagName = newTagName;
+                  SqliteUtil.updateTagNameByAnimeId(
+                      animesInTag[oldTagindex][pos].animeId, newTagName);
+                  debugPrint(
+                      "修改${animesInTag[oldTagindex][pos].animeName}的标签为$newTagName");
+                  debugPrint("$pos: ${animesInTag[oldTagindex][pos]}");
+
+                  animesInTag[newTagindex]
+                      .insert(0, animesInTag[oldTagindex][pos]); // 添加到最上面
+                  animesInTag[oldTagindex]
+                      .removeAt(pos); // 第一次是正确位置key，第二次就需要-1了
+                  j++;
+                }
+                // 同时修改标签数量
+                int modifiedCnt = mapSelected.length;
+                _animeCntPerTag[oldTagindex] -= modifiedCnt;
+                _animeCntPerTag[newTagindex] += modifiedCnt;
+                // 记得清空选择的动漫(注意在修改数量之后)
+                mapSelected.clear();
+                // 并消除多选状态
+                multiSelected = false;
+                setState(() {});
                 Navigator.pop(context);
               },
             ),
