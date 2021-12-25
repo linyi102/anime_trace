@@ -114,7 +114,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   _displayAnimeName() {
     var animeNameTextEditingController = TextEditingController();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: TextField(
         focusNode: animeNameFocusNode,
         // maxLines: null, // 加上这个后，回车不会调用onEditingComplete
@@ -143,7 +143,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   _displayDesc() {
     var descTextEditingController = TextEditingController();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: TextField(
         // focusNode: descFocusNode,
         maxLines: null,
@@ -170,8 +170,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     for (int i = 0; i < _episodes.length; ++i) {
       list.add(
         ListTile(
+          visualDensity: const VisualDensity(vertical: -2),
+          // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           title: Text("第 ${_episodes[i].number} 集"),
           subtitle: Text(_episodes[i].getDate()),
+          style: ListTileStyle.drawer,
           trailing: IconButton(
             onPressed: () {
               if (_episodes[i].isChecked()) {

@@ -259,7 +259,8 @@ class _AnimeListPageState extends State<AnimeListPage>
               ),
             ),
             body: Container(
-              color: const Color.fromRGBO(250, 250, 250, 1),
+              // color: const Color.fromRGBO(250, 250, 250, 1),
+              color: Colors.white,
               child: TabBarView(
                 controller: _tabController,
                 // children: _getAnimeList(),

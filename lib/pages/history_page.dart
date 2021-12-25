@@ -54,7 +54,8 @@ class _HistoryPageState extends State<HistoryPage> {
         },
         child: !_loadOk
             ? Container(
-                color: const Color.fromRGBO(250, 250, 250, 1),
+                // color: const Color.fromRGBO(250, 250, 250, 1),
+                color: Colors.white,
               )
             : _getChildPlus(),
       ),
@@ -69,7 +70,8 @@ class _HistoryPageState extends State<HistoryPage> {
     //   );
     // }
     return Container(
-      color: const Color.fromRGBO(250, 250, 250, 1),
+      // color: const Color.fromRGBO(250, 250, 250, 1),
+      color: Colors.white,
       child: ListView.separated(
         itemCount: historyPlus.length,
         itemBuilder: (BuildContext context, int index) {
