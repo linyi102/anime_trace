@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
@@ -70,6 +71,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 Navigator.pop(context, _anime);
               },
               icon: const Icon(Icons.arrow_back_rounded)),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _dialogRemoveAnime();
+                },
+                icon: const Icon(Icons.delete)),
+          ],
           title: !_loadOk
               ? Container()
               : ListTile(
@@ -318,5 +326,35 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         );
       },
     );
+  }
+
+  _dialogRemoveAnime() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('警告！'),
+            content: const Text('确认删除该动漫吗？'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("取消")),
+              TextButton(
+                  onPressed: () {
+                    SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
+                    // 直接返回到主页
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const Tabs()),
+                        (route) => false); // 返回false就没有左上角的返回按钮了
+                  },
+                  child: const Text(
+                    "确认",
+                    style: TextStyle(color: Colors.red),
+                  )),
+            ],
+          );
+        });
   }
 }

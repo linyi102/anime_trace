@@ -104,8 +104,9 @@ class _HistoryPageState extends State<HistoryPage> {
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
           ),
-          trailing:
-              Text("${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
+          trailing: record.startEpisodeNumber == record.endEpisodeNumber
+              ? Text("${record.startEpisodeNumber}")
+              : Text("${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
           onTap: () {
             Navigator.push(
                 context,

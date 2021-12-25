@@ -209,6 +209,19 @@ class SqliteUtil {
     ''');
   }
 
+  static void deleteAnimeByAnimeId(int animeId) async {
+    print("sql: deleteHistoryItem");
+    // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
+    await _database.rawDelete('''
+    delete from history
+    where anime_id = $animeId;
+    ''');
+    await _database.rawDelete('''
+    delete from anime
+    where anime_id = $animeId;
+    ''');
+  }
+
   static void insertTagName(String tagName, int tagOrder) async {
     print("sql: insertTagName");
     await _database.rawInsert('''
