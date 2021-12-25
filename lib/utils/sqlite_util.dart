@@ -511,4 +511,60 @@ class SqliteUtil {
     // }
     return history;
   }
+
+  static Future<List<HistoryPlus>> getAllHistoryByYear(int year) async {
+    print("sql: getAllHistoryByYear");
+
+    // 整体思路：先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
+    List<HistoryPlus> history = [];
+
+    for (int month = 12; month >= 1; --month) {
+      String date;
+      if (month >= 10) {
+        date = "$year-$month";
+      } else {
+        date = "$year-0$month";
+      }
+      var list = await _database.rawQuery('''
+        select distinct anime.anime_id, anime.anime_name
+        from history, anime
+        where date like '$date%' and history.anime_id = anime.anime_id
+        order by date desc; -- 倒序
+        ''');
+      List<Anime> animes = [];
+      for (var item in list) {
+        animes.add(Anime(
+            animeId: item['anime_id'] as int,
+            animeName: item['anime_name'] as String,
+            animeEpisodeCnt: 0));
+      }
+      if (animes.isEmpty) continue; // 没有观看记录时直接跳过
+
+      List<Record> records = [];
+      // 对于每个动漫，找到当月观看的最小值的最大值
+      for (var anime in animes) {
+        // print(anime);
+        list = await _database.rawQuery('''
+          select min(episode_number) as start
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId};
+          ''');
+        int startEpisodeNumber = list[0]['start'] as int;
+        list = await _database.rawQuery('''
+          select max(episode_number) as end
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId};
+          ''');
+        int endEpisodeNumber = list[0]['end'] as int;
+        Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
+        // print(record);
+        records.add(record);
+      }
+      history.add(HistoryPlus(date, records));
+    }
+    // for (var item in history) {
+    //   print(item);
+    // }
+    return history;
+  }
 }
