@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations: # 国际化
+    sdk: flutter
   shared_preferences: ^2.0.9
   sqflite: ^2.0.1 # 不支持web
   path_provider: ^2.0.8

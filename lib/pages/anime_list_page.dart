@@ -149,6 +149,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   //     ? const Color.fromRGBO(226, 235, 252, 1)
                   //     : Colors.white,
                   child: ListTile(
+                    visualDensity: const VisualDensity(vertical: -1),
                     title: Text(
                       anime.animeName,
                       style: const TextStyle(
@@ -233,9 +234,34 @@ class _AnimeListPageState extends State<AnimeListPage>
         ),
       );
     }
+    // list.clear();
+    // for (int i = 0; i < tags.length; ++i) {
+    //   list.add(ListView(
+    //     children: [
+    //       ListTile(
+    //         title: const Text("测试"),
+    //         onTap: () {},
+    //         onLongPress: () {},
+    //       )
+    //     ],
+    //   ));
+    // }
     return list;
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     body: ListView(
+  //       children: [
+  //         ListTile(
+  //           title: const Text("测试"),
+  //           onTap: () {},
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
     return !_loadOk
@@ -263,9 +289,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               color: Colors.white,
               child: TabBarView(
                 controller: _tabController,
-                // children: _getAnimeList(),
                 children: _getAnimesPlus(),
-                // children: loadOk ? _getAnimesPlus() : _waitDataPage(),
               ),
             ),
             floatingActionButton: FloatingActionButton(

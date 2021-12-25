@@ -190,6 +190,16 @@ class SqliteUtil {
     ''');
   }
 
+  static void updateHistoryItem(
+      int animeId, int episodeNumber, String date) async {
+    print("sql: updateHistoryItem");
+    await _database.rawInsert('''
+    update history
+    set date = '$date'
+    where anime_id = $animeId and episode_number = $episodeNumber;
+    ''');
+  }
+
   static void deleteHistoryItem(
       String? date, int animeId, int episodeNumber) async {
     print("sql: deleteHistoryItem");

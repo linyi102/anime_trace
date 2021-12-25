@@ -6,6 +6,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -80,6 +81,15 @@ class _MyAppState extends State<MyApp> {
           //   },
           // ),
         ),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
+          GlobalWidgetsLocalizations
+              .delegate, //定义 widget 默认的文本方向，从左到右或从右到左。GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
+        ],
+        supportedLocales: const [
+          Locale('zh', 'CH'),
+          Locale('en', 'US'),
+        ],
       ),
     );
   }

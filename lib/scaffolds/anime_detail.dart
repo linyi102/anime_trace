@@ -201,9 +201,34 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     color: Colors.black,
                   ),
           ),
-          onLongPress: () {},
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+          },
+          onLongPress: () async {
+            DateTime defaultDateTime = DateTime.now();
+            if (_episodes[i].isChecked()) {
+              defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
+            }
+            String dateTime =
+                await _showDatePicker(defaultDateTime: defaultDateTime);
+
+            if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
+
+            // 选择日期后，如果之前有日期，则更新。没有则直接插入
+            // 注意：对于_episodes[i]，它是第_episodes[i].number集
+            int episodeNumber = _episodes[i].number;
+            if (_episodes[i].isChecked()) {
+              SqliteUtil.updateHistoryItem(
+                  _anime.animeId, episodeNumber, dateTime);
+            } else {
+              SqliteUtil.insertHistoryItem(
+                  _anime.animeId, episodeNumber, dateTime);
+            }
+            // 更新页面
+            setState(() {
+              // 改的是i，而不是episodeNumber
+              _episodes[i].dateTime = dateTime;
+            });
           },
         ),
       );
@@ -211,6 +236,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Column(
       children: list,
     );
+  }
+
+  Future<String> _showDatePicker({DateTime? defaultDateTime}) async {
+    var picker = await showDatePicker(
+        context: context,
+        initialDate: defaultDateTime ?? DateTime.now(), // 没有给默认时间时，设置为今天
+        firstDate: DateTime(1986),
+        lastDate: DateTime(DateTime.now().year + 2),
+        locale: const Locale("zh"));
+    return picker == null ? "" : picker.toString();
   }
 
   void _dialogRemoveDate(int episodeNumber, String? date) {

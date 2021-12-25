@@ -99,6 +99,7 @@ class _HistoryPageState extends State<HistoryPage> {
     for (var record in records) {
       listWidget.add(
         ListTile(
+          visualDensity: const VisualDensity(vertical: -3),
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
