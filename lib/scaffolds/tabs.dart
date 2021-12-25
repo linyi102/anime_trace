@@ -3,7 +3,6 @@ import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:flutter_test_future/scaffolds/search.dart';
-import 'package:proste_route_animation/proste_route_animation.dart';
 import 'package:scroll_bottom_navigation_bar/scroll_bottom_navigation_bar.dart';
 
 class Tabs extends StatefulWidget {
@@ -33,19 +32,11 @@ class _TabsState extends State<Tabs> {
     actions[0].add(
       IconButton(
         onPressed: () async {
-          Navigator.push(
-              context,
-              ProsteRouteAnimation.fadeRoute(
-                route: const Search(),
-                duration: const Duration(milliseconds: 0),
-                reverseDuration: const Duration(milliseconds: 0),
-                curve: Curves.linear,
-              ));
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => const Search(),
-          //   ),
-          // );
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const Search(),
+            ),
+          );
         },
         icon: const Icon(Icons.search_outlined),
         color: Colors.black,
@@ -135,7 +126,7 @@ class _TabsState extends State<Tabs> {
       // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        elevation: 0,
+        // elevation: 0,
         backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
         onTap: (int index) {
           setState(() {

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
@@ -7,8 +5,6 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
-import 'package:multiselect_scope/multiselect_scope.dart';
-import 'package:proste_route_animation/proste_route_animation.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -85,39 +81,6 @@ class _AnimeListPageState extends State<AnimeListPage>
           thickness: 5,
           radius: const Radius.circular(10),
           child: Stack(children: [
-            !multiSelected
-                ? Container()
-                : Container(
-                    alignment: Alignment.bottomCenter,
-                    child: Card(
-                      margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-                      child: Row(
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: IconButton(
-                                onPressed: () {
-                                  print("object");
-                                },
-                                icon: const Icon(Icons.label_outline_rounded)),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.delete_outline_rounded)),
-                          ),
-                          Expanded(
-                            child: IconButton(
-                                onPressed: () {
-                                  multiSelected = false;
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.exit_to_app_outlined)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
             ListView.builder(
               itemCount: animesInTag[i].length,
               // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
@@ -168,14 +131,11 @@ class _AnimeListPageState extends State<AnimeListPage>
                     ),
                     onTap: () {
                       if (multiSelected) {}
-                      Navigator.push(
-                          context,
-                          ProsteRouteAnimation.fadeRoute(
-                            route: AnimeDetailPlus(anime.animeId),
-                            duration: const Duration(milliseconds: 0),
-                            reverseDuration: const Duration(milliseconds: 0),
-                            curve: Curves.linear,
-                          )).then((value) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                        builder: (context) => AnimeDetailPlus(anime.animeId),
+                      ))
+                          .then((value) {
                         debugPrint(value.toString());
                         // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
                         Anime newAnime = value;
@@ -196,31 +156,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                         }
                         setState(() {});
                       });
-
-                      // Navigator.of(context)
-                      //     .push(MaterialPageRoute(
-                      //   builder: (context) => AnimeDetailPlus(anime.animeId),
-                      // ))
-                      //     .then((value) {
-                      //   debugPrint(value.toString());
-                      //   // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
-                      //   Anime newAnime = value;
-                      //   // 如果更换了标签，则还要移动到相应的标签
-                      //   if (anime.tagName != newAnime.tagName) {
-                      //     // debugPrint("${anime.tagName}, ${newAnime.tagName}");
-                      //     // debugPrint("old: ${anime.toString()}");
-                      //     int newTagIndex = tags.indexOf(newAnime.tagName);
-                      //     animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
-                      //     animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
-                      //     // 还要改变标签的数量
-                      //     _animeCntPerTag[i]--;
-                      //     _animeCntPerTag[newTagIndex]++;
-                      //     // debugPrint("移动了标签");
-                      //   } else {
-                      //     animesInTag[i][index] = newAnime;
-                      //   }
-                      //   setState(() {});
-                      // });
                     },
                     onLongPress: () {
                       multiSelected = true;
@@ -230,6 +165,38 @@ class _AnimeListPageState extends State<AnimeListPage>
                 );
               },
             ),
+            // 一定要叠放在ListView上面，否则点击按钮没有反应
+            !multiSelected
+                ? Container()
+                : Container(
+                    alignment: Alignment.bottomCenter,
+                    child: Card(
+                      margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+                      child: Row(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.label_outline_rounded)),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.delete_outline_rounded)),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                                onPressed: () {
+                                  multiSelected = false;
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.exit_to_app_outlined)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           ]),
         ),
       );
@@ -507,14 +474,6 @@ class _AnimeItemState extends State<AnimeItem> {
         ),
       ),
       onTap: () {
-        // Navigator.of(context)
-        //     .push(RouteFade(AnimeDetailPlus(widget.anime.animeId)))
-        //     .then((value) {
-        //   debugPrint(value.toString());
-        //   setState(() {
-        //     widget.anime = value;
-        //   });
-        // });
         Navigator.of(context)
             .push(MaterialPageRoute(
                 builder: (context) => AnimeDetailPlus(widget.anime.animeId)))

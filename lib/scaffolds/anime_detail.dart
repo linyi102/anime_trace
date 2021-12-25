@@ -87,7 +87,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ],
                   ),
                   onTap: () {
-                    _dialogSelectTag(context);
+                    _dialogSelectTag();
                   },
                 ),
           actions: [
@@ -297,8 +297,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  // 传入动漫对话框的状态，选择好标签后，就会更新该状态
-  void _dialogSelectTag(parentContext) {
+  void _dialogSelectTag() {
     showDialog(
       context: context,
       builder: (BuildContext context) {

@@ -52,7 +52,7 @@ dependencies:
   # search_page: ^2.0.0+1
   salomon_bottom_bar: ^3.2.0
   # animations: ^2.0.2
-  proste_route_animation: ^2.0.2
+  # proste_route_animation: ^2.0.2 # 路由过渡动画
   scroll_bottom_navigation_bar: ^4.0.0
   multiselect_scope: ^0.2.0 # 切换顶部栏时会出错
   # flutter_keyboard_visibility: ^5.1.0

@@ -3,7 +3,6 @@ import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:proste_route_animation/proste_route_animation.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -108,25 +107,15 @@ class _HistoryPageState extends State<HistoryPage> {
               ? Text("${record.startEpisodeNumber}")
               : Text("${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
           onTap: () {
-            Navigator.push(
-                context,
-                ProsteRouteAnimation.fadeRoute(
-                  route: AnimeDetailPlus(record.anime.animeId),
-                  duration: const Duration(milliseconds: 0),
-                  reverseDuration: const Duration(milliseconds: 0),
-                  curve: Curves.linear,
-                )).then((value) {
+            Navigator.of(context)
+                .push(
+              MaterialPageRoute(
+                builder: (context) => AnimeDetailPlus(record.anime.animeId),
+              ),
+            )
+                .then((value) {
               _loadData();
             });
-            // Navigator.of(context)
-            //     .push(
-            //   MaterialPageRoute(
-            //     builder: (context) => AnimeDetailPlus(record.anime.animeId),
-            //   ),
-            // )
-            //     .then((value) {
-            //   _loadData();
-            // });
           },
         ),
       );

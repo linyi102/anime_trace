@@ -287,13 +287,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
-  proste_route_animation:
-    dependency: "direct main"
-    description:
-      name: proste_route_animation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.2"
   salomon_bottom_bar:
     dependency: "direct main"
     description:

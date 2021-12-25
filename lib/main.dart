@@ -75,11 +75,11 @@ class _MyAppState extends State<MyApp> {
               color: Colors.black,
             ),
           ),
-          // pageTransitionsTheme: const PageTransitionsTheme(
-          //   builders: <TargetPlatform, PageTransitionsBuilder>{
-          //     TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          //   },
-          // ),
+          pageTransitionsTheme: const PageTransitionsTheme(
+            builders: <TargetPlatform, PageTransitionsBuilder>{
+              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            },
+          ),
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
