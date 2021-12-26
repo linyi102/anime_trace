@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/pages/anime_list_page.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class Search extends StatefulWidget {
@@ -77,6 +77,54 @@ class _SearchState extends State<Search> {
       child: ListView(
         children: listWidget,
       ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class AnimeItem extends StatefulWidget {
+  Anime anime;
+  AnimeItem(
+    this.anime, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<AnimeItem> createState() => _AnimeItemState();
+}
+
+class _AnimeItemState extends State<AnimeItem> {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        widget.anime.animeName,
+        style: const TextStyle(
+          fontSize: 15,
+          // fontWeight: FontWeight.w600,
+        ),
+        overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+      ),
+      trailing: Text(
+        "${widget.anime.checkedEpisodeCnt}/${widget.anime.animeEpisodeCnt}",
+        style: const TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+          // fontWeight: FontWeight.w400,
+        ),
+      ),
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+                builder: (context) => AnimeDetailPlus(widget.anime.animeId)))
+            .then((value) {
+          debugPrint(value.toString());
+          setState(() {
+            widget.anime = value;
+          });
+        });
+      },
+      onLongPress: () {},
     );
   }
 }
