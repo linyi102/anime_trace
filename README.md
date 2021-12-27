@@ -2,7 +2,7 @@
 
 ## 应用截图
 
-![](assets\img\example.png)
+![](./assets/img/example.png)
 
 ## 坚果云备份
 [坚果云第三方应用授权WebDAV开启方法 | 坚果云帮助中心](https://help.jianguoyun.com/?p=2064) 
