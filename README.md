@@ -11,3 +11,6 @@
 ### 动漫详细页面
 
 <img src="https://gitee.com/linyi517/imagesbed/raw/master/img/20211227174259.jpg" style="zoom:25%;" />
+
+### 坚果云备份
+[坚果云第三方应用授权WebDAV开启方法 | 坚果云帮助中心](https://help.jianguoyun.com/?p=2064)
