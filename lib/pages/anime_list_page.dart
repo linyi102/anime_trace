@@ -18,14 +18,16 @@ class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String addDefaultTag = tags[0];
-  List<int> _animeCntPerTag = [];
-  List<List<Anime>> animesInTag = [];
-  Map<int, bool> mapSelected = {};
+  List<int> _animeCntPerTag = []; // 各个标签下的动漫数量
+  List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 
+  // 数据加载
   bool _loadOk = false;
   int _pageIndex = 1;
   final int _pageSize = 50;
 
+  // 多选
+  Map<int, bool> mapSelected = {};
   bool multiSelected = false;
 
   @override
@@ -49,6 +51,10 @@ class _AnimeListPageState extends State<AnimeListPage>
         // lastTopTabIndex = _tabController.index;
         SPUtil.setInt("last_top_tab_index", _tabController.index);
         addDefaultTag = tags[_tabController.index]; // 切换顶层tab后，默认添加动漫标签为当前tab标签
+        // 取消多选
+        if (multiSelected) {
+          _quitMultiSelectState();
+        }
       }
     });
   }
@@ -81,6 +87,8 @@ class _AnimeListPageState extends State<AnimeListPage>
       list.add(
         Scrollbar(
           thickness: 5,
+          showTrackOnHover: true,
+          interactive: true,
           radius: const Radius.circular(10),
           child: Stack(children: [
             ListView.builder(
@@ -109,76 +117,73 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // debugPrint("$index");
                 // return AnimeItem(animesInTag[i][index]);
                 Anime anime = animesInTag[i][index];
-                return Container(
-                  color: mapSelected.containsKey(index)
-                      ? const Color.fromRGBO(0, 118, 243, 0.1)
-                      : Colors.white,
-                  child: ListTile(
-                    // 不管用
-                    // tileColor: isSelected.containsKey(index)
-                    //     ? Colors.grey
-                    //     : Colors.white,
-                    visualDensity: const VisualDensity(vertical: -1),
-                    title: Text(
-                      anime.animeName,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        // fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+                return ListTile(
+                  selectedTileColor: const Color.fromRGBO(0, 118, 243, 0.1),
+                  selected: mapSelected.containsKey(index),
+                  selectedColor: Colors.black,
+                  visualDensity: const VisualDensity(vertical: -1),
+                  title: Text(
+                    anime.animeName,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      // fontWeight: FontWeight.w600,
                     ),
-                    trailing: Text(
-                      "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        // fontWeight: FontWeight.w400,
-                      ),
+                    overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+                  ),
+                  trailing: Text(
+                    "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                      // fontWeight: FontWeight.w400,
                     ),
-                    onTap: () {
-                      // 多选
-                      if (multiSelected) {
-                        if (mapSelected.containsKey(index)) {
-                          mapSelected.remove(index); // 选过，再选就会取消s
-                        } else {
-                          mapSelected[index] = true;
-                        }
-                        setState(() {});
-                        return;
+                  ),
+                  onTap: () {
+                    // 多选
+                    if (multiSelected) {
+                      if (mapSelected.containsKey(index)) {
+                        mapSelected.remove(index); // 选过，再选就会取消s
+                      } else {
+                        mapSelected[index] = true;
                       }
-                      // 非多选
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(
-                        builder: (context) => AnimeDetailPlus(anime.animeId),
-                      ))
-                          .then((value) {
-                        debugPrint(value.toString());
-                        // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
-                        Anime newAnime = value;
-                        // 如果更换了标签，则还要移动到相应的标签
-                        if (anime.tagName != newAnime.tagName) {
-                          // debugPrint("${anime.tagName}, ${newAnime.tagName}");
-                          // debugPrint("old: ${anime.toString()}");
-                          int newTagIndex = tags.indexOf(newAnime.tagName);
-                          animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
-                          animesInTag[newTagIndex]
-                              .insert(0, newAnime); // 向新标签添加新动漫
-                          // 还要改变标签的数量
-                          _animeCntPerTag[i]--;
-                          _animeCntPerTag[newTagIndex]++;
-                          // debugPrint("移动了标签");
-                        } else {
-                          animesInTag[i][index] = newAnime;
-                        }
-                        setState(() {});
-                      });
-                    },
-                    onLongPress: () {
+                      setState(() {});
+                      return;
+                    }
+                    // 非多选
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                      builder: (context) => AnimeDetailPlus(anime.animeId),
+                    ))
+                        .then((value) {
+                      debugPrint(value.toString());
+                      // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
+                      Anime newAnime = value;
+                      // 如果更换了标签，则还要移动到相应的标签
+                      if (anime.tagName != newAnime.tagName) {
+                        // debugPrint("${anime.tagName}, ${newAnime.tagName}");
+                        // debugPrint("old: ${anime.toString()}");
+                        int newTagIndex = tags.indexOf(newAnime.tagName);
+                        animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
+                        animesInTag[newTagIndex]
+                            .insert(0, newAnime); // 向新标签添加新动漫
+                        // 还要改变标签的数量
+                        _animeCntPerTag[i]--;
+                        _animeCntPerTag[newTagIndex]++;
+                        // debugPrint("移动了标签");
+                      } else {
+                        animesInTag[i][index] = newAnime;
+                      }
+                      setState(() {});
+                    });
+                  },
+                  onLongPress: () {
+                    // 非多选状态下才需要进入多选状态
+                    if (multiSelected == false) {
                       multiSelected = true;
                       mapSelected[index] = true;
                       setState(() {}); // 添加操作按钮
-                    },
-                  ),
+                    }
+                  },
                 );
               },
             ),
@@ -226,7 +231,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                               onPressed: () {
                                 _dialogModifyTag(tags[i]);
                               },
-                              icon: const Icon(Icons.label_outline_rounded),
+                              icon: const Icon(Icons.new_label_outlined),
                               color: Colors.blueAccent,
                             ),
                           ),
@@ -240,10 +245,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           Expanded(
                             child: IconButton(
                               onPressed: () {
-                                multiSelected = false;
-                                // 记得清空选择的动漫
-                                mapSelected.clear();
-                                setState(() {});
+                                _quitMultiSelectState();
                               },
                               icon: const Icon(Icons.exit_to_app_outlined),
                               color: Colors.blueAccent,
@@ -257,90 +259,57 @@ class _AnimeListPageState extends State<AnimeListPage>
         ),
       );
     }
-    // list.clear();
-    // for (int i = 0; i < tags.length; ++i) {
-    //   list.add(ListView(
-    //     children: [
-    //       ListTile(
-    //         title: const Text("测试"),
-    //         onTap: () {},
-    //         onLongPress: () {},
-    //       )
-    //     ],
-    //   ));
-    // }
     return list;
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: ListView(
-  //       children: [
-  //         ListTile(
-  //           title: const Text("测试"),
-  //           onTap: () {},
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
-    return !_loadOk
-        ? _waitDataScaffold()
-        : Scaffold(
-            appBar: AppBar(
-              toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-              bottom: TabBar(
-                isScrollable: true, // 标签可以滑动，避免拥挤
-                unselectedLabelColor: Colors.black54,
-                labelColor: Colors.blue, // 标签字体颜色
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 0),
+      child: !_loadOk
+          ? _waitDataScaffold()
+          : Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
+                bottom: TabBar(
+                  isScrollable: true, // 标签可以滑动，避免拥挤
+                  unselectedLabelColor: Colors.black54,
+                  labelColor: Colors.blue, // 标签字体颜色
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  indicatorColor: Colors.blue, // 指示器颜色
+                  indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
+                  indicatorWeight: 3, // 指示器高度
+                  tabs: _showTagAndAnimeCntPlus(),
+                  // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                  controller: _tabController,
                 ),
-                indicatorColor: Colors.blue, // 指示器颜色
-                indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
-                indicatorWeight: 3, // 指示器高度
-                tabs: _showTagAndAnimeCntPlus(),
-                // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                controller: _tabController,
               ),
-            ),
-            body: Container(
-              // color: const Color.fromRGBO(250, 250, 250, 1),
-              color: Colors.white,
-              child: TabBarView(
+              body: TabBarView(
                 controller: _tabController,
                 children: _getAnimesPlus(),
               ),
+              floatingActionButton: FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  _dialogAddAnime();
+                },
+                child: const Icon(Icons.add),
+              ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                _dialogAddAnime();
-              },
-              child: const Icon(Icons.add),
-            ),
-          );
+    );
   }
 
   Scaffold _waitDataScaffold() {
     return Scaffold(
+      key: UniqueKey(), // 保证被AnimatedSwitcher视为不同的控件
       appBar: AppBar(
         toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-        // bottom: TabBar(
-        //   tabs: const [],
-        //   indicatorWeight: 3,
-        //   controller: TabController(
-        //     initialIndex: 0, // 设置初始index
-        //     length: 1,
-        //     vsync: this,
-        //   ),
-        // ),
       ),
-      body: Container(
-        color: Colors.white,
-      ),
+      backgroundColor: Colors.white,
+      // body: null,
     );
   }
 
@@ -530,11 +499,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 int modifiedCnt = mapSelected.length;
                 _animeCntPerTag[oldTagindex] -= modifiedCnt;
                 _animeCntPerTag[newTagindex] += modifiedCnt;
-                // 记得清空选择的动漫(注意在修改数量之后)
-                mapSelected.clear();
-                // 并消除多选状态
-                multiSelected = false;
-                setState(() {});
+                _quitMultiSelectState();
                 Navigator.pop(context);
               },
             ),
@@ -550,6 +515,13 @@ class _AnimeListPageState extends State<AnimeListPage>
         );
       },
     );
+  }
+
+  void _quitMultiSelectState() {
+    // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
+    multiSelected = false;
+    mapSelected.clear();
+    setState(() {});
   }
 
   List<Widget> _showTagAndAnimeCntPlus() {

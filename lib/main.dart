@@ -66,6 +66,7 @@ class _MyAppState extends State<MyApp> {
         home: const MyHome(),
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          // brightness: Brightness.dark,
           // fontFamily: 'hm',
           appBarTheme: const AppBarTheme(
             shadowColor: Colors.transparent,

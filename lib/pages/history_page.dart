@@ -38,21 +38,20 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      thickness: 5,
-      radius: const Radius.circular(10),
-      child: RefreshIndicator(
+    return RefreshIndicator(
         // 下拉刷新
         onRefresh: () async {
           _loadData(curYear);
         },
-        child: !yearLoadOk.containsKey(curYear)
-            ? Container(
-                color: Colors.white,
-              )
-            : _getHistory(),
-      ),
-    );
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: !yearLoadOk.containsKey(curYear)
+              ? Container(
+                  key: UniqueKey(),
+                  color: Colors.white,
+                )
+              : _getHistory(),
+        ));
   }
 
   Widget _getHistory() {
@@ -63,40 +62,38 @@ class _HistoryPageState extends State<HistoryPage> {
     //   );
     // }
     return Stack(children: [
-      Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            _showOpYearButton(),
-            yearHistory[curYear]!.isEmpty
-                ? const Center(
-                    child: Text(
-                      "暂无相关记录",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  )
-                : Expanded(
-                    child: ListView.separated(
-                      itemCount: yearHistory[curYear]!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        // debugPrint("$index");
-                        return ListTile(
-                          contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          title: ListTile(
-                            title: Text(yearHistory[curYear]![index].date),
-                          ),
-                          subtitle: Column(
-                            children: _getRecord(index),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const Divider();
-                      },
-                    ),
-                  ),
-          ],
-        ),
+      Column(
+        children: [
+          _showOpYearButton(),
+          yearHistory[curYear]!.isEmpty
+              ? const Text("暂无相关记录")
+              : Expanded(
+                  child: Scrollbar(
+                      showTrackOnHover: true,
+                      thickness: 5,
+                      interactive: true,
+                      radius: const Radius.circular(10),
+                      child: (ListView.separated(
+                        itemCount: yearHistory[curYear]!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          // debugPrint("$index");
+                          return ListTile(
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            title: ListTile(
+                              title: Text(yearHistory[curYear]![index].date),
+                            ),
+                            subtitle: Column(
+                              children: _getRecord(index),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider();
+                        },
+                      ))),
+                ),
+        ],
       ),
       // Container(
       //   alignment: Alignment.bottomCenter,
@@ -120,11 +117,6 @@ class _HistoryPageState extends State<HistoryPage> {
       listWidget.add(
         ListTile(
           visualDensity: const VisualDensity(vertical: -4),
-          // leading: const Icon(
-          //   Icons.data_saver_off_sharp,
-          //   color: Colors.black,
-          //   size: 15,
-          // ),
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,

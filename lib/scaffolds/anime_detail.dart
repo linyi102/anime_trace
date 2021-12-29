@@ -191,6 +191,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           title: Text("第 ${_episodes[i].number} 集"),
           subtitle: Text(_episodes[i].getDate()),
+          // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           style: ListTileStyle.drawer,
           trailing: IconButton(
             onPressed: () {

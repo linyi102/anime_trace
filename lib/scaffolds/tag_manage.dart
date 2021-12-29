@@ -15,6 +15,7 @@ class _TagManageState extends State<TagManage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           "标签管理",
@@ -154,7 +155,8 @@ class _TagManageState extends State<TagManage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Text("确认删除标签「$tagName」吗？"),
+            title: const Text("删除标签"),
+            content: Text("确认删除「$tagName」标签吗？"),
             actions: [
               TextButton(
                   onPressed: () {
