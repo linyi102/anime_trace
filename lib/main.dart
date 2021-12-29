@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
               TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             },
           ),
+          scaffoldBackgroundColor: Colors.white,
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值

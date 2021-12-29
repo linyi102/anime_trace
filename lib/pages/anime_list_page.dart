@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -151,9 +152,33 @@ class _AnimeListPageState extends State<AnimeListPage>
                     }
                     // 非多选
                     Navigator.of(context)
-                        .push(MaterialPageRoute(
-                      builder: (context) => AnimeDetailPlus(anime.animeId),
-                    ))
+                        .push(
+                      // 1.默认
+                      MaterialPageRoute(
+                        builder: (context) => AnimeDetailPlus(anime.animeId),
+                      ),
+                      // 2.渐进
+                      // PageRouteBuilder(
+                      //   transitionDuration: const Duration(milliseconds: 100),
+                      //   reverseTransitionDuration:
+                      //       const Duration(milliseconds: 100),
+                      //   pageBuilder: (BuildContext context,
+                      //       Animation<double> animation,
+                      //       Animation secondaryAnimation) {
+                      //     return FadeTransition(
+                      //       //使用渐隐渐入过渡,
+                      //       opacity: animation,
+                      //       child: AnimeDetailPlus(anime.animeId),
+                      //     );
+                      //   },
+                      // ),
+                      // 3.bug：返回无渐进
+                      // FadeRoute(
+                      //   builder: (context) {
+                      //     return AnimeDetailPlus(anime.animeId);
+                      //   },
+                      // ),
+                    )
                         .then((value) {
                       debugPrint(value.toString());
                       // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
@@ -265,10 +290,11 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 0),
+      duration: const Duration(milliseconds: 100),
       child: !_loadOk
           ? _waitDataScaffold()
           : Scaffold(
+              // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
               backgroundColor: Colors.white,
               appBar: AppBar(
                 toolbarHeight: 0, // 太小容易导致底部不够，从而溢出

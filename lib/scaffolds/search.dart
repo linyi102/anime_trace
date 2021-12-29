@@ -26,7 +26,6 @@ class _SearchState extends State<Search> {
         selection: TextSelection.fromPosition(TextPosition(
             affinity: TextAffinity.downstream, offset: lastInputText.length))));
     return Scaffold(
-      // backgroundColor: Colors.white,
       appBar: AppBar(
         title: TextField(
           autofocus: true, // 自动弹出键盘

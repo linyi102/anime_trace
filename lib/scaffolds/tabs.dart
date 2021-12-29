@@ -44,7 +44,6 @@ class _TabsState extends State<Tabs> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           _listName[_currentIndex],

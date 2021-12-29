@@ -64,7 +64,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
@@ -208,16 +207,34 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 setState(() {});
               }
             },
-            icon: _episodes[i].isChecked()
-                ? const Icon(
-                    // Icons.check_box_outlined,
-                    Icons.check_rounded,
-                    color: Colors.grey,
-                  )
-                : const Icon(
-                    Icons.check_box_outline_blank_rounded,
-                    color: Colors.black,
-                  ),
+            // icon: _episodes[i].isChecked()
+            //     ? const Icon(
+            //         // Icons.check_box_outlined,
+            //         Icons.check_rounded,
+            //         color: Colors.grey,
+            //       )
+            //     : const Icon(
+            //         Icons.check_box_outline_blank_rounded,
+            //         color: Colors.black,
+            //       ),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 100),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                //执行缩放动画
+                return ScaleTransition(child: child, scale: animation);
+              },
+              child: _episodes[i].isChecked()
+                  ? Icon(
+                      // Icons.check_box_outlined,
+                      Icons.check_rounded,
+                      color: Colors.grey,
+                      key: Key("$i"), // 不能用unique，否则同状态的按钮都会有动画
+                    )
+                  : const Icon(
+                      Icons.check_box_outline_blank_rounded,
+                      color: Colors.black,
+                    ),
+            ),
           ),
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
