@@ -14,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SPUtil.getInstance();
   await SqliteUtil.getInstance();
+  await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
   tags = await SqliteUtil.getAllTags();
 
   runApp(const MyApp());

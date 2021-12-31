@@ -6,6 +6,7 @@ import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:flutter_test_future/scaffolds/search.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:scroll_bottom_navigation_bar/scroll_bottom_navigation_bar.dart';
 
 class Tabs extends StatefulWidget {
@@ -57,6 +58,7 @@ class _TabsState extends State<Tabs> {
               SqliteUtil.updateAnimeCoverbyAnimeId(anime.animeId, coverUrl);
             }
           }
+          showToast("更新完成");
         },
         icon: const Icon(Icons.refresh),
         color: Colors.black,

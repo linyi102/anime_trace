@@ -172,7 +172,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           mainAxisSpacing: 3, // 竖轴距离
           // childAspectRatio: mq.size.width /
           // (mq.size.height / 3 * 2.5), // 设备变为横屏时，需要width和height交换一下
-          childAspectRatio: 31 / 56, // 每个网格的比例。
+          childAspectRatio: 31 / 53, // 每个网格的比例。
         ),
         itemCount: animesInTag[i].length,
         itemBuilder: (BuildContext context, int index) {

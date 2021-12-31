@@ -32,7 +32,9 @@ class SqliteUtil {
       onCreate: (Database db, int version) {
         Future(() {
           _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
-        }).then((value) => _insertInitData(db));
+        }).then((value) async {
+          await _insertInitData(db); // await确保加载数据后再执行后面的语句
+        });
       },
       version: 1, // onCreate must be null if no version is specified
     );
@@ -90,7 +92,7 @@ class SqliteUtil {
       ''');
   }
 
-  static void _insertInitData(Database db) async {
+  static Future<void> _insertInitData(Database db) async {
     await db.rawInsert('''
       insert into tag(tag_name, tag_order)
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
@@ -181,8 +183,6 @@ class SqliteUtil {
   }
 
   static Future<void> insertAnime(Anime anime) async {
-    await addColumnCoverToAnime();
-
     print("sql: insertAnime");
     String datetime = DateTime.now().toString();
     await _database.rawInsert('''
@@ -207,7 +207,6 @@ class SqliteUtil {
 
   static void updateAnimeCoverbyAnimeId(int animeId, String? coverUrl) async {
     print("sql: updateAnimeCoverbyAnimeId");
-    await addColumnCoverToAnime();
 
     await _database.rawUpdate('''
     update anime
@@ -312,7 +311,6 @@ class SqliteUtil {
 
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
     print("sql: getAnimeByAnimeId($animeId)");
-    await addColumnCoverToAnime();
 
     var list = await _database.rawQuery('''
     select anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url
@@ -417,7 +415,6 @@ class SqliteUtil {
 
   static getAllAnimeBytagName(String tagName, int offset, int number) async {
     print("sql: getAllAnimeBytagName");
-    addColumnCoverToAnime();
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt, tag_name, anime_cover_url
