@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:photo_view/photo_view.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
@@ -91,6 +95,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           actions: [
             IconButton(
                 onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (context) => AnimeClimb(
+                                animeId: _anime.animeId,
+                                keyword: _anime.animeName,
+                              )))
+                      .then((value) async {
+                    _loadData();
+                  });
+                },
+                icon: const Icon(Icons.image_search_rounded)),
+            IconButton(
+                onPressed: () {
                   _dialogUpdateEpisodeCnt();
                 },
                 icon: const Icon(Icons.add)),
@@ -104,8 +121,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         body: _loadOk
             ? ListView(
                 children: [
-                  _displayAnimeName(),
-                  _displayDesc(),
+                  _displayAnimeCover(),
+                  // _displayAnimeName(),
+                  // _displayDesc(),
                   const SizedBox(
                     height: 10,
                   ),
@@ -127,15 +145,41 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Container();
   }
 
+  _displayAnimeCover() {
+    return Flex(direction: Axis.horizontal, children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
+        child: SizedBox(
+          width: 110,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: AnimeGridCover(_anime),
+          ),
+        ),
+      ),
+      Expanded(
+        child: Column(
+          children: [
+            _displayAnimeName(),
+            _displayDesc(),
+          ],
+        ),
+      )
+    ]);
+  }
+
   _displayAnimeName() {
     var animeNameTextEditingController = TextEditingController();
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: TextField(
         focusNode: animeNameFocusNode,
-        // maxLines: null, // 加上这个后，回车不会调用onEditingComplete
+        maxLines: null, // 加上这个后，回车不会调用onEditingComplete
         controller: animeNameTextEditingController..text = _anime.animeName,
-        style: const TextStyle(fontSize: 20, overflow: TextOverflow.ellipsis),
+        style: const TextStyle(
+          fontSize: 17,
+          overflow: TextOverflow.ellipsis,
+        ),
         decoration: const InputDecoration(
           border: InputBorder.none,
         ),

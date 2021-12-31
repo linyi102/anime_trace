@@ -4,6 +4,7 @@ class Anime {
   int animeEpisodeCnt;
   String tagName;
   String animeDesc;
+  String animeCoverUrl;
 
   int checkedEpisodeCnt;
 
@@ -12,6 +13,7 @@ class Anime {
       required this.animeName,
       required this.animeEpisodeCnt,
       this.tagName = "",
+      this.animeCoverUrl = "",
       this.checkedEpisodeCnt = 0,
       this.animeDesc = ""});
 

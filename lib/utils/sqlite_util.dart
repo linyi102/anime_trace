@@ -180,12 +180,39 @@ class SqliteUtil {
     ''');
   }
 
-  static void insertAnime(Anime anime) async {
+  static Future<void> insertAnime(Anime anime) async {
+    await addColumnCoverToAnime();
+
     print("sql: insertAnime");
     String datetime = DateTime.now().toString();
     await _database.rawInsert('''
-    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime');
+    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url)
+    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}');
+    ''');
+  }
+
+  static Future<void> addColumnCoverToAnime() async {
+    var list = await _database.rawQuery('''
+    select * from sqlite_master where name = 'anime' and sql like '%anime_cover_url%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      print("sql: addColumnCoverToAnime");
+      await _database.execute('''
+      alter table anime
+      add column anime_cover_url TEXT;
+      ''');
+    }
+  }
+
+  static void updateAnimeCoverbyAnimeId(int animeId, String? coverUrl) async {
+    print("sql: updateAnimeCoverbyAnimeId");
+    await addColumnCoverToAnime();
+
+    await _database.rawUpdate('''
+    update anime
+    set anime_cover_url = '$coverUrl'
+    where anime_id = $animeId;
     ''');
   }
 
@@ -218,7 +245,7 @@ class SqliteUtil {
   }
 
   static void deleteAnimeByAnimeId(int animeId) async {
-    print("sql: deleteHistoryItem");
+    print("sql: deleteAnimeByAnimeId");
     // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
     await _database.rawDelete('''
     delete from history
@@ -284,17 +311,23 @@ class SqliteUtil {
   }
 
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
-    print("sql: getAnimeByAnimeId");
+    print("sql: getAnimeByAnimeId($animeId)");
+    await addColumnCoverToAnime();
+
     var list = await _database.rawQuery('''
-    select anime_name, anime_episode_cnt, tag_name, anime_desc
+    select anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url
     from anime
     where anime_id = $animeId;
     ''');
+    if (list.isEmpty) {
+      print("不应该啊");
+    }
     Anime anime = Anime(
         animeId: animeId,
         animeName: list[0]['anime_name'] as String,
         animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
         animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
+        animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
         tagName: list[0]['tag_name'] as String);
     return anime;
   }
@@ -384,9 +417,10 @@ class SqliteUtil {
 
   static getAllAnimeBytagName(String tagName, int offset, int number) async {
     print("sql: getAllAnimeBytagName");
+    addColumnCoverToAnime();
 
     var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt, tag_name
+    select anime_id, anime_name, anime_episode_cnt, tag_name, anime_cover_url
     from anime
     where tag_name = '$tagName'
     order by last_mode_tag_time desc -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
@@ -406,8 +440,30 @@ class SqliteUtil {
         animeId: element['anime_id'] as int, // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        animeCoverUrl: element['anime_cover_url'] as String? ??
+            "", // 强制转换为String?，如果为null，则设置为空字符串
         tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
         checkedEpisodeCnt: checkedEpisodeCnt,
+      ));
+    }
+    return res;
+  }
+
+  static Future<List<Anime>> getAllAnimes() async {
+    print("sql: getAllAnimes");
+
+    var list = await _database.rawQuery('''
+    select anime_id, anime_name, anime_cover_url
+    from anime;
+    ''');
+
+    List<Anime> res = [];
+    for (var element in list) {
+      res.add(Anime(
+        animeId: element['anime_id'] as int,
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: 0,
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
       ));
     }
     return res;
@@ -525,7 +581,7 @@ class SqliteUtil {
         date = "$year-0$month";
       }
       var list = await _database.rawQuery('''
-        select distinct anime.anime_id, anime.anime_name
+        select distinct anime.anime_id, anime.anime_name, anime.anime_cover_url
         from history, anime
         where date like '$date%' and history.anime_id = anime.anime_id
         order by date desc; -- 倒序
@@ -535,7 +591,8 @@ class SqliteUtil {
         animes.add(Anime(
             animeId: item['anime_id'] as int,
             animeName: item['anime_name'] as String,
-            animeEpisodeCnt: 0));
+            animeEpisodeCnt: 0,
+            animeCoverUrl: item['anime_cover_url'] as String? ?? ""));
       }
       if (animes.isEmpty) continue; // 没有观看记录时直接跳过
 

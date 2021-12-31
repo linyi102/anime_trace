@@ -15,6 +15,7 @@ class _SearchState extends State<Search> {
   bool _searchOk = false;
   late List<Anime> _resAnimes;
   String lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
+  FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +55,7 @@ class _SearchState extends State<Search> {
                 debugPrint(item.toString());
               }
               lastInputText = text;
-              SystemChannels.textInput.invokeMethod(
-                  'TextInput.hide'); // 回车后执行onEditingComplete，执行到这里会自动隐藏键盘
+              FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
               setState(() {});
             });
           },

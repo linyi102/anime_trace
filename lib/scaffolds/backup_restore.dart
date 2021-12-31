@@ -126,11 +126,13 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 // 如果是开启，点击后则关闭
                 SPUtil.setBool("auto_backup", false);
                 autoBackupState = "关闭";
+                showToast("关闭自动备份");
               } else {
                 SPUtil.setBool("auto_backup", true);
                 // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
                 WebDavUtil.backupData(true);
                 autoBackupState = "开启";
+                showToast("开启自动备份");
               }
               setState(() {});
             },

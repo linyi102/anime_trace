@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:flutter_test_future/scaffolds/search.dart';
+import 'package:flutter_test_future/utils/clime_cover_util.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:scroll_bottom_navigation_bar/scroll_bottom_navigation_bar.dart';
 
 class Tabs extends StatefulWidget {
@@ -29,6 +32,36 @@ class _TabsState extends State<Tabs> {
       // error: actions[i] = []; 因为最外面的List为空，需要添加元素：空的List
       actions.add([]);
     }
+    actions[0].add(
+      IconButton(
+        onPressed: () async {
+          List<Anime> animes;
+          animes = await SqliteUtil.getAllAnimes();
+          for (var anime in animes) {
+            // 已有封面直接跳过
+            if (anime.animeCoverUrl.isNotEmpty) {
+              if (anime.animeCoverUrl.startsWith("//")) {
+                anime.animeCoverUrl = "https:${anime.animeCoverUrl}";
+                // 更新链接
+                SqliteUtil.updateAnimeCoverbyAnimeId(
+                    anime.animeId, anime.animeCoverUrl);
+              }
+              debugPrint("${anime.animeName}已有封面：'${anime.animeCoverUrl}'，跳过");
+              continue;
+            }
+            String coverUrl =
+                await ClimeCoverUtil.climeCoverUrl(anime.animeName);
+            debugPrint("${anime.animeName}封面：$coverUrl");
+            // 返回的链接不为空字符串，更新封面
+            if (coverUrl.isNotEmpty) {
+              SqliteUtil.updateAnimeCoverbyAnimeId(anime.animeId, coverUrl);
+            }
+          }
+        },
+        icon: const Icon(Icons.refresh),
+        color: Colors.black,
+      ),
+    );
     actions[0].add(
       IconButton(
         onPressed: () async {

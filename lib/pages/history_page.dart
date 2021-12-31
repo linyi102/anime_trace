@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
+import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -116,7 +118,7 @@ class _HistoryPageState extends State<HistoryPage> {
     for (var record in records) {
       listWidget.add(
         ListTile(
-          visualDensity: const VisualDensity(vertical: -4),
+          // visualDensity: const VisualDensity(vertical: -1),
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
@@ -124,6 +126,7 @@ class _HistoryPageState extends State<HistoryPage> {
               fontSize: 15,
             ),
           ),
+          leading: AnimeListCover(record.anime),
           trailing: Text(
             record.startEpisodeNumber == record.endEpisodeNumber
                 ? "${record.startEpisodeNumber}"
