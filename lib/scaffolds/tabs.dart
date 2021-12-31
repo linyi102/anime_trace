@@ -37,6 +37,7 @@ class _TabsState extends State<Tabs> {
       IconButton(
         onPressed: () async {
           List<Anime> animes;
+          showToast("开始更新");
           animes = await SqliteUtil.getAllAnimes();
           for (var anime in animes) {
             // 已有封面直接跳过
