@@ -28,7 +28,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   Win32Window::Point origin(10, 10);
   // Win32Window::Size size(1280, 720);
   Win32Window::Size size(500, 800);
-  if (!window.CreateAndShow(L"anime_footmark_windows", origin, size)) {
+  if (!window.CreateAndShow(L"Manji", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

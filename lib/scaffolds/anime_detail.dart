@@ -73,6 +73,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 _refreshAnime();
                 Navigator.pop(context, _anime);
               },
+              tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
           title: !_loadOk
               ? Container()
@@ -103,16 +104,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     _loadData();
                   });
                 },
+                tooltip: "搜索封面",
                 icon: const Icon(Icons.image_search_rounded)),
             IconButton(
                 onPressed: () {
                   _dialogUpdateEpisodeCnt();
                 },
+                tooltip: "更改集数",
                 icon: const Icon(Icons.add)),
             IconButton(
                 onPressed: () {
                   _dialogDeleteAnime();
                 },
+                tooltip: "删除动漫",
                 icon: const Icon(Icons.delete)),
           ],
         ),

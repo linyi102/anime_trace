@@ -60,6 +60,7 @@ class _TabsState extends State<Tabs> {
           showToast("更新完成");
         },
         icon: const Icon(Icons.refresh),
+        tooltip: "刷新封面",
         color: Colors.black,
       ),
     );
@@ -73,6 +74,7 @@ class _TabsState extends State<Tabs> {
           );
         },
         icon: const Icon(Icons.search_outlined),
+        tooltip: "搜索动漫",
         color: Colors.black,
       ),
     );
