@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -93,26 +92,38 @@ class _AnimeListPageState extends State<AnimeListPage>
           : Scaffold(
               // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
               backgroundColor: Colors.white,
-              appBar: AppBar(
-                // elevation: 1,
-                // shadowColor: Colors.black,
-                toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-                bottom: TabBar(
-                  // labelPadding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-                  isScrollable: true, // 标签可以滑动，避免拥挤
-                  unselectedLabelColor: Colors.black54,
-                  labelColor: Colors.blue, // 标签字体颜色
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
+              appBar: PreferredSize(
+                preferredSize:
+                    const Size.fromHeight(kTextTabBarHeight), // 减少顶部栏高度
+                child: AppBar(
+                  // backgroundColor: Colors.amber,
+                  // elevation: 1,
+                  // shadowColor: Colors.black,
+                  // toolbarHeight: 0, // 外套了PreferredSize，就不需要这个了
+                  bottom: PreferredSize(
+                    // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                    preferredSize: const Size.fromHeight(kToolbarHeight),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: TabBar(
+                        padding: const EdgeInsets.all(2), // 居中，而不是靠左下
+                        labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        isScrollable: true, // 标签可以滑动，避免拥挤
+                        unselectedLabelColor: Colors.black54,
+                        labelColor: Colors.blue, // 标签字体颜色
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        indicatorColor: Colors.transparent, // 隐藏
+                        // indicatorColor: Colors.blue, // 指示器颜色
+                        indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
+                        indicatorWeight: 3, // 指示器高度
+                        tabs: _showTagAndAnimeCntPlus(),
+                        // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                        controller: _tabController,
+                      ),
+                    ),
                   ),
-                  indicatorColor: Colors.white, // 隐藏
-                  // indicatorColor: Colors.blue, // 指示器颜色
-                  indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
-                  indicatorWeight: 3, // 指示器高度
-
-                  tabs: _showTagAndAnimeCntPlus(),
-                  // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                  controller: _tabController,
                 ),
               ),
               body: TabBarView(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/scaffolds/basic_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -106,5 +107,6 @@ class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Tabs();
+    // return BasicPage();
   }
 }
