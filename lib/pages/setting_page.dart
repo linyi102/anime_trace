@@ -82,69 +82,8 @@ class _SettingPageState extends State<SettingPage> {
                 //     }
                 //   },
                 // ),
-                _imgFile == null
-                    ? Container()
-                    : SizedBox(
-                        height: MediaQuery.of(context).size.height / 4,
-                        width: MediaQuery.of(context).size.width,
-                        child: Card(
-                          elevation: 5,
-                          margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5))), // 圆角
-                          clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-                          // elevation: 0,
-                          // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: Image.file(
-                            _imgFile as File,
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
-                      ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.image_outlined,
-                    color: Colors.blue,
-                  ),
-                  title: const Text("设置图片"),
-                  onTap: () async {
-                    final ImagePicker _picker = ImagePicker();
-                    final XFile? image =
-                        await _picker.pickImage(source: ImageSource.gallery);
-                    if (image != null) {
-                      SPUtil.setString("img_file_path", image.path);
-                      _imgFile = File(image.path);
-                      setState(() {});
-                    }
-                  },
-                  onLongPress: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text("取消图片"),
-                            content: const Text("确认取消图片吗？"),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("取消")),
-                              TextButton(
-                                  onPressed: () {
-                                    SPUtil.setString("img_file_path", "");
-                                    _imgFile =
-                                        null; // 需要将该成员设置会null，setState才有效果
-                                    setState(() {});
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("确认")),
-                            ],
-                          );
-                        });
-                  },
-                ),
+                Platform.isAndroid ? _showImg() : Container(),
+                Platform.isAndroid ? _showImgButton() : Container(),
                 ListTile(
                   leading: const Icon(
                     Icons.settings_backup_restore_outlined,
@@ -183,6 +122,73 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ],
             ),
+    );
+  }
+
+  _showImg() {
+    return _imgFile == null
+        ? Container()
+        : SizedBox(
+            height: MediaQuery.of(context).size.height / 4,
+            width: MediaQuery.of(context).size.width,
+            child: Card(
+              elevation: 5,
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))), // 圆角
+              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+              // elevation: 0,
+              // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              child: Image.file(
+                _imgFile as File,
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          );
+  }
+
+  _showImgButton() {
+    return ListTile(
+      leading: const Icon(
+        Icons.image_outlined,
+        color: Colors.blue,
+      ),
+      title: const Text("设置图片"),
+      onTap: () async {
+        final ImagePicker _picker = ImagePicker();
+        final XFile? image =
+            await _picker.pickImage(source: ImageSource.gallery);
+        if (image != null) {
+          SPUtil.setString("img_file_path", image.path);
+          _imgFile = File(image.path);
+          setState(() {});
+        }
+      },
+      onLongPress: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("取消图片"),
+                content: const Text("确认取消图片吗？"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("取消")),
+                  TextButton(
+                      onPressed: () {
+                        SPUtil.setString("img_file_path", "");
+                        _imgFile = null; // 需要将该成员设置会null，setState才有效果
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("确认")),
+                ],
+              );
+            });
+      },
     );
   }
 }

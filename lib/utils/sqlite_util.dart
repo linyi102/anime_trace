@@ -1,10 +1,13 @@
 // ignore_for_file: avoid_print
+import 'dart:io';
+
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SqliteUtil {
   // 单例模式
@@ -22,22 +25,41 @@ class SqliteUtil {
   static late String dbPath;
 
   static _initDatabase() async {
-    dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
-    // String path = "${await getDatabasesPath()}/$sqlFileName";
-
-    print("👉path=$dbPath");
-    // await deleteDatabase(dbPath); // 删除数据库
-    return await openDatabase(
-      dbPath,
-      onCreate: (Database db, int version) {
-        Future(() {
-          _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
-        }).then((value) async {
-          await _insertInitData(db); // await确保加载数据后再执行后面的语句
-        });
-      },
-      version: 1, // onCreate must be null if no version is specified
-    );
+    if (Platform.isAndroid) {
+      dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
+      print("👉android: path=$dbPath");
+      // await deleteDatabase(dbPath); // 删除数据库
+      return await openDatabase(
+        dbPath,
+        onCreate: (Database db, int version) {
+          Future(() {
+            _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
+          }).then((value) async {
+            await _insertInitData(db); // await确保加载数据后再执行后面的语句
+          });
+        },
+        version: 1, // onCreate must be null if no version is specified
+      );
+    } else if (Platform.isWindows) {
+      dbPath =
+          "${(await getApplicationSupportDirectory()).path}/$sqlFileName"; // 使用
+      print("👉windows: path=$dbPath");
+      var databaseFactory = databaseFactoryFfi;
+      return await databaseFactory.openDatabase(dbPath,
+          // onCreate、version都封装到了options中
+          options: OpenDatabaseOptions(
+            onCreate: (Database db, int version) {
+              Future(() {
+                _createInitTable(db);
+              }).then((value) async {
+                await _insertInitData(db);
+              });
+            },
+            version: 1,
+          ));
+    } else {
+      throw ("未适配平台：${Platform.environment}");
+    }
   }
 
   static void _createInitTable(Database db) async {

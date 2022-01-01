@@ -1,6 +1,6 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/scaffolds/basic_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -8,16 +8,31 @@ import 'package:flutter_test_future/utils/tags.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// import 'package:flutter_autosize_screen/binding.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding
+      .ensureInitialized(); // 确保初始化，否则Unhandled Exception: Null check operator used on a null value
   await SPUtil.getInstance();
+  sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.getInstance();
   await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
   tags = await SqliteUtil.getAllTags();
+  // AutoSizeUtil.setStandard(360);
 
+  // if (Platform.isWindows) {
+  //   doWhenWindowReady(() {
+  //     const initialSize = Size(500, 800);
+  //     appWindow.minSize = initialSize;
+  //     appWindow.size = initialSize;
+  //     // appWindow.alignment = Alignment.center;
+  //     appWindow.show();
+  //   });
+  // }
+  // runAutoApp(const MyApp());
   runApp(const MyApp());
 }
 
@@ -107,6 +122,5 @@ class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Tabs();
-    // return BasicPage();
   }
 }

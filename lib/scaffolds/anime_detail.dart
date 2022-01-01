@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:photo_view/photo_view.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;

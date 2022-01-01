@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -175,15 +177,23 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   GridView _getAnimeGridView(int i) {
+    // var mq = MediaQuery.of(context);
+    // var msh = mq.size.height;
+    // var msw = mq.size.width;
+    // var car;
+    // if (msh > msw) {
+    //   car = (msw / 3) / (msh);
+    // } else {
+    //   car = (msh) / (msw / 3);
+    // }
     return GridView.builder(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3, // 横轴数量
           crossAxisSpacing: 5, // 横轴距离
           mainAxisSpacing: 3, // 竖轴距离
-          // childAspectRatio: mq.size.width /
-          // (mq.size.height / 3 * 2.5), // 设备变为横屏时，需要width和height交换一下
-          childAspectRatio: 31 / 53, // 每个网格的比例。
+          // childAspectRatio: car, // 设备变为横屏时，需要width和height交换一下
+          childAspectRatio: 31 / 53, // 每个网格的比例
         ),
         itemCount: animesInTag[i].length,
         itemBuilder: (BuildContext context, int index) {
@@ -213,44 +223,91 @@ class _AnimeListPageState extends State<AnimeListPage>
               onLongPress(index);
             },
             padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-            child: Flex(
-              direction: Axis.vertical,
+            child: Column(
               children: [
-                Stack(
-                  children: [
-                    AnimeGridCover(anime),
-                    Positioned(
-                        left: 5,
-                        top: 5,
-                        child: Container(
-                          // height: 20,
-                          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            color: Colors.blue,
-                          ),
-                          child: Text(
-                            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.white),
-                          ),
-                        )),
-                  ],
+                SizedBox(
+                  // height: coverHeight,
+                  child: Stack(
+                    children: [
+                      AnimeGridCover(anime),
+                      Positioned(
+                          left: 5,
+                          top: 5,
+                          child: Container(
+                            // height: 20,
+                            padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: Colors.blue,
+                            ),
+                            child: Text(
+                              "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.white),
+                            ),
+                          )),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        anime.animeName,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: const TextStyle(fontSize: 13),
+                SizedBox(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          anime.animeName,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: Platform.isAndroid
+                              ? const TextStyle(fontSize: 13)
+                              : null,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
+            // child: Flex(
+            //   direction: Axis.vertical,
+            //   children: [
+            //     Stack(
+            //       children: [
+            //         AnimeGridCover(anime),
+            //         Positioned(
+            //             left: 5,
+            //             top: 5,
+            //             child: Container(
+            //               // height: 20,
+            //               padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(3),
+            //                 color: Colors.blue,
+            //               ),
+            //               child: Text(
+            //                 "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+            //                 style: const TextStyle(
+            //                     fontSize: 12, color: Colors.white),
+            //               ),
+            //             )),
+            //       ],
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.only(top: 5),
+            //       child: Row(
+            //         children: [
+            //           Expanded(
+            //             child: Text(
+            //               anime.animeName,
+            //               overflow: TextOverflow.ellipsis,
+            //               maxLines: 2,
+            //               style: const TextStyle(fontSize: 13),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ],
+            // ),
           );
         });
   }
