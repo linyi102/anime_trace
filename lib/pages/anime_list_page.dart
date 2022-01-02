@@ -27,12 +27,15 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   // 数据加载
   bool _loadOk = false;
-  int _pageIndex = 1;
+  List<int> pageIndex = List.generate(tags.length, (index) => 1); // 初始页都为1
   final int _pageSize = 50;
+  // int _pageIndex = 1;
+  // final int _pageSize = 50;
 
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
+  Color multiSelectedColor = Colors.blueAccent.withOpacity(0.25);
 
   @override
   void initState() {
@@ -70,8 +73,9 @@ class _AnimeListPageState extends State<AnimeListPage>
       for (int i = 0; i < tags.length; ++i) {
         animesInTag[i] =
             await SqliteUtil.getAllAnimeBytagName(tags[i], 0, _pageSize);
-        // debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
+        debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
       }
+      debugPrint("animesInTag[0].length=${animesInTag[0].length}");
     }).then((value) {
       debugPrint("数据加载完毕");
       _loadOk = true; // 放这里啊，之前干嘛放外面...
@@ -154,15 +158,8 @@ class _AnimeListPageState extends State<AnimeListPage>
   List<Widget> _getAnimesPlus() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
-      // MediaQueryData mq = MediaQuery.of(context);
-      // debugPrint(
-      //     "height=${mq.size.height}, top=${mq.padding.top}, bottom=${mq.padding.bottom}");
       list.add(
         Scrollbar(
-          thickness: 5,
-          showTrackOnHover: true,
-          interactive: true,
-          radius: const Radius.circular(10),
           child: Stack(children: [
             SPUtil.getBool("display_list")
                 ? _getAnimeListView(i)
@@ -177,137 +174,81 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   GridView _getAnimeGridView(int i) {
-    // var mq = MediaQuery.of(context);
-    // var msh = mq.size.height;
-    // var msw = mq.size.width;
-    // var car;
-    // if (msh > msw) {
-    //   car = (msw / 3) / (msh);
-    // } else {
-    //   car = (msh) / (msw / 3);
-    // }
     return GridView.builder(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // 横轴数量
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount:
+              SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
           crossAxisSpacing: 5, // 横轴距离
           mainAxisSpacing: 3, // 竖轴距离
-          // childAspectRatio: car, // 设备变为横屏时，需要width和height交换一下
-          childAspectRatio: 31 / 53, // 每个网格的比例
+          childAspectRatio: SPUtil.getBool("hideGridAnimeName")
+              ? 31 / 48
+              : 31 / 56, // 每个网格的比例
         ),
         itemCount: animesInTag[i].length,
         itemBuilder: (BuildContext context, int index) {
-          // if (index + 10 == _pageSize * (_pageIndex)) {
-          //   // +10提前请求
-          //   _pageIndex++;
-          //   debugPrint("再次请求$_pageSize个数据");
-          //   Future(() {
-          //     return SqliteUtil.getAllAnimeBytagName(
-          //         tags[i], animesInTag[i].length, _pageSize);
-          //   }).then((value) {
-          //     debugPrint("请求结束");
-          //     animesInTag[i].addAll(value);
-          //     debugPrint("添加并更新状态");
-          //     setState(() {});
-          //   });
-          // }
+          _loadExtraData(i, index);
           Anime anime = animesInTag[i][index];
           return MaterialButton(
-            color: mapSelected.containsKey(index)
-                ? Colors.blue.withOpacity(0.7)
-                : null,
             onPressed: () {
               onpress(i, index, anime);
             },
             onLongPress: () {
               onLongPress(index);
             },
-            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-            child: Column(
-              children: [
-                SizedBox(
-                  // height: coverHeight,
-                  child: Stack(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0), // 设置按钮填充
+            child: Stack(children: [
+              Column(
+                children: [
+                  Stack(
                     children: [
                       AnimeGridCover(anime),
-                      Positioned(
-                          left: 5,
-                          top: 5,
-                          child: Container(
-                            // height: 20,
-                            padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: Colors.blue,
-                            ),
-                            child: Text(
-                              "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.white),
-                            ),
-                          )),
+                      SPUtil.getBool("hideGridAnimeProgress")
+                          ? Container()
+                          : Positioned(
+                              left: 5,
+                              top: 5,
+                              child: Container(
+                                // height: 20,
+                                padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(3),
+                                  color: Colors.blue,
+                                ),
+                                child: Text(
+                                  "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              )),
                     ],
                   ),
-                ),
-                SizedBox(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          anime.animeName,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: Platform.isAndroid
-                              ? const TextStyle(fontSize: 13)
-                              : null,
+                  SPUtil.getBool("hideGridAnimeName")
+                      ? Container()
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  anime.animeName,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: Platform.isAndroid
+                                      ? const TextStyle(fontSize: 13)
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            // child: Flex(
-            //   direction: Axis.vertical,
-            //   children: [
-            //     Stack(
-            //       children: [
-            //         AnimeGridCover(anime),
-            //         Positioned(
-            //             left: 5,
-            //             top: 5,
-            //             child: Container(
-            //               // height: 20,
-            //               padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-            //               decoration: BoxDecoration(
-            //                 borderRadius: BorderRadius.circular(3),
-            //                 color: Colors.blue,
-            //               ),
-            //               child: Text(
-            //                 "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-            //                 style: const TextStyle(
-            //                     fontSize: 12, color: Colors.white),
-            //               ),
-            //             )),
-            //       ],
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.only(top: 5),
-            //       child: Row(
-            //         children: [
-            //           Expanded(
-            //             child: Text(
-            //               anime.animeName,
-            //               overflow: TextOverflow.ellipsis,
-            //               maxLines: 2,
-            //               style: const TextStyle(fontSize: 13),
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            // ),
+                ],
+              ),
+              Container(
+                color:
+                    mapSelected.containsKey(index) ? multiSelectedColor : null,
+              )
+            ]),
           );
         });
   }
@@ -317,30 +258,13 @@ class _AnimeListPageState extends State<AnimeListPage>
       itemCount: animesInTag[i].length,
       // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
       itemBuilder: (BuildContext context, int index) {
-        // debugPrint("index=$index");
-        // 直接使用index会导致重复请求
-        // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
-        // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
-        // 当到达100(50*2)时，会再次请求50个数据
-        if (index + 10 == _pageSize * (_pageIndex)) {
-          // +10提前请求
-          _pageIndex++;
-          debugPrint("再次请求$_pageSize个数据");
-          Future(() {
-            return SqliteUtil.getAllAnimeBytagName(
-                tags[i], animesInTag[i].length, _pageSize);
-          }).then((value) {
-            debugPrint("请求结束");
-            animesInTag[i].addAll(value);
-            debugPrint("添加并更新状态");
-            setState(() {});
-          });
-        }
+        _loadExtraData(i, index);
+
         // debugPrint("$index");
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[i][index];
         return ListTile(
-          selectedTileColor: const Color.fromRGBO(0, 118, 243, 0.1),
+          selectedTileColor: multiSelectedColor,
           selected: mapSelected.containsKey(index),
           selectedColor: Colors.black,
           // visualDensity: const VisualDensity(vertical: -1),
@@ -370,6 +294,28 @@ class _AnimeListPageState extends State<AnimeListPage>
         );
       },
     );
+  }
+
+  void _loadExtraData(i, index) {
+    // debugPrint("index=$index");
+    // 直接使用index会导致重复请求
+    // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
+    // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
+    // 当到达100(50*2)时，会再次请求50个数据
+    if (index + 10 == _pageSize * (pageIndex[i])) {
+      // +10提前请求
+      pageIndex[i]++;
+      debugPrint("再次请求$_pageSize个数据");
+      Future(() {
+        return SqliteUtil.getAllAnimeBytagName(
+            tags[i], animesInTag[i].length, _pageSize);
+      }).then((value) {
+        debugPrint("请求结束");
+        animesInTag[i].addAll(value);
+        debugPrint("添加并更新状态，animesInTag[$i].length=${animesInTag[i].length}");
+        setState(() {});
+      });
+    }
   }
 
   void onpress(i, index, anime) {
@@ -500,7 +446,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   int pos = list[m] - j;
 
                   animesInTag[oldTagindex][pos].tagName = newTagName;
-                  SqliteUtil.updateTagNameByAnimeId(
+                  SqliteUtil.updateTagByAnimeId(
                       animesInTag[oldTagindex][pos].animeId, newTagName);
                   debugPrint(
                       "修改${animesInTag[oldTagindex][pos].animeName}的标签为$newTagName");

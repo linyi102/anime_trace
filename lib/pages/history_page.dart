@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -71,29 +72,24 @@ class _HistoryPageState extends State<HistoryPage> {
               ? const Text("暂无相关记录")
               : Expanded(
                   child: Scrollbar(
-                      showTrackOnHover: true,
-                      thickness: 5,
-                      interactive: true,
-                      radius: const Radius.circular(10),
                       child: (ListView.separated(
-                        itemCount: yearHistory[curYear]!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          // debugPrint("$index");
-                          return ListTile(
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            title: ListTile(
-                              title: Text(yearHistory[curYear]![index].date),
-                            ),
-                            subtitle: Column(
-                              children: _getRecord(index),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const Divider();
-                        },
-                      ))),
+                    itemCount: yearHistory[curYear]!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      // debugPrint("$index");
+                      return ListTile(
+                        contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        title: ListTile(
+                          title: Text(yearHistory[curYear]![index].date),
+                        ),
+                        subtitle: Column(
+                          children: _getRecord(index),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const Divider();
+                    },
+                  ))),
                 ),
         ],
       ),
@@ -178,7 +174,18 @@ class _HistoryPageState extends State<HistoryPage> {
         Expanded(
           child: TextButton(
               onPressed: () {
-                _dialogSelectYear();
+                // _dialogSelectYear();
+                dialogSelectUint(context, "选择年份",
+                        defaultValue: curYear, maxValue: curYear + 2)
+                    .then((value) {
+                  if (value == null) {
+                    debugPrint("未选择，直接返回");
+                    return;
+                  }
+                  debugPrint("选择了$value");
+                  curYear = value;
+                  _loadData(curYear);
+                });
               },
               child: Text(
                 "$curYear",

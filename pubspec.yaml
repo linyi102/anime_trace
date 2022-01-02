@@ -65,8 +65,7 @@ dependencies:
   cached_network_image: ^3.2.0 # 缓存图片。不支持windows
   photo_view: ^0.13.0 # 点击查看图片
   # flutter_screenutil: ^5.0.2
-  # flutter_autosize_screen: ^1.0.1
-  bitsdojo_window: ^0.1.1+1
+  # flutter_autosize_screen: ^1.0.1 # get不了
   # desktop_window: ^0.4.0 # 添加导致run不了：无法运行“rc.exe”
 
   # The following adds the Cupertino Icons font to your application.

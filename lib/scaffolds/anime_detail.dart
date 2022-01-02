@@ -379,8 +379,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
               onTap: () {
                 _anime.tagName = tags[i];
-                SqliteUtil.updateTagNameByAnimeId(
-                    _anime.animeId, _anime.tagName);
+                SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
                 debugPrint("修改标签为${_anime.tagName}");
                 setState(() {});
                 Navigator.pop(context);

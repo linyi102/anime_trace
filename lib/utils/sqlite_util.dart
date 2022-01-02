@@ -17,6 +17,16 @@ class SqliteUtil {
 
   static Future<SqliteUtil> getInstance() async {
     _database = await _initDatabase();
+    // for (int i = 0; i < 200; ++i) {
+    //   await _database.rawInsert('''
+    // insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
+    // values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
+    //     ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
+    //     ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
+    //     ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
+    //     ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
+    // ''');
+    // }
     return _instance ??= SqliteUtil._();
   }
 
@@ -28,7 +38,7 @@ class SqliteUtil {
     if (Platform.isAndroid) {
       dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
       print("👉android: path=$dbPath");
-      // await deleteDatabase(dbPath); // 删除数据库
+      // await deleteDatabase(dbPath); // 删除Android数据库
       return await openDatabase(
         dbPath,
         onCreate: (Database db, int version) {
@@ -43,6 +53,7 @@ class SqliteUtil {
     } else if (Platform.isWindows) {
       dbPath =
           "${(await getApplicationSupportDirectory()).path}/$sqlFileName"; // 使用
+      // await deleteDatabase(dbPath); // 删除桌面端数据库，然而并不能删除
       print("👉windows: path=$dbPath");
       var databaseFactory = databaseFactoryFfi;
       return await databaseFactory.openDatabase(dbPath,
@@ -120,16 +131,16 @@ class SqliteUtil {
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
       values('收集', 0), ('旅途', 1), ('终点', 2);
     ''');
-    // for (int i = 0; i < 1; ++i) {
-    //   await db.rawInsert('''
-    // insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-    // values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
-    //     ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
-    //     ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
-    //     ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
-    //     ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
-    // ''');
-    // }
+    for (int i = 0; i < 100; ++i) {
+      await db.rawInsert('''
+    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
+    values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
+        ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
+        ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
+        ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
+        ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
+    ''');
+    }
     // for (int i = 0; i < 1; ++i) {
     //   await db.rawInsert('''
     // insert into history(date, anime_id, episode_number)
@@ -177,11 +188,12 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateTagNameByAnimeId(int animeId, String newTagName) async {
+  static void updateTagByAnimeId(int animeId, String newTagName) async {
     print("sql: updateTagNameByAnimeId");
+    // 同时修改最后一次修改标签的时间
     await _database.rawUpdate('''
     update anime
-    set tag_name = '$newTagName'
+    set tag_name = '$newTagName', last_mode_tag_time = '${DateTime.now().toString()}'
     where anime_id = $animeId;
     ''');
   }
@@ -411,7 +423,7 @@ class SqliteUtil {
     print("sql: getAnimesBySearch");
 
     var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt
+    select anime_id, anime_name, anime_episode_cnt, anime_cover_url
     from anime
     where anime_name LIKE '%$keyWord%';
     ''');
@@ -430,6 +442,7 @@ class SqliteUtil {
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
       ));
     }
     return res;

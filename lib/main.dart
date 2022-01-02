@@ -1,4 +1,3 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-// import 'package:flutter_autosize_screen/binding.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -21,18 +19,7 @@ void main() async {
   await SqliteUtil.getInstance();
   await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
   tags = await SqliteUtil.getAllTags();
-  // AutoSizeUtil.setStandard(360);
 
-  // if (Platform.isWindows) {
-  //   doWhenWindowReady(() {
-  //     const initialSize = Size(500, 800);
-  //     appWindow.minSize = initialSize;
-  //     appWindow.size = initialSize;
-  //     // appWindow.alignment = Alignment.center;
-  //     appWindow.show();
-  //   });
-  // }
-  // runAutoApp(const MyApp());
   runApp(const MyApp());
 }
 
@@ -92,6 +79,12 @@ class _MyAppState extends State<MyApp> {
             iconTheme: IconThemeData(
               color: Colors.black,
             ),
+          ),
+          scrollbarTheme: ScrollbarThemeData(
+            showTrackOnHover: true,
+            thickness: MaterialStateProperty.all(7),
+            interactive: true,
+            radius: const Radius.circular(10),
           ),
           pageTransitionsTheme: const PageTransitionsTheme(
             builders: <TargetPlatform, PageTransitionsBuilder>{

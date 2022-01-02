@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -71,8 +71,6 @@ class _SearchState extends State<Search> {
       listWidget.add(AnimeItem(anime));
     }
     return Scrollbar(
-      thickness: 5,
-      radius: const Radius.circular(10),
       child: ListView(
         children: listWidget,
       ),
@@ -96,6 +94,7 @@ class _AnimeItemState extends State<AnimeItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      leading: AnimeListCover(widget.anime),
       title: Text(
         widget.anime.animeName,
         style: const TextStyle(
