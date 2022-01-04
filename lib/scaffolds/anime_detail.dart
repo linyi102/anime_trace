@@ -135,7 +135,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       thickness: 1,
                     ),
                   ),
-                  _displayEpisode(),
+                  // _displayEpisode(),
+                  _displayEpisodePlus(),
                 ],
               )
             : _waitDataBody(),
@@ -232,7 +233,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     for (int i = 0; i < _episodes.length; ++i) {
       list.add(
         ListTile(
-          visualDensity: const VisualDensity(vertical: -2),
+          // visualDensity: const VisualDensity(vertical: -2),
           // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           title: Text("第 ${_episodes[i].number} 集"),
           subtitle: Text(_episodes[i].getDate()),
@@ -253,16 +254,88 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 setState(() {});
               }
             },
-            // icon: _episodes[i].isChecked()
-            //     ? const Icon(
-            //         // Icons.check_box_outlined,
-            //         Icons.check_rounded,
-            //         color: Colors.grey,
-            //       )
-            //     : const Icon(
-            //         Icons.check_box_outline_blank_rounded,
-            //         color: Colors.black,
-            //       ),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 100),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                //执行缩放动画
+                return ScaleTransition(child: child, scale: animation);
+              },
+              child: _episodes[i].isChecked()
+                  ? Icon(
+                      // Icons.check_box_outlined,
+                      Icons.check_rounded,
+                      color: Colors.grey,
+                      key: Key("$i"), // 不能用unique，否则同状态的按钮都会有动画
+                    )
+                  : const Icon(
+                      Icons.check_box_outline_blank_rounded,
+                      color: Colors.black,
+                    ),
+            ),
+          ),
+          onTap: () {
+            FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+          },
+          onLongPress: () async {
+            DateTime defaultDateTime = DateTime.now();
+            if (_episodes[i].isChecked()) {
+              defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
+            }
+            String dateTime =
+                await _showDatePicker(defaultDateTime: defaultDateTime);
+
+            if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
+
+            // 选择日期后，如果之前有日期，则更新。没有则直接插入
+            // 注意：对于_episodes[i]，它是第_episodes[i].number集
+            int episodeNumber = _episodes[i].number;
+            if (_episodes[i].isChecked()) {
+              SqliteUtil.updateHistoryItem(
+                  _anime.animeId, episodeNumber, dateTime);
+            } else {
+              SqliteUtil.insertHistoryItem(
+                  _anime.animeId, episodeNumber, dateTime);
+            }
+            // 更新页面
+            setState(() {
+              // 改的是i，而不是episodeNumber
+              _episodes[i].dateTime = dateTime;
+            });
+          },
+        ),
+      );
+    }
+    return Column(
+      children: list,
+    );
+  }
+
+  _displayEpisodePlus() {
+    List<Widget> list = [];
+    for (int i = 0; i < _episodes.length; ++i) {
+      list.add(
+        ListTile(
+          // visualDensity: const VisualDensity(vertical: -2),
+          // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+          title: Text("第 ${_episodes[i].number} 集"),
+          subtitle: Text(_episodes[i].getDate()),
+          // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
+          style: ListTileStyle.drawer,
+          trailing: IconButton(
+            onPressed: () {
+              if (_episodes[i].isChecked()) {
+                _dialogRemoveDate(
+                  _episodes[i].number,
+                  _episodes[i].dateTime,
+                ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+              } else {
+                String date = DateTime.now().toString();
+                SqliteUtil.insertHistoryItem(
+                    widget.animeId, _episodes[i].number, date);
+                _episodes[i].dateTime = date;
+                setState(() {});
+              }
+            },
             icon: AnimatedSwitcher(
               duration: const Duration(milliseconds: 100),
               transitionBuilder: (Widget child, Animation<double> animation) {

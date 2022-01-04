@@ -25,9 +25,12 @@ class AnimeGridCover extends StatelessWidget {
                   style: const TextStyle(fontSize: 20),
                 ),
               )
-            : CachedNetworkImage(
-                imageUrl: _anime.animeCoverUrl,
-                fit: BoxFit.fitHeight,
+            : Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: CachedNetworkImage(
+                  imageUrl: _anime.animeCoverUrl,
+                  fit: BoxFit.fitHeight,
+                ),
               ),
       ),
     );

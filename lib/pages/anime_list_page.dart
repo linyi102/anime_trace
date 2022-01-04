@@ -189,66 +189,71 @@ class _AnimeListPageState extends State<AnimeListPage>
         itemBuilder: (BuildContext context, int index) {
           _loadExtraData(i, index);
           Anime anime = animesInTag[i][index];
-          return MaterialButton(
-            onPressed: () {
-              onpress(i, index, anime);
-            },
-            onLongPress: () {
-              onLongPress(index);
-            },
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0), // 设置按钮填充
-            child: Stack(children: [
-              Column(
-                children: [
-                  Stack(
-                    children: [
-                      AnimeGridCover(anime),
-                      SPUtil.getBool("hideGridAnimeProgress")
-                          ? Container()
-                          : Positioned(
-                              left: 5,
-                              top: 5,
-                              child: Container(
-                                // height: 20,
-                                padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  color: Colors.blue,
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: MaterialButton(
+              onPressed: () {
+                onpress(i, index, anime);
+              },
+              onLongPress: () {
+                onLongPress(index);
+              },
+              padding: const EdgeInsets.all(0), // 设置按钮填充
+              child: Stack(children: [
+                Column(
+                  children: [
+                    Stack(
+                      children: [
+                        AnimeGridCover(anime),
+                        SPUtil.getBool("hideGridAnimeProgress")
+                            ? Container()
+                            : Positioned(
+                                left: 5,
+                                top: 5,
+                                child: Container(
+                                  // height: 20,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    color: Colors.blue,
+                                  ),
+                                  child: Text(
+                                    "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.white),
+                                  ),
+                                )),
+                      ],
+                    ),
+                    SPUtil.getBool("hideGridAnimeName")
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    anime.animeName,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: Platform.isAndroid
+                                        ? const TextStyle(fontSize: 13)
+                                        : null,
+                                  ),
                                 ),
-                                child: Text(
-                                  "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.white),
-                                ),
-                              )),
-                    ],
-                  ),
-                  SPUtil.getBool("hideGridAnimeName")
-                      ? Container()
-                      : Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  anime.animeName,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  style: Platform.isAndroid
-                                      ? const TextStyle(fontSize: 13)
-                                      : null,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                ],
-              ),
-              Container(
-                color:
-                    mapSelected.containsKey(index) ? multiSelectedColor : null,
-              )
-            ]),
+                  ],
+                ),
+                Container(
+                  color: mapSelected.containsKey(index)
+                      ? multiSelectedColor
+                      : null,
+                ),
+              ]),
+            ),
           );
         });
   }
@@ -326,7 +331,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         // 如果取消后一个都没选，就自动退出多选状态
         if (mapSelected.isEmpty) {
           multiSelected = false;
-          setState(() {});
         }
       } else {
         mapSelected[index] = true;
