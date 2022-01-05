@@ -51,7 +51,7 @@ class _HistoryPageState extends State<HistoryPage> {
           child: !yearLoadOk.containsKey(curYear)
               ? Container(
                   key: UniqueKey(),
-                  color: Colors.white,
+                  // color: Colors.white,
                 )
               : _getHistory(),
         ));

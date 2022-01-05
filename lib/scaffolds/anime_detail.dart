@@ -138,9 +138,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ),
         body: _loadOk
             ? ListView(
-                shrinkWrap: true, // ListView嵌套GridView
-                physics:
-                    const NeverScrollableScrollPhysics(), // ListView嵌套GridView。解决滑动事假冲突
                 children: [
                   _displayAnimeCover(),
                   // _displayAnimeName(),
@@ -374,20 +371,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
             ),
           ),
-          // trailing: _episodes[i].isChecked()
-          //     ? IconButton(
-          //         onPressed: () {
-          //           Navigator.of(context)
-          //               .push(MaterialPageRoute(
-          //                   builder: (context) =>
-          //                       EpisodeNoteSF(_episodeNotes[i])))
-          //               .then((value) {
-          //             _episodeNotes[i] = value; // 更新修改
-          //             setState(() {});
-          //           });
-          //         },
-          //         icon: const Icon(Icons.arrow_forward_ios_rounded))
-          //     : null,
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
             if (_episodes[i].isChecked()) {

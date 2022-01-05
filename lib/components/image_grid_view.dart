@@ -6,6 +6,7 @@ showImageGridView(
   return GridView.builder(
       padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
       shrinkWrap: true, // ListView嵌套GridView
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3, // 横轴数量
         crossAxisSpacing: 15, // 横轴距离

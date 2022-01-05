@@ -66,14 +66,16 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
               "${widget.episodeNote.anime.animeName}>第 ${widget.episodeNote.episode.number} 集"),
         ),
         body: _loadOk
-            ? ListView(
-                shrinkWrap: true, // ListView嵌套GridView
-                physics:
-                    const NeverScrollableScrollPhysics(), // ListView嵌套GridView。解决滑动事假冲突
-                children: [
-                  _showNoteContent(),
-                  _showImages(),
-                ],
+            ? Scrollbar(
+                child: ListView(
+                  shrinkWrap: true, // ListView嵌套GridView
+                  physics:
+                      const NeverScrollableScrollPhysics(), // ListView嵌套GridView。解决滑动事假冲突
+                  children: [
+                    _showNoteContent(),
+                    _showImages(),
+                  ],
+                ),
               )
             : Container(),
       ),
@@ -115,9 +117,9 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
               borderRadius: BorderRadius.circular(5),
               child: MaterialButton(
                   onPressed: () async {
-                    FilePickerResult? result = await FilePicker.platform
-                        .pickFiles(
-                            allowedExtensions: ['jpg', 'png', 'gif'],
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                            // allowedExtensions: ['jpg', 'png', 'gif'],
                             allowMultiple: true);
                     if (result == null) return;
                     List<PlatformFile> platformFiles = result.files;

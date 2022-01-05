@@ -39,7 +39,7 @@ class _NoteListPageState extends State<NoteListPage> {
       child: !_loadOk
           ? Container(
               key: UniqueKey(),
-              color: Colors.white,
+              // color: Colors.white,
             )
           : _showNotes(),
     );
@@ -51,7 +51,7 @@ class _NoteListPageState extends State<NoteListPage> {
       itemBuilder: (BuildContext context, int index) {
         return Column(children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
             child: Card(
               // color: Colors.red,
               elevation: 0,
@@ -72,11 +72,16 @@ class _NoteListPageState extends State<NoteListPage> {
                       // style: ListTileStyle.drawer,
                       leading: AnimeListCover(episodeNotes[index].anime),
                       title: Text(
-                        "${episodeNotes[index].episode.getDate()} ${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
+                        "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      subtitle: Text(episodeNotes[index].episode.getDate()),
                     ),
+                    episodeNotes[index].noteContent.isEmpty &&
+                            episodeNotes[index].imgLocalPaths.isEmpty
+                        ? Container()
+                        : const Divider(),
                     episodeNotes[index].noteContent.isEmpty
                         ? Container()
                         : ListTile(
@@ -87,6 +92,23 @@ class _NoteListPageState extends State<NoteListPage> {
                       return ImageGridItem(
                           episodeNotes[index].imgLocalPaths[index1]);
                     }),
+                    // episodeNotes[index].noteContent.isEmpty &&
+                    //         episodeNotes[index].imgLocalPaths.isEmpty
+                    //     ? Container()
+                    //     : const Divider(),
+                    // ListTile(
+                    //   trailing: AnimeListCover(episodeNotes[index].anime),
+                    //   title: Text(
+                    //     "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
+                    //     maxLines: 1,
+                    //     overflow: TextOverflow.ellipsis,
+                    //     textAlign: TextAlign.right,
+                    //   ),
+                    //   subtitle: Text(
+                    //     episodeNotes[index].episode.getDate(),
+                    //     textAlign: TextAlign.right,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
