@@ -18,6 +18,8 @@ void main() async {
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.getInstance();
   await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
+  await SqliteUtil.createTableEpisodeNote();
+  await SqliteUtil.createTableImage();
   tags = await SqliteUtil.getAllTags();
 
   runApp(const MyApp());

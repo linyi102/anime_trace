@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode.dart';
+import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:path_provider/path_provider.dart';
@@ -654,5 +655,117 @@ class SqliteUtil {
     //   print(item);
     // }
     return history;
+  }
+
+  static createTableEpisodeNote() async {
+    await _database.execute('''
+    CREATE TABLE IF NOT EXISTS episode_note ( -- IF NOT EXISTS表示不存在表时才会创建
+      note_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+      anime_id       INTEGER NOT NULL,
+      episode_number INTEGER NOT NULL,
+      note_content   TEXT,
+      FOREIGN KEY (anime_id) REFERENCES anime (anime_id) 
+    );
+    ''');
+  }
+
+  static insertEpisodeNote(EpisodeNote episodeNote) async {
+    print("sql: insertEpisodeNote");
+    await _database.rawInsert('''
+    insert into episode_note (anime_id, episode_number, note_content)
+    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ''); -- 空内容
+    ''');
+  }
+
+  static updateEpisodeNoteContentByNoteId(
+      int noteId, String noteContent) async {
+    print("sql: updateEpisodeNoteContent");
+    print("笔记id：$noteId, 笔记内容：$noteContent");
+    await _database.rawUpdate('''
+    update episode_note
+    set note_content = '$noteContent'
+    where note_id = $noteId;
+    ''');
+  }
+
+  static Future<EpisodeNote> getEpisodeNoteByAnimeIdAndEpisodeNumber(
+      EpisodeNote episodeNote) async {
+    print("sql: getEpisodeNoteByAnimeIdAndEpisodeNumber");
+    // 查询内容
+    var lm1 = await _database.rawQuery('''
+    select note_id, note_content from episode_note
+    where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number};
+    ''');
+    if (lm1.isEmpty) {
+      // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
+      insertEpisodeNote(episodeNote);
+      var lm2 = await _database.rawQuery('''
+      select last_insert_rowid() as last_id
+      from episode_note;
+      ''');
+      episodeNote.episodeNoteId = lm2[0]["last_id"] as int;
+    } else {
+      episodeNote.episodeNoteId = lm1[0]['note_id'] as int;
+      // 获取笔记内容
+      episodeNote.noteContent = lm1[0]['note_content'] as String;
+    }
+    // print("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
+    // 查询图片
+    episodeNote.imgLocalPaths =
+        await getImgsByNoteId(episodeNote.episodeNoteId);
+    return episodeNote;
+  }
+
+  static Future<List<EpisodeNote>> getAllNotes() async {
+    print("sql: getAllNotes");
+    List<EpisodeNote> episodeNotes = [];
+    // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
+    var lm1 = await _database.rawQuery('''
+    select date, history.anime_id, episode_number, anime_name, anime_cover_url
+    from history inner join anime on history.anime_id = anime.anime_id
+    order by date desc;
+    ''');
+    for (var item in lm1) {
+      Anime anime = Anime(
+          animeId: item['anime_id'] as int,
+          animeName: item['anime_name'] as String,
+          animeEpisodeCnt: 0,
+          animeCoverUrl: item['anime_cover_url'] as String);
+      Episode episode = Episode(
+        item['episode_number'] as int,
+        dateTime: item['date'] as String,
+      );
+      EpisodeNote episodeNote = EpisodeNote(
+          anime: anime, episode: episode, imgLocalPaths: [], imgUrls: []);
+      episodeNote = await getEpisodeNoteByAnimeIdAndEpisodeNumber(episodeNote);
+      // print(episodeNote);
+      episodeNotes.add(episodeNote);
+    }
+    return episodeNotes;
+  }
+
+  static createTableImage() async {
+    await _database.execute('''
+    CREATE TABLE IF NOT EXISTS image (
+      image_id          INTEGER  PRIMARY KEY AUTOINCREMENT,
+      note_id           INTEGER,
+      image_local_path  TEXT,
+      image_url         TEXT,
+      image_origin_name TEXT,
+      FOREIGN KEY (note_id) REFERENCES episode_note (note_id) 
+    );
+    ''');
+  }
+
+  static Future<List<String>> getImgsByNoteId(int noteId) async {
+    var lm = await _database.rawQuery('''
+    select image_local_path from image
+    where note_id = $noteId;
+    ''');
+    List<String> imgLocalPaths = [];
+    for (var item in lm) {
+      imgLocalPaths.add(item['image_local_path'] as String);
+    }
+    return imgLocalPaths;
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
@@ -21,6 +23,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime _anime;
   List<Episode> _episodes = [];
   bool _loadOk = false;
+  List<EpisodeNote> _episodeNotes = [];
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -40,6 +43,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       _anime = value;
       debugPrint(value.toString());
       _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
+      for (var episode in _episodes) {
+        EpisodeNote episodeNote = EpisodeNote(
+            anime: _anime, episode: episode, imgLocalPaths: [], imgUrls: []);
+        if (episode.isChecked()) {
+          // 如果该集完成了，就去获取该集笔记（内容+图片）
+          episodeNote =
+              await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
+                  episodeNote);
+        }
+        _episodeNotes.add(episodeNote);
+      }
     }).then((value) {
       _loadOk = true;
       setState(() {});
@@ -321,7 +335,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           subtitle: Text(_episodes[i].getDate()),
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           style: ListTileStyle.drawer,
-          trailing: IconButton(
+          leading: IconButton(
             onPressed: () {
               if (_episodes[i].isChecked()) {
                 _dialogRemoveDate(
@@ -355,6 +369,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
             ),
           ),
+          trailing: _episodes[i].isChecked()
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                            builder: (context) =>
+                                EpisodeNoteSF(_episodeNotes[i])))
+                        .then((value) {
+                      _episodeNotes[i] = value; // 更新修改
+                      setState(() {});
+                    });
+                  },
+                  icon: const Icon(Icons.arrow_forward_ios_rounded))
+              : null,
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
           },
@@ -386,6 +414,29 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           },
         ),
       );
+      if (_episodes[i].isChecked()) {
+        list.add(ListTile(
+          title: Text(_episodeNotes[i].noteContent),
+          onTap: () {},
+        ));
+        // list.add(GridView.builder(
+        //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        //       crossAxisCount: 2, // 横轴数量
+        //       crossAxisSpacing: 5, // 横轴距离
+        //       mainAxisSpacing: 5, // 竖轴距离
+        //       childAspectRatio: 1, // 网格比例。31/43为封面比例
+        //     ),
+        //     itemCount: 2,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       return ClipRRect(
+        //         borderRadius: BorderRadius.circular(5),
+        //         child: Image.network(
+        //           "https://pic4.zhimg.com/v2-12721920675babe5afb7c44b12020e72_r.jpg",
+        //           fit: BoxFit.fitWidth,
+        //         ),
+        //       );
+        //     }));
+      }
     }
     return Column(
       children: list,
