@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/image_grid_item.dart';
+import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -47,21 +49,50 @@ class _NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: episodeNotes.length,
       itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          leading: AnimeListCover(episodeNotes[index].anime),
-          title: Text(episodeNotes[index].noteContent),
-          subtitle: Text(
-              "${episodeNotes[index].episode.getDate()} ${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}"),
-          onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(
-                    builder: (context) => EpisodeNoteSF(episodeNotes[index])))
-                .then((value) {
-              episodeNotes[index] = value; // 更新修改
-              setState(() {});
-            });
-          },
-        );
+        return Column(children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+            child: Card(
+              // color: Colors.red,
+              elevation: 0,
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (context) =>
+                              EpisodeNoteSF(episodeNotes[index])))
+                      .then((value) {
+                    episodeNotes[index] = value; // 更新修改
+                    setState(() {});
+                  });
+                },
+                child: Column(
+                  children: [
+                    ListTile(
+                      // style: ListTileStyle.drawer,
+                      leading: AnimeListCover(episodeNotes[index].anime),
+                      title: Text(
+                        "${episodeNotes[index].episode.getDate()} ${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    episodeNotes[index].noteContent.isEmpty
+                        ? Container()
+                        : ListTile(
+                            title: Text(episodeNotes[index].noteContent),
+                          ),
+                    showImageGridView(episodeNotes[index].imgLocalPaths.length,
+                        (BuildContext context, int index1) {
+                      return ImageGridItem(
+                          episodeNotes[index].imgLocalPaths[index1]);
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ]);
       },
     );
   }

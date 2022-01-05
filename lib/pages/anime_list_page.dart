@@ -97,7 +97,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ? _waitDataScaffold()
           : Scaffold(
               // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-              backgroundColor: Colors.white,
+              // backgroundColor: Colors.white,
               appBar: PreferredSize(
                 preferredSize:
                     const Size.fromHeight(kTextTabBarHeight), // 减少顶部栏高度
@@ -407,7 +407,7 @@ class _AnimeListPageState extends State<AnimeListPage>
       appBar: AppBar(
         toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
       ),
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       // body: null,
     );
   }

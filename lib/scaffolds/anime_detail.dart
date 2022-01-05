@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/image_grid_item.dart';
+import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
@@ -136,6 +138,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ),
         body: _loadOk
             ? ListView(
+                shrinkWrap: true, // ListView嵌套GridView
+                physics:
+                    const NeverScrollableScrollPhysics(), // ListView嵌套GridView。解决滑动事假冲突
                 children: [
                   _displayAnimeCover(),
                   // _displayAnimeName(),
@@ -335,7 +340,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           subtitle: Text(_episodes[i].getDate()),
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           style: ListTileStyle.drawer,
-          leading: IconButton(
+          trailing: IconButton(
             onPressed: () {
               if (_episodes[i].isChecked()) {
                 _dialogRemoveDate(
@@ -369,22 +374,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
             ),
           ),
-          trailing: _episodes[i].isChecked()
-              ? IconButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) =>
-                                EpisodeNoteSF(_episodeNotes[i])))
-                        .then((value) {
-                      _episodeNotes[i] = value; // 更新修改
-                      setState(() {});
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_forward_ios_rounded))
-              : null,
+          // trailing: _episodes[i].isChecked()
+          //     ? IconButton(
+          //         onPressed: () {
+          //           Navigator.of(context)
+          //               .push(MaterialPageRoute(
+          //                   builder: (context) =>
+          //                       EpisodeNoteSF(_episodeNotes[i])))
+          //               .then((value) {
+          //             _episodeNotes[i] = value; // 更新修改
+          //             setState(() {});
+          //           });
+          //         },
+          //         icon: const Icon(Icons.arrow_forward_ios_rounded))
+          //     : null,
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+            if (_episodes[i].isChecked()) {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => EpisodeNoteSF(_episodeNotes[i])))
+                  .then((value) {
+                _episodeNotes[i] = value; // 更新修改
+                setState(() {});
+              });
+            }
           },
           onLongPress: () async {
             DateTime defaultDateTime = DateTime.now();
@@ -415,27 +429,41 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ),
       );
       if (_episodes[i].isChecked()) {
-        list.add(ListTile(
-          title: Text(_episodeNotes[i].noteContent),
-          onTap: () {},
+        list.add(Padding(
+          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+          child: _episodeNotes[i].imgLocalPaths.isEmpty &&
+                  _episodeNotes[i].noteContent.isEmpty
+              ? Container()
+              : Card(
+                  elevation: 0,
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) =>
+                                  EpisodeNoteSF(_episodeNotes[i])))
+                          .then((value) {
+                        _episodeNotes[i] = value; // 更新修改
+                        setState(() {});
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        _episodeNotes[i].noteContent.isEmpty
+                            ? Container()
+                            : ListTile(
+                                title: Text(_episodeNotes[i].noteContent),
+                              ),
+                        showImageGridView(_episodeNotes[i].imgLocalPaths.length,
+                            (BuildContext context, int index) {
+                          return ImageGridItem(
+                              _episodeNotes[i].imgLocalPaths[index]);
+                        })
+                      ],
+                    ),
+                  ),
+                ),
         ));
-        // list.add(GridView.builder(
-        //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        //       crossAxisCount: 2, // 横轴数量
-        //       crossAxisSpacing: 5, // 横轴距离
-        //       mainAxisSpacing: 5, // 竖轴距离
-        //       childAspectRatio: 1, // 网格比例。31/43为封面比例
-        //     ),
-        //     itemCount: 2,
-        //     itemBuilder: (BuildContext context, int index) {
-        //       return ClipRRect(
-        //         borderRadius: BorderRadius.circular(5),
-        //         child: Image.network(
-        //           "https://pic4.zhimg.com/v2-12721920675babe5afb7c44b12020e72_r.jpg",
-        //           fit: BoxFit.fitWidth,
-        //         ),
-        //       );
-        //     }));
       }
     }
     return Column(

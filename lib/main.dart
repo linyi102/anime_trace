@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -16,6 +17,7 @@ void main() async {
       .ensureInitialized(); // 确保初始化，否则Unhandled Exception: Null check operator used on a null value
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
+  await ImageUtil.getInstance();
   await SqliteUtil.getInstance();
   await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
   await SqliteUtil.createTableEpisodeNote();
@@ -93,7 +95,8 @@ class _MyAppState extends State<MyApp> {
               TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             },
           ),
-          scaffoldBackgroundColor: Colors.white,
+          // scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值

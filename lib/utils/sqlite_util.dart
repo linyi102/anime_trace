@@ -757,6 +757,23 @@ class SqliteUtil {
     ''');
   }
 
+  static insertNoteIdAndImageLocalPath(
+      int noteId, String imageLocalPath) async {
+    print("sql: insertNoteIdAndLocalImg($noteId, $imageLocalPath)");
+    await _database.rawInsert('''
+    insert into image (note_id, image_local_path)
+    values ($noteId, '$imageLocalPath');
+    ''');
+  }
+
+  static deleteLocalImageByImageLocalPath(String imageLocalPath) async {
+    print("sql: deleteLocalImageByImageLocalPath($imageLocalPath)");
+    await _database.rawDelete('''
+    delete from image
+    where image_local_path = '$imageLocalPath';
+    ''');
+  }
+
   static Future<List<String>> getImgsByNoteId(int noteId) async {
     var lm = await _database.rawQuery('''
     select image_local_path from image
