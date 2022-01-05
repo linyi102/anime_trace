@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -41,7 +43,7 @@ class _NoteListPageState extends State<NoteListPage> {
               key: UniqueKey(),
               // color: Colors.white,
             )
-          : _showNotes(),
+          : Scrollbar(child: _showNotes()),
     );
   }
 
@@ -49,6 +51,8 @@ class _NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: episodeNotes.length,
       itemBuilder: (BuildContext context, int index) {
+        if (episodeNotes[index].noteContent.isEmpty &&
+            episodeNotes[index].imgLocalPaths.isEmpty) return Container();
         return Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
@@ -56,6 +60,7 @@ class _NoteListPageState extends State<NoteListPage> {
               // color: Colors.red,
               elevation: 0,
               child: MaterialButton(
+                padding: const EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(
@@ -85,13 +90,27 @@ class _NoteListPageState extends State<NoteListPage> {
                     episodeNotes[index].noteContent.isEmpty
                         ? Container()
                         : ListTile(
-                            title: Text(episodeNotes[index].noteContent),
+                            title: Text(
+                              episodeNotes[index].noteContent,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            style: ListTileStyle.drawer,
                           ),
-                    showImageGridView(episodeNotes[index].imgLocalPaths.length,
-                        (BuildContext context, int index1) {
-                      return ImageGridItem(
-                          episodeNotes[index].imgLocalPaths[index1]);
-                    }),
+                    episodeNotes[index].imgLocalPaths.length == 1
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(5), // 圆角
+                            child: Image.file(
+                              File(episodeNotes[index].imgLocalPaths[0]),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          )
+                        : showImageGridView(
+                            episodeNotes[index].imgLocalPaths.length,
+                            (BuildContext context, int index1) {
+                            return ImageGridItem(
+                                episodeNotes[index].imgLocalPaths[index1]);
+                          }),
                     // episodeNotes[index].noteContent.isEmpty &&
                     //         episodeNotes[index].imgLocalPaths.isEmpty
                     //     ? Container()

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -8,6 +10,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
@@ -30,6 +33,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
   // FocusNode descFocusNode = FocusNode(); // 描述输入框焦点
+
+  bool hideNoteInAnimeDetail =
+      SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
 
   @override
   void initState() {
@@ -122,6 +128,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 tooltip: "搜索封面",
                 icon: const Icon(Icons.image_search_rounded)),
+            IconButton(
+                onPressed: () {
+                  if (hideNoteInAnimeDetail) {
+                    // 原先隐藏，则设置为false，表示显示
+                    SPUtil.setBool("hideNoteInAnimeDetail", false);
+                    hideNoteInAnimeDetail = false;
+                  } else {
+                    SPUtil.setBool("hideNoteInAnimeDetail", true);
+                    hideNoteInAnimeDetail = true;
+                  }
+                  setState(() {});
+                },
+                tooltip: "显示笔记",
+                icon: const Icon(Icons.remove_red_eye_rounded)),
             IconButton(
                 onPressed: () {
                   _dialogUpdateEpisodeCnt();
@@ -411,7 +431,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           },
         ),
       );
-      if (_episodes[i].isChecked()) {
+      if (!hideNoteInAnimeDetail && _episodes[i].isChecked()) {
         list.add(Padding(
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           child: _episodeNotes[i].imgLocalPaths.isEmpty &&
@@ -420,6 +440,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               : Card(
                   elevation: 0,
                   child: MaterialButton(
+                    padding: _episodeNotes[i].noteContent.isEmpty
+                        ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+                        : const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     onPressed: () {
                       Navigator.of(context)
                           .push(MaterialPageRoute(
@@ -435,13 +458,27 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         _episodeNotes[i].noteContent.isEmpty
                             ? Container()
                             : ListTile(
-                                title: Text(_episodeNotes[i].noteContent),
+                                title: Text(
+                                  _episodeNotes[i].noteContent,
+                                  maxLines: 10,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                style: ListTileStyle.drawer,
                               ),
-                        showImageGridView(_episodeNotes[i].imgLocalPaths.length,
-                            (BuildContext context, int index) {
-                          return ImageGridItem(
-                              _episodeNotes[i].imgLocalPaths[index]);
-                        })
+                        _episodeNotes[i].imgLocalPaths.length == 1
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(5), // 圆角
+                                child: Image.file(
+                                  File(_episodeNotes[i].imgLocalPaths[0]),
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              )
+                            : showImageGridView(
+                                _episodeNotes[i].imgLocalPaths.length,
+                                (BuildContext context, int index) {
+                                return ImageGridItem(
+                                    _episodeNotes[i].imgLocalPaths[index]);
+                              })
                       ],
                     ),
                   ),

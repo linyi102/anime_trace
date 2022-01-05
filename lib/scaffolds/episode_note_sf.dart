@@ -68,9 +68,6 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         body: _loadOk
             ? Scrollbar(
                 child: ListView(
-                  shrinkWrap: true, // ListView嵌套GridView
-                  physics:
-                      const NeverScrollableScrollPhysics(), // ListView嵌套GridView。解决滑动事假冲突
                   children: [
                     _showNoteContent(),
                     _showImages(),
@@ -88,8 +85,9 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 0),
       ),
+      maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),
       onChanged: (value) {
         widget.episodeNote.noteContent = value;
@@ -157,26 +155,31 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
             Positioned(
               right: 0,
               top: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2),
-                  color: const Color.fromRGBO(255, 255, 255, 0.1),
+              child: Transform.scale(
+                alignment: Alignment.topRight,
+                scale: 0.5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    color: const Color.fromRGBO(255, 255, 255, 0.1),
+                  ),
+                  child: IconButton(
+                      onPressed: () {
+                        String imgLocalPath =
+                            widget.episodeNote.imgLocalPaths[index];
+                        // 删除数据库记录、删除本地图片、删除该页中的图片
+                        SqliteUtil.deleteLocalImageByImageLocalPath(
+                            imgLocalPath);
+                        widget.episodeNote.imgLocalPaths
+                            .removeWhere((element) => element == imgLocalPath);
+                        File(imgLocalPath).delete();
+                        setState(() {});
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.black,
+                      )),
                 ),
-                child: IconButton(
-                    onPressed: () {
-                      String imgLocalPath =
-                          widget.episodeNote.imgLocalPaths[index];
-                      // 删除数据库记录、删除本地图片、删除该页中的图片
-                      SqliteUtil.deleteLocalImageByImageLocalPath(imgLocalPath);
-                      widget.episodeNote.imgLocalPaths
-                          .removeWhere((element) => element == imgLocalPath);
-                      File(imgLocalPath).delete();
-                      setState(() {});
-                    },
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.black,
-                    )),
               ),
             )
           ],

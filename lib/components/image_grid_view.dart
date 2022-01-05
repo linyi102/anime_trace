@@ -7,10 +7,10 @@ showImageGridView(
       padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
       shrinkWrap: true, // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // 横轴数量
-        crossAxisSpacing: 15, // 横轴距离
-        mainAxisSpacing: 15, // 竖轴距离
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: itemCount <= 2 ? 2 : 3, // 横轴数量
+        crossAxisSpacing: 5, // 横轴距离
+        mainAxisSpacing: 5, // 竖轴距离
         childAspectRatio: 1, // 网格比例。31/43为封面比例
       ),
       itemCount: itemCount,
