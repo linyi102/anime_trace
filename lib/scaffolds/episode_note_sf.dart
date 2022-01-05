@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -62,13 +64,28 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
           foregroundColor: Colors.black,
-          title: Text(
-              "${widget.episodeNote.anime.animeName}>第 ${widget.episodeNote.episode.number} 集"),
+          // title: Text(
+          //     "${widget.episodeNote.anime.animeName}>第 ${widget.episodeNote.episode.number} 集"),
         ),
         body: _loadOk
             ? Scrollbar(
                 child: ListView(
                   children: [
+                    ListTile(
+                      // style: ListTileStyle.drawer,
+                      leading: AnimeListCover(widget.episodeNote.anime),
+                      title: Text(
+                        "${widget.episodeNote.anime.animeName} ${widget.episodeNote.episode.number}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(widget.episodeNote.episode.getDate()),
+                      // onTap: () {
+                      //   Navigator.of(context).push(MaterialPageRoute(
+                      //       builder: (context) => AnimeDetailPlus(
+                      //           widget.episodeNote.anime.animeId)));
+                      // },
+                    ),
                     _showNoteContent(),
                     _showImages(),
                   ],

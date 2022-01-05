@@ -7,6 +7,7 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
@@ -130,26 +131,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 icon: const Icon(Icons.image_search_rounded)),
             IconButton(
                 onPressed: () {
-                  if (hideNoteInAnimeDetail) {
-                    // 原先隐藏，则设置为false，表示显示
-                    SPUtil.setBool("hideNoteInAnimeDetail", false);
-                    hideNoteInAnimeDetail = false;
-                  } else {
-                    SPUtil.setBool("hideNoteInAnimeDetail", true);
-                    hideNoteInAnimeDetail = true;
-                  }
-                  setState(() {});
-                },
-                tooltip: "显示笔记",
-                icon: const Icon(Icons.remove_red_eye_rounded)),
-            IconButton(
-                onPressed: () {
-                  _dialogUpdateEpisodeCnt();
-                },
-                tooltip: "更改集数",
-                icon: const Icon(Icons.add)),
-            IconButton(
-                onPressed: () {
                   _dialogDeleteAnime();
                 },
                 tooltip: "删除动漫",
@@ -172,6 +153,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
                   ),
                   // _displayEpisode(),
+                  _displayButtonsAboutEpisode(),
                   _displayEpisodePlus(),
                 ],
               )
@@ -661,5 +643,80 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ],
           );
         });
+  }
+
+  _displayButtonsAboutEpisode() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      // direction: Axis.horizontal,
+      children: [
+        Row(children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: Text(
+                "${_episodes.length} 集",
+                // style: const TextStyle(fontSize: 20),
+              )),
+        ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+                onPressed: () {
+                  if (hideNoteInAnimeDetail) {
+                    // 原先隐藏，则设置为false，表示显示
+                    SPUtil.setBool("hideNoteInAnimeDetail", false);
+                    hideNoteInAnimeDetail = false;
+                  } else {
+                    SPUtil.setBool("hideNoteInAnimeDetail", true);
+                    hideNoteInAnimeDetail = true;
+                  }
+                  setState(() {});
+                },
+                tooltip: "显示笔记",
+                icon: hideNoteInAnimeDetail
+                    ? const Icon(Icons.fullscreen_rounded)
+                    : const Icon(Icons.fullscreen_exit_rounded)),
+            IconButton(
+                onPressed: () {
+                  // _dialogUpdateEpisodeCnt();
+                  dialogSelectUint(context, "修改集数",
+                          defaultValue: _anime.animeEpisodeCnt)
+                      .then((value) {
+                    if (value == null) {
+                      debugPrint("未选择，直接返回");
+                      return;
+                    }
+                    int episodeCnt = value;
+                    SqliteUtil.updateEpisodeCntByAnimeId(
+                        _anime.animeId, episodeCnt);
+
+                    _anime.animeEpisodeCnt = episodeCnt;
+                    // 少了就删除，多了就添加
+                    var len = _episodes
+                        .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
+                    if (len > episodeCnt) {
+                      for (int i = 0; i < len - episodeCnt; ++i) {
+                        // 还应该删除history表里的记录，否则会误判完成过的集数
+                        SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
+                            _anime.animeId, _episodes.last.number);
+                        // 注意顺序
+                        _episodes.removeLast();
+                      }
+                    } else {
+                      int number = _episodes.last.number;
+                      for (int i = 0; i < episodeCnt - len; ++i) {
+                        _episodes.add(Episode(number + i + 1));
+                      }
+                    }
+                    setState(() {});
+                  });
+                },
+                tooltip: "更改集数",
+                icon: const Icon(Icons.add)),
+          ],
+        ),
+      ],
+    );
   }
 }
