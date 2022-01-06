@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class BackupUtil {
           print("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
-          if (basename(element.path) == zipName) break; // 如果文件名是data.zip，则跳过
+          if (basename(element.path) == zipName) break; // 跳过备份的压缩包
           encoder.addFile(File(element.path));
           print("添加文件：${element.path}");
           break;
@@ -67,15 +68,24 @@ class BackupUtil {
       }
       if (remoteBackupDirPath.isNotEmpty) {
         String remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
-        WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
-          if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+        // WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
+        //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+        //   // File(tempZipFilePath).delete();
+        // });
+        // 可以备份，但不是增量备份
+        Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
+        WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
+          showToast("备份成功：$remoteBackupFilePath");
           File(tempZipFilePath).delete();
         });
-        // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
-        // WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
+        // 移动。会导致无法连接，第一次还没有效果
+        // WebDavUtil.client
+        //     .copy(tempZipFilePath, remoteBackupFilePath, false)
+        //     .then((value) {
         //   showToast("备份成功：$remoteBackupFilePath");
         //   File(tempZipFilePath).delete();
         // });
+        // 报错
         // WebDavUtil.upload("$dirPath/mydb.db", remoteBackupFilePath)
         //     .then((value) {
         //   showToast("备份成功：$remoteBackupFilePath");

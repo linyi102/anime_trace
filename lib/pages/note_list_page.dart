@@ -37,14 +37,25 @@ class _NoteListPageState extends State<NoteListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 100),
-      child: !_loadOk
-          ? Container(
-              key: UniqueKey(),
-              // color: Colors.white,
-            )
-          : Scrollbar(child: _showNotes()),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "笔记",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 100),
+        child: !_loadOk
+            ? Container(
+                key: UniqueKey(),
+                // color: Colors.white,
+              )
+            : Scrollbar(child: _showNotes()),
+      ),
     );
   }
 

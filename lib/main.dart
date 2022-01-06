@@ -61,6 +61,9 @@ class _MyAppState extends State<MyApp> {
         SPUtil.getString("webdav_password"),
       );
       if (SPUtil.getBool("auto_backup_webdav")) {
+        BackupUtil.backup(
+            remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
+            showToastFlag: false);
         // String lastTimeBackup = SPUtil.getString("last_time_backup");
         // // 不为空串表示之前备份过
         // if (lastTimeBackup != "") {
@@ -94,6 +97,11 @@ class _MyAppState extends State<MyApp> {
             iconTheme: IconThemeData(
               color: Colors.black,
             ),
+            // titleTextStyle: TextStyle(
+            //   color: Colors.black,
+            //   fontWeight: FontWeight.bold,
+            // ),
+            // 会影响字体大小，应该和TextStyle有关
           ),
           scrollbarTheme: ScrollbarThemeData(
             showTrackOnHover: true,
@@ -107,8 +115,8 @@ class _MyAppState extends State<MyApp> {
             },
           ),
           // scaffoldBackgroundColor: Colors.white,
-          // scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
-          scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+          scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
+          // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值

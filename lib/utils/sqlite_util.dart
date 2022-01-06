@@ -241,7 +241,8 @@ class SqliteUtil {
     }
   }
 
-  static void updateAnimeCoverbyAnimeId(int animeId, String? coverUrl) async {
+  static Future<void> updateAnimeCoverbyAnimeId(
+      int animeId, String? coverUrl) async {
     debugPrint("sql: updateAnimeCoverbyAnimeId");
 
     await _database.rawUpdate('''

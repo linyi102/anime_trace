@@ -23,75 +23,11 @@ class _TabsState extends State<Tabs> {
     const NoteListPage(),
     const SettingPage(),
   ];
-  final List _listName = ["动漫", "历史", "笔记", "更多"];
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    List<List<Widget>> actions = [];
-    for (int i = 0; i < _list.length; ++i) {
-      // error: actions[i] = []; 因为最外面的List为空，需要添加元素：空的List
-      actions.add([]);
-    }
-    actions[0].add(
-      IconButton(
-        onPressed: () async {
-          List<Anime> animes;
-          showToast("开始更新");
-          animes = await SqliteUtil.getAllAnimes();
-          for (var anime in animes) {
-            // 已有封面直接跳过
-            if (anime.animeCoverUrl.isNotEmpty) {
-              if (anime.animeCoverUrl.startsWith("//")) {
-                anime.animeCoverUrl = "https:${anime.animeCoverUrl}";
-                // 更新链接
-                SqliteUtil.updateAnimeCoverbyAnimeId(
-                    anime.animeId, anime.animeCoverUrl);
-              }
-              debugPrint("${anime.animeName}已有封面：'${anime.animeCoverUrl}'，跳过");
-              continue;
-            }
-            String coverUrl =
-                await ClimeCoverUtil.climeCoverUrl(anime.animeName);
-            debugPrint("${anime.animeName}封面：$coverUrl");
-            // 返回的链接不为空字符串，更新封面
-            if (coverUrl.isNotEmpty) {
-              SqliteUtil.updateAnimeCoverbyAnimeId(anime.animeId, coverUrl);
-            }
-          }
-          showToast("更新完成");
-        },
-        icon: const Icon(Icons.refresh),
-        tooltip: "刷新封面",
-        color: Colors.black,
-      ),
-    );
-    actions[0].add(
-      IconButton(
-        onPressed: () async {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const Search(),
-            ),
-          );
-        },
-        icon: const Icon(Icons.search_outlined),
-        tooltip: "搜索动漫",
-        color: Colors.black,
-      ),
-    );
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _listName[_currentIndex],
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: actions[_currentIndex],
-      ),
       body: _list[_currentIndex],
       // body: IndexedStack(
       //   // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新

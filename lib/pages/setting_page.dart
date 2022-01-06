@@ -56,72 +56,84 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 100),
-      child: !loadOk
-          ? Container()
-          : ListView(
-              key: UniqueKey(),
-              children: [
-                // ListTile(
-                //   title: const Text("创建备份"),
-                //   subtitle: const Text("备份动漫记录"),
-                //   onTap: () async {
-                //     // 首先判断备份目录是否存在
-                //     String backupDir = SPUtil.getString("backup_path");
-                //     if (!(await Directory(backupDir).exists())) {
-                //       showToast("备份之前请先设置备份目录！");
-                //       return;
-                //     }
-                //     // 拷贝数据库文件到备份目录下
-                //     final backupFilePath =
-                //         "$backupDir/anime_trace_${DateTime.now()}.db";
-                //     if (await Permission.storage.request().isGranted) {
-                //       await File(SqliteUtil.dbPath).copy(backupFilePath);
-                //       showToast("备份成功");
-                //     }
-                //   },
-                // ),
-                Platform.isAndroid ? _showImg() : Container(),
-                Platform.isAndroid ? _showImgButton() : Container(),
-                ListTile(
-                  leading: const Icon(
-                    Icons.settings_backup_restore_outlined,
-                    color: Colors.blue,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "更多",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 100),
+        child: !loadOk
+            ? Container()
+            : ListView(
+                key: UniqueKey(),
+                children: [
+                  // ListTile(
+                  //   title: const Text("创建备份"),
+                  //   subtitle: const Text("备份动漫记录"),
+                  //   onTap: () async {
+                  //     // 首先判断备份目录是否存在
+                  //     String backupDir = SPUtil.getString("backup_path");
+                  //     if (!(await Directory(backupDir).exists())) {
+                  //       showToast("备份之前请先设置备份目录！");
+                  //       return;
+                  //     }
+                  //     // 拷贝数据库文件到备份目录下
+                  //     final backupFilePath =
+                  //         "$backupDir/anime_trace_${DateTime.now()}.db";
+                  //     if (await Permission.storage.request().isGranted) {
+                  //       await File(SqliteUtil.dbPath).copy(backupFilePath);
+                  //       showToast("备份成功");
+                  //     }
+                  //   },
+                  // ),
+                  Platform.isAndroid ? _showImg() : Container(),
+                  Platform.isAndroid ? _showImgButton() : Container(),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.settings_backup_restore_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("备份与还原"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const BackupAndRestore()));
+                    },
                   ),
-                  title: const Text("备份与还原"),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const BackupAndRestore()));
-                  },
-                ),
-                // const Divider(),
-                ListTile(
-                  leading: const Icon(
-                    Icons.new_label_outlined,
-                    color: Colors.blue,
+                  // const Divider(),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.new_label_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("标签管理"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const TagManage()));
+                    },
                   ),
-                  title: const Text("标签管理"),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => const TagManage()));
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.book_outlined,
-                    color: Colors.blue,
+                  ListTile(
+                    leading: const Icon(
+                      Icons.book_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("动漫界面"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const AnimesDisplaySetting()));
+                    },
                   ),
-                  title: const Text("动漫界面"),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const AnimesDisplaySetting()));
-                  },
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 

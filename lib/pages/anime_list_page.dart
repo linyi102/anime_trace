@@ -7,9 +7,12 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/scaffolds/search.dart';
+import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
+import 'package:oktoast/oktoast.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -97,37 +100,36 @@ class _AnimeListPageState extends State<AnimeListPage>
           ? _waitDataScaffold()
           : Scaffold(
               // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-              // backgroundColor: Colors.white,
-              appBar: PreferredSize(
-                preferredSize:
-                    const Size.fromHeight(kTextTabBarHeight), // 减少顶部栏高度
-                child: AppBar(
-                  // backgroundColor: Colors.amber,
-                  // elevation: 1,
-                  // shadowColor: Colors.black,
-                  // toolbarHeight: 0, // 外套了PreferredSize，就不需要这个了
-                  bottom: PreferredSize(
-                    // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                    preferredSize: const Size.fromHeight(kToolbarHeight),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TabBar(
-                        padding: const EdgeInsets.all(2), // 居中，而不是靠左下
-                        labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        isScrollable: true, // 标签可以滑动，避免拥挤
-                        unselectedLabelColor: Colors.black54,
-                        labelColor: Colors.blue, // 标签字体颜色
-                        labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        indicatorColor: Colors.transparent, // 隐藏
-                        // indicatorColor: Colors.blue, // 指示器颜色
-                        indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
-                        indicatorWeight: 3, // 指示器高度
-                        tabs: _showTagAndAnimeCntPlus(),
-                        // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                        controller: _tabController,
+              appBar: AppBar(
+                title: const Text(
+                  "动漫",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                actions: _getActions(),
+                bottom: PreferredSize(
+                  // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                  preferredSize: const Size.fromHeight(kToolbarHeight),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TabBar(
+                      padding: const EdgeInsets.all(2), // 居中，而不是靠左下
+                      labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      isScrollable: true, // 标签可以滑动，避免拥挤
+                      unselectedLabelColor: Colors.black54,
+                      labelColor: Colors.blue, // 标签字体颜色
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
+                      indicatorColor: Colors.transparent, // 隐藏
+                      // indicatorColor: Colors.blue, // 指示器颜色
+                      indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
+                      indicatorWeight: 3, // 指示器高度
+                      tabs: _showTagAndAnimeCntPlus(),
+                      // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                      controller: _tabController,
                     ),
                   ),
                 ),
@@ -153,6 +155,72 @@ class _AnimeListPageState extends State<AnimeListPage>
                     ),
             ),
     );
+  }
+
+  List<Widget> _getActions() {
+    List<Widget> actions = [];
+    actions.add(
+      IconButton(
+        onPressed: () async {
+          List<Anime> animes;
+          showToast("开始更新");
+          animes = await SqliteUtil.getAllAnimes();
+          for (var anime in animes) {
+            // 已有封面直接跳过
+            if (anime.animeCoverUrl.isNotEmpty) {
+              if (anime.animeCoverUrl.startsWith("//")) {
+                anime.animeCoverUrl = "https:${anime.animeCoverUrl}";
+                // 更新链接(前面加上https:)
+                SqliteUtil.updateAnimeCoverbyAnimeId(
+                    anime.animeId, anime.animeCoverUrl);
+              }
+              debugPrint("${anime.animeName}已有封面：'${anime.animeCoverUrl}'，跳过");
+              continue;
+            }
+            String coverUrl =
+                await ClimeCoverUtil.climeCoverUrl(anime.animeName);
+            debugPrint("${anime.animeName}封面：$coverUrl");
+            // 返回的链接不为空字符串，更新封面
+            if (coverUrl.isNotEmpty) {
+              SqliteUtil.updateAnimeCoverbyAnimeId(anime.animeId, coverUrl);
+              // _loadData(); // 不太好，每次刷新整个页面
+              for (var animes in animesInTag) {
+                int findIndex = animes
+                    .indexWhere((element) => element.animeId == anime.animeId);
+                if (findIndex != -1) {
+                  // 找到后更新，然后直接退出循环
+                  setState(() {
+                    animes[findIndex].animeCoverUrl = coverUrl;
+                  });
+                  break;
+                }
+                // 尽管由于分页有些动漫还不在请求的数据中，如果找不到就不用改就行了，并不影响
+              }
+            }
+          }
+          showToast("更新完成");
+          // _loadData(); // 更新完成后重新获取
+        },
+        icon: const Icon(Icons.refresh),
+        tooltip: "刷新封面",
+        color: Colors.black,
+      ),
+    );
+    actions.add(
+      IconButton(
+        onPressed: () async {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const Search(),
+            ),
+          );
+        },
+        icon: const Icon(Icons.search_outlined),
+        tooltip: "搜索动漫",
+        color: Colors.black,
+      ),
+    );
+    return actions;
   }
 
   List<Widget> _getAnimesPlus() {
@@ -403,13 +471,17 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   Scaffold _waitDataScaffold() {
     return Scaffold(
-      key: UniqueKey(), // 保证被AnimatedSwitcher视为不同的控件
-      appBar: AppBar(
-        toolbarHeight: 0, // 太小容易导致底部不够，从而溢出
-      ),
-      // backgroundColor: Colors.white,
-      // body: null,
-    );
+        key: UniqueKey(), // 保证被AnimatedSwitcher视为不同的控件
+        appBar: AppBar(
+          title: const Text(
+            "动漫",
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          actions: _getActions(),
+        ));
   }
 
   void _dialogModifyTag(String defaultTagName) {

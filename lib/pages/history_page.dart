@@ -39,20 +39,31 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-        // 下拉刷新
-        onRefresh: () async {
-          _loadData(curYear);
-        },
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 100),
-          child: !yearLoadOk.containsKey(curYear)
-              ? Container(
-                  key: UniqueKey(),
-                  // color: Colors.white,
-                )
-              : _getHistory(),
-        ));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "历史",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: RefreshIndicator(
+          // 下拉刷新
+          onRefresh: () async {
+            _loadData(curYear);
+          },
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 100),
+            child: !yearLoadOk.containsKey(curYear)
+                ? Container(
+                    key: UniqueKey(),
+                    // color: Colors.white,
+                  )
+                : _getHistory(),
+          )),
+    );
   }
 
   Widget _getHistory() {
