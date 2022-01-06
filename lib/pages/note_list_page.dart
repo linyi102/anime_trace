@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -52,8 +54,15 @@ class _NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: episodeNotes.length,
       itemBuilder: (BuildContext context, int index) {
+        // 该笔记没有内容，且没有图片，直接返回
         if (episodeNotes[index].noteContent.isEmpty &&
             episodeNotes[index].imgLocalPaths.isEmpty) return Container();
+        MultiImageProvider multiImageProvider = MultiImageProvider(
+          episodeNotes[index]
+              .imgLocalPaths
+              .map((imgLocalPath) => Image.file(File(imgLocalPath)).image)
+              .toList(),
+        );
         return Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
@@ -108,9 +117,13 @@ class _NoteListPageState extends State<NoteListPage> {
                           )
                         : showImageGridView(
                             episodeNotes[index].imgLocalPaths.length,
-                            (BuildContext context, int index1) {
+                            (BuildContext context, int indexImage) {
                             return ImageGridItem(
-                                episodeNotes[index].imgLocalPaths[index1]);
+                              multiImageProvider: multiImageProvider,
+                              imageLocalPath:
+                                  episodeNotes[index].imgLocalPaths[indexImage],
+                              initialIndex: indexImage, // 并没有发挥作用
+                            );
                           }),
                     episodeNotes[index].noteContent.isEmpty &&
                             episodeNotes[index].imgLocalPaths.isEmpty

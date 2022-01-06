@@ -168,7 +168,8 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         }
         return Stack(
           children: [
-            ImageGridItem(widget.episodeNote.imgLocalPaths[index]),
+            ImageGridItem(
+                imageLocalPath: widget.episodeNote.imgLocalPaths[index]),
             Positioned(
               right: 0,
               top: 0,

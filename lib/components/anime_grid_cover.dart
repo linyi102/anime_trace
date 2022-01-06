@@ -8,31 +8,30 @@ class AnimeGridCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 31 / 43, // 固定大小
-      // aspectRatio: 41 / 63, // 固定大小
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(3),
-        child: _anime.animeCoverUrl.isEmpty
-            ? Center(
-                child: Text(
-                  _anime.animeName.substring(
-                      0,
-                      _anime.animeName.length >
-                              3 // 最低长度为3，此时下标最大为2，才可以设置end为3，[0, 3)
-                          ? 3
-                          : _anime.animeName.length), // 第二个参数如果只设置为3可能会导致越界
-                  style: const TextStyle(fontSize: 20),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(3.0),
-                child: CachedNetworkImage(
-                  imageUrl: _anime.animeCoverUrl,
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-      ),
-    );
+    return Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: AspectRatio(
+          aspectRatio: 31 / 43, // 固定大小
+          // aspectRatio: 41 / 63, // 固定大小
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: _anime.animeCoverUrl.isEmpty
+                ? Center(
+                    child: Text(
+                      _anime.animeName.substring(
+                          0,
+                          _anime.animeName.length >
+                                  3 // 最低长度为3，此时下标最大为2，才可以设置end为3，[0, 3)
+                              ? 3
+                              : _anime.animeName.length), // 第二个参数如果只设置为3可能会导致越界
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: _anime.animeCoverUrl,
+                    fit: BoxFit.fitHeight,
+                  ),
+          ),
+        ));
   }
 }

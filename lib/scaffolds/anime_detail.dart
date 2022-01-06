@@ -459,7 +459,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 _episodeNotes[i].imgLocalPaths.length,
                                 (BuildContext context, int index) {
                                 return ImageGridItem(
-                                    _episodeNotes[i].imgLocalPaths[index]);
+                                    imageLocalPath:
+                                        _episodeNotes[i].imgLocalPaths[index]);
                               })
                       ],
                     ),
