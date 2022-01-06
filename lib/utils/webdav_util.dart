@@ -53,7 +53,7 @@ class WebDavUtil {
   }
 
   static Future<void> upload(String localPath, String remotePath) async {
-    client.writeFromFile(
+    await client.writeFromFile(
       localPath,
       remotePath,
     );

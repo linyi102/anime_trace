@@ -35,10 +35,11 @@ class BackupUtil {
     String tempZipFilePath = "$localRootDirPath/$zipName";
     encoder.create(tempZipFilePath);
     Directory directory = Directory(localRootDirPath);
+    // 其他方法：获取上一级目录，直接压缩
     directory.list().forEach((element) {
       switch (element.statSync().type) {
         case FileSystemEntityType.directory:
-          encoder.addDirectory(Directory(element.path));
+          encoder.addDirectory(Directory(element.path)); // 添加目录
           print("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
@@ -51,6 +52,7 @@ class BackupUtil {
           break;
       }
     }).then((value) async {
+      encoder.close();
       if (localBackupDirPath.isNotEmpty) {
         // 已设置路径，直接备份
         if (localBackupDirPath != "unset") {
@@ -67,17 +69,21 @@ class BackupUtil {
         }
       }
       if (remoteBackupDirPath.isNotEmpty) {
+        // 本地的却可以上传(虽然不是增量的)
+        // tempZipFilePath = "C:/Users/11580/Desktop/manji_backup.zip";
         String remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
-        // WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
-        //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
-        //   // File(tempZipFilePath).delete();
-        // });
-        // 可以备份，但不是增量备份
-        Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
-        WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
-          showToast("备份成功：$remoteBackupFilePath");
+        WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
+          if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+          // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
           File(tempZipFilePath).delete();
         });
+        // 可以备份，但不是增量备份。
+        // ！无法还原：Unhandled Exception: FormatException: Could not find End of Central Directory Record
+        // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
+        // WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
+        //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+        //   File(tempZipFilePath).delete();
+        // });
         // 移动。会导致无法连接，第一次还没有效果
         // WebDavUtil.client
         //     .copy(tempZipFilePath, remoteBackupFilePath, false)
@@ -92,14 +98,13 @@ class BackupUtil {
         //   File(tempZipFilePath).delete();
         // });
       }
-      encoder.close();
-      // 删除临时的压缩包
     });
   }
 
   static void restore({
     String localZipPath = "",
-    String remoteZipPath = "",
+    bool remoteZip = false,
+    // String remoteZipPath = "", // 都是从本地获取的路径
   }) async {
     String localRootDirPath = await getLocalRootDirPath();
     // 如果图片目录中的图片都不存在，则可以正常还原。如果存在则会退出
@@ -116,10 +121,21 @@ class BackupUtil {
     // File("C:/Users/11580/AppData/Roaming/com.example/anime_footmark_windows/images/26/1/20210225_190939.jpg")
     //     .deleteSync();
     // debugPrint("图片删除成功");
-    debugPrint(localRootDirPath);
+    debugPrint(
+        "localRootDirPath: $localRootDirPath\nlocalZipPath: $localZipPath");
+    // // 先把选择的压缩包拷贝到数据根路径下
+    // File localZip =
+    //     await File(localZipPath).copy("$localRootDirPath/manji_backup.zip");
+    // localZipPath = localRootDirPath;
+    if (remoteZip) {
+      localZipPath = "$localRootDirPath/manji_backup.zip";
+      await WebDavUtil.client
+          .read2File("/animetrace/manji_backup.zip", localZipPath);
+    }
     if (localZipPath.isNotEmpty) {
       // Read the Zip file from disk.
       final bytes = File(localZipPath).readAsBytesSync();
+      // final bytes = localZip.readAsBytesSync();
 
       // Decode the Zip file
       final archive = ZipDecoder().decodeBytes(bytes);
@@ -146,6 +162,8 @@ class BackupUtil {
           Directory("$localRootDirPath/$filename").createSync(recursive: true);
         }
       }
+      File(localZipPath).delete();
+      showToast("还原成功");
     }
   }
 }

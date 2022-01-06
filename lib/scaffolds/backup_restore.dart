@@ -38,34 +38,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
       ),
       body: ListView(
         children: [
-          ListTile(
-            title: const Text("还原备份"),
-            subtitle: const Text("还原动漫记录"),
-            onTap: () async {
-              // 获取备份文件
-              String? selectedFilePath = await selectFile();
-              if (selectedFilePath != null) {
-                if (selectedFilePath.endsWith(".zip")) {
-                  // 如果是压缩包，则使用restore函数还原
-                  BackupUtil.restore(localZipPath: selectedFilePath);
-                  showToast("还原成功");
-                } else if ((selectedFilePath.endsWith(".db"))) {
-                  // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝
-                  // await File(selectedFilePath).copy(SqliteUtil.dbPath);
-                  // window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
-                  // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问。
-                  // await File(SqliteUtil.dbPath).delete();
-                  // 可以直接在里面写入即可，writeAsBytes会清空原先内容
-                  var content = await File(selectedFilePath).readAsBytes();
-                  await File(SqliteUtil.dbPath).writeAsBytes(content);
-                  showToast("还原成功");
-                } else {
-                  showToast("还原文件必须以.zip或.db结尾");
-                }
-              }
-            },
-          ),
-
           Platform.isWindows
               ? const ListTile(
                   title: Text(
@@ -148,6 +120,33 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   },
                 )
               : Container(),
+          ListTile(
+            title: const Text("还原备份"),
+            subtitle: const Text("还原动漫记录"),
+            onTap: () async {
+              // 获取备份文件
+              String? selectedFilePath = await selectFile();
+              if (selectedFilePath != null) {
+                if (selectedFilePath.endsWith(".zip")) {
+                  // 如果是压缩包，则使用restore函数还原
+                  BackupUtil.restore(localZipPath: selectedFilePath);
+                } else if ((selectedFilePath.endsWith(".db"))) {
+                  // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝
+                  // await File(selectedFilePath).copy(SqliteUtil.dbPath);
+                  // window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
+                  // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问。
+                  // await File(SqliteUtil.dbPath).delete();
+                  // 可以直接在里面写入即可，writeAsBytes会清空原先内容
+                  var content = await File(selectedFilePath).readAsBytes();
+                  await File(SqliteUtil.dbPath).writeAsBytes(content);
+                  showToast("还原成功");
+                } else {
+                  showToast("还原文件必须以.zip或.db结尾");
+                }
+              }
+            },
+          ),
+
           // 注意！！！！！share插件window会打不开应用
           // Platform.isAndroid
           //     ? ListTile(
@@ -239,6 +238,17 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("开启自动备份");
               }
               setState(() {});
+            },
+          ),
+
+          ListTile(
+            title: const Text("还原最新数据"),
+            onTap: () async {
+              if (SPUtil.getBool("login")) {
+                BackupUtil.restore(remoteZip: true);
+              } else {
+                showToast("配置账号后才可以进行还原");
+              }
             },
           ),
         ],
