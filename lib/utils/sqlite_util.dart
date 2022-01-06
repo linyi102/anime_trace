@@ -672,12 +672,18 @@ class SqliteUtil {
     ''');
   }
 
-  static insertEpisodeNote(EpisodeNote episodeNote) async {
+  static Future<int> insertEpisodeNote(EpisodeNote episodeNote) async {
     debugPrint("sql: insertEpisodeNote");
     await _database.rawInsert('''
     insert into episode_note (anime_id, episode_number, note_content)
     values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ''); -- 空内容
     ''');
+
+    var lm2 = await _database.rawQuery('''
+      select last_insert_rowid() as last_id
+      from episode_note;
+      ''');
+    return lm2[0]["last_id"] as int; // 返回最新插入的id
   }
 
   static updateEpisodeNoteContentByNoteId(
@@ -701,12 +707,7 @@ class SqliteUtil {
     ''');
     if (lm1.isEmpty) {
       // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
-      insertEpisodeNote(episodeNote);
-      var lm2 = await _database.rawQuery('''
-      select last_insert_rowid() as last_id
-      from episode_note;
-      ''');
-      episodeNote.episodeNoteId = lm2[0]["last_id"] as int;
+      episodeNote.episodeNoteId = await insertEpisodeNote(episodeNote);
     } else {
       episodeNote.episodeNoteId = lm1[0]['note_id'] as int;
       // 获取笔记内容

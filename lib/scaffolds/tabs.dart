@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:flutter_test_future/scaffolds/search.dart';
-import 'package:flutter_test_future/utils/clime_cover_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:oktoast/oktoast.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);

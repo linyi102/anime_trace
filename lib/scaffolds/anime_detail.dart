@@ -256,7 +256,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           style: ListTileStyle.drawer,
           trailing: IconButton(
-            onPressed: () {
+            onPressed: () async {
               if (_episodes[i].isChecked()) {
                 _dialogRemoveDate(
                   _episodes[i].number,
@@ -267,6 +267,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 SqliteUtil.insertHistoryItem(
                     _anime.animeId, _episodes[i].number, date);
                 _episodes[i].dateTime = date;
+                // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+                EpisodeNote episodeNote = EpisodeNote(
+                    anime: _anime,
+                    episode: _episodes[i],
+                    imgLocalPaths: [],
+                    imgUrls: []);
+                episodeNote.episodeNoteId =
+                    await SqliteUtil.insertEpisodeNote(episodeNote);
+                episodeNotes[i] = episodeNote; // 更新
                 setState(() {});
               }
             },

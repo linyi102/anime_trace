@@ -23,6 +23,10 @@ class _NoteListPageState extends State<NoteListPage> {
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
     Future(() {
       debugPrint("note_list_page: 开始加载数据");
       return SqliteUtil.getAllNotes();
@@ -154,9 +158,11 @@ class _NoteListPageState extends State<NoteListPage> {
                         textAlign: TextAlign.right,
                       ),
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AnimeDetailPlus(
-                                episodeNotes[index].anime.animeId)));
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                                builder: (context) => AnimeDetailPlus(
+                                    episodeNotes[index].anime.animeId)))
+                            .then((value) => _loadData());
                       },
                     ),
 
