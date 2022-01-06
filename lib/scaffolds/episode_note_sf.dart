@@ -72,7 +72,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                 child: ListView(
                   children: [
                     ListTile(
-                      // style: ListTileStyle.drawer,
+                      style: ListTileStyle.drawer,
                       leading: AnimeListCover(widget.episodeNote.anime),
                       title: Text(
                         "${widget.episodeNote.anime.animeName} ${widget.episodeNote.episode.number}",

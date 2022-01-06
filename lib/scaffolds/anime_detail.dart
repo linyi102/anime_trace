@@ -349,7 +349,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               } else {
                 String date = DateTime.now().toString();
                 SqliteUtil.insertHistoryItem(
-                    widget.animeId, _episodes[i].number, date);
+                    _anime.animeId, _episodes[i].number, date);
                 _episodes[i].dateTime = date;
                 setState(() {});
               }
@@ -650,14 +650,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // direction: Axis.horizontal,
       children: [
-        Row(children: [
-          Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Text(
-                "${_episodes.length} 集",
-                // style: const TextStyle(fontSize: 20),
-              )),
-        ]),
+        // Row(children: [
+        //   Padding(
+        //       padding: const EdgeInsets.only(left: 15),
+        //       child: Text(
+        //         "共 ${_episodes.length} 集",
+        //         // style: const TextStyle(fontSize: 20),
+        //       )),
+        // ]),
+        Expanded(child: Container()),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

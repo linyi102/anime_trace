@@ -96,7 +96,8 @@ class _MyAppState extends State<MyApp> {
             },
           ),
           // scaffoldBackgroundColor: Colors.white,
-          scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
+          // scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
+          scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
