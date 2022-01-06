@@ -26,6 +26,7 @@ class BackupUtil {
   static void backup({
     String localBackupDirPath = "",
     String remoteBackupDirPath = "",
+    bool showToastFlag = true,
   }) async {
     var encoder = ZipFileEncoder();
     String localRootDirPath = await getLocalRootDirPath();
@@ -56,18 +57,18 @@ class BackupUtil {
           Directory(localBackupDirPath).create().then((value) {
             String localBackupFilePath = "$localBackupDirPath/$zipName";
             File(tempZipFilePath).copy(localBackupFilePath).then((value) {
-              showToast("备份成功：$localBackupFilePath");
+              if (showToastFlag) showToast("备份成功：$localBackupFilePath");
               File(tempZipFilePath).delete();
             });
           });
         } else {
-          showToast("请先设置本地备份目录");
+          if (showToastFlag) showToast("请先设置本地备份目录");
         }
       }
       if (remoteBackupDirPath.isNotEmpty) {
         String remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
         WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
-          showToast("备份成功：$remoteBackupFilePath");
+          if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
           File(tempZipFilePath).delete();
         });
         // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();

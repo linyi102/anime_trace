@@ -15,7 +15,14 @@ class BackupAndRestore extends StatefulWidget {
 }
 
 class _BackupAndRestoreState extends State<BackupAndRestore> {
-  String autoBackupState = SPUtil.getBool("auto_backup") ? "开启" : "关闭";
+  String autoBackupWebDav = SPUtil.getBool("auto_backup_webdav") ? "开启" : "关闭";
+  String autoBackupLocal = SPUtil.getBool("auto_backup_local") ? "开启" : "关闭";
+
+  @override
+  void initState() {
+    super.initState();
+    // SPUtil.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +74,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   ),
                 )
               : Container(),
+
           Platform.isWindows
               ? ListTile(
                   title: const Text("点击进行备份"),
@@ -104,6 +112,39 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                       SPUtil.setString("backup_local_dir", selectedDirectory);
                       setState(() {});
                     }
+                  },
+                )
+              : Container(),
+          Platform.isWindows
+              ? ListTile(
+                  title: const Text("自动备份"),
+                  subtitle: const Text("每次进入应用后会自动备份"),
+                  trailing: SPUtil.getBool("auto_backup_local")
+                      ? const Icon(
+                          Icons.toggle_on,
+                          color: Colors.blue,
+                        )
+                      : const Icon(Icons.toggle_off),
+                  onTap: () {
+                    if (SPUtil.getString("backup_local_dir",
+                            defaultValue: "unset") ==
+                        "unset") {
+                      showToast("请先设置本地备份目录，再进行备份！");
+                      return;
+                    }
+                    if (SPUtil.getBool("auto_backup_local")) {
+                      // 如果是开启，点击后则关闭
+                      SPUtil.setBool("auto_backup_local", false);
+                      autoBackupLocal = "关闭";
+                      showToast("关闭自动备份");
+                    } else {
+                      SPUtil.setBool("auto_backup_local", true);
+                      // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
+                      // WebDavUtil.backupData(true);
+                      autoBackupLocal = "开启";
+                      showToast("开启自动备份");
+                    }
+                    setState(() {});
                   },
                 )
               : Container(),
@@ -173,8 +214,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           ),
           ListTile(
             title: const Text("自动备份"),
-            subtitle: const Text("每天会自动进行备份"),
-            trailing: SPUtil.getBool("auto_backup")
+            subtitle: const Text("每次进入应用后会自动备份"),
+            trailing: SPUtil.getBool("auto_backup_webdav")
                 ? const Icon(
                     Icons.toggle_on,
                     color: Colors.blue,
@@ -185,16 +226,16 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
-              if (SPUtil.getBool("auto_backup")) {
+              if (SPUtil.getBool("auto_backup_webdav")) {
                 // 如果是开启，点击后则关闭
-                SPUtil.setBool("auto_backup", false);
-                autoBackupState = "关闭";
+                SPUtil.setBool("auto_backup_webdav", false);
+                autoBackupWebDav = "关闭";
                 showToast("关闭自动备份");
               } else {
-                SPUtil.setBool("auto_backup", true);
+                SPUtil.setBool("auto_backup_webdav", true);
                 // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
                 // WebDavUtil.backupData(true);
-                autoBackupState = "开启";
+                autoBackupWebDav = "开启";
                 showToast("开启自动备份");
               }
               setState(() {});

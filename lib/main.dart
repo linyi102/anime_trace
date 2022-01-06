@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
@@ -42,6 +43,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   _autoBackup() async {
+    if (SPUtil.getBool("auto_backup_local")) {
+      // 每次进入应用后，进行覆盖本地备份
+      BackupUtil.backup(
+        localBackupDirPath:
+            SPUtil.getString("backup_local_dir", defaultValue: "unset"),
+        showToastFlag: false,
+      );
+      debugPrint("自动备份成功");
+    }
+
     // 之前登录过，因为关闭应用会导致连接关闭，所以下次重启应用时需要再次连接
     if (SPUtil.getBool("login")) {
       await WebDavUtil.initWebDav(
@@ -49,19 +60,19 @@ class _MyAppState extends State<MyApp> {
         SPUtil.getString("webdav_user"),
         SPUtil.getString("webdav_password"),
       );
-      if (SPUtil.getBool("auto_backup")) {
-        String lastTimeBackup = SPUtil.getString("last_time_backup");
-        // 不为空串表示之前备份过
-        if (lastTimeBackup != "") {
-          debugPrint("上次备份的时间：$lastTimeBackup");
-          DateTime dateTime = DateTime.parse(lastTimeBackup);
-          DateTime now = DateTime.now();
-          // 距离上次备份超过1天，则进行备份
-          // if (now.difference(dateTime).inSeconds >= 10) {
-          if (now.difference(dateTime).inDays >= 1) {
-            // WebDavUtil.backupData(true);
-          }
-        }
+      if (SPUtil.getBool("auto_backup_webdav")) {
+        // String lastTimeBackup = SPUtil.getString("last_time_backup");
+        // // 不为空串表示之前备份过
+        // if (lastTimeBackup != "") {
+        //   debugPrint("上次备份的时间：$lastTimeBackup");
+        //   DateTime dateTime = DateTime.parse(lastTimeBackup);
+        //   DateTime now = DateTime.now();
+        //   // 距离上次备份超过1天，则进行备份
+        //   // if (now.difference(dateTime).inSeconds >= 10) {
+        //   if (now.difference(dateTime).inDays >= 1) {
+        //     // WebDavUtil.backupData(true);
+        //   }
+        // }
       }
     }
   }
