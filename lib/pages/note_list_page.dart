@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -57,13 +55,14 @@ class _NoteListPageState extends State<NoteListPage> {
         // 该笔记没有内容，且没有图片，直接返回
         if (episodeNotes[index].noteContent.isEmpty &&
             episodeNotes[index].imgLocalPaths.isEmpty) return Container();
-        MultiImageProvider multiImageProvider = MultiImageProvider(
-          episodeNotes[index]
-              .imgLocalPaths
-              .map((imgLocalPath) => Image.file(File(imgLocalPath)).image)
-              .toList(),
-        );
-        return Column(children: [
+        // 会导致windows出错
+        // MultiImageProvider multiImageProvider = MultiImageProvider(
+        //   episodeNotes[index]
+        //       .imgLocalPaths
+        //       .map((imgLocalPath) => Image.file(File(imgLocalPath)).image)
+        //       .toList(),
+        // );
+        return Flex(direction: Axis.vertical, children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
             child: Card(
@@ -81,7 +80,8 @@ class _NoteListPageState extends State<NoteListPage> {
                     setState(() {});
                   });
                 },
-                child: Column(
+                child: Flex(
+                  direction: Axis.vertical,
                   children: [
                     // ListTile(
                     //   style: ListTileStyle.drawer,
@@ -119,10 +119,10 @@ class _NoteListPageState extends State<NoteListPage> {
                             episodeNotes[index].imgLocalPaths.length,
                             (BuildContext context, int indexImage) {
                             return ImageGridItem(
-                              multiImageProvider: multiImageProvider,
+                              // multiImageProvider: multiImageProvider,
                               imageLocalPath:
                                   episodeNotes[index].imgLocalPaths[indexImage],
-                              initialIndex: indexImage, // 并没有发挥作用
+                              initialIndex: 0, // 并没有发挥作用
                             );
                           }),
                     episodeNotes[index].noteContent.isEmpty &&

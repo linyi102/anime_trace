@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/tags.dart';
-import 'package:oktoast/oktoast.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
@@ -29,7 +27,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime _anime;
   List<Episode> _episodes = [];
   bool _loadOk = false;
-  List<EpisodeNote> _episodeNotes = [];
+  List<EpisodeNote> episodeNotes = [];
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -61,7 +59,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
                   episodeNote);
         }
-        _episodeNotes.add(episodeNote);
+        episodeNotes.add(episodeNote);
       }
     }).then((value) {
       _loadOk = true;
@@ -246,88 +244,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _displayEpisode() {
-    List<Widget> list = [];
-    for (int i = 0; i < _episodes.length; ++i) {
-      list.add(
-        ListTile(
-          // visualDensity: const VisualDensity(vertical: -2),
-          // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          title: Text("第 ${_episodes[i].number} 集"),
-          subtitle: Text(_episodes[i].getDate()),
-          // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
-          style: ListTileStyle.drawer,
-          trailing: IconButton(
-            onPressed: () {
-              if (_episodes[i].isChecked()) {
-                _dialogRemoveDate(
-                  _episodes[i].number,
-                  _episodes[i].dateTime,
-                ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
-              } else {
-                String date = DateTime.now().toString();
-                SqliteUtil.insertHistoryItem(
-                    widget.animeId, _episodes[i].number, date);
-                _episodes[i].dateTime = date;
-                setState(() {});
-              }
-            },
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                //执行缩放动画
-                return ScaleTransition(child: child, scale: animation);
-              },
-              child: _episodes[i].isChecked()
-                  ? Icon(
-                      // Icons.check_box_outlined,
-                      Icons.check_rounded,
-                      color: Colors.grey,
-                      key: Key("$i"), // 不能用unique，否则同状态的按钮都会有动画
-                    )
-                  : const Icon(
-                      Icons.check_box_outline_blank_rounded,
-                      color: Colors.black,
-                    ),
-            ),
-          ),
-          onTap: () {
-            FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-          },
-          onLongPress: () async {
-            DateTime defaultDateTime = DateTime.now();
-            if (_episodes[i].isChecked()) {
-              defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
-            }
-            String dateTime =
-                await _showDatePicker(defaultDateTime: defaultDateTime);
-
-            if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
-
-            // 选择日期后，如果之前有日期，则更新。没有则直接插入
-            // 注意：对于_episodes[i]，它是第_episodes[i].number集
-            int episodeNumber = _episodes[i].number;
-            if (_episodes[i].isChecked()) {
-              SqliteUtil.updateHistoryItem(
-                  _anime.animeId, episodeNumber, dateTime);
-            } else {
-              SqliteUtil.insertHistoryItem(
-                  _anime.animeId, episodeNumber, dateTime);
-            }
-            // 更新页面
-            setState(() {
-              // 改的是i，而不是episodeNumber
-              _episodes[i].dateTime = dateTime;
-            });
-          },
-        ),
-      );
-    }
-    return Column(
-      children: list,
-    );
-  }
-
   _displayEpisodePlus() {
     List<Widget> list = [];
     for (int i = 0; i < _episodes.length; ++i) {
@@ -378,9 +294,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             if (_episodes[i].isChecked()) {
               Navigator.of(context)
                   .push(MaterialPageRoute(
-                      builder: (context) => EpisodeNoteSF(_episodeNotes[i])))
+                      builder: (context) => EpisodeNoteSF(episodeNotes[i])))
                   .then((value) {
-                _episodeNotes[i] = value; // 更新修改
+                episodeNotes[i] = value; // 更新修改
                 setState(() {});
               });
             }
@@ -416,51 +332,51 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       if (!hideNoteInAnimeDetail && _episodes[i].isChecked()) {
         list.add(Padding(
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: _episodeNotes[i].imgLocalPaths.isEmpty &&
-                  _episodeNotes[i].noteContent.isEmpty
+          child: episodeNotes[i].imgLocalPaths.isEmpty &&
+                  episodeNotes[i].noteContent.isEmpty
               ? Container()
               : Card(
                   elevation: 0,
                   child: MaterialButton(
-                    padding: _episodeNotes[i].noteContent.isEmpty
+                    padding: episodeNotes[i].noteContent.isEmpty
                         ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                         : const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     onPressed: () {
                       Navigator.of(context)
                           .push(MaterialPageRoute(
                               builder: (context) =>
-                                  EpisodeNoteSF(_episodeNotes[i])))
+                                  EpisodeNoteSF(episodeNotes[i])))
                           .then((value) {
-                        _episodeNotes[i] = value; // 更新修改
+                        episodeNotes[i] = value; // 更新修改
                         setState(() {});
                       });
                     },
                     child: Column(
                       children: [
-                        _episodeNotes[i].noteContent.isEmpty
+                        episodeNotes[i].noteContent.isEmpty
                             ? Container()
                             : ListTile(
                                 title: Text(
-                                  _episodeNotes[i].noteContent,
+                                  episodeNotes[i].noteContent,
                                   maxLines: 10,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ListTileStyle.drawer,
                               ),
-                        _episodeNotes[i].imgLocalPaths.length == 1
+                        episodeNotes[i].imgLocalPaths.length == 1
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(5), // 圆角
                                 child: Image.file(
-                                  File(_episodeNotes[i].imgLocalPaths[0]),
+                                  File(episodeNotes[i].imgLocalPaths[0]),
                                   fit: BoxFit.fitHeight,
                                 ),
                               )
                             : showImageGridView(
-                                _episodeNotes[i].imgLocalPaths.length,
+                                episodeNotes[i].imgLocalPaths.length,
                                 (BuildContext context, int index) {
                                 return ImageGridItem(
                                     imageLocalPath:
-                                        _episodeNotes[i].imgLocalPaths[index]);
+                                        episodeNotes[i].imgLocalPaths[index]);
                               })
                       ],
                     ),
@@ -579,68 +495,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     "确认",
                     style: TextStyle(color: Colors.red),
                   )),
-            ],
-          );
-        });
-  }
-
-  _dialogUpdateEpisodeCnt() {
-    var episodeCntTextEditingController = TextEditingController();
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("修改动漫集数"),
-            content: TextField(
-              autofocus: true,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly, // 数字，只能是整数
-              ],
-              controller: episodeCntTextEditingController
-                ..text = _anime.animeEpisodeCnt.toString(),
-              decoration: const InputDecoration(
-                  border: InputBorder.none, labelText: "动漫集数"),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("取消")),
-              TextButton(
-                  onPressed: () {
-                    String content = episodeCntTextEditingController.text;
-                    if (content.isEmpty) {
-                      showToast("集数不能为空！");
-                      return;
-                    }
-                    int episodeCnt = int.parse(content);
-                    SqliteUtil.updateEpisodeCntByAnimeId(
-                        _anime.animeId, episodeCnt);
-
-                    setState(() {
-                      _anime.animeEpisodeCnt = episodeCnt;
-                      // 少了就删除，多了就添加
-                      var len = _episodes
-                          .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
-                      if (len > episodeCnt) {
-                        for (int i = 0; i < len - episodeCnt; ++i) {
-                          // 还应该删除history表里的记录，否则会误判完成过的集数
-                          SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
-                              _anime.animeId, _episodes.last.number);
-                          // 注意顺序
-                          _episodes.removeLast();
-                        }
-                      } else {
-                        int number = _episodes.last.number;
-                        for (int i = 0; i < episodeCnt - len; ++i) {
-                          _episodes.add(Episode(number + i + 1));
-                        }
-                      }
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: const Text("确认")),
             ],
           );
         });

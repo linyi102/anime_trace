@@ -1,6 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -218,69 +216,5 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ],
     );
-  }
-
-  _dialogSelectYear() {
-    var yearTextEditingController = TextEditingController();
-    int tmpYear = curYear;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, state) {
-            return AlertDialog(
-                title: const Text("选择年份"),
-                content: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        // autofocus: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly, // 数字，只能是整数
-                        ],
-                        controller: yearTextEditingController
-                          ..text = tmpYear.toString(),
-                        decoration:
-                            const InputDecoration(border: InputBorder.none),
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          tmpYear--;
-                          state(() {});
-                        },
-                        icon: const Icon(Icons.navigate_before)),
-                    IconButton(
-                        onPressed: () {
-                          tmpYear++;
-                          state(() {});
-                        },
-                        icon: const Icon(Icons.navigate_next)),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("取消")),
-                  TextButton(
-                      onPressed: () {
-                        String content = yearTextEditingController.text;
-                        if (content.isEmpty) {
-                          showToast("年份不能为空！");
-                          return;
-                        }
-                        if (tmpYear > DateTime.now().year + 2) {
-                          showToast("前面的区域，以后再来探索吧！");
-                          return;
-                        }
-                        curYear = int.parse(content);
-                        _loadData(curYear);
-                        Navigator.pop(context);
-                      },
-                      child: const Text("确认")),
-                ]);
-          });
-        });
   }
 }

@@ -8,7 +8,6 @@ import 'package:flutter_test_future/scaffolds/search.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);

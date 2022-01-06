@@ -6,12 +6,10 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:path/path.dart';
 
+// ignore: must_be_immutable
 class EpisodeNoteSF extends StatefulWidget {
   EpisodeNote episodeNote;
   EpisodeNoteSF(this.episodeNote, {Key? key}) : super(key: key);
@@ -190,7 +188,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                             imgLocalPath);
                         widget.episodeNote.imgLocalPaths
                             .removeWhere((element) => element == imgLocalPath);
-                        File(imgLocalPath).delete();
+                        File(imgLocalPath).deleteSync();
                         setState(() {});
                       },
                       icon: const Icon(

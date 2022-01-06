@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 
 class WebDavUtil {
@@ -53,16 +52,15 @@ class WebDavUtil {
     return true;
   }
 
-  static void upload(String localPath, String remotePath) async {
-    await client.writeFromFile(
+  static Future<void> upload(String localPath, String remotePath) async {
+    client.writeFromFile(
       localPath,
       remotePath,
     );
   }
 
-  static Future<String> backupData(bool auto) async {
+  static Future<String> getRemoteDirPath() async {
     // 先判断是否有animetrace目录，没有则创建
-    String backupDir = "/animetrace";
     var list = await client.readDir('/');
     bool existBackupDir = false;
     for (var file in list) {
@@ -71,25 +69,30 @@ class WebDavUtil {
         break;
       }
     }
+    String backupDir = "/animetrace";
     if (!existBackupDir) {
       await client.mkdir(backupDir);
     }
-
-    DateTime dateTime = DateTime.now();
-    String time =
-        "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-
-    if (auto) {
-      backupDir += "/automatic";
-      if (!existBackupDir) {
-        await client.mkdir(backupDir);
-      }
-      // 更新最后一次自动备份的时间
-      SPUtil.setString("last_time_backup", dateTime.toString());
-    }
-    String remotePath = '$backupDir/animetrace_$time.db';
-    upload(SqliteUtil.dbPath, remotePath);
-    print("备份成功：$remotePath");
-    return remotePath;
+    return backupDir;
   }
+
+  // static Future<String> backupData(bool auto) async {
+  //   String backupDirPath = await getRemoteDirPath();
+  //   DateTime dateTime = DateTime.now();
+  //   String time =
+  //       "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+
+  //   if (auto) {
+  //     backupDirPath += "/automatic";
+  //     if (!existBackupDir) {
+  //       await client.mkdir(backupDirPath);
+  //     }
+  //     // 更新最后一次自动备份的时间
+  //     SPUtil.setString("last_time_backup", dateTime.toString());
+  //   }
+  //   String remotePath = '$backupDirPath/animetrace_$time.db';
+  //   upload(SqliteUtil.dbPath, remotePath);
+  //   print("备份成功：$remotePath");
+  //   return remotePath;
+  // }
 }

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';

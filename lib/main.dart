@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           // 距离上次备份超过1天，则进行备份
           // if (now.difference(dateTime).inSeconds >= 10) {
           if (now.difference(dateTime).inDays >= 1) {
-            WebDavUtil.backupData(true);
+            // WebDavUtil.backupData(true);
           }
         }
       }

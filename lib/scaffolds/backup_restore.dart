@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class BackupAndRestore extends StatefulWidget {
@@ -38,16 +38,23 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               // 获取备份文件
               String? selectedFilePath = await selectFile();
               if (selectedFilePath != null) {
-                // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝
-                // await File(selectedFilePath).copy(SqliteUtil.dbPath);
-                // window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
-                // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问。
-                // await File(SqliteUtil.dbPath).delete();
-                // 可以直接在里面写入即可，writeAsBytes会清空原先内容
-                var content = await File(selectedFilePath).readAsBytes();
-                await File(SqliteUtil.dbPath).writeAsBytes(content);
-
-                showToast("还原成功");
+                if (selectedFilePath.endsWith(".zip")) {
+                  // 如果是压缩包，则使用restore函数还原
+                  BackupUtil.restore(localZipPath: selectedFilePath);
+                  showToast("还原成功");
+                } else if ((selectedFilePath.endsWith(".db"))) {
+                  // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝
+                  // await File(selectedFilePath).copy(SqliteUtil.dbPath);
+                  // window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
+                  // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问。
+                  // await File(SqliteUtil.dbPath).delete();
+                  // 可以直接在里面写入即可，writeAsBytes会清空原先内容
+                  var content = await File(selectedFilePath).readAsBytes();
+                  await File(SqliteUtil.dbPath).writeAsBytes(content);
+                  showToast("还原成功");
+                } else {
+                  showToast("还原文件必须以.zip或.db结尾");
+                }
               }
             },
           ),
@@ -65,30 +72,25 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   title: const Text("点击进行备份"),
                   subtitle: const Text(""),
                   // subtitle: Text(getDuration()),
-                  onTap: () async {
-                    DateTime dateTime = DateTime.now();
-                    String time =
-                        "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-                    String dir = SPUtil.getString("backup_local_dir");
-                    String path;
-                    // 已设置路径，直接备份
-                    if (dir.isNotEmpty) {
-                      // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
-                      await Directory(dir).create();
-                      path = "$dir/animetrace_$time.db";
-                      File(SqliteUtil.dbPath).copy(path);
-                      showToast("备份成功");
-                      // if ((await Directory(dir).exists())) {
-                      //   await Directory(dir).create();
-                      //   path = "$dir/animetrace_$time.db";
-                      //   File(SqliteUtil.dbPath).copy(path);
-                      //   showToast("备份成功");
-                      // } else {
-
-                      // }
-                    } else {
-                      showToast("请先设置本地备份目录");
-                    }
+                  onTap: () {
+                    BackupUtil.backup(
+                        localBackupDirPath: SPUtil.getString("backup_local_dir",
+                            defaultValue: "unset"));
+                    // DateTime dateTime = DateTime.now();
+                    // String time =
+                    //     "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+                    // String dir = SPUtil.getString("backup_local_dir");
+                    // String path;
+                    // // 已设置路径，直接备份
+                    // if (dir.isNotEmpty) {
+                    //   // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
+                    //   await Directory(dir).create();
+                    //   path = "$dir/animetrace_$time.db";
+                    //   File(SqliteUtil.dbPath).copy(path);
+                    //   showToast("备份成功");
+                    // } else {
+                    //   showToast("请先设置本地备份目录");
+                    // }
                   },
                 )
               : Container(),
@@ -153,7 +155,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               color: SPUtil.getBool("login") ? Colors.greenAccent : Colors.grey,
             ),
             onTap: () {
-              _loginWebDav();
+              _loginWebDav(context);
             },
           ),
           ListTile(
@@ -164,8 +166,9 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
-              String remotePath = await WebDavUtil.backupData(false);
-              showToast("备份成功: $remotePath");
+              BackupUtil.backup(
+                  remoteBackupDirPath: await WebDavUtil.getRemoteDirPath());
+              // String remotePath = await WebDavUtil.backupData(false);
             },
           ),
           ListTile(
@@ -190,7 +193,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               } else {
                 SPUtil.setBool("auto_backup", true);
                 // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
-                WebDavUtil.backupData(true);
+                // WebDavUtil.backupData(true);
                 autoBackupState = "开启";
                 showToast("开启自动备份");
               }
@@ -202,7 +205,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     );
   }
 
-  void _loginWebDav() {
+  void _loginWebDav(context) {
     var inputUriController = TextEditingController();
     var inputUserController = TextEditingController();
     var inputPasswordController = TextEditingController();
@@ -225,7 +228,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
         ),
       );
     }
-
     showDialog(
       context: context,
       builder: (context) {

@@ -65,6 +65,7 @@ dependencies:
   cached_network_image: ^3.2.0 # 缓存图片。不支持windows
   photo_view: ^0.13.0 # 点击查看图片
   easy_image_viewer: ^1.0.3
+  archive: ^3.1.8
   # flutter_screenutil: ^5.0.2
   # flutter_autosize_screen: ^1.0.1 # get不了
   # desktop_window: ^0.4.0 # 添加导致run不了：无法运行“rc.exe”

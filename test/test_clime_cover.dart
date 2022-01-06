@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 
 main(List<String> args) async {
@@ -13,13 +14,13 @@ main(List<String> args) async {
     // print(document.outerHtml);
 
   } catch (e) {
-    print(e);
+    debugPrint("$e");
   }
 }
 
 void yhdm(document) {
   var elements = document.getElementsByClassName("lpic");
-  print(elements[0]
+  debugPrint(elements[0]
       .children[0]
       .children[0]
       .children[0]
