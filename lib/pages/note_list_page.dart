@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class NoteListPage extends StatefulWidget {
 class _NoteListPageState extends State<NoteListPage> {
   List<EpisodeNote> episodeNotes = [];
   bool _loadOk = false;
+  bool hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
 
   @override
   void initState() {
@@ -50,6 +52,23 @@ class _NoteListPageState extends State<NoteListPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          // IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+          IconButton(
+              onPressed: () {
+                if (hideAnimeListTile) {
+                  SPUtil.setBool("hideAnimeListTile", false);
+                } else {
+                  SPUtil.setBool("hideAnimeListTile", true);
+                }
+                setState(() {
+                  hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
+                });
+              },
+              icon: hideAnimeListTile
+                  ? const Icon(Icons.unfold_more)
+                  : const Icon(Icons.unfold_less)),
+        ],
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 100),
@@ -60,6 +79,20 @@ class _NoteListPageState extends State<NoteListPage> {
               )
             : Scrollbar(child: _showNotes()),
       ),
+    );
+  }
+
+  _showTest() {
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: (BuildContext context, int index) {
+        return index > 3
+            ? Container(color: Colors.blue, height: 50)
+            : Container(
+                color: Colors.amber,
+                height: 500,
+              );
+      },
     );
   }
 
@@ -77,120 +110,124 @@ class _NoteListPageState extends State<NoteListPage> {
         //       .map((imgLocalPath) => Image.file(File(imgLocalPath)).image)
         //       .toList(),
         // );
-        return Flex(direction: Axis.vertical, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-            child: Card(
-              // color: Colors.red,
-              elevation: 0,
-              child: MaterialButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) =>
-                              EpisodeNoteSF(episodeNotes[index])))
-                      .then((value) {
-                    episodeNotes[index] = value; // 更新修改
-                    setState(() {});
-                  });
-                },
-                child: Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    // ListTile(
-                    //   style: ListTileStyle.drawer,
-                    //   leading: AnimeListCover(episodeNotes[index].anime),
-                    //   title: Text(
-                    //     "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
-                    //     maxLines: 1,
-                    //     overflow: TextOverflow.ellipsis,
-                    //   ),
-                    //   subtitle: Text(episodeNotes[index].episode.getDate()),
-                    // ),
-                    // episodeNotes[index].noteContent.isEmpty &&
-                    //         episodeNotes[index].imgLocalPaths.isEmpty
-                    //     ? Container()
-                    //     : const Divider(),
-                    episodeNotes[index].noteContent.isEmpty
-                        ? Container()
-                        : ListTile(
-                            title: Text(
-                              episodeNotes[index].noteContent,
-                              maxLines: 10,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            style: ListTileStyle.drawer,
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+          child: Card(
+            elevation: 0,
+            child: MaterialButton(
+              padding: const EdgeInsets.all(0),
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                        builder: (context) =>
+                            EpisodeNoteSF(episodeNotes[index])))
+                    .then((value) {
+                  episodeNotes[index] = value; // 更新修改
+                  setState(() {});
+                });
+              },
+              child: Flex(
+                direction: Axis.vertical,
+                children: [
+                  // ListTile(
+                  //   style: ListTileStyle.drawer,
+                  //   leading: AnimeListCover(episodeNotes[index].anime),
+                  //   title: Text(
+                  //     "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
+                  //     maxLines: 1,
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  //   subtitle: Text(episodeNotes[index].episode.getDate()),
+                  // ),
+                  // episodeNotes[index].noteContent.isEmpty &&
+                  //         episodeNotes[index].imgLocalPaths.isEmpty
+                  //     ? Container()
+                  //     : const Divider(),
+                  episodeNotes[index].noteContent.isEmpty
+                      ? Container()
+                      : ListTile(
+                          title: Text(
+                            episodeNotes[index].noteContent,
+                            maxLines: 10,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                    episodeNotes[index].imgLocalPaths.length == 1
-                        ? ClipRRect(
+                          style: ListTileStyle.drawer,
+                        ),
+                  episodeNotes[index].imgLocalPaths.length == 1
+                      ? Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
+                          child: ClipRRect(
                             borderRadius: BorderRadius.circular(5), // 圆角
                             child: Image.file(
                               File(episodeNotes[index].imgLocalPaths[0]),
                               fit: BoxFit.fitHeight,
                             ),
-                          )
-                        : showImageGridView(
-                            episodeNotes[index].imgLocalPaths.length,
-                            (BuildContext context, int indexImage) {
-                            return ImageGridItem(
-                              // multiImageProvider: multiImageProvider,
-                              imageLocalPath:
-                                  episodeNotes[index].imgLocalPaths[indexImage],
-                              initialIndex: 0, // 并没有发挥作用
-                            );
-                          }),
-                    episodeNotes[index].noteContent.isEmpty &&
-                            episodeNotes[index].imgLocalPaths.isEmpty
-                        ? Container()
-                        : const Divider(),
-                    ListTile(
-                      style: ListTileStyle.drawer,
-                      trailing: AnimeListCover(episodeNotes[index].anime),
-                      title: Text(
-                        episodeNotes[index].anime.animeName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                      ),
-                      subtitle: Text(
-                        "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
-                        textAlign: TextAlign.right,
-                      ),
-                      onTap: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(
-                                builder: (context) => AnimeDetailPlus(
-                                    episodeNotes[index].anime.animeId)))
-                            .then((value) => _loadData());
-                      },
-                    ),
+                          ),
+                        )
+                      : showImageGridView(
+                          episodeNotes[index].imgLocalPaths.length,
+                          (BuildContext context, int indexImage) {
+                          return ImageGridItem(
+                            // multiImageProvider: multiImageProvider,
+                            imageLocalPath:
+                                episodeNotes[index].imgLocalPaths[indexImage],
+                            initialIndex: 0, // 并没有发挥作用
+                          );
+                        }),
+                  episodeNotes[index].noteContent.isEmpty &&
+                          episodeNotes[index].imgLocalPaths.isEmpty
+                      ? Container() // 内容和图片都为空，则不显示
+                      : hideAnimeListTile
+                          ? Container() // 如果隐藏了AnimeListTile，则不显示分割线
+                          : const Divider(),
+                  hideAnimeListTile
+                      ? Container()
+                      : ListTile(
+                          style: ListTileStyle.drawer,
+                          trailing: AnimeListCover(episodeNotes[index].anime),
+                          title: Text(
+                            episodeNotes[index].anime.animeName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                          ),
+                          subtitle: Text(
+                            "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
+                            textAlign: TextAlign.right,
+                          ),
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                    builder: (context) => AnimeDetailPlus(
+                                        episodeNotes[index].anime.animeId)))
+                                .then((value) => _loadData());
+                          },
+                        ),
 
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: Row(
-                    //     children: [
-                    //       Expanded(
-                    //         child: Text(
-                    //           "完成于${episodeNotes[index].episode.getDate()}",
-                    //           textAlign: TextAlign.left,
-                    //         ),
-                    //       ),
-                    //       Expanded(
-                    //         child: Text(
-                    //           "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
-                    //           textAlign: TextAlign.right,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
-                ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     children: [
+                  //       Expanded(
+                  //         child: Text(
+                  //           "完成于${episodeNotes[index].episode.getDate()}",
+                  //           textAlign: TextAlign.left,
+                  //         ),
+                  //       ),
+                  //       Expanded(
+                  //         child: Text(
+                  //           "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
+                  //           textAlign: TextAlign.right,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
               ),
             ),
           ),
-        ]);
+        );
       },
     );
   }
