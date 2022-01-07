@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
 import 'package:oktoast/oktoast.dart';
@@ -23,6 +27,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
   List<Anime> searchAnimes = [];
+  List<Anime> addedAnimes = [];
   bool searchOk = false;
   bool searching = false;
   String addDefaultTag = tags[0];
@@ -42,12 +47,21 @@ class _AnimeClimbState extends State<AnimeClimb> {
     debugPrint("开始爬取动漫封面");
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
-    Future(() {
+    Future(() async {
+      addedAnimes = await SqliteUtil.getAnimesBySearch(widget.keyword);
       return ClimeCoverUtil.climeAllCoverUrl(keyword); // 一定要return！！！
     }).then((value) {
       searchAnimes = value;
       debugPrint("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+      // 若某个搜索的动漫存在，则更新它
+      for (int i = 0; i < searchAnimes.length; ++i) {
+        int findIndex = addedAnimes.indexWhere(
+            (element) => element.animeName == searchAnimes[i].animeName);
+        if (findIndex != -1) {
+          searchAnimes[i] = addedAnimes[findIndex];
+        }
+      }
       // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
       searchAnimes.insert(
           0,
@@ -96,8 +110,9 @@ class _AnimeClimbState extends State<AnimeClimb> {
               duration: const Duration(milliseconds: 5000),
               child: GridView.builder(
                 padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 横轴数量
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
                   crossAxisSpacing: 5, // 横轴距离
                   mainAxisSpacing: 3, // 竖轴距离
                   childAspectRatio: 31 / 56, // 每个网格的比例
@@ -119,7 +134,24 @@ class _AnimeClimbState extends State<AnimeClimb> {
                         } else {
                           Navigator.of(context).pop(); // 名字没有变，直接退出
                         }
+                      } else if (anime.animeId != 0) {
+                        // 不为0，说明已添加，点击进入动漫详细页面
+                        Navigator.of(context)
+                            .push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AnimeDetailPlus(anime.animeId),
+                          ),
+                        )
+                            .then((updatedAnime) {
+                          int findIndex = searchAnimes.indexWhere((element) =>
+                              element.animeName == updatedAnime.animeName);
+                          setState(() {
+                            searchAnimes[findIndex] = updatedAnime;
+                          });
+                        });
                       } else {
+                        // 其他情况才是添加动漫
                         _dialogAddAnime(anime);
                       }
                     },
@@ -127,18 +159,28 @@ class _AnimeClimbState extends State<AnimeClimb> {
                     child: Flex(
                       direction: Axis.vertical,
                       children: [
-                        AnimeGridCover(anime),
-                        Row(
+                        Stack(
                           children: [
-                            Expanded(
-                              child: Text(
-                                anime.animeName,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ),
+                            AnimeGridCover(anime),
+                            _displayEpisodeState(anime),
                           ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  anime.animeName,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: Platform.isAndroid
+                                      ? const TextStyle(fontSize: 13)
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -220,9 +262,16 @@ class _AnimeClimbState extends State<AnimeClimb> {
                       animeEpisodeCnt: endEpisode,
                       tagName: addDefaultTag,
                       animeCoverUrl: anime.animeCoverUrl);
-                  await SqliteUtil.insertAnime(
-                      newAnime); // 必须要等待添加完毕，否则如果在添加到数据库之前就进入详细页面，就会找不到
-                  showToast("添加成功！");
+                  SqliteUtil.insertAnime(newAnime).then((lastInsertId) {
+                    showToast("添加成功！");
+                    // 为新添加的动漫增加集数
+                    int findIndex = searchAnimes.indexWhere(
+                        (element) => element.animeName == newAnime.animeName);
+                    searchAnimes[findIndex] = newAnime;
+                    searchAnimes[findIndex].animeId = lastInsertId;
+                    setState(() {});
+                  });
+
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.send),
@@ -331,5 +380,25 @@ class _AnimeClimbState extends State<AnimeClimb> {
             ],
           );
         });
+  }
+
+  _displayEpisodeState(Anime anime) {
+    if (anime.animeId == 0) return Container(); // 没有id，说明未添加
+
+    return Positioned(
+        left: 5,
+        top: 5,
+        child: Container(
+          // height: 20,
+          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            color: Colors.blue,
+          ),
+          child: Text(
+            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+            style: const TextStyle(fontSize: 12, color: Colors.white),
+          ),
+        ));
   }
 }

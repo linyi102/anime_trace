@@ -218,10 +218,10 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<void> insertAnime(Anime anime) async {
+  static Future<int> insertAnime(Anime anime) async {
     debugPrint("sql: insertAnime");
     String datetime = DateTime.now().toString();
-    await _database.rawInsert('''
+    return await _database.rawInsert('''
     insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url)
     values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}');
     ''');

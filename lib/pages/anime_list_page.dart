@@ -266,7 +266,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               onLongPress: () {
                 onLongPress(index);
               },
-              padding: const EdgeInsets.all(0), // 设置按钮填充
+              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
               child: Stack(children: [
                 Column(
                   children: [
