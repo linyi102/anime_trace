@@ -46,7 +46,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   ),
                 )
               : Container(),
-
           Platform.isWindows
               ? ListTile(
                   title: const Text("点击进行备份"),
@@ -56,9 +55,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                     BackupUtil.backup(
                         localBackupDirPath: SPUtil.getString("backup_local_dir",
                             defaultValue: "unset"));
-                    // DateTime dateTime = DateTime.now();
-                    // String time =
-                    //     "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+
                     // String dir = SPUtil.getString("backup_local_dir");
                     // String path;
                     // // 已设置路径，直接备份
@@ -121,66 +118,16 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 )
               : Container(),
           ListTile(
-            title: const Text("还原备份"),
+            title: const Text("还原本地备份"),
             subtitle: const Text("还原动漫记录"),
             onTap: () async {
               // 获取备份文件
               String? selectedFilePath = await selectFile();
               if (selectedFilePath != null) {
-                if (selectedFilePath.endsWith(".zip")) {
-                  // 如果是压缩包，则使用restore函数还原
-                  BackupUtil.restore(localZipPath: selectedFilePath);
-                } else if ((selectedFilePath.endsWith(".db"))) {
-                  // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝
-                  // await File(selectedFilePath).copy(SqliteUtil.dbPath);
-                  // window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
-                  // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问。
-                  // await File(SqliteUtil.dbPath).delete();
-                  // 可以直接在里面写入即可，writeAsBytes会清空原先内容
-                  var content = await File(selectedFilePath).readAsBytes();
-                  await File(SqliteUtil.dbPath).writeAsBytes(content);
-                  showToast("还原成功");
-                } else {
-                  showToast("还原文件必须以.zip或.db结尾");
-                }
+                BackupUtil.restoreFromLocal(selectedFilePath);
               }
             },
           ),
-
-          // 注意！！！！！share插件window会打不开应用
-          // Platform.isAndroid
-          //     ? ListTile(
-          //         title: const Text("发送数据"),
-          //         subtitle: const Text("发送动漫记录文件"),
-          //         // subtitle: Text(getDuration()),
-          //         onTap: () async {
-          //           // 名字太长会导致备份不到坚果云
-          //           DateTime dateTime = DateTime.now();
-          //           String time =
-          //               "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-          //           String? dir = await selectDirectory();
-          //           if (dir != null) {
-          //             String path = "$dir/animetrace_$time.db";
-          //             File(SqliteUtil.dbPath).copy(path);
-          //           }
-          //           // 点击分享弹出界面后，就会返回Future<void>，而即使删除文件也能发送，因此不用担心
-          //           // final sharedFilePath =
-          //           //     "${(await get())!.path}/animetrace_$time.db";
-          //           // final sharedFilePath =
-          //           //     "${(await getExternalStorageDirectory())!.path}/animetrace_$time.db";
-          //           // // 拷贝一份
-          //           // File sharedFile =
-          //           //     await File(SqliteUtil.dbPath).copy(sharedFilePath);
-          //           // // 点击分享弹出界面后，就会返回Future<void>，而即使删除文件也能发送，因此不用担心
-          //           // // await Share.shareFiles([sharedFilePath]);
-          //           // sharedFile.delete();
-          //           // SPUtil.setString("lastSharedTime", dateTime.toString());
-          //           // // setState(() {});
-          //           // // showToast("分享成功"); // 找不到合适的时间
-          //         },
-          //       )
-          //     : Container(),
-
           const ListTile(
             title: Text(
               "WebDav 备份",
@@ -195,7 +142,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               color: SPUtil.getBool("login") ? Colors.greenAccent : Colors.grey,
             ),
             onTap: () {
-              _loginWebDav(context);
+              _loginWebDav();
             },
           ),
           ListTile(
@@ -240,12 +187,11 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               setState(() {});
             },
           ),
-
           ListTile(
             title: const Text("还原最新数据"),
             onTap: () async {
               if (SPUtil.getBool("login")) {
-                BackupUtil.restore(remoteZip: true);
+                BackupUtil.restoreFromWebDav();
               } else {
                 showToast("配置账号后才可以进行还原");
               }
@@ -256,7 +202,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     );
   }
 
-  void _loginWebDav(context) {
+  void _loginWebDav() {
     var inputUriController = TextEditingController();
     var inputUserController = TextEditingController();
     var inputPasswordController = TextEditingController();

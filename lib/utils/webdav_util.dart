@@ -53,7 +53,7 @@ class WebDavUtil {
   }
 
   static Future<void> upload(String localPath, String remotePath) async {
-    await client.writeFromFile(
+    return client.writeFromFile(
       localPath,
       remotePath,
     );
@@ -75,24 +75,4 @@ class WebDavUtil {
     }
     return backupDir;
   }
-
-  // static Future<String> backupData(bool auto) async {
-  //   String backupDirPath = await getRemoteDirPath();
-  //   DateTime dateTime = DateTime.now();
-  //   String time =
-  //       "${dateTime.year}-${dateTime.month}-${dateTime.day}_${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
-
-  //   if (auto) {
-  //     backupDirPath += "/automatic";
-  //     if (!existBackupDir) {
-  //       await client.mkdir(backupDirPath);
-  //     }
-  //     // 更新最后一次自动备份的时间
-  //     SPUtil.setString("last_time_backup", dateTime.toString());
-  //   }
-  //   String remotePath = '$backupDirPath/animetrace_$time.db';
-  //   upload(SqliteUtil.dbPath, remotePath);
-  //   print("备份成功：$remotePath");
-  //   return remotePath;
-  // }
 }

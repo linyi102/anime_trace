@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path/path.dart';
@@ -27,10 +28,15 @@ class BackupUtil {
     String localBackupDirPath = "",
     String remoteBackupDirPath = "",
     bool showToastFlag = true,
+    bool automatic = false,
   }) async {
+    DateTime dateTime = DateTime.now();
+    String time =
+        "${dateTime.year}-${dateTime.month}-${dateTime.day}-${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+
     var encoder = ZipFileEncoder();
     String localRootDirPath = await getLocalRootDirPath();
-    String zipName = "manji_backup.zip";
+    String zipName = "animetrace-backup-$time.zip";
     String tempZipFilePath = "$localRootDirPath/$zipName";
     encoder.create(tempZipFilePath);
     Directory directory = Directory(localRootDirPath);
@@ -56,11 +62,17 @@ class BackupUtil {
         // 已设置路径，直接备份
         if (localBackupDirPath != "unset") {
           // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
-          Directory(localBackupDirPath).create().then((value) {
-            String localBackupFilePath = "$localBackupDirPath/$zipName";
+          Directory("$localBackupDirPath/automatic").create().then((value) {
+            String localBackupFilePath;
+            if (automatic) {
+              localBackupFilePath = "$localBackupDirPath/automatic/$zipName";
+            } else {
+              localBackupFilePath = "$localBackupDirPath/$zipName";
+            }
             File(tempZipFilePath).copy(localBackupFilePath).then((value) {
               if (showToastFlag) showToast("备份成功：$localBackupFilePath");
-              File(tempZipFilePath).delete();
+              // 如果还要备份到webdav，则先不删除
+              if (remoteBackupDirPath.isEmpty) File(tempZipFilePath).delete();
             });
           });
         } else {
@@ -68,9 +80,12 @@ class BackupUtil {
         }
       }
       if (remoteBackupDirPath.isNotEmpty) {
-        // 本地的却可以上传(虽然不是增量的)
-        // tempZipFilePath = "C:/Users/11580/Desktop/manji_backup.zip";
-        String remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
+        String remoteBackupFilePath;
+        if (automatic) {
+          remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
+        } else {
+          remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
+        }
         WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
           if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
           // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
@@ -100,69 +115,83 @@ class BackupUtil {
     });
   }
 
-  static void restore({
-    String localZipPath = "",
-    bool remoteZip = false,
-    // String remoteZipPath = "", // 都是从本地获取的路径
-  }) async {
-    String localRootDirPath = await getLocalRootDirPath();
-    // 如果图片目录中的图片都不存在，则可以正常还原。如果存在则会退出
-    // 解决方法：先删除掉图片目录中的所有图片，然后再还原
-    // 或者直接递归删除图片目录(不行，会闪退，但删除单个图片却可以)
-    // 当前的解决办法：存在该图片就不解压出来
-    // Directory directory = Directory(localRootDirPath);
-    // directory.list().forEach((element) {
-    //   element.deleteSync(recursive: true);
-    // });
-    // localRootDirPath = "C:/Users/11580/Desktop";
-    // Directory("$localRootDirPath/images").deleteSync(recursive: true);
-    // debugPrint("图片目录删除成功");
-    // File("C:/Users/11580/AppData/Roaming/com.example/anime_footmark_windows/images/26/1/20210225_190939.jpg")
-    //     .deleteSync();
-    // debugPrint("图片删除成功");
-    debugPrint(
-        "localRootDirPath: $localRootDirPath\nlocalZipPath: $localZipPath");
-    // // 先把选择的压缩包拷贝到数据根路径下
-    // File localZip =
-    //     await File(localZipPath).copy("$localRootDirPath/manji_backup.zip");
-    // localZipPath = localRootDirPath;
-    if (remoteZip) {
-      localZipPath = "$localRootDirPath/manji_backup.zip";
-      await WebDavUtil.client
-          .read2File("/animetrace/manji_backup.zip", localZipPath);
+  static Future<void> restoreFromLocal(String localBackupFilePath) async {
+    if (localBackupFilePath.endsWith(".db")) {
+      // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
+      // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
+      // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问：await File(SqliteUtil.dbPath).delete();
+      // 可以直接在里面写入即可，writeAsBytes会清空原先内容
+      var content = await File(localBackupFilePath).readAsBytes();
+      File(SqliteUtil.dbPath)
+          .writeAsBytes(content)
+          .then((value) => showToast("还原成功"));
+    } else if (localBackupFilePath.endsWith(".zip")) {
+      unzip(localBackupFilePath).then((value) => showToast("还原成功"));
+    } else {
+      showToast("还原文件必须以.zip或.db结尾");
     }
-    if (localZipPath.isNotEmpty) {
-      // Read the Zip file from disk.
-      final bytes = File(localZipPath).readAsBytesSync();
-      // final bytes = localZip.readAsBytesSync();
+  }
 
-      // Decode the Zip file
-      final archive = ZipDecoder().decodeBytes(bytes);
+  static void restoreFromWebDav() async {
+    String localRootDirPath = await getLocalRootDirPath();
 
-      debugPrint("开始解压");
-      // Extract the contents of the Zip archive to disk.
-      for (final file in archive) {
-        final filename = file.name;
-        debugPrint("filename: $filename");
-        if (file.isFile) {
-          // 先判断该图片是否存在，如果不存在再解压出来
-          String filePath = "$localRootDirPath/$filename";
-          if (filename.startsWith("images") && File(filePath).existsSync()) {
-            debugPrint("已存在图片：$filePath");
-            continue;
-          }
-          debugPrint("解压文件：$localRootDirPath/$filename");
-          final data = file.content as List<int>;
-          File("$localRootDirPath/$filename")
-            ..createSync(recursive: true)
-            ..writeAsBytesSync(data);
-        } else {
-          debugPrint("非文件：$localRootDirPath/$filename");
-          Directory("$localRootDirPath/$filename").createSync(recursive: true);
+    var files = await WebDavUtil.client.readDir("/animetrace");
+    files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
+    files.sort((a, b) {
+      return a.mTime.toString().compareTo(b.mTime.toString());
+    });
+    // for (var file in files) {
+    //   debugPrint(
+    //       "${file.path} created time: ${file.mTime.toString()}"); // cTime都是null
+    // }
+    var latestFile = files.last;
+    if (latestFile.path == null) {
+      showToast("还原失败");
+      return;
+    }
+    debugPrint("latestFilePath: ${latestFile.path}");
+    String localBackupFilePath = "$localRootDirPath/${latestFile.name}";
+    await WebDavUtil.client
+        .read2File(latestFile.path as String, localBackupFilePath);
+
+    debugPrint(
+        "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
+    // 下载到本地后，使用本地还原，还原结束后删除下载的文件
+    restoreFromLocal(localBackupFilePath)
+        .then((value) => File(localBackupFilePath).delete());
+  }
+
+  static Future<void> unzip(String localZipPath) async {
+    String localRootDirPath = await getLocalRootDirPath();
+
+    // Read the Zip file from disk.
+    final bytes = File(localZipPath).readAsBytesSync();
+    // final bytes = localZip.readAsBytesSync();
+
+    // Decode the Zip file
+    final archive = ZipDecoder().decodeBytes(bytes);
+
+    debugPrint("开始解压");
+    // Extract the contents of the Zip archive to disk.
+    for (final file in archive) {
+      final filename = file.name;
+      debugPrint("filename: $filename");
+      if (file.isFile) {
+        // 先判断该图片是否存在，如果不存在再解压出来。否则会闪退
+        String filePath = "$localRootDirPath/$filename";
+        if (filename.startsWith("images") && File(filePath).existsSync()) {
+          debugPrint("已存在图片：$filePath");
+          continue;
         }
+        debugPrint("解压文件：$localRootDirPath/$filename");
+        final data = file.content as List<int>;
+        File("$localRootDirPath/$filename")
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(data);
+      } else {
+        debugPrint("非文件：$localRootDirPath/$filename");
+        Directory("$localRootDirPath/$filename").createSync(recursive: true);
       }
-      File(localZipPath).delete();
-      showToast("还原成功");
     }
   }
 }
