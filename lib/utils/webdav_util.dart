@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_print
-
+import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 
@@ -21,7 +20,7 @@ class WebDavUtil {
       debug: false,
     );
     if (!(await pingWebDav())) {
-      print("WebDav初始化失败！");
+      debugPrint("WebDav初始化失败！");
       return false;
     }
     // Set the public request headers
@@ -35,7 +34,7 @@ class WebDavUtil {
 
     // Set transfer data time in milliseconds.
     client.setReceiveTimeout(8000);
-    print("WebDav初始化成功！");
+    debugPrint("WebDav初始化成功！");
     return true;
   }
 

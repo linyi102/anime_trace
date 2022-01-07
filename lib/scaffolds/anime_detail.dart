@@ -44,9 +44,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   void _loadData() async {
-    Future(() async {
-      return await SqliteUtil.getAnimeByAnimeId(
-          widget.animeId); // 一定要return，value才有值
+    Future(() {
+      return SqliteUtil.getAnimeByAnimeId(widget.animeId); // 一定要return，value才有值
     }).then((value) async {
       _anime = value;
       debugPrint(value.toString());

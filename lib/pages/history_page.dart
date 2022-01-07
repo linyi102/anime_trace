@@ -27,8 +27,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   _loadData(int year) async {
     debugPrint("加载$year年数据中...");
-    Future(() async {
-      return await SqliteUtil.getAllHistoryByYear(year);
+    Future(() {
+      return SqliteUtil.getAllHistoryByYear(year);
     }).then((value) {
       debugPrint("$year年数据加载完成");
       yearHistory[year] = value;

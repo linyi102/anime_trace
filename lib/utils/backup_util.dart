@@ -52,15 +52,15 @@ class BackupUtil {
       switch (element.statSync().type) {
         case FileSystemEntityType.directory:
           encoder.addDirectory(Directory(element.path)); // 添加目录
-          print("添加目录：${element.path}");
+          debugPrint("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
           if (element.path.endsWith(".zip")) break; // 避免备份压缩包
           encoder.addFile(File(element.path));
-          print("添加文件：${element.path}");
+          debugPrint("添加文件：${element.path}");
           break;
         default:
-          print("非目录和文件，不压缩：${element.path}");
+          debugPrint("非目录和文件，不压缩：${element.path}");
           break;
       }
     }).then((value) async {

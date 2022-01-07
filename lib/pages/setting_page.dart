@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/scaffolds/about_version.dart';
 import 'package:flutter_test_future/scaffolds/anime_display_setting.dart';
 import 'package:flutter_test_future/scaffolds/backup_restore.dart';
 import 'package:flutter_test_future/scaffolds/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:image_picker/image_picker.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -92,6 +93,8 @@ class _SettingPageState extends State<SettingPage> {
                   //     }
                   //   },
                   // ),
+                  _showImg(),
+                  _showImgButton(),
                   Platform.isAndroid ? _showImg() : Container(),
                   Platform.isAndroid ? _showImgButton() : Container(),
                   ListTile(
@@ -99,7 +102,7 @@ class _SettingPageState extends State<SettingPage> {
                       Icons.settings_backup_restore_outlined,
                       color: Colors.blue,
                     ),
-                    title: const Text("备份与还原"),
+                    title: const Text("备份还原"),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) =>
@@ -131,6 +134,18 @@ class _SettingPageState extends State<SettingPage> {
                               const AnimesDisplaySetting()));
                     },
                   ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.error_outline,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("关于版本"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const AboutVersion()));
+                    },
+                  )
                 ],
               ),
       ),
@@ -162,17 +177,19 @@ class _SettingPageState extends State<SettingPage> {
   _showImgButton() {
     return ListTile(
       leading: const Icon(
-        Icons.image_outlined,
+        // Icons.image_outlined,
+        Icons.wallpaper_outlined,
         color: Colors.blue,
       ),
       title: const Text("设置图片"),
       onTap: () async {
-        final ImagePicker _picker = ImagePicker();
-        final XFile? image =
-            await _picker.pickImage(source: ImageSource.gallery);
-        if (image != null) {
-          SPUtil.setString("img_file_path", image.path);
-          _imgFile = File(image.path);
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom, allowedExtensions: ["jpg", "png", "gif"]);
+        if (result != null) {
+          PlatformFile imgae = result.files.single;
+          String path = imgae.path as String;
+          SPUtil.setString("img_file_path", path);
+          _imgFile = File(path);
           setState(() {});
         }
       },
