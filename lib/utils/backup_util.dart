@@ -133,7 +133,10 @@ class BackupUtil {
           .writeAsBytes(content)
           .then((value) => showToast("还原成功"));
     } else if (localBackupFilePath.endsWith(".zip")) {
-      unzip(localBackupFilePath).then((value) => showToast("还原成功"));
+      unzip(localBackupFilePath).then((value) {
+        showToast("还原成功");
+        File(localBackupFilePath).delete();
+      });
     } else {
       showToast("还原文件必须以.zip或.db结尾");
     }
@@ -164,8 +167,7 @@ class BackupUtil {
     debugPrint(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
-    restoreFromLocal(localBackupFilePath)
-        .then((value) => File(localBackupFilePath).delete());
+    restoreFromLocal(localBackupFilePath); // 这里使用.then里删除，会导致android还原失败
   }
 
   static Future<void> unzip(String localZipPath) async {
