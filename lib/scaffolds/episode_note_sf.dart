@@ -6,6 +6,7 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -73,11 +74,12 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                       style: ListTileStyle.drawer,
                       leading: AnimeListCover(widget.episodeNote.anime),
                       title: Text(
-                        "${widget.episodeNote.anime.animeName} ${widget.episodeNote.episode.number}",
+                        widget.episodeNote.anime.animeName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: Text(widget.episodeNote.episode.getDate()),
+                      subtitle: Text(
+                          "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
                       // onTap: () {
                       //   Navigator.of(context).push(MaterialPageRoute(
                       //       builder: (context) => AnimeDetailPlus(
@@ -85,7 +87,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                       // },
                     ),
                     _showNoteContent(),
-                    _showImages(),
+                    // _showImages(),
                   ],
                 ),
               )

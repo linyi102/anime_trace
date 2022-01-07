@@ -538,7 +538,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   }
                   setState(() {});
                 },
-                tooltip: "显示笔记",
+                tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                 icon: hideNoteInAnimeDetail
                     ? const Icon(Icons.fullscreen_rounded)
                     : const Icon(Icons.fullscreen_exit_rounded)),

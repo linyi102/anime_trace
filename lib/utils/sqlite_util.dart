@@ -714,9 +714,9 @@ class SqliteUtil {
       episodeNote.noteContent = lm1[0]['note_content'] as String;
     }
     // debugPrint("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
-    // 查询图片
-    episodeNote.imgLocalPaths =
-        await getImgsByNoteId(episodeNote.episodeNoteId);
+    // 查询图片(暂时取消)
+    // episodeNote.imgLocalPaths =
+    //     await getImgsByNoteId(episodeNote.episodeNoteId);
     return episodeNote;
   }
 
