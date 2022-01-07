@@ -95,8 +95,6 @@ class _SettingPageState extends State<SettingPage> {
                   // ),
                   _showImg(),
                   _showImgButton(),
-                  Platform.isAndroid ? _showImg() : Container(),
-                  Platform.isAndroid ? _showImgButton() : Container(),
                   ListTile(
                     leading: const Icon(
                       Icons.settings_backup_restore_outlined,
