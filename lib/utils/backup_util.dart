@@ -36,7 +36,14 @@ class BackupUtil {
 
     var encoder = ZipFileEncoder();
     String localRootDirPath = await getLocalRootDirPath();
-    String zipName = "animetrace-backup-$time.zip";
+    String zipName = "";
+    if (Platform.isAndroid) {
+      zipName = "animetrace-backup-$time-android.zip";
+    } else if (Platform.isWindows) {
+      zipName = "animetrace-backup-$time-windows.zip";
+    } else {
+      throw ("未适配平台：${Platform.environment}");
+    }
     String tempZipFilePath = "$localRootDirPath/$zipName";
     encoder.create(tempZipFilePath);
     Directory directory = Directory(localRootDirPath);
@@ -48,7 +55,7 @@ class BackupUtil {
           print("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
-          if (basename(element.path) == zipName) break; // 跳过备份的压缩包
+          if (element.path.endsWith(".zip")) break; // 避免备份压缩包
           encoder.addFile(File(element.path));
           print("添加文件：${element.path}");
           break;
