@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
@@ -165,6 +166,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   _displayAnimeCover() {
+    final imageProvider = Image.network(_anime.animeCoverUrl).image;
     return Flex(direction: Axis.horizontal, children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
@@ -172,7 +174,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           width: 110,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: AnimeGridCover(_anime),
+            child: MaterialButton(
+              padding: const EdgeInsets.all(0),
+              onPressed: () {
+                showImageViewer(context, imageProvider, immersive: false);
+              },
+              child: AnimeGridCover(_anime),
+            ),
           ),
         ),
       ),
