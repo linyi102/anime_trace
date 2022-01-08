@@ -689,7 +689,7 @@ class SqliteUtil {
 
   static updateEpisodeNoteContentByNoteId(
       int noteId, String noteContent) async {
-    debugPrint("sql: updateEpisodeNoteContent");
+    debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     debugPrint("笔记id：$noteId, 笔记内容：$noteContent");
     await _database.rawUpdate('''
     update episode_note
@@ -774,6 +774,7 @@ class SqliteUtil {
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       EpisodeNote episodeNote = EpisodeNote(
+          episodeNoteId: item['note_id'] as int, // 忘记设置了，导致都是进入笔记0
           anime: anime,
           episode: episode,
           noteContent: item['note_content'] as String,
