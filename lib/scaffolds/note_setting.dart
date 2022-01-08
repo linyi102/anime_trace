@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -10,13 +12,21 @@ class NoteSetting extends StatefulWidget {
 }
 
 class _NoteSettingState extends State<NoteSetting> {
-  String imageRootDirPath =
-      SPUtil.getString("imageRootDirPath", defaultValue: "");
+  late String imageRootDirPath;
 
   @override
   void dispose() {
     super.dispose();
-    // SPUtil.setString("imageRootDirPath", "");
+    // SPUtil.setString("imageWindowsRootDirPath", "");
+    if (Platform.isAndroid) {
+      imageRootDirPath =
+          SPUtil.getString("imageWindowsRootDirPath", defaultValue: "");
+    } else if (Platform.isWindows) {
+      imageRootDirPath =
+          SPUtil.getString("imageAndroidRootDirPath", defaultValue: "");
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
   }
 
   @override
@@ -39,7 +49,7 @@ class _NoteSettingState extends State<NoteSetting> {
             onTap: () async {
               imageRootDirPath = (await selectDirectory()) ?? "";
               setState(() {});
-              SPUtil.setString("imageRootDirPath", imageRootDirPath);
+              SPUtil.setString("imageWindowsRootDirPath", imageRootDirPath);
             },
           ),
         ],

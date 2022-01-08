@@ -76,9 +76,8 @@ class _AnimeListPageState extends State<AnimeListPage>
       for (int i = 0; i < tags.length; ++i) {
         animesInTag[i] =
             await SqliteUtil.getAllAnimeBytagName(tags[i], 0, _pageSize);
-        debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
+        // debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
       }
-      debugPrint("animesInTag[0].length=${animesInTag[0].length}");
     }).then((value) {
       debugPrint("数据加载完毕");
       _loadOk = true; // 放这里啊，之前干嘛放外面...

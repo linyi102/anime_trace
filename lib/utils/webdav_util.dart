@@ -43,11 +43,11 @@ class WebDavUtil {
       await client.ping();
     } catch (e) {
       SPUtil.setBool("login", false); // 如果之前成功，但现在失败了，所以需要覆盖
-      print("ping false");
+      debugPrint("ping false");
       return false;
     }
     SPUtil.setBool("login", true);
-    print("ping ok");
+    debugPrint("ping ok");
     return true;
   }
 

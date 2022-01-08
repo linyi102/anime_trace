@@ -24,8 +24,9 @@ Future<int?> dialogSelectUint(context, String title,
                       ],
                       controller: yearTextEditingController
                         ..text = tmpValue.toString(),
-                      decoration:
-                          const InputDecoration(border: InputBorder.none),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          helperText: "设置范围：[$minValue, $maxValue]"),
                     ),
                   ),
                   IconButton(
@@ -64,8 +65,12 @@ Future<int?> dialogSelectUint(context, String title,
                         showToast("不能为空！");
                         return;
                       }
-
-                      Navigator.pop(context, int.parse(content));
+                      int number = int.parse(content);
+                      if (number < minValue || number > maxValue) {
+                        showToast("设置范围：[$minValue, $maxValue]");
+                        return;
+                      }
+                      Navigator.pop(context, number);
                     },
                     child: const Text("确认")),
               ]);

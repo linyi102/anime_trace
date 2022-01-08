@@ -17,7 +17,7 @@ class ImageUtil {
       // rootImageDirPath =
       //     join((await getApplicationSupportDirectory()).path, "images");
     } else {
-      throw ("未适配平台：${Platform.environment}");
+      throw ("未适配平台：${Platform.operatingSystem}");
     }
     return _instance ?? ImageUtil._();
   }

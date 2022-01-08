@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -17,7 +18,7 @@ class BackupUtil {
       // rootImageDirPath =
       //     join((await getApplicationSupportDirectory()).path, "images");
     } else {
-      throw ("未适配平台：${Platform.environment}");
+      throw ("未适配平台：${Platform.operatingSystem}");
     }
     return localRootDirPath;
   }
@@ -41,7 +42,7 @@ class BackupUtil {
     } else if (Platform.isWindows) {
       zipName = "animetrace-backup-$time-windows.zip";
     } else {
-      throw ("未适配平台：${Platform.environment}");
+      throw ("未适配平台：${Platform.operatingSystem}");
     }
     String tempZipFilePath = "$localRootDirPath/$zipName";
     encoder.create(tempZipFilePath);
@@ -100,6 +101,8 @@ class BackupUtil {
       if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
       File(tempZipFilePath).delete();
+      deleteOldAutoBackupFileFromRemote(
+          remoteBackupDirPath); // 删除自动备份中超过用户备份数量的文件
       return remoteBackupFilePath;
       // 可以备份，但不是增量备份。
       // ！无法还原：Unhandled Exception: FormatException: Could not find End of Central Directory Record
@@ -124,6 +127,28 @@ class BackupUtil {
     }
     return "";
   }
+
+  static deleteOldAutoBackupFileFromRemote(String autoBackupDirPath) async {
+    var files = await WebDavUtil.client.readDir("/animetrace/automatic");
+    files.sort((a, b) {
+      return a.mTime.toString().compareTo(b.mTime.toString());
+    });
+    int totalNumber = files.length;
+    int autoBackupWebDavNumber =
+        SPUtil.getInt("autoBackupWebDavNumber", defaultValue: 20);
+    for (int i = 0; i < totalNumber - autoBackupWebDavNumber; ++i) {
+      String? path = files[i].path;
+      if (path != null && path.endsWith(".zip")) {
+        debugPrint("删除文件：$path");
+        WebDavUtil.client.remove(path);
+      }
+    }
+  }
+
+  // static deleteOldAutoBackupFileFromLocal(String autoBackupDirPath) async {
+  //   Stream<FileSystemEntity> files = Directory(autoBackupDirPath).list();
+  //   await for (FileSystemEntity file in files) {}
+  // }
 
   static Future<void> restoreFromLocal(String localBackupFilePath) async {
     if (localBackupFilePath.endsWith(".db")) {

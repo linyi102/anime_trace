@@ -83,20 +83,6 @@ class _NoteListPageState extends State<NoteListPage> {
     );
   }
 
-  _showTest() {
-    return ListView.builder(
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return index > 3
-            ? Container(color: Colors.blue, height: 50)
-            : Container(
-                color: Colors.amber,
-                height: 500,
-              );
-      },
-    );
-  }
-
   _showNotes() {
     return ListView.builder(
       itemCount: episodeNotes.length,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -18,17 +19,30 @@ class BackupAndRestore extends StatefulWidget {
 class _BackupAndRestoreState extends State<BackupAndRestore> {
   String autoBackupWebDav = SPUtil.getBool("auto_backup_webdav") ? "开启" : "关闭";
   String autoBackupLocal = SPUtil.getBool("auto_backup_local") ? "开启" : "关闭";
+  int autoBackupWebDavNumber =
+      SPUtil.getInt("autoBackupWebDavNumber", defaultValue: 20);
+  int autoBackupLocalNumber =
+      SPUtil.getInt("autoBackupLocalNumber", defaultValue: 20);
   late File latestFile;
+
   bool loadOk = false;
 
   @override
   void initState() {
     super.initState();
     // SPUtil.clear();
-    _showLatestFile();
+    // 获取最新情况，更新SP中的login
+    WebDavUtil.pingWebDav().then((pingOk) {
+      setState(() {});
+      // 如果成功，则获取最新备份文件
+      if (pingOk) {
+        _showLatestFile();
+      }
+    });
   }
 
   _showLatestFile() async {
+    debugPrint("获取最新备份文件ing...");
     var files = await WebDavUtil.client.readDir("/animetrace");
     files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
     files.sort((a, b) {
@@ -36,6 +50,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     });
     latestFile = files.last;
     loadOk = true;
+    debugPrint("获取最新备份文件成功：${latestFile.path}");
     setState(() {});
   }
 
@@ -70,19 +85,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                     BackupUtil.backup(
                         localBackupDirPath: SPUtil.getString("backup_local_dir",
                             defaultValue: "unset"));
-
-                    // String dir = SPUtil.getString("backup_local_dir");
-                    // String path;
-                    // // 已设置路径，直接备份
-                    // if (dir.isNotEmpty) {
-                    //   // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
-                    //   await Directory(dir).create();
-                    //   path = "$dir/animetrace_$time.db";
-                    //   File(SqliteUtil.dbPath).copy(path);
-                    //   showToast("备份成功");
-                    // } else {
-                    //   showToast("请先设置本地备份目录");
-                    // }
                   },
                 )
               : Container(),
@@ -204,6 +206,21 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             },
           ),
           ListTile(
+            title: const Text("自动备份数量"),
+            subtitle: Text("$autoBackupWebDavNumber"),
+            onTap: () async {
+              int? number = await dialogSelectUint(context, "自动备份数量",
+                  defaultValue: autoBackupWebDavNumber,
+                  minValue: 1,
+                  maxValue: 100);
+              if (number != null) {
+                autoBackupWebDavNumber = number;
+                SPUtil.setInt("autoBackupWebDavNumber", number);
+                setState(() {});
+              }
+            },
+          ),
+          ListTile(
             title: const Text("还原最新数据"),
             subtitle: loadOk
                 ? Text(latestFile.path!.split("/").last)
@@ -281,7 +298,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                     return;
                   }
                   showToast("连接成功！");
-                  setState(() {});
+                  _showLatestFile();
                   Navigator.of(context).pop();
                 },
                 child: const Text("确认"))

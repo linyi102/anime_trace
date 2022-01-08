@@ -72,7 +72,7 @@ class SqliteUtil {
             version: 1,
           ));
     } else {
-      throw ("未适配平台：${Platform.environment}");
+      throw ("未适配平台：${Platform.operatingSystem}");
     }
   }
 
