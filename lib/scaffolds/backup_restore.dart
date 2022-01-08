@@ -7,6 +7,8 @@ import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'dart:io';
 
+import 'package:webdav_client/webdav_client.dart';
+
 class BackupAndRestore extends StatefulWidget {
   const BackupAndRestore({Key? key}) : super(key: key);
 
@@ -17,11 +19,25 @@ class BackupAndRestore extends StatefulWidget {
 class _BackupAndRestoreState extends State<BackupAndRestore> {
   String autoBackupWebDav = SPUtil.getBool("auto_backup_webdav") ? "开启" : "关闭";
   String autoBackupLocal = SPUtil.getBool("auto_backup_local") ? "开启" : "关闭";
+  late File latestFile;
+  bool loadOk = false;
 
   @override
   void initState() {
     super.initState();
     // SPUtil.clear();
+    _showLatestFile();
+  }
+
+  _showLatestFile() async {
+    var files = await WebDavUtil.client.readDir("/animetrace");
+    files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
+    files.sort((a, b) {
+      return a.mTime.toString().compareTo(b.mTime.toString());
+    });
+    latestFile = files.last;
+    loadOk = true;
+    setState(() {});
   }
 
   @override
@@ -29,7 +45,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "备份与还原",
+          "备份还原",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -153,8 +169,9 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
-              BackupUtil.backup(
+              latestFile.path = await BackupUtil.backup(
                   remoteBackupDirPath: await WebDavUtil.getRemoteDirPath());
+              setState(() {});
               // String remotePath = await WebDavUtil.backupData(false);
             },
           ),
@@ -189,9 +206,12 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           ),
           ListTile(
             title: const Text("还原最新数据"),
+            subtitle: loadOk
+                ? Text(latestFile.path!.split("/").last)
+                : const Text(""),
             onTap: () async {
               if (SPUtil.getBool("login")) {
-                BackupUtil.restoreFromWebDav();
+                BackupUtil.restoreFromWebDav(latestFile);
               } else {
                 showToast("配置账号后才可以进行还原");
               }
@@ -215,7 +235,9 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     for (int i = 0; i < keys.length; ++i) {
       listTextFields.add(
         TextField(
-          // obscureText: labelTexts[i] == "密码" ? true : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
+          obscureText: labelTexts[i] == "密码"
+              ? true
+              : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
           controller: controllers[i]
             ..text = SPUtil.getString(keys[i], defaultValue: ""),
           decoration: InputDecoration(

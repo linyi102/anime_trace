@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class BackupUtil {
@@ -24,7 +22,8 @@ class BackupUtil {
     return localRootDirPath;
   }
 
-  static void backup({
+  // 应该返回webdav包中的File，可惜加上后会和io中的File冲突
+  static Future<String> backup({
     String localBackupDirPath = "",
     String remoteBackupDirPath = "",
     bool showToastFlag = true,
@@ -48,7 +47,7 @@ class BackupUtil {
     encoder.create(tempZipFilePath);
     Directory directory = Directory(localRootDirPath);
     // 其他方法：获取上一级目录，直接压缩
-    directory.list().forEach((element) {
+    await directory.list().forEach((element) {
       switch (element.statSync().type) {
         case FileSystemEntityType.directory:
           encoder.addDirectory(Directory(element.path)); // 添加目录
@@ -63,63 +62,67 @@ class BackupUtil {
           debugPrint("非目录和文件，不压缩：${element.path}");
           break;
       }
-    }).then((value) async {
-      encoder.close();
-      if (localBackupDirPath.isNotEmpty) {
-        // 已设置路径，直接备份
-        if (localBackupDirPath != "unset") {
-          // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
-          Directory("$localBackupDirPath/automatic").create().then((value) {
-            String localBackupFilePath;
-            if (automatic) {
-              localBackupFilePath = "$localBackupDirPath/automatic/$zipName";
-            } else {
-              localBackupFilePath = "$localBackupDirPath/$zipName";
-            }
-            File(tempZipFilePath).copy(localBackupFilePath).then((value) {
-              if (showToastFlag) showToast("备份成功：$localBackupFilePath");
-              // 如果还要备份到webdav，则先不删除
-              if (remoteBackupDirPath.isEmpty) File(tempZipFilePath).delete();
-            });
-          });
-        } else {
-          if (showToastFlag) showToast("请先设置本地备份目录");
-        }
-      }
-      if (remoteBackupDirPath.isNotEmpty) {
-        String remoteBackupFilePath;
-        if (automatic) {
-          remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
-        } else {
-          remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
-        }
-        WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath).then((value) {
-          if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
-          // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
-          File(tempZipFilePath).delete();
-        });
-        // 可以备份，但不是增量备份。
-        // ！无法还原：Unhandled Exception: FormatException: Could not find End of Central Directory Record
-        // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
-        // WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
-        //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
-        //   File(tempZipFilePath).delete();
-        // });
-        // 移动。会导致无法连接，第一次还没有效果
-        // WebDavUtil.client
-        //     .copy(tempZipFilePath, remoteBackupFilePath, false)
-        //     .then((value) {
-        //   showToast("备份成功：$remoteBackupFilePath");
-        //   File(tempZipFilePath).delete();
-        // });
-        // 报错
-        // WebDavUtil.upload("$dirPath/mydb.db", remoteBackupFilePath)
-        //     .then((value) {
-        //   showToast("备份成功：$remoteBackupFilePath");
-        //   File(tempZipFilePath).delete();
-        // });
-      }
     });
+    encoder.close();
+    if (localBackupDirPath.isNotEmpty) {
+      // 已设置路径，直接备份
+      if (localBackupDirPath != "unset") {
+        // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
+        await Directory("$localBackupDirPath/automatic").create();
+        String localBackupFilePath;
+        if (automatic) {
+          localBackupFilePath = "$localBackupDirPath/automatic/$zipName";
+        } else {
+          localBackupFilePath = "$localBackupDirPath/$zipName";
+        }
+        await File(tempZipFilePath).copy(localBackupFilePath);
+        if (showToastFlag) showToast("备份成功：$localBackupFilePath");
+        // 如果还要备份到webdav，则先不删除
+        if (remoteBackupDirPath.isEmpty) {
+          File(tempZipFilePath).delete();
+          return localBackupFilePath;
+        }
+      } else {
+        if (showToastFlag) {
+          showToast("请先设置本地备份目录");
+          return "";
+        }
+      }
+    }
+    if (remoteBackupDirPath.isNotEmpty) {
+      String remoteBackupFilePath;
+      if (automatic) {
+        remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
+      } else {
+        remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
+      }
+      await WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath);
+      if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+      // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
+      File(tempZipFilePath).delete();
+      return remoteBackupFilePath;
+      // 可以备份，但不是增量备份。
+      // ！无法还原：Unhandled Exception: FormatException: Could not find End of Central Directory Record
+      // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
+      // WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
+      //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+      //   File(tempZipFilePath).delete();
+      // });
+      // 移动。会导致无法连接，第一次还没有效果
+      // WebDavUtil.client
+      //     .copy(tempZipFilePath, remoteBackupFilePath, false)
+      //     .then((value) {
+      //   showToast("备份成功：$remoteBackupFilePath");
+      //   File(tempZipFilePath).delete();
+      // });
+      // 报错
+      // WebDavUtil.upload("$dirPath/mydb.db", remoteBackupFilePath)
+      //     .then((value) {
+      //   showToast("备份成功：$remoteBackupFilePath");
+      //   File(tempZipFilePath).delete();
+      // });
+    }
+    return "";
   }
 
   static Future<void> restoreFromLocal(String localBackupFilePath) async {
@@ -142,19 +145,9 @@ class BackupUtil {
     }
   }
 
-  static void restoreFromWebDav() async {
+  static void restoreFromWebDav(latestFile) async {
     String localRootDirPath = await getLocalRootDirPath();
 
-    var files = await WebDavUtil.client.readDir("/animetrace");
-    files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
-    files.sort((a, b) {
-      return a.mTime.toString().compareTo(b.mTime.toString());
-    });
-    // for (var file in files) {
-    //   debugPrint(
-    //       "${file.path} created time: ${file.mTime.toString()}"); // cTime都是null
-    // }
-    var latestFile = files.last;
     if (latestFile.path == null) {
       showToast("还原失败");
       return;
