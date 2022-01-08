@@ -102,7 +102,7 @@ class _NoteListPageState extends State<NoteListPage> {
       itemBuilder: (BuildContext context, int index) {
         // 该笔记没有内容，且没有图片，直接返回
         if (episodeNotes[index].noteContent.isEmpty &&
-            episodeNotes[index].imgLocalPaths.isEmpty) return Container();
+            episodeNotes[index].relativeLocalImages.isEmpty) return Container();
         // 会导致windows出错
         // MultiImageProvider multiImageProvider = MultiImageProvider(
         //   episodeNotes[index]
@@ -153,29 +153,32 @@ class _NoteListPageState extends State<NoteListPage> {
                           ),
                           style: ListTileStyle.drawer,
                         ),
-                  episodeNotes[index].imgLocalPaths.length == 1
+                  episodeNotes[index].relativeLocalImages.length == 1
                       ? Padding(
                           padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5), // 圆角
                             child: Image.file(
-                              File(episodeNotes[index].imgLocalPaths[0]),
+                              File(episodeNotes[index]
+                                  .relativeLocalImages[0]
+                                  .path),
                               fit: BoxFit.fitHeight,
                             ),
                           ),
                         )
                       : showImageGridView(
-                          episodeNotes[index].imgLocalPaths.length,
+                          episodeNotes[index].relativeLocalImages.length,
                           (BuildContext context, int indexImage) {
                           return ImageGridItem(
                             // multiImageProvider: multiImageProvider,
-                            imageLocalPath:
-                                episodeNotes[index].imgLocalPaths[indexImage],
+                            relativeImageLocalPath: episodeNotes[index]
+                                .relativeLocalImages[indexImage]
+                                .path,
                             initialIndex: 0, // 并没有发挥作用
                           );
                         }),
                   episodeNotes[index].noteContent.isEmpty &&
-                          episodeNotes[index].imgLocalPaths.isEmpty
+                          episodeNotes[index].relativeLocalImages.isEmpty
                       ? Container() // 内容和图片都为空，则不显示
                       : hideAnimeListTile
                           ? Container() // 如果隐藏了AnimeListTile，则不显示分割线

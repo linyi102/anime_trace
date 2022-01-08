@@ -7,6 +7,7 @@ import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
+import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -714,9 +715,9 @@ class SqliteUtil {
       episodeNote.noteContent = lm1[0]['note_content'] as String;
     }
     // debugPrint("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
-    // 查询图片(暂时取消)
-    // episodeNote.imgLocalPaths =
-    //     await getImgsByNoteId(episodeNote.episodeNoteId);
+    // 查询图片
+    episodeNote.relativeLocalImages =
+        await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
     return episodeNote;
   }
 
@@ -740,9 +741,11 @@ class SqliteUtil {
         dateTime: item['date'] as String,
       );
       EpisodeNote episodeNote = EpisodeNote(
-          anime: anime, episode: episode, imgLocalPaths: [], imgUrls: []);
+          anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
       episodeNote = await getEpisodeNoteByAnimeIdAndEpisodeNumber(episodeNote);
       // debugPrint(episodeNote);
+      episodeNote.relativeLocalImages =
+          await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
       episodeNotes.add(episodeNote);
     }
     return episodeNotes;
@@ -761,32 +764,34 @@ class SqliteUtil {
     ''');
   }
 
-  static insertNoteIdAndImageLocalPath(
+  static Future<int> insertNoteIdAndImageLocalPath(
       int noteId, String imageLocalPath) async {
     debugPrint("sql: insertNoteIdAndLocalImg($noteId, $imageLocalPath)");
-    await _database.rawInsert('''
+    return await _database.rawInsert('''
     insert into image (note_id, image_local_path)
     values ($noteId, '$imageLocalPath');
     ''');
   }
 
-  static deleteLocalImageByImageLocalPath(String imageLocalPath) async {
-    debugPrint("sql: deleteLocalImageByImageLocalPath($imageLocalPath)");
+  static deleteLocalImageByImageId(int imageId) async {
+    debugPrint("sql: deleteLocalImageByImageLocalPath($imageId)");
     await _database.rawDelete('''
     delete from image
-    where image_local_path = '$imageLocalPath';
+    where image_id = $imageId;
     ''');
   }
 
-  static Future<List<String>> getImgsByNoteId(int noteId) async {
+  static Future<List<RelativeLocalImage>> getRelativeLocalImgsByNoteId(
+      int noteId) async {
     var lm = await _database.rawQuery('''
-    select image_local_path from image
+    select image_id, image_local_path from image
     where note_id = $noteId;
     ''');
-    List<String> imgLocalPaths = [];
+    List<RelativeLocalImage> relativeLocalImages = [];
     for (var item in lm) {
-      imgLocalPaths.add(item['image_local_path'] as String);
+      relativeLocalImages.add(RelativeLocalImage(
+          item['image_id'] as int, item['image_local_path'] as String));
     }
-    return imgLocalPaths;
+    return relativeLocalImages;
   }
 }

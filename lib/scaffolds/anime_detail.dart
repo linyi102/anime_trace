@@ -52,7 +52,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
       for (var episode in _episodes) {
         EpisodeNote episodeNote = EpisodeNote(
-            anime: _anime, episode: episode, imgLocalPaths: [], imgUrls: []);
+            anime: _anime,
+            episode: episode,
+            relativeLocalImages: [],
+            imgUrls: []);
         if (episode.isChecked()) {
           // 如果该集完成了，就去获取该集笔记（内容+图片）
           episodeNote =
@@ -278,7 +281,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 EpisodeNote episodeNote = EpisodeNote(
                     anime: _anime,
                     episode: _episodes[i],
-                    imgLocalPaths: [],
+                    relativeLocalImages: [],
                     imgUrls: []);
                 episodeNote.episodeNoteId =
                     await SqliteUtil.insertEpisodeNote(episodeNote);
@@ -348,7 +351,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       if (!hideNoteInAnimeDetail && _episodes[i].isChecked()) {
         list.add(Padding(
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: episodeNotes[i].imgLocalPaths.isEmpty &&
+          child: episodeNotes[i].relativeLocalImages.isEmpty &&
                   episodeNotes[i].noteContent.isEmpty
               ? Container()
               : Card(
@@ -379,20 +382,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 ),
                                 style: ListTileStyle.drawer,
                               ),
-                        episodeNotes[i].imgLocalPaths.length == 1
+                        episodeNotes[i].relativeLocalImages.length == 1
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(5), // 圆角
                                 child: Image.file(
-                                  File(episodeNotes[i].imgLocalPaths[0]),
+                                  File(episodeNotes[i]
+                                      .relativeLocalImages[0]
+                                      .path),
                                   fit: BoxFit.fitHeight,
                                 ),
                               )
                             : showImageGridView(
-                                episodeNotes[i].imgLocalPaths.length,
+                                episodeNotes[i].relativeLocalImages.length,
                                 (BuildContext context, int index) {
                                 return ImageGridItem(
-                                    imageLocalPath:
-                                        episodeNotes[i].imgLocalPaths[index]);
+                                    relativeImageLocalPath: episodeNotes[i]
+                                        .relativeLocalImages[index]
+                                        .path);
                               })
                       ],
                     ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/scaffolds/about_version.dart';
 import 'package:flutter_test_future/scaffolds/anime_display_setting.dart';
 import 'package:flutter_test_future/scaffolds/backup_restore.dart';
+import 'package:flutter_test_future/scaffolds/note_setting.dart';
 import 'package:flutter_test_future/scaffolds/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
@@ -130,6 +131,18 @@ class _SettingPageState extends State<SettingPage> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) =>
                               const AnimesDisplaySetting()));
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.note_alt_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text("笔记设置"),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const NoteSetting()));
                     },
                   ),
                   ListTile(

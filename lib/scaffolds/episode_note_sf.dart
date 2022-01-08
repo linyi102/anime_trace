@@ -1,14 +1,14 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/scaffolds/note_setting.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 // ignore: must_be_immutable
 class EpisodeNoteSF extends StatefulWidget {
@@ -87,7 +87,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                       // },
                     ),
                     _showNoteContent(),
-                    // _showImages(),
+                    _showImages(),
                   ],
                 ),
               )
@@ -115,9 +115,9 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
   _showImages() {
     Color addColor = Colors.black;
     return showImageGridView(
-      widget.episodeNote.imgLocalPaths.length + 1,
+      widget.episodeNote.relativeLocalImages.length + 1,
       (BuildContext context, int index) {
-        if (index == widget.episodeNote.imgLocalPaths.length) {
+        if (index == widget.episodeNote.relativeLocalImages.length) {
           return Container(
             decoration: BoxDecoration(
               // color: Colors.white,
@@ -132,30 +132,32 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
               borderRadius: BorderRadius.circular(5),
               child: MaterialButton(
                   onPressed: () async {
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                            // allowedExtensions: ['jpg', 'png', 'gif'],
+                    String imageRootDirPath =
+                        SPUtil.getString("imageRootDirPath", defaultValue: "");
+                    if (imageRootDirPath.isEmpty) {
+                      showToast("请先设置图片根目录");
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const NoteSetting()));
+                    }
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                            type: FileType.custom,
+                            allowedExtensions: ['jpg', 'png', 'gif'],
                             allowMultiple: true);
                     if (result == null) return;
                     List<PlatformFile> platformFiles = result.files;
-                    String newDirPath =
-                        "${ImageUtil.rootImageDirPath}/${widget.episodeNote.anime.animeId}/${widget.episodeNote.episode.number}";
-                    // String newDirPath = join(
-                    //     ImageUtil.rootImageDirPath,
-                    //     widget.episodeNote.anime.animeId.toString(),
-                    //     widget.episodeNote.episode.number.toString());
-
-                    await Directory(newDirPath).create(recursive: true); // 创建目录
                     for (var platformFile in platformFiles) {
-                      String newImagePath = "$newDirPath/${platformFile.name}";
-                      File file = File(platformFile.path as String);
-                      // File(newImagePath).create(); // 对于windows，需要先创建文件，然后才能拷贝
-                      await file
-                          .copy(newImagePath); // 必须拷贝完后才重新加载页面，否则有时会显示找不到文件
-                      widget.episodeNote.imgLocalPaths.add(newImagePath);
-                      // debugPrint("拷贝的图片路径：$newImagePath");
-                      SqliteUtil.insertNoteIdAndImageLocalPath(
-                          widget.episodeNote.episodeNoteId, newImagePath);
+                      // 绝对路径去掉根路径的长度，就是相对路径
+                      String relativeImagePath =
+                          platformFile.path!.substring(imageRootDirPath.length);
+                      debugPrint(relativeImagePath);
+                      int imageId =
+                          await SqliteUtil.insertNoteIdAndImageLocalPath(
+                              widget.episodeNote.episodeNoteId,
+                              relativeImagePath);
+                      widget.episodeNote.relativeLocalImages
+                          .add(RelativeLocalImage(imageId, relativeImagePath));
                     }
                     setState(() {});
                   },
@@ -169,7 +171,8 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         return Stack(
           children: [
             ImageGridItem(
-                imageLocalPath: widget.episodeNote.imgLocalPaths[index]),
+                relativeImageLocalPath:
+                    widget.episodeNote.relativeLocalImages[index].path),
             Positioned(
               right: 0,
               top: 0,
@@ -183,14 +186,14 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                   ),
                   child: IconButton(
                       onPressed: () {
-                        String imgLocalPath =
-                            widget.episodeNote.imgLocalPaths[index];
-                        // 删除数据库记录、删除本地图片、删除该页中的图片
-                        SqliteUtil.deleteLocalImageByImageLocalPath(
-                            imgLocalPath);
-                        widget.episodeNote.imgLocalPaths
-                            .removeWhere((element) => element == imgLocalPath);
-                        File(imgLocalPath).deleteSync();
+                        RelativeLocalImage relativeLocalImage =
+                            widget.episodeNote.relativeLocalImages[index];
+                        // 删除数据库记录、删除该页中的图片
+                        SqliteUtil.deleteLocalImageByImageId(
+                            relativeLocalImage.imageId);
+                        widget.episodeNote.relativeLocalImages.removeWhere(
+                            (element) =>
+                                element.imageId == relativeLocalImage.imageId);
                         setState(() {});
                       },
                       icon: const Icon(
