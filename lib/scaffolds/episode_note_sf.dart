@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
@@ -139,19 +141,29 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) =>
                               const NoteSetting()));
+                      return;
                     }
-                    FilePickerResult? result = await FilePicker.platform
-                        .pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: ['jpg', 'png', 'gif'],
-                            allowMultiple: true);
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['jpg', 'png', 'gif'],
+                      allowMultiple: true,
+                    );
                     if (result == null) return;
                     List<PlatformFile> platformFiles = result.files;
                     for (var platformFile in platformFiles) {
                       // 绝对路径去掉根路径的长度，就是相对路径
                       String relativeImagePath =
                           platformFile.path!.substring(imageRootDirPath.length);
-                      debugPrint(relativeImagePath);
+                      // debugPrint("relativeImagePath: $relativeImagePath");
+                      // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
+                      String cacheNameStr = "test_future/cache/file_picker";
+                      if (Platform.isAndroid &&
+                          relativeImagePath.startsWith(cacheNameStr)) {
+                        relativeImagePath =
+                            relativeImagePath.substring(cacheNameStr.length);
+                      }
+                      // debugPrint("relativeImagePath: $relativeImagePath");
                       int imageId =
                           await SqliteUtil.insertNoteIdAndImageLocalPath(
                               widget.episodeNote.episodeNoteId,

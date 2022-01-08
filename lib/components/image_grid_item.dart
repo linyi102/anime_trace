@@ -20,7 +20,9 @@ class ImageGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     String imageLocalPath =
         SPUtil.getString("imageRootDirPath") + relativeImageLocalPath;
-    debugPrint("imageLocalPath: $imageLocalPath");
+
+    // debugPrint("relativeImageLocalPath: $relativeImageLocalPath");
+    // debugPrint("imageLocalPath: $imageLocalPath");
 
     final imageProvider = Image.file(
       File(imageLocalPath),
