@@ -56,13 +56,14 @@ class _AnimeClimbState extends State<AnimeClimb> {
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
       // 若某个搜索的动漫存在，则更新它
       for (int i = 0; i < searchAnimes.length; ++i) {
-        int findIndex = addedAnimes.indexWhere(
+        int findIndex = addedAnimes.lastIndexWhere(
             (element) => element.animeName == searchAnimes[i].animeName);
         if (findIndex != -1) {
           searchAnimes[i] = addedAnimes[findIndex];
         }
       }
       // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
+      // 因为下面更新状态时使用了lastIndexWhere来匹配动漫是否已添加，所以后面同名的动漫会先匹配上，因此该数据不受影响
       searchAnimes.insert(
           0,
           Anime(
@@ -144,15 +145,19 @@ class _AnimeClimbState extends State<AnimeClimb> {
                           ),
                         )
                             .then((updatedAnime) {
-                          int findIndex = searchAnimes.indexWhere((element) =>
-                              element.animeName == updatedAnime.animeName);
+                          int findIndex = searchAnimes.lastIndexWhere(
+                              (element) =>
+                                  element.animeName == updatedAnime.animeName);
                           setState(() {
                             searchAnimes[findIndex] = updatedAnime;
                           });
                         });
                       } else {
                         // 其他情况才是添加动漫
-                        _dialogAddAnime(anime);
+                        bool standBy = false;
+                        // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere
+                        if (index == 0) standBy = true;
+                        _dialogAddAnime(anime, standBy);
                       }
                     },
                     padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
@@ -196,7 +201,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
     );
   }
 
-  void _dialogAddAnime(Anime anime) {
+  void _dialogAddAnime(Anime anime, bool standBy) {
     var inputNameController = TextEditingController();
     var inputEndEpisodeController = TextEditingController();
     showDialog(
@@ -265,8 +270,12 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   SqliteUtil.insertAnime(newAnime).then((lastInsertId) {
                     showToast("添加成功！");
                     // 为新添加的动漫增加集数
-                    int findIndex = searchAnimes.indexWhere(
-                        (element) => element.animeName == newAnime.animeName);
+                    int findIndex = 0;
+                    if (!standBy) {
+                      // 不是备用数据，才寻找最后一次出现的数据。否则只修改备用数据的状态
+                      findIndex = searchAnimes.lastIndexWhere(
+                          (element) => element.animeName == newAnime.animeName);
+                    }
                     searchAnimes[findIndex] = newAnime;
                     searchAnimes[findIndex].animeId = lastInsertId;
                     setState(() {});
