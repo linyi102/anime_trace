@@ -31,7 +31,8 @@ class _NoteListPageState extends State<NoteListPage> {
   void _loadData() {
     Future(() {
       debugPrint("note_list_page: 开始加载数据");
-      return SqliteUtil.getAllNotes();
+      // return SqliteUtil.getAllNotesByTableHistory();
+      return SqliteUtil.getAllNotesByTableNote(); // 优化
     }).then((value) {
       episodeNotes = value;
       _loadOk = true;

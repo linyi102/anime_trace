@@ -721,8 +721,8 @@ class SqliteUtil {
     return episodeNote;
   }
 
-  static Future<List<EpisodeNote>> getAllNotes() async {
-    debugPrint("sql: getAllNotes");
+  static Future<List<EpisodeNote>> getAllNotesByTableHistory() async {
+    debugPrint("sql: getAllNotesByTableHistory");
     List<EpisodeNote> episodeNotes = [];
     // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
     var lm1 = await _database.rawQuery('''
@@ -746,6 +746,39 @@ class SqliteUtil {
       // debugPrint(episodeNote);
       episodeNote.relativeLocalImages =
           await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
+      episodeNotes.add(episodeNote);
+    }
+    return episodeNotes;
+  }
+
+  static Future<List<EpisodeNote>> getAllNotesByTableNote() async {
+    debugPrint("sql: getAllNotesByTableNote");
+    List<EpisodeNote> episodeNotes = [];
+    // 根据笔记中的动漫id和集数number，即可获取到完成时间，根据动漫id，获取动漫封面
+    var lm1 = await _database.rawQuery('''
+    select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url
+    from episode_note, anime, history
+    where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number
+    order by history.date desc;
+    ''');
+    for (var item in lm1) {
+      Anime anime = Anime(
+          animeId: item['anime_id'] as int, // 不能写成episode_note.anime_id，下面也是
+          animeName: item['anime_name'] as String,
+          animeCoverUrl: item['anime_cover_url'] as String,
+          animeEpisodeCnt: 0);
+      Episode episode = Episode(
+        item['episode_number'] as int,
+        dateTime: item['date'] as String,
+      );
+      List<RelativeLocalImage> relativeLocalImages =
+          await getRelativeLocalImgsByNoteId(item['note_id'] as int);
+      EpisodeNote episodeNote = EpisodeNote(
+          anime: anime,
+          episode: episode,
+          noteContent: item['note_content'] as String,
+          relativeLocalImages: relativeLocalImages,
+          imgUrls: []);
       episodeNotes.add(episodeNote);
     }
     return episodeNotes;
