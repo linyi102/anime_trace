@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -146,9 +147,10 @@ class _NoteListPageState extends State<NoteListPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5), // 圆角
                             child: Image.file(
-                              File(episodeNotes[index]
-                                  .relativeLocalImages[0]
-                                  .path),
+                              File(ImageUtil.getAbsoluteImagePath(
+                                  episodeNotes[index]
+                                      .relativeLocalImages[0]
+                                      .path)),
                               fit: BoxFit.fitHeight,
                             ),
                           ),
@@ -158,7 +160,7 @@ class _NoteListPageState extends State<NoteListPage> {
                           (BuildContext context, int indexImage) {
                           return ImageGridItem(
                             // multiImageProvider: multiImageProvider,
-                            relativeImageLocalPath: episodeNotes[index]
+                            relativeImagePath: episodeNotes[index]
                                 .relativeLocalImages[indexImage]
                                 .path,
                             initialIndex: 0, // 并没有发挥作用

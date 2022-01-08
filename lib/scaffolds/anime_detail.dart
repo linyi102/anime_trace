@@ -11,6 +11,7 @@ import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
@@ -386,9 +387,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(5), // 圆角
                                 child: Image.file(
-                                  File(episodeNotes[i]
-                                      .relativeLocalImages[0]
-                                      .path),
+                                  File(ImageUtil.getAbsoluteImagePath(
+                                      episodeNotes[i]
+                                          .relativeLocalImages[0]
+                                          .path)),
                                   fit: BoxFit.fitHeight,
                                 ),
                               )
@@ -396,7 +398,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 episodeNotes[i].relativeLocalImages.length,
                                 (BuildContext context, int index) {
                                 return ImageGridItem(
-                                    relativeImageLocalPath: episodeNotes[i]
+                                    relativeImagePath: episodeNotes[i]
                                         .relativeLocalImages[index]
                                         .path);
                               })

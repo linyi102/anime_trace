@@ -3,23 +3,22 @@ import 'dart:io';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 
 class ImageGridItem extends StatelessWidget {
-  final String relativeImageLocalPath; // 单张图片
+  final String relativeImagePath; // 单张图片
   final MultiImageProvider? multiImageProvider; // 传入多个图片
   final int initialIndex; // 传入多个图片的起始下标
   const ImageGridItem(
       {this.multiImageProvider,
-      required this.relativeImageLocalPath,
+      required this.relativeImagePath,
       this.initialIndex = 0,
       Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String imageLocalPath =
-        SPUtil.getString("imageRootDirPath") + relativeImageLocalPath;
+    String imageLocalPath = ImageUtil.getAbsoluteImagePath(relativeImagePath);
 
     // debugPrint("relativeImageLocalPath: $relativeImageLocalPath");
     // debugPrint("imageLocalPath: $imageLocalPath");

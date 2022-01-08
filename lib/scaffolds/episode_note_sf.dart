@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/scaffolds/note_setting.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -134,9 +135,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
               borderRadius: BorderRadius.circular(5),
               child: MaterialButton(
                   onPressed: () async {
-                    String imageRootDirPath =
-                        SPUtil.getString("imageRootDirPath", defaultValue: "");
-                    if (imageRootDirPath.isEmpty) {
+                    if (!ImageUtil.hasImageRootDirPath()) {
                       showToast("请先设置图片根目录");
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) =>
@@ -152,18 +151,11 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                     if (result == null) return;
                     List<PlatformFile> platformFiles = result.files;
                     for (var platformFile in platformFiles) {
-                      // 绝对路径去掉根路径的长度，就是相对路径
+                      String absoluteImagePath = platformFile.path ?? "";
+                      if (absoluteImagePath.isEmpty) continue;
+
                       String relativeImagePath =
-                          platformFile.path!.substring(imageRootDirPath.length);
-                      // debugPrint("relativeImagePath: $relativeImagePath");
-                      // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
-                      String cacheNameStr = "test_future/cache/file_picker";
-                      if (Platform.isAndroid &&
-                          relativeImagePath.startsWith(cacheNameStr)) {
-                        relativeImagePath =
-                            relativeImagePath.substring(cacheNameStr.length);
-                      }
-                      // debugPrint("relativeImagePath: $relativeImagePath");
+                          ImageUtil.getRelativeImagePath(absoluteImagePath);
                       int imageId =
                           await SqliteUtil.insertNoteIdAndImageLocalPath(
                               widget.episodeNote.episodeNoteId,
@@ -183,7 +175,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         return Stack(
           children: [
             ImageGridItem(
-                relativeImageLocalPath:
+                relativeImagePath:
                     widget.episodeNote.relativeLocalImages[index].path),
             Positioned(
               right: 0,
