@@ -39,7 +39,8 @@ class SqliteUtil {
 
   static _initDatabase() async {
     if (Platform.isAndroid) {
-      dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
+      // dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
+      dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
       debugPrint("👉android: path=$dbPath");
       // await deleteDatabase(dbPath); // 删除Android数据库
       return await openDatabase(

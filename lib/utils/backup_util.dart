@@ -12,7 +12,8 @@ class BackupUtil {
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
     if (Platform.isAndroid) {
-      localRootDirPath = ((await getExternalStorageDirectory())!.path);
+      // localRootDirPath = ((await getExternalStorageDirectory())!.path);
+      localRootDirPath = ((await getApplicationSupportDirectory()).path);
     } else if (Platform.isWindows) {
       localRootDirPath = ((await getApplicationSupportDirectory()).path);
       // rootImageDirPath =

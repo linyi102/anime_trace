@@ -9,8 +9,10 @@ class ImageUtil {
 
   static getInstance() async {
     if (Platform.isAndroid) {
+      // rootImageDirPath =
+      //     ((await getExternalStorageDirectory())!.path + "/images");
       rootImageDirPath =
-          ((await getExternalStorageDirectory())!.path + "/images");
+          ((await getApplicationSupportDirectory()).path + "/images");
     } else if (Platform.isWindows) {
       rootImageDirPath =
           ((await getApplicationSupportDirectory()).path + "/images");
