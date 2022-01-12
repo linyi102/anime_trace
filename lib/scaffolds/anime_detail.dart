@@ -62,6 +62,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           episodeNote =
               await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
                   episodeNote);
+          debugPrint(
+              "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
         }
         episodeNotes.add(episodeNote);
       }
@@ -284,9 +286,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     episode: _episodes[i],
                     relativeLocalImages: [],
                     imgUrls: []);
-                episodeNote.episodeNoteId =
-                    await SqliteUtil.insertEpisodeNote(episodeNote);
-                episodeNotes[i] = episodeNote; // 更新
+
+                // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+                episodeNotes[i] =
+                    await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
+                        episodeNote);
+                // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
+                // episodeNote.episodeNoteId =
+                //     await SqliteUtil.insertEpisodeNote(episodeNote);
+                // episodeNotes[i] = episodeNote; // 更新
                 setState(() {});
               }
             },
