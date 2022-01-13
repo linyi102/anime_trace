@@ -256,7 +256,8 @@ class SqliteUtil {
 
   static void insertHistoryItem(
       int animeId, int episodeNumber, String date) async {
-    debugPrint("sql: insertHistoryItem");
+    debugPrint(
+        "sql: insertHistoryItem(animeId=$animeId, episodeNumber=$episodeNumber, date=$date)");
     await _database.rawInsert('''
     insert into history(date, anime_id, episode_number)
     values('$date', $animeId, $episodeNumber);
@@ -275,7 +276,8 @@ class SqliteUtil {
 
   static void deleteHistoryItemByAnimeIdAndEpisodeNumber(
       int animeId, int episodeNumber) async {
-    debugPrint("sql: deleteHistoryItemByAnimeIdAndEpisodeNumber");
+    debugPrint(
+        "sql: deleteHistoryItemByAnimeIdAndEpisodeNumber(animeId=$animeId, episodeNumber=$episodeNumber)");
     await _database.rawDelete('''
     delete from history
     where anime_id = $animeId and episode_number = $episodeNumber;

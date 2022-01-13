@@ -23,5 +23,7 @@ class Episode {
     // 2022-09-04 00:00:00.000Z
     String date = dateTime!.split(' ')[0]; // 2022-09-04
     return date.replaceAll("-", "/"); // 2022/09/04
+    // DateTime dt = DateTime.parse(dateTime as String);
+    // return "${dt.year}年${dt.month}月${dt.day}日";
   }
 }

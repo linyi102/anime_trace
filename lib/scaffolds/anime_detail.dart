@@ -51,6 +51,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       _anime = value;
       debugPrint(value.toString());
       _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
+      _sortEpisodes(SPUtil.getString("episodeSortMethod")); // 排序
       for (var episode in _episodes) {
         EpisodeNote episodeNote = EpisodeNote(
             anime: _anime,
@@ -264,11 +265,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ListTile(
           // visualDensity: const VisualDensity(vertical: -2),
           // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          title: Text("第 ${_episodes[i].number} 集"),
-          subtitle: Text(_episodes[i].getDate()),
+          title: Text(
+            "第 ${_episodes[i].number} 集",
+            style: TextStyle(
+              color: _episodes[i].isChecked() ? Colors.black54 : Colors.black,
+            ),
+          ),
+          // subtitle: Text(_episodes[i].getDate()),
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           style: ListTileStyle.drawer,
-          trailing: IconButton(
+          trailing: Text(
+            _episodes[i].getDate(),
+            style: const TextStyle(color: Colors.black54),
+          ),
+          leading: IconButton(
+            iconSize: 20,
+            hoverColor: Colors.transparent, // 悬停时的颜色
+            highlightColor: Colors.transparent, // 长按时的颜色
+            splashColor: Colors.transparent, // 点击时的颜色
             onPressed: () async {
               if (_episodes[i].isChecked()) {
                 _dialogRemoveDate(
@@ -295,25 +309,26 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 // episodeNote.episodeNoteId =
                 //     await SqliteUtil.insertEpisodeNote(episodeNote);
                 // episodeNotes[i] = episodeNote; // 更新
+                _moveToLastIfSet(i);
                 setState(() {});
               }
             },
             icon: AnimatedSwitcher(
               duration: const Duration(milliseconds: 100),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                //执行缩放动画
-                return ScaleTransition(child: child, scale: animation);
-              },
+              // transitionBuilder: (Widget child, Animation<double> animation) {
+              //   //执行缩放动画
+              //   return ScaleTransition(child: child, scale: animation);
+              // },
               child: _episodes[i].isChecked()
                   ? Icon(
-                      // Icons.check_box_outlined,
-                      Icons.check_rounded,
-                      color: Colors.grey,
+                      Icons.check_box_outlined,
+                      // Icons.check_rounded,
+                      color: Colors.black54,
                       key: Key("$i"), // 不能用unique，否则同状态的按钮都会有动画
                     )
                   : const Icon(
                       Icons.check_box_outline_blank_rounded,
-                      color: Colors.black,
+                      color: Colors.black54,
                     ),
             ),
           ),
@@ -357,6 +372,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           },
         ),
       );
+      // 显示笔记
       if (!hideNoteInAnimeDetail && _episodes[i].isChecked()) {
         list.add(Padding(
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -450,8 +466,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               onPressed: () {
                 SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
                     _anime.animeId, episodeNumber);
-                // 注意第1集是下标0
-                _episodes[episodeNumber - 1].cancelDateTime();
+                // 根据episodeNumber找到对应的下标
+                int findIndex = _getEpisodeIndexByEpisodeNumber(episodeNumber);
+                _episodes[findIndex].cancelDateTime();
                 setState(() {});
                 Navigator.pop(context);
               },
@@ -492,6 +509,52 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         }
         return AlertDialog(
           title: const Text('选择标签'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: radioList,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<String> sortMethods = [
+    "sortByEpisodeNumberAsc",
+    "sortByEpisodeNumberDesc",
+    "sortByUnCheckedFront"
+  ];
+
+  List<String> sortMethodsName = ["集数升序", "集数倒序", "未完成在前"];
+
+  void _dialogSelectSortMethod() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        List<Widget> radioList = [];
+        for (int i = 0; i < sortMethods.length; ++i) {
+          radioList.add(
+            ListTile(
+              title: Text(sortMethodsName[i]),
+              leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
+                  ? const Icon(
+                      Icons.radio_button_on_outlined,
+                      color: Colors.blue,
+                    )
+                  : const Icon(
+                      Icons.radio_button_off_outlined,
+                    ),
+              onTap: () {
+                debugPrint("修改排序方式为${sortMethods[i]}");
+                _sortEpisodes(sortMethods[i]);
+                setState(() {});
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+        return AlertDialog(
+          title: const Text('排序方式'),
           content: SingleChildScrollView(
             child: Column(
               children: radioList,
@@ -602,9 +665,67 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 tooltip: "更改集数",
                 icon: const Icon(Icons.add)),
+            IconButton(
+                onPressed: () {
+                  _dialogSelectSortMethod();
+                },
+                tooltip: "排序方式",
+                icon: const Icon(Icons.sort)),
           ],
         ),
       ],
     );
+  }
+
+  void _sortEpisodes(String sortMethod) {
+    if (sortMethod == "sortByEpisodeNumberAsc") {
+      _sortByEpisodeNumberAsc(sortMethod);
+    } else if (sortMethod == "sortByEpisodeNumberDesc") {
+      _sortByEpisodeNumberDesc(sortMethod);
+    } else if (sortMethod == "sortByUnCheckedFront") {
+      _sortByUnCheckedFront(sortMethod);
+    } else {
+      throw "不可能的排序方式";
+    }
+    SPUtil.setString("episodeSortMethod", sortMethod);
+  }
+
+  void _sortByEpisodeNumberAsc(String sortMethod) {
+    _episodes.sort((a, b) {
+      return a.number.compareTo(b.number);
+    });
+  }
+
+  void _sortByEpisodeNumberDesc(String sortMethod) {
+    _episodes.sort((a, b) {
+      return b.number.compareTo(a.number);
+    });
+  }
+
+  // 未完成的靠前，完成的按number升序排序
+  void _sortByUnCheckedFront(String sortMethod) {
+    _sortByEpisodeNumberAsc(sortMethod); // 先按number升序排序
+    _episodes.sort((a, b) {
+      int ac, bc;
+      ac = a.isChecked() ? 1 : 0;
+      bc = b.isChecked() ? 1 : 0;
+      return ac.compareTo(bc);
+    });
+  }
+
+  // 如果设置了未完成的靠前，则完成某集后移到最后面
+  void _moveToLastIfSet(int index) {
+    // 先不用移到最后面吧
+    // // 先移除，再添加
+    // if (SPUtil.getBool("sortByUnCheckedFront")) {
+    //   Episode episode = _episodes[index];
+    //   _episodes.removeAt(index);
+    //   _episodes.add(episode); // 不应该直接在后面添加，而是根据number插入到合适的位置。但还要注意越界什么的
+    // }
+  }
+  // 如果取消了日期，还需要移到最前面。好麻烦...还得插入到合适的位置
+
+  int _getEpisodeIndexByEpisodeNumber(int episodeNumber) {
+    return _episodes.indexWhere((element) => element.number == episodeNumber);
   }
 }

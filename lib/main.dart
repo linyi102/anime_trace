@@ -123,6 +123,12 @@ class _MyAppState extends State<MyApp> {
               TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             },
           ),
+          // 无效，不知道为什么
+          // buttonTheme: const ButtonThemeData(
+          //   hoverColor: Colors.transparent, // 悬停时的颜色
+          //   highlightColor: Colors.transparent, // 长按时的颜色
+          //   splashColor: Colors.transparent, // 点击时的颜色
+          // ),
           // scaffoldBackgroundColor: Colors.white,
           scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
           // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
