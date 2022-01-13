@@ -3,6 +3,8 @@ import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/tags.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'dart:io';
@@ -142,6 +144,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               String? selectedFilePath = await selectFile();
               if (selectedFilePath != null) {
                 BackupUtil.restoreFromLocal(selectedFilePath);
+                tags = await SqliteUtil.getAllTags(); // 重新更新标签
               }
             },
           ),
@@ -228,6 +231,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             onTap: () async {
               if (SPUtil.getBool("login")) {
                 BackupUtil.restoreFromWebDav(latestFile);
+                tags = await SqliteUtil.getAllTags(); // 重新更新标签
               } else {
                 showToast("配置账号后才可以进行还原");
               }

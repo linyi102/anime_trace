@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -51,7 +52,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       _anime = value;
       debugPrint(value.toString());
       _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
-      _sortEpisodes(SPUtil.getString("episodeSortMethod")); // 排序
+      _sortEpisodes(SPUtil.getString("episodeSortMethod",
+          defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
       for (var episode in _episodes) {
         EpisodeNote episodeNote = EpisodeNote(
             anime: _anime,
@@ -145,9 +147,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         body: _loadOk
             ? ListView(
                 children: [
-                  _displayAnimeCover(),
-                  // _displayAnimeName(),
-                  // _displayDesc(),
+                  _displayAnimeInfo(),
                   const SizedBox(
                     height: 10,
                   ),
@@ -171,34 +171,52 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Container();
   }
 
-  _displayAnimeCover() {
+  _displayAnimeInfo() {
     final imageProvider = Image.network(_anime.animeCoverUrl).image;
-    return Flex(direction: Axis.horizontal, children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
-        child: SizedBox(
-          width: 110,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: MaterialButton(
-              padding: const EdgeInsets.all(0),
-              onPressed: () {
-                showImageViewer(context, imageProvider, immersive: false);
-              },
-              child: AnimeGridCover(_anime),
-            ),
-          ),
-        ),
-      ),
-      Expanded(
-        child: Column(
+    return Stack(
+      children: [
+        // SizedBox(
+        //   width: 999999999,
+        //   height: 200,
+        //   child: Opacity(
+        //     opacity: 0.2,
+        //     child: CachedNetworkImage(
+        //       imageUrl: _anime.animeCoverUrl,
+        //       fit: BoxFit.fitWidth,
+        //     ),
+        //   ),
+        // ),
+        Flex(
+          direction: Axis.horizontal,
           children: [
-            _displayAnimeName(),
-            _displayDesc(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
+              child: SizedBox(
+                width: 110,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: MaterialButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
+                      showImageViewer(context, imageProvider, immersive: false);
+                    },
+                    child: AnimeGridCover(_anime),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  _displayAnimeName(),
+                  // _displayDesc(),
+                ],
+              ),
+            ),
           ],
-        ),
-      )
-    ]);
+        )
+      ],
+    );
   }
 
   _displayAnimeName() {
@@ -273,13 +291,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           ),
           // subtitle: Text(_episodes[i].getDate()),
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
-          style: ListTileStyle.drawer,
+          // style: ListTileStyle.drawer,
           trailing: Text(
             _episodes[i].getDate(),
             style: const TextStyle(color: Colors.black54),
           ),
           leading: IconButton(
-            iconSize: 20,
+            // iconSize: 20,
+            visualDensity: VisualDensity.compact, // 缩小leading
             hoverColor: Colors.transparent, // 悬停时的颜色
             highlightColor: Colors.transparent, // 长按时的颜色
             splashColor: Colors.transparent, // 点击时的颜色
