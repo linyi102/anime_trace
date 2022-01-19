@@ -416,8 +416,9 @@ class _AnimeListPageState extends State<AnimeListPage>
       }
       setState(() {});
       return;
+    } else {
+      _enterPageAnimeDetail(i, index, anime);
     }
-    _enterPageAnimeDetail(i, index, anime);
   }
 
   void onLongPress(index) {

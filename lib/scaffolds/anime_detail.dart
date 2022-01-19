@@ -37,6 +37,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
   // FocusNode descFocusNode = FocusNode(); // 描述输入框焦点
 
+  // 多选
+  Map<int, bool> mapSelected = {};
+  bool multiSelected = false;
+  Color multiSelectedColor = Colors.blueAccent.withOpacity(0.25);
+
   bool hideNoteInAnimeDetail =
       SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
 
@@ -160,23 +165,26 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 ? Container(
                     key: UniqueKey(),
                   )
-                : ListView(
-                    children: [
-                      _displayAnimeInfo(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
-                        child: Divider(
-                          thickness: 1,
+                : Stack(children: [
+                    ListView(
+                      children: [
+                        _displayAnimeInfo(),
+                        const SizedBox(
+                          height: 10,
                         ),
-                      ),
-                      // _displayEpisode(),
-                      _displayButtonsAboutEpisode(),
-                      _displayEpisodePlus(),
-                    ],
-                  ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+                          child: Divider(
+                            thickness: 1,
+                          ),
+                        ),
+                        // _displayEpisode(),
+                        _displayButtonsAboutEpisode(),
+                        _displayEpisodePlus(),
+                      ],
+                    ),
+                    _showBottomButton(),
+                  ]),
           )),
     );
   }
@@ -224,7 +232,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               ),
             ),
           ],
-        )
+        ),
       ],
     );
   }
@@ -288,22 +296,29 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayEpisodePlus() {
     List<Widget> list = [];
-    for (int i = 0; i < _episodes.length; ++i) {
+    for (int episodeIndex = 0;
+        episodeIndex < _episodes.length;
+        ++episodeIndex) {
       list.add(
         ListTile(
+          selectedTileColor: multiSelectedColor,
+          selected: mapSelected.containsKey(episodeIndex),
+          selectedColor: Colors.black,
           // visualDensity: const VisualDensity(vertical: -2),
           // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           title: Text(
-            "第 ${_episodes[i].number} 集",
+            "第 ${_episodes[episodeIndex].number} 集",
             style: TextStyle(
-              color: _episodes[i].isChecked() ? Colors.black54 : Colors.black,
+              color: _episodes[episodeIndex].isChecked()
+                  ? Colors.black54
+                  : Colors.black,
             ),
           ),
           // subtitle: Text(_episodes[i].getDate()),
           // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
           // style: ListTileStyle.drawer,
           trailing: Text(
-            _episodes[i].getDate(),
+            _episodes[episodeIndex].getDate(),
             style: const TextStyle(color: Colors.black54),
           ),
           leading: IconButton(
@@ -313,32 +328,32 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             highlightColor: Colors.transparent, // 长按时的颜色
             splashColor: Colors.transparent, // 点击时的颜色
             onPressed: () async {
-              if (_episodes[i].isChecked()) {
+              if (_episodes[episodeIndex].isChecked()) {
                 _dialogRemoveDate(
-                  _episodes[i].number,
-                  _episodes[i].dateTime,
+                  _episodes[episodeIndex].number,
+                  _episodes[episodeIndex].dateTime,
                 ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
               } else {
                 String date = DateTime.now().toString();
                 SqliteUtil.insertHistoryItem(
-                    _anime.animeId, _episodes[i].number, date);
-                _episodes[i].dateTime = date;
+                    _anime.animeId, _episodes[episodeIndex].number, date);
+                _episodes[episodeIndex].dateTime = date;
                 // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
                 EpisodeNote episodeNote = EpisodeNote(
                     anime: _anime,
-                    episode: _episodes[i],
+                    episode: _episodes[episodeIndex],
                     relativeLocalImages: [],
                     imgUrls: []);
 
                 // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                episodeNotes[i] =
+                episodeNotes[episodeIndex] =
                     await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
                         episodeNote);
                 // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
                 // episodeNote.episodeNoteId =
                 //     await SqliteUtil.insertEpisodeNote(episodeNote);
                 // episodeNotes[i] = episodeNote; // 更新
-                _moveToLastIfSet(i);
+                _moveToLastIfSet(episodeIndex);
                 setState(() {});
               }
             },
@@ -348,12 +363,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               //   //执行缩放动画
               //   return ScaleTransition(child: child, scale: animation);
               // },
-              child: _episodes[i].isChecked()
+              child: _episodes[episodeIndex].isChecked()
                   ? Icon(
                       Icons.check_box_outlined,
                       // Icons.check_rounded,
                       color: Colors.black54,
-                      key: Key("$i"), // 不能用unique，否则同状态的按钮都会有动画
+                      key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
                     )
                   : const Icon(
                       Icons.check_box_outline_blank_rounded,
@@ -362,103 +377,75 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ),
           ),
           onTap: () {
-            FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-            if (_episodes[i].isChecked()) {
-              Navigator.of(context).push(
-                // MaterialPageRoute(
-                //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
-                FadeRoute(
-                  builder: (context) {
-                    return EpisodeNoteSF(episodeNotes[i]);
-                  },
-                ),
-              ).then((value) {
-                episodeNotes[i] = value; // 更新修改
-                setState(() {});
-              });
-            }
+            onpress(episodeIndex);
           },
           onLongPress: () async {
-            DateTime defaultDateTime = DateTime.now();
-            if (_episodes[i].isChecked()) {
-              defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
-            }
-            String dateTime =
-                await _showDatePicker(defaultDateTime: defaultDateTime);
-
-            if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
-
-            // 选择日期后，如果之前有日期，则更新。没有则直接插入
-            // 注意：对于_episodes[i]，它是第_episodes[i].number集
-            int episodeNumber = _episodes[i].number;
-            if (_episodes[i].isChecked()) {
-              SqliteUtil.updateHistoryItem(
-                  _anime.animeId, episodeNumber, dateTime);
-            } else {
-              SqliteUtil.insertHistoryItem(
-                  _anime.animeId, episodeNumber, dateTime);
-            }
-            // 更新页面
-            setState(() {
-              // 改的是i，而不是episodeNumber
-              _episodes[i].dateTime = dateTime;
-            });
+            // pickDate(episodeIndex);
+            onLongPress(episodeIndex);
           },
         ),
       );
       // 显示笔记
-      if (!hideNoteInAnimeDetail && _episodes[i].isChecked()) {
+      if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
         list.add(Padding(
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: episodeNotes[i].relativeLocalImages.isEmpty &&
-                  episodeNotes[i].noteContent.isEmpty
+          child: episodeNotes[episodeIndex].relativeLocalImages.isEmpty &&
+                  episodeNotes[episodeIndex].noteContent.isEmpty
               ? Container()
               : Card(
                   elevation: 0,
                   child: MaterialButton(
-                    padding: episodeNotes[i].noteContent.isEmpty
+                    padding: episodeNotes[episodeIndex].noteContent.isEmpty
                         ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                         : const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     onPressed: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(
-                              builder: (context) =>
-                                  EpisodeNoteSF(episodeNotes[i])))
-                          .then((value) {
-                        episodeNotes[i] = value; // 更新修改
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (context) =>
+                        //         EpisodeNoteSF(episodeNotes[episodeIndex])),
+                        FadeRoute(
+                          builder: (context) {
+                            return EpisodeNoteSF(episodeNotes[episodeIndex]);
+                          },
+                        ),
+                      ).then((value) {
+                        episodeNotes[episodeIndex] = value; // 更新修改
                         setState(() {});
                       });
                     },
                     child: Column(
                       children: [
-                        episodeNotes[i].noteContent.isEmpty
+                        episodeNotes[episodeIndex].noteContent.isEmpty
                             ? Container()
                             : ListTile(
                                 title: Text(
-                                  episodeNotes[i].noteContent,
+                                  episodeNotes[episodeIndex].noteContent,
                                   maxLines: 10,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ListTileStyle.drawer,
                               ),
-                        episodeNotes[i].relativeLocalImages.length == 1
+                        episodeNotes[episodeIndex].relativeLocalImages.length ==
+                                1
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(5), // 圆角
                                 child: Image.file(
                                   File(ImageUtil.getAbsoluteImagePath(
-                                      episodeNotes[i]
+                                      episodeNotes[episodeIndex]
                                           .relativeLocalImages[0]
                                           .path)),
                                   fit: BoxFit.fitHeight,
                                 ),
                               )
                             : showImageGridView(
-                                episodeNotes[i].relativeLocalImages.length,
-                                (BuildContext context, int index) {
+                                episodeNotes[episodeIndex]
+                                    .relativeLocalImages
+                                    .length, (BuildContext context, int index) {
                                 return ImageGridItem(
-                                    relativeImagePath: episodeNotes[i]
-                                        .relativeLocalImages[index]
-                                        .path);
+                                    relativeImagePath:
+                                        episodeNotes[episodeIndex]
+                                            .relativeLocalImages[index]
+                                            .path);
                               })
                       ],
                     ),
@@ -472,6 +459,71 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
+  void pickDate(i) async {
+    DateTime defaultDateTime = DateTime.now();
+    if (_episodes[i].isChecked()) {
+      defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
+    }
+    String dateTime = await _showDatePicker(defaultDateTime: defaultDateTime);
+
+    if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
+
+    // 选择日期后，如果之前有日期，则更新。没有则直接插入
+    // 注意：对于_episodes[i]，它是第_episodes[i].number集
+    int episodeNumber = _episodes[i].number;
+    if (_episodes[i].isChecked()) {
+      SqliteUtil.updateHistoryItem(_anime.animeId, episodeNumber, dateTime);
+    } else {
+      SqliteUtil.insertHistoryItem(_anime.animeId, episodeNumber, dateTime);
+    }
+    // 更新页面
+    setState(() {
+      // 改的是i，而不是episodeNumber
+      _episodes[i].dateTime = dateTime;
+    });
+  }
+
+  void onpress(episodeIndex) {
+    // 多选
+    if (multiSelected) {
+      if (mapSelected.containsKey(episodeIndex)) {
+        mapSelected.remove(episodeIndex); // 选过，再选就会取消
+        // 如果取消后一个都没选，就自动退出多选状态
+        if (mapSelected.isEmpty) {
+          multiSelected = false;
+        }
+      } else {
+        mapSelected[episodeIndex] = true;
+      }
+      setState(() {});
+    } else {
+      FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+      if (_episodes[episodeIndex].isChecked()) {
+        Navigator.of(context).push(
+          // MaterialPageRoute(
+          //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
+          FadeRoute(
+            builder: (context) {
+              return EpisodeNoteSF(episodeNotes[episodeIndex]);
+            },
+          ),
+        ).then((value) {
+          episodeNotes[episodeIndex] = value; // 更新修改
+          setState(() {});
+        });
+      }
+    }
+  }
+
+  void onLongPress(index) {
+    // 非多选状态下才需要进入多选状态
+    if (multiSelected == false) {
+      multiSelected = true;
+      mapSelected[index] = true;
+      setState(() {}); // 添加操作按钮
+    }
+  }
+
   Future<String> _showDatePicker({DateTime? defaultDateTime}) async {
     var picker = await showDatePicker(
         context: context,
@@ -480,6 +532,100 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         lastDate: DateTime(DateTime.now().year + 2),
         locale: const Locale("zh"));
     return picker == null ? "" : picker.toString();
+  }
+
+  _showBottomButton() {
+    return !multiSelected
+        ? Container()
+        : Container(
+            alignment: Alignment.bottomCenter,
+            child: Card(
+              elevation: 4,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
+              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+              color: Colors.white,
+              margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+              child: Row(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        if (mapSelected.length == _episodes.length) {
+                          // 全选了，点击则会取消全选
+                          mapSelected.clear();
+                        } else {
+                          // 其他情况下，全选
+                          for (int j = 0; j < _episodes.length; ++j) {
+                            mapSelected[j] = true;
+                          }
+                        }
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.select_all_rounded),
+                      color: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () async {
+                        DateTime defaultDateTime = DateTime.now();
+                        String dateTime = await _showDatePicker(
+                            defaultDateTime: defaultDateTime);
+                        if (dateTime.isNotEmpty) {
+                          mapSelected.forEach((episodeIndex, value) {
+                            int episodeNumber = _episodes[episodeIndex].number;
+                            if (_episodes[episodeIndex].isChecked()) {
+                              SqliteUtil.updateHistoryItem(
+                                  _anime.animeId, episodeNumber, dateTime);
+                            } else {
+                              SqliteUtil.insertHistoryItem(
+                                  _anime.animeId, episodeNumber, dateTime);
+                              // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+                              EpisodeNote episodeNote = EpisodeNote(
+                                  anime: _anime,
+                                  episode: _episodes[episodeIndex],
+                                  relativeLocalImages: [],
+                                  imgUrls: []);
+
+                              // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+                              () async {
+                                episodeNotes[episodeIndex] = await SqliteUtil
+                                    .getEpisodeNoteByAnimeIdAndEpisodeNumber(
+                                        episodeNote);
+                              }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
+                            }
+                            _episodes[episodeIndex].dateTime = dateTime;
+                          });
+                        } // 遍历选中的下标
+                        // 退出多选模式
+                        _quitMultiSelectState();
+                      },
+                      icon: const Icon(Icons.date_range),
+                      color: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        _quitMultiSelectState();
+                      },
+                      icon: const Icon(Icons.exit_to_app_outlined),
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+  }
+
+  void _quitMultiSelectState() {
+    // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
+    multiSelected = false;
+    mapSelected.clear();
+    setState(() {});
   }
 
   void _dialogRemoveDate(int episodeNumber, String? date) {
