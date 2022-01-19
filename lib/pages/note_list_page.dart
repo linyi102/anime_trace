@@ -5,6 +5,7 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -105,11 +106,16 @@ class _NoteListPageState extends State<NoteListPage> {
             child: MaterialButton(
               padding: const EdgeInsets.all(0),
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                        builder: (context) =>
-                            EpisodeNoteSF(episodeNotes[index])))
-                    .then((value) {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
+                  // ),
+                  FadeRoute(
+                    builder: (context) {
+                      return EpisodeNoteSF(episodeNotes[index]);
+                    },
+                  ),
+                ).then((value) {
                   episodeNotes[index] = value; // 更新修改
                   setState(() {});
                 });
@@ -189,9 +195,20 @@ class _NoteListPageState extends State<NoteListPage> {
                           ),
                           onTap: () {
                             Navigator.of(context)
-                                .push(MaterialPageRoute(
-                                    builder: (context) => AnimeDetailPlus(
-                                        episodeNotes[index].anime.animeId)))
+                                .push(
+                                  // MaterialPageRoute(
+                                  //   builder: (context) => AnimeDetailPlus(
+                                  //       episodeNotes[index].anime.animeId),
+                                  // ),
+                                  FadeRoute(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 0),
+                                    builder: (context) {
+                                      return AnimeDetailPlus(
+                                          episodeNotes[index].anime.animeId);
+                                    },
+                                  ),
+                                )
                                 .then((value) => _loadData());
                           },
                         ),

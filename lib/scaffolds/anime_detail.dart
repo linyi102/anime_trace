@@ -9,6 +9,7 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
@@ -65,8 +66,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           episodeNote =
               await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
                   episodeNote);
-          debugPrint(
-              "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
+          // debugPrint(
+          //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
         }
         episodeNotes.add(episodeNote);
       }
@@ -96,79 +97,88 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                debugPrint("按返回按钮，返回anime");
-                _refreshAnime();
-                Navigator.pop(context, _anime);
-              },
-              tooltip: "返回上一级",
-              icon: const Icon(Icons.arrow_back_rounded)),
-          title: !_loadOk
-              ? Container()
-              : ListTile(
-                  title: Row(
-                    children: [
-                      Text(_anime.tagName),
-                      const SizedBox(
-                        width: 10,
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  debugPrint("按返回按钮，返回anime");
+                  _refreshAnime();
+                  Navigator.pop(context, _anime);
+                },
+                tooltip: "返回上一级",
+                icon: const Icon(Icons.arrow_back_rounded)),
+            title: !_loadOk
+                ? Container()
+                : ListTile(
+                    title: Row(
+                      children: [
+                        Text(_anime.tagName),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Icon(Icons.expand_more_rounded),
+                      ],
+                    ),
+                    onTap: () {
+                      _dialogSelectTag();
+                    },
+                  ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      // MaterialPageRoute(
+                      //   builder: (context) => AnimeClimb(
+                      //     animeId: _anime.animeId,
+                      //     keyword: _anime.animeName,
+                      //   ),
+                      // ),
+                      FadeRoute(
+                        builder: (context) {
+                          return AnimeClimb(
+                            animeId: _anime.animeId,
+                            keyword: _anime.animeName,
+                          );
+                        },
                       ),
-                      const Icon(Icons.expand_more_rounded),
+                    ).then((value) async {
+                      _loadData();
+                    });
+                  },
+                  tooltip: "搜索封面",
+                  icon: const Icon(Icons.image_search_rounded)),
+              IconButton(
+                  onPressed: () {
+                    _dialogDeleteAnime();
+                  },
+                  tooltip: "删除动漫",
+                  icon: const Icon(Icons.delete)),
+            ],
+          ),
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: !_loadOk
+                ? Container(
+                    key: UniqueKey(),
+                  )
+                : ListView(
+                    children: [
+                      _displayAnimeInfo(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+                        child: Divider(
+                          thickness: 1,
+                        ),
+                      ),
+                      // _displayEpisode(),
+                      _displayButtonsAboutEpisode(),
+                      _displayEpisodePlus(),
                     ],
                   ),
-                  onTap: () {
-                    _dialogSelectTag();
-                  },
-                ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) => AnimeClimb(
-                                animeId: _anime.animeId,
-                                keyword: _anime.animeName,
-                              )))
-                      .then((value) async {
-                    _loadData();
-                  });
-                },
-                tooltip: "搜索封面",
-                icon: const Icon(Icons.image_search_rounded)),
-            IconButton(
-                onPressed: () {
-                  _dialogDeleteAnime();
-                },
-                tooltip: "删除动漫",
-                icon: const Icon(Icons.delete)),
-          ],
-        ),
-        body: _loadOk
-            ? ListView(
-                children: [
-                  _displayAnimeInfo(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
-                    child: Divider(
-                      thickness: 1,
-                    ),
-                  ),
-                  // _displayEpisode(),
-                  _displayButtonsAboutEpisode(),
-                  _displayEpisodePlus(),
-                ],
-              )
-            : _waitDataBody(),
-      ),
+          )),
     );
-  }
-
-  _waitDataBody() {
-    return Container();
   }
 
   _displayAnimeInfo() {
@@ -354,10 +364,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           onTap: () {
             FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
             if (_episodes[i].isChecked()) {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(
-                      builder: (context) => EpisodeNoteSF(episodeNotes[i])))
-                  .then((value) {
+              Navigator.of(context).push(
+                // MaterialPageRoute(
+                //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
+                FadeRoute(
+                  builder: (context) {
+                    return EpisodeNoteSF(episodeNotes[i]);
+                  },
+                ),
+              ).then((value) {
                 episodeNotes[i] = value; // 更新修改
                 setState(() {});
               });
@@ -602,8 +617,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
                     // 直接返回到主页
                     Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const Tabs()),
-                        (route) => false); // 返回false就没有左上角的返回按钮了
+                      // MaterialPageRoute(builder: (context) => const Tabs()),
+                      FadeRoute(
+                        builder: (context) {
+                          return const Tabs();
+                        },
+                      ),
+                      (route) => false,
+                    ); // 返回false就没有左上角的返回按钮了
                   },
                   child: const Text(
                     "确认",

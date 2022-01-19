@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           // brightness: Brightness.dark,
-          // fontFamily: 'hm',
+          fontFamily: 'yuan',
           appBarTheme: const AppBarTheme(
             shadowColor: Colors.transparent,
             elevation: 0,
@@ -121,6 +121,7 @@ class _MyAppState extends State<MyApp> {
           pageTransitionsTheme: const PageTransitionsTheme(
             builders: <TargetPlatform, PageTransitionsBuilder>{
               TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+              TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
             },
           ),
           // 无效，不知道为什么

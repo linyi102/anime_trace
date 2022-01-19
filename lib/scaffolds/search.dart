@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -112,10 +113,16 @@ class _AnimeItemState extends State<AnimeItem> {
         ),
       ),
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(
-                builder: (context) => AnimeDetailPlus(widget.anime.animeId)))
-            .then((value) {
+        Navigator.of(context).push(
+          // MaterialPageRoute(
+          //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
+          // ),
+          FadeRoute(
+            builder: (context) {
+              return AnimeDetailPlus(widget.anime.animeId);
+            },
+          ),
+        ).then((value) {
           debugPrint(value.toString());
           setState(() {
             widget.anime = value;

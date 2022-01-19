@@ -65,6 +65,7 @@ class _AboutVersionState extends State<AboutVersion> {
           ListTile(
             title: const Text("更新进度"),
             subtitle:
+                // const Text("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
                 const Text("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
             onTap: () {
               Clipboard.setData(const ClipboardData(

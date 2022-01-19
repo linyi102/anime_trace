@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -137,14 +138,17 @@ class _AnimeClimbState extends State<AnimeClimb> {
                         }
                       } else if (anime.animeId != 0) {
                         // 不为0，说明已添加，点击进入动漫详细页面
-                        Navigator.of(context)
-                            .push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AnimeDetailPlus(anime.animeId),
+                        Navigator.of(context).push(
+                          // MaterialPageRoute(
+                          //   builder: (context) =>
+                          //       AnimeDetailPlus(anime.animeId),
+                          // ),
+                          FadeRoute(
+                            builder: (context) {
+                              return AnimeDetailPlus(anime.animeId);
+                            },
                           ),
-                        )
-                            .then((updatedAnime) {
+                        ).then((updatedAnime) {
                           int findIndex = searchAnimes.lastIndexWhere(
                               (element) =>
                                   element.animeName == updatedAnime.animeName);

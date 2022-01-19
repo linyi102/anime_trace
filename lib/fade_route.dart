@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class FadeRoute extends PageRoute {
   FadeRoute({
     required this.builder,
-    this.transitionDuration = const Duration(milliseconds: 100),
-    this.reverseTransitionDuration = const Duration(milliseconds: 100),
+    this.transitionDuration = const Duration(milliseconds: 200),
+    this.reverseTransitionDuration =
+        const Duration(milliseconds: 200), // 100 没有效果
     this.opaque = true,
     this.barrierDismissible = false,
     this.barrierColor = Colors.transparent,

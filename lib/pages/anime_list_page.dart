@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -94,7 +95,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 200),
       child: !_loadOk
           ? _waitDataScaffold()
           : Scaffold(
@@ -142,10 +143,16 @@ class _AnimeListPageState extends State<AnimeListPage>
                   : FloatingActionButton(
                       heroTag: null,
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(
-                                builder: (context) => const AnimeClimb()))
-                            .then((value) {
+                        Navigator.of(context).push(
+                          // MaterialPageRoute(
+                          //   builder: (context) => const AnimeClimb(),
+                          // ),
+                          FadeRoute(
+                            builder: (context) {
+                              return const AnimeClimb();
+                            },
+                          ),
+                        ).then((value) {
                           _loadData(); // 重新加载数据，显示新添加的动漫
                         });
                         // _dialogAddAnime();
@@ -209,8 +216,13 @@ class _AnimeListPageState extends State<AnimeListPage>
       IconButton(
         onPressed: () async {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const Search(),
+            // MaterialPageRoute(
+            //   builder: (context) => const Search(),
+            // ),
+            FadeRoute(
+              builder: (context) {
+                return const Search();
+              },
             ),
           );
         },
@@ -421,16 +433,14 @@ class _AnimeListPageState extends State<AnimeListPage>
     Navigator.of(context)
         .push(
       // 1.默认
-      MaterialPageRoute(
-        builder: (context) => AnimeDetailPlus(anime.animeId),
-      ),
+      // MaterialPageRoute(
+      //   builder: (context) => AnimeDetailPlus(anime.animeId),
+      // ),
       // 2.渐进
       // PageRouteBuilder(
-      //   transitionDuration: const Duration(milliseconds: 100),
-      //   reverseTransitionDuration:
-      //       const Duration(milliseconds: 100),
-      //   pageBuilder: (BuildContext context,
-      //       Animation<double> animation,
+      //   transitionDuration: const Duration(milliseconds: 0),
+      //   reverseTransitionDuration: const Duration(milliseconds: 200),
+      //   pageBuilder: (BuildContext context, Animation<double> animation,
       //       Animation secondaryAnimation) {
       //     return FadeTransition(
       //       //使用渐隐渐入过渡,
@@ -439,12 +449,13 @@ class _AnimeListPageState extends State<AnimeListPage>
       //     );
       //   },
       // ),
-      // 3.bug：返回无渐进
-      // FadeRoute(
-      //   builder: (context) {
-      //     return AnimeDetailPlus(anime.animeId);
-      //   },
-      // ),
+      // 3. 将方法2封装到FadeRoute
+      FadeRoute(
+        transitionDuration: const Duration(milliseconds: 0),
+        builder: (context) {
+          return AnimeDetailPlus(anime.animeId);
+        },
+      ),
     )
         .then((value) {
       debugPrint(value.toString());
@@ -572,7 +583,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
           Text(
             "${tags[i]} (${animeCntPerTag[i]})",
-            // style: const TextStyle(fontFamily: "hm"),
+            style: const TextStyle(fontFamily: "yuan"),
           ),
           const SizedBox(
             height: 10,

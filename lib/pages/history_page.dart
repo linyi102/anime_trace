@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -55,7 +56,7 @@ class _HistoryPageState extends State<HistoryPage> {
             _loadData(curYear);
           },
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 100),
+            duration: const Duration(milliseconds: 200),
             child: !yearLoadOk.containsKey(curYear)
                 ? Container(
                     key: UniqueKey(),
@@ -143,8 +144,14 @@ class _HistoryPageState extends State<HistoryPage> {
           onTap: () {
             Navigator.of(context)
                 .push(
-              MaterialPageRoute(
-                builder: (context) => AnimeDetailPlus(record.anime.animeId),
+              // MaterialPageRoute(
+              //   builder: (context) => AnimeDetailPlus(record.anime.animeId),
+              // ),
+              FadeRoute(
+                transitionDuration: const Duration(milliseconds: 0),
+                builder: (context) {
+                  return AnimeDetailPlus(record.anime.animeId);
+                },
               ),
             )
                 .then((value) {

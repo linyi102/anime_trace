@@ -128,12 +128,12 @@ flutter:
   #         weight: 700
   #
   
-  # fonts:
+  fonts:
   # - family: hm
   #   fonts:
   #     - asset: assets/fonts/HarmonyOS_Sans_SC_Regular.ttf
-  # - family: yuan
-  #   fonts:
-  #     - asset: assets/fonts/未来圆SC Regular.ttf  
+  - family: yuan
+    fonts:
+      - asset: assets/fonts/未来圆SC Regular.ttf  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

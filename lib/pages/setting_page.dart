@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/about_version.dart';
 import 'package:flutter_test_future/scaffolds/anime_display_setting.dart';
 import 'package:flutter_test_future/scaffolds/backup_restore.dart';
@@ -69,11 +70,12 @@ class _SettingPageState extends State<SettingPage> {
         ),
       ),
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 200),
         child: !loadOk
-            ? Container()
-            : ListView(
+            ? Container(
                 key: UniqueKey(),
+              )
+            : ListView(
                 children: [
                   // ListTile(
                   //   title: const Text("创建备份"),
@@ -103,9 +105,16 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     title: const Text("备份还原"),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const BackupAndRestore()));
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (BuildContext context) =>
+                        //         const BackupAndRestore()),
+                        FadeRoute(
+                          builder: (context) {
+                            return const BackupAndRestore();
+                          },
+                        ),
+                      );
                     },
                   ),
                   // const Divider(),
@@ -116,9 +125,16 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     title: const Text("标签管理"),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const TagManage()));
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (BuildContext context) =>
+                        //         const TagManage()),
+                        FadeRoute(
+                          builder: (context) {
+                            return const TagManage();
+                          },
+                        ),
+                      );
                     },
                   ),
                   ListTile(
@@ -128,9 +144,16 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     title: const Text("动漫界面"),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const AnimesDisplaySetting()));
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (BuildContext context) =>
+                        //         const AnimesDisplaySetting()),
+                        FadeRoute(
+                          builder: (context) {
+                            return const AnimesDisplaySetting();
+                          },
+                        ),
+                      );
                     },
                   ),
                   ListTile(
@@ -140,9 +163,16 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     title: const Text("笔记设置"),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const NoteSetting()));
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (BuildContext context) =>
+                        //         const NoteSetting()),
+                        FadeRoute(
+                          builder: (context) {
+                            return const NoteSetting();
+                          },
+                        ),
+                      );
                     },
                   ),
                   ListTile(
@@ -152,9 +182,16 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     title: const Text("关于版本"),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const AboutVersion()));
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //     builder: (BuildContext context) =>
+                        //         const AboutVersion()),
+                        FadeRoute(
+                          builder: (context) {
+                            return const AboutVersion();
+                          },
+                        ),
+                      );
                     },
                   )
                 ],
