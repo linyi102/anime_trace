@@ -46,7 +46,12 @@ class _AboutVersionState extends State<AboutVersion> {
           ),
           ListTile(
             title: const Text("Github 地址"),
-            subtitle: const Text("https://github.com/linyi102/anime_trace"),
+            subtitle: const Text(
+              "https://github.com/linyi102/anime_trace",
+              style: TextStyle(
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             onTap: () {
               Clipboard.setData(const ClipboardData(
                       text: "https://github.com/linyi102/anime_trace"))
@@ -55,7 +60,12 @@ class _AboutVersionState extends State<AboutVersion> {
           ),
           ListTile(
             title: const Text("Gitee 地址"),
-            subtitle: const Text("https://gitee.com/linyi517/anime_trace"),
+            subtitle: const Text(
+              "https://gitee.com/linyi517/anime_trace",
+              style: TextStyle(
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             onTap: () {
               Clipboard.setData(const ClipboardData(
                       text: "https://gitee.com/linyi517/anime_trace"))
@@ -66,7 +76,12 @@ class _AboutVersionState extends State<AboutVersion> {
             title: const Text("更新进度"),
             subtitle:
                 // const Text("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
-                const Text("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
+                const Text(
+              "https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC",
+              style: TextStyle(
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             onTap: () {
               Clipboard.setData(const ClipboardData(
                       text: "https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"))

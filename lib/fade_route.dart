@@ -5,7 +5,7 @@ class FadeRoute extends PageRoute {
     required this.builder,
     this.transitionDuration = const Duration(milliseconds: 200),
     this.reverseTransitionDuration =
-        const Duration(milliseconds: 200), // 100 没有效果
+        const Duration(milliseconds: 150), // 100 没有效果
     this.opaque = true,
     this.barrierDismissible = false,
     this.barrierColor = Colors.transparent,

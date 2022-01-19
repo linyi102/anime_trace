@@ -3,6 +3,7 @@ import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -66,8 +67,8 @@ class _TabsState extends State<Tabs> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
         currentIndex: _currentIndex,
-        // elevation: 0,
-        backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
+        elevation: 0,
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
         onTap: (int index) {
           setState(() {
             _currentIndex = index;

@@ -144,7 +144,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               String? selectedFilePath = await selectFile();
               if (selectedFilePath != null) {
                 BackupUtil.restoreFromLocal(selectedFilePath);
-                tags = await SqliteUtil.getAllTags(); // 重新更新标签
               }
             },
           ),
@@ -231,7 +230,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             onTap: () async {
               if (SPUtil.getBool("login")) {
                 BackupUtil.restoreFromWebDav(latestFile);
-                tags = await SqliteUtil.getAllTags(); // 重新更新标签
               } else {
                 showToast("配置账号后才可以进行还原");
               }

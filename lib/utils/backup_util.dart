@@ -4,6 +4,7 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/tags.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -160,11 +161,13 @@ class BackupUtil {
       // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问：await File(SqliteUtil.dbPath).delete();
       // 可以直接在里面写入即可，writeAsBytes会清空原先内容
       var content = await File(localBackupFilePath).readAsBytes();
-      File(SqliteUtil.dbPath)
-          .writeAsBytes(content)
-          .then((value) => showToast("还原成功"));
+      File(SqliteUtil.dbPath).writeAsBytes(content).then((value) async {
+        tags = await SqliteUtil.getAllTags(); // 重新更新标签
+        showToast("还原成功");
+      });
     } else if (localBackupFilePath.endsWith(".zip")) {
-      unzip(localBackupFilePath).then((value) {
+      unzip(localBackupFilePath).then((value) async {
+        tags = await SqliteUtil.getAllTags(); // 重新更新标签
         showToast("还原成功");
         File(localBackupFilePath).delete();
       });
@@ -173,7 +176,7 @@ class BackupUtil {
     }
   }
 
-  static void restoreFromWebDav(latestFile) async {
+  static Future<void> restoreFromWebDav(latestFile) async {
     String localRootDirPath = await getLocalRootDirPath();
 
     if (latestFile.path == null) {

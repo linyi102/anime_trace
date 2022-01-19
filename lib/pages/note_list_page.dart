@@ -77,7 +77,7 @@ class _NoteListPageState extends State<NoteListPage> {
         ],
       ),
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 200),
         child: !_loadOk
             ? Container(
                 key: UniqueKey(),

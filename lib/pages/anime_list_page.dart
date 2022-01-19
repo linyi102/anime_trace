@@ -584,7 +584,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
           Text(
             "${tags[i]} (${animeCntPerTag[i]})",
-            // style: const TextStyle(fontFamily: "yuan"),
+            style: const TextStyle(fontFamily: "yuan"),
           ),
           const SizedBox(
             height: 10,

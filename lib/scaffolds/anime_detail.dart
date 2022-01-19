@@ -357,7 +357,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               }
             },
             icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 200),
               // transitionBuilder: (Widget child, Animation<double> animation) {
               //   //执行缩放动画
               //   return ScaleTransition(child: child, scale: animation);
