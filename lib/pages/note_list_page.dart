@@ -24,6 +24,9 @@ class _NoteListPageState extends State<NoteListPage> {
   bool _loadOk = false;
   bool hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
 
+  final int _pageSize = 20;
+  int _pageIndex = 1;
+
   @override
   void initState() {
     super.initState();
@@ -34,12 +37,12 @@ class _NoteListPageState extends State<NoteListPage> {
     Future(() {
       debugPrint("note_list_page: 开始加载数据");
       // return SqliteUtil.getAllNotesByTableHistory();
-      return SqliteUtil.getAllNotesByTableNote(); // 优化
+      return SqliteUtil.getAllNotesByTableNote(0, _pageSize);
     }).then((value) {
       episodeNotes = value;
       _loadOk = true;
       debugPrint("note_list_page: 数据加载完成");
-      debugPrint(episodeNotes.length.toString());
+      debugPrint("笔记总数(包括空笔记)：${episodeNotes.length}");
       setState(() {});
     });
   }
@@ -89,9 +92,13 @@ class _NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: episodeNotes.length,
       itemBuilder: (BuildContext context, int index) {
-        // 该笔记没有内容，且没有图片，直接返回
+        // debugPrint("index=$index");
+        _loadExtraData(index);
+        // 跳过空笔记
         if (episodeNotes[index].noteContent.isEmpty &&
-            episodeNotes[index].relativeLocalImages.isEmpty) return Container();
+            episodeNotes[index].relativeLocalImages.isEmpty) {
+          return Container();
+        }
         // 会导致windows出错
         // MultiImageProvider multiImageProvider = MultiImageProvider(
         //   episodeNotes[index]
@@ -123,20 +130,6 @@ class _NoteListPageState extends State<NoteListPage> {
               child: Flex(
                 direction: Axis.vertical,
                 children: [
-                  // ListTile(
-                  //   style: ListTileStyle.drawer,
-                  //   leading: AnimeListCover(episodeNotes[index].anime),
-                  //   title: Text(
-                  //     "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
-                  //     maxLines: 1,
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  //   subtitle: Text(episodeNotes[index].episode.getDate()),
-                  // ),
-                  // episodeNotes[index].noteContent.isEmpty &&
-                  //         episodeNotes[index].imgLocalPaths.isEmpty
-                  //     ? Container()
-                  //     : const Divider(),
                   episodeNotes[index].noteContent.isEmpty
                       ? Container()
                       : ListTile(
@@ -172,12 +165,12 @@ class _NoteListPageState extends State<NoteListPage> {
                             initialIndex: 0, // 并没有发挥作用
                           );
                         }),
-                  episodeNotes[index].noteContent.isEmpty &&
-                          episodeNotes[index].relativeLocalImages.isEmpty
-                      ? Container() // 内容和图片都为空，则不显示
-                      : hideAnimeListTile
-                          ? Container() // 如果隐藏了AnimeListTile，则不显示分割线
-                          : const Divider(),
+                  // episodeNotes[index].noteContent.isEmpty &&
+                  //         episodeNotes[index].relativeLocalImages.isEmpty
+                  //     ? Container() // 内容和图片都为空，则不显示
+                  //     : hideAnimeListTile
+                  //         ? Container() // 如果隐藏了AnimeListTile，则不显示分割线
+                  //         : const Divider(),
                   hideAnimeListTile
                       ? Container()
                       : ListTile(
@@ -196,20 +189,22 @@ class _NoteListPageState extends State<NoteListPage> {
                           onTap: () {
                             Navigator.of(context)
                                 .push(
-                                  // MaterialPageRoute(
-                                  //   builder: (context) => AnimeDetailPlus(
-                                  //       episodeNotes[index].anime.animeId),
-                                  // ),
-                                  FadeRoute(
-                                    transitionDuration:
-                                        const Duration(milliseconds: 0),
-                                    builder: (context) {
-                                      return AnimeDetailPlus(
-                                          episodeNotes[index].anime.animeId);
-                                    },
-                                  ),
-                                )
-                                .then((value) => _loadData());
+                              // MaterialPageRoute(
+                              //   builder: (context) => AnimeDetailPlus(
+                              //       episodeNotes[index].anime.animeId),
+                              // ),
+                              FadeRoute(
+                                transitionDuration:
+                                    const Duration(milliseconds: 0),
+                                builder: (context) {
+                                  return AnimeDetailPlus(
+                                      episodeNotes[index].anime.animeId);
+                                },
+                              ),
+                            )
+                                .then((value) {
+                              // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
+                            });
                           },
                         ),
 
@@ -239,5 +234,21 @@ class _NoteListPageState extends State<NoteListPage> {
         );
       },
     );
+  }
+
+  void _loadExtraData(index) {
+    if (index + 5 == _pageSize * (_pageIndex)) {
+      _pageIndex++;
+      debugPrint("再次请求$_pageSize个数据");
+      Future(() {
+        return SqliteUtil.getAllNotesByTableNote(
+            episodeNotes.length, _pageSize); // 偏移量为当前页面显示的数量
+      }).then((value) {
+        debugPrint("请求结束");
+        episodeNotes.addAll(value);
+        debugPrint("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
+        setState(() {});
+      });
+    }
   }
 }

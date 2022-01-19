@@ -754,15 +754,18 @@ class SqliteUtil {
     return episodeNotes;
   }
 
-  static Future<List<EpisodeNote>> getAllNotesByTableNote() async {
+  static Future<List<EpisodeNote>> getAllNotesByTableNote(
+      int offset, int number) async {
     debugPrint("sql: getAllNotesByTableNote");
     List<EpisodeNote> episodeNotes = [];
     // 根据笔记中的动漫id和集数number，即可获取到完成时间，根据动漫id，获取动漫封面
+    // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
     var lm1 = await _database.rawQuery('''
     select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url
     from episode_note, anime, history
     where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number
-    order by history.date desc;
+    order by history.date desc
+    limit $number offset $offset;
     ''');
     for (var item in lm1) {
       Anime anime = Anime(
@@ -783,6 +786,9 @@ class SqliteUtil {
           noteContent: item['note_content'] as String,
           relativeLocalImages: relativeLocalImages,
           imgUrls: []);
+      // // 如果没有图片，且笔记内容为空，则不添加。会导致无法显示分页查询
+      // if (episodeNote.relativeLocalImages.isEmpty &&
+      //     episodeNote.noteContent.isEmpty) continue;
       episodeNotes.add(episodeNote);
     }
     return episodeNotes;
