@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 
 class NoteSetting extends StatefulWidget {
   const NoteSetting({Key? key}) : super(key: key);

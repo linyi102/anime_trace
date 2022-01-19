@@ -92,14 +92,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return OKToast(
-      textStyle: const TextStyle(fontFamily: "yuan"),
+      // textStyle: const TextStyle(fontFamily: "yuan"),
       child: MaterialApp(
         title: '漫迹', // 后台应用显示名称
         home: const MyHome(),
         theme: ThemeData(
           primarySwatch: Colors.blue,
           // brightness: Brightness.dark,
-          fontFamily: "yuan",
+          // fontFamily: "yuan",
           appBarTheme: const AppBarTheme(
             shadowColor: Colors.transparent,
             elevation: 0,

@@ -10,7 +10,6 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/note_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -151,26 +150,32 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                       );
                       return;
                     }
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['jpg', 'png', 'gif'],
-                      allowMultiple: true,
-                    );
-                    if (result == null) return;
-                    List<PlatformFile> platformFiles = result.files;
-                    for (var platformFile in platformFiles) {
-                      String absoluteImagePath = platformFile.path ?? "";
-                      if (absoluteImagePath.isEmpty) continue;
+                    if (Platform.isWindows || Platform.isAndroid) {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['jpg', 'png', 'gif'],
+                        allowMultiple: true,
+                      );
+                      if (result == null) return;
+                      List<PlatformFile> platformFiles = result.files;
+                      for (var platformFile in platformFiles) {
+                        String absoluteImagePath = platformFile.path ?? "";
+                        if (absoluteImagePath.isEmpty) continue;
 
-                      String relativeImagePath =
-                          ImageUtil.getRelativeImagePath(absoluteImagePath);
-                      int imageId =
-                          await SqliteUtil.insertNoteIdAndImageLocalPath(
-                              widget.episodeNote.episodeNoteId,
-                              relativeImagePath);
-                      widget.episodeNote.relativeLocalImages
-                          .add(RelativeLocalImage(imageId, relativeImagePath));
+                        String relativeImagePath =
+                            ImageUtil.getRelativeImagePath(absoluteImagePath);
+                        int imageId =
+                            await SqliteUtil.insertNoteIdAndImageLocalPath(
+                                widget.episodeNote.episodeNoteId,
+                                relativeImagePath);
+                        widget.episodeNote.relativeLocalImages.add(
+                            RelativeLocalImage(imageId, relativeImagePath));
+                      }
+                    } else if (Platform.isAndroid) {
+                      //
+                    } else {
+                      throw ("未适配平台：${Platform.operatingSystem}");
                     }
                     setState(() {});
                   },
