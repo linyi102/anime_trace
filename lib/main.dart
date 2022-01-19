@@ -89,61 +89,84 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  _onBackPressed() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("确定退出程序吗?"),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("暂不"),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                TextButton(
+                  child: const Text("确定"),
+                  onPressed: () => Navigator.pop(context, true),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return OKToast(
-      textStyle: const TextStyle(fontFamily: "yuan"),
-      child: MaterialApp(
-        title: '漫迹', // 后台应用显示名称
-        home: const MyHome(),
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          // brightness: Brightness.dark,
-          fontFamily: "yuan",
-          appBarTheme: const AppBarTheme(
-            shadowColor: Colors.transparent,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            iconTheme: IconThemeData(
-              color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        return _onBackPressed();
+      },
+      child: OKToast(
+        textStyle: const TextStyle(fontFamily: "yuan"),
+        child: MaterialApp(
+          title: '漫迹', // 后台应用显示名称
+          home: const MyHome(),
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            // brightness: Brightness.dark,
+            fontFamily: "yuan",
+            appBarTheme: const AppBarTheme(
+              shadowColor: Colors.transparent,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              iconTheme: IconThemeData(
+                color: Colors.black,
+              ),
+              // titleTextStyle: TextStyle(
+              //   color: Colors.black,
+              //   fontWeight: FontWeight.bold,
+              // ),
+              // 会影响字体大小，应该和TextStyle有关
             ),
-            // titleTextStyle: TextStyle(
-            //   color: Colors.black,
-            //   fontWeight: FontWeight.bold,
+            scrollbarTheme: ScrollbarThemeData(
+              showTrackOnHover: true,
+              thickness: MaterialStateProperty.all(7),
+              interactive: true,
+              radius: const Radius.circular(10),
+            ),
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+              },
+            ),
+            // 无效，不知道为什么
+            // buttonTheme: const ButtonThemeData(
+            //   hoverColor: Colors.transparent, // 悬停时的颜色
+            //   highlightColor: Colors.transparent, // 长按时的颜色
+            //   splashColor: Colors.transparent, // 点击时的颜色
             // ),
-            // 会影响字体大小，应该和TextStyle有关
+            // scaffoldBackgroundColor: Colors.white,
+            scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
+            // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
           ),
-          scrollbarTheme: ScrollbarThemeData(
-            showTrackOnHover: true,
-            thickness: MaterialStateProperty.all(7),
-            interactive: true,
-            radius: const Radius.circular(10),
-          ),
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: <TargetPlatform, PageTransitionsBuilder>{
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-            },
-          ),
-          // 无效，不知道为什么
-          // buttonTheme: const ButtonThemeData(
-          //   hoverColor: Colors.transparent, // 悬停时的颜色
-          //   highlightColor: Colors.transparent, // 长按时的颜色
-          //   splashColor: Colors.transparent, // 点击时的颜色
-          // ),
-          // scaffoldBackgroundColor: Colors.white,
-          scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
-          // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
+            GlobalWidgetsLocalizations
+                .delegate, //定义 widget 默认的文本方向，从左到右或从右到左。GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
+          ],
+          supportedLocales: const [
+            Locale('zh', 'CH'),
+            Locale('en', 'US'),
+          ],
         ),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
-          GlobalWidgetsLocalizations
-              .delegate, //定义 widget 默认的文本方向，从左到右或从右到左。GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
-        ],
-        supportedLocales: const [
-          Locale('zh', 'CH'),
-          Locale('en', 'US'),
-        ],
       ),
     );
   }

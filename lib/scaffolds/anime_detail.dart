@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
@@ -434,6 +435,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           .relativeLocalImages[0]
                                           .path)),
                                   fit: BoxFit.fitHeight,
+                                  errorBuilder: errorImageBuilder(
+                                      episodeNotes[episodeIndex]
+                                          .relativeLocalImages[0]
+                                          .path),
                                 ),
                               )
                             : showImageGridView(

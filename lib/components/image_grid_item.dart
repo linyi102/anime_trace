@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 
 class ImageGridItem extends StatelessWidget {
@@ -60,6 +61,7 @@ class ImageGridItem extends StatelessWidget {
           child: Image.file(
             File(imageLocalPath),
             fit: BoxFit.cover,
+            errorBuilder: errorImageBuilder(relativeImagePath),
           ),
         ),
       ),

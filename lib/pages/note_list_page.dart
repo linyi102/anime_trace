@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
@@ -151,6 +152,10 @@ class _NoteListPageState extends State<NoteListPage> {
                                       .relativeLocalImages[0]
                                       .path)),
                               fit: BoxFit.fitHeight,
+                              errorBuilder: errorImageBuilder(
+                                  episodeNotes[index]
+                                      .relativeLocalImages[0]
+                                      .path),
                             ),
                           ),
                         )
