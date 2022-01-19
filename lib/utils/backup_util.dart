@@ -141,7 +141,7 @@ class BackupUtil {
     for (int i = 0; i < totalNumber - autoBackupWebDavNumber; ++i) {
       String? path = files[i].path;
       if (path != null &&
-          path.startsWith("animetrace-backup") &&
+          path.startsWith("/animetrace/automatic/animetrace-backup") &&
           path.endsWith(".zip")) {
         debugPrint("删除文件：$path");
         WebDavUtil.client.remove(path);
