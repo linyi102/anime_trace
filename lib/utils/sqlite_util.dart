@@ -185,6 +185,8 @@ class SqliteUtil {
 
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
     debugPrint("sql: updateAnimeNameByAnimeId");
+    newAnimeName =
+        newAnimeName.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
     await _database.rawUpdate('''
     update anime
     set anime_name = '$newAnimeName'
@@ -220,8 +222,21 @@ class SqliteUtil {
     ''');
   }
 
+  // 转义单引号
+  static Anime escapeAnime(Anime anime) {
+    anime.animeName = escapeStr(anime.animeName);
+    return anime;
+  }
+
+  static String escapeStr(String str) {
+    str = str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
+    return str;
+  }
+
   static Future<int> insertAnime(Anime anime) async {
-    debugPrint("sql: insertAnime");
+    anime = escapeAnime(anime);
+    debugPrint("sql: insertAnime(anime=$anime)");
+
     String datetime = DateTime.now().toString();
     return await _database.rawInsert('''
     insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url)
@@ -428,6 +443,7 @@ class SqliteUtil {
 
   static Future<List<Anime>> getAnimesBySearch(String keyWord) async {
     debugPrint("sql: getAnimesBySearch");
+    keyWord = escapeStr(keyWord);
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt, anime_cover_url

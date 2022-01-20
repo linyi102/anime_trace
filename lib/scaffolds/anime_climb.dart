@@ -277,11 +277,19 @@ class _AnimeClimbState extends State<AnimeClimb> {
                     int findIndex = 0;
                     if (!standBy) {
                       // 不是备用数据，才寻找最后一次出现的数据。否则只修改备用数据的状态
+                      // 数据库字段通过''转义保存'，而获取时得到的是''，因此需要转为'
+                      newAnime.animeName =
+                          newAnime.animeName.replaceAll("''", "'");
                       findIndex = searchAnimes.lastIndexWhere(
                           (element) => element.animeName == newAnime.animeName);
                     }
-                    searchAnimes[findIndex] = newAnime;
-                    searchAnimes[findIndex].animeId = lastInsertId;
+                    debugPrint("找到的动漫下标：$findIndex");
+                    if (findIndex != -1) {
+                      searchAnimes[findIndex] = newAnime;
+                      searchAnimes[findIndex].animeId = lastInsertId;
+                    } else {
+                      debugPrint("未找到符合的动漫名字：${newAnime.animeName}");
+                    }
                     setState(() {});
                   });
 
