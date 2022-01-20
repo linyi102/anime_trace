@@ -1,4 +1,4 @@
-[项目更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [Github](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace)
+[Github](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [下载地址(密码：eocv)](https://wwe.lanzouw.com/b01uyqcrg)
 
 ## 应用截图
 
