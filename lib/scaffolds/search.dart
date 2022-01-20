@@ -69,67 +69,54 @@ class _SearchState extends State<Search> {
   _showSearchPage() {
     List<Widget> listWidget = [];
     for (var anime in _resAnimes) {
-      listWidget.add(AnimeItem(anime));
+      // listWidget.add(AnimeItem(anime));
+      listWidget.add(ListTile(
+        leading: AnimeListCover(anime),
+        title: Text(
+          anime.animeName,
+          style: const TextStyle(
+            fontSize: 15,
+            // fontWeight: FontWeight.w600,
+          ),
+          overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+        ),
+        trailing: Text(
+          "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+            // fontWeight: FontWeight.w400,
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).push(
+            // MaterialPageRoute(
+            //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
+            // ),
+            FadeRoute(
+              builder: (context) {
+                return AnimeDetailPlus(anime.animeId);
+              },
+            ),
+          ).then((value) {
+            // anime = value; // 无效，因为不是数据成员
+            int findIndex = _resAnimes.indexWhere(
+                (element) => element.animeId == (value as Anime).animeId);
+            if (findIndex != -1) {
+              _resAnimes[findIndex] = value;
+              setState(() {});
+            } else {
+              debugPrint("未找到动漫：$value");
+            }
+          });
+        },
+        onLongPress: () {},
+      ));
     }
     return Scrollbar(
       child: ListView(
         children: listWidget,
       ),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class AnimeItem extends StatefulWidget {
-  Anime anime;
-  AnimeItem(
-    this.anime, {
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<AnimeItem> createState() => _AnimeItemState();
-}
-
-class _AnimeItemState extends State<AnimeItem> {
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: AnimeListCover(widget.anime),
-      title: Text(
-        widget.anime.animeName,
-        style: const TextStyle(
-          fontSize: 15,
-          // fontWeight: FontWeight.w600,
-        ),
-        overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-      ),
-      trailing: Text(
-        "${widget.anime.checkedEpisodeCnt}/${widget.anime.animeEpisodeCnt}",
-        style: const TextStyle(
-          fontSize: 15,
-          color: Colors.black,
-          // fontWeight: FontWeight.w400,
-        ),
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-          // MaterialPageRoute(
-          //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
-          // ),
-          FadeRoute(
-            builder: (context) {
-              return AnimeDetailPlus(widget.anime.animeId);
-            },
-          ),
-        ).then((value) {
-          debugPrint(value.toString());
-          setState(() {
-            widget.anime = value;
-          });
-        });
-      },
-      onLongPress: () {},
     );
   }
 }

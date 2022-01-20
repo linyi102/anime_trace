@@ -224,7 +224,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                 return const Search();
               },
             ),
-          );
+          ).then((value) {
+            debugPrint("更新在搜索页面里进行的修改");
+            _loadData();
+          });
         },
         icon: const Icon(Icons.search_outlined),
         tooltip: "搜索动漫",
