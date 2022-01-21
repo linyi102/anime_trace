@@ -225,16 +225,25 @@ class _AnimeClimbState extends State<AnimeClimb> {
                       labelText: "动漫名称",
                       border: InputBorder.none,
                     ),
+                    onChanged: (onChanged) {
+                      anime.animeName = onChanged;
+                    },
                   ),
                   TextField(
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                     ],
-                    controller: inputEndEpisodeController..text = "12",
+                    controller: inputEndEpisodeController
+                      ..text =
+                          "${anime.animeEpisodeCnt == 0 ? 12 : anime.animeEpisodeCnt}",
                     decoration: const InputDecoration(
                       labelText: "动漫集数",
                       border: InputBorder.none,
                     ),
+                    onChanged: (onChanged) {
+                      // 非法(比如为空时)，返回null，则赋值为12
+                      anime.animeEpisodeCnt = int.tryParse(onChanged) ?? 12;
+                    },
                   ),
                 ],
               ),
@@ -260,11 +269,18 @@ class _AnimeClimbState extends State<AnimeClimb> {
               TextButton.icon(
                 onPressed: () async {
                   String name = inputNameController.text;
-                  if (name.isEmpty) return;
+                  if (name.isEmpty) {
+                    showToast("动漫名称不能为空");
+                    return;
+                  }
                   String endEpisodeStr = inputEndEpisodeController.text;
                   int endEpisode = 12;
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
+                  }
+                  if (endEpisode > 100) {
+                    showToast("集数范围：[0, 100]");
+                    return;
                   }
                   Anime newAnime = Anime(
                       animeName: name,

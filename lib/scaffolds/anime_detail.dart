@@ -295,7 +295,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   _displayEpisodePlus() {
+    // return ListView.builder(
+    //   shrinkWrap: true, //解决无限高度问题
+    //   physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+    //   itemCount: 2,
+    //   itemBuilder: (BuildContext context, int index) {
+    //     return ListTile();
+    //   },
+    // );
     List<Widget> list = [];
+
     for (int episodeIndex = 0;
         episodeIndex < _episodes.length;
         ++episodeIndex) {
