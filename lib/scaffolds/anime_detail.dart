@@ -458,6 +458,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ));
       }
     }
+    // 添加空白，防止多选按钮条遮挡
+    // list.add(const SizedBox(
+    //   height: 100,
+    // ));
+    // 改成两个空tile，感觉会更好些
+    list.add(const ListTile());
+    list.add(const ListTile());
+
     return Column(
       children: list,
     );
