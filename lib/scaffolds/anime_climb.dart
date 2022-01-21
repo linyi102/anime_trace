@@ -278,8 +278,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   if (endEpisodeStr.isNotEmpty) {
                     endEpisode = int.parse(inputEndEpisodeController.text);
                   }
-                  if (endEpisode > 100) {
-                    showToast("集数范围：[0, 100]");
+                  if (endEpisode > 999) {
+                    showToast("集数范围：[0, 999]");
                     return;
                   }
                   Anime newAnime = Anime(
