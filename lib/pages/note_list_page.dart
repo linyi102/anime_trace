@@ -190,7 +190,12 @@ class _NoteListPageState extends State<NoteListPage> {
                       ? Container()
                       : ListTile(
                           style: ListTileStyle.drawer,
-                          trailing: AnimeListCover(episodeNotes[index].anime),
+                          trailing: AnimeListCover(
+                            episodeNotes[index].anime,
+                            showReviewNumber: true,
+                            reviewNumber:
+                                episodeNotes[index].episode.reviewNumber,
+                          ),
                           title: Text(
                             episodeNotes[index].anime.animeName,
                             maxLines: 1,

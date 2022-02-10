@@ -18,14 +18,18 @@ void main() async {
       .ensureInitialized(); // 确保初始化，否则Unhandled Exception: Null check operator used on a null value
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
+  await ensureLatestData(); // 必须要用await
+  runApp(const MyApp());
+}
+
+ensureLatestData() async {
   await ImageUtil.getInstance();
   await SqliteUtil.getInstance();
   await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
+  await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
   await SqliteUtil.createTableEpisodeNote();
   await SqliteUtil.createTableImage();
   tags = await SqliteUtil.getAllTags();
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {

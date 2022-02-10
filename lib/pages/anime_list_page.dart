@@ -461,23 +461,34 @@ class _AnimeListPageState extends State<AnimeListPage>
         },
       ),
     )
-        .then((value) {
-      debugPrint(value.toString());
-      // anime = value; // 无效是因为anime是局部变量，和页面状态无关，所以setState没有作用
+        .then((value) async {
+      // debugPrint(value.toString());
+
+      // 根据传回的动漫id获取最新的更新进度以及标签
       Anime newAnime = value;
-      // 如果更换了标签，则还要移动到相应的标签
-      if (anime.tagName != newAnime.tagName) {
-        // debugPrint("${anime.tagName}, ${newAnime.tagName}");
-        // debugPrint("old: ${anime.toString()}");
-        int newTagIndex = tags.indexOf(newAnime.tagName);
-        animesInTag[i].removeAt(index); // 从该标签中删除旧动漫
-        animesInTag[newTagIndex].insert(0, newAnime); // 向新标签添加新动漫
-        // 还要改变标签的数量
-        animeCntPerTag[i]--;
-        animeCntPerTag[newTagIndex]++;
-        // debugPrint("移动了标签");
-      } else {
-        animesInTag[i][index] = newAnime;
+      newAnime = await SqliteUtil.getAnimeByAnimeId(newAnime.animeId);
+
+      // 找到并更新旧动漫
+      for (int tagIndex = 0; tagIndex < tags.length; ++tagIndex) {
+        int findIndex = animesInTag[tagIndex]
+            .indexWhere((element) => element.animeId == newAnime.animeId);
+        if (findIndex != -1) {
+          // 标签改变，则移动到新的标签组
+          Anime oldAnime = animesInTag[tagIndex][findIndex];
+          if (oldAnime.tagName != newAnime.tagName) {
+            animesInTag[tagIndex].removeAt(findIndex);
+            int newTagIndex =
+                tags.indexWhere((element) => element == newAnime.tagName);
+            animesInTag[newTagIndex].insert(0, newAnime); // 插到最前面
+            // 还要改变标签的数量
+            animeCntPerTag[tagIndex]--;
+            animeCntPerTag[newTagIndex]++;
+          } else {
+            // 标签没变，简单改下进度
+            animesInTag[tagIndex][findIndex] = newAnime;
+          }
+          break;
+        }
       }
       setState(() {});
     });

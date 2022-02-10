@@ -258,6 +258,46 @@ class SqliteUtil {
     }
   }
 
+  // 为历史表和笔记表添加列：回顾号
+  // 并将NULL改为1
+  static Future<void> addColumnReviewNumberToHistoryAndNote() async {
+    var list = await _database.rawQuery('''
+    select * from sqlite_master where name = 'history' and sql like '%review_number%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnReviewNumberToHistoryAndNote");
+      await _database.execute('''
+      alter table history
+      add column review_number INTEGER;
+      ''');
+
+      // 新增列才会修改NULL→1，之后就不修改了
+      await _database.rawUpdate('''
+      update history
+      set review_number = 1
+      where review_number is NULL;
+      ''');
+    }
+    list = await _database.rawQuery('''
+    select * from sqlite_master where name = 'episode_note' and sql like '%review_number%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnReviewNumberToHistoryAndNote");
+      await _database.execute('''
+      alter table episode_note
+      add column review_number INTEGER;
+      ''');
+
+      await _database.rawUpdate('''
+      update episode_note
+      set review_number = 1
+      where review_number is NULL;
+      ''');
+    }
+  }
+
   static Future<void> updateAnimeCoverbyAnimeId(
       int animeId, String? coverUrl) async {
     debugPrint("sql: updateAnimeCoverbyAnimeId");
@@ -270,32 +310,33 @@ class SqliteUtil {
   }
 
   static void insertHistoryItem(
-      int animeId, int episodeNumber, String date) async {
+      int animeId, int episodeNumber, String date, int reviewNumber) async {
     debugPrint(
-        "sql: insertHistoryItem(animeId=$animeId, episodeNumber=$episodeNumber, date=$date)");
+        "sql: insertHistoryItem(animeId=$animeId, episodeNumber=$episodeNumber, date=$date, reviewNumber=$reviewNumber)");
     await _database.rawInsert('''
-    insert into history(date, anime_id, episode_number)
-    values('$date', $animeId, $episodeNumber);
+    insert into history(date, anime_id, episode_number, review_number)
+    values('$date', $animeId, $episodeNumber, $reviewNumber);
     ''');
   }
 
   static void updateHistoryItem(
-      int animeId, int episodeNumber, String date) async {
+      int animeId, int episodeNumber, String date, int reviewNumber) async {
     debugPrint("sql: updateHistoryItem");
+
     await _database.rawInsert('''
     update history
     set date = '$date'
-    where anime_id = $animeId and episode_number = $episodeNumber;
+    where anime_id = $animeId and episode_number = $episodeNumber and review_number = $reviewNumber;
     ''');
   }
 
-  static void deleteHistoryItemByAnimeIdAndEpisodeNumber(
-      int animeId, int episodeNumber) async {
+  static void deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
+      int animeId, int episodeNumber, int reviewNumber) async {
     debugPrint(
-        "sql: deleteHistoryItemByAnimeIdAndEpisodeNumber(animeId=$animeId, episodeNumber=$episodeNumber)");
+        "sql: deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(animeId=$animeId, episodeNumber=$episodeNumber)");
     await _database.rawDelete('''
     delete from history
-    where anime_id = $animeId and episode_number = $episodeNumber;
+    where anime_id = $animeId and episode_number = $episodeNumber and review_number = $reviewNumber;
     ''');
   }
 
@@ -376,13 +417,16 @@ class SqliteUtil {
     if (list.isEmpty) {
       debugPrint("不应该啊");
     }
+    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId);
+
     Anime anime = Anime(
         animeId: animeId,
         animeName: list[0]['anime_name'] as String,
         animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
         animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
         animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
-        tagName: list[0]['tag_name'] as String);
+        tagName: list[0]['tag_name'] as String,
+        checkedEpisodeCnt: checkedEpisodeCnt);
     return anime;
   }
 
@@ -407,21 +451,23 @@ class SqliteUtil {
     return list[0]['tag_name'] as String;
   }
 
-  static Future<List<Episode>> getAnimeEpisodeHistoryById(Anime anime) async {
-    debugPrint("sql: getAnimeEpisodeHistoryById");
+  static Future<List<Episode>> getEpisodeHistoryByAnimeIdAndReviewNumber(
+      Anime anime, int reviewNumber) async {
+    debugPrint(
+        "sql: getEpisodeHistoryByAnimeIdAndReviewNumber(animeId=${anime.animeId}, reviewNumber=$reviewNumber)");
     int animeEpisodeCnt = anime.animeEpisodeCnt;
 
     var list = await _database.rawQuery('''
     select date, episode_number
     from anime inner join history
-        on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id;
+        on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id and history.review_number = $reviewNumber;
     ''');
     // debugPrint("查询结果：$list");
     List<Episode> episodes = [];
     for (int episodeNumber = 1;
         episodeNumber <= animeEpisodeCnt;
         ++episodeNumber) {
-      episodes.add(Episode(episodeNumber));
+      episodes.add(Episode(episodeNumber, reviewNumber));
     }
     // 遍历查询结果，每个元素都是一个键值对(列名-值)
     for (var element in list) {
@@ -471,6 +517,35 @@ class SqliteUtil {
     return res;
   }
 
+  static Future<int> getMaxReviewNumberByAnimeId(int animeId) async {
+    // debugPrint("getMaxReviewNumberByAnimeId(animeId=$animeId)");
+    // 新增回顾号列后，不能简单从历史表中计数来获取进度了
+    // 而是先得到该动漫的最大回顾号，然后根据该回顾号计数
+    var maxReviewNumberList = await _database.rawQuery('''
+      select max(review_number) max_review_number
+      from history
+      where history.anime_id = $animeId;
+      ''');
+    // 有些动漫没有进度，所以没有回顾号，此时返回的表有一行，结果为NULL，此时默认为1即可
+    int maxReviewNumber =
+        maxReviewNumberList[0]["max_review_number"] as int? ?? 1;
+    return maxReviewNumber;
+  }
+
+  static Future<int> getCheckedEpisodeCntByAnimeId(int animeId) async {
+    // debugPrint("getCheckedEpisodeCntByAnimeId(animeId=$animeId)");
+    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+
+    var checkedEpisodeCntList = await _database.rawQuery('''
+      select count(anime.anime_id) cnt
+      from anime inner join history
+          on anime.anime_id = $animeId and anime.anime_id = history.anime_id and review_number = $maxReviewNumber;
+      ''');
+    // debugPrint(
+    //     "最大回顾号$maxReviewNumber的进度：checkedEpisodeCnt=${checkedEpisodeCntList[0]["cnt"] as int}");
+    return checkedEpisodeCntList[0]["cnt"] as int;
+  }
+
   static getAllAnimeBytagName(String tagName, int offset, int number) async {
     debugPrint("sql: getAllAnimeBytagName");
 
@@ -484,12 +559,8 @@ class SqliteUtil {
 
     List<Anime> res = [];
     for (var element in list) {
-      var checkedEpisodeCntList = await _database.rawQuery('''
-      select count(anime.anime_id) cnt
-      from anime inner join history
-          on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
-      ''');
-      int checkedEpisodeCnt = checkedEpisodeCntList[0]["cnt"] as int;
+      int checkedEpisodeCnt =
+          await getCheckedEpisodeCntByAnimeId(element['anime_id'] as int);
 
       res.add(Anime(
         animeId: element['anime_id'] as int, // 进入详细页面后需要该id
@@ -544,89 +615,90 @@ class SqliteUtil {
     return res;
   }
 
-  static Future<List<HistoryPlus>> getAllHistoryPlus() async {
-    debugPrint("sql: getAllHistoryPlus");
-    String earliestDate;
-    // earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
-    // if (earliestDate.isEmpty) {
-    var list = await _database.rawQuery('''
-      select min(date) min_date
-      from history;
-      ''');
-    if (list[0]['min_date'] == null) return []; // 还没有历史，直接返回，否则强制转为String会报错
-    earliestDate = list[0]['min_date'] as String;
-    //   SPUtil.setString("earliest_date", earliestDate);
-    // }
-    debugPrint("最早日期为：$earliestDate");
-    DateTime earliestDateTime = DateTime.parse(earliestDate);
-    int earliestYear = earliestDateTime.year;
-    int earliestMonth = earliestDateTime.month;
+  // static Future<List<HistoryPlus>> getAllHistoryPlus() async {
+  //   debugPrint("sql: getAllHistoryPlus");
+  //   String earliestDate;
+  //   // earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
+  //   // if (earliestDate.isEmpty) {
+  //   var list = await _database.rawQuery('''
+  //     select min(date) min_date
+  //     from history;
+  //     ''');
+  //   if (list[0]['min_date'] == null) return []; // 还没有历史，直接返回，否则强制转为String会报错
+  //   earliestDate = list[0]['min_date'] as String;
+  //   //   SPUtil.setString("earliest_date", earliestDate);
+  //   // }
+  //   debugPrint("最早日期为：$earliestDate");
+  //   DateTime earliestDateTime = DateTime.parse(earliestDate);
+  //   int earliestYear = earliestDateTime.year;
+  //   int earliestMonth = earliestDateTime.month;
 
-    // 先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
-    List<HistoryPlus> history = [];
-    DateTime now = DateTime.now();
-    int curMonth = now.month;
-    int curYear = now.year;
-    for (int year = curYear; year >= earliestYear; --year) {
-      int month = curMonth;
-      int border = 1;
-      if (year != curYear) month = 12;
-      if (year == earliestYear) border = earliestMonth;
-      for (; month >= border; --month) {
-        String date;
-        if (month >= 10) {
-          date = "$year-$month";
-        } else {
-          date = "$year-0$month";
-        }
-        var list = await _database.rawQuery('''
-        select distinct anime.anime_id, anime.anime_name
-        from history, anime
-        where date like '$date%' and history.anime_id = anime.anime_id
-        order by date desc; -- 倒序
-        ''');
-        List<Anime> animes = [];
-        for (var item in list) {
-          animes.add(Anime(
-              animeId: item['anime_id'] as int,
-              animeName: item['anime_name'] as String,
-              animeEpisodeCnt: 0));
-        }
-        if (animes.isEmpty) continue; // 没有观看记录时直接跳过
+  //   // 先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
+  //   List<HistoryPlus> history = [];
+  //   DateTime now = DateTime.now();
+  //   int curMonth = now.month;
+  //   int curYear = now.year;
+  //   for (int year = curYear; year >= earliestYear; --year) {
+  //     int month = curMonth;
+  //     int border = 1;
+  //     if (year != curYear) month = 12;
+  //     if (year == earliestYear) border = earliestMonth;
+  //     for (; month >= border; --month) {
+  //       String date;
+  //       if (month >= 10) {
+  //         date = "$year-$month";
+  //       } else {
+  //         date = "$year-0$month";
+  //       }
+  //       var list = await _database.rawQuery('''
+  //       select distinct anime.anime_id, anime.anime_name
+  //       from history, anime
+  //       where date like '$date%' and history.anime_id = anime.anime_id
+  //       order by date desc; -- 倒序
+  //       ''');
+  //       List<Anime> animes = [];
+  //       for (var item in list) {
+  //         animes.add(Anime(
+  //             animeId: item['anime_id'] as int,
+  //             animeName: item['anime_name'] as String,
+  //             animeEpisodeCnt: 0));
+  //       }
+  //       if (animes.isEmpty) continue; // 没有观看记录时直接跳过
 
-        List<Record> records = [];
-        // 对于每个动漫，找到当月观看的最小值的最大值
-        for (var anime in animes) {
-          // debugPrint(anime);
-          list = await _database.rawQuery('''
-          select min(episode_number) as start
-          from history
-          where date like '$date%' and anime_id = ${anime.animeId};
-          ''');
-          int startEpisodeNumber = list[0]['start'] as int;
-          list = await _database.rawQuery('''
-          select max(episode_number) as end
-          from history
-          where date like '$date%' and anime_id = ${anime.animeId};
-          ''');
-          int endEpisodeNumber = list[0]['end'] as int;
-          Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
-          // debugPrint(record);
-          records.add(record);
-        }
-        history.add(HistoryPlus(date, records));
-      }
-    }
-    // for (var item in history) {
-    //   debugPrint(item);
-    // }
-    return history;
-  }
+  //       List<Record> records = [];
+  //       // 对于每个动漫，找到当月观看的最小值的最大值
+  //       for (var anime in animes) {
+  //         // debugPrint(anime);
+  //         list = await _database.rawQuery('''
+  //         select min(episode_number) as start
+  //         from history
+  //         where date like '$date%' and anime_id = ${anime.animeId};
+  //         ''');
+  //         int startEpisodeNumber = list[0]['start'] as int;
+  //         list = await _database.rawQuery('''
+  //         select max(episode_number) as end
+  //         from history
+  //         where date like '$date%' and anime_id = ${anime.animeId};
+  //         ''');
+  //         int endEpisodeNumber = list[0]['end'] as int;
+  //         Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
+  //         // debugPrint(record);
+  //         records.add(record);
+  //       }
+  //       history.add(HistoryPlus(date, records));
+  //     }
+  //   }
+  //   // for (var item in history) {
+  //   //   debugPrint(item);
+  //   // }
+  //   return history;
+  // }
 
   static Future<List<HistoryPlus>> getAllHistoryByYear(int year) async {
     debugPrint("sql: getAllHistoryByYear");
 
     // 整体思路：先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
+    // 新增回顾号列后，最小值和最大值应该属于同一回顾号
     List<HistoryPlus> history = [];
 
     for (int month = 12; month >= 1; --month) {
@@ -653,24 +725,36 @@ class SqliteUtil {
       if (animes.isEmpty) continue; // 没有观看记录时直接跳过
 
       List<Record> records = [];
-      // 对于每个动漫，找到当月观看的最小值的最大值
+      // 对于每个动漫，找到当月观看的最小值和最大值
+      // 如果该月存在多个回顾号，注意要挑选的最小值和最大值的回顾号一样
+      // 因此需要先找出该月存在的该动漫的所有回顾号(注意去重)，对与每个回顾号
+      // 都要找出min和max，并添加到records中
       for (var anime in animes) {
         // debugPrint(anime);
-        list = await _database.rawQuery('''
+        var reviewNumberList = await _database.rawQuery('''
+        select distinct review_number
+        from history
+        where date like '$date%' and anime_id = ${anime.animeId};
+        ''');
+        for (var reviewNumberElem in reviewNumberList) {
+          int reviewNumber = reviewNumberElem['review_number'] as int;
+          list = await _database.rawQuery('''
           select min(episode_number) as start
           from history
-          where date like '$date%' and anime_id = ${anime.animeId};
+          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
-        int startEpisodeNumber = list[0]['start'] as int;
-        list = await _database.rawQuery('''
+          int startEpisodeNumber = list[0]['start'] as int;
+          list = await _database.rawQuery('''
           select max(episode_number) as end
           from history
-          where date like '$date%' and anime_id = ${anime.animeId};
+          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
-        int endEpisodeNumber = list[0]['end'] as int;
-        Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
-        // debugPrint(record);
-        records.add(record);
+          int endEpisodeNumber = list[0]['end'] as int;
+          Record record =
+              Record(anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
+          // debugPrint(record);
+          records.add(record);
+        }
       }
       history.add(HistoryPlus(date, records));
     }
@@ -693,10 +777,11 @@ class SqliteUtil {
   }
 
   static Future<int> insertEpisodeNote(EpisodeNote episodeNote) async {
-    debugPrint("sql: insertEpisodeNote");
+    debugPrint(
+        "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
     await _database.rawInsert('''
-    insert into episode_note (anime_id, episode_number, note_content)
-    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ''); -- 空内容
+    insert into episode_note (anime_id, episode_number, review_number, note_content)
+    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, ''); -- 空内容
     ''');
 
     var lm2 = await _database.rawQuery('''
@@ -717,13 +802,15 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<EpisodeNote> getEpisodeNoteByAnimeIdAndEpisodeNumber(
-      EpisodeNote episodeNote) async {
-    debugPrint("sql: getEpisodeNoteByAnimeIdAndEpisodeNumber");
+  static Future<EpisodeNote>
+      getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+          EpisodeNote episodeNote) async {
+    debugPrint(
+        "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
     // 查询内容
     var lm1 = await _database.rawQuery('''
     select note_id, note_content from episode_note
-    where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number};
+    where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number} and review_number = ${episodeNote.episode.reviewNumber};
     ''');
     if (lm1.isEmpty) {
       // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
@@ -745,7 +832,7 @@ class SqliteUtil {
     List<EpisodeNote> episodeNotes = [];
     // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
     var lm1 = await _database.rawQuery('''
-    select date, history.anime_id, episode_number, anime_name, anime_cover_url
+    select date, history.anime_id, episode_number, anime_name, anime_cover_url, review_number
     from history inner join anime on history.anime_id = anime.anime_id
     order by date desc;
     ''');
@@ -757,11 +844,14 @@ class SqliteUtil {
           animeCoverUrl: item['anime_cover_url'] as String);
       Episode episode = Episode(
         item['episode_number'] as int,
+        item['review_number'] as int,
         dateTime: item['date'] as String,
       );
       EpisodeNote episodeNote = EpisodeNote(
           anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
-      episodeNote = await getEpisodeNoteByAnimeIdAndEpisodeNumber(episodeNote);
+      episodeNote =
+          await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+              episodeNote);
       // debugPrint(episodeNote);
       episodeNote.relativeLocalImages =
           await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
@@ -770,16 +860,17 @@ class SqliteUtil {
     return episodeNotes;
   }
 
+  //↓优化
   static Future<List<EpisodeNote>> getAllNotesByTableNote(
       int offset, int number) async {
     debugPrint("sql: getAllNotesByTableNote");
     List<EpisodeNote> episodeNotes = [];
-    // 根据笔记中的动漫id和集数number，即可获取到完成时间，根据动漫id，获取动漫封面
+    // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
     // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
     var lm1 = await _database.rawQuery('''
-    select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url
+    select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url, episode_note.review_number
     from episode_note, anime, history
-    where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number
+    where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number and episode_note.review_number = history.review_number
     order by history.date desc
     limit $number offset $offset;
     ''');
@@ -791,6 +882,7 @@ class SqliteUtil {
           animeEpisodeCnt: 0);
       Episode episode = Episode(
         item['episode_number'] as int,
+        item['review_number'] as int,
         dateTime: item['date'] as String,
       );
       List<RelativeLocalImage> relativeLocalImages =

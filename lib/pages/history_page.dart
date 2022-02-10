@@ -62,12 +62,12 @@ class _HistoryPageState extends State<HistoryPage> {
                     key: UniqueKey(),
                     // color: Colors.white,
                   )
-                : _getHistory(),
+                : _showHistory(),
           )),
     );
   }
 
-  Widget _getHistory() {
+  Widget _showHistory() {
     // if (historyPlus.isEmpty) {
     //   return ListView(
     //     // 必须是ListView，不然向下滑不会有刷新
@@ -92,7 +92,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           title: Text(yearHistory[curYear]![index].date),
                         ),
                         subtitle: Column(
-                          children: _getRecord(index),
+                          children: _showRecord(index),
                         ),
                       );
                     },
@@ -118,7 +118,7 @@ class _HistoryPageState extends State<HistoryPage> {
     ]);
   }
 
-  List<Widget> _getRecord(int index) {
+  List<Widget> _showRecord(int index) {
     List<Widget> listWidget = [];
     List<Record> records = yearHistory[curYear]![index].records;
     for (var record in records) {
@@ -132,7 +132,8 @@ class _HistoryPageState extends State<HistoryPage> {
               fontSize: 15,
             ),
           ),
-          leading: AnimeListCover(record.anime),
+          leading: AnimeListCover(record.anime,
+              showReviewNumber: true, reviewNumber: record.reviewNumber),
           trailing: Text(
             record.startEpisodeNumber == record.endEpisodeNumber
                 ? "${record.startEpisodeNumber}"

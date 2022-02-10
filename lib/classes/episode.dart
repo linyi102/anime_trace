@@ -1,8 +1,9 @@
 class Episode {
   final int _number; // 第几集
   String? dateTime; // 完成日期，若未完成，则是null
+  int reviewNumber;
 
-  Episode(this._number, {this.dateTime});
+  Episode(this._number, this.reviewNumber, {this.dateTime});
 
   // void setDateTimeNow() {
   //   dateTime = DateTime.now();

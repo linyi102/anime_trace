@@ -3,7 +3,7 @@ import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+// import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({Key? key}) : super(key: key);
@@ -26,7 +26,7 @@ class _TabsState extends State<Tabs> {
     return Scaffold(
       body: _list[_currentIndex],
       // body: IndexedStack(
-      //   // 新方法，可以保持页面状态。注：从详细中改变标签返回无法实时更新
+      //   // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
       //   index: _currentIndex,
       //   children: _list,
       // ),

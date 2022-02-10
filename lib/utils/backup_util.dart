@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/main.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/tags.dart';
@@ -163,12 +164,14 @@ class BackupUtil {
       // 可以直接在里面写入即可，writeAsBytes会清空原先内容
       var content = await File(localBackupFilePath).readAsBytes();
       File(SqliteUtil.dbPath).writeAsBytes(content).then((value) async {
-        tags = await SqliteUtil.getAllTags(); // 重新更新标签
+        // tags = await SqliteUtil.getAllTags(); // 重新更新标签
+        ensureLatestData();
         showToast("还原成功");
       });
     } else if (localBackupFilePath.endsWith(".zip")) {
       unzip(localBackupFilePath).then((value) async {
-        tags = await SqliteUtil.getAllTags(); // 重新更新标签
+        // tags = await SqliteUtil.getAllTags(); // 重新更新标签
+        ensureLatestData();
         showToast("还原成功");
         File(localBackupFilePath).delete();
       });

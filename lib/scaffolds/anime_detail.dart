@@ -32,6 +32,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   List<Episode> _episodes = [];
   bool _loadOk = false;
   List<EpisodeNote> episodeNotes = [];
+  late int reviewNumber;
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -52,12 +53,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   void _loadData() async {
+    // _loadOk = false; // 保证加载n刷的数据时显示等待页面
     Future(() {
       return SqliteUtil.getAnimeByAnimeId(widget.animeId); // 一定要return，value才有值
     }).then((value) async {
+      if (!_loadOk) {
+        // 刚进入页面才会设置为最大回顾号，否则增加回顾号又会覆盖成最大的
+        reviewNumber = await SqliteUtil.getMaxReviewNumberByAnimeId(
+            widget.animeId); // 获取最大回顾号
+      }
       _anime = value;
       debugPrint(value.toString());
-      _episodes = await SqliteUtil.getAnimeEpisodeHistoryById(_anime);
+      _episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndReviewNumber(
+          _anime, reviewNumber);
       _sortEpisodes(SPUtil.getString("episodeSortMethod",
           defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
       for (var episode in _episodes) {
@@ -68,13 +76,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             imgUrls: []);
         if (episode.isChecked()) {
           // 如果该集完成了，就去获取该集笔记（内容+图片）
-          episodeNote =
-              await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
+          episodeNote = await SqliteUtil
+              .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                   episodeNote);
           // debugPrint(
           //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
         }
-        episodeNotes.add(episodeNote);
+        // 如果是切换，则不是add，而是覆盖
+        if (_loadOk) {
+          int findIndex = episodeNotes.indexWhere((element) =>
+              element.episode.number == episodeNote.episode.number);
+          episodeNotes[findIndex] = episodeNote;
+        } else {
+          episodeNotes.add(episodeNote);
+        }
       }
     }).then((value) {
       _loadOk = true;
@@ -300,7 +315,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       itemCount: _episodes.length,
       itemBuilder: (BuildContext context, int episodeIndex) {
         // debugPrint("episodeIndex: $episodeIndex");
-        // 对于每一集，用一个Column表示，里面填充ListTile，如果有笔记，则额外填充笔记
+        // 对于每一集，用一个Column表示，里面添加ListTile表示每一集，如果有笔记，则额外添加笔记
         List<Widget> columnChildren = [];
         // 在第一集上面添加动漫信息
         if (episodeIndex == 0) {
@@ -359,8 +374,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
                 } else {
                   String date = DateTime.now().toString();
-                  SqliteUtil.insertHistoryItem(
-                      _anime.animeId, _episodes[episodeIndex].number, date);
+                  SqliteUtil.insertHistoryItem(_anime.animeId,
+                      _episodes[episodeIndex].number, date, reviewNumber);
                   _episodes[episodeIndex].dateTime = date;
                   // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
                   EpisodeNote episodeNote = EpisodeNote(
@@ -370,8 +385,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       imgUrls: []);
 
                   // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                  episodeNotes[episodeIndex] =
-                      await SqliteUtil.getEpisodeNoteByAnimeIdAndEpisodeNumber(
+                  episodeNotes[episodeIndex] = await SqliteUtil
+                      .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                           episodeNote);
                   // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
                   // episodeNote.episodeNoteId =
@@ -411,78 +426,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         );
         // 在每一集下面添加笔记
         if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
-          columnChildren.add(Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: episodeNotes[episodeIndex].relativeLocalImages.isEmpty &&
-                    episodeNotes[episodeIndex].noteContent.isEmpty
-                ? Container()
-                : Card(
-                    elevation: 0,
-                    child: MaterialButton(
-                      padding: episodeNotes[episodeIndex].noteContent.isEmpty
-                          ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                          : const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          // MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         EpisodeNoteSF(episodeNotes[episodeIndex])),
-                          FadeRoute(
-                            builder: (context) {
-                              return EpisodeNoteSF(episodeNotes[episodeIndex]);
-                            },
-                          ),
-                        ).then((value) {
-                          episodeNotes[episodeIndex] = value; // 更新修改
-                          setState(() {});
-                        });
-                      },
-                      child: Column(
-                        children: [
-                          episodeNotes[episodeIndex].noteContent.isEmpty
-                              ? Container()
-                              : ListTile(
-                                  title: Text(
-                                    episodeNotes[episodeIndex].noteContent,
-                                    maxLines: 10,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  style: ListTileStyle.drawer,
-                                ),
-                          episodeNotes[episodeIndex]
-                                      .relativeLocalImages
-                                      .length ==
-                                  1
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(5), // 圆角
-                                  child: Image.file(
-                                    File(ImageUtil.getAbsoluteImagePath(
-                                        episodeNotes[episodeIndex]
-                                            .relativeLocalImages[0]
-                                            .path)),
-                                    fit: BoxFit.fitHeight,
-                                    errorBuilder: errorImageBuilder(
-                                        episodeNotes[episodeIndex]
-                                            .relativeLocalImages[0]
-                                            .path),
-                                  ),
-                                )
-                              : showImageGridView(
-                                  episodeNotes[episodeIndex]
-                                      .relativeLocalImages
-                                      .length,
-                                  (BuildContext context, int index) {
-                                  return ImageGridItem(
-                                      relativeImagePath:
-                                          episodeNotes[episodeIndex]
-                                              .relativeLocalImages[index]
-                                              .path);
-                                })
-                        ],
-                      ),
-                    ),
-                  ),
-          ));
+          columnChildren.add(displayNote(episodeIndex, context));
         }
         // 在最后一集下面添加空白
         if (episodeIndex == _episodes.length - 1) {
@@ -493,6 +437,81 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           children: columnChildren,
         );
       },
+    );
+  }
+
+  Widget displayNote(int episodeIndex, BuildContext context) {
+    // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
+    int episodeNoteIndex = episodeNotes.indexWhere(
+        (element) => element.episode.number == _episodes[episodeIndex].number);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+      child: episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
+              episodeNotes[episodeNoteIndex].noteContent.isEmpty
+          ? Container()
+          : Card(
+              elevation: 0,
+              child: MaterialButton(
+                padding: episodeNotes[episodeNoteIndex].noteContent.isEmpty
+                    ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
+                    : const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    // MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         EpisodeNoteSF(episodeNotes[episodeIndex])),
+                    FadeRoute(
+                      builder: (context) {
+                        return EpisodeNoteSF(episodeNotes[episodeNoteIndex]);
+                      },
+                    ),
+                  ).then((value) {
+                    episodeNotes[episodeNoteIndex] = value; // 更新修改
+                    setState(() {});
+                  });
+                },
+                child: Column(
+                  children: [
+                    episodeNotes[episodeNoteIndex].noteContent.isEmpty
+                        ? Container()
+                        : ListTile(
+                            title: Text(
+                              episodeNotes[episodeNoteIndex].noteContent,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            style: ListTileStyle.drawer,
+                          ),
+                    episodeNotes[episodeNoteIndex].relativeLocalImages.length ==
+                            1
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(5), // 圆角
+                            child: Image.file(
+                              File(ImageUtil.getAbsoluteImagePath(
+                                  episodeNotes[episodeNoteIndex]
+                                      .relativeLocalImages[0]
+                                      .path)),
+                              fit: BoxFit.fitHeight,
+                              errorBuilder: errorImageBuilder(
+                                  episodeNotes[episodeNoteIndex]
+                                      .relativeLocalImages[0]
+                                      .path),
+                            ),
+                          )
+                        : showImageGridView(
+                            episodeNotes[episodeNoteIndex]
+                                .relativeLocalImages
+                                .length, (BuildContext context, int index) {
+                            return ImageGridItem(
+                                relativeImagePath:
+                                    episodeNotes[episodeNoteIndex]
+                                        .relativeLocalImages[index]
+                                        .path);
+                          })
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -509,9 +528,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 注意：对于_episodes[i]，它是第_episodes[i].number集
     int episodeNumber = _episodes[i].number;
     if (_episodes[i].isChecked()) {
-      SqliteUtil.updateHistoryItem(_anime.animeId, episodeNumber, dateTime);
+      SqliteUtil.updateHistoryItem(
+          _anime.animeId, episodeNumber, dateTime, reviewNumber);
     } else {
-      SqliteUtil.insertHistoryItem(_anime.animeId, episodeNumber, dateTime);
+      SqliteUtil.insertHistoryItem(
+          _anime.animeId, episodeNumber, dateTime, reviewNumber);
     }
     // 更新页面
     setState(() {
@@ -614,11 +635,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                           mapSelected.forEach((episodeIndex, value) {
                             int episodeNumber = _episodes[episodeIndex].number;
                             if (_episodes[episodeIndex].isChecked()) {
-                              SqliteUtil.updateHistoryItem(
-                                  _anime.animeId, episodeNumber, dateTime);
+                              SqliteUtil.updateHistoryItem(_anime.animeId,
+                                  episodeNumber, dateTime, reviewNumber);
                             } else {
-                              SqliteUtil.insertHistoryItem(
-                                  _anime.animeId, episodeNumber, dateTime);
+                              SqliteUtil.insertHistoryItem(_anime.animeId,
+                                  episodeNumber, dateTime, reviewNumber);
                               // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
                               EpisodeNote episodeNote = EpisodeNote(
                                   anime: _anime,
@@ -629,7 +650,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                               // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
                               () async {
                                 episodeNotes[episodeIndex] = await SqliteUtil
-                                    .getEpisodeNoteByAnimeIdAndEpisodeNumber(
+                                    .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                                         episodeNote);
                               }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
                             }
@@ -681,8 +702,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ),
             TextButton(
               onPressed: () {
-                SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
-                    _anime.animeId, episodeNumber);
+                SqliteUtil
+                    .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
+                        _anime.animeId, episodeNumber, reviewNumber);
                 // 根据episodeNumber找到对应的下标
                 int findIndex = _getEpisodeIndexByEpisodeNumber(episodeNumber);
                 _episodes[findIndex].cancelDateTime();
@@ -823,14 +845,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // direction: Axis.horizontal,
       children: [
-        // Row(children: [
-        //   Padding(
-        //       padding: const EdgeInsets.only(left: 15),
-        //       child: Text(
-        //         "共 ${_episodes.length} 集",
-        //         // style: const TextStyle(fontSize: 20),
-        //       )),
-        // ]),
+        Row(children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: IconButton(
+              onPressed: () {
+                if (reviewNumber - 1 <= 0) {
+                  return;
+                }
+                reviewNumber--;
+                setState(() {});
+                _loadData();
+              },
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+          ),
+          Text("第 $reviewNumber 次观看"),
+          IconButton(
+            onPressed: () {
+              reviewNumber++;
+              setState(() {});
+              _loadData();
+            },
+            icon: const Icon(Icons.chevron_right_rounded),
+          ),
+        ]),
         Expanded(child: Container()),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -874,15 +913,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     if (len > episodeCnt) {
                       for (int i = 0; i < len - episodeCnt; ++i) {
                         // 还应该删除history表里的记录，否则会误判完成过的集数
-                        SqliteUtil.deleteHistoryItemByAnimeIdAndEpisodeNumber(
-                            _anime.animeId, _episodes.last.number);
+                        SqliteUtil
+                            .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
+                                _anime.animeId,
+                                _episodes.last.number,
+                                reviewNumber);
                         // 注意顺序
                         _episodes.removeLast();
                       }
                     } else {
                       int number = _episodes.last.number;
                       for (int i = 0; i < episodeCnt - len; ++i) {
-                        _episodes.add(Episode(number + i + 1));
+                        _episodes.add(Episode(number + i + 1, reviewNumber));
                       }
                     }
                     setState(() {});
