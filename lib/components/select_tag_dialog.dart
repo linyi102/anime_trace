@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/tags.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 
 dialogSelectTag(state, context, originTag) {
   showDialog(

@@ -9,7 +9,7 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/tags.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:oktoast/oktoast.dart';
 
 class AnimeClimb extends StatefulWidget {

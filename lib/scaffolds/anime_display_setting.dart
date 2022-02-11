@@ -14,6 +14,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
   int gridColumnCnt = SPUtil.getInt("gridColumnCnt", defaultValue: 3);
   bool hideGridAnimeName = SPUtil.getBool("hideGridAnimeName");
   bool hideGridAnimeProgress = SPUtil.getBool("hideGridAnimeProgress");
+  bool hideReviewNumber = SPUtil.getBool("hideReviewNumber");
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +98,19 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
                     setState(() {});
                   },
                 ),
+          ListTile(
+            title: const Text("是否显示动漫第几次观看"),
+            subtitle: Text(hideReviewNumber ? "隐藏" : "显示"),
+            onTap: () {
+              if (hideReviewNumber) {
+                SPUtil.setBool("hideReviewNumber", false);
+              } else {
+                SPUtil.setBool("hideReviewNumber", true);
+              }
+              hideReviewNumber = SPUtil.getBool("hideReviewNumber");
+              setState(() {});
+            },
+          ),
         ],
       ),
     );

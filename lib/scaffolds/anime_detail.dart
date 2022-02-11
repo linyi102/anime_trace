@@ -17,7 +17,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/utils/tags.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;

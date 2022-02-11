@@ -417,7 +417,9 @@ class SqliteUtil {
     if (list.isEmpty) {
       debugPrint("不应该啊");
     }
-    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId);
+    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
+        maxReviewNumber: maxReviewNumber);
 
     Anime anime = Anime(
         animeId: animeId,
@@ -426,7 +428,8 @@ class SqliteUtil {
         animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
         animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
         tagName: list[0]['tag_name'] as String,
-        checkedEpisodeCnt: checkedEpisodeCnt);
+        checkedEpisodeCnt: checkedEpisodeCnt,
+        reviewNumber: maxReviewNumber);
     return anime;
   }
 
@@ -534,9 +537,13 @@ class SqliteUtil {
     return maxReviewNumber;
   }
 
-  static Future<int> getCheckedEpisodeCntByAnimeId(int animeId) async {
+  static Future<int> getCheckedEpisodeCntByAnimeId(int animeId,
+      {int maxReviewNumber = 0}) async {
     // debugPrint("getCheckedEpisodeCntByAnimeId(animeId=$animeId)");
-    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    // 如果已经给了最大回顾号，则不用再查找。因为要求动漫列表也显示最大回顾号，所以查询的时候会先查询最大回顾号，然后存放在Anime中
+    if (maxReviewNumber == 0) {
+      maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    }
 
     var checkedEpisodeCntList = await _database.rawQuery('''
       select count(anime.anime_id) cnt
@@ -561,18 +568,20 @@ class SqliteUtil {
 
     List<Anime> res = [];
     for (var element in list) {
-      int checkedEpisodeCnt =
-          await getCheckedEpisodeCntByAnimeId(element['anime_id'] as int);
+      int animeId = element['anime_id'] as int;
+      int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+      int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
+          maxReviewNumber: maxReviewNumber);
 
       res.add(Anime(
-        animeId: element['anime_id'] as int, // 进入详细页面后需要该id
-        animeName: element['anime_name'] as String,
-        animeEpisodeCnt: element['anime_episode_cnt'] as int,
-        animeCoverUrl: element['anime_cover_url'] as String? ??
-            "", // 强制转换为String?，如果为null，则设置为空字符串
-        tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
-        checkedEpisodeCnt: checkedEpisodeCnt,
-      ));
+          animeId: animeId, // 进入详细页面后需要该id
+          animeName: element['anime_name'] as String,
+          animeEpisodeCnt: element['anime_episode_cnt'] as int,
+          animeCoverUrl: element['anime_cover_url'] as String? ??
+              "", // 强制转换为String?，如果为null，则设置为空字符串
+          tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
+          checkedEpisodeCnt: checkedEpisodeCnt,
+          reviewNumber: maxReviewNumber));
     }
     return res;
   }

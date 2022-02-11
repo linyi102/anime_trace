@@ -7,6 +7,7 @@ class Anime {
   String animeCoverUrl;
 
   int checkedEpisodeCnt;
+  int reviewNumber;
 
   Anime(
       {this.animeId = 0,
@@ -15,7 +16,8 @@ class Anime {
       this.tagName = "",
       this.animeCoverUrl = "",
       this.checkedEpisodeCnt = 0,
-      this.animeDesc = ""});
+      this.animeDesc = "",
+      this.reviewNumber = 1});
 
   @override
   String toString() {

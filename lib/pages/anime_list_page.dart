@@ -12,7 +12,7 @@ import 'package:flutter_test_future/scaffolds/search.dart';
 import 'package:flutter_test_future/utils/clime_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/tags.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:oktoast/oktoast.dart';
 
 class AnimeListPage extends StatefulWidget {
@@ -25,12 +25,12 @@ class AnimeListPage extends StatefulWidget {
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String addDefaultTag = tags[0];
-  List<int> animeCntPerTag = []; // 各个标签下的动漫数量
-  List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
+  // List<int> animeCntPerTag = []; // 各个标签下的动漫数量
+  // List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 
   // 数据加载
   bool _loadOk = false;
+  bool _transitOk = false;
   List<int> pageIndex = List.generate(tags.length, (index) => 1); // 初始页都为1
   final int _pageSize = 50;
   // int _pageIndex = 1;
@@ -47,6 +47,11 @@ class _AnimeListPageState extends State<AnimeListPage>
     for (int i = 0; i < tags.length; ++i) {
       animesInTag.add([]); // 先添加元素List，然后才能用下标访问
     }
+    Future.delayed(const Duration(milliseconds: 1)).then((value) {
+      setState(() {
+        _transitOk = true;
+      });
+    });
 
     _loadData();
     // 顶部tab控制器
@@ -61,7 +66,6 @@ class _AnimeListPageState extends State<AnimeListPage>
       if (_tabController.index == _tabController.animation!.value) {
         // lastTopTabIndex = _tabController.index;
         SPUtil.setInt("last_top_tab_index", _tabController.index);
-        addDefaultTag = tags[_tabController.index]; // 切换顶层tab后，默认添加动漫标签为当前tab标签
         // 取消多选
         if (multiSelected) {
           _quitMultiSelectState();
@@ -96,70 +100,76 @@ class _AnimeListPageState extends State<AnimeListPage>
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: !_loadOk
+      // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+      // 然后再通过_loadData覆盖掉旧数据
+      // 美化：显示旧数据时也由空白页面过渡
+      child: !_loadOk && animeCntPerTag.isEmpty
           ? _waitDataScaffold()
-          : Scaffold(
-              // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-              appBar: AppBar(
-                title: const Text(
-                  "动漫",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                actions: _getActions(),
-                bottom: PreferredSize(
-                  // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                  preferredSize: const Size.fromHeight(kToolbarHeight),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TabBar(
-                      padding: const EdgeInsets.all(2), // 居中，而不是靠左下
-                      labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      isScrollable: true, // 标签可以滑动，避免拥挤
-                      unselectedLabelColor: Colors.black54,
-                      labelColor: Colors.blue, // 标签字体颜色
-                      labelStyle: const TextStyle(
+          : !_transitOk
+              ? _waitDataScaffold()
+              : Scaffold(
+                  // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+                  appBar: AppBar(
+                    title: const Text(
+                      "动漫",
+                      style: TextStyle(
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
-                      indicatorColor: Colors.transparent, // 隐藏
-                      // indicatorColor: Colors.blue, // 指示器颜色
-                      indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
-                      indicatorWeight: 3, // 指示器高度
-                      tabs: _showTagAndAnimeCntPlus(),
-                      // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                      controller: _tabController,
+                    ),
+                    actions: _getActions(),
+                    bottom: PreferredSize(
+                      // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                      preferredSize: const Size.fromHeight(kToolbarHeight),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TabBar(
+                          padding: const EdgeInsets.all(2), // 居中，而不是靠左下
+                          labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          isScrollable: true, // 标签可以滑动，避免拥挤
+                          unselectedLabelColor: Colors.black54,
+                          labelColor: Colors.blue, // 标签字体颜色
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          indicatorColor: Colors.transparent, // 隐藏
+                          // indicatorColor: Colors.blue, // 指示器颜色
+                          indicatorSize:
+                              TabBarIndicatorSize.label, // 指示器长短和标签一样
+                          indicatorWeight: 3, // 指示器高度
+                          tabs: _showTagAndAnimeCntPlus(),
+                          // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                          controller: _tabController,
+                        ),
+                      ),
                     ),
                   ),
+                  body: TabBarView(
+                    controller: _tabController,
+                    children: _getAnimesPlus(),
+                  ),
+                  floatingActionButton: multiSelected
+                      ? null // 多选时隐藏添加按钮
+                      : FloatingActionButton(
+                          heroTag: null,
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              // MaterialPageRoute(
+                              //   builder: (context) => const AnimeClimb(),
+                              // ),
+                              FadeRoute(
+                                builder: (context) {
+                                  return const AnimeClimb();
+                                },
+                              ),
+                            ).then((value) {
+                              _loadData(); // 重新加载数据，显示新添加的动漫
+                            });
+                            // _dialogAddAnime();
+                          },
+                          child: const Icon(Icons.add),
+                        ),
                 ),
-              ),
-              body: TabBarView(
-                controller: _tabController,
-                children: _getAnimesPlus(),
-              ),
-              floatingActionButton: multiSelected
-                  ? null // 多选时隐藏添加按钮
-                  : FloatingActionButton(
-                      heroTag: null,
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          // MaterialPageRoute(
-                          //   builder: (context) => const AnimeClimb(),
-                          // ),
-                          FadeRoute(
-                            builder: (context) {
-                              return const AnimeClimb();
-                            },
-                          ),
-                        ).then((value) {
-                          _loadData(); // 重新加载数据，显示新添加的动漫
-                        });
-                        // _dialogAddAnime();
-                      },
-                      child: const Icon(Icons.add),
-                    ),
-            ),
     );
   }
 
@@ -306,6 +316,26 @@ class _AnimeListPageState extends State<AnimeListPage>
                                         fontSize: 12, color: Colors.white),
                                   ),
                                 )),
+                        SPUtil.getBool("hideReviewNumber")
+                            ? Container()
+                            : anime.reviewNumber == 1
+                                ? Container()
+                                : Positioned(
+                                    right: 5,
+                                    top: 5,
+                                    child: Container(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(3),
+                                        color: Colors.blue,
+                                      ),
+                                      child: Text(
+                                        "${anime.reviewNumber}",
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.white),
+                                      ),
+                                    )),
                       ],
                     ),
                     SPUtil.getBool("hideGridAnimeName")
@@ -363,7 +393,11 @@ class _AnimeListPageState extends State<AnimeListPage>
             ),
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
-          leading: AnimeListCover(anime),
+          leading: AnimeListCover(
+            anime,
+            showReviewNumber: !SPUtil.getBool("hideReviewNumber"),
+            reviewNumber: anime.reviewNumber,
+          ),
           trailing: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
             style: const TextStyle(
