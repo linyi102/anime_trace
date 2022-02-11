@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/main.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/tags.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -55,15 +54,15 @@ class BackupUtil {
       switch (element.statSync().type) {
         case FileSystemEntityType.directory:
           encoder.addDirectory(Directory(element.path)); // 添加目录
-          debugPrint("添加目录：${element.path}");
+          // debugPrint("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
           if (element.path.endsWith(".zip")) break; // 避免备份压缩包
           encoder.addFile(File(element.path));
-          debugPrint("添加文件：${element.path}");
+          // debugPrint("添加文件：${element.path}");
           break;
         default:
-          debugPrint("非目录和文件，不压缩：${element.path}");
+          // debugPrint("非目录和文件，不压缩：${element.path}");
           break;
       }
     });
@@ -94,14 +93,19 @@ class BackupUtil {
       }
     }
     if (remoteBackupDirPath.isNotEmpty) {
+      if (!SPUtil.getBool("online")) return "";
       String remoteBackupFilePath;
       if (automatic) {
         remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
       } else {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
+      // // 在上传之前检查是否连接正常
+      // if (!await WebDavUtil.pingWebDav()) {
+      //   showToast("WebDav 备份失败，请检查网络状态");
+      // }
       await WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath);
-      if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+      if (showToastFlag) showToast("WebDav 备份成功：$remoteBackupFilePath");
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
       File(tempZipFilePath).delete();
       deleteOldAutoBackupFileFromRemote(

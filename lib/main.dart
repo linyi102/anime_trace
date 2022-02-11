@@ -54,10 +54,15 @@ class _MyAppState extends State<MyApp> {
         SPUtil.getString("webdav_user"),
         SPUtil.getString("webdav_password"),
       );
+      if (!SPUtil.getBool("online") && SPUtil.getBool("auto_backup_webdav")) {
+        debugPrint("WebDav 自动备份失败，请检查网络状态");
+        showToast("WebDav 自动备份失败，请检查网络状态");
+      }
     }
     // 如果都设置了自动备份，则只需要压缩一次
     if (SPUtil.getBool("auto_backup_local") &&
         SPUtil.getBool("auto_backup_webdav")) {
+      debugPrint("准备本地和WebDav自动备份");
       BackupUtil.backup(
         localBackupDirPath:
             SPUtil.getString("backup_local_dir", defaultValue: "unset"),
@@ -66,6 +71,7 @@ class _MyAppState extends State<MyApp> {
         automatic: true,
       );
     } else if (SPUtil.getBool("auto_backup_local")) {
+      debugPrint("准备本地自动备份");
       BackupUtil.backup(
         localBackupDirPath:
             SPUtil.getString("backup_local_dir", defaultValue: "unset"),
@@ -73,6 +79,7 @@ class _MyAppState extends State<MyApp> {
         automatic: true,
       );
     } else if (SPUtil.getBool("auto_backup_webdav")) {
+      debugPrint("准备WebDav自动备份");
       BackupUtil.backup(
         remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
         showToastFlag: false,

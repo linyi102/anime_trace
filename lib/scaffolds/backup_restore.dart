@@ -31,7 +31,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
   void initState() {
     super.initState();
     // SPUtil.clear();
-    // 获取最新情况，更新SP中的login
+    // 获取最新情况，更新SP中的online
     WebDavUtil.pingWebDav().then((pingOk) {
       setState(() {});
       // 如果成功，则获取最新备份文件
@@ -156,7 +156,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             trailing: Icon(
               Icons.circle,
               size: 12,
-              color: SPUtil.getBool("login") ? Colors.greenAccent : Colors.grey,
+              color:
+                  SPUtil.getBool("online") ? Colors.greenAccent : Colors.grey,
             ),
             onTap: () {
               _loginWebDav();
@@ -226,7 +227,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 ? Text(latestFile.path!.split("/").last)
                 : const Text(""),
             onTap: () async {
-              if (SPUtil.getBool("login")) {
+              if (SPUtil.getBool("online")) {
                 BackupUtil.restoreFromWebDav(latestFile);
               } else {
                 showToast("配置账号后才可以进行还原");
@@ -292,7 +293,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   SPUtil.setString("webdav_user", user);
                   SPUtil.setString("webdav_password", password);
                   if (!(await WebDavUtil.initWebDav(uri, user, password))) {
-                    showToast("无法连接，请确认是否输入正确！");
+                    showToast("无法连接，请确保输入正确和网络正常！");
                     // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
                     setState(() {});
                     return;
@@ -301,7 +302,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   _showLatestFile();
                   Navigator.of(context).pop();
                 },
-                child: const Text("确认"))
+                child: const Text("连接"))
           ],
         );
       },
