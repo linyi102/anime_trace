@@ -499,15 +499,17 @@ class SqliteUtil {
 
     List<Anime> res = [];
     for (var element in list) {
-      var checkedEpisodeCntList = await _database.rawQuery('''
-      select count(anime.anime_id) cnt
-      from anime inner join history
-          on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
-      ''');
-      int checkedEpisodeCnt = checkedEpisodeCntList[0]["cnt"] as int;
+      // var checkedEpisodeCntList = await _database.rawQuery('''
+      // select count(anime.anime_id) cnt
+      // from anime inner join history
+      //     on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
+      // ''');
+      int animeId = element['anime_id'] as int;
+      int checkedEpisodeCnt =
+          await SqliteUtil.getCheckedEpisodeCntByAnimeId(animeId);
 
       res.add(Anime(
-        animeId: element['anime_id'] as int, // 进入详细页面后需要该id
+        animeId: animeId, // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,

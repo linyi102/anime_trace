@@ -98,12 +98,15 @@ class _SearchState extends State<Search> {
                 return AnimeDetailPlus(anime.animeId);
               },
             ),
-          ).then((value) {
+          ).then((value) async {
             // anime = value; // 无效，因为不是数据成员
             int findIndex = _resAnimes.indexWhere(
                 (element) => element.animeId == (value as Anime).animeId);
             if (findIndex != -1) {
-              _resAnimes[findIndex] = value;
+              // _resAnimes[findIndex] = value;
+              // 直接从数据库中得到最新信息
+              _resAnimes[findIndex] = await SqliteUtil.getAnimeByAnimeId(
+                  _resAnimes[findIndex].animeId);
               setState(() {});
             } else {
               debugPrint("未找到动漫：$value");

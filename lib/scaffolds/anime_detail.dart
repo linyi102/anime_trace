@@ -329,9 +329,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
-                child: Divider(
-                  thickness: 1,
-                ),
+                child: Divider(),
               ),
               _displayButtonsAboutEpisode(),
             ],
