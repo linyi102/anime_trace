@@ -148,13 +148,15 @@ class _AnimeClimbState extends State<AnimeClimb> {
                               return AnimeDetailPlus(anime.animeId);
                             },
                           ),
-                        ).then((updatedAnime) {
+                        ).then((value) async {
+                          Anime retAnime = value;
                           int findIndex = searchAnimes.lastIndexWhere(
                               (element) =>
-                                  element.animeName == updatedAnime.animeName);
-                          setState(() {
-                            searchAnimes[findIndex] = updatedAnime;
-                          });
+                                  element.animeName == retAnime.animeName);
+                          searchAnimes[findIndex] =
+                              await SqliteUtil.getAnimeByAnimeId(
+                                  retAnime.animeId);
+                          setState(() {});
                         });
                       } else {
                         // 其他情况才是添加动漫
@@ -172,6 +174,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                           children: [
                             AnimeGridCover(anime),
                             _displayEpisodeState(anime),
+                            _displayReviewNumber(anime),
                           ],
                         ),
                         Padding(
@@ -437,5 +440,26 @@ class _AnimeClimbState extends State<AnimeClimb> {
             style: const TextStyle(fontSize: 12, color: Colors.white),
           ),
         ));
+  }
+
+  _displayReviewNumber(Anime anime) {
+    if (anime.animeId == 0) return Container(); // 没有id，说明未添加
+
+    return anime.reviewNumber == 1
+        ? Container()
+        : Positioned(
+            right: 5,
+            top: 5,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                color: Colors.blue,
+              ),
+              child: Text(
+                "${anime.reviewNumber}",
+                style: const TextStyle(fontSize: 12, color: Colors.white),
+              ),
+            ));
   }
 }

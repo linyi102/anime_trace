@@ -508,8 +508,11 @@ class SqliteUtil {
       //     on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
       // ''');
       int animeId = element['anime_id'] as int;
-      int checkedEpisodeCnt =
-          await SqliteUtil.getCheckedEpisodeCntByAnimeId(animeId);
+      int maxReviewNumber =
+          await SqliteUtil.getMaxReviewNumberByAnimeId(animeId);
+      int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
+          animeId,
+          maxReviewNumber: maxReviewNumber);
 
       res.add(Anime(
         animeId: animeId, // 进入详细页面后需要该id
@@ -517,6 +520,7 @@ class SqliteUtil {
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        reviewNumber: maxReviewNumber,
       ));
     }
     return res;

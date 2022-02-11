@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class Search extends StatefulWidget {
@@ -71,7 +72,11 @@ class _SearchState extends State<Search> {
     for (var anime in _resAnimes) {
       // listWidget.add(AnimeItem(anime));
       listWidget.add(ListTile(
-        leading: AnimeListCover(anime),
+        leading: AnimeListCover(
+          anime,
+          showReviewNumber: !SPUtil.getBool("hideReviewNumber"),
+          reviewNumber: anime.reviewNumber,
+        ),
         title: Text(
           anime.animeName,
           style: const TextStyle(

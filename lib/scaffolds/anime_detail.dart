@@ -99,6 +99,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   // 用于传回到动漫列表页
   void _refreshAnime() {
+    _anime.checkedEpisodeCnt = 0;
     for (var episode in _episodes) {
       if (episode.isChecked()) _anime.checkedEpisodeCnt++;
     }
@@ -112,6 +113,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       onWillPop: () async {
         debugPrint("按返回键，返回anime");
         _refreshAnime();
+        // 返回的_anime用到了id(列表页面和搜索页面)和name(爬取页面)
+        // 完成集数因为切换到小的回顾号会导致不是最大回顾号完成的集数，所以那些页面会通过传回的id来获取最新动漫信息
         Navigator.pop(context, _anime);
         debugPrint("返回true");
         return true;
