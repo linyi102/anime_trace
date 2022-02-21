@@ -104,6 +104,15 @@ class _AnimeClimbState extends State<AnimeClimb> {
             lastInputName = text; // 更新上一次输入的名字
             _climbAnime(keyword: text);
           },
+          // onChanged: (inputStr) {
+          //   if (inputStr.isEmpty) {
+          //     setState(() {
+          //       searchOk = false;
+          //       searching = false;
+          //     });
+          //     lastInputName = "";
+          //   }
+          // },
         ),
       ),
       body: searchOk
@@ -204,7 +213,30 @@ class _AnimeClimbState extends State<AnimeClimb> {
               ? const Center(
                   child: RefreshProgressIndicator(),
                 )
-              : Container(),
+              : _displayWebsiteOption(),
+    );
+  }
+
+  String selectedWebsite =
+      SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
+  List websites = ["樱花动漫", "OmoFun"];
+
+  _displayWebsiteOption() {
+    return ListView(
+      children: websites
+          .map((website) => ListTile(
+                title: Text(website),
+                leading: selectedWebsite == website
+                    ? const Icon(Icons.radio_button_checked, color: Colors.blue)
+                    : const Icon(Icons.radio_button_off),
+                onTap: () {
+                  setState(() {
+                    selectedWebsite = website;
+                  });
+                  SPUtil.setString("selectedWebsite", website);
+                },
+              ))
+          .toList(),
     );
   }
 

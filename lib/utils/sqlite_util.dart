@@ -623,8 +623,8 @@ class SqliteUtil {
 
     List<int> res = [];
     for (var item in list) {
-      debugPrint(
-          '${item['tag_name']}-${item['anime_cnt']}-${item['tag_order']}');
+      // debugPrint(
+      //     '${item['tag_name']}-${item['anime_cnt']}-${item['tag_order']}');
       res.add(item['anime_cnt'] as int);
     }
     return res;

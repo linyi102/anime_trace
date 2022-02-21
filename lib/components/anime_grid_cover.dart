@@ -31,6 +31,7 @@ class AnimeGridCover extends StatelessWidget {
                     imageUrl: _anime.animeCoverUrl,
                     fit: BoxFit.fitHeight,
                   ),
+            // : Image.network(_anime.animeCoverUrl),
           ),
         ));
   }

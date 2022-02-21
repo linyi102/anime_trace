@@ -2,11 +2,15 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 
 class ClimeCoverUtil {
+  // 刷新动漫封面
   static Future<String> climeCoverUrl(String keyword) async {
-    String coverUrl = await sourceOfyhdm(keyword);
+    String coverUrl = "";
+    coverUrl = await sourceOfyhdm(keyword);
+
     return coverUrl;
   }
 
@@ -33,9 +37,19 @@ class ClimeCoverUtil {
     }
   }
 
+  // 添加动漫
   static Future<List<Anime>> climeAllCoverUrl(String keyword) async {
     List<Anime> allAnimeNameAndCoverUrl = [];
-    allAnimeNameAndCoverUrl = await climeAllSourceOfyhdm(keyword);
+
+    String selectedWebsite =
+        SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
+    if (selectedWebsite == "樱花动漫") {
+      allAnimeNameAndCoverUrl = await climeAllSourceOfyhdm(keyword);
+    } else if (selectedWebsite == "OmoFun") {
+      allAnimeNameAndCoverUrl = await climeAllSourceOfOmoFun(keyword);
+    } else {
+      throw ("爬取的网站名错误: $selectedWebsite");
+    }
     return allAnimeNameAndCoverUrl;
   }
 
@@ -48,6 +62,31 @@ class ClimeCoverUtil {
       var elements = document.getElementsByTagName("img");
       for (var element in elements) {
         String? coverUrl = element.attributes["src"];
+        String? animeName = element.attributes["alt"];
+        if (coverUrl != null) {
+          if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
+          allAnimeNameAndCoverUrl.add(Anime(
+              animeName: animeName ?? "", // 没有名字时返回空串
+              animeEpisodeCnt: 0,
+              animeCoverUrl: coverUrl));
+          print("爬取封面：$coverUrl");
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+    return allAnimeNameAndCoverUrl;
+  }
+
+  static Future<List<Anime>> climeAllSourceOfOmoFun(String keyword) async {
+    String url = "https://omofun.tv/index.php/vod/search.html?wd=$keyword";
+    List<Anime> allAnimeNameAndCoverUrl = [];
+    try {
+      var response = await Dio().get(url);
+      var document = parse(response.data);
+      var elements = document.getElementsByClassName("lazy lazyload");
+      for (var element in elements) {
+        String? coverUrl = element.attributes["data-src"];
         String? animeName = element.attributes["alt"];
         if (coverUrl != null) {
           if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
