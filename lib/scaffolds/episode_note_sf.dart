@@ -204,15 +204,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                   ),
                   child: IconButton(
                       onPressed: () {
-                        RelativeLocalImage relativeLocalImage =
-                            widget.episodeNote.relativeLocalImages[index];
-                        // 删除数据库记录、删除该页中的图片
-                        SqliteUtil.deleteLocalImageByImageId(
-                            relativeLocalImage.imageId);
-                        widget.episodeNote.relativeLocalImages.removeWhere(
-                            (element) =>
-                                element.imageId == relativeLocalImage.imageId);
-                        setState(() {});
+                        _dialogRemoveImage(index);
                       },
                       icon: const Icon(
                         Icons.close,
@@ -225,5 +217,41 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         );
       },
     );
+  }
+
+  _dialogRemoveImage(int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          // 返回警告对话框
+          return AlertDialog(
+            title: const Text("提示"),
+            content: const Text("确认移除该图片吗？"),
+            // 动作集合
+            actions: <Widget>[
+              TextButton(
+                child: const Text("取消"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text("确认"),
+                onPressed: () {
+                  RelativeLocalImage relativeLocalImage =
+                      widget.episodeNote.relativeLocalImages[index];
+                  // 删除数据库记录、删除该页中的图片
+                  SqliteUtil.deleteLocalImageByImageId(
+                      relativeLocalImage.imageId);
+                  widget.episodeNote.relativeLocalImages.removeWhere(
+                      (element) =>
+                          element.imageId == relativeLocalImage.imageId);
+                  setState(() {});
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }
