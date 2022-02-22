@@ -460,6 +460,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
     int episodeNoteIndex = episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
@@ -517,12 +518,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         : showImageGridView(
                             episodeNotes[episodeNoteIndex]
                                 .relativeLocalImages
-                                .length, (BuildContext context, int index) {
+                                .length,
+                            (BuildContext context, int imageIndex) {
                             return ImageGridItem(
-                                relativeImagePath:
-                                    episodeNotes[episodeNoteIndex]
-                                        .relativeLocalImages[index]
-                                        .path);
+                              relativeLocalImages:
+                                  episodeNotes[episodeNoteIndex]
+                                      .relativeLocalImages,
+                              initialIndex: imageIndex,
+                            );
                           })
                   ],
                 ),

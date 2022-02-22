@@ -110,13 +110,7 @@ class _NoteListPageState extends State<NoteListPage> {
             episodeNotes[index].relativeLocalImages.isEmpty) {
           return Container();
         }
-        // 会导致windows出错
-        // MultiImageProvider multiImageProvider = MultiImageProvider(
-        //   episodeNotes[index]
-        //       .imgLocalPaths
-        //       .map((imgLocalPath) => Image.file(File(imgLocalPath)).image)
-        //       .toList(),
-        // );
+
         return Padding(
           padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
           child: Card(
@@ -173,19 +167,41 @@ class _NoteListPageState extends State<NoteListPage> {
                           episodeNotes[index].relativeLocalImages.length,
                           (BuildContext context, int indexImage) {
                           return ImageGridItem(
-                            // multiImageProvider: multiImageProvider,
-                            relativeImagePath: episodeNotes[index]
-                                .relativeLocalImages[indexImage]
-                                .path,
-                            initialIndex: 0, // 并没有发挥作用
+                            relativeLocalImages:
+                                episodeNotes[index].relativeLocalImages,
+                            initialIndex: indexImage,
                           );
+                          // String relativeImagePath = episodeNotes[index]
+                          //     .relativeLocalImages[indexImage]
+                          //     .path;
+                          // String imageLocalPath =
+                          //     ImageUtil.getAbsoluteImagePath(relativeImagePath);
+
+                          // return MaterialButton(
+                          //   padding: const EdgeInsets.all(0),
+                          //   onPressed: () {
+                          //     Navigator.push(context,
+                          //         FadeRoute(builder: (context) {
+                          //       return ImageViewer(
+                          //         relativeImagePaths: relativeImagePaths,
+                          //         initialIndex: indexImage,
+                          //       );
+                          //     }));
+                          //   },
+                          //   child: AspectRatio(
+                          //     aspectRatio: 1,
+                          //     child: ClipRRect(
+                          //       borderRadius: BorderRadius.circular(5), // 圆角
+                          //       child: Image.file(
+                          //         File(imageLocalPath),
+                          //         fit: BoxFit.cover,
+                          //         errorBuilder:
+                          //             errorImageBuilder(relativeImagePath),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // );
                         }),
-                  // episodeNotes[index].noteContent.isEmpty &&
-                  //         episodeNotes[index].relativeLocalImages.isEmpty
-                  //     ? Container() // 内容和图片都为空，则不显示
-                  //     : hideAnimeListTile
-                  //         ? Container() // 如果隐藏了AnimeListTile，则不显示分割线
-                  //         : const Divider(),
                   hideAnimeListTile
                       ? Container()
                       : ListTile(

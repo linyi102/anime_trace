@@ -15,7 +15,7 @@ import 'package:oktoast/oktoast.dart';
 
 // ignore: must_be_immutable
 class EpisodeNoteSF extends StatefulWidget {
-  EpisodeNote episodeNote;
+  EpisodeNote episodeNote; // 可能会修改笔记内容，因此不能用final
   EpisodeNoteSF(this.episodeNote, {Key? key}) : super(key: key);
 
   @override
@@ -117,10 +117,11 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
 
   _showImages() {
     Color addColor = Colors.black;
+
     return showImageGridView(
       widget.episodeNote.relativeLocalImages.length + 1,
-      (BuildContext context, int index) {
-        if (index == widget.episodeNote.relativeLocalImages.length) {
+      (BuildContext context, int imageIndex) {
+        if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
           return Container(
             decoration: BoxDecoration(
               // color: Colors.white,
@@ -186,11 +187,13 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
             ),
           );
         }
+
         return Stack(
           children: [
             ImageGridItem(
-                relativeImagePath:
-                    widget.episodeNote.relativeLocalImages[index].path),
+              relativeLocalImages: widget.episodeNote.relativeLocalImages,
+              initialIndex: imageIndex,
+            ),
             Positioned(
               right: 0,
               top: 0,
@@ -204,7 +207,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                   ),
                   child: IconButton(
                       onPressed: () {
-                        _dialogRemoveImage(index);
+                        _dialogRemoveImage(imageIndex);
                       },
                       icon: const Icon(
                         Icons.close,
