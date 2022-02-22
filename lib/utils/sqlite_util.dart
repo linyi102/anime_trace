@@ -743,6 +743,17 @@ class SqliteUtil {
     // 新增回顾号列后，最小值和最大值应该属于同一回顾号
     List<HistoryPlus> history = [];
 
+    // 如果存在临时表，则删除
+    await _database.execute('''
+      drop table if exists history_year;
+      ''');
+    // 优化：先只选出该年的记录，作为临时表。记得删除该表(放在上面比较好)
+    await _database.execute('''
+      create temp table history_year as
+      select * from history
+      where date like '$year%';
+      ''');
+
     for (int month = 12; month >= 1; --month) {
       String date;
       if (month >= 10) {
@@ -752,8 +763,8 @@ class SqliteUtil {
       }
       var list = await _database.rawQuery('''
         select distinct anime.anime_id, anime.anime_name, anime.anime_cover_url
-        from history, anime
-        where date like '$date%' and history.anime_id = anime.anime_id
+        from history_year, anime
+        where date like '$date%' and history_year.anime_id = anime.anime_id
         order by date desc; -- 倒序
         ''');
       List<Anime> animes = [];
@@ -775,20 +786,20 @@ class SqliteUtil {
         // debugPrint(anime);
         var reviewNumberList = await _database.rawQuery('''
         select distinct review_number
-        from history
+        from history_year
         where date like '$date%' and anime_id = ${anime.animeId};
         ''');
         for (var reviewNumberElem in reviewNumberList) {
           int reviewNumber = reviewNumberElem['review_number'] as int;
           list = await _database.rawQuery('''
           select min(episode_number) as start
-          from history
+          from history_year
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
           int startEpisodeNumber = list[0]['start'] as int;
           list = await _database.rawQuery('''
           select max(episode_number) as end
-          from history
+          from history_year
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
           int endEpisodeNumber = list[0]['end'] as int;
