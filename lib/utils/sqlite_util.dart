@@ -8,6 +8,7 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -239,8 +240,8 @@ class SqliteUtil {
 
     String datetime = DateTime.now().toString();
     return await _database.rawInsert('''
-    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url)
-    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}');
+    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url, cover_source)
+    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.coverSource}');
     ''');
   }
 
@@ -298,13 +299,37 @@ class SqliteUtil {
     }
   }
 
+  // 为动漫表添加列：图片的搜索源
+  // 添加动漫、更改封面时都会用到该列
+  static Future<void> addColumnCoverSourceToAnime() async {
+    var list = await _database.rawQuery('''
+    select * from sqlite_master where name = 'anime' and sql like '%cover_source%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnCoverSourceToAnime");
+      await _database.execute('''
+      alter table anime
+      add column cover_source TEXT;
+      ''');
+
+      // 新增列才会修改NULL→1，之后就不修改了
+      await _database.rawUpdate('''
+      update anime
+      set cover_source = '樱花动漫'
+      where cover_source is NULL;
+      ''');
+    }
+  }
+
   static Future<void> updateAnimeCoverbyAnimeId(
       int animeId, String? coverUrl) async {
     debugPrint("sql: updateAnimeCoverbyAnimeId");
+    String coverSource = SPUtil.getString("selectedWebsite");
 
     await _database.rawUpdate('''
     update anime
-    set anime_cover_url = '$coverUrl'
+    set anime_cover_url = '$coverUrl', cover_source = '$coverSource'
     where anime_id = $animeId;
     ''');
   }
@@ -410,7 +435,7 @@ class SqliteUtil {
     debugPrint("sql: getAnimeByAnimeId($animeId)");
 
     var list = await _database.rawQuery('''
-    select anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url
+    select anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url, cover_source
     from anime
     where anime_id = $animeId;
     ''');
@@ -422,14 +447,16 @@ class SqliteUtil {
         maxReviewNumber: maxReviewNumber);
 
     Anime anime = Anime(
-        animeId: animeId,
-        animeName: list[0]['anime_name'] as String,
-        animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-        animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
-        animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
-        tagName: list[0]['tag_name'] as String,
-        checkedEpisodeCnt: checkedEpisodeCnt,
-        reviewNumber: maxReviewNumber);
+      animeId: animeId,
+      animeName: list[0]['anime_name'] as String,
+      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
+      animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
+      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
+      tagName: list[0]['tag_name'] as String,
+      checkedEpisodeCnt: checkedEpisodeCnt,
+      reviewNumber: maxReviewNumber,
+      coverSource: list[0]['cover_source'] as String,
+    );
     return anime;
   }
 

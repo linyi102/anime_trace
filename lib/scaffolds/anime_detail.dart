@@ -246,6 +246,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: Column(
                 children: [
                   _displayAnimeName(),
+                  _displayCoverSource(),
                   // _displayDesc(),
                 ],
               ),
@@ -284,6 +285,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, newAnimeName);
           FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
         },
+      ),
+    );
+  }
+
+  _displayCoverSource() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+      child: Row(
+        children: [
+          Text(
+            _anime.coverSource,
+            style: const TextStyle(color: Colors.black54),
+          ),
+        ],
       ),
     );
   }

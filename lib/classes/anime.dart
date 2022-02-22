@@ -8,6 +8,7 @@ class Anime {
 
   int checkedEpisodeCnt;
   int reviewNumber;
+  String coverSource;
 
   Anime(
       {this.animeId = 0,
@@ -17,7 +18,8 @@ class Anime {
       this.animeCoverUrl = "",
       this.checkedEpisodeCnt = 0,
       this.animeDesc = "",
-      this.reviewNumber = 1});
+      this.reviewNumber = 1,
+      this.coverSource = ""});
 
   @override
   String toString() {

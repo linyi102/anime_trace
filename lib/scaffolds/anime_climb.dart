@@ -97,123 +97,125 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   icon: const Icon(Icons.close, color: Colors.black))),
           onEditingComplete: () async {
             String text = animeNameController.text;
-            // 如果输入的名字为空，或者与上一次相同，则不再爬取
-            if (text.isEmpty || lastInputName == text) {
+            // 如果输入的名字为空，则不再爬取
+            if (text.isEmpty) {
               return;
             }
             lastInputName = text; // 更新上一次输入的名字
             _climbAnime(keyword: text);
           },
-          // onChanged: (inputStr) {
-          //   if (inputStr.isEmpty) {
-          //     setState(() {
-          //       searchOk = false;
-          //       searching = false;
-          //     });
-          //     lastInputName = "";
-          //   }
-          // },
+          onChanged: (inputStr) {
+            lastInputName = inputStr;
+            // 避免输入好后切换搜索源后，清空了输入的内容
+          },
         ),
       ),
-      body: searchOk
-          ? AnimatedSwitcher(
-              key: UniqueKey(), // 不一样的搜索结果也需要过渡
-              duration: const Duration(milliseconds: 5000),
-              child: GridView.builder(
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount:
-                      SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
-                  crossAxisSpacing: 5, // 横轴距离
-                  mainAxisSpacing: 3, // 竖轴距离
-                  childAspectRatio: 31 / 56, // 每个网格的比例
-                ),
-                itemCount: searchAnimes.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Anime anime = searchAnimes[index];
-                  return MaterialButton(
-                    onPressed: () async {
-                      // 若传入了关键字，说明是修改封面，而非添加动漫
-                      if (widget.keyword.isNotEmpty) {
-                        SqliteUtil.updateAnimeCoverbyAnimeId(
-                            widget.animeId, anime.animeCoverUrl);
-                        // 提示是否修改动漫名字
-                        String oldAnimeName = widget.keyword; // 旧动漫名字就是传入的关键字
-                        String newAnimeName = anime.animeName;
-                        if (oldAnimeName != newAnimeName) {
-                          _dialogModifyAnimeName(oldAnimeName, newAnimeName);
-                        } else {
-                          Navigator.of(context).pop(); // 名字没有变，直接退出
-                        }
-                      } else if (anime.animeId != 0) {
-                        // 不为0，说明已添加，点击进入动漫详细页面
-                        Navigator.of(context).push(
-                          // MaterialPageRoute(
-                          //   builder: (context) =>
-                          //       AnimeDetailPlus(anime.animeId),
-                          // ),
-                          FadeRoute(
-                            builder: (context) {
-                              return AnimeDetailPlus(anime.animeId);
-                            },
-                          ),
-                        ).then((value) async {
-                          Anime retAnime = value;
-                          int findIndex = searchAnimes.lastIndexWhere(
-                              (element) =>
-                                  element.animeName == retAnime.animeName);
-                          searchAnimes[findIndex] =
-                              await SqliteUtil.getAnimeByAnimeId(
-                                  retAnime.animeId);
-                          setState(() {});
-                        });
-                      } else {
-                        // 其他情况才是添加动漫
-                        bool standBy = false;
-                        // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere
-                        if (index == 0) standBy = true;
-                        _dialogAddAnime(anime, standBy);
-                      }
+      body: Column(
+        children: [
+          _displayWebsiteOption(),
+          searchOk
+              ? Expanded(child: _displayClimbAnime())
+              : searching
+                  ? const Center(
+                      child: RefreshProgressIndicator(),
+                    )
+                  : Container()
+        ],
+      ),
+    );
+  }
+
+  _displayClimbAnime() {
+    return AnimatedSwitcher(
+      key: UniqueKey(), // 不一样的搜索结果也需要过渡
+      duration: const Duration(milliseconds: 5000),
+      child: GridView.builder(
+        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount:
+              SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
+          crossAxisSpacing: 5, // 横轴距离
+          mainAxisSpacing: 3, // 竖轴距离
+          childAspectRatio: 31 / 56, // 每个网格的比例
+        ),
+        itemCount: searchAnimes.length,
+        itemBuilder: (BuildContext context, int index) {
+          Anime anime = searchAnimes[index];
+          return MaterialButton(
+            onPressed: () async {
+              // 若传入了关键字，说明是修改封面，而非添加动漫
+              if (widget.keyword.isNotEmpty) {
+                SqliteUtil.updateAnimeCoverbyAnimeId(
+                    widget.animeId, anime.animeCoverUrl);
+                // 提示是否修改动漫名字
+                String oldAnimeName = widget.keyword; // 旧动漫名字就是传入的关键字
+                String newAnimeName = anime.animeName;
+                if (oldAnimeName != newAnimeName) {
+                  _dialogModifyAnimeName(oldAnimeName, newAnimeName);
+                } else {
+                  Navigator.of(context).pop(); // 名字没有变，直接退出
+                }
+              } else if (anime.animeId != 0) {
+                // 不为0，说明已添加，点击进入动漫详细页面
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //   builder: (context) =>
+                  //       AnimeDetailPlus(anime.animeId),
+                  // ),
+                  FadeRoute(
+                    builder: (context) {
+                      return AnimeDetailPlus(anime.animeId);
                     },
-                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-                    child: Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        Stack(
-                          children: [
-                            AnimeGridCover(anime),
-                            _displayEpisodeState(anime),
-                            _displayReviewNumber(anime),
-                          ],
+                  ),
+                ).then((value) async {
+                  Anime retAnime = value;
+                  int findIndex = searchAnimes.lastIndexWhere(
+                      (element) => element.animeName == retAnime.animeName);
+                  searchAnimes[findIndex] =
+                      await SqliteUtil.getAnimeByAnimeId(retAnime.animeId);
+                  setState(() {});
+                });
+              } else {
+                // 其他情况才是添加动漫
+                bool standBy = false;
+                // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere
+                if (index == 0) standBy = true;
+                _dialogAddAnime(anime, standBy);
+              }
+            },
+            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                Stack(
+                  children: [
+                    AnimeGridCover(anime),
+                    _displayEpisodeState(anime),
+                    _displayReviewNumber(anime),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          anime.animeName,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: Platform.isAndroid
+                              ? const TextStyle(fontSize: 13)
+                              : null,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  anime.animeName,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  style: Platform.isAndroid
-                                      ? const TextStyle(fontSize: 13)
-                                      : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )
-          : searching
-              ? const Center(
-                  child: RefreshProgressIndicator(),
-                )
-              : _displayWebsiteOption(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -222,21 +224,73 @@ class _AnimeClimbState extends State<AnimeClimb> {
   List websites = ["樱花动漫", "OmoFun"];
 
   _displayWebsiteOption() {
-    return ListView(
-      children: websites
-          .map((website) => ListTile(
-                title: Text(website),
-                leading: selectedWebsite == website
-                    ? const Icon(Icons.radio_button_checked, color: Colors.blue)
-                    : const Icon(Icons.radio_button_off),
-                onTap: () {
-                  setState(() {
-                    selectedWebsite = website;
-                  });
-                  SPUtil.setString("selectedWebsite", website);
-                },
-              ))
-          .toList(),
+    // return ListView(
+    //   children: websites
+    //       .map((website) => ListTile(
+    //             title: Text(website),
+    //             leading: selectedWebsite == website
+    //                 ? const Icon(Icons.radio_button_checked, color: Colors.blue)
+    //                 : const Icon(Icons.radio_button_off),
+    //             onTap: () {
+    //               setState(() {
+    //                 selectedWebsite = website;
+    //               });
+    //               SPUtil.setString("selectedWebsite", website);
+    //             },
+    //           ))
+    //       .toList(),
+    // );
+    return ListTile(
+      leading: const Icon(Icons.expand_more_outlined),
+      title: Text(selectedWebsite),
+      onTap: () {
+        _dialogSelectWebsite();
+      },
+    );
+  }
+
+  void _dialogSelectWebsite() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        List<Widget> radioList = [];
+        for (int i = 0; i < websites.length; ++i) {
+          radioList.add(
+            ListTile(
+              title: Text(websites[i]),
+              leading: websites[i] == selectedWebsite
+                  ? const Icon(
+                      Icons.radio_button_on_outlined,
+                      color: Colors.blue,
+                    )
+                  : const Icon(
+                      Icons.radio_button_off_outlined,
+                    ),
+              onTap: () {
+                selectedWebsite = websites[i];
+                SPUtil.setString("selectedWebsite", websites[i]);
+                // 如果输入的文本不为空，则再次搜索
+                if (lastInputName.isNotEmpty) {
+                  searchOk = false;
+                  searching = true;
+                  searchAnimes = []; // 清空查找的动漫
+                  _climbAnime(keyword: lastInputName);
+                }
+                setState(() {});
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+        return AlertDialog(
+          title: const Text('选择搜索源'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: radioList,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -318,10 +372,12 @@ class _AnimeClimbState extends State<AnimeClimb> {
                     return;
                   }
                   Anime newAnime = Anime(
-                      animeName: name,
-                      animeEpisodeCnt: endEpisode,
-                      tagName: addDefaultTag,
-                      animeCoverUrl: anime.animeCoverUrl);
+                    animeName: name,
+                    animeEpisodeCnt: endEpisode,
+                    tagName: addDefaultTag,
+                    animeCoverUrl: anime.animeCoverUrl,
+                    coverSource: selectedWebsite,
+                  );
                   SqliteUtil.insertAnime(newAnime).then((lastInsertId) {
                     showToast("添加成功！");
                     // 为新添加的动漫增加集数
