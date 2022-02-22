@@ -38,20 +38,6 @@ class _ImageViewerState extends State<ImageViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: Container(),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.close,
-                color: Colors.white70,
-              )),
-        ],
-      ),
       body: MaterialButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
@@ -69,6 +55,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       widget.relativeLocalImages[currentIndex].path),
                 ),
               ),
+              _dislpayCloseButton(),
               imagesCount == 1 ? Container() : _displayBottomButton(),
             ],
           ),
@@ -77,7 +64,7 @@ class _ImageViewerState extends State<ImageViewer> {
     );
   }
 
-  Container _displayBottomButton() {
+  Widget _displayBottomButton() {
     return Container(
         alignment: Alignment.bottomCenter,
         child: Card(
@@ -126,5 +113,21 @@ class _ImageViewerState extends State<ImageViewer> {
             ],
           ),
         ));
+  }
+
+// 不能在AppBar的actions中添加，否则图片不是特别居中
+  Widget _dislpayCloseButton() {
+    return Positioned(
+      top: 10,
+      right: 10,
+      child: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.close,
+            color: Colors.white70,
+          )),
+    );
   }
 }
