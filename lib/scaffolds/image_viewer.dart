@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<RelativeLocalImage> relativeLocalImages;
@@ -54,6 +55,14 @@ class _ImageViewerState extends State<ImageViewer> {
                   errorBuilder: errorImageBuilder(
                       widget.relativeLocalImages[currentIndex].path),
                 ),
+                // child: FadeInImage(
+                //   placeholder: MemoryImage(kTransparentImage),
+                //   image: FileImage(File(imageLocalPaths[currentIndex])),
+                //   fit: BoxFit.cover,
+                //   fadeInDuration: const Duration(milliseconds: 300),
+                //   imageErrorBuilder: errorImageBuilder(
+                //       widget.relativeLocalImages[currentIndex].path),
+                // ),
               ),
               _dislpayCloseButton(),
               imagesCount == 1 ? Container() : _displayBottomButton(),

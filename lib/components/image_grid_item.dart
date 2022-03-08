@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ImageGridItem extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
@@ -33,11 +34,20 @@ class ImageGridItem extends StatelessWidget {
         aspectRatio: 1,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5), // 圆角
-          child: Image.file(
-            File(imageLocalPath),
+          // child: FadeInImage.memoryNetwork(
+          //     placeholder: kTransparentImage, image: imageLocalPath),
+          child: FadeInImage(
+            placeholder: MemoryImage(kTransparentImage),
+            image: FileImage(File(imageLocalPath)),
             fit: BoxFit.cover,
-            errorBuilder: errorImageBuilder(relativeImagePath),
+            fadeInDuration: const Duration(milliseconds: 300),
+            imageErrorBuilder: errorImageBuilder(relativeImagePath),
           ),
+          // child: Image.file(
+          //   File(imageLocalPath),
+          //   fit: BoxFit.cover,
+          //   errorBuilder: errorImageBuilder(relativeImagePath),
+          // ),
         ),
       ),
     );
