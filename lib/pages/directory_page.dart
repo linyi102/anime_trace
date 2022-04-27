@@ -28,7 +28,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
       _loadData();
     } else {
       // 如果已有数据，则直接显示
-      _loadOk = true;
+      Future.delayed(const Duration(milliseconds: 0)).then((value) {
+        setState(() {
+          _loadOk = true;
+        });
+      });
     }
   }
 
@@ -83,10 +87,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
           ),
         ],
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: _showBody(),
-      ),
+      body: _showBody(),
     );
   }
 
@@ -100,18 +101,17 @@ class _DirectoryPageState extends State<DirectoryPage> {
           children: [
             _showFilter(),
             AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Stack(
-                  children: [
-                    _showAnimeList(),
-                    _loadOk
-                        ? Container()
-                        : Center(
-                            key: UniqueKey(),
-                            child: const RefreshProgressIndicator(),
-                          )
-                  ],
-                )),
+              duration: const Duration(milliseconds: 200),
+              child: _loadOk
+                  ? _showAnimeList()
+                  : SizedBox(
+                      height: 200,
+                      child: Center(
+                        key: UniqueKey(),
+                        child: const RefreshProgressIndicator(),
+                      ),
+                    ),
+            ),
           ],
         ),
       ),
@@ -239,7 +239,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
   _showAnimeList() {
     return ListView.builder(
-      key: UniqueKey(),
       shrinkWrap: true, //解决无限高度问题
       physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
       itemCount: directory.length,

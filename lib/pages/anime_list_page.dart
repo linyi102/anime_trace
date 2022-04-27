@@ -148,27 +148,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                     controller: _tabController,
                     children: _getAnimesPlus(),
                   ),
-                  // floatingActionButton: multiSelected
-                  //     ? null // 多选时隐藏添加按钮
-                  //     : FloatingActionButton(
-                  //         heroTag: null,
-                  //         onPressed: () {
-                  //           Navigator.of(context).push(
-                  //             // MaterialPageRoute(
-                  //             //   builder: (context) => const AnimeClimb(),
-                  //             // ),
-                  //             FadeRoute(
-                  //               builder: (context) {
-                  //                 return const AnimeClimb();
-                  //               },
-                  //             ),
-                  //           ).then((value) {
-                  //             _loadData(); // 重新加载数据，显示新添加的动漫
-                  //           });
-                  //           // _dialogAddAnime();
-                  //         },
-                  //         child: const Icon(Icons.add),
-                  //       ),
                 ),
     );
   }

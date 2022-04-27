@@ -19,19 +19,17 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   File? _imgFile;
-  bool loadOk = false;
+  bool _loadOk = false;
 
   @override
   void initState() {
     super.initState();
-    // SPUtil.clear();
-    // WebDavUtil.pingWebDav();
     String imgFilePath = SPUtil.getString("img_file_path");
     if (imgFilePath.isNotEmpty) {
       _imgFile = File(imgFilePath);
     }
-    Future.delayed(Duration.zero).then((value) {
-      loadOk = true;
+    Future.delayed(const Duration(milliseconds: 0)).then((value) {
+      _loadOk = true;
       setState(() {});
     });
   }
@@ -41,21 +39,6 @@ class _SettingPageState extends State<SettingPage> {
     // SPUtil.setString("img_file_path", "");
     super.dispose();
   }
-
-  // String getDuration() {
-  //   DateTime now = DateTime.now();
-  //   String lastSharedTime = SPUtil.getString("lastSharedTime");
-  //   if (lastSharedTime.isNotEmpty) {
-  //     DateTime before = DateTime.parse(lastSharedTime);
-  //     int inDays = now.difference(before).inDays;
-  //     if (inDays == 0) {
-  //       return "今天备份过";
-  //     } else {
-  //       return "$inDays天前备份过";
-  //     }
-  //   }
-  //   return "";
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -71,31 +54,12 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: !loadOk
+        child: !_loadOk
             ? Container(
                 key: UniqueKey(),
               )
             : ListView(
                 children: [
-                  // ListTile(
-                  //   title: const Text("创建备份"),
-                  //   subtitle: const Text("备份动漫记录"),
-                  //   onTap: () async {
-                  //     // 首先判断备份目录是否存在
-                  //     String backupDir = SPUtil.getString("backup_path");
-                  //     if (!(await Directory(backupDir).exists())) {
-                  //       showToast("备份之前请先设置备份目录！");
-                  //       return;
-                  //     }
-                  //     // 拷贝数据库文件到备份目录下
-                  //     final backupFilePath =
-                  //         "$backupDir/anime_trace_${DateTime.now()}.db";
-                  //     if (await Permission.storage.request().isGranted) {
-                  //       await File(SqliteUtil.dbPath).copy(backupFilePath);
-                  //       showToast("备份成功");
-                  //     }
-                  //   },
-                  // ),
                   _showImg(),
                   _showImgButton(),
                   ListTile(
