@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_cover_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -243,39 +244,56 @@ class _DirectoryPageState extends State<DirectoryPage> {
       physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
       itemCount: directory.length,
       itemBuilder: (BuildContext context, int index) {
-        final anime = directory[index];
+        Anime anime = directory[index];
         final imageProvider = Image.network(anime.animeCoverUrl).image;
-        return Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
-              child: SizedBox(
-                width: 90,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      showImageViewer(context, imageProvider, immersive: false);
-                    },
-                    child: AnimeGridCover(anime),
+        return MaterialButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            debugPrint("单击");
+            // 如果收藏了，则单击进入详细页面
+            if (anime.isCollected()) {
+              Navigator.of(context).push(FadeRoute(builder: (context) {
+                return AnimeDetailPlus(anime.animeId);
+              })).then((value) {
+                setState(() {
+                  // anime = value;
+                  directory[index] = value;
+                });
+              });
+            }
+          },
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                child: SizedBox(
+                  width: 90,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: MaterialButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () {
+                        showImageViewer(context, imageProvider,
+                            immersive: false);
+                      },
+                      child: AnimeGridCover(anime),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  _showAnimeName(anime.animeName),
-                  _showCoverSource(anime.coverSource),
-                  _showAnimeInfo(anime.getSubTitle()),
-
-                  // _displayDesc(),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    _showAnimeName(anime.animeName),
+                    _showCoverSource(anime.coverSource),
+                    _showAnimeInfo(anime.getSubTitle()),
+                    // _displayDesc(),
+                  ],
+                ),
               ),
-            ),
-            _showCollectIcon(anime)
-          ],
+              _showCollectIcon(anime)
+            ],
+          ),
         );
       },
     );
@@ -284,7 +302,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   _showAnimeName(animeName) {
     return Container(
       alignment: Alignment.topLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
         style: const TextStyle(fontSize: 18),
