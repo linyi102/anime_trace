@@ -88,7 +88,7 @@ class ClimbCoverUtil {
           animeEpisodeCnt: episodeCnt,
           animeDesc: desc,
           animeCoverUrl: coverUrl ?? "",
-          coverSource: "yhdm",
+          coverSource: "樱花动漫",
           animeUrl: animeUrl,
         );
         directory.add(anime);

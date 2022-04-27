@@ -16,6 +16,7 @@ class AnimeGridCover extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: _anime.animeCoverUrl.isEmpty
+                // ? Image.asset("assets/images/defaultAnimeCover.jpg")
                 ? Center(
                     child: Text(
                       _anime.animeName.substring(

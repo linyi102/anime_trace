@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/filter.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/utils/climb_cover_util.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -17,19 +19,26 @@ class DirectoryPage extends StatefulWidget {
 
 class _DirectoryPageState extends State<DirectoryPage> {
   bool _loadOk = false;
-  List<Anime> directory = [];
-  Filter filter = Filter();
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    if (directory.isEmpty) {
+      _loadData();
+    } else {
+      // 如果已有数据，则直接显示
+      _loadOk = true;
+    }
   }
 
   void _loadData() async {
+    setState(() {
+      _loadOk = false;
+    });
     Future(() async {
       directory = await ClimbCoverUtil.climbDirectory(filter);
     }).then((value) {
+      debugPrint("目录页：数据获取完毕");
       _loadOk = true;
       setState(() {});
     });
@@ -65,19 +74,35 @@ class _DirectoryPageState extends State<DirectoryPage> {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: _loadOk
-            ? _showBody()
-            : Container(
-                key: UniqueKey(),
-              ),
+        child: _showBody(),
       ),
     );
   }
 
   _showBody() {
-    return Scrollbar(
-      child: ListView(
-        children: [_showFilter(), _showAnimeList()],
+    return RefreshIndicator(
+      onRefresh: () async {
+        _loadData();
+      },
+      child: Scrollbar(
+        child: ListView(
+          children: [
+            _showFilter(),
+            AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Stack(
+                  children: [
+                    _showAnimeList(),
+                    _loadOk
+                        ? Container()
+                        : Center(
+                            key: UniqueKey(),
+                            child: const RefreshProgressIndicator(),
+                          )
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }
@@ -91,7 +116,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
           padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
           child: SizedBox(
             // 给出高度才可以横向排列
-            height: 25,
+            height: 30,
             child: Row(
               children: [
                 GestureDetector(
@@ -130,7 +155,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
           child: SizedBox(
-            height: 25,
+            height: 30,
             child: Row(
               children: [
                 const Text("季度："),
@@ -203,80 +228,107 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
   _showAnimeList() {
     return ListView.builder(
+      key: UniqueKey(),
       shrinkWrap: true, //解决无限高度问题
       physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
       itemCount: directory.length,
       itemBuilder: (BuildContext context, int index) {
         final anime = directory[index];
         final imageProvider = Image.network(anime.animeCoverUrl).image;
-        return ListTile(
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Image.network(
-              anime.animeCoverUrl,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-          title: Text(anime.animeName),
-          subtitle: Text(anime.getSubTitle()),
-        );
-        // return Stack(
-        //   children: [
-        //     Flex(
-        //       direction: Axis.horizontal,
-        //       children: [
-        //         Padding(
-        //           padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
-        //           child: SizedBox(
-        //             width: 110,
-        //             child: ClipRRect(
-        //               borderRadius: BorderRadius.circular(5),
-        //               child: MaterialButton(
-        //                 padding: const EdgeInsets.all(0),
-        //                 onPressed: () {
-        //                   showImageViewer(context, imageProvider,
-        //                       immersive: false);
-        //                 },
-        //                 child: AnimeGridCover(anime),
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //         Expanded(
-        //           child: Column(
-        //             children: [
-        //               _showAnimeName(anime.animeName),
-        //               _showCoverSource(anime.coverSource),
-        //               // _displayDesc(),
-        //             ],
-        //           ),
-        //         ),
-        //       ],
+        // return ListTile(
+        //   leading: ClipRRect(
+        //     borderRadius: BorderRadius.circular(5),
+        //     child: Image.network(
+        //       anime.animeCoverUrl,
+        //       fit: BoxFit.fitWidth,
         //     ),
-        //   ],
+        //   ),
+        //   title: Text(anime.animeName),
+        //   subtitle: Text(anime.getSubTitle()),
         // );
+        return Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
+              child: SizedBox(
+                width: 90,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: MaterialButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
+                      showImageViewer(context, imageProvider, immersive: false);
+                    },
+                    child: AnimeGridCover(anime),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  _showAnimeName(anime.animeName),
+                  _showCoverSource(anime.coverSource),
+                  _showAnimeInfo(anime.getSubTitle()),
+
+                  // _displayDesc(),
+                ],
+              ),
+            ),
+            _showCollectIcon(anime)
+          ],
+        );
       },
     );
   }
 
   _showAnimeName(animeName) {
-    return Padding(
+    return Container(
+      alignment: Alignment.topLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Text(animeName),
+      child: Text(
+        animeName,
+        style: const TextStyle(fontSize: 18),
+      ),
+    );
+  }
+
+  _showAnimeInfo(animeInfo) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+      child: Text(
+        animeInfo,
+        style: const TextStyle(color: Colors.black54),
+      ),
     );
   }
 
   _showCoverSource(coverSource) {
-    return Padding(
+    return Container(
+      alignment: Alignment.topLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Row(
-        children: [
-          Text(
-            coverSource,
-            style: const TextStyle(color: Colors.black54),
-          ),
-        ],
+      child: Text(
+        coverSource,
+        style: const TextStyle(color: Colors.black54),
       ),
+    );
+  }
+
+  // 传入index是为了便于后面更改directory中的该动漫的id
+  _showCollectIcon(anime) {
+    return Container(
+      padding: const EdgeInsets.only(right: 15),
+      child: IconButton(
+          onPressed: () {
+            dialogSelectTag(setState, context, anime);
+          },
+          icon: anime.isCollected()
+              ? const Icon(
+                  Icons.favorite,
+                  color: Colors.red,
+                )
+              : const Icon(Icons.favorite_border)),
     );
   }
 }

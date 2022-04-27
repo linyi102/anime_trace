@@ -64,4 +64,8 @@ class Anime {
     }
     return list.join(" / ");
   }
+
+  bool isCollected() {
+    return animeId > 0;
+  }
 }
