@@ -9,7 +9,7 @@ import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search.dart';
-import 'package:flutter_test_future/utils/clime_cover_util.dart';
+import 'package:flutter_test_future/utils/climb_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -148,27 +148,27 @@ class _AnimeListPageState extends State<AnimeListPage>
                     controller: _tabController,
                     children: _getAnimesPlus(),
                   ),
-                  floatingActionButton: multiSelected
-                      ? null // 多选时隐藏添加按钮
-                      : FloatingActionButton(
-                          heroTag: null,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              // MaterialPageRoute(
-                              //   builder: (context) => const AnimeClimb(),
-                              // ),
-                              FadeRoute(
-                                builder: (context) {
-                                  return const AnimeClimb();
-                                },
-                              ),
-                            ).then((value) {
-                              _loadData(); // 重新加载数据，显示新添加的动漫
-                            });
-                            // _dialogAddAnime();
-                          },
-                          child: const Icon(Icons.add),
-                        ),
+                  // floatingActionButton: multiSelected
+                  //     ? null // 多选时隐藏添加按钮
+                  //     : FloatingActionButton(
+                  //         heroTag: null,
+                  //         onPressed: () {
+                  //           Navigator.of(context).push(
+                  //             // MaterialPageRoute(
+                  //             //   builder: (context) => const AnimeClimb(),
+                  //             // ),
+                  //             FadeRoute(
+                  //               builder: (context) {
+                  //                 return const AnimeClimb();
+                  //               },
+                  //             ),
+                  //           ).then((value) {
+                  //             _loadData(); // 重新加载数据，显示新添加的动漫
+                  //           });
+                  //           // _dialogAddAnime();
+                  //         },
+                  //         child: const Icon(Icons.add),
+                  //       ),
                 ),
     );
   }
@@ -194,7 +194,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               continue;
             }
             String coverUrl =
-                await ClimeCoverUtil.climeCoverUrl(anime.animeName);
+                await ClimbCoverUtil.climbCoverUrl(anime.animeName);
             debugPrint("${anime.animeName}封面：$coverUrl");
             // 返回的链接不为空字符串，更新封面
             if (coverUrl.isNotEmpty) {
@@ -632,7 +632,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
           Text(
             "${tags[i]} (${animeCntPerTag[i]})",
-            style: const TextStyle(fontFamily: "yuan"),
+            // style: const TextStyle(fontFamily: "yuan"),
           ),
           const SizedBox(
             height: 10,

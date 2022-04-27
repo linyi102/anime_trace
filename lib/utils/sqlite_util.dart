@@ -134,7 +134,7 @@ class SqliteUtil {
     await db.rawInsert('''
       insert into tag(tag_name, tag_order)
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
-      values('收集', 0), ('旅途', 1), ('终点', 2);
+      values('收集', 0), ('旅途', 1), ('终点', 2), ('搁置', 3), ('放弃', 4);
     ''');
     // for (int i = 0; i < 100; ++i) {
     //   await db.rawInsert('''
@@ -257,6 +257,31 @@ class SqliteUtil {
       add column anime_cover_url TEXT;
       ''');
     }
+  }
+
+  static Future<void> addColumnInfoToAnime() async {
+    Map<String, String> columns = {};
+    columns['premiere_time'] = 'TEXT'; // 首播时间
+    columns['name_another'] = 'TEXT'; // 其他名称
+    columns['name_ori'] = 'TEXT'; // 原版名称
+    columns['author_ori'] = 'TEXT'; // 原版作者
+    columns['area'] = 'TEXT'; // 地区
+    columns['play_status'] = 'TEXT'; // 播放状态
+    columns['category'] = 'TEXT'; // 动漫类型
+    columns['production_company'] = 'TEXT'; // 制作公司
+    columns['official_site'] = 'TEXT'; // 官方网站
+    columns['anime_url'] = 'TEXT'; // 动漫网址
+    columns.forEach((key, value) async {
+      var list = await _database.rawQuery('''
+    select * from sqlite_master where name = 'anime' and sql like '%$key%';
+    ''');
+      if (list.isEmpty) {
+        await _database.execute('''
+      alter table anime
+      add column $key $value;
+      ''');
+      }
+    });
   }
 
   // 为历史表和笔记表添加列：回顾号

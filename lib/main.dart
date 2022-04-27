@@ -30,6 +30,7 @@ ensureLatestData() async {
   await SqliteUtil.createTableEpisodeNote();
   await SqliteUtil.createTableImage();
   await SqliteUtil.addColumnCoverSourceToAnime(); // 添加搜索源列
+  await SqliteUtil.addColumnInfoToAnime(); // 添加搜索源列
   tags = await SqliteUtil.getAllTags();
 }
 
@@ -126,14 +127,14 @@ class _MyAppState extends State<MyApp> {
         return _onBackPressed();
       },
       child: OKToast(
-        textStyle: const TextStyle(fontFamily: "yuan"),
+        // textStyle: const TextStyle(fontFamily: "yuan"),
         child: MaterialApp(
           title: '漫迹', // 后台应用显示名称
           home: const MyHome(),
           theme: ThemeData(
             primarySwatch: Colors.blue,
             // brightness: Brightness.dark,
-            fontFamily: "yuan",
+            // fontFamily: "yuan",
             appBarTheme: const AppBarTheme(
               shadowColor: Colors.transparent,
               elevation: 0,

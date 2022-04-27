@@ -6,7 +6,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/utils/clime_cover_util.dart';
+import 'package:flutter_test_future/utils/climb_cover_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -50,7 +50,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
     Future(() async {
       addedAnimes = await SqliteUtil.getAnimesBySearch(widget.keyword);
-      return ClimeCoverUtil.climeAllCoverUrl(keyword); // 一定要return！！！
+      return ClimbCoverUtil.climbAllCoverUrl(keyword); // 一定要return！！！
     }).then((value) {
       searchAnimes = value;
       debugPrint("爬取结束");
@@ -224,22 +224,6 @@ class _AnimeClimbState extends State<AnimeClimb> {
   List websites = ["樱花动漫", "OmoFun"];
 
   _displayWebsiteOption() {
-    // return ListView(
-    //   children: websites
-    //       .map((website) => ListTile(
-    //             title: Text(website),
-    //             leading: selectedWebsite == website
-    //                 ? const Icon(Icons.radio_button_checked, color: Colors.blue)
-    //                 : const Icon(Icons.radio_button_off),
-    //             onTap: () {
-    //               setState(() {
-    //                 selectedWebsite = website;
-    //               });
-    //               SPUtil.setString("selectedWebsite", website);
-    //             },
-    //           ))
-    //       .toList(),
-    // );
     return ListTile(
       leading: const Icon(Icons.expand_more_outlined),
       title: Text(selectedWebsite),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
+import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
@@ -15,6 +16,7 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   final List<Widget> _list = [
     const AnimeListPage(),
+    const DirectoryPage(),
     const HistoryPage(),
     const NoteListPage(),
     const SettingPage(),
@@ -76,8 +78,12 @@ class _TabsState extends State<Tabs> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
+            icon: Icon(Icons.home_filled),
             label: "动漫",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: "目录",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history_rounded),

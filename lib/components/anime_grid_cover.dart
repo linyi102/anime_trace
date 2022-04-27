@@ -27,10 +27,31 @@ class AnimeGridCover extends StatelessWidget {
                       style: const TextStyle(fontSize: 20),
                     ),
                   )
-                : CachedNetworkImage(
-                    imageUrl: _anime.animeCoverUrl,
-                    fit: BoxFit.fitHeight,
+                : Container(
+                    // padding: const EdgeInsets.fromLTRB(3, 3, 5, 5),
+                    // decoration: BoxDecoration(
+                    //   boxShadow: [
+                    //     BoxShadow(
+                    //       color: Colors.grey, // 阴影的颜色
+                    //       offset: const Offset(20, 20), // 阴影与容器的距离
+                    //       blurRadius:
+                    //           45.0, // 高斯的标准偏差与盒子的形状卷积。spreadRadius: 0.0,
+                    //     ),
+                    //   ],
+                    // ),
+                    child: CachedNetworkImage(
+                      imageUrl: _anime.animeCoverUrl,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
+            // : Card(
+            //     elevation: 6, // z轴高度，即阴影大小
+            //     shadowColor: Colors.grey,
+            //     child: CachedNetworkImage(
+            //       imageUrl: _anime.animeCoverUrl,
+            //       fit: BoxFit.fitHeight,
+            //     ),
+            //   )
             // : Image.network(_anime.animeCoverUrl),
           ),
         ));

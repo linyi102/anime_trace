@@ -167,8 +167,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       _loadData();
                     });
                   },
-                  tooltip: "搜索封面",
-                  icon: const Icon(Icons.image_search_rounded)),
+                  tooltip: "迁移",
+                  icon: const Icon(Icons.drive_file_move_outline)),
               IconButton(
                   onPressed: () {
                     _dialogDeleteAnime();
@@ -262,6 +262,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: TextField(
+        enabled: false, // 不可编辑
         focusNode: animeNameFocusNode,
         maxLines: null, // 加上这个后，回车不会调用onEditingComplete
         controller: animeNameTextEditingController..text = _anime.animeName,

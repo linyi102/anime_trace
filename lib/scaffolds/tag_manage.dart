@@ -92,7 +92,7 @@ class _TagManageState extends State<TagManage> {
       tagListWidget.add(
         ListTile(
           key: ValueKey(i),
-          leading: const Icon(Icons.tag),
+          leading: const Icon(Icons.drag_handle),
           title: Text(tags[i]),
           onTap: () {
             showDialog(
