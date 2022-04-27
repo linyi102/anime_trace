@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
@@ -72,7 +73,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
       bool expandNote = SPUtil.getBool("hideNoteInAnimeDetail");
       for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
-        debugPrint(expandNote.toString());
+        // debugPrint(expandNote.toString());
         _expandNotes.add(expandNote);
       }
 
@@ -151,38 +152,59 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
                     onTap: () {
                       _dialogSelectTag();
+                      // 不能复用该对话框，如果选择了取消收藏，则需要退回到主页，但无法实现。
+                      // dialogSelectTag(setState, context, _anime);
                     },
                   ),
             actions: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      // MaterialPageRoute(
-                      //   builder: (context) => AnimeClimb(
-                      //     animeId: _anime.animeId,
-                      //     keyword: _anime.animeName,
-                      //   ),
-                      // ),
-                      FadeRoute(
-                        builder: (context) {
-                          return AnimeClimb(
-                            animeId: _anime.animeId,
-                            keyword: _anime.animeName,
-                          );
+              PopupMenuButton(
+                icon: const Icon(Icons.more_vert),
+                offset: const Offset(0, 50),
+                itemBuilder: (BuildContext context) {
+                  return [
+                    // PopupMenuItem(
+                    //   child: GestureDetector(
+                    //       child: const Text("取消收藏"),
+                    //       onTap: () {
+                    //         _dialogDeleteAnime();
+                    //       }),
+                    // ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: const Text("取消收藏"),
+                        onTap: () {
+                          _dialogDeleteAnime();
                         },
                       ),
-                    ).then((value) async {
-                      _loadData();
-                    });
-                  },
-                  tooltip: "迁移",
-                  icon: const Icon(Icons.drive_file_move_outline)),
-              IconButton(
-                  onPressed: () {
-                    _dialogDeleteAnime();
-                  },
-                  tooltip: "删除动漫",
-                  icon: const Icon(Icons.delete)),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: const Text("迁移动漫"),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            // MaterialPageRoute(
+                            //   builder: (context) => AnimeClimb(
+                            //     animeId: _anime.animeId,
+                            //     keyword: _anime.animeName,
+                            //   ),
+                            // ),
+                            FadeRoute(
+                              builder: (context) {
+                                return AnimeClimb(
+                                  animeId: _anime.animeId,
+                                  keyword: _anime.animeName,
+                                );
+                              },
+                            ),
+                          ).then((value) async {
+                            _loadData();
+                          });
+                        },
+                      ),
+                    ),
+                  ];
+                },
+              ),
             ],
           ),
           body: AnimatedSwitcher(
@@ -986,7 +1008,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               icon: const Icon(Icons.chevron_left_rounded),
             ),
           ),
-          Text("第 $reviewNumber 次观看"),
+          // Text("第 $reviewNumber 次观看"),
+          Text("$reviewNumber"),
           IconButton(
             onPressed: () {
               reviewNumber++;
@@ -1022,8 +1045,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                 icon: hideNoteInAnimeDetail
-                    ? const Icon(Icons.fullscreen_rounded)
-                    : const Icon(Icons.fullscreen_exit_rounded)),
+                    ? const Icon(Icons.expand_more)
+                    : const Icon(Icons.expand_less)),
+            IconButton(
+                onPressed: () {
+                  _dialogSelectSortMethod();
+                },
+                tooltip: "排序方式",
+                icon: const Icon(Icons.sort)),
             IconButton(
                 onPressed: () {
                   // _dialogUpdateEpisodeCnt();
@@ -1065,13 +1094,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   });
                 },
                 tooltip: "更改集数",
-                icon: const Icon(Icons.add)),
-            IconButton(
-                onPressed: () {
-                  _dialogSelectSortMethod();
-                },
-                tooltip: "排序方式",
-                icon: const Icon(Icons.sort)),
+                icon: const Icon(Icons.mode)),
           ],
         ),
       ],
