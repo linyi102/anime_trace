@@ -8,7 +8,7 @@ import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/utils/climb_cover_util.dart';
+import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -119,78 +119,151 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
+  bool _expandFilter = false;
   _showFilter() {
-    return ListView(
-      shrinkWrap: true, //解决无限高度问题
-      physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            // 给出高度才可以横向排列
-            height: 30,
-            child: Row(
+    return ExpansionPanelList(
+        elevation: 1,
+        expansionCallback: (panelIndex, isExpanded) {
+          setState(() {
+            _expandFilter = !isExpanded;
+          });
+        },
+        animationDuration: kThemeAnimationDuration,
+        children: <ExpansionPanel>[
+          ExpansionPanel(
+            headerBuilder: (context, isExpanded) {
+              return const ListTile(
+                title: Text("展开过滤"),
+                visualDensity: VisualDensity(vertical: -4),
+              );
+            },
+            isExpanded: _expandFilter,
+            canTapOnHeader: true,
+            body: ListView(
+              shrinkWrap: true, //解决无限高度问题
+              physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
               children: [
-                GestureDetector(
-                  child: const Text("年份："),
-                  onTap: () {
-                    int defaultYear = filter.year.isEmpty
-                        ? DateTime.now().year
-                        : int.parse(filter.year);
-                    dialogSelectUint(context, "选择年份",
-                            minValue: 2000,
-                            maxValue: DateTime.now().year + 2,
-                            defaultValue: defaultYear)
-                        .then((value) {
-                      if (value == null || value == 0 || value == defaultYear) {
-                        debugPrint("未选择，直接返回");
-                        return;
-                      }
-                      debugPrint("选择了$value");
-                      filter.year = value.toString();
-                      _loadData();
-                    });
-                  },
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: SizedBox(
+                    // 给出高度才可以横向排列
+                    height: 30,
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          child: const Text("年份："),
+                          onTap: () {
+                            int defaultYear = filter.year.isEmpty
+                                ? DateTime.now().year
+                                : int.parse(filter.year);
+                            dialogSelectUint(context, "选择年份",
+                                    minValue: 2000,
+                                    maxValue: DateTime.now().year + 2,
+                                    defaultValue: defaultYear)
+                                .then((value) {
+                              if (value == null ||
+                                  value == 0 ||
+                                  value == defaultYear) {
+                                debugPrint("未选择，直接返回");
+                                return;
+                              }
+                              debugPrint("选择了$value");
+                              filter.year = value.toString();
+                              _loadData();
+                            });
+                          },
+                        ),
+                        // Row嵌套ListView，需要使用Expanded嵌套ListView
+                        Expanded(
+                          child: ListView(
+                            // 横向滚动
+                            scrollDirection: Axis.horizontal,
+                            children: _showRadioYear(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                // Row嵌套ListView，需要使用Expanded嵌套ListView
-                Expanded(
-                  child: ListView(
-                    // 横向滚动
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioYear(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: SizedBox(
+                    height: 30,
+                    child: Row(
+                      children: [
+                        const Text("季度："),
+                        Expanded(
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _showRadioSeason(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: SizedBox(
+                    height: 30,
+                    child: Row(
+                      children: [
+                        const Text("地区："),
+                        Expanded(
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _showRadioRegion(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: SizedBox(
+                    height: 30,
+                    child: Row(
+                      children: [
+                        const Text("状态："),
+                        Expanded(
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _showRadioStatus(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: SizedBox(
+                    height: 30,
+                    child: Row(
+                      children: [
+                        const Text("类型："),
+                        Expanded(
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _showRadioCategory(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            height: 30,
-            child: Row(
-              children: [
-                const Text("季度："),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioSeason(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
+          )
+        ]);
   }
 
   _showRadioYear() {
     List<Widget> children = [];
 
-    List<String> years = [];
+    List<String> years = [""]; // 空字符串对应全部
     // groupValue(filter.year)对应选中的value
-    years.add("");
     int endYear = DateTime.now().year + 2;
     for (int year = endYear; year >= 2000; --year) {
       years.add("$year"); // 转为字符串
@@ -205,7 +278,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
               onChanged: (value) {
                 filter.year = value.toString();
 
-                debugPrint(filter.year);
+                // debugPrint(filter.year);
                 _loadData();
               }),
           Text(i == 0 ? "全部" : (i == years.length - 1 ? "2000以前" : years[i]))
@@ -218,8 +291,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   _showRadioSeason() {
     List<Widget> children = [];
 
-    var seasons = ["1", "4", "7", "10"];
-    seasons.insert(0, "");
+    var seasons = ["", "1", "4", "7", "10"];
     for (var i = 0; i < seasons.length; i++) {
       children.add(Row(
         children: [
@@ -228,10 +300,73 @@ class _DirectoryPageState extends State<DirectoryPage> {
               groupValue: filter.season,
               onChanged: (value) {
                 filter.season = value.toString();
-                debugPrint(filter.season);
+                // debugPrint(filter.season);
                 _loadData();
               }),
           Text(i == 0 ? "全部" : "${seasons[i]} 月")
+        ],
+      ));
+    }
+    return children;
+  }
+
+  _showRadioRegion() {
+    List<Widget> children = [];
+
+    var regions = ["", "日本", "中国", "欧美"];
+    for (var i = 0; i < regions.length; i++) {
+      children.add(Row(
+        children: [
+          Radio(
+              value: regions[i],
+              groupValue: filter.region,
+              onChanged: (value) {
+                filter.region = value.toString();
+                _loadData();
+              }),
+          Text(i == 0 ? "全部" : regions[i])
+        ],
+      ));
+    }
+    return children;
+  }
+
+  _showRadioStatus() {
+    List<Widget> children = [];
+
+    var statuss = ["", "连载", "完结", "未播放"];
+    for (var i = 0; i < statuss.length; i++) {
+      children.add(Row(
+        children: [
+          Radio(
+              value: statuss[i],
+              groupValue: filter.status,
+              onChanged: (value) {
+                filter.status = value.toString();
+                _loadData();
+              }),
+          Text(i == 0 ? "全部" : statuss[i])
+        ],
+      ));
+    }
+    return children;
+  }
+
+  _showRadioCategory() {
+    List<Widget> children = [];
+
+    var categorys = ["", "TV", "剧场版", "OVA"];
+    for (var i = 0; i < categorys.length; i++) {
+      children.add(Row(
+        children: [
+          Radio(
+              value: categorys[i],
+              groupValue: filter.category,
+              onChanged: (value) {
+                filter.category = value.toString();
+                _loadData();
+              }),
+          Text(i == 0 ? "全部" : categorys[i])
         ],
       ));
     }
