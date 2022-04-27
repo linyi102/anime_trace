@@ -33,6 +33,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   bool _loadOk = false;
   List<EpisodeNote> episodeNotes = [];
   late int reviewNumber;
+  List<bool> _expandNotes = [];
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -68,6 +69,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           _anime, reviewNumber);
       _sortEpisodes(SPUtil.getString("episodeSortMethod",
           defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
+
+      bool expandNote = SPUtil.getBool("hideNoteInAnimeDetail");
+      for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
+        debugPrint(expandNote.toString());
+        _expandNotes.add(expandNote);
+      }
+
       for (var episode in _episodes) {
         EpisodeNote episodeNote = EpisodeNote(
             anime: _anime,
@@ -212,17 +220,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     final imageProvider = Image.network(_anime.animeCoverUrl).image;
     return Stack(
       children: [
-        // SizedBox(
-        //   width: 999999999,
-        //   height: 200,
-        //   child: Opacity(
-        //     opacity: 0.2,
-        //     child: CachedNetworkImage(
-        //       imageUrl: _anime.animeCoverUrl,
-        //       fit: BoxFit.fitWidth,
-        //     ),
-        //   ),
-        // ),
         Flex(
           direction: Axis.horizontal,
           children: [
@@ -355,6 +352,114 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           ));
         }
 
+        // columnChildren.add(ExpansionPanelList(
+        //     elevation: 0,
+        //     expansionCallback: (panelIndex, isExpanded) {
+        //       setState(() {
+        //         _expandNotes[episodeIndex] = !isExpanded;
+        //       });
+        //     },
+        //     animationDuration: kThemeAnimationDuration,
+        //     children: <ExpansionPanel>[
+        //       ExpansionPanel(
+        //           headerBuilder: (context, isExpanded) {
+        //             return ListTile(
+        //               selectedTileColor: multiSelectedColor,
+        //               selected: mapSelected.containsKey(episodeIndex),
+        //               selectedColor: Colors.black,
+        //               // visualDensity: const VisualDensity(vertical: -2),
+        //               // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+        //               title: Text(
+        //                 "第 ${_episodes[episodeIndex].number} 集",
+        //                 style: TextStyle(
+        //                   color: _episodes[episodeIndex].isChecked()
+        //                       ? Colors.black54
+        //                       : Colors.black,
+        //                 ),
+        //               ),
+        //               // subtitle: Text(_episodes[i].getDate()),
+        //               // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
+        //               // style: ListTileStyle.drawer,
+        //               trailing: Text(
+        //                 _episodes[episodeIndex].getDate(),
+        //                 style: const TextStyle(color: Colors.black54),
+        //               ),
+        //               leading: IconButton(
+        //                 // iconSize: 20,
+        //                 visualDensity: VisualDensity.compact, // 缩小leading
+        //                 hoverColor: Colors.transparent, // 悬停时的颜色
+        //                 highlightColor: Colors.transparent, // 长按时的颜色
+        //                 splashColor: Colors.transparent, // 点击时的颜色
+        //                 onPressed: () async {
+        //                   if (_episodes[episodeIndex].isChecked()) {
+        //                     _dialogRemoveDate(
+        //                       _episodes[episodeIndex].number,
+        //                       _episodes[episodeIndex].dateTime,
+        //                     ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+        //                   } else {
+        //                     String date = DateTime.now().toString();
+        //                     SqliteUtil.insertHistoryItem(
+        //                         _anime.animeId,
+        //                         _episodes[episodeIndex].number,
+        //                         date,
+        //                         reviewNumber);
+        //                     _episodes[episodeIndex].dateTime = date;
+        //                     // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+        //                     EpisodeNote episodeNote = EpisodeNote(
+        //                         anime: _anime,
+        //                         episode: _episodes[episodeIndex],
+        //                         relativeLocalImages: [],
+        //                         imgUrls: []);
+
+        //                     // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+        //                     episodeNotes[episodeIndex] = await SqliteUtil
+        //                         .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+        //                             episodeNote);
+        //                     // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
+        //                     // episodeNote.episodeNoteId =
+        //                     //     await SqliteUtil.insertEpisodeNote(episodeNote);
+        //                     // episodeNotes[i] = episodeNote; // 更新
+        //                     _moveToLastIfSet(episodeIndex);
+        //                     setState(() {});
+        //                   }
+        //                 },
+        //                 icon: AnimatedSwitcher(
+        //                   duration: const Duration(milliseconds: 200),
+        //                   // transitionBuilder: (Widget child, Animation<double> animation) {
+        //                   //   //执行缩放动画
+        //                   //   return ScaleTransition(child: child, scale: animation);
+        //                   // },
+        //                   child: _episodes[episodeIndex].isChecked()
+        //                       ? Icon(
+        //                           Icons.check_box_outlined,
+        //                           // Icons.check_rounded,
+        //                           color: Colors.black54,
+        //                           key: Key(
+        //                               "$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
+        //                         )
+        //                       : const Icon(
+        //                           Icons.check_box_outline_blank_rounded,
+        //                           color: Colors.black54,
+        //                         ),
+        //                 ),
+        //               ),
+        //               onTap: () {
+        //                 onpress(episodeIndex);
+        //               },
+        //               onLongPress: () async {
+        //                 // pickDate(episodeIndex);
+        //                 onLongPress(episodeIndex);
+        //               },
+        //             );
+        //           },
+        //           isExpanded: _expandNotes[episodeIndex],
+        //           // canTapOnHeader: true,
+        //           body: _episodes[episodeIndex].isChecked()
+        //               ? displayNote(episodeIndex, context)
+        //               : Container())
+        //     ]));
+
+        // 添加每集
         columnChildren.add(
           ListTile(
             selectedTileColor: multiSelectedColor,
@@ -445,6 +550,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
           columnChildren.add(displayNote(episodeIndex, context));
         }
+
         // 在最后一集下面添加空白
         if (episodeIndex == _episodes.length - 1) {
           columnChildren.add(const ListTile());
@@ -900,9 +1006,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     // 原先隐藏，则设置为false，表示显示
                     SPUtil.setBool("hideNoteInAnimeDetail", false);
                     hideNoteInAnimeDetail = false;
+                    // 可折叠
+                    for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
+                      _expandNotes[i] = true;
+                    }
                   } else {
                     SPUtil.setBool("hideNoteInAnimeDetail", true);
                     hideNoteInAnimeDetail = true;
+                    // 可折叠
+                    for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
+                      _expandNotes[i] = false;
+                    }
                   }
                   setState(() {});
                 },

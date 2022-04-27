@@ -67,5 +67,6 @@ class Anime {
 
   bool isCollected() {
     return animeId > 0;
+    // return tagName.isNotEmpty;
   }
 }

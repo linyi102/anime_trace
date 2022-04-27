@@ -483,7 +483,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                       color: Colors.red,
                     )
                   : const Icon(Icons.favorite_border)),
-          anime.tagName.isNotEmpty ? Text(anime.tagName) : Container()
+          anime.isCollected() ? Text(anime.tagName) : Container()
         ],
       ),
     );

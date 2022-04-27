@@ -240,8 +240,8 @@ class SqliteUtil {
 
     String datetime = DateTime.now().toString();
     return await _database.rawInsert('''
-    insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url, cover_source)
-    values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.coverSource}');
+      insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time, anime_cover_url, cover_source)
+      values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.coverSource}');
     ''');
   }
 

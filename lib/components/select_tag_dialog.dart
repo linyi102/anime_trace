@@ -21,19 +21,24 @@ dialogSelectTag(setState, context, Anime anime) {
                 : const Icon(
                     Icons.radio_button_off_outlined,
                   ),
-            onTap: () {
+            onTap: () async {
               // 不能只传入tagName，需要把对象的引用传进来，然后修改就会生效
               // 如果起初没有收藏，则说明是新增，否则修改
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
-                SqliteUtil.insertAnime(anime).then((lastInsertId) {
-                  showToast("收藏成功！");
-                  // 修改id
-                  anime.animeId = lastInsertId;
-                });
+                anime.animeId = await SqliteUtil.insertAnime(anime);
+                // 方法2：
+                // SqliteUtil.insertAnime(anime).then((lastInsertId) {
+                //   showToast("收藏成功！");
+                //   // 修改id
+                //   anime.animeId = lastInsertId;
+                //   // 这里也要重新渲染，因为在then里
+                //   setState(() {});
+                // });
               } else {
                 SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
                 anime.tagName = tags[i];
+
                 showToast("修改成功！");
               }
               setState(() {});
