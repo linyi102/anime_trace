@@ -29,10 +29,14 @@ class _DirectoryPageState extends State<DirectoryPage> {
       _loadData();
     } else {
       // 如果已有数据，则直接显示
-      Future.delayed(const Duration(milliseconds: 0)).then((value) {
-        setState(() {
-          _loadOk = true;
-        });
+      Future.delayed(const Duration(milliseconds: 0)).then((value) async {
+        // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
+        for (int i = 0; i < directory.length; ++i) {
+          directory[i] =
+              await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
+        }
+        _loadOk = true;
+        setState(() {});
       });
     }
   }
@@ -440,7 +444,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
-        style: const TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 17),
       ),
     );
   }

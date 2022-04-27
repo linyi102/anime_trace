@@ -36,6 +36,7 @@ class _NoteListPageState extends State<NoteListPage> {
   }
 
   void _loadData() {
+    _loadOk = false;
     Future(() {
       debugPrint("note_list_page: 开始加载数据");
       // return SqliteUtil.getAllNotesByTableHistory();
@@ -61,30 +62,41 @@ class _NoteListPageState extends State<NoteListPage> {
           ),
         ),
         actions: [
-          // IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
-          IconButton(
-              onPressed: () {
-                if (hideAnimeListTile) {
-                  SPUtil.setBool("hideAnimeListTile", false);
-                } else {
-                  SPUtil.setBool("hideAnimeListTile", true);
-                }
-                setState(() {
-                  hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
-                });
-              },
-              icon: hideAnimeListTile
-                  ? const Icon(Icons.unfold_more)
-                  : const Icon(Icons.unfold_less)),
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, FadeRoute(
-                  builder: (context) {
-                    return const NoteSetting();
-                  },
-                )).then((value) => _loadData());
-              },
-              icon: const Icon(Icons.settings)),
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            offset: const Offset(0, 50),
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  child: ListTile(
+                    title: const Text("显示/隐藏动漫行"),
+                    onTap: () {
+                      if (hideAnimeListTile) {
+                        SPUtil.setBool("hideAnimeListTile", false);
+                      } else {
+                        SPUtil.setBool("hideAnimeListTile", true);
+                      }
+                      setState(() {
+                        hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
+                      });
+                    },
+                  ),
+                ),
+                PopupMenuItem(
+                  child: ListTile(
+                    title: const Text("更多设置"),
+                    onTap: () {
+                      Navigator.push(context, FadeRoute(
+                        builder: (context) {
+                          return const NoteSetting();
+                        },
+                      )).then((value) => _loadData());
+                    },
+                  ),
+                ),
+              ];
+            },
+          ),
         ],
       ),
       body: AnimatedSwitcher(

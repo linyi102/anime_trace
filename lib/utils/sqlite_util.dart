@@ -500,6 +500,9 @@ class SqliteUtil {
     ''');
     // 为空返回旧对象
     if (list.isEmpty) {
+      // 传入的对象可能已经在动漫页进入的详细页中被取消收藏了，但目录页显示的旧数据仍然保留着id和tagName等信息
+      anime.animeId = 0;
+      anime.tagName = "";
       return anime;
     }
     int animeId = list[0]['anime_id'] as int;
