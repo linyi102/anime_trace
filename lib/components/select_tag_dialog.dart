@@ -44,9 +44,8 @@ dialogSelectTag(setState, context, Anime anime) {
       }
       return AlertDialog(
         title: const Text('选择标签'),
-        content: AspectRatio(
-          aspectRatio: 0.9 / 1,
-          child: ListView(
+        content: SingleChildScrollView(
+          child: Column(
             children: radioList,
           ),
         ),
@@ -57,6 +56,9 @@ dialogSelectTag(setState, context, Anime anime) {
               if (anime.isCollected()) {
                 SqliteUtil.deleteAnimeByAnimeId(anime.animeId);
                 anime.animeId = 0;
+                anime.tagName = "";
+                setState(() {});
+                showToast("取消成功！");
               }
               Navigator.of(context).pop();
             },

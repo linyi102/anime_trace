@@ -9,6 +9,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/utils/climb_cover_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -37,8 +38,18 @@ class _DirectoryPageState extends State<DirectoryPage> {
     });
     Future(() async {
       directory = await ClimbCoverUtil.climbDirectory(filter);
-    }).then((value) {
+    }).then((value) async {
       debugPrint("目录页：数据获取完毕");
+      // 根据动漫名和来源查询动漫，如果存在
+      // 则获取到id(用于进入详细页)和tagName(用于修改tag)
+      // 下面两种方式修改了anime，都不能修改数组中的值
+      // 1. for (var anime in directory) {
+      // 2. for (int i = 0; i < directory.length; ++i) {
+      //   Anime anime = directory[i];
+      for (int i = 0; i < directory.length; ++i) {
+        directory[i] =
+            await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
+      }
       _loadOk = true;
       setState(() {});
     });
@@ -235,17 +246,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
       itemBuilder: (BuildContext context, int index) {
         final anime = directory[index];
         final imageProvider = Image.network(anime.animeCoverUrl).image;
-        // return ListTile(
-        //   leading: ClipRRect(
-        //     borderRadius: BorderRadius.circular(5),
-        //     child: Image.network(
-        //       anime.animeCoverUrl,
-        //       fit: BoxFit.fitWidth,
-        //     ),
-        //   ),
-        //   title: Text(anime.animeName),
-        //   subtitle: Text(anime.getSubTitle()),
-        // );
         return Row(
           children: [
             Padding(

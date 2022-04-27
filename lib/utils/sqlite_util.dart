@@ -485,6 +485,35 @@ class SqliteUtil {
     return anime;
   }
 
+  static Future<Anime> getAnimeByAnimeNameAndSource(Anime anime) async {
+    // debugPrint("sql: getAnimeIdByAnimeNameAndSource()");
+    var list = await _database.rawQuery('''
+      select anime_id, anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url, cover_source
+      from anime
+      where anime_name = '${anime.animeName}' and cover_source = '${anime.coverSource}';
+    ''');
+    // 为空返回旧对象
+    if (list.isEmpty) {
+      return anime;
+    }
+    int animeId = list[0]['anime_id'] as int;
+    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
+        maxReviewNumber: maxReviewNumber);
+    Anime searchedanime = Anime(
+      animeId: animeId,
+      animeName: list[0]['anime_name'] as String,
+      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
+      animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
+      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
+      tagName: list[0]['tag_name'] as String,
+      checkedEpisodeCnt: checkedEpisodeCnt,
+      reviewNumber: maxReviewNumber,
+      coverSource: list[0]['cover_source'] as String,
+    );
+    return searchedanime;
+  }
+
   static Future<int> getAnimeLastId() async {
     debugPrint("sql: getAnimeLastId");
     var list = await _database.rawQuery('''
