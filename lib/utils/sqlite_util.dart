@@ -414,9 +414,15 @@ class SqliteUtil {
   static void updateTagName(String oldTagName, String newTagName) async {
     debugPrint("sql: updateTagNameByTagId");
     await _database.rawUpdate('''
-    update tag
-    set tag_name = '$newTagName'
-    where tag_name = '$oldTagName';
+      update tag
+      set tag_name = '$newTagName'
+      where tag_name = '$oldTagName';
+    ''');
+    // 更改tag表的tag_name后，还需要更改动漫表中的tag_name列
+    await _database.rawUpdate('''
+      update anime
+      set tag_name = '$newTagName'
+      where tag_name = '$oldTagName';
     ''');
   }
 

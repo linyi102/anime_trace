@@ -316,19 +316,24 @@ class _DirectoryPageState extends State<DirectoryPage> {
   }
 
   // 传入index是为了便于后面更改directory中的该动漫的id
-  _showCollectIcon(anime) {
+  _showCollectIcon(Anime anime) {
     return Container(
       padding: const EdgeInsets.only(right: 15),
-      child: IconButton(
-          onPressed: () {
-            dialogSelectTag(setState, context, anime);
-          },
-          icon: anime.isCollected()
-              ? const Icon(
-                  Icons.favorite,
-                  color: Colors.red,
-                )
-              : const Icon(Icons.favorite_border)),
+      child: Column(
+        children: [
+          IconButton(
+              onPressed: () {
+                dialogSelectTag(setState, context, anime);
+              },
+              icon: anime.isCollected()
+                  ? const Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    )
+                  : const Icon(Icons.favorite_border)),
+          anime.tagName.isNotEmpty ? Text(anime.tagName) : Container()
+        ],
+      ),
     );
   }
 }
