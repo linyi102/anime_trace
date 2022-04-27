@@ -63,13 +63,22 @@ class _DirectoryPageState extends State<DirectoryPage> {
           ),
         ],
       ),
-      body: _loadOk ? _showBody() : Container(),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: _loadOk
+            ? _showBody()
+            : Container(
+                key: UniqueKey(),
+              ),
+      ),
     );
   }
 
   _showBody() {
-    return ListView(
-      children: [_showFilter(), _showAnimeList()],
+    return Scrollbar(
+      child: ListView(
+        children: [_showFilter(), _showAnimeList()],
+      ),
     );
   }
 
@@ -85,57 +94,27 @@ class _DirectoryPageState extends State<DirectoryPage> {
             height: 25,
             child: Row(
               children: [
-                // const Text("年份："),
-                // GestureDetector(
-                //   child: const Text("年份："),
-                //   onTap: () {
-                //     int defaultYear = filter.year.isEmpty
-                //         ? DateTime.now().year
-                //         : int.parse(filter.year);
-                //     dialogSelectUint(context, "选择年份",
-                //             minValue: 2000,
-                //             maxValue: DateTime.now().year + 2,
-                //             defaultValue: defaultYear)
-                //         .then((value) {
-                //       if (value == null || value == 0 || value == defaultYear) {
-                //         debugPrint("未选择，直接返回");
-                //         return;
-                //       }
-                //       debugPrint("选择了$value");
-                //       filter.year = value.toString();
-                //       _loadData();
-                //     });
-                //   },
-                // ),
-                TextButton(
-                    style: ButtonStyle(
-                      padding:
-                          MaterialStateProperty.all(const EdgeInsets.all(0)),
-                      foregroundColor: MaterialStateProperty.all(Colors.black),
-                      side: MaterialStateProperty.all(BorderSide.none),
-                      // alignment: Alignment.centerLeft,
-                    ),
-                    onPressed: () {
-                      int defaultYear = filter.year.isEmpty
-                          ? DateTime.now().year
-                          : int.parse(filter.year);
-                      dialogSelectUint(context, "选择年份",
-                              minValue: 2000,
-                              maxValue: DateTime.now().year + 2,
-                              defaultValue: defaultYear)
-                          .then((value) {
-                        if (value == null ||
-                            value == 0 ||
-                            value == defaultYear) {
-                          debugPrint("未选择，直接返回");
-                          return;
-                        }
-                        debugPrint("选择了$value");
-                        filter.year = value.toString();
-                        _loadData();
-                      });
-                    },
-                    child: const Text("年份：")),
+                GestureDetector(
+                  child: const Text("年份："),
+                  onTap: () {
+                    int defaultYear = filter.year.isEmpty
+                        ? DateTime.now().year
+                        : int.parse(filter.year);
+                    dialogSelectUint(context, "选择年份",
+                            minValue: 2000,
+                            maxValue: DateTime.now().year + 2,
+                            defaultValue: defaultYear)
+                        .then((value) {
+                      if (value == null || value == 0 || value == defaultYear) {
+                        debugPrint("未选择，直接返回");
+                        return;
+                      }
+                      debugPrint("选择了$value");
+                      filter.year = value.toString();
+                      _loadData();
+                    });
+                  },
+                ),
                 // Row嵌套ListView，需要使用Expanded嵌套ListView
                 Expanded(
                   child: ListView(

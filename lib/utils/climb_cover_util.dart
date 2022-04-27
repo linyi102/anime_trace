@@ -69,7 +69,6 @@ class ClimbCoverUtil {
         if (episodeCntStr == "[全集]") {
           episodeCnt = 1;
         } else {
-          // 找「第」开头
           int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
           int episodeCntEndIndex = episodeCntStr.indexOf("集"); // 不要-1
           if (episodeCntStartIndex < episodeCntEndIndex) {
