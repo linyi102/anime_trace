@@ -162,16 +162,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 offset: const Offset(0, 50),
                 itemBuilder: (BuildContext context) {
                   return [
-                    // PopupMenuItem(
-                    //   child: GestureDetector(
-                    //       child: const Text("取消收藏"),
-                    //       onTap: () {
-                    //         _dialogDeleteAnime();
-                    //       }),
-                    // ),
                     PopupMenuItem(
                       child: ListTile(
                         title: const Text("取消收藏"),
+                        style: ListTileStyle.drawer,
                         onTap: () {
                           _dialogDeleteAnime();
                         },
@@ -179,7 +173,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
                     PopupMenuItem(
                       child: ListTile(
+                        title: const Text("访问网址"),
+                        style: ListTileStyle.drawer,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
                         title: const Text("迁移动漫"),
+                        style: ListTileStyle.drawer,
                         onTap: () {
                           Navigator.of(context).push(
                             // MaterialPageRoute(
@@ -199,6 +203,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                           ).then((value) async {
                             _loadData();
                           });
+                          Navigator.pop(context);
                         },
                       ),
                     ),

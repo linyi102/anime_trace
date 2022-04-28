@@ -69,7 +69,10 @@ class _NoteListPageState extends State<NoteListPage> {
               return [
                 PopupMenuItem(
                   child: ListTile(
-                    title: const Text("显示/隐藏动漫行"),
+                    title: hideAnimeListTile
+                        ? const Text("显示动漫行")
+                        : const Text("隐藏动漫行"),
+                    style: ListTileStyle.drawer,
                     onTap: () {
                       if (hideAnimeListTile) {
                         SPUtil.setBool("hideAnimeListTile", false);
@@ -79,13 +82,16 @@ class _NoteListPageState extends State<NoteListPage> {
                       setState(() {
                         hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
                       });
+                      Navigator.pop(context);
                     },
                   ),
                 ),
                 PopupMenuItem(
                   child: ListTile(
                     title: const Text("更多设置"),
+                    style: ListTileStyle.drawer,
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(context, FadeRoute(
                         builder: (context) {
                           return const NoteSetting();

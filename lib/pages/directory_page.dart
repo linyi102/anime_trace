@@ -88,7 +88,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Icons.extension_outlined),
           ),
         ],
       ),

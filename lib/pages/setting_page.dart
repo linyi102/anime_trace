@@ -190,7 +190,8 @@ class _SettingPageState extends State<SettingPage> {
     return ListTile(
       leading: const Icon(
         // Icons.image_outlined,
-        Icons.wallpaper_outlined,
+        // Icons.wallpaper_outlined,
+        Icons.perm_media_outlined,
         color: Colors.blue,
       ),
       title: const Text("设置图片"),
