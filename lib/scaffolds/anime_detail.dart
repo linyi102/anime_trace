@@ -160,6 +160,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     },
                   ),
             actions: [
+              IconButton(
+                  onPressed: () async {
+                    if (_anime.animeUrl.isEmpty) {
+                      showToast("当前动漫没有来源，请先进行迁移");
+                      return;
+                    }
+                    Anime oldAnime = _anime;
+                    Anime newAnime =
+                        await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);
+                    SqliteUtil.updateAnime(oldAnime, newAnime);
+                    setState(() {
+                      _anime = newAnime;
+                    });
+                    showToast("更新信息成功");
+                  },
+                  tooltip: "更新信息",
+                  icon: const Icon(Icons.refresh)),
               PopupMenuButton(
                 icon: const Icon(Icons.more_vert),
                 offset: const Offset(0, 50),
@@ -233,22 +250,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 : Stack(children: [
                     // ListView嵌套ListViewBuilder会导致builder失效，仍会全部加载，因此只使用ListViewBuilder，index为0时添加动漫信息就可以了
                     _displayEpisodePlus(),
-                    // ListView(
-                    //   children: [
-                    //     _displayAnimeInfo(),
-                    //     const SizedBox(
-                    //       height: 10,
-                    //     ),
-                    //     const Padding(
-                    //       padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
-                    //       child: Divider(
-                    //         thickness: 1,
-                    //       ),
-                    //     ),
-                    //     _displayButtonsAboutEpisode(),
-                    //     _displayEpisodePlus(),
-                    //   ],
-                    // ),
                     _showBottomButton(),
                   ]),
           )),
@@ -257,110 +258,82 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _displayAnimeInfo() {
     final imageProvider = Image.network(_anime.animeCoverUrl).image;
-    return Stack(
+    return Row(
       children: [
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 20, 0, 15),
-              child: SizedBox(
-                width: 110,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      showImageViewer(context, imageProvider, immersive: false);
-                    },
-                    child: AnimeGridCover(_anime),
-                  ),
-                ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+          child: SizedBox(
+            width: 90,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: MaterialButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  showImageViewer(context, imageProvider, immersive: false);
+                },
+                child: AnimeGridCover(_anime),
               ),
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  _displayAnimeName(),
-                  _displaySource(),
-                  // _displayDesc(),
-                ],
-              ),
-            ),
-          ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              _showAnimeName(_anime.animeName),
+              _showNameAnother(_anime.nameAnother),
+              _showCoverSource(
+                  ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
+              _showAnimeInfo(_anime.getSubTitle()),
+              // _displayDesc(),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  _displayAnimeName() {
-    var animeNameTextEditingController = TextEditingController();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: TextField(
-        enabled: false, // 不可编辑
-        focusNode: animeNameFocusNode,
-        maxLines: null, // 加上这个后，回车不会调用onEditingComplete
-        controller: animeNameTextEditingController..text = _anime.animeName,
-        style: const TextStyle(
-          fontSize: 17,
-          overflow: TextOverflow.ellipsis,
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-        ),
-        onTap: () {},
-        // 情况1：改完名字直接返回，此时需要onChanged来时刻监听输入的值，并改变_anime.animeName，然后在返回键和返回按钮中更新数据库并传回
-        onChanged: (value) {
-          _anime.animeName = value;
-        },
-        // 情况2：改完名字后回车，会直接保存到_anime.animeName和数据库中
-        onEditingComplete: () {
-          String newAnimeName = animeNameTextEditingController.text;
-          debugPrint("失去焦点，动漫名称为：$newAnimeName");
-          _anime.animeName = newAnimeName;
-          SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, newAnimeName);
-          FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-        },
+  _showAnimeName(animeName) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      child: Text(
+        animeName,
+        style: const TextStyle(fontSize: 17),
       ),
     );
   }
 
-  _displaySource() {
-    return Padding(
+  _showNameAnother(String nameAnother) {
+    return nameAnother.isEmpty
+        ? Container()
+        : Container(
+            alignment: Alignment.topLeft,
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            child: Text(
+              nameAnother,
+              style: const TextStyle(color: Colors.black54),
+            ),
+          );
+  }
+
+  _showAnimeInfo(animeInfo) {
+    return Container(
+      alignment: Alignment.topLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Row(
-        children: [
-          Text(
-            ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl),
-            style: const TextStyle(color: Colors.black54),
-          ),
-        ],
+      child: Text(
+        animeInfo,
+        style: const TextStyle(color: Colors.black54),
       ),
     );
   }
 
-  _displayDesc() {
-    var descTextEditingController = TextEditingController();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: TextField(
-        // focusNode: descFocusNode,
-        maxLines: null,
-        controller: descTextEditingController..text = _anime.animeDesc,
-        decoration: const InputDecoration(
-          hintText: "描述",
-          border: InputBorder.none,
-        ),
-        style: const TextStyle(height: 1.5, fontSize: 16),
-        onChanged: (value) {
-          _anime.animeDesc = value;
-        },
-        // 因为设置的是无限行(可以回车换行)，所以怎样也不会执行onEditingComplete
-        // onEditingComplete: () {
-        //   debugPrint("失去焦点，动漫名称为：${descTextEditingController.text}");
-        //   FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-        // },
+  _showCoverSource(coverSource) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+      child: Text(
+        coverSource,
+        style: const TextStyle(color: Colors.black54),
       ),
     );
   }

@@ -442,7 +442,6 @@ class SqliteUtil {
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
     debugPrint("sql: getAnimeByAnimeId($animeId)");
     var list = await _database.rawQuery('''
-    -- select anime_name, anime_episode_cnt, tag_name, anime_desc, anime_cover_url, premiere_time, name_another, name_ori, author_ori, area, play_status, production_company, official_site, category, anime_url
     select *
     from anime
     where anime_id = $animeId;
@@ -462,6 +461,7 @@ class SqliteUtil {
       reviewNumber: maxReviewNumber,
       premiereTime: list[0]['name_another'] as String? ?? "",
       nameOri: list[0]['name_ori'] as String? ?? "",
+      nameAnother: list[0]['name_another'] as String? ?? "",
       authorOri: list[0]['author_ori'] as String? ?? "",
       area: list[0]['area'] as String? ?? "",
       playStatus: list[0]['play_status'] as String? ?? "",

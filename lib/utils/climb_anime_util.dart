@@ -74,12 +74,12 @@ class ClimbAnimeUtil {
       for (var li in lis) {
         String desc = li.getElementsByTagName("p")[0].innerHtml;
         String episodeCntStr = li.getElementsByTagName("font")[0].innerHtml;
-        int episodeCnt = -1;
+        int episodeCnt = 0;
         if (episodeCntStr == "[全集]") {
           episodeCnt = 1;
         } else {
           int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
-          int episodeCntEndIndex = episodeCntStr.indexOf("集"); // 不要-1
+          int episodeCntEndIndex = episodeCntStr.indexOf("集");
           if (episodeCntStartIndex < episodeCntEndIndex) {
             episodeCnt = int.parse(episodeCntStr.substring(
                 episodeCntStartIndex, episodeCntEndIndex));
@@ -100,44 +100,6 @@ class ClimbAnimeUtil {
           animeUrl: animeUrl,
         );
         animes.add(anime);
-        // 进入该动漫网址，获取详细信息(每个动漫都得获取，速度太慢了)
-        // try {
-        //   var response = await Dio().get(animeUrl);
-        //   var document = parse(response.data);
-        //   var animeInfo = document.getElementsByClassName("sinfo")[0];
-        //   String premiereTime = animeInfo
-        //       .getElementsByTagName("span")[0]
-        //       .getElementsByTagName("a")[0]
-        //       .innerHtml;
-        //   String area = animeInfo
-        //       .getElementsByTagName("span")[1]
-        //       .getElementsByTagName("a")[0]
-        //       .innerHtml;
-        //   String category = animeInfo
-        //       .getElementsByTagName("span")[4]
-        //       .getElementsByTagName("a")[0]
-        //       .innerHtml;
-        //   String playStatus = animeInfo
-        //       .getElementsByTagName("span")[4]
-        //       .getElementsByTagName("a")[2]
-        //       .innerHtml;
-        //   Anime anime = Anime(
-        //     animeName: animeName ?? "", // 没有名字时返回空串
-        //     animeEpisodeCnt: episodeCnt,
-        //     animeDesc: desc,
-        //     animeCoverUrl: coverUrl ?? "",
-        //     coverSource: "yhdm",
-        //     animeUrl: animeUrl,
-        //     premiereTime: premiereTime,
-        //     area: area,
-        //     category: category,
-        //     playStatus: playStatus,
-        //   );
-        //   directory.add(anime);
-        // } catch (e) {
-        //   debugPrint(e.toString());
-        // }
-        // debugPrint(anime);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -200,5 +162,49 @@ class ClimbAnimeUtil {
       debugPrint(e.toString());
     }
     return allAnimeNameAndCoverUrl;
+  }
+
+  static Future<Anime> climbAnimeInfoByUrl(Anime anime) async {
+    // 注意不要修改旧对象的id
+    if (getSourceByAnimeUrl(anime.animeUrl) == "樱花动漫") {
+      anime = await _climbAnimeInfoOfyhdm(anime);
+    } else {
+      debugPrint("无来源，无法更新");
+    }
+    return anime;
+  }
+
+  static Future<Anime> _climbAnimeInfoOfyhdm(Anime anime) async {
+    // 进入该动漫网址，获取详细信息
+    try {
+      var response = await Dio().get(anime.animeUrl);
+      var document = parse(response.data);
+      var animeInfo = document.getElementsByClassName("sinfo")[0];
+      String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
+      // str内容：
+      // <label>别名:</label>古見さんは、コミ ュ症です。2期
+      debugPrint("str=$str");
+      anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
+      anime.premiereTime = animeInfo
+          .getElementsByTagName("span")[0]
+          .getElementsByTagName("a")[0]
+          .innerHtml;
+      anime.area = animeInfo
+          .getElementsByTagName("span")[1]
+          .getElementsByTagName("a")[0]
+          .innerHtml;
+      anime.category = animeInfo
+          .getElementsByTagName("span")[4]
+          .getElementsByTagName("a")[0]
+          .innerHtml;
+      anime.playStatus = animeInfo
+          .getElementsByTagName("span")[4]
+          .getElementsByTagName("a")[2]
+          .innerHtml;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    debugPrint(anime.toString());
+    return anime;
   }
 }

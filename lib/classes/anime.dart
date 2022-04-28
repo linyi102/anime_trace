@@ -43,7 +43,7 @@ class Anime {
 
   @override
   String toString() {
-    return "animeId=$animeId, animeName=$animeName, animeEpisodeCnt=$animeEpisodeCnt, tagName=$tagName, checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, animeUrl=$animeUrl";
+    return "animeId=$animeId\nanimeName=$animeName\nanimeEpisodeCnt=$animeEpisodeCnt\ntagName=$tagName\ncheckedEpisodeCnt=$checkedEpisodeCnt\nanimeCoverUrl=$animeCoverUrl\nanimeUrl=$animeUrl\npremiereTime=$premiereTime\nanimeDesc=$animeDesc\nplayStatus=$playStatus\ncategory=$category\narea=$area\n";
   }
 
   String getSubTitle() {
