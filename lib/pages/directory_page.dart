@@ -475,7 +475,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
-  // 传入index是为了便于后面更改directory中的该动漫的id
   _showCollectIcon(Anime anime) {
     return Container(
       padding: const EdgeInsets.only(right: 15),

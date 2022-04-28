@@ -27,6 +27,7 @@ dialogSelectTag(setState, context, Anime anime) {
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
                 anime.animeId = await SqliteUtil.insertAnime(anime);
+                showToast("收藏成功！");
                 // 方法2：
                 // SqliteUtil.insertAnime(anime).then((lastInsertId) {
                 //   showToast("收藏成功！");
@@ -38,7 +39,6 @@ dialogSelectTag(setState, context, Anime anime) {
               } else {
                 SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
                 anime.tagName = tags[i];
-
                 showToast("修改成功！");
               }
               setState(() {});
