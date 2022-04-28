@@ -63,7 +63,29 @@ class ClimbAnimeUtil {
     return directory;
   }
 
-// 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
+  // 解析樱花动漫里的集数
+  static int _parseEpisodeCntOfyhdm(episodeCntStr) {
+    int episodeCnt = 0;
+    if (episodeCntStr == "[全集]") {
+      episodeCnt = 1;
+    } else if (episodeCntStr.contains("第")) {
+      int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
+      int episodeCntEndIndex = episodeCntStr.indexOf("集");
+      if (episodeCntStartIndex < episodeCntEndIndex) {
+        episodeCnt = int.parse(
+            episodeCntStr.substring(episodeCntStartIndex, episodeCntEndIndex));
+      }
+    } else if (episodeCntStr.contains("01-")) {
+      // [TV 01-12+OVA+SP]
+      int episodeCntStartIndex = episodeCntStr.indexOf("01-") + 3; // 跳过01-
+      // [start, end)，中间有2个数字，即集数
+      episodeCnt = int.parse(episodeCntStr.substring(
+          episodeCntStartIndex, episodeCntStartIndex + 2));
+    }
+    return episodeCnt;
+  }
+
+  // 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
   static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url) async {
     List<Anime> animes = [];
     try {
@@ -74,17 +96,8 @@ class ClimbAnimeUtil {
       for (var li in lis) {
         String desc = li.getElementsByTagName("p")[0].innerHtml;
         String episodeCntStr = li.getElementsByTagName("font")[0].innerHtml;
-        int episodeCnt = 0;
-        if (episodeCntStr == "[全集]") {
-          episodeCnt = 1;
-        } else {
-          int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
-          int episodeCntEndIndex = episodeCntStr.indexOf("集");
-          if (episodeCntStartIndex < episodeCntEndIndex) {
-            episodeCnt = int.parse(episodeCntStr.substring(
-                episodeCntStartIndex, episodeCntEndIndex));
-          }
-        }
+        int episodeCnt = _parseEpisodeCntOfyhdm(episodeCntStr);
+
         String? coverUrl = li.getElementsByTagName("img")[0].attributes["src"];
         if (coverUrl != null && coverUrl.startsWith("//")) {
           coverUrl = "https:$coverUrl";
@@ -168,8 +181,9 @@ class ClimbAnimeUtil {
     // 注意不要修改旧对象的id
     if (getSourceByAnimeUrl(anime.animeUrl) == "樱花动漫") {
       anime = await _climbAnimeInfoOfyhdm(anime);
+      return anime;
     } else {
-      debugPrint("无来源，无法更新");
+      debugPrint("无来源，无法更新，返回旧动漫对象");
     }
     return anime;
   }
@@ -201,6 +215,12 @@ class ClimbAnimeUtil {
           .getElementsByTagName("span")[4]
           .getElementsByTagName("a")[2]
           .innerHtml;
+      anime.playStatus = animeInfo
+          .getElementsByTagName("span")[4]
+          .getElementsByTagName("a")[2]
+          .innerHtml;
+      String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
+      anime.animeEpisodeCnt = _parseEpisodeCntOfyhdm(episodeCntStr);
     } catch (e) {
       debugPrint(e.toString());
     }

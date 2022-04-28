@@ -427,9 +427,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 child: Column(
                   children: [
                     _showAnimeName(anime.animeName),
-                    _showCoverSource(
-                        ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
                     _showAnimeInfo(anime.getSubTitle()),
+                    _showSource(
+                        ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
                     // _displayDesc(),
                   ],
                 ),
@@ -464,7 +464,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
-  _showCoverSource(coverSource) {
+  _showSource(coverSource) {
     return Container(
       alignment: Alignment.topLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),

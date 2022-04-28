@@ -148,8 +148,12 @@ class _AnimeClimbState extends State<AnimeClimb> {
                 // SqliteUtil.updateAnimeCoverbyAnimeId(
                 //     widget.animeId, anime.animeCoverUrl);
                 SqliteUtil.updateAnime(
-                    await SqliteUtil.getAnimeByAnimeId(widget.animeId), anime);
-                Navigator.pop(context);
+                        await SqliteUtil.getAnimeByAnimeId(widget.animeId),
+                        anime)
+                    .then((value) {
+                  // 更新完毕(then)后，退回到详细页，然后重新加载数据才会看到更新
+                  Navigator.pop(context);
+                });
               } else if (anime.animeId != 0) {
                 // 不为0，说明已添加，点击进入动漫详细页面
                 Navigator.of(context).push(

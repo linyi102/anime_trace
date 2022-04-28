@@ -160,18 +160,36 @@ class SqliteUtil {
   }
 
   // 迁移动漫
-  static void updateAnime(Anime oldAnime, Anime newAnime) async {
+  static Future<int> updateAnime(Anime oldAnime, Anime newAnime) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
     debugPrint(
         "oldAnime.tagName=${oldAnime.tagName}, newAnime.tagName=${newAnime.tagName}");
 
+    // 如果爬取的集数量大于旧数量，则改变，否则不变
+    debugPrint(
+        "新集数：${newAnime.animeEpisodeCnt}，旧集数：${oldAnime.animeEpisodeCnt}");
+    if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
+      await _database.rawUpdate('''
+        update anime
+        set anime_episode_cnt = ${newAnime.animeEpisodeCnt}
+        where anime_id = ${oldAnime.animeId};
+      ''');
+    }
+    // 如果标签不一样，则还需要更新最后修改标签的时间
+    if (oldAnime.tagName != newAnime.tagName) {
+      await _database.rawUpdate('''
+        update anime
+        set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
+        where anime_id = ${oldAnime.animeId};
+      ''');
+      debugPrint("last_mode_tag_time: $datetime");
+    }
     // 先改基础信息
     newAnime = escapeAnime(newAnime);
-    await _database.rawUpdate('''
+    return await _database.rawUpdate('''
       update anime
       set anime_name = '${newAnime.animeName}',
-          -- anime_episode_cnt = ${newAnime.animeEpisodeCnt}, -- 不要修改集数
           anime_desc = '${newAnime.animeDesc}',
           -- tag_name = '${newAnime.tagName}', -- 不能修改标签，因为新动漫没有标签
           anime_cover_url = '${newAnime.animeCoverUrl}',
@@ -187,15 +205,6 @@ class SqliteUtil {
           anime_url = '${newAnime.animeUrl}'
       where anime_id = ${oldAnime.animeId};
     ''');
-    // 如果标签不一样，则还需要更新最后修改标签的时间
-    if (oldAnime.tagName != newAnime.tagName) {
-      await _database.rawUpdate('''
-        update anime
-        set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
-        where anime_id = ${oldAnime.animeId};
-      ''');
-      debugPrint("last_mode_tag_time: $datetime");
-    }
   }
 
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
@@ -368,8 +377,8 @@ class SqliteUtil {
     debugPrint(
         "sql: deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(animeId=$animeId, episodeNumber=$episodeNumber)");
     await _database.rawDelete('''
-    delete from history
-    where anime_id = $animeId and episode_number = $episodeNumber and review_number = $reviewNumber;
+      delete from history
+      where anime_id = $animeId and episode_number = $episodeNumber and review_number = $reviewNumber;
     ''');
   }
 

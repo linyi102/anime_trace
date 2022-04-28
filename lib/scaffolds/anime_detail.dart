@@ -166,10 +166,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       showToast("当前动漫没有来源，请先进行迁移");
                       return;
                     }
-                    Anime oldAnime = _anime;
+                    // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
+                    // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
+                    // 当
+                    Anime oldAnime = Anime(
+                        animeId: _anime.animeId,
+                        animeName: _anime.animeName,
+                        animeEpisodeCnt: _anime.animeEpisodeCnt,
+                        tagName: _anime.tagName);
+                    // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
                     Anime newAnime =
                         await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);
-                    SqliteUtil.updateAnime(oldAnime, newAnime);
+                    SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
+                      // 如果集数变大，则重新加载页面
+                      if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
+                        _loadData();
+                      }
+                    });
                     setState(() {
                       _anime = newAnime;
                     });
@@ -229,7 +242,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 );
                               },
                             ),
-                          ).then((value) async {
+                          ).then((value) {
                             _loadData();
                             Navigator.pop(context);
                           });
@@ -281,9 +294,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             children: [
               _showAnimeName(_anime.animeName),
               _showNameAnother(_anime.nameAnother),
-              _showCoverSource(
-                  ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               _showAnimeInfo(_anime.getSubTitle()),
+              _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               // _displayDesc(),
             ],
           ),
@@ -327,7 +339,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _showCoverSource(coverSource) {
+  _showSource(coverSource) {
     return Container(
       alignment: Alignment.topLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
