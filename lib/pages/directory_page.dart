@@ -72,7 +72,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
           "目录",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
@@ -448,7 +448,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
-        style: const TextStyle(fontSize: 17),
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
       ),
     );
   }

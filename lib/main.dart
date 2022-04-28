@@ -143,7 +143,7 @@ class _MyAppState extends State<MyApp> {
               ),
               // titleTextStyle: TextStyle(
               //   color: Colors.black,
-              //   fontWeight: FontWeight.bold,
+              //   fontWeight: FontWeight.w600,
               // ),
               // 会影响字体大小，应该和TextStyle有关
             ),

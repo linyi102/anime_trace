@@ -42,7 +42,7 @@ class _AboutVersionState extends State<AboutVersion> {
           "关于版本",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

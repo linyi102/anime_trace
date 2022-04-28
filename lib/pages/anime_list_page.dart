@@ -114,7 +114,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       "动漫",
                       style: TextStyle(
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     actions: _getActions(),
@@ -130,7 +130,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           unselectedLabelColor: Colors.black54,
                           labelColor: Colors.blue, // 标签字体颜色
                           labelStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                           indicatorColor: Colors.transparent, // 隐藏
                           // indicatorColor: Colors.blue, // 指示器颜色
@@ -468,7 +468,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             "动漫",
             style: TextStyle(
               color: Colors.black,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
           actions: _getActions(),

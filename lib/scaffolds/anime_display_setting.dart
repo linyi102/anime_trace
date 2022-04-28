@@ -24,7 +24,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
           "动漫界面",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

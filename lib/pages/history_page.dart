@@ -46,7 +46,7 @@ class _HistoryPageState extends State<HistoryPage> {
           "历史",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

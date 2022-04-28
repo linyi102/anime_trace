@@ -31,7 +31,7 @@ class _NoteSettingState extends State<NoteSetting> {
           "笔记设置",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

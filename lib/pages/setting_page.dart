@@ -48,7 +48,7 @@ class _SettingPageState extends State<SettingPage> {
           "更多",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

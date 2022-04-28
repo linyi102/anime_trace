@@ -62,7 +62,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           "备份还原",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

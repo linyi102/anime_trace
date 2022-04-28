@@ -60,7 +60,7 @@ class _NoteListPageState extends State<NoteListPage> {
           "笔记",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [

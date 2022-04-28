@@ -155,10 +155,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 width: MediaQuery.of(context).size.width,
                                 child: CachedNetworkImage(
                                   imageUrl: _anime.animeCoverUrl,
-                                  fit: BoxFit.fitWidth,
-                                  // colorBlendMode:
+                                  fit: BoxFit.cover,
                                   color:
-                                      const Color.fromRGBO(255, 255, 255, 0.3),
+                                      const Color.fromRGBO(255, 255, 255, 0.4),
                                   colorBlendMode: BlendMode.modulate,
                                 ),
                               ),
@@ -174,13 +173,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                       Colors.white.withOpacity(0.1),
                                       Colors.white.withOpacity(0.2),
                                       Colors.white.withOpacity(0.2),
-                                      // Colors.white.withOpacity(0.8),
-                                      // Colors.white.withOpacity(0.9),
-                                      // Colors.white.withOpacity(1),
                                       const Color.fromRGBO(250, 250, 250, 0.6),
+                                      const Color.fromRGBO(250, 250, 250, 0.7),
                                       const Color.fromRGBO(250, 250, 250, 0.8),
-                                      const Color.fromRGBO(250, 250, 250, 0.9),
-                                      const Color.fromRGBO(250, 250, 250, 1),
+                                      const Color.fromRGBO(250, 250, 250, 1.0),
                                     ],
                                   ),
                                 ),
@@ -367,7 +363,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
-        style: const TextStyle(fontSize: 17),
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
       ),
     );
   }

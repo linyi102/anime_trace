@@ -926,8 +926,8 @@ class SqliteUtil {
   static Future<EpisodeNote>
       getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
           EpisodeNote episodeNote) async {
-    debugPrint(
-        "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
+    // debugPrint(
+    //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
     // 查询内容
     var lm1 = await _database.rawQuery('''
     select note_id, note_content from episode_note

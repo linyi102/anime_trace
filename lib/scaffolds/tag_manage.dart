@@ -21,7 +21,7 @@ class _TagManageState extends State<TagManage> {
           "标签管理",
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
