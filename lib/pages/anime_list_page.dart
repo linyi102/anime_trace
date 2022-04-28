@@ -157,53 +157,6 @@ class _AnimeListPageState extends State<AnimeListPage>
     actions.add(
       IconButton(
         onPressed: () async {
-          List<Anime> animes;
-          showToast("开始更新");
-          animes = await SqliteUtil.getAllAnimes();
-          for (var anime in animes) {
-            // 已有封面直接跳过
-            if (anime.animeCoverUrl.isNotEmpty) {
-              if (anime.animeCoverUrl.startsWith("//")) {
-                anime.animeCoverUrl = "https:${anime.animeCoverUrl}";
-                // 更新链接(前面加上https:)
-                SqliteUtil.updateAnimeCoverbyAnimeId(
-                    anime.animeId, anime.animeCoverUrl);
-              }
-              debugPrint("${anime.animeName}已有封面：'${anime.animeCoverUrl}'，跳过");
-              continue;
-            }
-            String coverUrl =
-                await ClimbCoverUtil.climbCoverUrl(anime.animeName);
-            debugPrint("${anime.animeName}封面：$coverUrl");
-            // 返回的链接不为空字符串，更新封面
-            if (coverUrl.isNotEmpty) {
-              SqliteUtil.updateAnimeCoverbyAnimeId(anime.animeId, coverUrl);
-              // _loadData(); // 不太好，每次刷新整个页面
-              for (var animes in animesInTag) {
-                int findIndex = animes
-                    .indexWhere((element) => element.animeId == anime.animeId);
-                if (findIndex != -1) {
-                  // 找到后更新，然后直接退出循环
-                  setState(() {
-                    animes[findIndex].animeCoverUrl = coverUrl;
-                  });
-                  break;
-                }
-                // 尽管由于分页有些动漫还不在请求的数据中，如果找不到就不用改就行了，并不影响
-              }
-            }
-          }
-          showToast("更新完成");
-          // _loadData(); // 更新完成后重新获取
-        },
-        icon: const Icon(Icons.refresh),
-        tooltip: "刷新封面",
-        color: Colors.black,
-      ),
-    );
-    actions.add(
-      IconButton(
-        onPressed: () async {
           Navigator.of(context).push(
             // MaterialPageRoute(
             //   builder: (context) => const Search(),

@@ -29,7 +29,6 @@ ensureLatestData() async {
   await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
   await SqliteUtil.createTableEpisodeNote();
   await SqliteUtil.createTableImage();
-  await SqliteUtil.addColumnCoverSourceToAnime(); // 添加搜索源列
   await SqliteUtil.addColumnInfoToAnime(); // 添加搜索源列
   tags = await SqliteUtil.getAllTags();
 }

@@ -46,7 +46,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       _loadOk = false;
     });
     Future(() async {
-      directory = await ClimbCoverUtil.climbDirectory(filter);
+      directory = await ClimbAnimeUtil.climbDirectory(filter);
     }).then((value) async {
       debugPrint("目录页：数据获取完毕");
       // 根据动漫名和来源查询动漫，如果存在
@@ -136,9 +136,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
         children: <ExpansionPanel>[
           ExpansionPanel(
             headerBuilder: (context, isExpanded) {
-              return const ListTile(
-                title: Text("展开过滤"),
-                visualDensity: VisualDensity(vertical: -4),
+              return ListTile(
+                title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),
+                visualDensity: const VisualDensity(vertical: -4),
               );
             },
             isExpanded: _expandFilter,
@@ -257,6 +257,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                     ),
                   ),
                 ),
+                const SizedBox(
+                  height: 10,
+                )
               ],
             ),
           )
@@ -424,7 +427,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 child: Column(
                   children: [
                     _showAnimeName(anime.animeName),
-                    _showCoverSource(anime.coverSource),
+                    _showCoverSource(
+                        ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
                     _showAnimeInfo(anime.getSubTitle()),
                     // _displayDesc(),
                   ],

@@ -5,7 +5,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:flutter/material.dart';
 
-class ClimbCoverUtil {
+class ClimbAnimeUtil {
   // 刷新动漫封面
   static Future<String> climbCoverUrl(String keyword) async {
     String coverUrl = "";
@@ -37,6 +37,18 @@ class ClimbCoverUtil {
     }
   }
 
+  // 根据网址前缀来判断来源
+  static String getSourceByAnimeUrl(String animeUrl) {
+    if (animeUrl.isEmpty) {
+      return "无来源";
+    } else if (animeUrl.startsWith("https://www.yhdmp.cc")) {
+      return "樱花动漫";
+    } else {
+      return "未知来源";
+    }
+  }
+
+  // 根据过滤查询目录动漫
   static Future<List<Anime>> climbDirectory(Filter filter) async {
     List<Anime> directory = [];
     String selectedWebsite =
@@ -51,12 +63,9 @@ class ClimbCoverUtil {
     return directory;
   }
 
-  static Future<List<Anime>> climbDirectoryOfyhdm(Filter filter) async {
-    String baseUrl = "https://www.yhdmp.cc";
-    List<Anime> directory = [];
-    String url = baseUrl +
-        "/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}";
-
+// 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
+  static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url) async {
+    List<Anime> animes = [];
     try {
       var response = await Dio().get(url);
       var document = parse(response.data);
@@ -88,10 +97,9 @@ class ClimbCoverUtil {
           animeEpisodeCnt: episodeCnt,
           animeDesc: desc,
           animeCoverUrl: coverUrl ?? "",
-          coverSource: "樱花动漫",
           animeUrl: animeUrl,
         );
-        directory.add(anime);
+        animes.add(anime);
         // 进入该动漫网址，获取详细信息(每个动漫都得获取，速度太慢了)
         // try {
         //   var response = await Dio().get(animeUrl);
@@ -134,51 +142,42 @@ class ClimbCoverUtil {
     } catch (e) {
       debugPrint(e.toString());
     }
+    return animes;
+  }
+
+  static Future<List<Anime>> climbDirectoryOfyhdm(Filter filter) async {
+    String baseUrl = "https://www.yhdmp.cc";
+    String url = baseUrl +
+        "/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}";
+
+    List<Anime> directory = await _climbOfyhdm(baseUrl, url);
     return directory;
   }
 
-  // 添加动漫
-  static Future<List<Anime>> climbAllCoverUrl(String keyword) async {
+  // 根据关键字爬取动漫
+  static Future<List<Anime>> climbAnimesByKeyword(String keyword) async {
     List<Anime> allAnimeNameAndCoverUrl = [];
 
     String selectedWebsite =
         SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
     if (selectedWebsite == "樱花动漫") {
-      allAnimeNameAndCoverUrl = await climbAllSourceOfyhdm(keyword);
+      allAnimeNameAndCoverUrl = await climbAnimesByKeywordOfyhdm(keyword);
     } else if (selectedWebsite == "OmoFun") {
-      allAnimeNameAndCoverUrl = await climbAllSourceOfOmoFun(keyword);
+      allAnimeNameAndCoverUrl = await climbAnimesByKeywordOfOmoFun(keyword);
     } else {
       throw ("爬取的网站名错误: $selectedWebsite");
     }
     return allAnimeNameAndCoverUrl;
   }
 
-  static Future<List<Anime>> climbAllSourceOfyhdm(String keyword) async {
-    String url = "https://www.yhdmp.cc/s_all?ex=1&kw=$keyword";
-    List<Anime> allAnimeNameAndCoverUrl = [];
-    try {
-      var response = await Dio().get(url);
-      var document = parse(response.data);
-      var elements = document.getElementsByTagName("img");
-      for (var element in elements) {
-        String? coverUrl = element.attributes["src"];
-        String? animeName = element.attributes["alt"];
-        if (coverUrl != null) {
-          if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
-          allAnimeNameAndCoverUrl.add(Anime(
-              animeName: animeName ?? "", // 没有名字时返回空串
-              animeEpisodeCnt: 0,
-              animeCoverUrl: coverUrl));
-          debugPrint("爬取封面：$coverUrl");
-        }
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-    return allAnimeNameAndCoverUrl;
+  static Future<List<Anime>> climbAnimesByKeywordOfyhdm(String keyword) async {
+    String baseUrl = "https://www.yhdmp.cc";
+    String url = baseUrl + "/s_all?ex=1&kw=$keyword";
+    return await _climbOfyhdm(baseUrl, url);
   }
 
-  static Future<List<Anime>> climbAllSourceOfOmoFun(String keyword) async {
+  static Future<List<Anime>> climbAnimesByKeywordOfOmoFun(
+      String keyword) async {
     String url = "https://omofun.tv/index.php/vod/search.html?wd=$keyword";
     List<Anime> allAnimeNameAndCoverUrl = [];
     try {

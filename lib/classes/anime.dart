@@ -8,7 +8,6 @@ class Anime {
 
   int checkedEpisodeCnt;
   int reviewNumber;
-  String coverSource; // 动漫来源
   String animeUrl; // 动漫网址
 
   String premiereTime;
@@ -30,7 +29,6 @@ class Anime {
     this.checkedEpisodeCnt = 0,
     this.animeDesc = "",
     this.reviewNumber = 1,
-    this.coverSource = "",
     this.animeUrl = "",
     this.premiereTime = "",
     this.nameAnother = "",

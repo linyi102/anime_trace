@@ -14,11 +14,14 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/scaffolds/tabs.dart';
+import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
@@ -175,7 +178,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       child: ListTile(
                         title: const Text("访问网址"),
                         style: ListTileStyle.drawer,
-                        onTap: () {
+                        onTap: () async {
+                          Uri uri;
+                          if (_anime.animeUrl.isNotEmpty) {
+                            uri = Uri.parse(_anime.animeUrl);
+                            if (!await launchUrl(uri)) {
+                              throw "Could not launch $uri";
+                            }
+                          } else {
+                            showToast("网址为空，请先迁移动漫");
+                          }
                           Navigator.pop(context);
                         },
                       ),
@@ -202,8 +214,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             ),
                           ).then((value) async {
                             _loadData();
+                            Navigator.pop(context);
                           });
-                          Navigator.pop(context);
                         },
                       ),
                     ),
@@ -270,7 +282,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: Column(
                 children: [
                   _displayAnimeName(),
-                  _displayCoverSource(),
+                  _displaySource(),
                   // _displayDesc(),
                 ],
               ),
@@ -314,13 +326,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _displayCoverSource() {
+  _displaySource() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: Row(
         children: [
           Text(
-            _anime.coverSource,
+            ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl),
             style: const TextStyle(color: Colors.black54),
           ),
         ],

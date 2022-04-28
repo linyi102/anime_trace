@@ -49,22 +49,18 @@ class _AnimeClimbState extends State<AnimeClimb> {
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
     Future(() async {
-      addedAnimes = await SqliteUtil.getAnimesBySearch(widget.keyword);
-      return ClimbCoverUtil.climbAllCoverUrl(keyword); // 一定要return！！！
-    }).then((value) {
+      return ClimbAnimeUtil.climbAnimesByKeyword(keyword); // 一定要return！！！
+    }).then((value) async {
       searchAnimes = value;
       debugPrint("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
       // 若某个搜索的动漫存在，则更新它
-      for (int i = 0; i < searchAnimes.length; ++i) {
-        int findIndex = addedAnimes.lastIndexWhere(
-            (element) => element.animeName == searchAnimes[i].animeName);
-        if (findIndex != -1) {
-          searchAnimes[i] = addedAnimes[findIndex];
-        }
+      // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
+      for (var i = 0; i < searchAnimes.length; i++) {
+        searchAnimes[i] =
+            await SqliteUtil.getAnimeByAnimeNameAndSource(searchAnimes[i]);
       }
       // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
-      // 因为下面更新状态时使用了lastIndexWhere来匹配动漫是否已添加，所以后面同名的动漫会先匹配上，因此该数据不受影响
       searchAnimes.insert(
           0,
           Anime(
@@ -143,18 +139,13 @@ class _AnimeClimbState extends State<AnimeClimb> {
           Anime anime = searchAnimes[index];
           return MaterialButton(
             onPressed: () async {
-              // 若传入了关键字，说明是修改封面，而非添加动漫
+              // 若传入了关键字，说明是迁移动漫，而非添加动漫
               if (widget.keyword.isNotEmpty) {
-                SqliteUtil.updateAnimeCoverbyAnimeId(
-                    widget.animeId, anime.animeCoverUrl);
-                // 提示是否修改动漫名字
-                String oldAnimeName = widget.keyword; // 旧动漫名字就是传入的关键字
-                String newAnimeName = anime.animeName;
-                if (oldAnimeName != newAnimeName) {
-                  _dialogModifyAnimeName(oldAnimeName, newAnimeName);
-                } else {
-                  Navigator.of(context).pop(); // 名字没有变，直接退出
-                }
+                // SqliteUtil.updateAnimeCoverbyAnimeId(
+                //     widget.animeId, anime.animeCoverUrl);
+                SqliteUtil.updateAnime(
+                    await SqliteUtil.getAnimeByAnimeId(widget.animeId), anime);
+                Navigator.pop(context);
               } else if (anime.animeId != 0) {
                 // 不为0，说明已添加，点击进入动漫详细页面
                 Navigator.of(context).push(
@@ -360,7 +351,6 @@ class _AnimeClimbState extends State<AnimeClimb> {
                     animeEpisodeCnt: endEpisode,
                     tagName: addDefaultTag,
                     animeCoverUrl: anime.animeCoverUrl,
-                    coverSource: selectedWebsite,
                   );
                   SqliteUtil.insertAnime(newAnime).then((lastInsertId) {
                     showToast("添加成功！");
