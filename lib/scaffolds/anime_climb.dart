@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
@@ -27,7 +28,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
   var endEpisodeController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
-  List<Anime> searchAnimes = [];
+  List<Anime> searchedAnimes = [];
   List<Anime> addedAnimes = [];
   bool searchOk = false;
   bool searching = false;
@@ -51,23 +52,26 @@ class _AnimeClimbState extends State<AnimeClimb> {
     Future(() async {
       return ClimbAnimeUtil.climbAnimesByKeyword(keyword); // 一定要return！！！
     }).then((value) async {
-      searchAnimes = value;
+      searchedAnimes = value;
       debugPrint("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
       // 若某个搜索的动漫存在，则更新它
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
-      for (var i = 0; i < searchAnimes.length; i++) {
-        searchAnimes[i] =
-            await SqliteUtil.getAnimeByAnimeNameAndSource(searchAnimes[i]);
+      for (var i = 0; i < searchedAnimes.length; i++) {
+        searchedAnimes[i] =
+            await SqliteUtil.getAnimeByAnimeNameAndSource(searchedAnimes[i]);
       }
       // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
-      searchAnimes.insert(
-          0,
-          Anime(
-            animeName: keyword,
-            animeEpisodeCnt: 0,
-            animeCoverUrl: "",
-          ));
+      // 迁移时不添加
+      if (widget.keyword.isEmpty) {
+        searchedAnimes.insert(
+            0,
+            Anime(
+              animeName: keyword,
+              animeEpisodeCnt: 0,
+              animeCoverUrl: "",
+            ));
+      }
 
       searchOk = true;
       searching = false;
@@ -134,9 +138,9 @@ class _AnimeClimbState extends State<AnimeClimb> {
           mainAxisSpacing: 3, // 竖轴距离
           childAspectRatio: 31 / 56, // 每个网格的比例
         ),
-        itemCount: searchAnimes.length,
+        itemCount: searchedAnimes.length,
         itemBuilder: (BuildContext context, int index) {
-          Anime anime = searchAnimes[index];
+          Anime anime = searchedAnimes[index];
           return MaterialButton(
             onPressed: () async {
               // 若传入了关键字，说明是迁移动漫，而非添加动漫
@@ -160,9 +164,9 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   ),
                 ).then((value) async {
                   Anime retAnime = value;
-                  int findIndex = searchAnimes.lastIndexWhere(
+                  int findIndex = searchedAnimes.lastIndexWhere(
                       (element) => element.animeName == retAnime.animeName);
-                  searchAnimes[findIndex] =
+                  searchedAnimes[findIndex] =
                       await SqliteUtil.getAnimeByAnimeId(retAnime.animeId);
                   setState(() {});
                 });
@@ -171,7 +175,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                 bool standBy = false;
                 // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere
                 if (index == 0) standBy = true;
-                _dialogAddAnime(anime, standBy);
+                dialogSelectTag(setState, context, anime);
               }
             },
             padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
@@ -248,7 +252,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                 if (lastInputName.isNotEmpty) {
                   searchOk = false;
                   searching = true;
-                  searchAnimes = []; // 清空查找的动漫
+                  searchedAnimes = []; // 清空查找的动漫
                   _climbAnime(keyword: lastInputName);
                 }
                 setState(() {});
@@ -267,221 +271,6 @@ class _AnimeClimbState extends State<AnimeClimb> {
         );
       },
     );
-  }
-
-  void _dialogAddAnime(Anime anime, bool standBy) {
-    var inputNameController = TextEditingController();
-    var inputEndEpisodeController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setTagStateOnAddAnime) {
-          return AlertDialog(
-            title: const Text('添加动漫'),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextField(
-                    maxLines: null,
-                    autofocus: false,
-                    controller: inputNameController..text = anime.animeName,
-                    decoration: const InputDecoration(
-                      labelText: "动漫名称",
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (onChanged) {
-                      anime.animeName = onChanged;
-                    },
-                  ),
-                  TextField(
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    controller: inputEndEpisodeController
-                      ..text =
-                          "${anime.animeEpisodeCnt == 0 ? 12 : anime.animeEpisodeCnt}",
-                    decoration: const InputDecoration(
-                      labelText: "动漫集数",
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (onChanged) {
-                      // 非法(比如为空时)，返回null，则赋值为12
-                      anime.animeEpisodeCnt = int.tryParse(onChanged) ?? 12;
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton.icon(
-                onPressed: () {
-                  _dialogSelectTag(setTagStateOnAddAnime);
-                },
-                icon: const Icon(
-                  Icons.new_label,
-                  size: 26,
-                  color: Colors.blue,
-                ),
-                label: Text(
-                  addDefaultTag,
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              TextButton.icon(
-                onPressed: () async {
-                  String name = inputNameController.text;
-                  if (name.isEmpty) {
-                    showToast("动漫名称不能为空");
-                    return;
-                  }
-                  String endEpisodeStr = inputEndEpisodeController.text;
-                  int endEpisode = 12;
-                  if (endEpisodeStr.isNotEmpty) {
-                    endEpisode = int.parse(inputEndEpisodeController.text);
-                  }
-                  if (endEpisode > 999) {
-                    showToast("集数范围：[0, 999]");
-                    return;
-                  }
-                  Anime newAnime = Anime(
-                    animeName: name,
-                    animeEpisodeCnt: endEpisode,
-                    tagName: addDefaultTag,
-                    animeCoverUrl: anime.animeCoverUrl,
-                  );
-                  SqliteUtil.insertAnime(newAnime).then((lastInsertId) {
-                    showToast("添加成功！");
-                    // 为新添加的动漫增加集数
-                    int findIndex = 0;
-                    if (!standBy) {
-                      // 不是备用数据，才寻找最后一次出现的数据。否则只修改备用数据的状态
-                      // 数据库字段通过''转义保存'，而获取时得到的是''，因此需要转为'
-                      newAnime.animeName =
-                          newAnime.animeName.replaceAll("''", "'");
-                      findIndex = searchAnimes.lastIndexWhere(
-                          (element) => element.animeName == newAnime.animeName);
-                    }
-                    debugPrint("找到的动漫下标：$findIndex");
-                    if (findIndex != -1) {
-                      searchAnimes[findIndex] = newAnime;
-                      searchAnimes[findIndex].animeId = lastInsertId;
-                    } else {
-                      debugPrint("未找到符合的动漫名字：${newAnime.animeName}");
-                    }
-                    setState(() {});
-                  });
-
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.send),
-                label: const Text(""),
-              ),
-            ],
-          );
-        });
-      },
-    );
-  }
-
-  // 传入动漫对话框的状态，选择好标签后，就会更新该状态
-  void _dialogSelectTag(setTagStateOnAddAnime) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        List<Widget> radioList = [];
-        for (int i = 0; i < tags.length; ++i) {
-          radioList.add(
-            ListTile(
-              title: Text(tags[i]),
-              leading: tags[i] == addDefaultTag
-                  ? const Icon(
-                      Icons.radio_button_on_outlined,
-                      color: Colors.blue,
-                    )
-                  : const Icon(
-                      Icons.radio_button_off_outlined,
-                    ),
-              onTap: () {
-                addDefaultTag = tags[i];
-                setTagStateOnAddAnime(() {});
-                Navigator.pop(context);
-              },
-            ),
-          );
-        }
-        return AlertDialog(
-          title: const Text('选择标签'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: radioList,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  _dialogModifyAnimeName(String oldAnimeName, String newAnimeName) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("修改动漫名"),
-            // content: Column(
-            //   children: [
-            //     // Text("$oldAnimeName\n↓\n$newAnimeName"),
-            //     Text(oldAnimeName),
-            //     const Icon(Icons.downloading_rounded),
-            //     Text(newAnimeName),
-            //   ],
-            // ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Text("旧："),
-                    contentPadding: const EdgeInsets.all(0),
-                    title: Text(oldAnimeName),
-                  ),
-                  ListTile(
-                    leading: const Text("新："),
-                    contentPadding: const EdgeInsets.all(0),
-                    title: Text(newAnimeName),
-                  ),
-                ],
-              ),
-            ),
-            // 动作集合
-            actions: <Widget>[
-              TextButton(
-                child: const Text("不修改"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text("修改"),
-                onPressed: () {
-                  SqliteUtil.updateAnimeNameByAnimeId(
-                      widget.animeId, newAnimeName);
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  // // 直接跳转到动漫详细页面，否则pop只会出栈对话框，而该爬取页面仍存在。
-                  // // 注意：跳转到动漫详细页面后，因为栈中没有页面，所以无法直接返回到主页
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             AnimeDetailPlus(widget.animeId)),
-                  //     (route) => false); // 返回false就没有左上角的返回按钮了
-                },
-              ),
-            ],
-          );
-        });
   }
 
   _displayEpisodeState(Anime anime) {

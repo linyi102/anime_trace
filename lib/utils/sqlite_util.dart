@@ -165,7 +165,9 @@ class SqliteUtil {
     String datetime = DateTime.now().toString();
     debugPrint(
         "oldAnime.tagName=${oldAnime.tagName}, newAnime.tagName=${newAnime.tagName}");
+
     // 先改基础信息
+    newAnime = escapeAnime(newAnime);
     await _database.rawUpdate('''
       update anime
       set anime_name = '${newAnime.animeName}',
@@ -238,18 +240,22 @@ class SqliteUtil {
   // 转义单引号
   static Anime escapeAnime(Anime anime) {
     anime.animeName = escapeStr(anime.animeName);
+    anime.animeDesc = escapeStr(anime.animeDesc);
+    anime.tagName = escapeStr(anime.tagName);
+    anime.nameAnother = escapeStr(anime.nameAnother);
+    anime.nameOri = escapeStr(anime.nameOri);
     return anime;
   }
 
   static String escapeStr(String str) {
-    str = str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
-    return str;
+    return str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
   }
 
   static Future<int> insertAnime(Anime anime) async {
     anime = escapeAnime(anime);
     debugPrint("sql: insertAnime(anime:$anime)");
 
+    anime = escapeAnime(anime);
     String datetime = DateTime.now().toString();
     return await _database.rawInsert('''
       insert into anime(anime_name, anime_episode_cnt, anime_desc, tag_name, last_mode_tag_time, anime_cover_url, premiere_time, name_another, name_ori, author_ori, area, play_status, production_company, official_site, category, anime_url)
