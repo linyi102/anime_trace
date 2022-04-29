@@ -47,7 +47,7 @@ class _NoteListPageState extends State<NoteListPage> {
       episodeNotes = value;
       _loadOk = true;
       debugPrint("note_list_page: 数据加载完成");
-      debugPrint("笔记总数(包括空笔记)：${episodeNotes.length}");
+      debugPrint("笔记总数(不包括空笔记)：${episodeNotes.length}");
       setState(() {});
     });
   }
@@ -164,7 +164,7 @@ class _NoteListPageState extends State<NoteListPage> {
                   // 显示图片
                   episodeNotes[index].relativeLocalImages.length == 1
                       ? Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
+                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5), // 圆角
                             child: Image.file(

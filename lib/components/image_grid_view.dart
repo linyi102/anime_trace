@@ -4,7 +4,7 @@ showImageGridView(
     int itemCount, Widget Function(BuildContext, int) itemBuilder) {
   if (itemCount == 0) return Container();
   return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       shrinkWrap: true, // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

@@ -607,18 +607,21 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 .relativeLocalImages
                                 .length ==
                             1
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(5), // 圆角
-                            child: Image.file(
-                              File(ImageUtil.getAbsoluteImagePath(
-                                  _episodeNotes[episodeNoteIndex]
-                                      .relativeLocalImages[0]
-                                      .path)),
-                              fit: BoxFit.fitHeight,
-                              errorBuilder: errorImageBuilder(
-                                  _episodeNotes[episodeNoteIndex]
-                                      .relativeLocalImages[0]
-                                      .path),
+                        ? Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5), // 圆角
+                              child: Image.file(
+                                File(ImageUtil.getAbsoluteImagePath(
+                                    _episodeNotes[episodeNoteIndex]
+                                        .relativeLocalImages[0]
+                                        .path)),
+                                fit: BoxFit.fitHeight,
+                                errorBuilder: errorImageBuilder(
+                                    _episodeNotes[episodeNoteIndex]
+                                        .relativeLocalImages[0]
+                                        .path),
+                              ),
                             ),
                           )
                         : showImageGridView(
