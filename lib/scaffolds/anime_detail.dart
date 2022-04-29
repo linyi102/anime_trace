@@ -117,8 +117,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     for (var episode in _episodes) {
       if (episode.isChecked()) _anime.checkedEpisodeCnt++;
     }
-    SqliteUtil.updateDescByAnimeId(_anime.animeId, _anime.animeDesc);
-    SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, _anime.animeName);
+    // SqliteUtil.updateDescByAnimeId(_anime.animeId, _anime.animeDesc);
+    // SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, _anime.animeName);
   }
 
   @override
@@ -1114,7 +1114,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       int ac, bc;
       ac = a.isChecked() ? 1 : 0;
       bc = b.isChecked() ? 1 : 0;
-      return ac.compareTo(bc);
+      // 双方都没有完成或都完成(状态一致)时，按number升序排序
+      if (a.isChecked() == b.isChecked()) {
+        return a.number.compareTo(b.number);
+      } else {
+        // 否则未完成的靠前
+        return ac.compareTo(bc);
+      }
     });
   }
 

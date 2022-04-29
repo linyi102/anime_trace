@@ -123,7 +123,7 @@ class ClimbAnimeUtil {
   static Future<List<Anime>> climbDirectoryOfyhdm(Filter filter) async {
     String baseUrl = "https://www.yhdmp.cc";
     String url = baseUrl +
-        "/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}";
+        "/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
 
     List<Anime> directory = await _climbOfyhdm(baseUrl, url);
     return directory;
