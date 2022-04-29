@@ -38,6 +38,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   bool _loadOk = false;
   List<EpisodeNote> _episodeNotes = [];
   late int reviewNumber;
+  late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -665,7 +666,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     });
   }
 
-  void onpress(episodeIndex) {
+  void onpress(int episodeIndex) {
     // 多选
     if (multiSelected) {
       if (mapSelected.containsKey(episodeIndex)) {
@@ -676,6 +677,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         }
       } else {
         mapSelected[episodeIndex] = true;
+        // 选择后，更新最后一次多选时选择的集下标
+        lastMultiSelectedIndex = episodeIndex;
       }
       setState(() {});
     } else {
@@ -697,12 +700,26 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }
   }
 
-  void onLongPress(index) {
+  void onLongPress(int index) {
     // 非多选状态下才需要进入多选状态
     if (multiSelected == false) {
       multiSelected = true;
       mapSelected[index] = true;
+      lastMultiSelectedIndex = index; // 第一次也要设置最后一次多选的集下标
       setState(() {}); // 添加操作按钮
+    } else {
+      // 如果存在上一次多选集的下标，则将中间的所有集选择
+      if (lastMultiSelectedIndex >= 0) {
+        // 注意大小关系[lastMultiSelectedIndex, index]和[index, lastMultiSelectedIndex]
+        int begin =
+            lastMultiSelectedIndex < index ? lastMultiSelectedIndex : index;
+        int end =
+            lastMultiSelectedIndex > index ? lastMultiSelectedIndex : index;
+        for (var i = begin; i <= end; i++) {
+          mapSelected[i] = true;
+        }
+        setState(() {});
+      }
     }
   }
 
