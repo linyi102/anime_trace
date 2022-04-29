@@ -390,7 +390,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-      child: Text(
+      child: SelectableText(
         animeName,
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
       ),
@@ -403,9 +403,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         : Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-            child: Text(
+            child: SelectableText(
               nameAnother,
               style: const TextStyle(color: Colors.black54),
+              maxLines: 1,
+              // overflow: TextOverflow.ellipsis,
             ),
           );
   }
@@ -414,7 +416,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Text(
+      child: SelectableText(
         animeInfo,
         style: const TextStyle(color: Colors.black54),
       ),
@@ -425,7 +427,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Text(
+      child: SelectableText(
         "$coverSource",
         style: const TextStyle(color: Colors.black54),
       ),
