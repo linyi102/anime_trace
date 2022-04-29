@@ -301,6 +301,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                             //   builder: (context) => AnimeClimb(
                                             //     animeId: _anime.animeId,
                                             //     keyword: _anime.animeName,
+                                            //     ismigrate: true,
                                             //   ),
                                             // ),
                                             FadeRoute(
@@ -308,6 +309,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                                 return AnimeClimb(
                                                   animeId: _anime.animeId,
                                                   keyword: _anime.animeName,
+                                                  ismigrate: true,
                                                 );
                                               },
                                             ),

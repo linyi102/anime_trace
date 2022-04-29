@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -18,6 +19,23 @@ class _SearchState extends State<Search> {
   late List<Anime> _resAnimes;
   String lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
+
+  void searchDbAnimesByKeyword(String text) {
+    Future(() {
+      debugPrint("search: $text");
+      return SqliteUtil.getAnimesBySearch(text);
+    }).then((value) {
+      _resAnimes = value;
+      _searchOk = true;
+      debugPrint("_resAnimes.length=${_resAnimes.length}");
+      // for (var item in _resAnimes) {
+      //   debugPrint(item.toString());
+      // }
+      lastInputText = text;
+      FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,20 +64,7 @@ class _SearchState extends State<Search> {
             if (text.isEmpty) {
               return;
             }
-            Future(() {
-              debugPrint("search: $text");
-              return SqliteUtil.getAnimesBySearch(text);
-            }).then((value) {
-              _resAnimes = value;
-              _searchOk = true;
-              debugPrint("_resAnimes.length=${_resAnimes.length}");
-              for (var item in _resAnimes) {
-                debugPrint(item.toString());
-              }
-              lastInputText = text;
-              FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-              setState(() {});
-            });
+            searchDbAnimesByKeyword(text);
           },
         ),
       ),
@@ -118,13 +123,29 @@ class _SearchState extends State<Search> {
             }
           });
         },
-        onLongPress: () {},
       ));
     }
+
+    // 添加搜索网络动漫提示
+    listWidget.add(ListTile(
+        // leading: Icon(Icons.search),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text("网络搜索更多 ", style: TextStyle(color: Colors.blue)),
+            Icon(Icons.manage_search_outlined, color: Colors.blue)
+          ],
+        ),
+        onTap: () {
+          Navigator.of(context).push(FadeRoute(builder: (context) {
+            return AnimeClimb(keyword: lastInputText, ismigrate: false);
+          })).then((value) {
+            searchDbAnimesByKeyword(lastInputText);
+          });
+        }));
+
     return Scrollbar(
-      child: ListView(
-        children: listWidget,
-      ),
+      child: ListView(children: listWidget),
     );
   }
 }

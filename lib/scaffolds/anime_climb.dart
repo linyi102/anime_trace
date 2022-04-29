@@ -11,12 +11,13 @@ import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:oktoast/oktoast.dart';
 
 class AnimeClimb extends StatefulWidget {
   final int animeId;
   final String keyword;
-  const AnimeClimb({this.animeId = 0, this.keyword = "", Key? key})
+  final bool ismigrate;
+  const AnimeClimb(
+      {this.animeId = 0, this.keyword = "", this.ismigrate = false, Key? key})
       : super(key: key);
 
   @override
@@ -143,8 +144,9 @@ class _AnimeClimbState extends State<AnimeClimb> {
           Anime anime = searchedAnimes[index];
           return MaterialButton(
             onPressed: () async {
-              // 若传入了关键字，说明是迁移动漫，而非添加动漫
-              if (widget.keyword.isNotEmpty) {
+              // 迁移动漫
+              if (widget.ismigrate) {
+                debugPrint("迁移动漫${anime.animeId}");
                 // SqliteUtil.updateAnimeCoverbyAnimeId(
                 //     widget.animeId, anime.animeCoverUrl);
                 SqliteUtil.updateAnime(
@@ -155,6 +157,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   Navigator.pop(context);
                 });
               } else if (anime.animeId != 0) {
+                debugPrint("进入动漫详细页面${anime.animeId}");
                 // 不为0，说明已添加，点击进入动漫详细页面
                 Navigator.of(context).push(
                   // MaterialPageRoute(
@@ -175,6 +178,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                   setState(() {});
                 });
               } else {
+                debugPrint("添加动漫");
                 // 其他情况才是添加动漫
                 bool standBy = false;
                 // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere

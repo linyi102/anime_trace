@@ -41,7 +41,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
     }
   }
 
-  void _loadData() async {
+  void _loadData() {
     setState(() {
       _loadOk = false;
     });
