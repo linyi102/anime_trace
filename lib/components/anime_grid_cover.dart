@@ -17,15 +17,19 @@ class AnimeGridCover extends StatelessWidget {
             borderRadius: BorderRadius.circular(3),
             child: _anime.animeCoverUrl.isEmpty
                 // ? Image.asset("assets/images/defaultAnimeCover.jpg")
-                ? Center(
-                    child: Text(
-                      _anime.animeName.substring(
-                          0,
-                          _anime.animeName.length >
-                                  3 // 最低长度为3，此时下标最大为2，才可以设置end为3，[0, 3)
-                              ? 3
-                              : _anime.animeName.length), // 第二个参数如果只设置为3可能会导致越界
-                      style: const TextStyle(fontSize: 20),
+                ? Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        _anime.animeName.substring(
+                            0,
+                            _anime.animeName.length >
+                                    3 // 最低长度为3，此时下标最大为2，才可以设置end为3，[0, 3)
+                                ? 3
+                                : _anime
+                                    .animeName.length), // 第二个参数如果只设置为3可能会导致越界
+                        style: const TextStyle(fontSize: 20),
+                      ),
                     ),
                   )
                 : Container(

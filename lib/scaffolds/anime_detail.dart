@@ -155,6 +155,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 width: MediaQuery.of(context).size.width,
                                 child: CachedNetworkImage(
                                   imageUrl: _anime.animeCoverUrl,
+                                  errorWidget: (context, url, error) {
+                                    return Container(
+                                      color: const Color.fromRGBO(
+                                          250, 250, 250, 1.0),
+                                    );
+                                  },
                                   fit: BoxFit.cover,
                                   color:
                                       const Color.fromRGBO(255, 255, 255, 0.4),
@@ -202,6 +208,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             },
                             tooltip: "返回上一级",
                             icon: const Icon(Icons.arrow_back_rounded)),
+                        title: !_loadOk
+                            ? Container()
+                            : ListTile(
+                                title: Row(
+                                  children: [
+                                    Text(_anime.tagName),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(Icons.expand_more_rounded),
+                                  ],
+                                ),
+                                onTap: () {
+                                  _dialogSelectTag();
+                                  // 不能复用该对话框，如果选择了取消收藏，则需要退回到主页，但无法实现。
+                                  // dialogSelectTag(setState, context, _anime);
+                                },
+                              ),
                         actions: [
                           IconButton(
                               onPressed: () async {
@@ -349,10 +373,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ],
           ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [_showCollectIcon(_anime)],
-        ),
+        // Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [_showCollectIcon(_anime)],
+        // ),
       ],
     );
   }
