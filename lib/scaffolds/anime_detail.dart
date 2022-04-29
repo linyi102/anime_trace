@@ -174,11 +174,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                       colorBlendMode: BlendMode.modulate,
                                     ),
                                   ),
-                                  // BackdropFilter(
-                                  //   filter:
-                                  //       ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-                                  //   child: const SizedBox(),
-                                  // ),
+                                  BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                        sigmaX: 10, sigmaY: 10),
+                                    child: const SizedBox(),
+                                  ),
                                   Container(
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
