@@ -28,17 +28,19 @@ class _DirectoryPageState extends State<DirectoryPage> {
     if (directory.isEmpty) {
       _loadData();
     } else {
-      // 如果已有数据，则直接显示
-      Future.delayed(const Duration(milliseconds: 0)).then((value) async {
-        // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
-        for (int i = 0; i < directory.length; ++i) {
-          directory[i] =
-              await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
-        }
-        _loadOk = true;
-        setState(() {});
-      });
+      // 如果已有数据，则直接显示，但也要根据重新查询数据库中的动漫来替换
+      _replaceDbAnimes();
     }
+  }
+
+  void _replaceDbAnimes() async {
+    // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
+    for (int i = 0; i < directory.length; ++i) {
+      directory[i] =
+          await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
+    }
+    _loadOk = true;
+    setState(() {});
   }
 
   void _loadData() {
@@ -82,7 +84,10 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 builder: (context) {
                   return const AnimeClimb();
                 },
-              ));
+              )).then((value) {
+                // 搜索后添加了动漫，可能就在目录里
+                _replaceDbAnimes();
+              });
             },
             icon: const Icon(Icons.search),
           ),
