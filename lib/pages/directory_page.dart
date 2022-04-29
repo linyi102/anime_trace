@@ -432,6 +432,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 child: Column(
                   children: [
                     _showAnimeName(anime.animeName),
+                    _showNameAnother(anime.nameAnother),
                     _showAnimeInfo(anime.getSubTitle()),
                     _showSource(
                         ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
@@ -456,6 +457,21 @@ class _DirectoryPageState extends State<DirectoryPage> {
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
       ),
     );
+  }
+
+  _showNameAnother(String nameAnother) {
+    return nameAnother.isEmpty
+        ? Container()
+        : Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            child: Text(
+              nameAnother,
+              style: const TextStyle(color: Colors.black54),
+              maxLines: 1,
+              // overflow: TextOverflow.ellipsis,
+            ),
+          );
   }
 
   _showAnimeInfo(animeInfo) {

@@ -11,8 +11,10 @@ class AnimeGridCover extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.all(3.0),
         child: AspectRatio(
-          aspectRatio: 31 / 43, // 固定大小
-          // aspectRatio: 41 / 63, // 固定大小
+          // 固定大小
+          aspectRatio: 198 / 275,
+          // aspectRatio: 31 / 45,
+          // aspectRatio: 41 / 63,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: _anime.animeCoverUrl.isEmpty

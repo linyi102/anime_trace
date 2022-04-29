@@ -118,14 +118,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                       ),
                     ),
                     actions: _getActions(),
-                    // bottom: TabBar(
-                    //   tabs: _showTagAndAnimeCntPlus(),
-                    //   padding: EdgeInsets.all(0),
-                    //   labelPadding: EdgeInsets.all(0),
-                    //   indicatorPadding: EdgeInsets.all(0),
-                    //   indicatorColor: Colors.transparent,
-                    //   controller: _tabController,
-                    // ),
                     bottom: PreferredSize(
                       // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
                       preferredSize: const Size.fromHeight(kToolbarHeight),

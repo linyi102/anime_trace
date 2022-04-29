@@ -359,8 +359,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               _showAnimeName(_anime.animeName),
               _showNameAnother(_anime.nameAnother),
               _showAnimeInfo(_anime.getSubTitle()),
-              // _showAnimeInfo(_anime.getVariableInfo()),
-              // _showAnimeInfo(_anime.getConstantInfo()),
               _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               // _displayDesc(),
             ],
