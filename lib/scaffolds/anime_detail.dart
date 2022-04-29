@@ -677,7 +677,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         }
       } else {
         mapSelected[episodeIndex] = true;
-        // 选择后，更新最后一次多选时选择的集下标
+        // 选择后，更新最后一次多选时选择的集下标(不管是选择还是又取消了，因为如果是取消，无法获取上一次短按的集下标)
         lastMultiSelectedIndex = episodeIndex;
       }
       setState(() {});
@@ -986,52 +986,27 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // direction: Axis.horizontal,
       children: [
-        Row(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: IconButton(
-              onPressed: () {
-                if (reviewNumber - 1 <= 0) {
-                  return;
-                }
-                reviewNumber--;
-                setState(() {});
-                _loadData();
-              },
-              icon: const Icon(Icons.chevron_left_rounded),
-            ),
-          ),
-          // Text("第 $reviewNumber 次观看"),
-          Text("$reviewNumber"),
-          IconButton(
-            onPressed: () {
-              reviewNumber++;
-              setState(() {});
-              _loadData();
-            },
-            icon: const Icon(Icons.chevron_right_rounded),
-          ),
-        ]),
+        Row(children: []),
         Expanded(child: Container()),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             IconButton(
-                onPressed: () {
-                  if (hideNoteInAnimeDetail) {
-                    // 原先隐藏，则设置为false，表示显示
-                    SPUtil.setBool("hideNoteInAnimeDetail", false);
-                    hideNoteInAnimeDetail = false;
-                  } else {
-                    SPUtil.setBool("hideNoteInAnimeDetail", true);
-                    hideNoteInAnimeDetail = true;
+              onPressed: () {
+                dialogSelectUint(context, "选择第 n 次观看",
+                        initialValue: reviewNumber, minValue: 1, maxValue: 6)
+                    .then((value) {
+                  if (value != null) {
+                    if (reviewNumber != value) {
+                      reviewNumber = value;
+                      // 不相等才设置并重新加载数据
+                      _loadData();
+                    }
                   }
-                  setState(() {});
-                },
-                tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
-                icon: hideNoteInAnimeDetail
-                    ? const Icon(Icons.expand_more)
-                    : const Icon(Icons.expand_less)),
+                });
+              },
+              icon: showReviewNumberIcon(),
+            ),
             IconButton(
                 onPressed: () {
                   _dialogSelectSortMethod();
@@ -1042,7 +1017,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 onPressed: () {
                   // _dialogUpdateEpisodeCnt();
                   dialogSelectUint(context, "修改集数",
-                          defaultValue: _anime.animeEpisodeCnt,
+                          initialValue: _anime.animeEpisodeCnt,
                           minValue: 0,
                           maxValue: 2000)
                       .then((value) {
@@ -1090,6 +1065,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 tooltip: "更改集数",
                 icon: const Icon(Icons.mode)),
+            IconButton(
+                onPressed: () {
+                  if (hideNoteInAnimeDetail) {
+                    // 原先隐藏，则设置为false，表示显示
+                    SPUtil.setBool("hideNoteInAnimeDetail", false);
+                    hideNoteInAnimeDetail = false;
+                  } else {
+                    SPUtil.setBool("hideNoteInAnimeDetail", true);
+                    hideNoteInAnimeDetail = true;
+                  }
+                  setState(() {});
+                },
+                tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
+                icon: hideNoteInAnimeDetail
+                    ? const Icon(Icons.expand_more)
+                    : const Icon(Icons.expand_less)),
           ],
         ),
       ],
@@ -1179,5 +1170,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     });
     showToast("更新信息成功");
     return true;
+  }
+
+  showReviewNumberIcon() {
+    switch (reviewNumber) {
+      case 1:
+        return const Icon(Icons.looks_one_outlined);
+      case 2:
+        return const Icon(Icons.looks_two_outlined);
+      case 3:
+        return const Icon(Icons.looks_3_outlined);
+      case 4:
+        return const Icon(Icons.looks_4_outlined);
+      case 5:
+        return const Icon(Icons.looks_5_outlined);
+      case 6:
+        return const Icon(Icons.looks_6_outlined);
+      default:
+        return const Icon(Icons.error_outline);
+    }
   }
 }

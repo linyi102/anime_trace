@@ -53,7 +53,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
                   subtitle: Text("$gridColumnCnt"),
                   onTap: () {
                     dialogSelectUint(context, "选择列数",
-                            defaultValue: gridColumnCnt,
+                            initialValue: gridColumnCnt,
                             minValue: 1,
                             maxValue: 10)
                         .then((value) {

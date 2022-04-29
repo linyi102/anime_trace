@@ -193,7 +193,7 @@ class _HistoryPageState extends State<HistoryPage> {
               onPressed: () {
                 // _dialogSelectYear();
                 dialogSelectUint(context, "选择年份",
-                        defaultValue: curYear, maxValue: curYear + 2)
+                        initialValue: curYear, maxValue: curYear + 2)
                     .then((value) {
                   if (value == null) {
                     debugPrint("未选择，直接返回");

@@ -211,7 +211,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             subtitle: Text("$autoBackupWebDavNumber"),
             onTap: () async {
               int? number = await dialogSelectUint(context, "自动备份数量",
-                  defaultValue: autoBackupWebDavNumber,
+                  initialValue: autoBackupWebDavNumber,
                   minValue: 1,
                   maxValue: 100);
               if (number != null) {

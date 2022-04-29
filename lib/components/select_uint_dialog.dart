@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future<int?> dialogSelectUint(context, String title,
-    {int defaultValue = 0,
+    {int initialValue = 0,
     int minValue = 0,
     int maxValue = 9223372036854775807}) async {
   var yearTextEditingController = TextEditingController();
-  int tmpValue = defaultValue;
+  int tmpValue = initialValue;
   return await showDialog(
       context: context,
       builder: (context) {
@@ -26,7 +26,7 @@ Future<int?> dialogSelectUint(context, String title,
                         ..text = tmpValue.toString(),
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          helperText: "设置范围：[$minValue, $maxValue]"),
+                          helperText: "范围：[$minValue, $maxValue]"),
                     ),
                   ),
                   IconButton(
@@ -38,7 +38,7 @@ Future<int?> dialogSelectUint(context, String title,
                           state(() {});
                         }
                       },
-                      icon: const Icon(Icons.navigate_before)),
+                      icon: const Icon(Icons.remove)),
                   IconButton(
                       onPressed: () {
                         tmpValue++;
@@ -49,13 +49,13 @@ Future<int?> dialogSelectUint(context, String title,
                           tmpValue--; // 恢复
                         }
                       },
-                      icon: const Icon(Icons.navigate_next)),
+                      icon: const Icon(Icons.add)),
                 ],
               ),
               actions: [
                 TextButton(
                     onPressed: () {
-                      Navigator.pop(context, defaultValue); // 取消了则返回默认值
+                      Navigator.pop(context, initialValue); // 取消了则返回默认值
                     },
                     child: const Text("取消")),
                 TextButton(

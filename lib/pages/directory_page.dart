@@ -168,7 +168,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                             dialogSelectUint(context, "选择年份",
                                     minValue: 2000,
                                     maxValue: DateTime.now().year + 2,
-                                    defaultValue: defaultYear)
+                                    initialValue: defaultYear)
                                 .then((value) {
                               if (value == null ||
                                   value == 0 ||
