@@ -10,10 +10,11 @@ Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
         Clipboard.setData(ClipboardData(text: path))
             .then((value) => showToast("已复制图片相对路径：\n$path"));
       },
-      child: const Text(
-        "未找到图片",
-        style: TextStyle(color: Colors.black),
-      ),
+      // child: const Text(
+      //   "未找到图片",
+      //   style: TextStyle(color: Colors.black),
+      // ),
+      child: const Placeholder(),
     );
   };
 }

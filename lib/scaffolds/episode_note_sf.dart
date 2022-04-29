@@ -132,6 +132,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
       ),
       itemCount: itemCount,
       itemBuilder: (BuildContext context, int imageIndex) {
+        // 如果是最后一个下标，则设置添加图片图标
         if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
           return Container(
             decoration: BoxDecoration(
@@ -199,12 +200,14 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
           );
         }
 
+        // 否则显示图片
         return Stack(
           children: [
             ImageGridItem(
               relativeLocalImages: widget.episodeNote.relativeLocalImages,
               initialIndex: imageIndex,
             ),
+            // 删除按钮
             Positioned(
               right: 0,
               top: 0,
