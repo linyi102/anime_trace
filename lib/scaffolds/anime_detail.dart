@@ -10,7 +10,6 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
-import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
@@ -37,9 +36,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime _anime;
   List<Episode> _episodes = [];
   bool _loadOk = false;
-  List<EpisodeNote> episodeNotes = [];
+  List<EpisodeNote> _episodeNotes = [];
   late int reviewNumber;
-  List<bool> _expandNotes = [];
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
@@ -60,7 +58,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   void _loadData() async {
-    // _loadOk = false; // 保证加载n刷的数据时显示等待页面
+    _episodes = [];
+    _episodeNotes = [];
+
     Future(() {
       return SqliteUtil.getAnimeByAnimeId(widget.animeId); // 一定要return，value才有值
     }).then((value) async {
@@ -76,12 +76,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       _sortEpisodes(SPUtil.getString("episodeSortMethod",
           defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
 
-      bool expandNote = SPUtil.getBool("hideNoteInAnimeDetail");
-      for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
-        // debugPrint(expandNote.toString());
-        _expandNotes.add(expandNote);
-      }
-
       for (var episode in _episodes) {
         EpisodeNote episodeNote = EpisodeNote(
             anime: _anime,
@@ -96,14 +90,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           // debugPrint(
           //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
         }
-        // 如果是切换，则不是add，而是覆盖
-        if (_loadOk) {
-          int findIndex = episodeNotes.indexWhere((element) =>
-              element.episode.number == episodeNote.episode.number);
-          episodeNotes[findIndex] = episodeNote;
-        } else {
-          episodeNotes.add(episodeNote);
-        }
+        _episodeNotes.add(episodeNote);
       }
     }).then((value) {
       _loadOk = true;
@@ -512,15 +499,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         relativeLocalImages: [],
                         imgUrls: []);
 
+                    // 一定要先添加笔记，否则episodeIndex会越界
+                    _episodeNotes.add(episodeNote);
                     // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                    episodeNotes[episodeIndex] = await SqliteUtil
+                    _episodeNotes[episodeIndex] = await SqliteUtil
                         .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                             episodeNote);
                     // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
                     // episodeNote.episodeNoteId =
                     //     await SqliteUtil.insertEpisodeNote(episodeNote);
                     // episodeNotes[i] = episodeNote; // 更新
-                    _moveToLastIfSet(episodeIndex);
                     setState(() {});
                   }
                 },
@@ -573,18 +561,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   Widget displayNote(int episodeIndex, BuildContext context) {
     // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
-    int episodeNoteIndex = episodeNotes.indexWhere(
+    int episodeNoteIndex = _episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
-              episodeNotes[episodeNoteIndex].noteContent.isEmpty
+      child: _episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
+              _episodeNotes[episodeNoteIndex].noteContent.isEmpty
           ? Container()
           : Card(
               elevation: 0,
               child: MaterialButton(
-                padding: episodeNotes[episodeNoteIndex].noteContent.isEmpty
+                padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
                     : const EdgeInsets.fromLTRB(0, 10, 0, 0),
                 onPressed: () {
@@ -594,50 +582,52 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     //         EpisodeNoteSF(episodeNotes[episodeIndex])),
                     FadeRoute(
                       builder: (context) {
-                        return EpisodeNoteSF(episodeNotes[episodeNoteIndex]);
+                        return EpisodeNoteSF(_episodeNotes[episodeNoteIndex]);
                       },
                     ),
                   ).then((value) {
-                    episodeNotes[episodeNoteIndex] = value; // 更新修改
+                    _episodeNotes[episodeNoteIndex] = value; // 更新修改
                     setState(() {});
                   });
                 },
                 child: Column(
                   children: [
-                    episodeNotes[episodeNoteIndex].noteContent.isEmpty
+                    _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                         ? Container()
                         : ListTile(
                             title: Text(
-                              episodeNotes[episodeNoteIndex].noteContent,
+                              _episodeNotes[episodeNoteIndex].noteContent,
                               maxLines: 10,
                               overflow: TextOverflow.ellipsis,
                             ),
                             style: ListTileStyle.drawer,
                           ),
-                    episodeNotes[episodeNoteIndex].relativeLocalImages.length ==
+                    _episodeNotes[episodeNoteIndex]
+                                .relativeLocalImages
+                                .length ==
                             1
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(5), // 圆角
                             child: Image.file(
                               File(ImageUtil.getAbsoluteImagePath(
-                                  episodeNotes[episodeNoteIndex]
+                                  _episodeNotes[episodeNoteIndex]
                                       .relativeLocalImages[0]
                                       .path)),
                               fit: BoxFit.fitHeight,
                               errorBuilder: errorImageBuilder(
-                                  episodeNotes[episodeNoteIndex]
+                                  _episodeNotes[episodeNoteIndex]
                                       .relativeLocalImages[0]
                                       .path),
                             ),
                           )
                         : showImageGridView(
-                            episodeNotes[episodeNoteIndex]
+                            _episodeNotes[episodeNoteIndex]
                                 .relativeLocalImages
                                 .length,
                             (BuildContext context, int imageIndex) {
                             return ImageGridItem(
                               relativeLocalImages:
-                                  episodeNotes[episodeNoteIndex]
+                                  _episodeNotes[episodeNoteIndex]
                                       .relativeLocalImages,
                               initialIndex: imageIndex,
                             );
@@ -696,11 +686,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
           FadeRoute(
             builder: (context) {
-              return EpisodeNoteSF(episodeNotes[episodeIndex]);
+              return EpisodeNoteSF(_episodeNotes[episodeIndex]);
             },
           ),
         ).then((value) {
-          episodeNotes[episodeIndex] = value; // 更新修改
+          _episodeNotes[episodeIndex] = value; // 更新修改
           setState(() {});
         });
       }
@@ -783,7 +773,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
                               // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
                               () async {
-                                episodeNotes[episodeIndex] = await SqliteUtil
+                                _episodeNotes[episodeIndex] = await SqliteUtil
                                     .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                                         episodeNote);
                               }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
@@ -1015,17 +1005,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     // 原先隐藏，则设置为false，表示显示
                     SPUtil.setBool("hideNoteInAnimeDetail", false);
                     hideNoteInAnimeDetail = false;
-                    // 可折叠
-                    for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
-                      _expandNotes[i] = true;
-                    }
                   } else {
                     SPUtil.setBool("hideNoteInAnimeDetail", true);
                     hideNoteInAnimeDetail = true;
-                    // 可折叠
-                    for (int i = 0; i < _anime.animeEpisodeCnt; ++i) {
-                      _expandNotes[i] = false;
-                    }
                   }
                   setState(() {});
                 },

@@ -64,9 +64,9 @@ class ClimbAnimeUtil {
   }
 
   // 解析樱花动漫里的集数
-  static int _parseEpisodeCntOfyhdm(episodeCntStr) {
+  static int _parseEpisodeCntOfyhdm(String episodeCntStr) {
     int episodeCnt = 0;
-    if (episodeCntStr == "[全集]") {
+    if (episodeCntStr.contains("[全集]")) {
       episodeCnt = 1;
     } else if (episodeCntStr.contains("第")) {
       int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
@@ -210,10 +210,6 @@ class ClimbAnimeUtil {
       anime.category = animeInfo
           .getElementsByTagName("span")[4]
           .getElementsByTagName("a")[0]
-          .innerHtml;
-      anime.playStatus = animeInfo
-          .getElementsByTagName("span")[4]
-          .getElementsByTagName("a")[2]
           .innerHtml;
       anime.playStatus = animeInfo
           .getElementsByTagName("span")[4]
