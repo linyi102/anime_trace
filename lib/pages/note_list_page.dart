@@ -9,7 +9,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
-import 'package:flutter_test_future/scaffolds/note_setting.dart';
+import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';

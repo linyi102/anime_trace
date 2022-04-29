@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/scaffolds/tabs.dart';
+import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';

@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/about_version.dart';
-import 'package:flutter_test_future/scaffolds/anime_display_setting.dart';
-import 'package:flutter_test_future/scaffolds/backup_restore.dart';
-import 'package:flutter_test_future/scaffolds/note_setting.dart';
-import 'package:flutter_test_future/scaffolds/tag_manage.dart';
+import 'package:flutter_test_future/scaffolds/settings/about_version.dart';
+import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dart';
+import 'package:flutter_test_future/scaffolds/settings/backup_restore.dart';
+import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
+import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
 class SettingPage extends StatefulWidget {

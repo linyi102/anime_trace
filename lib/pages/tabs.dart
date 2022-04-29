@@ -90,7 +90,8 @@ class _TabsState extends State<Tabs> {
             label: "历史",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.note_alt_outlined),
+            // icon: Icon(Icons.note_alt_outlined),
+            icon: Icon(Icons.edit_road),
             label: "笔记",
           ),
           BottomNavigationBarItem(
