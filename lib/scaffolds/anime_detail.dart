@@ -1033,6 +1033,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       debugPrint("未选择，直接返回");
                       return;
                     }
+                    int oldEpisodeCnt = _anime.animeEpisodeCnt;
                     int episodeCnt = value;
                     SqliteUtil.updateEpisodeCntByAnimeId(
                         _anime.animeId, episodeCnt);
@@ -1042,6 +1043,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     var len = _episodes
                         .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
                     if (len > episodeCnt) {
+                      // 首先要按照编号正序排序，然后再删除后面几个
+                      _sortByEpisodeNumberAsc();
                       for (int i = 0; i < len - episodeCnt; ++i) {
                         // 还应该删除history表里的记录，否则会误判完成过的集数
                         SqliteUtil
@@ -1052,11 +1055,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         // 注意顺序
                         _episodes.removeLast();
                       }
+                      // 然后再恢复原来的排序
+                      _sortEpisodes(SPUtil.getString("episodeSortMethod"));
                     } else {
-                      int number = _episodes.last.number;
+                      // 当集数为0时，使用last会导致出错
+                      // 不应该选择last，而是找出最大的编号，因为可能是排过序的，最大的编号不一定在最后面
+                      // 所以采用先获取当前动漫的集数到oldEpisodeCnt中，然后再更新指定的集数
                       for (int i = 0; i < episodeCnt - len; ++i) {
-                        _episodes.add(Episode(number + i + 1, reviewNumber));
+                        _episodes
+                            .add(Episode(oldEpisodeCnt + i + 1, reviewNumber));
                       }
+                      // 添加集数后，按照用户选择的方式排序
+                      _sortEpisodes(SPUtil.getString("episodeSortMethod"));
                     }
                     setState(() {});
                   });
@@ -1071,32 +1081,32 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   void _sortEpisodes(String sortMethod) {
     if (sortMethod == "sortByEpisodeNumberAsc") {
-      _sortByEpisodeNumberAsc(sortMethod);
+      _sortByEpisodeNumberAsc();
     } else if (sortMethod == "sortByEpisodeNumberDesc") {
-      _sortByEpisodeNumberDesc(sortMethod);
+      _sortByEpisodeNumberDesc();
     } else if (sortMethod == "sortByUnCheckedFront") {
-      _sortByUnCheckedFront(sortMethod);
+      _sortByUnCheckedFront();
     } else {
       throw "不可能的排序方式";
     }
     SPUtil.setString("episodeSortMethod", sortMethod);
   }
 
-  void _sortByEpisodeNumberAsc(String sortMethod) {
+  void _sortByEpisodeNumberAsc() {
     _episodes.sort((a, b) {
       return a.number.compareTo(b.number);
     });
   }
 
-  void _sortByEpisodeNumberDesc(String sortMethod) {
+  void _sortByEpisodeNumberDesc() {
     _episodes.sort((a, b) {
       return b.number.compareTo(a.number);
     });
   }
 
   // 未完成的靠前，完成的按number升序排序
-  void _sortByUnCheckedFront(String sortMethod) {
-    _sortByEpisodeNumberAsc(sortMethod); // 先按number升序排序
+  void _sortByUnCheckedFront() {
+    _sortByEpisodeNumberAsc(); // 先按number升序排序
     _episodes.sort((a, b) {
       int ac, bc;
       ac = a.isChecked() ? 1 : 0;
