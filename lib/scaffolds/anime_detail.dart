@@ -170,7 +170,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                       },
                                       fit: BoxFit.cover,
                                       color: const Color.fromRGBO(
-                                          255, 255, 255, 0.3),
+                                          255, 255, 255, 0.8),
                                       colorBlendMode: BlendMode.modulate,
                                     ),
                                   ),
@@ -180,25 +180,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                     child: const SizedBox(),
                                   ),
                                   Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
                                         colors: [
                                           Colors.transparent,
-                                          Colors.white.withOpacity(0.1),
-                                          Colors.white.withOpacity(0.1),
-                                          Colors.white.withOpacity(0.1),
-                                          Colors.white.withOpacity(0.2),
-                                          Colors.white.withOpacity(0.2),
-                                          const Color.fromRGBO(
-                                              250, 250, 250, 0.6),
-                                          const Color.fromRGBO(
-                                              250, 250, 250, 0.7),
-                                          const Color.fromRGBO(
-                                              250, 250, 250, 0.8),
-                                          const Color.fromRGBO(
-                                              250, 250, 250, 1.0),
+                                          // Colors.transparent,
+                                          // Colors.transparent,
+                                          // Colors.transparent,
+                                          Color.fromRGBO(250, 250, 250, 0.1),
+                                          // Color.fromRGBO(250, 250, 250, 0.2),
+                                          // Color.fromRGBO(250, 250, 250, 0.3),
+                                          // Color.fromRGBO(250, 250, 250, 0.4),
+                                          // Color.fromRGBO(250, 250, 250, 0.5),
+                                          // Color.fromRGBO(250, 250, 250, 0.6),
+                                          // Color.fromRGBO(250, 250, 250, 0.7),
+                                          // Color.fromRGBO(250, 250, 250, 0.8),
+                                          Color.fromRGBO(250, 250, 250, 1.0),
                                         ],
                                       ),
                                     ),

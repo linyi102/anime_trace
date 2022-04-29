@@ -23,24 +23,30 @@ class ImageGridItem extends StatelessWidget {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
-        Navigator.push(context, FadeRoute(builder: (context) {
-          return ImageViewer(
-            relativeLocalImages: relativeLocalImages,
-            initialIndex: initialIndex,
-          );
-        }));
+        Navigator.push(
+            context,
+            FadeRoute(
+                // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+                builder: (context) {
+                  return ImageViewer(
+                    relativeLocalImages: relativeLocalImages,
+                    initialIndex: initialIndex,
+                  );
+                }));
       },
       child: AspectRatio(
         aspectRatio: 1,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(5), // 圆角
+          borderRadius: BorderRadius.circular(8), // 圆角
           // child: FadeInImage.memoryNetwork(
           //     placeholder: kTransparentImage, image: imageLocalPath),
           child: FadeInImage(
             placeholder: MemoryImage(kTransparentImage),
             image: FileImage(File(imageLocalPath)),
             fit: BoxFit.cover,
-            fadeInDuration: const Duration(milliseconds: 300),
+            fadeInDuration: const Duration(milliseconds: 100),
             imageErrorBuilder: errorImageBuilder(relativeImagePath),
           ),
           // child: Image.file(

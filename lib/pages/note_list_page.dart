@@ -155,6 +155,7 @@ class _NoteListPageState extends State<NoteListPage> {
               child: Flex(
                 direction: Axis.vertical,
                 children: [
+                  // 显示笔记内容
                   episodeNotes[index].noteContent.isEmpty
                       ? Container()
                       : ListTile(
@@ -165,6 +166,7 @@ class _NoteListPageState extends State<NoteListPage> {
                           ),
                           style: ListTileStyle.drawer,
                         ),
+                  // 显示图片
                   episodeNotes[index].relativeLocalImages.length == 1
                       ? Padding(
                           padding: const EdgeInsets.fromLTRB(15, 30, 15, 30),
@@ -191,37 +193,8 @@ class _NoteListPageState extends State<NoteListPage> {
                                 episodeNotes[index].relativeLocalImages,
                             initialIndex: indexImage,
                           );
-                          // String relativeImagePath = episodeNotes[index]
-                          //     .relativeLocalImages[indexImage]
-                          //     .path;
-                          // String imageLocalPath =
-                          //     ImageUtil.getAbsoluteImagePath(relativeImagePath);
-
-                          // return MaterialButton(
-                          //   padding: const EdgeInsets.all(0),
-                          //   onPressed: () {
-                          //     Navigator.push(context,
-                          //         FadeRoute(builder: (context) {
-                          //       return ImageViewer(
-                          //         relativeImagePaths: relativeImagePaths,
-                          //         initialIndex: indexImage,
-                          //       );
-                          //     }));
-                          //   },
-                          //   child: AspectRatio(
-                          //     aspectRatio: 1,
-                          //     child: ClipRRect(
-                          //       borderRadius: BorderRadius.circular(5), // 圆角
-                          //       child: Image.file(
-                          //         File(imageLocalPath),
-                          //         fit: BoxFit.cover,
-                          //         errorBuilder:
-                          //             errorImageBuilder(relativeImagePath),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // );
                         }),
+                  // 显示动漫行
                   hideAnimeListTile
                       ? Container()
                       : ListTile(
@@ -263,26 +236,6 @@ class _NoteListPageState extends State<NoteListPage> {
                             });
                           },
                         ),
-
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Row(
-                  //     children: [
-                  //       Expanded(
-                  //         child: Text(
-                  //           "完成于${episodeNotes[index].episode.getDate()}",
-                  //           textAlign: TextAlign.left,
-                  //         ),
-                  //       ),
-                  //       Expanded(
-                  //         child: Text(
-                  //           "${episodeNotes[index].anime.animeName} ${episodeNotes[index].episode.number}",
-                  //           textAlign: TextAlign.right,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             ),

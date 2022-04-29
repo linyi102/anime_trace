@@ -118,6 +118,14 @@ class _AnimeListPageState extends State<AnimeListPage>
                       ),
                     ),
                     actions: _getActions(),
+                    // bottom: TabBar(
+                    //   tabs: _showTagAndAnimeCntPlus(),
+                    //   padding: EdgeInsets.all(0),
+                    //   labelPadding: EdgeInsets.all(0),
+                    //   indicatorPadding: EdgeInsets.all(0),
+                    //   indicatorColor: Colors.transparent,
+                    //   controller: _tabController,
+                    // ),
                     bottom: PreferredSize(
                       // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
                       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -125,18 +133,25 @@ class _AnimeListPageState extends State<AnimeListPage>
                         alignment: Alignment.centerLeft,
                         child: TabBar(
                           padding: const EdgeInsets.all(2), // 居中，而不是靠左下
-                          labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           isScrollable: true, // 标签可以滑动，避免拥挤
                           unselectedLabelColor: Colors.black54,
+                          labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           labelColor: Colors.blue, // 标签字体颜色
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
-                          indicatorColor: Colors.transparent, // 隐藏
-                          // indicatorColor: Colors.blue, // 指示器颜色
-                          indicatorSize:
-                              TabBarIndicatorSize.label, // 指示器长短和标签一样
-                          indicatorWeight: 3, // 指示器高度
+                          // indicatorColor: Colors.transparent, // 隐藏
+                          // indicatorSize:
+                          //     TabBarIndicatorSize.label, // 指示器长短和标签一样
+                          indicator: BoxDecoration(
+                              // borderRadius: BorderRadius.only(
+                              //     topLeft: Radius.circular(2),
+                              //     topRight: Radius.circular(2)),
+                              borderRadius: BorderRadius.circular(2),
+                              color: Colors.blue),
+                          indicatorPadding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 40),
+                          indicatorWeight: 2, // 指示器高度
                           tabs: _showTagAndAnimeCntPlus(),
                           // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
                           controller: _tabController,

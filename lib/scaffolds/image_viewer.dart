@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<RelativeLocalImage> relativeLocalImages;
@@ -27,116 +26,120 @@ class _ImageViewerState extends State<ImageViewer> {
 
   @override
   void initState() {
+    super.initState();
     currentIndex = widget.initialIndex;
     for (var relativeLocalImage in widget.relativeLocalImages) {
       imageLocalPaths
           .add(ImageUtil.getAbsoluteImagePath(relativeLocalImage.path));
     }
     imagesCount = imageLocalPaths.length;
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MaterialButton(
-        padding: const EdgeInsets.all(0),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Container(
-          color: Colors.black,
-          child: Stack(
-            children: [
-              Center(
-                child: Image.file(
-                  File(imageLocalPaths[currentIndex]),
-                  fit: BoxFit.cover,
-                  errorBuilder: errorImageBuilder(
-                      widget.relativeLocalImages[currentIndex].path),
-                ),
-                // child: FadeInImage(
-                //   placeholder: MemoryImage(kTransparentImage),
-                //   image: FileImage(File(imageLocalPaths[currentIndex])),
-                //   fit: BoxFit.cover,
-                //   fadeInDuration: const Duration(milliseconds: 300),
-                //   imageErrorBuilder: errorImageBuilder(
-                //       widget.relativeLocalImages[currentIndex].path),
-                // ),
-              ),
-              _dislpayCloseButton(),
-              imagesCount == 1 ? Container() : _displayBottomButton(),
-            ],
-          ),
+      appBar: AppBar(),
+      body: Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            _showImage(),
+            _showScrollImages(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _displayBottomButton() {
-    return Container(
-        alignment: Alignment.bottomCenter,
-        child: Card(
-          elevation: 4,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
-          clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-          color: Colors.black,
-          margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-          child: Row(
-            children: [
-              Expanded(
-                child: IconButton(
-                  onPressed: () {
-                    if (currentIndex - 1 < 0) {
-                      return;
+  Offset? _initialOffset, _finalOffset;
+  _showImage() {
+    return Expanded(
+        flex: 3,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Container(
+            key: UniqueKey(),
+            // 左右滑动图片
+            child: GestureDetector(
+              key: UniqueKey(),
+              onHorizontalDragStart: (details) {
+                _initialOffset = details.globalPosition;
+              },
+              onHorizontalDragUpdate: (details) {
+                _finalOffset = details.globalPosition;
+              },
+              onHorizontalDragEnd: (details) {
+                if (_initialOffset != null && _finalOffset != null) {
+                  final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
+                  if (offsetDiff > 0) {
+                    debugPrint("右滑");
+                    if (currentIndex - 1 >= 0) {
+                      setState(() {
+                        currentIndex--;
+                      });
                     }
-                    currentIndex--;
-                    setState(() {});
-                  },
-                  icon: const Icon(
-                    Icons.chevron_left_outlined,
-                    color: Colors.white70,
-                  ),
-                ),
-              ),
-              Text(
-                imagesCount == 1 ? "" : "${currentIndex + 1}/$imagesCount",
-                style: const TextStyle(color: Colors.white70),
-              ),
-              Expanded(
-                child: IconButton(
-                  onPressed: () {
-                    if (currentIndex + 1 >= imagesCount) {
-                      return;
+                  } else {
+                    debugPrint("左滑");
+                    if (currentIndex + 1 < imageLocalPaths.length) {
+                      setState(() {
+                        currentIndex++;
+                      });
                     }
-                    currentIndex++;
-                    setState(() {});
-                  },
-                  icon: const Icon(
-                    Icons.chevron_right_outlined,
-                    color: Colors.white70,
-                  ),
-                ),
+                  }
+                }
+              },
+              child: Image.file(
+                File(imageLocalPaths[currentIndex]),
+                errorBuilder: errorImageBuilder(
+                    widget.relativeLocalImages[currentIndex].path),
               ),
-            ],
+            ),
           ),
         ));
   }
 
-// 不能在AppBar的actions中添加，否则图片不是特别居中
-  Widget _dislpayCloseButton() {
-    return Positioned(
-      top: 10,
-      right: 10,
-      child: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.close,
-            color: Colors.white70,
-          )),
-    );
+  _showScrollImages() {
+    return Expanded(
+        flex: 1,
+        child: ListView.builder(
+            itemCount: imageLocalPaths.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  // 点击共用轴中的图片
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 8, right: 8),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              width: 4,
+                              color: index == currentIndex
+                                  ? Colors.blueAccent
+                                  : Colors.transparent)),
+                      // 切割圆角图片
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.file(
+                          File(imageLocalPaths[index]),
+                          fit: BoxFit.fitHeight,
+                          height: 100,
+                          width: 140,
+                          errorBuilder: errorImageBuilder(
+                              widget.relativeLocalImages[index].path),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }));
   }
 }
