@@ -117,10 +117,21 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
 
   _showImages() {
     Color addColor = Colors.black;
+    int itemCount =
+        widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
-    return showImageGridView(
-      widget.episodeNote.relativeLocalImages.length + 1,
-      (BuildContext context, int imageIndex) {
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+      shrinkWrap: true, // ListView嵌套GridView
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: itemCount == 2 ? 2 : 3, // 横轴数量
+        crossAxisSpacing: 5, // 横轴距离
+        mainAxisSpacing: 5, // 竖轴距离
+        childAspectRatio: 1, // 网格比例。31/43为封面比例
+      ),
+      itemCount: itemCount,
+      itemBuilder: (BuildContext context, int imageIndex) {
         if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
           return Container(
             decoration: BoxDecoration(

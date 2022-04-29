@@ -9,6 +9,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
+import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -161,54 +162,42 @@ class _NoteListPageState extends State<NoteListPage> {
                           ),
                           style: ListTileStyle.drawer,
                         ),
-                  // 显示图片
-                  episodeNotes[index].relativeLocalImages.length == 1
-                      ? Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5), // 圆角
-                            child: Image.file(
-                              File(ImageUtil.getAbsoluteImagePath(
-                                  episodeNotes[index]
-                                      .relativeLocalImages[0]
-                                      .path)),
-                              fit: BoxFit.fitHeight,
-                              errorBuilder: errorImageBuilder(
-                                  episodeNotes[index]
-                                      .relativeLocalImages[0]
-                                      .path),
-                            ),
-                          ),
-                        )
-                      : showImageGridView(
-                          episodeNotes[index].relativeLocalImages.length,
-                          (BuildContext context, int indexImage) {
-                          return ImageGridItem(
-                            relativeLocalImages:
-                                episodeNotes[index].relativeLocalImages,
-                            initialIndex: indexImage,
-                          );
-                        }),
-                  // 显示动漫行
+                  ImageGridView(
+                      relativeLocalImages:
+                          episodeNotes[index].relativeLocalImages), // 显示动漫行
                   hideAnimeListTile
                       ? Container()
                       : ListTile(
                           style: ListTileStyle.drawer,
-                          trailing: AnimeListCover(
+                          leading: AnimeListCover(
                             episodeNotes[index].anime,
                             showReviewNumber: true,
                             reviewNumber:
                                 episodeNotes[index].episode.reviewNumber,
                           ),
+                          trailing: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  FadeRoute(
+                                    builder: (context) {
+                                      return EpisodeNoteSF(episodeNotes[index]);
+                                    },
+                                  ),
+                                ).then((value) {
+                                  episodeNotes[index] = value; // 更新修改
+                                  setState(() {});
+                                });
+                              },
+                              icon: const Icon(Icons.edit)),
                           title: Text(
                             episodeNotes[index].anime.animeName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
+                            // textAlign: TextAlign.right,
                           ),
                           subtitle: Text(
                             "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
-                            textAlign: TextAlign.right,
+                            // textAlign: TextAlign.right,
                           ),
                           onTap: () {
                             Navigator.of(context)

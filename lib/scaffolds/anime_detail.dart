@@ -601,39 +601,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             ),
                             style: ListTileStyle.drawer,
                           ),
-                    _episodeNotes[episodeNoteIndex]
-                                .relativeLocalImages
-                                .length ==
-                            1
-                        ? Container(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5), // 圆角
-                              child: Image.file(
-                                File(ImageUtil.getAbsoluteImagePath(
-                                    _episodeNotes[episodeNoteIndex]
-                                        .relativeLocalImages[0]
-                                        .path)),
-                                fit: BoxFit.fitHeight,
-                                errorBuilder: errorImageBuilder(
-                                    _episodeNotes[episodeNoteIndex]
-                                        .relativeLocalImages[0]
-                                        .path),
-                              ),
-                            ),
-                          )
-                        : showImageGridView(
-                            _episodeNotes[episodeNoteIndex]
-                                .relativeLocalImages
-                                .length,
-                            (BuildContext context, int imageIndex) {
-                            return ImageGridItem(
-                              relativeLocalImages:
-                                  _episodeNotes[episodeNoteIndex]
-                                      .relativeLocalImages,
-                              initialIndex: imageIndex,
-                            );
-                          })
+                    ImageGridView(
+                        relativeLocalImages:
+                            _episodeNotes[episodeNoteIndex].relativeLocalImages)
                   ],
                 ),
               ),
