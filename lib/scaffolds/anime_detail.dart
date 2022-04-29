@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -163,10 +164,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                   },
                                   fit: BoxFit.cover,
                                   color:
-                                      const Color.fromRGBO(255, 255, 255, 0.4),
+                                      const Color.fromRGBO(255, 255, 255, 0.3),
                                   colorBlendMode: BlendMode.modulate,
                                 ),
                               ),
+                              // BackdropFilter(
+                              //   filter:
+                              //       ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                              //   child: const SizedBox(),
+                              // ),
                               Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -195,7 +201,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                     _showAnimeRow(),
                                   ],
                                 ),
-                              )
+                              ),
+                              // 遮住背景封面细线
+                              Positioned(
+                                  bottom: -5,
+                                  child: Container(
+                                    height: 10,
+                                    width: MediaQuery.of(context).size.width,
+                                    color: const Color.fromRGBO(
+                                        250, 250, 250, 1.0),
+                                  ))
                             ],
                           ),
                           collapseMode: CollapseMode.parallax,
