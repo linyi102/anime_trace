@@ -988,12 +988,27 @@ class SqliteUtil {
     List<EpisodeNote> episodeNotes = [];
     // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
     // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
+    // var lm1 = await _database.rawQuery('''
+    // select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url, episode_note.review_number
+    // from episode_note, anime, history
+    // where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number and episode_note.review_number = history.review_number
+    // order by history.date desc
+    // limit $number offset $offset;
+    // ''');
+
+    // 优化：不会筛选出笔记内容和图片都没有的行
     var lm1 = await _database.rawQuery('''
-    select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url, episode_note.review_number
-    from episode_note, anime, history
-    where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number and episode_note.review_number = history.review_number
-    order by history.date desc
-    limit $number offset $offset;
+      select anime.*, history.date, episode_note.episode_number, episode_note.review_number, episode_note.note_id, episode_note.note_content
+      from history, episode_note, anime
+      where history.anime_id = episode_note.anime_id and history.episode_number = episode_note.episode_number
+          and history.review_number = episode_note.review_number
+          and anime.anime_id = history.anime_id
+          and episode_note.note_id in(
+              select distinct episode_note.note_id
+              from episode_note inner join image on episode_note.note_id = image.note_id
+          )
+      order by history.date desc
+      limit $number offset $offset;
     ''');
     for (var item in lm1) {
       Anime anime = Anime(

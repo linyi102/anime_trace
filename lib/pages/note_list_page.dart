@@ -125,11 +125,6 @@ class _NoteListPageState extends State<NoteListPage> {
       itemBuilder: (BuildContext context, int index) {
         // debugPrint("index=$index");
         _loadExtraData(index);
-        // 跳过空笔记
-        if (episodeNotes[index].noteContent.isEmpty &&
-            episodeNotes[index].relativeLocalImages.isEmpty) {
-          return Container();
-        }
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
