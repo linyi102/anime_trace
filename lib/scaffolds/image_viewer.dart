@@ -33,12 +33,22 @@ class _ImageViewerState extends State<ImageViewer> {
           .add(ImageUtil.getAbsoluteImagePath(relativeLocalImage.path));
     }
     imagesCount = imageLocalPaths.length;
+
+    // 首次进入可能选的是后面的图片，也需要移动
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
+      // 如果推迟，则会报错：Failed assertion: line 151 pos 12: '_positions.isNotEmpty': ScrollController not attached to any scroll views.
+      scrollToCurrentImage();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("${currentIndex + 1} / ${imageLocalPaths.length}",
+            style: const TextStyle(color: Colors.black)),
+      ),
       body: Container(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -54,54 +64,58 @@ class _ImageViewerState extends State<ImageViewer> {
   Offset? _initialOffset, _finalOffset;
   _showImage() {
     return Expanded(
-        flex: 3,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: Container(
+      flex: 3,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: Container(
+          key: UniqueKey(),
+          // 左右滑动图片
+          child: GestureDetector(
             key: UniqueKey(),
-            // 左右滑动图片
-            child: GestureDetector(
-              key: UniqueKey(),
-              onHorizontalDragStart: (details) {
-                _initialOffset = details.globalPosition;
-              },
-              onHorizontalDragUpdate: (details) {
-                _finalOffset = details.globalPosition;
-              },
-              onHorizontalDragEnd: (details) {
-                if (_initialOffset != null && _finalOffset != null) {
-                  final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
-                  if (offsetDiff > 0) {
-                    debugPrint("右滑");
-                    if (currentIndex - 1 >= 0) {
-                      setState(() {
-                        currentIndex--;
-                      });
-                    }
-                  } else {
-                    debugPrint("左滑");
-                    if (currentIndex + 1 < imageLocalPaths.length) {
-                      setState(() {
-                        currentIndex++;
-                      });
-                    }
+            onHorizontalDragStart: (details) {
+              _initialOffset = details.globalPosition;
+            },
+            onHorizontalDragUpdate: (details) {
+              _finalOffset = details.globalPosition;
+            },
+            onHorizontalDragEnd: (details) {
+              if (_initialOffset != null && _finalOffset != null) {
+                final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
+                if (offsetDiff > 0) {
+                  debugPrint("右滑");
+                  if (currentIndex - 1 >= 0) {
+                    setState(() {
+                      currentIndex--;
+                    });
+                  }
+                } else {
+                  debugPrint("左滑");
+                  if (currentIndex + 1 < imageLocalPaths.length) {
+                    setState(() {
+                      currentIndex++;
+                    });
                   }
                 }
-              },
-              child: Image.file(
-                File(imageLocalPaths[currentIndex]),
-                errorBuilder: errorImageBuilder(
-                    widget.relativeLocalImages[currentIndex].path),
-              ),
+                scrollToCurrentImage();
+              }
+            },
+            child: Image.file(
+              File(imageLocalPaths[currentIndex]),
+              errorBuilder: errorImageBuilder(
+                  widget.relativeLocalImages[currentIndex].path),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
+  ScrollController _scrollController = ScrollController();
   _showScrollImages() {
     return Expanded(
         flex: 1,
         child: ListView.builder(
+            controller: _scrollController, // 记得加上控制器
             itemCount: imageLocalPaths.length,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
@@ -111,9 +125,13 @@ class _ImageViewerState extends State<ImageViewer> {
                   // 点击共用轴中的图片
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        currentIndex = index;
-                      });
+                      if (currentIndex == index) {
+                        return;
+                      }
+                      // 先设置当前下标，然后在移动
+                      currentIndex = index;
+                      scrollToCurrentImage();
+                      setState(() {});
                     },
                     child: Container(
                       margin: const EdgeInsets.only(left: 8, right: 8),
@@ -141,5 +159,10 @@ class _ImageViewerState extends State<ImageViewer> {
                 ],
               );
             }));
+  }
+
+  void scrollToCurrentImage() {
+    _scrollController.animateTo(160.0 * (currentIndex - 1),
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 }

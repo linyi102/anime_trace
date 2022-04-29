@@ -39,7 +39,7 @@ class ImageGridItem extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8), // 圆角
+          borderRadius: BorderRadius.circular(5), // 圆角
           // child: FadeInImage.memoryNetwork(
           //     placeholder: kTransparentImage, image: imageLocalPath),
           child: FadeInImage(
