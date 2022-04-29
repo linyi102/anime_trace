@@ -43,7 +43,11 @@ class Anime {
 
   @override
   String toString() {
-    return "animeId=$animeId\nanimeName=$animeName\nanimeEpisodeCnt=$animeEpisodeCnt\ntagName=$tagName\ncheckedEpisodeCnt=$checkedEpisodeCnt\nanimeCoverUrl=$animeCoverUrl\nanimeUrl=$animeUrl\npremiereTime=$premiereTime\nanimeDesc=$animeDesc\nplayStatus=$playStatus\ncategory=$category\narea=$area\n";
+    return "animeId=$animeId\nanimeName=$animeName\nanimeEpisodeCnt=$animeEpisodeCnt\ntagName=$tagName\ncheckedEpisodeCnt=$checkedEpisodeCnt\nanimeCoverUrl=$animeCoverUrl\nanimeUrl=$animeUrl\npremiereTime=$premiereTime\nanimeDesc=${reduceStr(animeDesc)}\nplayStatus=$playStatus\ncategory=$category\narea=$area\n";
+  }
+
+  String reduceStr(String str) {
+    return str.length > 15 ? str.substring(0, 15) : str;
   }
 
   String getSubTitle() {
@@ -51,14 +55,43 @@ class Anime {
     if (area.isNotEmpty) {
       list.add(area);
     }
-    if (playStatus.isNotEmpty) {
-      list.add(playStatus);
-    }
     if (category.isNotEmpty) {
       list.add(category);
     }
+    if (premiereTime.isNotEmpty) {
+      list.add(premiereTime);
+    }
+    if (playStatus.isNotEmpty) {
+      list.add(playStatus);
+    }
     if (animeEpisodeCnt != -1) {
       list.add("$animeEpisodeCnt 集");
+    }
+
+    return list.join(" / ");
+  }
+
+  String getVariableInfo() {
+    var list = [];
+    if (premiereTime.isNotEmpty) {
+      list.add(premiereTime);
+    }
+    if (playStatus.isNotEmpty) {
+      list.add(playStatus);
+    }
+    if (animeEpisodeCnt != -1) {
+      list.add("$animeEpisodeCnt 集");
+    }
+    return list.join(" / ");
+  }
+
+  String getConstantInfo() {
+    var list = [];
+    if (area.isNotEmpty) {
+      list.add(area);
+    }
+    if (category.isNotEmpty) {
+      list.add(category);
     }
     return list.join(" / ");
   }

@@ -199,10 +199,10 @@ class ClimbAnimeUtil {
       // <label>别名:</label>古見さんは、コミ ュ症です。2期
       debugPrint("str=$str");
       anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
-      anime.premiereTime = animeInfo
-          .getElementsByTagName("span")[0]
-          .getElementsByTagName("a")[0]
-          .innerHtml;
+      var element = animeInfo.getElementsByTagName("span")[0];
+      str = element.innerHtml.trimRight(); // 需要去除右边的空白符
+      anime.premiereTime = element.getElementsByTagName("a")[0].innerHtml +
+          str.substring(str.length - 6);
       anime.area = animeInfo
           .getElementsByTagName("span")[1]
           .getElementsByTagName("a")[0]

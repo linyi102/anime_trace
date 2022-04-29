@@ -370,6 +370,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               _showAnimeName(_anime.animeName),
               _showNameAnother(_anime.nameAnother),
               _showAnimeInfo(_anime.getSubTitle()),
+              // _showAnimeInfo(_anime.getVariableInfo()),
+              // _showAnimeInfo(_anime.getConstantInfo()),
               _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               // _displayDesc(),
             ],
@@ -423,7 +425,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: Text(
-        coverSource,
+        "$coverSource",
         style: const TextStyle(color: Colors.black54),
       ),
     );

@@ -185,7 +185,7 @@ class SqliteUtil {
       ''');
       debugPrint("last_mode_tag_time: $datetime");
     }
-    // 先改基础信息
+    // 改基础信息
     newAnime = escapeAnime(newAnime);
     return await _database.rawUpdate('''
       update anime
@@ -474,7 +474,7 @@ class SqliteUtil {
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
       reviewNumber: maxReviewNumber,
-      premiereTime: list[0]['name_another'] as String? ?? "",
+      premiereTime: list[0]['premiere_time'] as String? ?? "",
       nameOri: list[0]['name_ori'] as String? ?? "",
       nameAnother: list[0]['name_another'] as String? ?? "",
       authorOri: list[0]['author_ori'] as String? ?? "",
