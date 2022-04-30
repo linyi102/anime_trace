@@ -102,6 +102,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
               return;
             }
             lastInputName = text; // 更新上一次输入的名字
+            searchOk = false;
+            searching = true;
             _climbAnime(keyword: text);
           },
           onChanged: (inputStr) {

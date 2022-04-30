@@ -185,7 +185,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           // Color.fromRGBO(250, 250, 250, 0.6),
                                           // Color.fromRGBO(250, 250, 250, 0.7),
                                           Color.fromRGBO(250, 250, 250, 0.8),
-                                          // Color.fromRGBO(250, 250, 250, 1.0),
+                                          Color.fromRGBO(250, 250, 250, 1.0),
                                         ],
                                       ),
                                     ),
@@ -1185,11 +1185,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return _episodes.indexWhere((element) => element.number == episodeNumber);
   }
 
+  bool _climbing = false;
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
       showToast("当前动漫没有来源，请先进行迁移");
       return false;
     }
+    if (_climbing) {
+      showToast("正在获取信息，请勿重复刷新");
+      return false;
+    }
+    _climbing = true;
     // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
     Anime oldAnime = Anime(
@@ -1205,9 +1211,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         _loadData();
       }
     });
-    setState(() {
-      _anime = newAnime;
-    });
+    _anime = newAnime;
+    _climbing = false;
+    setState(() {});
     showToast("更新信息成功");
     return true;
   }

@@ -49,6 +49,7 @@ class AnimeGridCover extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: _anime.animeCoverUrl,
                       fit: BoxFit.fitHeight,
+                      errorWidget: (context, url, error) => const Placeholder(),
                     ),
                   ),
             // : Card(
