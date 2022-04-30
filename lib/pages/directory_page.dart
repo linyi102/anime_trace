@@ -111,8 +111,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
               duration: const Duration(milliseconds: 200),
               child: _loadOk
                   ? _showAnimeList()
-                  : SizedBox(
-                      height: 200,
+                  : Container(
+                      // padding和_showAnimeList()里的暂无数据保持一致，否则没有数据时，「暂无数据」会突然往上移动
+                      padding: const EdgeInsets.only(top: 25),
                       child: Center(
                         key: UniqueKey(),
                         child: const RefreshProgressIndicator(),
@@ -383,68 +384,73 @@ class _DirectoryPageState extends State<DirectoryPage> {
   }
 
   _showAnimeList() {
-    return ListView.builder(
-      shrinkWrap: true, //解决无限高度问题
-      physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-      itemCount: directory.length,
-      itemBuilder: (BuildContext context, int index) {
-        Anime anime = directory[index];
-        final imageProvider = Image.network(anime.animeCoverUrl).image;
-        return MaterialButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
-            debugPrint("单击");
-            // 如果收藏了，则单击进入详细页面
-            if (anime.isCollected()) {
-              Navigator.of(context).push(FadeRoute(builder: (context) {
-                return AnimeDetailPlus(anime.animeId);
-              })).then((value) {
-                setState(() {
-                  // anime = value;
-                  directory[index] = value;
-                });
-              });
-            }
-          },
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
-                child: SizedBox(
-                  width: 90,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: MaterialButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        showImageViewer(context, imageProvider,
-                            immersive: false);
-                      },
-                      child: AnimeGridCover(anime),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
+    return directory.isEmpty
+        ? Container(
+            padding: const EdgeInsets.only(top: 25),
+            child: const Text("暂无数据"),
+          )
+        : ListView.builder(
+            shrinkWrap: true, //解决无限高度问题
+            physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+            itemCount: directory.length,
+            itemBuilder: (BuildContext context, int index) {
+              Anime anime = directory[index];
+              final imageProvider = Image.network(anime.animeCoverUrl).image;
+              return MaterialButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  debugPrint("单击");
+                  // 如果收藏了，则单击进入详细页面
+                  if (anime.isCollected()) {
+                    Navigator.of(context).push(FadeRoute(builder: (context) {
+                      return AnimeDetailPlus(anime.animeId);
+                    })).then((value) {
+                      setState(() {
+                        // anime = value;
+                        directory[index] = value;
+                      });
+                    });
+                  }
+                },
+                child: Row(
                   children: [
-                    // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
-                    _showAnimeName(anime.animeName),
-                    _showNameAnother(anime.nameAnother),
-                    _showAnimeInfo(anime.getAnimeInfoFirstLine()),
-                    _showAnimeInfo(anime.getAnimeInfoSecondLine()),
-                    // _showSource(
-                    //     ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
-                    // _displayDesc(),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                      child: SizedBox(
+                        width: 90,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: MaterialButton(
+                            padding: const EdgeInsets.all(0),
+                            onPressed: () {
+                              showImageViewer(context, imageProvider,
+                                  immersive: false);
+                            },
+                            child: AnimeGridCover(anime),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
+                          _showAnimeName(anime.animeName),
+                          _showNameAnother(anime.nameAnother),
+                          _showAnimeInfo(anime.getAnimeInfoFirstLine()),
+                          _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                          // _showSource(
+                          //     ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
+                          // _displayDesc(),
+                        ],
+                      ),
+                    ),
+                    _showCollectIcon(anime)
                   ],
                 ),
-              ),
-              _showCollectIcon(anime)
-            ],
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
   }
 
   _showAnimeName(animeName) {
