@@ -15,6 +15,11 @@ class ImageGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 没有图片则直接返回
+    if (relativeLocalImages.isEmpty) {
+      return Container();
+    }
+    // 只有一张图片，则16/9比例显示
     if (relativeLocalImages.length == 1) {
       return Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -49,6 +54,7 @@ class ImageGridView extends StatelessWidget {
         ),
       );
     } else {
+      // 构建网格图片
       return GridView.builder(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
         shrinkWrap: true, // ListView嵌套GridView

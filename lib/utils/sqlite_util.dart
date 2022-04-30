@@ -1007,6 +1007,9 @@ class SqliteUtil {
           and episode_note.note_id in(
               select distinct episode_note.note_id
               from episode_note inner join image on episode_note.note_id = image.note_id
+              union
+              select episode_note.note_id
+              from episode_note where note_content is not null and length(note_content) > 0
           )
       order by history.date desc
       limit $number offset $offset;
