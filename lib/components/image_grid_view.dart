@@ -8,6 +8,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 
+// 用于显示笔记图片网格
 class ImageGridView extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   const ImageGridView({Key? key, required this.relativeLocalImages})

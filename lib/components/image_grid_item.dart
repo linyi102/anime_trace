@@ -8,7 +8,7 @@ import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-// 网格图片的单个图片构建
+// 网格的单个笔记图片构建
 class ImageGridItem extends StatelessWidget {
   final List<RelativeLocalImage>
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面

@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -135,7 +136,8 @@ class _SearchState extends State<Search> {
         ),
         onTap: () {
           Navigator.of(context).push(FadeRoute(builder: (context) {
-            return AnimeClimb(keyword: lastInputText, ismigrate: false);
+            return AnimeClimbAllWebsite(
+                keyword: lastInputText, ismigrate: false);
           })).then((value) {
             searchDbAnimesByKeyword(lastInputText);
           });

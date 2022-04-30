@@ -1,0 +1,183 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
+import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/utils/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
+
+class AnimeClimbAllWebsite extends StatefulWidget {
+  final int animeId;
+  final String keyword;
+  final bool ismigrate;
+  const AnimeClimbAllWebsite(
+      {this.animeId = 0, this.keyword = "", this.ismigrate = false, Key? key})
+      : super(key: key);
+
+  @override
+  _AnimeClimbAllWebsiteState createState() => _AnimeClimbAllWebsiteState();
+}
+
+class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
+  var inputKeywordController = TextEditingController();
+  FocusNode blankFocusNode = FocusNode(); // 空白焦点
+
+  String addDefaultTag = tags[0];
+  String lastInputName = "";
+  List<String> websiteNames = ["樱花动漫", "AGE 动漫", "OmoFun"];
+  Map<String, List<Anime>> websiteClimbAnimes = {};
+  Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
+  Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
+
+  @override
+  void initState() {
+    super.initState();
+    for (var websiteName in websiteNames) {
+      websiteClimbSearchOk[websiteName] = false;
+      websiteClimbSearching[websiteName] = false;
+    }
+
+    // TODO 去掉delayed报错
+    Future.delayed(Duration.zero).then((value) {
+      if (widget.ismigrate) {
+        _climbAnime(keyword: widget.keyword);
+      }
+    });
+  }
+
+  _climbAnime({String keyword = ""}) {
+    FocusScope.of(context).requestFocus(blankFocusNode);
+    // 先全部清除数据
+    for (var websiteName in websiteNames) {
+      websiteClimbSearchOk[websiteName] = false;
+      websiteClimbSearching[websiteName] = false;
+    }
+
+    debugPrint("开始爬取动漫封面");
+    for (var websiteName in websiteNames) {
+      Future(() async {
+        // 正在搜索，用于显示加载圈
+        websiteClimbSearching[websiteName] = true;
+        setState(() {});
+
+        return ClimbAnimeUtil.climbAnimesByKeywordInWebSiteName(
+            keyword, websiteName);
+      }).then((value) async {
+        websiteClimbAnimes[websiteName] = value;
+        websiteClimbSearchOk[websiteName] = true;
+        // 根据动漫网址查询是否已经添加了该动漫
+        for (var i = 0; i < websiteClimbAnimes[websiteName]!.length; i++) {
+          websiteClimbAnimes[websiteName]![i] =
+              await SqliteUtil.getAnimeByAnimeUrl(
+                  websiteClimbAnimes[websiteName]![i]);
+        }
+        setState(() {});
+      });
+    }
+    // Future(() async {
+    //   return ClimbAnimeUtil.climbAnimesByKeyword(keyword); // 一定要return！！！
+    // }).then((value) async {
+    //   searchedAnimes = value;
+    //   debugPrint("爬取结束");
+    //   FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+    //   // 若某个搜索的动漫存在，则更新它
+    //   // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
+    //   for (var i = 0; i < searchedAnimes.length; i++) {
+    //     searchedAnimes[i] =
+    //         await SqliteUtil.getAnimeByAnimeUrl(searchedAnimes[i]);
+    //   }
+    //   // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
+    //   // 迁移时不添加
+    //   // if (widget.keyword.isEmpty) {
+    //   //   searchedAnimes.insert(
+    //   //       0,
+    //   //       Anime(
+    //   //         animeName: keyword,
+    //   //         animeEpisodeCnt: 0,
+    //   //         animeCoverUrl: "",
+    //   //       ));
+    //   // }
+
+    //   searching = false;
+    //   setState(() {});
+    // });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          autofocus:
+              widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
+          controller: inputKeywordController..text = lastInputName,
+          decoration: InputDecoration(
+              hintText: widget.ismigrate ? "迁移动漫" : "添加动漫",
+              border: InputBorder.none,
+              suffixIcon: IconButton(
+                  onPressed: () {
+                    inputKeywordController.clear();
+                  },
+                  icon: const Icon(Icons.close, color: Colors.black))),
+          onEditingComplete: () async {
+            String text = inputKeywordController.text;
+            // 如果输入的名字为空，则不再爬取
+            if (text.isEmpty) {
+              return;
+            }
+            lastInputName = text; // 更新上一次输入的名字
+            _climbAnime(keyword: text);
+          },
+          onChanged: (inputStr) {
+            lastInputName = inputStr;
+            // 避免输入好后切换搜索源后，清空了输入的内容
+          },
+        ),
+      ),
+      body: ListView.builder(
+        itemCount: websiteNames.length,
+        itemBuilder: (context, index) {
+          String websiteName = websiteNames[index];
+          return ListView(
+            shrinkWrap: true, //解决无限高度问题
+            physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+            children: [
+              ListTile(
+                title: Text(websiteName),
+                trailing: const Icon(Icons.arrow_forward),
+                onTap: () {
+                  // 进入详细搜索页
+                  Navigator.of(context).push(FadeRoute(builder: (context) {
+                    return AnimeClimb(
+                      keyword: lastInputName,
+                      ismigrate: widget.ismigrate,
+                    );
+                  }));
+                },
+              ),
+              websiteClimbSearchOk[websiteName] ?? false
+                  ? AnimeHorizontalCover(
+                      animes: websiteClimbAnimes[websiteName] ?? [],
+                      ismigrate: widget.ismigrate,
+                      animeId: widget.animeId,
+                    ) // 查询好后显示结果
+                  : websiteClimbSearching[websiteName] ?? false
+                      ? const SizedBox(
+                          height: 137 + 60,
+                          child: Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ) // 搜索时显示加载圈
+                      : Container() // 没有搜索则什么都不显示
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

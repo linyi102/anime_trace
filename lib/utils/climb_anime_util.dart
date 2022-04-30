@@ -106,6 +106,8 @@ class ClimbAnimeUtil {
           animeCoverUrl: coverUrl ?? "",
           animeUrl: animeUrl,
         );
+        debugPrint("爬取名字：${anime.animeName}");
+        debugPrint("爬取封面：${anime.animeCoverUrl}");
         animes.add(anime);
       }
     } catch (e) {
@@ -151,6 +153,23 @@ class ClimbAnimeUtil {
       allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfAGE(keyword);
     } else {
       throw ("爬取的网站名错误: $selectedWebsite");
+    }
+    return allAnimeNameAndCoverUrl;
+  }
+
+  // 根据传入的网站名爬取
+  static Future<List<Anime>> climbAnimesByKeywordInWebSiteName(
+      String keyword, String websiteName) async {
+    List<Anime> allAnimeNameAndCoverUrl = [];
+
+    if (websiteName == "樱花动漫") {
+      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfyhdm(keyword);
+    } else if (websiteName == "OmoFun") {
+      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfOmoFun(keyword);
+    } else if (websiteName == "AGE 动漫") {
+      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfAGE(keyword);
+    } else {
+      throw ("爬取的网站名错误: $websiteName");
     }
     return allAnimeNameAndCoverUrl;
   }

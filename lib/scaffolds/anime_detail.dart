@@ -11,6 +11,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
@@ -25,7 +26,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
-  const AnimeDetailPlus(this.animeId, {Key? key}) : super(key: key);
+  Anime? parentAnime;
+  AnimeDetailPlus(
+    this.animeId, {
+    Key? key,
+    this.parentAnime,
+  }) : super(key: key);
 
   @override
   _AnimeDetailPlusState createState() => _AnimeDetailPlusState();
@@ -54,7 +60,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    if (widget.animeId > 0) {
+      _loadData();
+    } else {
+      // widget.parentAnime肯定不为null，因为已经用isCollected判断过了
+      _anime = widget.parentAnime ?? Anime(animeName: "", animeEpisodeCnt: 0);
+      reviewNumber = 1;
+      // 爬取详细信息
+      _climbAnimeInfo();
+      _loadOk = true;
+    }
   }
 
   void _loadData() async {
@@ -222,112 +237,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 },
                                 tooltip: "返回上一级",
                                 icon: const Icon(Icons.arrow_back_rounded)),
-                            title: !_loadOk
-                                ? Container()
-                                : ListTile(
-                                    title: Row(
-                                      children: [
-                                        Text(_anime.tagName),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        const Icon(Icons.expand_more_rounded),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      _dialogSelectTag();
-                                      // 不能复用该对话框，如果选择了取消收藏，则需要退回到主页，但无法实现。
-                                      // dialogSelectTag(setState, context, _anime);
-                                    },
-                                  ),
-                            actions: [
-                              IconButton(
-                                  onPressed: () {
-                                    _climbAnimeInfo();
-                                  },
-                                  tooltip: "更新信息",
-                                  icon: const Icon(Icons.refresh)),
-                              PopupMenuButton(
-                                icon: const Icon(Icons.more_vert),
-                                offset: const Offset(0, 50),
-                                itemBuilder: (BuildContext context) {
-                                  return [
-                                    PopupMenuItem(
-                                      padding: const EdgeInsets.all(0),
-                                      child: ListTile(
-                                        title: const Text("取消收藏"),
-                                        trailing: const Icon(
-                                            Icons.favorite_border_outlined),
-                                        style: ListTileStyle.drawer,
-                                        onTap: () {
-                                          _dialogDeleteAnime();
-                                        },
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      padding: const EdgeInsets.all(0),
-                                      child: ListTile(
-                                        title: const Text("访问网址"),
-                                        style: ListTileStyle.drawer,
-                                        trailing:
-                                            const Icon(Icons.open_in_browser),
-                                        onTap: () async {
-                                          Uri uri;
-                                          if (_anime.animeUrl.isNotEmpty) {
-                                            uri = Uri.parse(_anime.animeUrl);
-                                            if (!await launchUrl(uri,
-                                                mode: LaunchMode
-                                                    .externalApplication)) {
-                                              throw "Could not launch $uri";
-                                            }
-                                          } else {
-                                            showToast("网址为空，请先迁移动漫");
-                                          }
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      padding: const EdgeInsets.all(0),
-                                      child: ListTile(
-                                        title: const Text("迁移动漫"),
-                                        style: ListTileStyle.drawer,
-                                        trailing: const Icon(
-                                            Icons.change_circle_outlined),
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            // MaterialPageRoute(
-                                            //   builder: (context) => AnimeClimb(
-                                            //     animeId: _anime.animeId,
-                                            //     keyword: _anime.animeName,
-                                            //     ismigrate: true,
-                                            //   ),
-                                            // ),
-                                            FadeRoute(
-                                              builder: (context) {
-                                                return AnimeClimb(
-                                                  animeId: _anime.animeId,
-                                                  keyword: _anime.animeName,
-                                                  ismigrate: true,
-                                                );
-                                              },
-                                            ),
-                                          ).then((value) {
-                                            _loadData();
-                                            Navigator.pop(context);
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ];
-                                },
-                              ),
-                            ],
+                            title: _buildAppBarTitle(),
+                            actions: _buildActions(),
                           ),
                           SliverToBoxAdapter(
-                            child: _displayButtonsAboutEpisode(),
+                            child: _buildButtonsAboutEpisode(),
                           ),
-                          _showEpisode(),
+                          _anime.isCollected()
+                              ? _showEpisode()
+                              : SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                      (context, index) {
+                                  return _showCollectIcon();
+                                }, childCount: 1)),
                         ],
                       ),
                     ),
@@ -337,6 +259,98 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildActions() {
+    if (!_anime.isCollected()) return [];
+    return [
+      IconButton(
+          onPressed: () {
+            _climbAnimeInfo();
+          },
+          tooltip: "更新信息",
+          icon: const Icon(Icons.refresh)),
+      PopupMenuButton(
+        icon: const Icon(Icons.more_vert),
+        offset: const Offset(0, 50),
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("取消收藏"),
+                trailing: const Icon(Icons.favorite_border_outlined),
+                style: ListTileStyle.drawer,
+                onTap: () {
+                  _dialogDeleteAnime();
+                },
+              ),
+            ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("访问网址"),
+                style: ListTileStyle.drawer,
+                trailing: const Icon(Icons.open_in_browser),
+                onTap: () async {
+                  Uri uri;
+                  if (_anime.animeUrl.isNotEmpty) {
+                    uri = Uri.parse(_anime.animeUrl);
+                    if (!await launchUrl(uri,
+                        mode: LaunchMode.externalApplication)) {
+                      throw "Could not launch $uri";
+                    }
+                  } else {
+                    showToast("网址为空，请先迁移动漫");
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("迁移动漫"),
+                style: ListTileStyle.drawer,
+                trailing: const Icon(Icons.change_circle_outlined),
+                onTap: () {
+                  Navigator.of(context).push(
+                    // MaterialPageRoute(
+                    //   builder: (context) => AnimeClimb(
+                    //     animeId: _anime.animeId,
+                    //     keyword: _anime.animeName,
+                    //     ismigrate: true,
+                    //   ),
+                    // ),
+                    // FadeRoute(
+                    //   builder: (context) {
+                    //     return AnimeClimb(
+                    //       animeId: _anime.animeId,
+                    //       keyword: _anime.animeName,
+                    //       ismigrate: true,
+                    //     );
+                    //   },
+                    // ),
+                    FadeRoute(
+                      builder: (context) {
+                        return AnimeClimbAllWebsite(
+                          animeId: _anime.animeId,
+                          keyword: _anime.animeName,
+                          ismigrate: true,
+                        );
+                      },
+                    ),
+                  ).then((value) {
+                    _loadData();
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ),
+          ];
+        },
+      ),
+    ];
   }
 
   _showAnimeRow() {
@@ -438,7 +452,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _showCollectIcon(Anime anime) {
+  _showCollectIcon() {
     return Container(
       padding: const EdgeInsets.only(right: 15),
       child: Column(
@@ -447,15 +461,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               onPressed: () {
                 // 不能使用，因为里面的删除动漫后找不到方法直接返回主页
                 // dialogSelectTag(setState, context, anime);
-                _dialogSelectTag();
+                // _dialogSelectTag();
+                debugPrint(_anime.animeCoverUrl);
               },
-              icon: anime.isCollected()
+              icon: _anime.isCollected()
                   ? const Icon(
                       Icons.favorite,
                       color: Colors.red,
                     )
                   : const Icon(Icons.favorite_border)),
-          anime.isCollected() ? Text(anime.tagName) : Container()
+          _anime.isCollected() ? Text(_anime.tagName) : Container()
         ],
       ),
     );
@@ -558,7 +573,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
           // 在每一集下面添加笔记
           if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
-            columnChildren.add(displayNote(episodeIndex, context));
+            columnChildren.add(buildNote(episodeIndex, context));
           }
 
           // 在最后一集下面添加空白
@@ -575,7 +590,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  Widget displayNote(int episodeIndex, BuildContext context) {
+  Widget buildNote(int episodeIndex, BuildContext context) {
     // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
     int episodeNoteIndex = _episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
@@ -1021,7 +1036,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         });
   }
 
-  _displayButtonsAboutEpisode() {
+  _buildButtonsAboutEpisode() {
+    if (!_anime.isCollected()) return Container();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // direction: Axis.horizontal,
@@ -1188,14 +1204,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   bool _climbing = false;
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
-      showToast("当前动漫没有来源，请先进行迁移");
+      if (_anime.isCollected()) showToast("当前动漫没有来源，请先进行迁移");
       return false;
     }
     if (_climbing) {
-      showToast("正在获取信息，请勿重复刷新");
+      if (_anime.isCollected()) showToast("正在获取信息，请勿重复刷新");
       return false;
     }
-    showToast("更新中...");
+    if (_anime.isCollected()) showToast("更新中...");
     _climbing = true;
     // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
@@ -1215,7 +1231,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     _anime = newAnime;
     _climbing = false;
     setState(() {});
-    showToast("更新信息成功");
+    if (_anime.isCollected()) showToast("更新信息成功");
     return true;
   }
 
@@ -1236,5 +1252,27 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       default:
         return const Icon(Icons.error_outline);
     }
+  }
+
+  _buildAppBarTitle() {
+    if (!_anime.isCollected()) return Container();
+    return !_loadOk
+        ? Container()
+        : ListTile(
+            title: Row(
+              children: [
+                Text(_anime.tagName),
+                const SizedBox(
+                  width: 10,
+                ),
+                const Icon(Icons.expand_more_rounded),
+              ],
+            ),
+            onTap: () {
+              _dialogSelectTag();
+              // 不能复用该对话框，如果选择了取消收藏，则需要退回到主页，但无法实现。
+              // dialogSelectTag(setState, context, _anime);
+            },
+          );
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -79,7 +80,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
             onPressed: () {
               Navigator.of(context).push(FadeRoute(
                 builder: (context) {
-                  return const AnimeClimb();
+                  return const AnimeClimbAllWebsite();
                 },
               )).then((value) {
                 // 搜索后添加了动漫，可能就在目录里
