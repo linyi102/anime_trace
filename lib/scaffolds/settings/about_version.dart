@@ -74,7 +74,8 @@ class _AboutVersionState extends State<AboutVersion> {
             ),
           ),
           onTap: () async {
-            if (!await launchUrl(_uris[i])) {
+            if (!await launchUrl(_uris[i],
+                mode: LaunchMode.externalApplication)) {
               throw "Could not launch $_uris[i]";
             }
             // Clipboard.setData(const ClipboardData(

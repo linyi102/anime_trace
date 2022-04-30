@@ -266,7 +266,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           Uri uri;
                                           if (_anime.animeUrl.isNotEmpty) {
                                             uri = Uri.parse(_anime.animeUrl);
-                                            if (!await launchUrl(uri)) {
+                                            if (!await launchUrl(uri,
+                                                mode: LaunchMode
+                                                    .externalApplication)) {
                                               throw "Could not launch $uri";
                                             }
                                           } else {
