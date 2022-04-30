@@ -250,8 +250,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 itemBuilder: (BuildContext context) {
                                   return [
                                     PopupMenuItem(
+                                      padding: const EdgeInsets.all(0),
                                       child: ListTile(
                                         title: const Text("取消收藏"),
+                                        trailing: const Icon(
+                                            Icons.favorite_border_outlined),
                                         style: ListTileStyle.drawer,
                                         onTap: () {
                                           _dialogDeleteAnime();
@@ -259,9 +262,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                       ),
                                     ),
                                     PopupMenuItem(
+                                      padding: const EdgeInsets.all(0),
                                       child: ListTile(
                                         title: const Text("访问网址"),
                                         style: ListTileStyle.drawer,
+                                        trailing:
+                                            const Icon(Icons.open_in_browser),
                                         onTap: () async {
                                           Uri uri;
                                           if (_anime.animeUrl.isNotEmpty) {
@@ -279,9 +285,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                       ),
                                     ),
                                     PopupMenuItem(
+                                      padding: const EdgeInsets.all(0),
                                       child: ListTile(
                                         title: const Text("迁移动漫"),
                                         style: ListTileStyle.drawer,
+                                        trailing: const Icon(
+                                            Icons.change_circle_outlined),
                                         onTap: () {
                                           Navigator.of(context).push(
                                             // MaterialPageRoute(

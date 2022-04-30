@@ -65,11 +65,13 @@ class _NoteListPageState extends State<NoteListPage> {
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
+                  // padding: const EdgeInsets.all(0),
                   child: ListTile(
                     title: hideAnimeListTile
                         ? const Text("显示动漫行")
                         : const Text("隐藏动漫行"),
                     style: ListTileStyle.drawer,
+                    // trailing: Icon(Icons.remove_red_eye),
                     onTap: () {
                       if (hideAnimeListTile) {
                         SPUtil.setBool("hideAnimeListTile", false);
@@ -84,6 +86,7 @@ class _NoteListPageState extends State<NoteListPage> {
                   ),
                 ),
                 PopupMenuItem(
+                  // padding: const EdgeInsets.all(0),
                   child: ListTile(
                     title: const Text("更多设置"),
                     style: ListTileStyle.drawer,
