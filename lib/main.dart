@@ -149,9 +149,10 @@ class _MyAppState extends State<MyApp> {
             ),
             scrollbarTheme: ScrollbarThemeData(
               showTrackOnHover: true,
-              thickness: MaterialStateProperty.all(7),
+              thickness: MaterialStateProperty.all(5),
               interactive: true,
               radius: const Radius.circular(10),
+              // thumbColor: MaterialStateProperty.all(Colors.blueGrey),
             ),
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: <TargetPlatform, PageTransitionsBuilder>{

@@ -84,16 +84,13 @@ class _SearchState extends State<Search> {
         ),
         title: Text(
           anime.animeName,
-          style: const TextStyle(
-            fontSize: 15,
-            // fontWeight: FontWeight.w600,
-          ),
+          textScaleFactor: 0.9,
           overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
         ),
         trailing: Text(
           "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+          textScaleFactor: 0.9,
           style: const TextStyle(
-            fontSize: 15,
             color: Colors.black,
             // fontWeight: FontWeight.w400,
           ),

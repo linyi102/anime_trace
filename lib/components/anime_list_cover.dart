@@ -37,12 +37,12 @@ class AnimeListCover extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
-                        color: Colors.blue,
+                        color: Colors.orange,
                       ),
                       child: Text(
-                        "$reviewNumber",
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.white),
+                        " $reviewNumber ",
+                        textScaleFactor: 0.8,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   )

@@ -89,7 +89,10 @@ class _HistoryPageState extends State<HistoryPage> {
                       return ListTile(
                         contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         title: ListTile(
-                          title: Text(yearHistory[curYear]![index].date),
+                          title: Text(
+                            yearHistory[curYear]![index].date,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                         subtitle: Column(
                           children: _showRecord(index),
@@ -128,9 +131,7 @@ class _HistoryPageState extends State<HistoryPage> {
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 15,
-            ),
+            textScaleFactor: 0.9,
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
@@ -138,9 +139,7 @@ class _HistoryPageState extends State<HistoryPage> {
             record.startEpisodeNumber == record.endEpisodeNumber
                 ? "${record.startEpisodeNumber}"
                 : "${record.startEpisodeNumber}-${record.endEpisodeNumber}",
-            style: const TextStyle(
-              fontSize: 15,
-            ),
+            textScaleFactor: 0.9,
           ),
           onTap: () {
             Navigator.of(context)
@@ -206,7 +205,8 @@ class _HistoryPageState extends State<HistoryPage> {
               },
               child: Text(
                 "$curYear",
-                style: const TextStyle(fontSize: 18, color: Colors.black),
+                textScaleFactor: 1.2,
+                style: const TextStyle(color: Colors.black),
               )),
         ),
         Expanded(

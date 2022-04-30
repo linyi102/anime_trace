@@ -4,6 +4,7 @@ import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 // import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Tabs extends StatefulWidget {
@@ -22,6 +23,7 @@ class _TabsState extends State<Tabs> {
     const SettingPage(),
   ];
   int _currentIndex = 0;
+  bool useSalomonBottomBar = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,73 +35,54 @@ class _TabsState extends State<Tabs> {
       //   children: _list,
       // ),
 
-      // bottomNavigationBar: SalomonBottomBar(
-      //   currentIndex: _currentIndex,
-      //   onTap: (int index) {
-      //     setState(() => _currentIndex = index);
-      //   },
-      //   items: [
-      //     // SalomonBottomBarItem(
-      //     //     icon: const SizedBox(
-      //     //       width: 50,
-      //     //       child: Icon(Icons.book),
-      //     //     ),
-      //     //     title: const Text("动漫")),
-      //     // SalomonBottomBarItem(
-      //     //     icon: const SizedBox(
-      //     //       width: 50,
-      //     //       child: Icon(Icons.history_rounded),
-      //     //     ),
-      //     //     title: const Text("历史")),
-      //     // SalomonBottomBarItem(
-      //     //   icon: const SizedBox(width: 50, child: Icon(Icons.more_horiz)),
-      //     //   title: const Text("更多"),
-      //     // ),
-      //     SalomonBottomBarItem(
-      //         icon: const Icon(Icons.book), title: const Text("动漫")),
-      //     SalomonBottomBarItem(
-      //         icon: const Icon(Icons.history_rounded), title: const Text("历史")),
-      //     SalomonBottomBarItem(
-      //         icon: const Icon(Icons.note_alt_outlined),
-      //         title: const Text("笔记")),
-      //     SalomonBottomBarItem(
-      //         icon: const Icon(Icons.more_horiz), title: const Text("更多")),
-      //   ],
-      // ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
-        currentIndex: _currentIndex,
-        elevation: 0,
-        backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled),
-            label: "动漫",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: "目录",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_rounded),
-            label: "历史",
-          ),
-          BottomNavigationBarItem(
-            // icon: Icon(Icons.note_alt_outlined),
-            icon: Icon(Icons.edit_road),
-            label: "笔记",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: "更多",
-          ),
-        ],
-      ),
+      bottomNavigationBar: useSalomonBottomBar
+          ? SalomonBottomBar(
+              currentIndex: _currentIndex,
+              onTap: (int index) {
+                setState(() => _currentIndex = index);
+              },
+              items: [
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.home_filled),
+                    title: const Text("动漫")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.book), title: const Text("目录")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.history_rounded),
+                    title: const Text("历史")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.note_alt_outlined),
+                    title: const Text("笔记")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.more_horiz),
+                    title: const Text("更多")),
+              ],
+            )
+          : BottomNavigationBar(
+              type:
+                  BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
+              currentIndex: _currentIndex,
+              elevation: 0,
+              backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+              onTap: (int index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.home_filled), label: "动漫"),
+                BottomNavigationBarItem(icon: Icon(Icons.book), label: "目录"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.history_rounded), label: "历史"),
+                BottomNavigationBarItem(
+                    // icon: Icon(Icons.note_alt_outlined),
+                    icon: Icon(Icons.edit_road),
+                    label: "笔记"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.more_horiz), label: "更多"),
+              ],
+            ),
     );
   }
 }

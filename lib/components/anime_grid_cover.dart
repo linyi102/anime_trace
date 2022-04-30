@@ -30,7 +30,7 @@ class AnimeGridCover extends StatelessWidget {
                                 ? 3
                                 : _anime
                                     .animeName.length), // 第二个参数如果只设置为3可能会导致越界
-                        style: const TextStyle(fontSize: 20),
+                        textScaleFactor: 1.3,
                       ),
                     ),
                   )

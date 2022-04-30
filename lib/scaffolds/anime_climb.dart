@@ -205,9 +205,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
                           anime.animeName,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: Platform.isAndroid
-                              ? const TextStyle(fontSize: 13)
-                              : null,
+                          textScaleFactor: 0.9,
                         ),
                       ),
                     ],
@@ -295,7 +293,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
           ),
           child: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-            style: const TextStyle(fontSize: 12, color: Colors.white),
+            textScaleFactor: 0.9,
+            style: const TextStyle(color: Colors.white),
           ),
         ));
   }
@@ -312,11 +311,12 @@ class _AnimeClimbState extends State<AnimeClimb> {
               padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(3),
-                color: Colors.blue,
+                color: Colors.orange,
               ),
               child: Text(
-                "${anime.reviewNumber}",
-                style: const TextStyle(fontSize: 12, color: Colors.white),
+                " ${anime.reviewNumber} ",
+                textScaleFactor: 0.9,
+                style: const TextStyle(color: Colors.white),
               ),
             ));
   }

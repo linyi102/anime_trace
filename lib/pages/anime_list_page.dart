@@ -140,7 +140,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                               color: Colors.blue),
                           indicatorPadding: const EdgeInsets.only(
                               left: 10, right: 10, top: 40),
-                          indicatorWeight: 2, // 指示器高度
+                          indicatorWeight: 3, // 指示器高度
                           tabs: _showTagAndAnimeCntPlus(),
                           // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
                           controller: _tabController,
@@ -248,8 +248,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                                   ),
                                   child: Text(
                                     "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.white),
+                                    textScaleFactor: 0.8,
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 )),
                         SPUtil.getBool("hideReviewNumber")
@@ -264,12 +264,13 @@ class _AnimeListPageState extends State<AnimeListPage>
                                           const EdgeInsets.fromLTRB(2, 2, 2, 2),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(3),
-                                        color: Colors.blue,
+                                        color: Colors.orange,
                                       ),
                                       child: Text(
-                                        "${anime.reviewNumber}",
+                                        " ${anime.reviewNumber} ",
+                                        textScaleFactor: 0.8,
                                         style: const TextStyle(
-                                            fontSize: 12, color: Colors.white),
+                                            color: Colors.white),
                                       ),
                                     )),
                       ],
@@ -281,14 +282,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    anime.animeName,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: Platform.isAndroid
-                                        ? const TextStyle(fontSize: 13)
-                                        : null,
-                                  ),
+                                  child: Text(anime.animeName,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textScaleFactor: 0.9),
                                 ),
                               ],
                             ),
@@ -323,10 +320,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           // visualDensity: const VisualDensity(vertical: -1),
           title: Text(
             anime.animeName,
-            style: const TextStyle(
-              fontSize: 15,
-              // fontWeight: FontWeight.w600,
-            ),
+            textScaleFactor: 0.9,
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
           leading: AnimeListCover(
@@ -336,8 +330,8 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
           trailing: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+            textScaleFactor: 0.9,
             style: const TextStyle(
-              fontSize: 15,
               color: Colors.black,
               // fontWeight: FontWeight.w400,
             ),
