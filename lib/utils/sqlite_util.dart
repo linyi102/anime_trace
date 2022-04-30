@@ -586,14 +586,14 @@ class SqliteUtil {
     return list[0]["cnt"] as int;
   }
 
-  static Future<List<Anime>> getAnimesBySearch(String keyWord) async {
+  static Future<List<Anime>> getAnimesBySearch(String keyword) async {
     debugPrint("sql: getAnimesBySearch");
-    keyWord = escapeStr(keyWord);
+    keyword = escapeStr(keyword);
 
     var list = await _database.rawQuery('''
     select anime_id, anime_name, anime_episode_cnt, anime_cover_url
     from anime
-    where anime_name LIKE '%$keyWord%';
+    where anime_name LIKE '%$keyword%' or name_another LIKE '%$keyword%';
     ''');
 
     List<Anime> res = [];
