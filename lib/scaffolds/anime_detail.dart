@@ -378,6 +378,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       child: SelectableText(
         animeName,
         textScaleFactor: 1.1,
+        // style: const TextStyle(fontWeight: FontWeight.w600, height: 1.1),
+        // maxLines: 1,
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );
@@ -391,9 +393,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             padding: const EdgeInsets.fromLTRB(15, 5, 35, 0),
             child: SelectableText(
               nameAnother,
-              style: const TextStyle(
-                color: Colors.black54,
-              ),
+              style: const TextStyle(color: Colors.black54, height: 1.1),
               maxLines: 1,
             ),
           );
@@ -407,7 +407,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
             child: SelectableText(
               animeInfo,
-              style: const TextStyle(color: Colors.black54),
+              style: const TextStyle(color: Colors.black54, height: 1.1),
+              maxLines: 1,
             ),
           );
   }
@@ -418,7 +419,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
       child: SelectableText(
         "$coverSource",
-        style: const TextStyle(color: Colors.black54),
+        style: const TextStyle(color: Colors.black54, height: 1.1),
       ),
     );
   }
