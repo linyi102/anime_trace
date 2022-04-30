@@ -147,11 +147,12 @@ class _ImageViewerState extends State<ImageViewer> {
                         borderRadius: BorderRadius.circular(6),
                         child: Image.file(
                           File(imageLocalPaths[index]),
-                          fit: BoxFit.fitHeight,
+                          fit: BoxFit.cover,
                           height: 100,
                           width: 140,
-                          errorBuilder: errorImageBuilder(
-                              widget.relativeLocalImages[index].path),
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container();
+                          },
                         ),
                       ),
                     ),
@@ -162,6 +163,7 @@ class _ImageViewerState extends State<ImageViewer> {
   }
 
   void scrollToCurrentImage() {
+    if (currentIndex == 0) return; // 如果访问的是第一个图片，不需要移动共用轴
     _scrollController.animateTo(160.0 * (currentIndex - 1),
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
