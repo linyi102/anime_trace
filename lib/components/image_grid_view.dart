@@ -56,7 +56,7 @@ class ImageGridView extends StatelessWidget {
     } else {
       // 构建网格图片
       return GridView.builder(
-        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
         shrinkWrap: true, // ListView嵌套GridView
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

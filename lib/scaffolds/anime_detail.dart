@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,7 +13,9 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
+import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
@@ -460,7 +463,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _showEpisode() {
     return SliverList(
-      // SliverList 的语法糖，用于每个 item 固定高度的 List
       delegate: SliverChildBuilderDelegate(
         (context, episodeIndex) {
           // debugPrint("$episodeIndex");
@@ -578,13 +580,40 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     int episodeNoteIndex = _episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
 
+    // return Column(
+    //   children: [
+    //     Row(
+    //       children: [
+    //         Container(
+    //           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+    //           height: 100,
+    //           width: MediaQuery.of(context).size.width,
+    //           color: Colors.redAccent,
+    //           child: ListView.builder(
+    //               scrollDirection: Axis.horizontal,
+    //               itemCount: _episodeNotes[episodeNoteIndex]
+    //                   .relativeLocalImages
+    //                   .length,
+    //               itemBuilder: (context, imageIndex) {
+    //                 return Image.file(File(
+    //                   ImageUtil.getAbsoluteImagePath(
+    //                       _episodeNotes[episodeNoteIndex]
+    //                           .relativeLocalImages[imageIndex]
+    //                           .path),
+    //                 ));
+    //               }),
+    //         )
+    //       ],
+    //     )
+    //   ],
+    // );
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: _episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
               _episodeNotes[episodeNoteIndex].noteContent.isEmpty
           ? Container()
           : Card(
-              elevation: 0,
+              elevation: 1,
               child: MaterialButton(
                 padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
@@ -606,6 +635,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 child: Column(
                   children: [
+                    // 笔记内容
                     _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                         ? Container()
                         : ListTile(
@@ -616,9 +646,57 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             ),
                             style: ListTileStyle.drawer,
                           ),
-                    ImageGridView(
-                        relativeLocalImages:
-                            _episodeNotes[episodeNoteIndex].relativeLocalImages)
+                    // 图片横向排列
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      height: 120, // 设置高度
+                      // color: Colors.redAccent,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _episodeNotes[episodeNoteIndex]
+                              .relativeLocalImages
+                              .length,
+                          itemBuilder: (context, imageIndex) {
+                            return MaterialButton(
+                              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    FadeRoute(
+                                        // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
+                                        transitionDuration: Duration.zero,
+                                        reverseTransitionDuration:
+                                            Duration.zero,
+                                        builder: (context) {
+                                          // 点击图片进入图片浏览页面
+                                          return ImageViewer(
+                                            relativeLocalImages:
+                                                _episodeNotes[episodeNoteIndex]
+                                                    .relativeLocalImages,
+                                            initialIndex: imageIndex,
+                                          );
+                                        }));
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: Image.file(
+                                  File(
+                                    ImageUtil.getAbsoluteImagePath(
+                                        _episodeNotes[episodeNoteIndex]
+                                            .relativeLocalImages[imageIndex]
+                                            .path),
+                                  ),
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          }),
+                    )
+                    // ImageGridView(
+                    //     relativeLocalImages:
+                    //         _episodeNotes[episodeNoteIndex].relativeLocalImages)
                   ],
                 ),
               ),

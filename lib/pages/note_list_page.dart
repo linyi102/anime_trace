@@ -130,9 +130,9 @@ class _NoteListPageState extends State<NoteListPage> {
         _loadExtraData(index);
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+          padding: const EdgeInsets.fromLTRB(0, 5, 0, 15),
           child: Card(
-            elevation: 0,
+            elevation: 1,
             child: MaterialButton(
               padding: const EdgeInsets.all(0),
               onPressed: () {

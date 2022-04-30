@@ -50,7 +50,7 @@ class _ImageViewerState extends State<ImageViewer> {
             style: const TextStyle(color: Colors.black)),
       ),
       body: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(0),
         child: Column(
           children: [
             _showImage(),
@@ -101,6 +101,7 @@ class _ImageViewerState extends State<ImageViewer> {
             key: UniqueKey(),
             child: Image.file(
               File(imageLocalPaths[currentIndex]),
+              fit: BoxFit.fitWidth,
               errorBuilder: errorImageBuilder(
                   widget.relativeLocalImages[currentIndex].path),
             ),
