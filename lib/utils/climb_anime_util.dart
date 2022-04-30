@@ -43,8 +43,10 @@ class ClimbAnimeUtil {
       return "无来源";
     } else if (animeUrl.startsWith("https://www.yhdmp.cc")) {
       return "樱花动漫";
-    } else if (animeUrl.startsWith("https://omofun.tv/")) {
+    } else if (animeUrl.startsWith("https://omofun.tv")) {
       return "OmoFun";
+    } else if (animeUrl.startsWith("https://www.agemys.com")) {
+      return "AGE 动漫";
     } else {
       return "未知来源";
     }
@@ -59,6 +61,8 @@ class ClimbAnimeUtil {
       directory = await _climbDirectoryOfyhdm(filter);
     } else if (selectedWebsite == "OmoFun") {
       // directory = await climbDirectoryOfOmoFun(filter);
+    } else if (selectedWebsite == "AGE 动漫") {
+      //
     } else {
       throw ("爬取的网站名错误: $selectedWebsite");
     }
@@ -142,6 +146,8 @@ class ClimbAnimeUtil {
       allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfyhdm(keyword);
     } else if (selectedWebsite == "OmoFun") {
       allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfOmoFun(keyword);
+    } else if (selectedWebsite == "AGE 动漫") {
+      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfAGE(keyword);
     } else {
       throw ("爬取的网站名错误: $selectedWebsite");
     }
@@ -152,6 +158,70 @@ class ClimbAnimeUtil {
     String baseUrl = "https://www.yhdmp.cc";
     String url = baseUrl + "/s_all?ex=1&kw=$keyword";
     return await _climbOfyhdm(baseUrl, url);
+  }
+
+  static Future<List<Anime>> _climbAnimesByKeywordOfAGE(String keyword) async {
+    String baseUrl = "https://www.agemys.com";
+    String url = baseUrl + "/search?query=$keyword";
+    List<Anime> climbAnimes = [];
+    try {
+      debugPrint("正在获取文档...");
+      var response = await Dio().get(url);
+      var document = parse(response.data);
+      debugPrint("获取文档成功√，正在解析...");
+
+      var elements = document.getElementsByClassName("cell_poster");
+
+      for (var element in elements) {
+        String? coverUrl =
+            element.getElementsByTagName("img")[0].attributes["src"];
+        String? animeName =
+            element.getElementsByTagName("img")[0].attributes["alt"];
+        String? animeUrl = element.attributes["href"];
+        String? episodeCntStr =
+            element.getElementsByClassName("newname")[0].innerHtml;
+        int episodeCnt = _parseEpisodeCntOfyhdm(
+            episodeCntStr); // AGE动漫的集表示和樱花动漫的一致，因此也使用这个解析
+        if (coverUrl != null) {
+          if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
+        }
+
+        Anime climbAnime = Anime(
+          animeName: animeName ?? "",
+          animeEpisodeCnt: episodeCnt,
+          animeCoverUrl: coverUrl ?? "",
+          animeUrl: animeUrl == null ? "" : (baseUrl + animeUrl),
+        );
+        debugPrint("爬取封面：$coverUrl");
+        debugPrint("爬取动漫网址：${climbAnime.animeUrl}");
+
+        // 注意是document，而上面的element只是用于获取图片，以及得知查询的动漫数量
+        climbAnime.category =
+            document.getElementsByClassName("cell_imform_value")[0].innerHtml;
+        climbAnime.nameOri =
+            document.getElementsByClassName("cell_imform_value")[1].innerHtml;
+        climbAnime.nameAnother =
+            document.getElementsByClassName("cell_imform_value")[2].innerHtml;
+        if (climbAnime.nameAnother == "暂无") climbAnime.nameAnother = "";
+        climbAnime.premiereTime =
+            document.getElementsByClassName("cell_imform_value")[3].innerHtml;
+        climbAnime.playStatus =
+            document.getElementsByClassName("cell_imform_value")[4].innerHtml;
+        climbAnime.authorOri =
+            document.getElementsByClassName("cell_imform_value")[5].innerHtml;
+        // 6：剧情类型
+        climbAnime.productionCompany =
+            document.getElementsByClassName("cell_imform_value")[7].innerHtml;
+        climbAnime.animeDesc =
+            document.getElementsByClassName("cell_imform_desc")[0].innerHtml;
+
+        climbAnimes.add(climbAnime);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    debugPrint("解析完毕√");
+    return climbAnimes;
   }
 
   static Future<List<Anime>> _climbAnimesByKeywordOfOmoFun(
@@ -212,6 +282,8 @@ class ClimbAnimeUtil {
       return anime;
     } else if (getSourceByAnimeUrl(anime.animeUrl) == "OmoFun") {
       anime = await _climbAnimeInfoOfOmoFun(anime);
+    } else if (getSourceByAnimeUrl(anime.animeUrl) == "AGE 动漫") {
+      anime = await _climbAnimeInfoOfAGE(anime);
     } else {
       debugPrint("无来源，无法更新，返回旧动漫对象");
     }
@@ -271,7 +343,6 @@ class ClimbAnimeUtil {
       var response = await Dio().get(anime.animeUrl);
       var document = parse(response.data);
       debugPrint("获取文档成功√，正在解析...");
-      int episodeCnt = 0;
 
       anime.animeEpisodeCnt =
           int.parse(document.getElementsByTagName("small")[0].innerHtml);
@@ -286,6 +357,33 @@ class ClimbAnimeUtil {
           .getElementsByClassName("module-info-tag-link")[1]
           .getElementsByTagName("a")[0]
           .innerHtml;
+      debugPrint("解析完毕√");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    debugPrint(anime.toString());
+    return anime;
+  }
+
+  static Future<Anime> _climbAnimeInfoOfAGE(Anime anime) async {
+    try {
+      debugPrint("正在获取文档...");
+      var response = await Dio().get(anime.animeUrl);
+      var document = parse(response.data);
+      debugPrint("获取文档成功√，正在解析...");
+      // 因为该动漫网址集数不容易解析，但又因为查询页面中很多信息都已经写上了，还包括了容易解析的集信息
+      // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
+      List<Anime> climbAnimes =
+          await _climbAnimesByKeywordOfAGE(anime.animeName);
+      for (var climbAnime in climbAnimes) {
+        if (climbAnime.animeUrl == anime.animeUrl) {
+          // 不能直接赋值，因为有id等信息
+          anime.animeEpisodeCnt = climbAnime.animeEpisodeCnt;
+          anime.playStatus = climbAnime.playStatus;
+          break;
+        }
+      }
+
       debugPrint("解析完毕√");
     } catch (e) {
       debugPrint(e.toString());

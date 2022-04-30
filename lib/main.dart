@@ -25,10 +25,12 @@ void main() async {
 ensureLatestData() async {
   await ImageUtil.getInstance();
   await SqliteUtil.getInstance();
-  await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
-  await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
+  // 先创建表，再添加列
   await SqliteUtil.createTableEpisodeNote();
   await SqliteUtil.createTableImage();
+
+  await SqliteUtil.addColumnCoverToAnime(); // 添加封面列
+  await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
   await SqliteUtil.addColumnInfoToAnime(); // 添加搜索源列
   tags = await SqliteUtil.getAllTags();
 }
@@ -127,6 +129,8 @@ class _MyAppState extends State<MyApp> {
       },
       child: OKToast(
         // textStyle: const TextStyle(fontFamily: "yuan"),
+        position: ToastPosition.center,
+        dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
         child: MaterialApp(
           title: '漫迹', // 后台应用显示名称
           home: const MyHome(),

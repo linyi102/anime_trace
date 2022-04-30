@@ -223,7 +223,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
 
   String selectedWebsite =
       SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
-  List websites = ["樱花动漫", "OmoFun"];
+  List websites = ["樱花动漫", "OmoFun", "AGE 动漫"];
 
   _displayWebsiteOption() {
     return ListTile(
