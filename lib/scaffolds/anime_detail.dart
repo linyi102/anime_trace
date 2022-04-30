@@ -162,7 +162,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                         },
                                         fit: BoxFit.cover,
                                         color: const Color.fromRGBO(
-                                            255, 255, 255, 0.6),
+                                            255, 255, 255, 0.8),
                                         colorBlendMode: BlendMode.modulate,
                                       ),
                                     ),
@@ -184,8 +184,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           // Color.fromRGBO(250, 250, 250, 0.5),
                                           // Color.fromRGBO(250, 250, 250, 0.6),
                                           // Color.fromRGBO(250, 250, 250, 0.7),
-                                          // Color.fromRGBO(250, 250, 250, 0.8),
-                                          Color.fromRGBO(250, 250, 250, 1.0),
+                                          Color.fromRGBO(250, 250, 250, 0.8),
+                                          // Color.fromRGBO(250, 250, 250, 1.0),
                                         ],
                                       ),
                                     ),
@@ -200,16 +200,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                     ),
                                   ),
                                   // 遮住背景封面细线
-                                  // Positioned(
-                                  //     bottom: -5,
-                                  //     child: Container(
-                                  //       height: 20,
-                                  //       width:
-                                  //           MediaQuery.of(context).size.width,
-                                  //       // color: Colors.blueGrey,
-                                  //       color: const Color.fromRGBO(
-                                  //           250, 250, 250, 1.0),
-                                  //     ))
+                                  Positioned(
+                                      bottom: -5,
+                                      child: Container(
+                                        height: 20,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        // color: Colors.blueGrey,
+                                        color: const Color.fromRGBO(
+                                            250, 250, 250, 1.0),
+                                      ))
                                 ],
                               ),
                               collapseMode: CollapseMode.parallax,
@@ -580,33 +580,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     int episodeNoteIndex = _episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
 
-    // return Column(
-    //   children: [
-    //     Row(
-    //       children: [
-    //         Container(
-    //           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-    //           height: 100,
-    //           width: MediaQuery.of(context).size.width,
-    //           color: Colors.redAccent,
-    //           child: ListView.builder(
-    //               scrollDirection: Axis.horizontal,
-    //               itemCount: _episodeNotes[episodeNoteIndex]
-    //                   .relativeLocalImages
-    //                   .length,
-    //               itemBuilder: (context, imageIndex) {
-    //                 return Image.file(File(
-    //                   ImageUtil.getAbsoluteImagePath(
-    //                       _episodeNotes[episodeNoteIndex]
-    //                           .relativeLocalImages[imageIndex]
-    //                           .path),
-    //                 ));
-    //               }),
-    //         )
-    //       ],
-    //     )
-    //   ],
-    // );
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: _episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty &&
@@ -658,7 +631,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                               .length,
                           itemBuilder: (context, imageIndex) {
                             return MaterialButton(
-                              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                              // 左右间距5时，pc看不到
+                              // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                              padding:
+                                  const EdgeInsets.fromLTRB(15, 15, 15, 15),
                               onPressed: () {
                                 Navigator.push(
                                     context,

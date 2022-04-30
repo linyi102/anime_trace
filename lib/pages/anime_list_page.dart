@@ -22,16 +22,12 @@ class AnimeListPage extends StatefulWidget {
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  // List<int> animeCntPerTag = []; // 各个标签下的动漫数量
-  // List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 
   // 数据加载
   bool _loadOk = false;
   bool _transitOk = false;
   List<int> pageIndex = List.generate(tags.length, (index) => 1); // 初始页都为1
   final int _pageSize = 50;
-  // int _pageIndex = 1;
-  // final int _pageSize = 50;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -107,14 +103,22 @@ class _AnimeListPageState extends State<AnimeListPage>
               : Scaffold(
                   // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
                   appBar: AppBar(
-                    title: const Text(
-                      "动漫",
-                      style: TextStyle(
+                    title: Text(
+                      multiSelected ? "${mapSelected.length}" : "动漫",
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    actions: _getActions(),
+                    leading: multiSelected
+                        ? IconButton(
+                            onPressed: () {
+                              _quitMultiSelectState();
+                            },
+                            icon: const Icon(Icons.close))
+                        : null,
+                    actions:
+                        multiSelected ? _getActionsOnMulti() : _getActions(),
                     bottom: PreferredSize(
                       // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
                       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -278,7 +282,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                     SPUtil.getBool("hideGridAnimeName")
                         ? Container()
                         : Padding(
-                            padding: const EdgeInsets.only(top: 2),
+                            padding: const EdgeInsets.only(
+                                top: 2, left: 3, right: 3),
                             child: Row(
                               children: [
                                 Expanded(
@@ -293,9 +298,15 @@ class _AnimeListPageState extends State<AnimeListPage>
                   ],
                 ),
                 Container(
-                  color: mapSelected.containsKey(index)
-                      ? multiSelectedColor
-                      : null,
+                  decoration: BoxDecoration(
+                    // border: mapSelected.containsKey(index)
+                    //     ? Border.all(width: 3, color: Colors.blue)
+                    //     : null,
+                    borderRadius: BorderRadius.circular(5),
+                    color: mapSelected.containsKey(index)
+                        ? multiSelectedColor
+                        : null,
+                  ),
                 ),
               ]),
             ),
@@ -629,5 +640,10 @@ class _AnimeListPageState extends State<AnimeListPage>
               ),
             ),
           );
+  }
+
+  _getActionsOnMulti() {
+    List<Widget> actions = [];
+    return actions;
   }
 }
