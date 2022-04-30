@@ -49,7 +49,7 @@ class ImageGridItem extends StatelessWidget {
             placeholder: MemoryImage(kTransparentImage),
             image: FileImage(File(imageLocalPath)),
             fit: BoxFit.cover,
-            fadeInDuration: const Duration(milliseconds: 100),
+            fadeInDuration: const Duration(milliseconds: 200),
             imageErrorBuilder: errorImageBuilder(relativeImagePath),
           ),
           // child: Image.file(
