@@ -1,17 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/error_image_builder.dart';
-import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
-import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -110,12 +104,17 @@ class _NoteListPageState extends State<NoteListPage> {
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: !_loadOk
-            ? Container(
-                key: UniqueKey(),
-                // color: Colors.white,
-              )
-            : Scrollbar(child: _showNotes()),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _loadData();
+          },
+          child: !_loadOk
+              ? Container(
+                  key: UniqueKey(),
+                  // color: Colors.white,
+                )
+              : Scrollbar(child: _showNotes()),
+        ),
       ),
     );
   }

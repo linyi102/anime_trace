@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/error_image_builder.dart';
-import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
@@ -16,7 +13,6 @@ import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
@@ -148,24 +144,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 children: [
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width,
-                                    child: CachedNetworkImage(
-                                      imageUrl: _anime.animeCoverUrl,
-                                      errorWidget: (context, url, error) {
-                                        return Container(
-                                          color: const Color.fromRGBO(
-                                              250, 250, 250, 1.0),
-                                        );
-                                      },
-                                      fit: BoxFit.cover,
-                                      color: const Color.fromRGBO(
-                                          255, 255, 255, 0.8),
-                                      colorBlendMode: BlendMode.modulate,
+                                    child: ImageFiltered(
+                                      imageFilter: ImageFilter.blur(
+                                        sigmaX: 10,
+                                        sigmaY: 10,
+                                      ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: _anime.animeCoverUrl,
+                                        errorWidget: (context, url, error) {
+                                          return Container(
+                                            color: const Color.fromRGBO(
+                                                250, 250, 250, 1.0),
+                                          );
+                                        },
+                                        fit: BoxFit.cover,
+                                        color: const Color.fromRGBO(
+                                            255, 255, 255, 0.6),
+                                        colorBlendMode: BlendMode.modulate,
+                                      ),
                                     ),
-                                  ),
-                                  BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                        sigmaX: 10, sigmaY: 10),
-                                    child: const SizedBox(),
                                   ),
                                   Container(
                                     decoration: const BoxDecoration(
@@ -200,15 +197,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                     ),
                                   ),
                                   // 遮住背景封面细线
-                                  Positioned(
-                                      bottom: -5,
-                                      child: Container(
-                                        height: 10,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        color: const Color.fromRGBO(
-                                            250, 250, 250, 1.0),
-                                      ))
+                                  // Positioned(
+                                  //     bottom: -5,
+                                  //     child: Container(
+                                  //       height: 20,
+                                  //       width:
+                                  //           MediaQuery.of(context).size.width,
+                                  //       // color: Colors.blueGrey,
+                                  //       color: const Color.fromRGBO(
+                                  //           250, 250, 250, 1.0),
+                                  //     ))
                                 ],
                               ),
                               collapseMode: CollapseMode.parallax,
