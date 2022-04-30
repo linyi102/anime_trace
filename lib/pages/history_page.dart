@@ -79,7 +79,12 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           _showOpYearButton(),
           yearHistory[curYear]!.isEmpty
-              ? const Text("暂无相关记录")
+              ? Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: const Text("暂无相关记录"),
+                  ),
+                )
               : Expanded(
                   child: Scrollbar(
                       child: (ListView.separated(

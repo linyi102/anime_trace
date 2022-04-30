@@ -38,7 +38,7 @@ class _NoteSettingState extends State<NoteSetting> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('图片根目录'),
+            title: const Text('设置图片根目录'),
             subtitle: Text(ImageUtil.imageRootDirPath),
             onTap: () async {
               String selectIimageRootDirPath = (await selectDirectory()) ?? "";
