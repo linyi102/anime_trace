@@ -1,3 +1,5 @@
+import 'package:flutter_test_future/utils/climb_anime_util.dart';
+
 class Anime {
   int animeId;
   String animeName;
@@ -50,7 +52,7 @@ class Anime {
     return str.length > 15 ? str.substring(0, 15) : str;
   }
 
-  String getSubTitle() {
+  String getAnimeInfoFirstLine() {
     var list = [];
     if (area.isNotEmpty) {
       list.add(area);
@@ -61,39 +63,20 @@ class Anime {
     if (premiereTime.isNotEmpty) {
       list.add(premiereTime);
     }
+
+    return list.join(" / ");
+  }
+
+  String getAnimeInfoSecondLine() {
+    var list = [];
+    list.add(ClimbAnimeUtil.getSourceByAnimeUrl(animeUrl));
     if (playStatus.isNotEmpty) {
       list.add(playStatus);
     }
     if (animeEpisodeCnt != -1) {
       list.add("$animeEpisodeCnt 集");
     }
-
-    return list.join(" / ");
-  }
-
-  String getVariableInfo() {
-    var list = [];
-    if (premiereTime.isNotEmpty) {
-      list.add(premiereTime);
-    }
-    if (playStatus.isNotEmpty) {
-      list.add(playStatus);
-    }
-    if (animeEpisodeCnt != -1) {
-      list.add("$animeEpisodeCnt 集");
-    }
-    return list.join(" / ");
-  }
-
-  String getConstantInfo() {
-    var list = [];
-    if (area.isNotEmpty) {
-      list.add(area);
-    }
-    if (category.isNotEmpty) {
-      list.add(category);
-    }
-    return list.join(" / ");
+    return list.join(" • ");
   }
 
   bool isCollected() {

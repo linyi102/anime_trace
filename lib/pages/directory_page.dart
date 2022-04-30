@@ -431,11 +431,13 @@ class _DirectoryPageState extends State<DirectoryPage> {
               Expanded(
                 child: Column(
                   children: [
+                    // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
                     _showAnimeName(anime.animeName),
                     _showNameAnother(anime.nameAnother),
-                    _showAnimeInfo(anime.getSubTitle()),
-                    _showSource(
-                        ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
+                    _showAnimeInfo(anime.getAnimeInfoFirstLine()),
+                    _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                    // _showSource(
+                    //     ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
                     // _displayDesc(),
                   ],
                 ),
@@ -454,7 +456,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        textScaleFactor: 1.1,
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -468,21 +471,22 @@ class _DirectoryPageState extends State<DirectoryPage> {
             child: Text(
               nameAnother,
               style: const TextStyle(color: Colors.black54),
-              maxLines: 1,
-              // overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis,
             ),
           );
   }
 
-  _showAnimeInfo(animeInfo) {
-    return Container(
-      alignment: Alignment.topLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Text(
-        animeInfo,
-        style: const TextStyle(color: Colors.black54),
-      ),
-    );
+  _showAnimeInfo(String animeInfo) {
+    return animeInfo.isEmpty
+        ? Container()
+        : Container(
+            alignment: Alignment.topLeft,
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            child: Text(
+              animeInfo,
+              style: const TextStyle(color: Colors.black54),
+            ),
+          );
   }
 
   _showSource(coverSource) {

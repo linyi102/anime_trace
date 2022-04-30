@@ -358,8 +358,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             children: [
               _showAnimeName(_anime.animeName),
               _showNameAnother(_anime.nameAnother),
-              _showAnimeInfo(_anime.getSubTitle()),
-              _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
+              _showAnimeInfo(_anime.getAnimeInfoFirstLine()),
+              _showAnimeInfo(_anime.getAnimeInfoSecondLine()),
+              // _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               // _displayDesc(),
             ],
           ),
@@ -378,7 +379,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: SelectableText(
         animeName,
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        textScaleFactor: 1.1,
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -388,25 +390,28 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         ? Container()
         : Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 5, 35, 0),
             child: SelectableText(
               nameAnother,
-              style: const TextStyle(color: Colors.black54),
+              style: const TextStyle(
+                color: Colors.black54,
+              ),
               maxLines: 1,
-              // overflow: TextOverflow.ellipsis,
             ),
           );
   }
 
-  _showAnimeInfo(animeInfo) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: SelectableText(
-        animeInfo,
-        style: const TextStyle(color: Colors.black54),
-      ),
-    );
+  _showAnimeInfo(String animeInfo) {
+    return animeInfo.isEmpty
+        ? Container()
+        : Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            child: SelectableText(
+              animeInfo,
+              style: const TextStyle(color: Colors.black54),
+            ),
+          );
   }
 
   _showSource(coverSource) {
