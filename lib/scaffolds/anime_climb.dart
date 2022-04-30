@@ -59,7 +59,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
       for (var i = 0; i < searchedAnimes.length; i++) {
         searchedAnimes[i] =
-            await SqliteUtil.getAnimeByAnimeNameAndSource(searchedAnimes[i]);
+            await SqliteUtil.getAnimeByAnimeUrl(searchedAnimes[i]);
       }
       // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
       // 迁移时不添加

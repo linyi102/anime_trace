@@ -35,8 +35,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   void _replaceDbAnimes() async {
     // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
     for (int i = 0; i < directory.length; ++i) {
-      directory[i] =
-          await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
+      directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
     }
     _loadOk = true;
     setState(() {});
@@ -57,8 +56,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       // 2. for (int i = 0; i < directory.length; ++i) {
       //   Anime anime = directory[i];
       for (int i = 0; i < directory.length; ++i) {
-        directory[i] =
-            await SqliteUtil.getAnimeByAnimeNameAndSource(directory[i]);
+        directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
       }
       _loadOk = true;
       setState(() {});

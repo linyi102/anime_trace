@@ -255,8 +255,22 @@ class SqliteUtil {
     return anime;
   }
 
+  // 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复
+  static Anime restoreEscapeAnime(Anime anime) {
+    anime.animeName = restoreEscapeStr(anime.animeName);
+    anime.animeDesc = restoreEscapeStr(anime.animeDesc);
+    anime.tagName = restoreEscapeStr(anime.tagName);
+    anime.nameAnother = restoreEscapeStr(anime.nameAnother);
+    anime.nameOri = restoreEscapeStr(anime.nameOri);
+    return anime;
+  }
+
   static String escapeStr(String str) {
     return str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
+  }
+
+  static String restoreEscapeStr(String str) {
+    return str.replaceAll("''", "'");
   }
 
   static Future<int> insertAnime(Anime anime) async {
@@ -484,15 +498,18 @@ class SqliteUtil {
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
     );
+    anime = restoreEscapeAnime(anime);
     return anime;
   }
 
-  static Future<Anime> getAnimeByAnimeNameAndSource(Anime anime) async {
+  static Future<Anime> getAnimeByAnimeUrl(Anime anime) async {
+    // 不需要根据animeName查找，只根据动漫地址就能知道数据库是否添加了该搜索源下的这个动漫
+    // 不能使用的animeName的原因：如果网络搜索fate，可能会找到带有单引号的动漫名，如果按这个动漫名查找，则会出错，需要进行转义。
     // debugPrint("sql: getAnimeIdByAnimeNameAndSource()");
     var list = await _database.rawQuery('''
       select *
       from anime
-      where anime_name = '${anime.animeName}' and anime_url = '${anime.animeUrl}';
+      where anime_url = '${anime.animeUrl}';
     ''');
     // 为空返回旧对象
     if (list.isEmpty) {
@@ -525,6 +542,7 @@ class SqliteUtil {
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
     );
+    searchedanime = restoreEscapeAnime(searchedanime);
     return searchedanime;
   }
 
@@ -608,15 +626,15 @@ class SqliteUtil {
       int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
           animeId,
           maxReviewNumber: maxReviewNumber);
-
-      res.add(Anime(
+      Anime anime = Anime(
         animeId: animeId, // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
         reviewNumber: maxReviewNumber,
-      ));
+      );
+      res.add(restoreEscapeAnime(anime));
     }
     return res;
   }
