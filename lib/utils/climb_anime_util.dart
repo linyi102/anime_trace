@@ -199,10 +199,21 @@ class ClimbAnimeUtil {
       // <label>别名:</label>古見さんは、コミ ュ症です。2期
       debugPrint("str=$str");
       anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
+
+      // 获取首播时间
+      // <a href="/list/?year=2020" target="_blank">2020</a>-01-11
+      // <a href="/list/?year=2022" target="_blank">2022</a>-10
+      // <a href="/list/?year=2022" target="_blank">2022</a>
       var element = animeInfo.getElementsByTagName("span")[0];
       str = element.innerHtml.trimRight(); // 需要去除右边的空白符
-      anime.premiereTime = element.getElementsByTagName("a")[0].innerHtml +
-          str.substring(str.length - 6);
+      String destStr = "target=\"_blank\">";
+      // 从字符串中找到target="_blank">并跳过该子串，取后面所有子串
+      anime.premiereTime =
+          str.substring(str.lastIndexOf(destStr) + destStr.length);
+      // 然后删除其中的</a>
+      anime.premiereTime = anime.premiereTime.replaceAll("</a>", "");
+
+      // 获取其他信息
       anime.area = animeInfo
           .getElementsByTagName("span")[1]
           .getElementsByTagName("a")[0]
@@ -215,6 +226,7 @@ class ClimbAnimeUtil {
           .getElementsByTagName("span")[4]
           .getElementsByTagName("a")[2]
           .innerHtml;
+      // 获取集数
       String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
       anime.animeEpisodeCnt = _parseEpisodeCntOfyhdm(episodeCntStr);
     } catch (e) {
