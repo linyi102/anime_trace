@@ -251,7 +251,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
                   Navigator.of(context).pop();
                 },
               ),
-              TextButton(
+              ElevatedButton(
                 child: const Text("确认"),
                 onPressed: () {
                   RelativeLocalImage relativeLocalImage =

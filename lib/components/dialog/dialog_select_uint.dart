@@ -58,7 +58,7 @@ Future<int?> dialogSelectUint(context, String title,
                       Navigator.pop(context, initialValue); // 取消了则返回默认值
                     },
                     child: const Text("取消")),
-                TextButton(
+                ElevatedButton(
                     onPressed: () {
                       String content = yearTextEditingController.text;
                       if (content.isEmpty) {

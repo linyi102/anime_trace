@@ -219,7 +219,7 @@ class _SettingPageState extends State<SettingPage> {
                         Navigator.of(context).pop();
                       },
                       child: const Text("取消")),
-                  TextButton(
+                  ElevatedButton(
                       onPressed: () {
                         SPUtil.setString("img_file_path", "");
                         _imgFile = null; // 需要将该成员设置会null，setState才有效果

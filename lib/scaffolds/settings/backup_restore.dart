@@ -280,7 +280,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   Navigator.of(context).pop();
                 },
                 child: const Text("取消")),
-            TextButton(
+            ElevatedButton(
                 onPressed: () async {
                   String uri = inputUriController.text;
                   String user = inputUserController.text;

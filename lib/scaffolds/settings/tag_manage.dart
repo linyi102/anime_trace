@@ -50,7 +50,7 @@ class _TagManageState extends State<TagManage> {
                                 Navigator.of(context).pop();
                               },
                               child: const Text("取消")),
-                          TextButton(
+                          ElevatedButton(
                               onPressed: () async {
                                 String tagName = inputTagNameController.text;
                                 if (tagName.isEmpty) return;
@@ -119,7 +119,7 @@ class _TagManageState extends State<TagManage> {
                           Navigator.of(context).pop();
                         },
                         child: const Text("取消")),
-                    TextButton(
+                    ElevatedButton(
                         onPressed: () async {
                           String newTagName = inputTagNameController.text;
                           if (newTagName.isEmpty) return;
@@ -166,7 +166,7 @@ class _TagManageState extends State<TagManage> {
                     Navigator.of(context).pop();
                   },
                   child: const Text("取消")),
-              TextButton(
+              ElevatedButton(
                   onPressed: () async {
                     if (await SqliteUtil.getAnimesCntBytagName(tagName) > 0) {
                       showToast("当前标签存在动漫，无法删除");
