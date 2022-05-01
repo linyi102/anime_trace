@@ -646,10 +646,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                               .length,
                           itemBuilder: (context, imageIndex) {
                             return MaterialButton(
-                              // 左右间距5时，pc看不到
-                              // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              padding:
-                                  const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                              padding: Platform.isAndroid
+                                  ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
+                                  : const EdgeInsets.fromLTRB(15, 5, 15, 5),
                               onPressed: () {
                                 Navigator.push(
                                     context,

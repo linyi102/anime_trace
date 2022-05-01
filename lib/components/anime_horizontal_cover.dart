@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -44,7 +46,10 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
             Anime anime = widget.animes[animeIndex];
 
             return MaterialButton(
-              padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+              padding: Platform.isAndroid
+                  ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
+                  : const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
               onPressed: () async {
                 // Navigator.of(context).push(FadeRoute(builder: (context) {
                 //   return AnimeDetailPlus(
@@ -113,7 +118,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   Stack(children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      // 渐变图片
+                      // 渐变图片，如果断网，则显示向右滑动后，左边的图片又会显示失败
                       child: FadeInImage(
                         placeholder: MemoryImage(kTransparentImage),
                         image: NetworkImage(anime.animeCoverUrl),
@@ -122,7 +127,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                         fit: BoxFit.cover,
                         fadeInDuration: const Duration(milliseconds: 200),
                         imageErrorBuilder: (context, error, stackTrace) =>
-                            const Placeholder(),
+                            const Placeholder(), // 窄高度，不会随FadeInImage里设置的宽高
                       ),
                       // 普通图片
                       // child: Image.network(anime.animeCoverUrl,
@@ -133,8 +138,8 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                       //   height: _coverHeight,
                       //   width: _coverWidth,
                       //   errorWidget: (context, url, error) =>
-                      //       const Placeholder(),
-                      // )
+                      //       const Placeholder(), // 会随CachedNetworkImage里设置的宽高
+                      // ),
                     ),
                     _displayEpisodeState(anime),
                     _displayReviewNumber(anime),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb.dart';
@@ -25,7 +26,6 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   String addDefaultTag = tags[0];
   String lastInputName = "";
-  List<String> websiteNames = ["樱花动漫", "AGE 动漫", "OmoFun"];
   Map<String, List<Anime>> websiteClimbAnimes = {};
   Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
   Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
@@ -33,9 +33,9 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   @override
   void initState() {
     super.initState();
-    for (var websiteName in websiteNames) {
-      websiteClimbSearchOk[websiteName] = false;
-      websiteClimbSearching[websiteName] = false;
+    for (var climbWebsite in climbWebsites) {
+      websiteClimbSearchOk[climbWebsite.name] = false;
+      websiteClimbSearching[climbWebsite.name] = false;
     }
 
     // TODO 去掉delayed报错
@@ -49,28 +49,30 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   _climbAnime({String keyword = ""}) {
     FocusScope.of(context).requestFocus(blankFocusNode);
     // 先全部清除数据
-    for (var websiteName in websiteNames) {
-      websiteClimbSearchOk[websiteName] = false;
-      websiteClimbSearching[websiteName] = false;
+    for (var climbWebsite in climbWebsites) {
+      websiteClimbSearchOk[climbWebsite.name] = false;
+      websiteClimbSearching[climbWebsite.name] = false;
     }
 
     debugPrint("开始爬取动漫封面");
-    for (var websiteName in websiteNames) {
+    for (var climbWebsite in climbWebsites) {
       Future(() async {
         // 正在搜索，用于显示加载圈
-        websiteClimbSearching[websiteName] = true;
+        websiteClimbSearching[climbWebsite.name] = true;
         setState(() {});
 
         return ClimbAnimeUtil.climbAnimesByKeywordInWebSiteName(
-            keyword, websiteName);
+            keyword, climbWebsite.name);
       }).then((value) async {
-        websiteClimbAnimes[websiteName] = value;
-        websiteClimbSearchOk[websiteName] = true;
+        websiteClimbAnimes[climbWebsite.name] = value;
+        websiteClimbSearchOk[climbWebsite.name] = true;
         // 根据动漫网址查询是否已经添加了该动漫
-        for (var i = 0; i < websiteClimbAnimes[websiteName]!.length; i++) {
-          websiteClimbAnimes[websiteName]![i] =
+        for (var i = 0;
+            i < websiteClimbAnimes[climbWebsite.name]!.length;
+            i++) {
+          websiteClimbAnimes[climbWebsite.name]![i] =
               await SqliteUtil.getAnimeByAnimeUrl(
-                  websiteClimbAnimes[websiteName]![i]);
+                  websiteClimbAnimes[climbWebsite.name]![i]);
         }
         setState(() {});
       });
@@ -136,24 +138,35 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         ),
       ),
       body: ListView.builder(
-        itemCount: websiteNames.length,
+        itemCount: () {
+          // 定义匿名函数
+          int count = 0;
+          // 统计开启的搜索源数量
+          for (var climbWebsite in climbWebsites) {
+            if (climbWebsite.enable) count++;
+          }
+          return count + 1; // +1是因为要添加自定义动漫
+        }(), // ()执行该函数
         itemBuilder: (context, index) {
-          String websiteName = websiteNames[index];
+          String websiteName = climbWebsites[index].name;
+          // 如果关闭了，则不显示
+          if (!climbWebsites[index].enable) return Container();
+
           return ListView(
             shrinkWrap: true, //解决无限高度问题
             physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
             children: [
               ListTile(
                 title: Text(websiteName),
-                trailing: const Icon(Icons.arrow_forward),
+                // trailing: const Icon(Icons.arrow_forward),
                 onTap: () {
-                  // 进入详细搜索页
-                  Navigator.of(context).push(FadeRoute(builder: (context) {
-                    return AnimeClimb(
-                      keyword: lastInputName,
-                      ismigrate: widget.ismigrate,
-                    );
-                  }));
+                  // // 进入详细搜索页
+                  // Navigator.of(context).push(FadeRoute(builder: (context) {
+                  //   return AnimeClimb(
+                  //     keyword: lastInputName,
+                  //     ismigrate: widget.ismigrate,
+                  //   );
+                  // }));
                 },
               ),
               websiteClimbSearchOk[websiteName] ?? false

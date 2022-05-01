@@ -5,7 +5,6 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/components/select_uint_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_climb.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
@@ -90,7 +89,61 @@ class _DirectoryPageState extends State<DirectoryPage> {
             icon: const Icon(Icons.search),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    // 多加一个StatefulBuilder，然后调用其中的setState才能更新对话框
+                    return StatefulBuilder(
+                        builder: (BuildContext context, setState) {
+                      // map方式
+                      List<Widget> buildListTiles = climbWebsites.map((e) {
+                        return ListTile(
+                          title: Text(e.name),
+                          trailing: e.enable
+                              ? const Icon(Icons.check_box, color: Colors.blue)
+                              : const Icon(Icons.check_box_outline_blank),
+                          // 带缩放动画的开关图标
+                          // trailing: AnimatedSwitcher(
+                          //   duration: const Duration(milliseconds: 200),
+                          //   transitionBuilder:
+                          //       (Widget child, Animation<double> animation) {
+                          //     return ScaleTransition(
+                          //         child: child, scale: animation); // 缩放
+                          //   },
+                          //   child: e.enable
+                          //       ? Icon(Icons.check_box,
+                          //           key: Key(e.enable.toString()), // 不能用Unique()，否则会影响其他ListTile中的图标
+                          //           color: Colors.blue)
+                          //       : Icon(Icons.check_box_outline_blank,
+                          //           key: Key(e.enable.toString())),
+                          // ),
+                          onTap: () {
+                            e.enable = !e.enable;
+                            setState(() {}); // 使用的是StatefulBuilder的setState
+                          },
+                        );
+                      }).toList();
+
+                      return AlertDialog(
+                          title: const Text("启用搜索源"),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: buildListTiles,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("关闭"))
+                          ]);
+                    });
+                  } // for方式
+
+                  );
+            },
             icon: const Icon(Icons.extension_outlined),
           ),
         ],

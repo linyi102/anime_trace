@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:flutter/material.dart';
@@ -38,19 +39,19 @@ class ClimbAnimeUtil {
     }
   }
 
-  // 根据网址前缀来判断来源
+  // 根据动漫网址前缀来判断来源
   static String getSourceByAnimeUrl(String animeUrl) {
     if (animeUrl.isEmpty) {
       return "无来源";
-    } else if (animeUrl.startsWith("https://www.yhdmp.cc")) {
-      return "樱花动漫";
-    } else if (animeUrl.startsWith("https://omofun.tv")) {
-      return "OmoFun";
-    } else if (animeUrl.startsWith("https://www.agemys.com")) {
-      return "AGE 动漫";
-    } else {
-      return "未知来源";
     }
+
+    String source = "未知来源";
+    for (var climbWebsite in climbWebsites) {
+      if (animeUrl.startsWith(climbWebsite.baseUrl)) {
+        source = climbWebsite.name;
+      }
+    }
+    return source;
   }
 
   // 根据过滤查询目录动漫
