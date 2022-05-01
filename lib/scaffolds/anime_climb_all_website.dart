@@ -11,9 +11,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 class AnimeClimbAllWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
-  final bool ismigrate;
-  const AnimeClimbAllWebsite(
-      {this.animeId = 0, this.keyword = "", this.ismigrate = false, Key? key})
+  const AnimeClimbAllWebsite({this.animeId = 0, this.keyword = "", Key? key})
       : super(key: key);
 
   @override
@@ -23,6 +21,7 @@ class AnimeClimbAllWebsite extends StatefulWidget {
 class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   var inputKeywordController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
+  bool ismigrate = false;
 
   String addDefaultTag = tags[0];
   String lastInputName = "";
@@ -33,14 +32,17 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   @override
   void initState() {
     super.initState();
+    ismigrate = widget.animeId > 0 ? true : false;
+    lastInputName = widget.keyword;
+
     for (var climbWebsite in climbWebsites) {
       websiteClimbSearchOk[climbWebsite.name] = false;
       websiteClimbSearching[climbWebsite.name] = false;
     }
 
-    // TODO 去掉delayed报错
+    // TODO：去除delay报错
     Future.delayed(Duration.zero).then((value) {
-      if (widget.ismigrate) {
+      if (ismigrate) {
         _climbAnime(keyword: widget.keyword);
       }
     });
@@ -67,43 +69,27 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         websiteClimbAnimes[climbWebsite.name] = value;
         websiteClimbSearchOk[climbWebsite.name] = true;
         // 根据动漫网址查询是否已经添加了该动漫
-        for (var i = 0;
-            i < websiteClimbAnimes[climbWebsite.name]!.length;
-            i++) {
-          websiteClimbAnimes[climbWebsite.name]![i] =
-              await SqliteUtil.getAnimeByAnimeUrl(
-                  websiteClimbAnimes[climbWebsite.name]![i]);
-        }
-        setState(() {});
+        // 需要等更新为数据库动漫完毕后才显示，否则提前显示时，可以迁移到已添加的动漫
+        _updateDBAnimesToClimbAnimes(climbWebsite)
+            .then((value) => setState(() {}));
+        // websiteClimbAnimes["自定义"]!.insert(
+        //     0,
+        //     Anime(
+        //       animeName: keyword,
+        //       animeEpisodeCnt: 0,
+        //       animeCoverUrl: "",
+        //     ));
       });
     }
-    // Future(() async {
-    //   return ClimbAnimeUtil.climbAnimesByKeyword(keyword); // 一定要return！！！
-    // }).then((value) async {
-    //   searchedAnimes = value;
-    //   debugPrint("爬取结束");
-    //   FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-    //   // 若某个搜索的动漫存在，则更新它
-    //   // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
-    //   for (var i = 0; i < searchedAnimes.length; i++) {
-    //     searchedAnimes[i] =
-    //         await SqliteUtil.getAnimeByAnimeUrl(searchedAnimes[i]);
-    //   }
-    //   // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
-    //   // 迁移时不添加
-    //   // if (widget.keyword.isEmpty) {
-    //   //   searchedAnimes.insert(
-    //   //       0,
-    //   //       Anime(
-    //   //         animeName: keyword,
-    //   //         animeEpisodeCnt: 0,
-    //   //         animeCoverUrl: "",
-    //   //       ));
-    //   // }
+  }
 
-    //   searching = false;
-    //   setState(() {});
-    // });
+  Future<bool> _updateDBAnimesToClimbAnimes(ClimbWebStie climbWebsite) async {
+    for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
+      websiteClimbAnimes[climbWebsite.name]![i] =
+          await SqliteUtil.getAnimeByAnimeUrl(
+              websiteClimbAnimes[climbWebsite.name]![i]);
+    }
+    return true;
   }
 
   @override
@@ -115,7 +101,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
           controller: inputKeywordController..text = lastInputName,
           decoration: InputDecoration(
-              hintText: widget.ismigrate ? "迁移动漫" : "添加动漫",
+              hintText: ismigrate ? "迁移动漫" : "添加动漫",
               border: InputBorder.none,
               suffixIcon: IconButton(
                   onPressed: () {
@@ -145,7 +131,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
           for (var climbWebsite in climbWebsites) {
             if (climbWebsite.enable) count++;
           }
-          return count + 1; // +1是因为要添加自定义动漫
+          return count; // +1是因为要添加自定义动漫
         }(), // ()执行该函数
         itemBuilder: (context, index) {
           String websiteName = climbWebsites[index].name;
@@ -158,27 +144,41 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
             children: [
               ListTile(
                 title: Text(websiteName),
-                // trailing: const Icon(Icons.arrow_forward),
+                trailing: const Icon(Icons.arrow_forward),
                 onTap: () {
-                  // // 进入详细搜索页
-                  // Navigator.of(context).push(FadeRoute(builder: (context) {
-                  //   return AnimeClimb(
-                  //     keyword: lastInputName,
-                  //     ismigrate: widget.ismigrate,
-                  //   );
-                  // }));
+                  // 进入详细搜索页
+                  Navigator.of(context).push(FadeRoute(builder: (context) {
+                    return AnimeClimb(
+                      animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
+                      keyword: lastInputName,
+                      climbWebStie: climbWebsites[index],
+                    );
+                  })).then((value) {
+                    // 如果是进入详细页迁移后，则直接返回到动漫详细页
+                    if (ismigrate) {
+                      Navigator.of(context).pop();
+                    } else {
+                      // 可能进入详细搜索页后修改了数据库动漫，因此也需要重新搜索数据库(只搜索该搜索源下爬取的动漫网址)
+                      // 小问题：进入动漫详细页后，迁移到了其他搜索源的动漫，animeUrl发生变化，此时该函数会通过animeUrl从数据库找到相应的动漫，并赋值，因此会出现原搜索源下面出现了一个其它搜索源的动漫
+                      // 无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
+                      _updateDBAnimesToClimbAnimes(climbWebsites[index])
+                          .then((value) => setState(() {}));
+                    }
+                  });
                 },
               ),
               websiteClimbSearchOk[websiteName] ?? false
                   ? AnimeHorizontalCover(
                       animes: websiteClimbAnimes[websiteName] ?? [],
-                      ismigrate: widget.ismigrate,
+                      ismigrate: ismigrate,
                       animeId: widget.animeId,
                     ) // 查询好后显示结果
                   : websiteClimbSearching[websiteName] ?? false
                       ? const SizedBox(
+                          // 每个搜索结果的显示高度(封面+名字高度)
                           height: 137 + 60,
                           child: Center(
+                            // 固定宽高的指示器
                             child: SizedBox(
                               width: 20,
                               height: 20,

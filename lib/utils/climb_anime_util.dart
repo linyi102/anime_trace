@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -141,21 +142,20 @@ class ClimbAnimeUtil {
   }
 
   // 根据关键字爬取动漫
-  static Future<List<Anime>> climbAnimesByKeyword(String keyword) async {
-    List<Anime> allAnimeNameAndCoverUrl = [];
+  static Future<List<Anime>> climbAnimesByKeyword(
+      String keyword, ClimbWebStie climbWebStie) async {
+    List<Anime> climbAnimes = [];
 
-    String selectedWebsite =
-        SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
-    if (selectedWebsite == "樱花动漫") {
-      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfyhdm(keyword);
-    } else if (selectedWebsite == "OmoFun") {
-      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfOmoFun(keyword);
-    } else if (selectedWebsite == "AGE 动漫") {
-      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfAGE(keyword);
+    if (climbWebStie.name == "樱花动漫") {
+      climbAnimes = await _climbAnimesByKeywordOfyhdm(keyword);
+    } else if (climbWebStie.name == "OmoFun") {
+      climbAnimes = await _climbAnimesByKeywordOfOmoFun(keyword);
+    } else if (climbWebStie.name == "AGE 动漫") {
+      climbAnimes = await _climbAnimesByKeywordOfAGE(keyword);
     } else {
-      throw ("爬取的网站名错误: $selectedWebsite");
+      throw ("爬取的网站名错误: ${climbWebStie.name}");
     }
-    return allAnimeNameAndCoverUrl;
+    return climbAnimes;
   }
 
   // 根据传入的网站名爬取

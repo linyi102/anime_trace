@@ -140,6 +140,7 @@ class _MyAppState extends State<MyApp> {
             // fontFamily: "yuan",
             appBarTheme: const AppBarTheme(
               shadowColor: Colors.transparent,
+              centerTitle: false,
               elevation: 0,
               backgroundColor: Colors.white,
               iconTheme: IconThemeData(

@@ -104,7 +104,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 80),
       ),
       maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),

@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/components/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class AnimeHorizontalCover extends StatefulWidget {
@@ -59,40 +61,8 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                 // }));
                 // 迁移动漫
                 if (widget.ismigrate) {
-                  debugPrint("迁移动漫${widget.animeId}");
-                  // SqliteUtil.updateAnimeCoverbyAnimeId(
-                  //     widget.animeId, anime.animeCoverUrl);
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text("提示"),
-                        content: const Text("确定迁移吗？"),
-                        actions: [
-                          TextButton(
-                            child: const Text("取消"),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          ElevatedButton(
-                              onPressed: () async {
-                                SqliteUtil.updateAnime(
-                                        await SqliteUtil.getAnimeByAnimeId(
-                                            widget.animeId),
-                                        anime)
-                                    .then((value) {
-                                  // 关闭对话框
-                                  Navigator.pop(context);
-                                  // 更新完毕(then)后，退回到详细页，然后重新加载数据才会看到更新
-                                  Navigator.pop(context);
-                                });
-                              },
-                              child: const Text("确认"))
-                        ],
-                      );
-                    },
-                  );
+                  // 迁移提示
+                  showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
                   debugPrint("进入动漫详细页面${anime.animeId}");
                   Navigator.of(context).push(
@@ -112,6 +82,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   dialogSelectTag(setState, context, anime);
                 }
               },
+              // 封面+动漫名
               child: Flex(
                 direction: Axis.vertical,
                 children: [
@@ -127,7 +98,10 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                         fit: BoxFit.cover,
                         fadeInDuration: const Duration(milliseconds: 200),
                         imageErrorBuilder: (context, error, stackTrace) =>
-                            const Placeholder(), // 窄高度，不会随FadeInImage里设置的宽高
+                            Placeholder(
+                          fallbackHeight: _coverHeight,
+                          fallbackWidth: _coverWidth,
+                        ), // 窄高度，不会随FadeInImage里设置的宽高，需要指出宽高
                       ),
                       // 普通图片
                       // child: Image.network(anime.animeCoverUrl,

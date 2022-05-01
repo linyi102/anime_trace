@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/select_tag_dialog.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
@@ -14,9 +14,12 @@ import 'package:flutter_test_future/utils/global_data.dart';
 class AnimeClimb extends StatefulWidget {
   final int animeId;
   final String keyword;
-  final bool ismigrate;
+  final ClimbWebStie climbWebStie;
   const AnimeClimb(
-      {this.animeId = 0, this.keyword = "", this.ismigrate = false, Key? key})
+      {this.animeId = 0,
+      this.keyword = "",
+      required this.climbWebStie,
+      Key? key})
       : super(key: key);
 
   @override
@@ -27,6 +30,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
   var animeNameController = TextEditingController();
   var endEpisodeController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
+  late bool ismigrate;
 
   List<Anime> searchedAnimes = [];
   List<Anime> addedAnimes = [];
@@ -38,6 +42,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
   @override
   void initState() {
     super.initState();
+    ismigrate = widget.animeId > 0 ? true : false;
+
     // 如果传入了关键字，说明是更新封面，此时需要直接爬取
     if (widget.keyword.isNotEmpty) {
       lastInputName = widget.keyword; // 搜索关键字第一次为传入的传健字，还可以进行修改
@@ -47,30 +53,20 @@ class _AnimeClimbState extends State<AnimeClimb> {
 
   _climbAnime({String keyword = ""}) {
     debugPrint("开始爬取动漫封面");
+    searchOk = false;
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
+
     Future(() async {
-      return ClimbAnimeUtil.climbAnimesByKeyword(keyword); // 一定要return！！！
+      return ClimbAnimeUtil.climbAnimesByKeyword(keyword, widget.climbWebStie);
     }).then((value) async {
       searchedAnimes = value;
       debugPrint("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-      // 若某个搜索的动漫存在，则更新它
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
       for (var i = 0; i < searchedAnimes.length; i++) {
         searchedAnimes[i] =
             await SqliteUtil.getAnimeByAnimeUrl(searchedAnimes[i]);
-      }
-      // 在开头添加一个没有封面的动漫，避免搜索不到相关动漫导致添加不了
-      // 迁移时不添加
-      if (widget.keyword.isEmpty) {
-        searchedAnimes.insert(
-            0,
-            Anime(
-              animeName: keyword,
-              animeEpisodeCnt: 0,
-              animeCoverUrl: "",
-            ));
       }
 
       searchOk = true;
@@ -108,20 +104,21 @@ class _AnimeClimbState extends State<AnimeClimb> {
           },
           onChanged: (inputStr) {
             lastInputName = inputStr;
-            // 避免输入好后切换搜索源后，清空了输入的内容
           },
         ),
       ),
       body: Column(
         children: [
-          _displayWebsiteOption(),
+          ListTile(
+            title: Text(widget.climbWebStie.name),
+          ),
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
                   ? const Center(
                       child: RefreshProgressIndicator(),
                     )
-                  : Container()
+                  : Container(),
         ],
       ),
     );
@@ -130,7 +127,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
   _displayClimbAnime() {
     return AnimatedSwitcher(
       key: UniqueKey(), // 不一样的搜索结果也需要过渡
-      duration: const Duration(milliseconds: 5000),
+      duration: const Duration(milliseconds: 200),
       child: GridView.builder(
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -146,17 +143,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
           return MaterialButton(
             onPressed: () async {
               // 迁移动漫
-              if (widget.ismigrate) {
-                debugPrint("迁移动漫${anime.animeId}");
-                // SqliteUtil.updateAnimeCoverbyAnimeId(
-                //     widget.animeId, anime.animeCoverUrl);
-                SqliteUtil.updateAnime(
-                        await SqliteUtil.getAnimeByAnimeId(widget.animeId),
-                        anime)
-                    .then((value) {
-                  // 更新完毕(then)后，退回到详细页，然后重新加载数据才会看到更新
-                  Navigator.pop(context);
-                });
+              if (ismigrate) {
+                showDialogOfConfirmMigrate(context, widget.animeId, anime);
               } else if (anime.animeId != 0) {
                 debugPrint("进入动漫详细页面${anime.animeId}");
                 // 不为0，说明已添加，点击进入动漫详细页面
@@ -180,10 +168,6 @@ class _AnimeClimbState extends State<AnimeClimb> {
                 });
               } else {
                 debugPrint("添加动漫");
-                // 其他情况才是添加动漫
-                bool standBy = false;
-                // 如果是备用数据，则不要使用lastIndexWhere，而是IndexWhere
-                if (index == 0) standBy = true;
                 dialogSelectTag(setState, context, anime);
               }
             },
@@ -218,65 +202,6 @@ class _AnimeClimbState extends State<AnimeClimb> {
           );
         },
       ),
-    );
-  }
-
-  String selectedWebsite =
-      SPUtil.getString("selectedWebsite", defaultValue: "樱花动漫");
-  List websites = ["樱花动漫", "OmoFun", "AGE 动漫"];
-
-  _displayWebsiteOption() {
-    return ListTile(
-      leading: const Icon(Icons.expand_more_outlined),
-      title: Text(selectedWebsite),
-      onTap: () {
-        _dialogSelectWebsite();
-      },
-    );
-  }
-
-  void _dialogSelectWebsite() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        List<Widget> radioList = [];
-        for (int i = 0; i < websites.length; ++i) {
-          radioList.add(
-            ListTile(
-              title: Text(websites[i]),
-              leading: websites[i] == selectedWebsite
-                  ? const Icon(
-                      Icons.radio_button_on_outlined,
-                      color: Colors.blue,
-                    )
-                  : const Icon(
-                      Icons.radio_button_off_outlined,
-                    ),
-              onTap: () {
-                selectedWebsite = websites[i];
-                SPUtil.setString("selectedWebsite", websites[i]);
-                // 如果输入的文本不为空，则再次搜索
-                if (lastInputName.isNotEmpty) {
-                  searchOk = false;
-                  searching = true;
-                  searchedAnimes = []; // 清空查找的动漫
-                  _climbAnime(keyword: lastInputName);
-                }
-                setState(() {});
-                Navigator.pop(context);
-              },
-            ),
-          );
-        }
-        return AlertDialog(
-          title: const Text('选择搜索源'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: radioList,
-            ),
-          ),
-        );
-      },
     );
   }
 

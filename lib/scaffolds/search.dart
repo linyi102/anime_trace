@@ -136,8 +136,7 @@ class _SearchState extends State<Search> {
         ),
         onTap: () {
           Navigator.of(context).push(FadeRoute(builder: (context) {
-            return AnimeClimbAllWebsite(
-                keyword: lastInputText, ismigrate: false);
+            return AnimeClimbAllWebsite(keyword: lastInputText);
           })).then((value) {
             searchDbAnimesByKeyword(lastInputText);
           });

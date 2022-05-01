@@ -162,10 +162,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 children: [
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width,
+                                    // 模糊
                                     child: ImageFiltered(
                                       imageFilter: ImageFilter.blur(
-                                        sigmaX: 10,
-                                        sigmaY: 10,
+                                        sigmaX: 20,
+                                        sigmaY: 20,
                                       ),
                                       child: CachedNetworkImage(
                                         imageUrl: _anime.animeCoverUrl,
@@ -176,12 +177,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           );
                                         },
                                         fit: BoxFit.cover,
+                                        // 设置透明度，防止背景太黑看不到顶部栏
                                         color: const Color.fromRGBO(
-                                            255, 255, 255, 0.8),
+                                            255, 255, 255, 0.9),
                                         colorBlendMode: BlendMode.modulate,
                                       ),
                                     ),
                                   ),
+                                  // 渐变
                                   Container(
                                     decoration: const BoxDecoration(
                                       gradient: LinearGradient(
@@ -199,7 +202,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                           // Color.fromRGBO(250, 250, 250, 0.5),
                                           // Color.fromRGBO(250, 250, 250, 0.6),
                                           // Color.fromRGBO(250, 250, 250, 0.7),
-                                          Color.fromRGBO(250, 250, 250, 0.8),
+                                          Color.fromRGBO(250, 250, 250, 0.2),
+                                          Color.fromRGBO(250, 250, 250, 0.5),
                                           Color.fromRGBO(250, 250, 250, 1.0),
                                         ],
                                       ),
@@ -218,7 +222,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                   Positioned(
                                       bottom: -5,
                                       child: Container(
-                                        height: 20,
+                                        height: 10,
                                         width:
                                             MediaQuery.of(context).size.width,
                                         // color: Colors.blueGrey,
@@ -336,7 +340,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         return AnimeClimbAllWebsite(
                           animeId: _anime.animeId,
                           keyword: _anime.animeName,
-                          ismigrate: true,
                         );
                       },
                     ),
