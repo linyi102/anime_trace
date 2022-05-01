@@ -124,15 +124,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         ),
       ),
       body: ListView.builder(
-        itemCount: () {
-          // 定义匿名函数
-          int count = 0;
-          // 统计开启的搜索源数量
-          for (var climbWebsite in climbWebsites) {
-            if (climbWebsite.enable) count++;
-          }
-          return count; // +1是因为要添加自定义动漫
-        }(), // ()执行该函数
+        itemCount: climbWebsites
+            .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
         itemBuilder: (context, index) {
           String websiteName = climbWebsites[index].name;
           // 如果关闭了，则不显示
