@@ -58,6 +58,9 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
     debugPrint("开始爬取动漫封面");
     for (var climbWebsite in climbWebsites) {
+      // 如果关闭了，则直接跳过该搜索源
+      if (!climbWebsite.enable) return;
+
       Future(() async {
         // 正在搜索，用于显示加载圈
         websiteClimbSearching[climbWebsite.name] = true;

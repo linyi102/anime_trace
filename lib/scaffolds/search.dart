@@ -53,7 +53,7 @@ class _SearchState extends State<Search> {
           autofocus: true, // 自动弹出键盘
           controller: inputController,
           decoration: InputDecoration(
-              hintText: "根据名称搜索动漫",
+              hintText: "搜索已收藏的动漫",
               border: InputBorder.none,
               suffixIcon: IconButton(
                   onPressed: () {

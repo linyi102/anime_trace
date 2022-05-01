@@ -9,6 +9,7 @@ import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class DirectoryPage extends StatefulWidget {
@@ -121,6 +122,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
                           onTap: () {
                             e.enable = !e.enable;
                             setState(() {}); // 使用的是StatefulBuilder的setState
+                            // 保存
+                            SPUtil.setBool(e.spkey, e.enable);
                           },
                         );
                       }).toList();
