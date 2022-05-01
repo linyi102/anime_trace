@@ -1,14 +1,12 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/components/dialog_confirm_migrate.dart';
-import 'package:flutter_test_future/components/select_tag_dialog.dart';
+import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class AnimeHorizontalCover extends StatefulWidget {

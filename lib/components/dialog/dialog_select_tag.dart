@@ -55,19 +55,21 @@ dialogSelectTag(setState, context, Anime anime) {
           ),
         ),
         actions: <Widget>[
-          TextButton(
-            child: const Text("取消收藏"),
-            onPressed: () {
-              if (anime.isCollected()) {
-                SqliteUtil.deleteAnimeByAnimeId(anime.animeId);
-                anime.animeId = 0;
-                anime.tagName = "";
-                setState(() {});
-                showToast("取消成功！");
-              }
-              Navigator.of(context).pop();
-            },
-          ),
+          anime.isCollected()
+              ? TextButton(
+                  child: const Text("取消收藏"),
+                  onPressed: () {
+                    if (anime.isCollected()) {
+                      SqliteUtil.deleteAnimeByAnimeId(anime.animeId);
+                      anime.animeId = 0;
+                      anime.tagName = "";
+                      setState(() {});
+                      showToast("取消成功！");
+                    }
+                    Navigator.of(context).pop();
+                  },
+                )
+              : Container(),
           TextButton(
             child: const Text("取消"),
             onPressed: () {

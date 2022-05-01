@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/select_uint_dialog.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';

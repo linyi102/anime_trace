@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/select_uint_dialog.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:oktoast/oktoast.dart';
 
