@@ -1102,4 +1102,98 @@ class SqliteUtil {
     }
     return relativeLocalImages;
   }
+
+  static Future<Anime> getCustomAnimeByAnimeName(String animeName) async {
+    animeName = escapeStr(animeName); // 先转义
+    debugPrint("sql: getCustomAnimeByAnimeName($animeName)");
+
+    var list = await _database.rawQuery('''
+    select *
+    from anime
+    where anime_name = '$animeName' and (anime_url is null or length(anime_url) = 0); -- 只找该名字的动漫，且没有动漫地址
+    ''');
+
+    // 没找到，返回自定义动漫，用于添加
+    if (list.isEmpty) {
+      return Anime(
+        animeName: animeName,
+        animeEpisodeCnt: 0,
+        animeCoverUrl: "",
+      );
+    }
+
+    int animeId = list[0]['anime_id'] as int;
+    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
+        maxReviewNumber: maxReviewNumber);
+
+    Anime anime = Anime(
+      animeId: animeId,
+      animeName: list[0]['anime_name'] as String,
+      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
+      animeDesc: list[0]['anime_desc'] as String? ?? "",
+      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
+      tagName: list[0]['tag_name'] as String,
+      checkedEpisodeCnt: checkedEpisodeCnt,
+      reviewNumber: maxReviewNumber,
+      premiereTime: list[0]['premiere_time'] as String? ?? "",
+      nameOri: list[0]['name_ori'] as String? ?? "",
+      nameAnother: list[0]['name_another'] as String? ?? "",
+      authorOri: list[0]['author_ori'] as String? ?? "",
+      area: list[0]['area'] as String? ?? "",
+      playStatus: list[0]['play_status'] as String? ?? "",
+      productionCompany: list[0]['production_company'] as String? ?? "",
+      officialSite: list[0]['official_site'] as String? ?? "",
+      category: list[0]['category'] as String? ?? "",
+      animeUrl: list[0]['anime_url'] as String? ?? "",
+    );
+    anime = restoreEscapeAnime(anime);
+    return anime;
+  }
+
+  static Future<List<Anime>> getCustomAnimesIfContainAnimeName(
+      String animeName) async {
+    animeName = escapeStr(animeName); // 先转义
+    debugPrint("sql: getCustomAnimeByAnimeName($animeName)");
+
+    var list = await _database.rawQuery('''
+    select *
+    from anime
+    where anime_name like '%$animeName%' and (anime_url is null or length(anime_url) = 0); -- 只找包含该名字的动漫，且没有动漫地址
+    ''');
+
+    List<Anime> res = [];
+    for (var element in list) {
+      int animeId = element['anime_id'] as int;
+      int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+      int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
+          maxReviewNumber: maxReviewNumber);
+
+      Anime anime = Anime(
+        animeId: element['anime_id'] as int,
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        animeDesc: element['anime_desc'] as String? ?? "",
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        tagName: element['tag_name'] as String,
+        checkedEpisodeCnt: checkedEpisodeCnt,
+        reviewNumber: maxReviewNumber,
+        premiereTime: element['premiere_time'] as String? ?? "",
+        nameOri: element['name_ori'] as String? ?? "",
+        nameAnother: element['name_another'] as String? ?? "",
+        authorOri: element['author_ori'] as String? ?? "",
+        area: element['area'] as String? ?? "",
+        playStatus: element['play_status'] as String? ?? "",
+        productionCompany: element['production_company'] as String? ?? "",
+        officialSite: element['official_site'] as String? ?? "",
+        category: element['category'] as String? ?? "",
+        animeUrl: element['anime_url'] as String? ?? "",
+      );
+      // 如果名字完全一样，则去掉，因为已经有了
+      if (anime.animeName == animeName) continue;
+      res.add(restoreEscapeAnime(anime));
+    }
+
+    return res;
+  }
 }

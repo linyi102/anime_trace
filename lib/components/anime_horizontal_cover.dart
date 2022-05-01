@@ -11,13 +11,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 class AnimeHorizontalCover extends StatefulWidget {
   List<Anime> animes;
-  bool ismigrate;
   int animeId;
-  AnimeHorizontalCover(
-      {Key? key,
-      required this.animes,
-      this.ismigrate = false,
-      this.animeId = 0})
+  AnimeHorizontalCover({Key? key, required this.animes, this.animeId = 0})
       : super(key: key);
 
   @override
@@ -27,6 +22,13 @@ class AnimeHorizontalCover extends StatefulWidget {
 class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
   // 275/198
   final _coverHeight = 137.0, _coverWidth = 99.0;
+  bool ismigrate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ismigrate = widget.animeId > 0 ? true : false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
       );
     }
     return Container(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       height: _coverHeight + 60, // 设置高度
       // color: Colors.redAccent,
       child: ListView.builder(
@@ -58,7 +60,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                 //   );
                 // }));
                 // 迁移动漫
-                if (widget.ismigrate) {
+                if (ismigrate) {
                   // 迁移提示
                   showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
@@ -88,23 +90,32 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       // 渐变图片，如果断网，则显示向右滑动后，左边的图片又会显示失败
-                      child: FadeInImage(
-                        placeholder: MemoryImage(kTransparentImage),
-                        image: NetworkImage(anime.animeCoverUrl),
-                        height: _coverHeight,
-                        width: _coverWidth,
-                        fit: BoxFit.cover,
-                        fadeInDuration: const Duration(milliseconds: 200),
-                        imageErrorBuilder: (context, error, stackTrace) =>
-                            Placeholder(
-                          fallbackHeight: _coverHeight,
-                          fallbackWidth: _coverWidth,
-                        ), // 窄高度，不会随FadeInImage里设置的宽高，需要指出宽高
-                      ),
+                      // 可能传入的自定义动漫没有封面链接，此时需要显示文字
+                      child: anime.animeCoverUrl.isEmpty
+                          ? Container(
+                              color: Colors.white,
+                              height: _coverHeight,
+                              width: _coverWidth,
+                              child: Image.asset(
+                                  "assets/images/defaultAnimeCover.png"),
+                            )
+                          : FadeInImage(
+                              placeholder: MemoryImage(kTransparentImage),
+                              image: NetworkImage(anime.animeCoverUrl),
+                              height: _coverHeight,
+                              width: _coverWidth,
+                              fit: BoxFit.cover,
+                              fadeInDuration: const Duration(milliseconds: 200),
+                              imageErrorBuilder: (context, error, stackTrace) =>
+                                  Placeholder(
+                                fallbackHeight: _coverHeight,
+                                fallbackWidth: _coverWidth,
+                              ), // 窄高度，不会随FadeInImage里设置的宽高，需要指出宽高
+                            ),
                       // 普通图片
                       // child: Image.network(anime.animeCoverUrl,
                       //     height: _coverHeight, width: _coverWidth)),
-                      // 缓存图片
+                      // 缓存图片(增大应用体积大小，因此没有使用)
                       // child: CachedNetworkImage(
                       //   imageUrl: anime.animeCoverUrl,
                       //   height: _coverHeight,
