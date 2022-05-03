@@ -20,7 +20,7 @@ class _SearchState extends State<Search> {
   String lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
-  void searchDbAnimesByKeyword(String text) {
+  void _searchDbAnimesByKeyword(String text) {
     Future(() {
       debugPrint("search: $text");
       return SqliteUtil.getAnimesBySearch(text);
@@ -32,7 +32,6 @@ class _SearchState extends State<Search> {
       //   debugPrint(item.toString());
       // }
       lastInputText = text;
-      FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
       setState(() {});
     });
   }
@@ -64,7 +63,12 @@ class _SearchState extends State<Search> {
             if (text.isEmpty) {
               return;
             }
-            searchDbAnimesByKeyword(text);
+            _searchDbAnimesByKeyword(text);
+            FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+          },
+          onChanged: (value) async {
+            if (value.isEmpty) return;
+            _searchDbAnimesByKeyword(value);
           },
         ),
       ),
@@ -137,7 +141,7 @@ class _SearchState extends State<Search> {
           Navigator.of(context).push(FadeRoute(builder: (context) {
             return AnimeClimbAllWebsite(keyword: lastInputText);
           })).then((value) {
-            searchDbAnimesByKeyword(lastInputText);
+            _searchDbAnimesByKeyword(lastInputText);
           });
         }));
 
