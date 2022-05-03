@@ -313,22 +313,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 trailing: const Icon(Icons.change_circle_outlined),
                 onTap: () {
                   Navigator.of(context).push(
-                    // MaterialPageRoute(
-                    //   builder: (context) => AnimeClimb(
-                    //     animeId: _anime.animeId,
-                    //     keyword: _anime.animeName,
-                    //     ismigrate: true,
-                    //   ),
-                    // ),
-                    // FadeRoute(
-                    //   builder: (context) {
-                    //     return AnimeClimb(
-                    //       animeId: _anime.animeId,
-                    //       keyword: _anime.animeName,
-                    //       ismigrate: true,
-                    //     );
-                    //   },
-                    // ),
                     FadeRoute(
                       builder: (context) {
                         return AnimeClimbAllWebsite(
@@ -341,6 +325,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     _loadData();
                     Navigator.pop(context);
                   });
+                },
+              ),
+            ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("修改名字"),
+                trailing: const Icon(Icons.edit),
+                style: ListTileStyle.drawer,
+                onTap: () {
+                  _dialogUpdateAnimeName();
                 },
               ),
             ),
@@ -1319,5 +1314,55 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               // dialogSelectTag(setState, context, _anime);
             },
           );
+  }
+
+  void _dialogUpdateAnimeName() {
+    var animeNameController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('修改名字'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  // 把TextEditingController对象应用到TextField上，便于获取输入内容
+                  controller: animeNameController..text = _anime.animeName,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                  maxLength: 50,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+            ElevatedButton(
+              // 修改动漫集数
+              onPressed: () {
+                if (animeNameController.text.isEmpty) {
+                  showToast("名字不能为空");
+                  return;
+                }
+                SqliteUtil.updateAnimeNameByAnimeId(
+                    _anime.animeId, animeNameController.text);
+                _anime.animeName = animeNameController.text;
+                setState(() {});
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
