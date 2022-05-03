@@ -285,20 +285,6 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<void> addColumnCoverToAnime() async {
-    var list = await _database.rawQuery('''
-    select * from sqlite_master where name = 'anime' and sql like '%anime_cover_url%';
-    ''');
-    // 没有列时添加
-    if (list.isEmpty) {
-      debugPrint("sql: addColumnCoverToAnime");
-      await _database.execute('''
-      alter table anime
-      add column anime_cover_url TEXT;
-      ''');
-    }
-  }
-
   static Future<void> addColumnInfoToAnime() async {
     Map<String, String> columns = {};
     columns['premiere_time'] = 'TEXT'; // 首播时间
