@@ -8,6 +8,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
@@ -606,7 +607,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: MaterialButton(
                 padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    : const EdgeInsets.fromLTRB(0, 5, 0, 5),
                 onPressed: () {
                   Navigator.of(context).push(
                     // MaterialPageRoute(
@@ -635,56 +636,76 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             ),
                             style: ListTileStyle.drawer,
                           ),
-                    // 图片横向排列
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      height: 120, // 设置高度
-                      // color: Colors.redAccent,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _episodeNotes[episodeNoteIndex]
-                              .relativeLocalImages
-                              .length,
-                          itemBuilder: (context, imageIndex) {
-                            return MaterialButton(
-                              padding: Platform.isAndroid
-                                  ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
-                                  : const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    FadeRoute(
-                                        // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
-                                        transitionDuration: Duration.zero,
-                                        reverseTransitionDuration:
-                                            Duration.zero,
-                                        builder: (context) {
-                                          // 点击图片进入图片浏览页面
-                                          return ImageViewer(
-                                            relativeLocalImages:
-                                                _episodeNotes[episodeNoteIndex]
-                                                    .relativeLocalImages,
-                                            initialIndex: imageIndex,
-                                          );
-                                        }));
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: Image.file(
-                                  File(
-                                    ImageUtil.getAbsoluteImagePath(
-                                        _episodeNotes[episodeNoteIndex]
-                                            .relativeLocalImages[imageIndex]
-                                            .path),
-                                  ),
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          }),
-                    )
+                    // 没有图片时不显示，否则有固定高度
+                    _episodeNotes[episodeNoteIndex].relativeLocalImages.isEmpty
+                        ? Container()
+                        :
+                        // 图片横向排列
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            height: 120, // 设置高度
+                            // color: Colors.redAccent,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _episodeNotes[episodeNoteIndex]
+                                    .relativeLocalImages
+                                    .length,
+                                itemBuilder: (context, imageIndex) {
+                                  return MaterialButton(
+                                    padding: Platform.isAndroid
+                                        ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
+                                        : const EdgeInsets.fromLTRB(
+                                            15, 5, 15, 5),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          FadeRoute(
+                                              // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
+                                              transitionDuration: Duration.zero,
+                                              reverseTransitionDuration:
+                                                  Duration.zero,
+                                              builder: (context) {
+                                                // 点击图片进入图片浏览页面
+                                                return ImageViewer(
+                                                  relativeLocalImages:
+                                                      _episodeNotes[
+                                                              episodeNoteIndex]
+                                                          .relativeLocalImages,
+                                                  initialIndex: imageIndex,
+                                                );
+                                              }));
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: Image.file(
+                                        File(
+                                          ImageUtil.getAbsoluteImagePath(
+                                              _episodeNotes[episodeNoteIndex]
+                                                  .relativeLocalImages[
+                                                      imageIndex]
+                                                  .path),
+                                        ),
+                                        errorBuilder: errorImageBuilder(
+                                          _episodeNotes[episodeNoteIndex]
+                                              .relativeLocalImages[imageIndex]
+                                              .path,
+                                          fallbackHeight: 100,
+                                          fallbackWidth: 100,
+                                        ),
+                                        // errorBuilder:
+                                        //     (context, error, stackTrace) =>
+                                        //         const Placeholder(
+                                        //   fallbackHeight: 100,
+                                        //   fallbackWidth: 100,
+                                        // ),
+                                        height: 100,
+                                        width: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          )
                     // ImageGridView(
                     //     relativeLocalImages:
                     //         _episodeNotes[episodeNoteIndex].relativeLocalImages)

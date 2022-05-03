@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 
 Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
-    String path) {
+    String path,
+    {double fallbackHeight = 400.0,
+    double fallbackWidth = 400.0}) {
   return (buildContext, object, stackTrace) {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
@@ -15,7 +17,10 @@ Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
       //   "未找到图片",
       //   style: TextStyle(color: Colors.black),
       // ),
-      child: const Placeholder(),
+      child: Placeholder(
+        fallbackHeight: fallbackHeight,
+        fallbackWidth: fallbackWidth,
+      ),
     );
   };
 }
