@@ -18,12 +18,13 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   Map<int, List<HistoryPlus>> yearHistory = {};
   Map<int, bool> yearLoadOk = {};
-  int curYear = DateTime.now().year;
+  int selectedYear = DateTime.now().year;
 
   @override
   void initState() {
     super.initState();
-    _loadData(curYear);
+
+    _loadData(selectedYear);
   }
 
   _loadData(int year) async {
@@ -53,32 +54,26 @@ class _HistoryPageState extends State<HistoryPage> {
       body: RefreshIndicator(
           // 下拉刷新
           onRefresh: () async {
-            _loadData(curYear);
+            _loadData(selectedYear);
           },
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child: !yearLoadOk.containsKey(curYear)
+            child: !yearLoadOk.containsKey(selectedYear)
                 ? Container(
                     key: UniqueKey(),
                     // color: Colors.white,
                   )
-                : _showHistory(),
+                : _buildHistory(),
           )),
     );
   }
 
-  Widget _showHistory() {
-    // if (historyPlus.isEmpty) {
-    //   return ListView(
-    //     // 必须是ListView，不然向下滑不会有刷新
-    //     children: const [],
-    //   );
-    // }
+  Widget _buildHistory() {
     return Stack(children: [
       Column(
         children: [
-          _showOpYearButton(),
-          yearHistory[curYear]!.isEmpty
+          _buildOpYearButton(),
+          yearHistory[selectedYear]!.isEmpty
               ? Expanded(
                   child: Container(
                     alignment: Alignment.center,
@@ -88,19 +83,19 @@ class _HistoryPageState extends State<HistoryPage> {
               : Expanded(
                   child: Scrollbar(
                       child: (ListView.separated(
-                    itemCount: yearHistory[curYear]!.length,
+                    itemCount: yearHistory[selectedYear]!.length,
                     itemBuilder: (BuildContext context, int index) {
                       // debugPrint("$index");
                       return ListTile(
                         contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         title: ListTile(
                           title: Text(
-                            yearHistory[curYear]![index].date,
+                            yearHistory[selectedYear]![index].date,
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
                         subtitle: Column(
-                          children: _showRecord(index),
+                          children: _buildRecord(index),
                         ),
                       );
                     },
@@ -111,24 +106,12 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
         ],
       ),
-      // Container(
-      //   alignment: Alignment.bottomCenter,
-      //   child: Card(
-      //     elevation: 0,
-      //     shape: const RoundedRectangleBorder(
-      //         borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
-      //     clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-      //     color: const Color.fromRGBO(0, 118, 243, 0.1),
-      //     margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-      //     child: _showOpYearButton(),
-      //   ),
-      // ),
     ]);
   }
 
-  List<Widget> _showRecord(int index) {
+  List<Widget> _buildRecord(int index) {
     List<Widget> listWidget = [];
-    List<Record> records = yearHistory[curYear]![index].records;
+    List<Record> records = yearHistory[selectedYear]![index].records;
     for (var record in records) {
       listWidget.add(
         ListTile(
@@ -160,7 +143,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
             )
                 .then((value) {
-              _loadData(curYear);
+              _loadData(selectedYear);
             });
           },
         ),
@@ -169,47 +152,52 @@ class _HistoryPageState extends State<HistoryPage> {
     return listWidget;
   }
 
-  Widget _showOpYearButton() {
+  Widget _buildOpYearButton() {
+    int minYear = 1970, maxYear = DateTime.now().year + 2;
+
     return Row(
       children: [
         Expanded(
           child: IconButton(
               onPressed: () {
-                curYear--;
+                if (selectedYear - 1 < minYear) {
+                  return;
+                }
+                selectedYear--;
                 // 没有加载过，才去查询数据库
-                if (!yearLoadOk.containsKey(curYear)) {
-                  debugPrint("之前未查询过$curYear年，现查询");
-                  _loadData(curYear);
+                if (!yearLoadOk.containsKey(selectedYear)) {
+                  debugPrint("之前未查询过$selectedYear年，现查询");
+                  _loadData(selectedYear);
                 } else {
                   // 加载过，直接更新状态
-                  debugPrint("查询过$curYear年，直接更新状态");
+                  debugPrint("查询过$selectedYear年，直接更新状态");
                   setState(() {});
                 }
               },
               icon: const Icon(
                 Icons.chevron_left_rounded,
-                // size: 20,
                 color: Colors.black,
               )),
         ),
         Expanded(
           child: TextButton(
               onPressed: () {
-                // _dialogSelectYear();
                 dialogSelectUint(context, "选择年份",
-                        initialValue: curYear, maxValue: curYear + 2)
+                        initialValue: selectedYear,
+                        minValue: minYear,
+                        maxValue: maxYear)
                     .then((value) {
                   if (value == null) {
                     debugPrint("未选择，直接返回");
                     return;
                   }
                   debugPrint("选择了$value");
-                  curYear = value;
-                  _loadData(curYear);
+                  selectedYear = value;
+                  _loadData(selectedYear);
                 });
               },
               child: Text(
-                "$curYear",
+                "$selectedYear",
                 textScaleFactor: 1.2,
                 style: const TextStyle(color: Colors.black),
               )),
@@ -217,24 +205,23 @@ class _HistoryPageState extends State<HistoryPage> {
         Expanded(
           child: IconButton(
               onPressed: () {
-                if (curYear + 1 > DateTime.now().year + 2) {
+                if (selectedYear + 1 > maxYear) {
                   showToast("前面的区域，以后再来探索吧！");
                   return;
                 }
-                curYear++;
+                selectedYear++;
                 // 没有加载过，才去查询数据库
-                if (!yearLoadOk.containsKey(curYear)) {
-                  debugPrint("之前未查询过$curYear年，现查询");
-                  _loadData(curYear);
+                if (!yearLoadOk.containsKey(selectedYear)) {
+                  debugPrint("之前未查询过$selectedYear年，现查询");
+                  _loadData(selectedYear);
                 } else {
                   // 加载过，直接更新状态
-                  debugPrint("查询过$curYear年，直接更新状态");
+                  debugPrint("查询过$selectedYear年，直接更新状态");
                   setState(() {});
                 }
               },
               icon: const Icon(
                 Icons.chevron_right_rounded,
-                // size: 20,
                 color: Colors.black,
               )),
         ),
