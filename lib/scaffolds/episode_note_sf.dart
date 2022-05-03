@@ -104,7 +104,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 80),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 30),
       ),
       maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),
@@ -120,7 +120,7 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
       shrinkWrap: true, // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -133,68 +133,71 @@ class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
       itemBuilder: (BuildContext context, int imageIndex) {
         // 如果是最后一个下标，则设置添加图片图标
         if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
-          return Container(
-            decoration: BoxDecoration(
-              // color: Colors.white,
-              border: Border.all(
-                width: 2,
-                style: BorderStyle.solid,
-                color: addColor,
+          return Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                // color: Colors.white,
+                border: Border.all(
+                  width: 2,
+                  style: BorderStyle.solid,
+                  color: addColor,
+                ),
+                borderRadius: BorderRadius.circular(5),
               ),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: MaterialButton(
-                  onPressed: () async {
-                    if (!ImageUtil.hasImageRootDirPath()) {
-                      showToast("请先设置图片根目录");
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //   builder: (BuildContext context) =>
-                        //       const NoteSetting(),
-                        // ),
-                        FadeRoute(
-                          builder: (context) {
-                            return const NoteSetting();
-                          },
-                        ),
-                      );
-                      return;
-                    }
-                    if (Platform.isWindows || Platform.isAndroid) {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['jpg', 'png', 'gif'],
-                        allowMultiple: true,
-                      );
-                      if (result == null) return;
-                      List<PlatformFile> platformFiles = result.files;
-                      for (var platformFile in platformFiles) {
-                        String absoluteImagePath = platformFile.path ?? "";
-                        if (absoluteImagePath.isEmpty) continue;
-
-                        String relativeImagePath =
-                            ImageUtil.getRelativeImagePath(absoluteImagePath);
-                        int imageId =
-                            await SqliteUtil.insertNoteIdAndImageLocalPath(
-                                widget.episodeNote.episodeNoteId,
-                                relativeImagePath);
-                        widget.episodeNote.relativeLocalImages.add(
-                            RelativeLocalImage(imageId, relativeImagePath));
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: MaterialButton(
+                    onPressed: () async {
+                      if (!ImageUtil.hasImageRootDirPath()) {
+                        showToast("请先设置图片根目录");
+                        Navigator.of(context).push(
+                          // MaterialPageRoute(
+                          //   builder: (BuildContext context) =>
+                          //       const NoteSetting(),
+                          // ),
+                          FadeRoute(
+                            builder: (context) {
+                              return const NoteSetting();
+                            },
+                          ),
+                        );
+                        return;
                       }
-                    } else if (Platform.isAndroid) {
-                      //
-                    } else {
-                      throw ("未适配平台：${Platform.operatingSystem}");
-                    }
-                    setState(() {});
-                  },
-                  child: Icon(
-                    Icons.add,
-                    color: addColor,
-                  )),
+                      if (Platform.isWindows || Platform.isAndroid) {
+                        FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['jpg', 'png', 'gif'],
+                          allowMultiple: true,
+                        );
+                        if (result == null) return;
+                        List<PlatformFile> platformFiles = result.files;
+                        for (var platformFile in platformFiles) {
+                          String absoluteImagePath = platformFile.path ?? "";
+                          if (absoluteImagePath.isEmpty) continue;
+
+                          String relativeImagePath =
+                              ImageUtil.getRelativeImagePath(absoluteImagePath);
+                          int imageId =
+                              await SqliteUtil.insertNoteIdAndImageLocalPath(
+                                  widget.episodeNote.episodeNoteId,
+                                  relativeImagePath);
+                          widget.episodeNote.relativeLocalImages.add(
+                              RelativeLocalImage(imageId, relativeImagePath));
+                        }
+                      } else if (Platform.isAndroid) {
+                        //
+                      } else {
+                        throw ("未适配平台：${Platform.operatingSystem}");
+                      }
+                      setState(() {});
+                    },
+                    child: Icon(
+                      Icons.add,
+                      color: addColor,
+                    )),
+              ),
             ),
           );
         }
