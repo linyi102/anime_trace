@@ -827,32 +827,32 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         DateTime defaultDateTime = DateTime.now();
                         String dateTime = await _showDatePicker(
                             defaultDateTime: defaultDateTime);
-                        if (dateTime.isNotEmpty) {
-                          mapSelected.forEach((episodeIndex, value) {
-                            int episodeNumber = _episodes[episodeIndex].number;
-                            if (_episodes[episodeIndex].isChecked()) {
-                              SqliteUtil.updateHistoryItem(_anime.animeId,
-                                  episodeNumber, dateTime, reviewNumber);
-                            } else {
-                              SqliteUtil.insertHistoryItem(_anime.animeId,
-                                  episodeNumber, dateTime, reviewNumber);
-                              // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-                              EpisodeNote episodeNote = EpisodeNote(
-                                  anime: _anime,
-                                  episode: _episodes[episodeIndex],
-                                  relativeLocalImages: [],
-                                  imgUrls: []);
+                        if (dateTime.isEmpty) return;
 
-                              // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                              () async {
-                                _episodeNotes[episodeIndex] = await SqliteUtil
-                                    .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                                        episodeNote);
-                              }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
-                            }
-                            _episodes[episodeIndex].dateTime = dateTime;
-                          });
-                        } // 遍历选中的下标
+                        // 遍历选中的下标
+                        mapSelected.forEach((episodeIndex, value) {
+                          int episodeNumber = _episodes[episodeIndex].number;
+                          if (_episodes[episodeIndex].isChecked()) {
+                            SqliteUtil.updateHistoryItem(_anime.animeId,
+                                episodeNumber, dateTime, reviewNumber);
+                          } else {
+                            SqliteUtil.insertHistoryItem(_anime.animeId,
+                                episodeNumber, dateTime, reviewNumber);
+                            // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+                            EpisodeNote episodeNote = EpisodeNote(
+                                anime: _anime,
+                                episode: _episodes[episodeIndex],
+                                relativeLocalImages: [],
+                                imgUrls: []);
+                            // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+                            () async {
+                              _episodeNotes[episodeIndex] = await SqliteUtil
+                                  .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+                                      episodeNote);
+                            }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
+                          }
+                          _episodes[episodeIndex].dateTime = dateTime;
+                        });
                         // 退出多选模式
                         _quitMultiSelectState();
                       },
@@ -1081,7 +1081,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       debugPrint("未选择，直接返回");
                       return;
                     }
-                    if (initialValue == _episodes.length) {
+                    if (value == _episodes.length) {
                       debugPrint("设置的集数等于初始值，直接返回");
                       return;
                     }
@@ -1094,9 +1094,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     // 少了就删除，多了就添加
                     var len = _episodes
                         .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
+
+                    // 首先要按照编号正序排序，然后再从后面删除或添加到后面
+                    _sortByEpisodeNumberAsc();
+
                     if (len > episodeCnt) {
-                      // 首先要按照编号正序排序，然后再删除后面几个
-                      _sortByEpisodeNumberAsc();
                       for (int i = 0; i < len - episodeCnt; ++i) {
                         // 还应该删除history表里的记录，否则会误判完成过的集数
                         SqliteUtil
@@ -1106,6 +1108,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                                 reviewNumber);
                         // 注意顺序
                         _episodes.removeLast();
+                        // 记得删除笔记
+                        _episodeNotes.removeLast();
                       }
                       // 然后再恢复原来的排序
                       _sortEpisodes(SPUtil.getString("episodeSortMethod"));
@@ -1116,6 +1120,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       for (int i = 0; i < episodeCnt - len; ++i) {
                         _episodes
                             .add(Episode(oldEpisodeCnt + i + 1, reviewNumber));
+                      }
+                      // 还要添加对应的笔记
+                      for (int i = _episodeNotes.length;
+                          i < _episodes.length;
+                          ++i) {
+                        _episodeNotes.add(EpisodeNote(
+                            anime: _anime,
+                            episode: _episodes[i],
+                            relativeLocalImages: [],
+                            imgUrls: []));
                       }
                       // 添加集数后，按照用户选择的方式排序
                       _sortEpisodes(SPUtil.getString("episodeSortMethod"));
