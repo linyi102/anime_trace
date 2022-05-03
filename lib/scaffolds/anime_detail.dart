@@ -11,7 +11,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
-import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
+import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
@@ -23,9 +23,11 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// ignore: must_be_immutable
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
-  Anime? parentAnime;
+  Anime?
+      parentAnime; // 用于传入动漫，目的是为了传入还没有收藏的动漫。目前没用到，点击未收藏的动漫时是直接显示添加清单对话框，而不是进入详细页
   AnimeDetailPlus(
     this.animeId, {
     Key? key,
@@ -143,104 +145,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       },
                       child: CustomScrollView(
                         slivers: [
-                          SliverAppBar(
-                            // floating: true,
-                            // snap: true,
-                            pinned: true,
-                            expandedHeight: 270,
-                            stretch: true,
-                            flexibleSpace: FlexibleSpaceBar(
-                              background: Stack(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    // 模糊
-                                    child: ImageFiltered(
-                                      imageFilter: ImageFilter.blur(
-                                        sigmaX: 20,
-                                        sigmaY: 20,
-                                      ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: _anime.animeCoverUrl,
-                                        errorWidget: (context, url, error) {
-                                          return Container(
-                                            color: const Color.fromRGBO(
-                                                250, 250, 250, 1.0),
-                                          );
-                                        },
-                                        fit: BoxFit.cover,
-                                        // 设置透明度，防止背景太黑看不到顶部栏
-                                        color: const Color.fromRGBO(
-                                            255, 255, 255, 0.9),
-                                        colorBlendMode: BlendMode.modulate,
-                                      ),
-                                    ),
-                                  ),
-                                  // 渐变
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          // Colors.transparent,
-                                          // Colors.transparent,
-                                          // Colors.transparent,
-                                          Color.fromRGBO(250, 250, 250, 0.1),
-                                          // Color.fromRGBO(250, 250, 250, 0.2),
-                                          // Color.fromRGBO(250, 250, 250, 0.3),
-                                          // Color.fromRGBO(250, 250, 250, 0.4),
-                                          // Color.fromRGBO(250, 250, 250, 0.5),
-                                          // Color.fromRGBO(250, 250, 250, 0.6),
-                                          // Color.fromRGBO(250, 250, 250, 0.7),
-                                          Color.fromRGBO(250, 250, 250, 0.2),
-                                          Color.fromRGBO(250, 250, 250, 0.5),
-                                          Color.fromRGBO(250, 250, 250, 1.0),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 30),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        _showAnimeRow(),
-                                      ],
-                                    ),
-                                  ),
-                                  // 遮住背景封面细线
-                                  Positioned(
-                                      bottom: -5,
-                                      child: Container(
-                                        height: 10,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        // color: Colors.blueGrey,
-                                        color: const Color.fromRGBO(
-                                            250, 250, 250, 1.0),
-                                      ))
-                                ],
-                              ),
-                              collapseMode: CollapseMode.parallax,
-                            ),
-                            leading: IconButton(
-                                onPressed: () {
-                                  debugPrint("按返回按钮，返回anime");
-                                  _refreshAnime();
-                                  Navigator.pop(context, _anime);
-                                },
-                                tooltip: "返回上一级",
-                                icon: const Icon(Icons.arrow_back_rounded)),
-                            title: _buildAppBarTitle(),
-                            actions: _buildActions(),
-                          ),
+                          _buildSliverAppBar(context),
                           SliverToBoxAdapter(
                             child: _buildButtonsAboutEpisode(),
                           ),
                           _anime.isCollected()
-                              ? _showEpisode()
+                              ? _buildEpisodeInfo()
                               : SliverList(
                                   delegate: SliverChildBuilderDelegate(
                                       (context, index) {
@@ -250,10 +160,102 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       ),
                     ),
                   ),
-                  _showBottomButton()
+                  _buildButtonsBarAboutEpisodeMulti()
                 ]),
         ),
       ),
+    );
+  }
+
+  SliverAppBar _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      // floating: true,
+      // snap: true,
+      pinned: true,
+      expandedHeight: 270,
+      stretch: true,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              // 模糊
+              child: ImageFiltered(
+                imageFilter: ImageFilter.blur(
+                  sigmaX: 20,
+                  sigmaY: 20,
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: _anime.animeCoverUrl,
+                  errorWidget: (context, url, error) {
+                    return Container(
+                      color: const Color.fromRGBO(250, 250, 250, 1.0),
+                    );
+                  },
+                  fit: BoxFit.cover,
+                  // 设置透明度，防止背景太黑看不到顶部栏
+                  color: const Color.fromRGBO(255, 255, 255, 0.9),
+                  colorBlendMode: BlendMode.modulate,
+                ),
+              ),
+            ),
+            // 渐变
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    // Colors.transparent,
+                    // Colors.transparent,
+                    // Colors.transparent,
+                    Color.fromRGBO(250, 250, 250, 0.1),
+                    // Color.fromRGBO(250, 250, 250, 0.2),
+                    // Color.fromRGBO(250, 250, 250, 0.3),
+                    // Color.fromRGBO(250, 250, 250, 0.4),
+                    // Color.fromRGBO(250, 250, 250, 0.5),
+                    // Color.fromRGBO(250, 250, 250, 0.6),
+                    // Color.fromRGBO(250, 250, 250, 0.7),
+                    Color.fromRGBO(250, 250, 250, 0.2),
+                    Color.fromRGBO(250, 250, 250, 0.5),
+                    Color.fromRGBO(250, 250, 250, 1.0),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  _showAnimeRow(),
+                ],
+              ),
+            ),
+            // 遮住背景封面细线
+            Positioned(
+                bottom: -5,
+                child: Container(
+                  height: 10,
+                  width: MediaQuery.of(context).size.width,
+                  // color: Colors.blueGrey,
+                  color: const Color.fromRGBO(250, 250, 250, 1.0),
+                ))
+          ],
+        ),
+        collapseMode: CollapseMode.parallax,
+      ),
+      leading: IconButton(
+          onPressed: () {
+            debugPrint("按返回按钮，返回anime");
+            _refreshAnime();
+            Navigator.pop(context, _anime);
+          },
+          tooltip: "返回上一级",
+          icon: const Icon(Icons.arrow_back_rounded)),
+      title: _buildAppBarTitle(),
+      actions: _buildActions(),
     );
   }
 
@@ -439,17 +441,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
   }
 
-  _showSource(coverSource) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: SelectableText(
-        "$coverSource",
-        style: const TextStyle(color: Colors.black54, height: 1.1),
-      ),
-    );
-  }
-
   _showCollectIcon() {
     return Container(
       padding: const EdgeInsets.only(right: 15),
@@ -474,7 +465,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  _showEpisode() {
+  _buildEpisodeInfo() {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, episodeIndex) {
@@ -564,17 +555,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 ),
               ),
               onTap: () {
-                onpress(episodeIndex);
+                onpressEpisode(episodeIndex);
               },
               onLongPress: () async {
                 // pickDate(episodeIndex);
-                onLongPress(episodeIndex);
+                onLongPressEpisode(episodeIndex);
               },
             ),
           );
           // 在每一集下面添加笔记
           if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
-            columnChildren.add(buildNote(episodeIndex, context));
+            columnChildren.add(_buildNote(episodeIndex, context));
           }
 
           // 在最后一集下面添加空白
@@ -591,7 +582,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  Widget buildNote(int episodeIndex, BuildContext context) {
+  _buildNote(int episodeIndex, BuildContext context) {
     // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
     int episodeNoteIndex = _episodeNotes.indexWhere(
         (element) => element.episode.number == _episodes[episodeIndex].number);
@@ -614,7 +605,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     //         EpisodeNoteSF(episodeNotes[episodeIndex])),
                     FadeRoute(
                       builder: (context) {
-                        return EpisodeNoteSF(_episodeNotes[episodeNoteIndex]);
+                        return NoteEdit(_episodeNotes[episodeNoteIndex]);
                       },
                     ),
                   ).then((value) {
@@ -741,7 +732,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     });
   }
 
-  void onpress(int episodeIndex) {
+  void onpressEpisode(int episodeIndex) {
     // 多选
     if (multiSelected) {
       if (mapSelected.containsKey(episodeIndex)) {
@@ -764,7 +755,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
           FadeRoute(
             builder: (context) {
-              return EpisodeNoteSF(_episodeNotes[episodeIndex]);
+              return NoteEdit(_episodeNotes[episodeIndex]);
             },
           ),
         ).then((value) {
@@ -775,7 +766,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }
   }
 
-  void onLongPress(int index) {
+  void onLongPressEpisode(int index) {
     // 非多选状态下才需要进入多选状态
     if (multiSelected == false) {
       multiSelected = true;
@@ -808,7 +799,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return picker == null ? "" : picker.toString();
   }
 
-  _showBottomButton() {
+  _buildButtonsBarAboutEpisodeMulti() {
     return !multiSelected
         ? Container()
         : Container(
@@ -1026,7 +1017,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         builder: (context) {
           return AlertDialog(
             title: const Text("提示"),
-            content: const Text("确认取消收藏吗？"),
+            content: const Text("这将会删除所有相关笔记，\n确认取消收藏吗？"),
             actions: [
               TextButton(
                   onPressed: () {
@@ -1036,6 +1027,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               ElevatedButton(
                   onPressed: () {
                     SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
+                    // 返回两次，跳过动漫详细页(然而并不能)
+                    // Navigator.of(context).pop();
+                    // Navigator.of(context).pop();
                     // 直接返回到主页
                     Navigator.of(context).pushAndRemoveUntil(
                       // MaterialPageRoute(builder: (context) => const Tabs()),
@@ -1059,7 +1053,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       // direction: Axis.horizontal,
       children: [
-        Row(children: []),
+        // Row(children: []),
         Expanded(child: Container()),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -1229,16 +1223,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   // 如果设置了未完成的靠前，则完成某集后移到最后面
-  void _moveToLastIfSet(int index) {
-    // 先不用移到最后面吧
-    // // 先移除，再添加
-    // if (SPUtil.getBool("sortByUnCheckedFront")) {
-    //   Episode episode = _episodes[index];
-    //   _episodes.removeAt(index);
-    //   _episodes.add(episode); // 不应该直接在后面添加，而是根据number插入到合适的位置。但还要注意越界什么的
-    // }
-  }
   // 如果取消了日期，还需要移到最前面。好麻烦...还得插入到合适的位置
+  // 不改变位置的好处：误点击完成了，不用翻到最下面取消
+  // void _moveToLastIfSet(int index) {
+  //   // 先不用移到最后面吧
+  //   // // 先移除，再添加
+  //   // if (SPUtil.getBool("sortByUnCheckedFront")) {
+  //   //   Episode episode = _episodes[index];
+  //   //   _episodes.removeAt(index);
+  //   //   _episodes.add(episode); // 不应该直接在后面添加，而是根据number插入到合适的位置。但还要注意越界什么的
+  //   // }
+  // }
 
   int _getEpisodeIndexByEpisodeNumber(int episodeNumber) {
     return _episodes.indexWhere((element) => element.number == episodeNumber);

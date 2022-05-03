@@ -6,7 +6,6 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
 
 class ClimbAnimeUtil {
   // 全局刷新动漫封面
@@ -388,10 +387,10 @@ class ClimbAnimeUtil {
 
   static Future<Anime> _climbAnimeInfoOfAGE(Anime anime) async {
     try {
-      debugPrint("正在获取文档...");
-      var response = await Dio().get(anime.animeUrl);
-      var document = parse(response.data);
-      debugPrint("获取文档成功√，正在解析...");
+      // debugPrint("正在获取文档...");
+      // var response = await Dio().get(anime.animeUrl);
+      // var document = parse(response.data);
+      // debugPrint("获取文档成功√，正在解析...");
       // 因为该动漫网址集数不容易解析，但又因为查询页面中很多信息都已经写上了，还包括了容易解析的集信息
       // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
       List<Anime> climbAnimes =

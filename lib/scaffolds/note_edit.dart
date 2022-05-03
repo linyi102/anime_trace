@@ -13,15 +13,15 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 // ignore: must_be_immutable
-class EpisodeNoteSF extends StatefulWidget {
+class NoteEdit extends StatefulWidget {
   EpisodeNote episodeNote; // 可能会修改笔记内容，因此不能用final
-  EpisodeNoteSF(this.episodeNote, {Key? key}) : super(key: key);
+  NoteEdit(this.episodeNote, {Key? key}) : super(key: key);
 
   @override
-  State<EpisodeNoteSF> createState() => _EpisodeNoteSFState();
+  State<NoteEdit> createState() => _NoteEditState();
 }
 
-class _EpisodeNoteSFState extends State<EpisodeNoteSF> {
+class _NoteEditState extends State<NoteEdit> {
   bool _loadOk = false;
   var noteContentController = TextEditingController();
 

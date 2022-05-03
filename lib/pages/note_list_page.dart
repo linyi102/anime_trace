@@ -4,7 +4,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
-import 'package:flutter_test_future/scaffolds/episode_note_sf.dart';
+import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -149,7 +149,7 @@ class _NoteListPageState extends State<NoteListPage> {
                         // ),
                         FadeRoute(
                           builder: (context) {
-                            return EpisodeNoteSF(episodeNotes[index]);
+                            return NoteEdit(episodeNotes[index]);
                           },
                         ),
                       ).then((value) {
@@ -207,7 +207,7 @@ class _NoteListPageState extends State<NoteListPage> {
             Navigator.of(context).push(
               FadeRoute(
                 builder: (context) {
-                  return EpisodeNoteSF(episodeNotes[index]);
+                  return NoteEdit(episodeNotes[index]);
                 },
               ),
             ).then((value) {

@@ -122,12 +122,12 @@ class _ImageViewerState extends State<ImageViewer> {
     );
   }
 
-  ScrollController _scrollController = ScrollController();
+  ScrollController scrollController = ScrollController();
   _showScrollImages() {
     return Expanded(
         flex: 1,
         child: ListView.builder(
-            controller: _scrollController, // 记得加上控制器
+            controller: scrollController, // 记得加上控制器
             itemCount: imageLocalPaths.length,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
@@ -176,7 +176,7 @@ class _ImageViewerState extends State<ImageViewer> {
 
   void scrollToCurrentImage() {
     if (currentIndex == 0) return; // 如果访问的是第一个图片，不需要移动共用轴
-    _scrollController.animateTo(180.0 * (currentIndex - 1),
+    scrollController.animateTo(180.0 * (currentIndex - 1),
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 }

@@ -552,18 +552,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
           );
   }
 
-  _showSource(coverSource) {
-    return Container(
-      alignment: Alignment.topLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-      child: Text(
-        coverSource,
-        style: const TextStyle(color: Colors.black54, height: 1.1),
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
   _showCollectIcon(Anime anime) {
     return Container(
       padding: const EdgeInsets.only(right: 15),

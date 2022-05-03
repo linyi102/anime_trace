@@ -9,6 +9,7 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+// ignore: must_be_immutable
 class AnimeHorizontalCover extends StatefulWidget {
   List<Anime> animes;
   int animeId;
