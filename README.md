@@ -1,4 +1,4 @@
-[Github](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [下载地址(密码：eocv)](https://wwe.lanzouw.com/b01uyqcrg)
+[Github](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC)
 
 因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。
 所以就尝试做了这么一个软件，只需要每天简单记录一下自己看过哪些动漫的哪些集，就可以在历史页面中得到一个很好的记录。
