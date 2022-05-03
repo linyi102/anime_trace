@@ -20,16 +20,6 @@ class SqliteUtil {
 
   static Future<SqliteUtil> getInstance() async {
     _database = await _initDatabase();
-    // for (int i = 0; i < 200; ++i) {
-    //   await _database.rawInsert('''
-    // insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-    // values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
-    //     ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
-    //     ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
-    //     ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
-    //     ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
-    // ''');
-    // }
     return _instance ??= SqliteUtil._();
   }
 

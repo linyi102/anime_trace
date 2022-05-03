@@ -58,8 +58,11 @@ class BackupUtil {
           break;
         case FileSystemEntityType.file:
           if (element.path.endsWith(".zip")) break; // 避免备份压缩包
-          encoder.addFile(File(element.path));
-          // debugPrint("添加文件：${element.path}");
+          // 只备份my.db
+          if (element.path.endsWith(SqliteUtil.sqlFileName)) {
+            encoder.addFile(File(element.path));
+            debugPrint("添加文件：${element.path}");
+          }
           break;
         default:
           // debugPrint("非目录和文件，不压缩：${element.path}");
