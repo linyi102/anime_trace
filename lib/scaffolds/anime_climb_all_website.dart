@@ -45,7 +45,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
     // TODO：去除delay报错
     Future.delayed(Duration.zero).then((value) {
-      if (ismigrate) {
+      // 迁移或者网络搜索更多
+      if (ismigrate || widget.keyword.isNotEmpty) {
         _climbAnime(keyword: widget.keyword);
       }
     });
