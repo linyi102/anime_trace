@@ -30,7 +30,7 @@ ensureLatestData() async {
   await SqliteUtil.createTableImage();
 
   await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
-  await SqliteUtil.addColumnInfoToAnime(); // 添加搜索源列
+  await SqliteUtil.addColumnInfoToAnime(); // 为动漫表添加列
   tags = await SqliteUtil.getAllTags();
 }
 

@@ -257,6 +257,7 @@ class SqliteUtil {
 
   static Future<void> addColumnInfoToAnime() async {
     Map<String, String> columns = {};
+    columns['anime_cover_url'] = 'TEXT'; // 封面链接
     columns['premiere_time'] = 'TEXT'; // 首播时间
     columns['name_another'] = 'TEXT'; // 其他名称
     columns['name_ori'] = 'TEXT'; // 原版名称
