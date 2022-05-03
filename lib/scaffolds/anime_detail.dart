@@ -41,7 +41,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   List<Episode> _episodes = [];
   bool _loadOk = false;
   List<EpisodeNote> _episodeNotes = [];
-  late int reviewNumber;
   late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
@@ -64,7 +63,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     } else {
       // widget.parentAnime肯定不为null，因为已经用isCollected判断过了
       _anime = widget.parentAnime ?? Anime(animeName: "", animeEpisodeCnt: 0);
-      reviewNumber = 1;
       // 爬取详细信息
       _climbAnimeInfo();
       _loadOk = true;
@@ -78,15 +76,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     Future(() {
       return SqliteUtil.getAnimeByAnimeId(widget.animeId); // 一定要return，value才有值
     }).then((value) async {
-      if (!_loadOk) {
-        // 刚进入页面才会设置为最大回顾号，否则增加回顾号又会覆盖成最大的
-        reviewNumber = await SqliteUtil.getMaxReviewNumberByAnimeId(
-            widget.animeId); // 获取最大回顾号
-      }
       _anime = value;
       debugPrint(value.toString());
       _episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndReviewNumber(
-          _anime, reviewNumber);
+          _anime, _anime.reviewNumber);
       _sortEpisodes(SPUtil.getString("episodeSortMethod",
           defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
 
@@ -525,8 +518,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
                   } else {
                     String date = DateTime.now().toString();
-                    SqliteUtil.insertHistoryItem(_anime.animeId,
-                        _episodes[episodeIndex].number, date, reviewNumber);
+                    SqliteUtil.insertHistoryItem(
+                        _anime.animeId,
+                        _episodes[episodeIndex].number,
+                        date,
+                        _anime.reviewNumber);
                     _episodes[episodeIndex].dateTime = date;
                     // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
                     EpisodeNote episodeNote = EpisodeNote(
@@ -733,10 +729,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     int episodeNumber = _episodes[i].number;
     if (_episodes[i].isChecked()) {
       SqliteUtil.updateHistoryItem(
-          _anime.animeId, episodeNumber, dateTime, reviewNumber);
+          _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
     } else {
       SqliteUtil.insertHistoryItem(
-          _anime.animeId, episodeNumber, dateTime, reviewNumber);
+          _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
     }
     // 更新页面
     setState(() {
@@ -858,10 +854,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                           int episodeNumber = _episodes[episodeIndex].number;
                           if (_episodes[episodeIndex].isChecked()) {
                             SqliteUtil.updateHistoryItem(_anime.animeId,
-                                episodeNumber, dateTime, reviewNumber);
+                                episodeNumber, dateTime, _anime.reviewNumber);
                           } else {
                             SqliteUtil.insertHistoryItem(_anime.animeId,
-                                episodeNumber, dateTime, reviewNumber);
+                                episodeNumber, dateTime, _anime.reviewNumber);
                             // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
                             EpisodeNote episodeNote = EpisodeNote(
                                 anime: _anime,
@@ -924,7 +920,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               onPressed: () {
                 SqliteUtil
                     .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
-                        _anime.animeId, episodeNumber, reviewNumber);
+                        _anime.animeId, episodeNumber, _anime.reviewNumber);
                 // 根据episodeNumber找到对应的下标
                 int findIndex = _getEpisodeIndexByEpisodeNumber(episodeNumber);
                 _episodes[findIndex].cancelDateTime();
@@ -1071,11 +1067,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             IconButton(
               onPressed: () {
                 dialogSelectUint(context, "选择第 n 次观看",
-                        initialValue: reviewNumber, minValue: 1, maxValue: 6)
+                        initialValue: _anime.reviewNumber,
+                        minValue: 1,
+                        maxValue: 6)
                     .then((value) {
                   if (value != null) {
-                    if (reviewNumber != value) {
-                      reviewNumber = value;
+                    if (_anime.reviewNumber != value) {
+                      _anime.reviewNumber = value;
+                      // SqliteUtil.updateAnimeReviewNumberByAnimeId(
+                      //     _anime.animeId, _anime.reviewNumber);
+                      SqliteUtil.updateAnime(_anime, _anime);
                       // 不相等才设置并重新加载数据
                       _loadData();
                     }
@@ -1129,7 +1130,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
                                 _anime.animeId,
                                 _episodes.last.number,
-                                reviewNumber);
+                                _anime.reviewNumber);
                         // 注意顺序
                         _episodes.removeLast();
                         // 记得删除笔记
@@ -1142,8 +1143,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       // 不应该选择last，而是找出最大的编号，因为可能是排过序的，最大的编号不一定在最后面
                       // 所以采用先获取当前动漫的集数到oldEpisodeCnt中，然后再更新指定的集数
                       for (int i = 0; i < episodeCnt - len; ++i) {
-                        _episodes
-                            .add(Episode(oldEpisodeCnt + i + 1, reviewNumber));
+                        _episodes.add(Episode(
+                            oldEpisodeCnt + i + 1, _anime.reviewNumber));
                       }
                       // 还要添加对应的笔记
                       for (int i = _episodeNotes.length;
@@ -1285,7 +1286,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   showReviewNumberIcon() {
-    switch (reviewNumber) {
+    switch (_anime.reviewNumber) {
       case 1:
         return const Icon(Icons.looks_one_outlined);
       case 2:

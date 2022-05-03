@@ -135,27 +135,6 @@ class SqliteUtil {
       -- values('拾'), ('途'), ('终'), ('搁'), ('弃');
       values('收集', 0), ('旅途', 1), ('终点', 2), ('搁置', 3), ('放弃', 4);
     ''');
-    // for (int i = 0; i < 100; ++i) {
-    //   await db.rawInsert('''
-    // insert into anime(anime_name, anime_episode_cnt, tag_name, last_mode_tag_time)
-    // values('进击的巨人第一季', '24', '收集', '2021-12-10 20:23:22'), -- 手动添加是一定注意是两位数表示月日，否则会出错，比如6月>12月，因为6>1
-    //     ('JOJO的奇妙冒险第六季 石之海', '12', '收集', '2021-12-09 20:23:22'),
-    //     ('刀剑神域第一季', '24', '收集', '2021-12-08 20:23:22'),
-    //     ('进击的巨人第二季', '12', '收集', '2021-12-07 20:23:22'),
-    //     ('在下坂本，有何贵干？', '12', '终点', '2021-12-06 20:23:22');
-    // ''');
-    // }
-    // for (int i = 0; i < 1; ++i) {
-    //   await db.rawInsert('''
-    // insert into history(date, anime_id, episode_number)
-    // values('2021-12-15 20:17:58', 2, 1),
-    //     ('2021-12-15 20:23:22', 2, 3),
-    //     ('2020-06-24 15:20:12', 1, 1),
-    //     ('2021-12-04 14:11:27', 4, 2),
-    //     ('2021-11-07 13:13:13', 3, 1),
-    //     ('2021-10-07 12:12:12', 5, 2);
-    // ''');
-    // }
   }
 
   // 迁移动漫
@@ -201,7 +180,8 @@ class SqliteUtil {
           production_company = '${newAnime.productionCompany}',
           official_site = '${newAnime.officialSite}',
           category = '${newAnime.category}',
-          anime_url = '${newAnime.animeUrl}'
+          anime_url = '${newAnime.animeUrl}',
+          review_number = ${newAnime.reviewNumber}
       where anime_id = ${oldAnime.animeId};
     ''');
   }
@@ -280,8 +260,8 @@ class SqliteUtil {
     anime = escapeAnime(anime);
     String datetime = DateTime.now().toString();
     return await _database.rawInsert('''
-      insert into anime(anime_name, anime_episode_cnt, anime_desc, tag_name, last_mode_tag_time, anime_cover_url, premiere_time, name_another, name_ori, author_ori, area, play_status, production_company, official_site, category, anime_url)
-      values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.animeDesc}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.premiereTime}', '${anime.nameAnother}', '${anime.nameOri}', '${anime.authorOri}', '${anime.area}', '${anime.playStatus}', '${anime.productionCompany}', '${anime.officialSite}', '${anime.category}', '${anime.animeUrl}');
+      insert into anime(anime_name, anime_episode_cnt, anime_desc, tag_name, last_mode_tag_time, anime_cover_url, premiere_time, name_another, name_ori, author_ori, area, play_status, production_company, official_site, category, anime_url, review_number)
+      values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.animeDesc}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.premiereTime}', '${anime.nameAnother}', '${anime.nameOri}', '${anime.authorOri}', '${anime.area}', '${anime.playStatus}', '${anime.productionCompany}', '${anime.officialSite}', '${anime.category}', '${anime.animeUrl}', 1);
     ''');
   }
 
@@ -297,15 +277,26 @@ class SqliteUtil {
     columns['production_company'] = 'TEXT'; // 制作公司
     columns['official_site'] = 'TEXT'; // 官方网站
     columns['anime_url'] = 'TEXT'; // 动漫网址
+    columns['review_number'] = 'INTEGER'; // 回顾号
     columns.forEach((key, value) async {
       var list = await _database.rawQuery('''
-    select * from sqlite_master where name = 'anime' and sql like '%$key%';
-    ''');
+        select * from sqlite_master where name = 'anime' and sql like '%$key%';
+      ''');
       if (list.isEmpty) {
         await _database.execute('''
-      alter table anime
-      add column $key $value;
-      ''');
+          alter table anime
+          add column $key $value;
+        ''').then((value) async {
+          if (key == 'review_number') {
+            debugPrint("修改回顾号为1");
+            // 新增的回顾号列才会修改NULL→1，之后插入新动漫默认回顾号为1
+            await _database.rawUpdate('''
+              update anime
+              set review_number = 1
+              where review_number is NULL;
+            ''');
+          }
+        });
       }
     });
   }
@@ -460,9 +451,9 @@ class SqliteUtil {
     from anime
     where anime_id = $animeId;
     ''');
-    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int reviewNumber = list[0]['review_number'] as int;
     int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        maxReviewNumber: maxReviewNumber);
+        reviewNumber: reviewNumber);
 
     Anime anime = Anime(
       animeId: animeId,
@@ -472,7 +463,7 @@ class SqliteUtil {
       animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: maxReviewNumber,
+      reviewNumber: reviewNumber,
       premiereTime: list[0]['premiere_time'] as String? ?? "",
       nameOri: list[0]['name_ori'] as String? ?? "",
       nameAnother: list[0]['name_another'] as String? ?? "",
@@ -505,9 +496,9 @@ class SqliteUtil {
       return anime;
     }
     int animeId = list[0]['anime_id'] as int;
-    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int reviewNumber = list[0]['review_number'] as int;
     int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        maxReviewNumber: maxReviewNumber);
+        reviewNumber: reviewNumber);
     Anime searchedanime = Anime(
       animeId: animeId,
       animeName: list[0]['anime_name'] as String,
@@ -516,7 +507,7 @@ class SqliteUtil {
       animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: maxReviewNumber,
+      reviewNumber: reviewNumber,
       premiereTime: list[0]['premiere_time'] as String? ?? "",
       nameOri: list[0]['name_ori'] as String? ?? "",
       nameAnother: list[0]['name_another'] as String? ?? "",
@@ -594,64 +585,38 @@ class SqliteUtil {
     keyword = escapeStr(keyword);
 
     var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt, anime_cover_url
+    select *
     from anime
     where anime_name LIKE '%$keyword%' or name_another LIKE '%$keyword%';
     ''');
 
     List<Anime> res = [];
     for (var element in list) {
-      // var checkedEpisodeCntList = await _database.rawQuery('''
-      // select count(anime.anime_id) cnt
-      // from anime inner join history
-      //     on anime.anime_id = ${element['anime_id']} and anime.anime_id = history.anime_id;
-      // ''');
       int animeId = element['anime_id'] as int;
-      int maxReviewNumber =
-          await SqliteUtil.getMaxReviewNumberByAnimeId(animeId);
+      int reviewNumber = element['review_number'] as int;
       int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
           animeId,
-          maxReviewNumber: maxReviewNumber);
+          reviewNumber: reviewNumber);
       Anime anime = Anime(
         animeId: animeId, // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
-        reviewNumber: maxReviewNumber,
+        reviewNumber: reviewNumber,
       );
       res.add(restoreEscapeAnime(anime));
     }
     return res;
   }
 
-  static Future<int> getMaxReviewNumberByAnimeId(int animeId) async {
-    // debugPrint("getMaxReviewNumberByAnimeId(animeId=$animeId)");
-    // 新增回顾号列后，不能简单从历史表中计数来获取进度了
-    // 而是先得到该动漫的最大回顾号，然后根据该回顾号计数
-    var maxReviewNumberList = await _database.rawQuery('''
-      select max(review_number) max_review_number
-      from history
-      where history.anime_id = $animeId;
-      ''');
-    // 有些动漫没有进度，所以没有回顾号，此时返回的表有一行，结果为NULL，此时默认为1即可
-    int maxReviewNumber =
-        maxReviewNumberList[0]["max_review_number"] as int? ?? 1;
-    return maxReviewNumber;
-  }
-
   static Future<int> getCheckedEpisodeCntByAnimeId(int animeId,
-      {int maxReviewNumber = 0}) async {
+      {int reviewNumber = 0}) async {
     // debugPrint("getCheckedEpisodeCntByAnimeId(animeId=$animeId)");
-    // 如果已经给了最大回顾号，则不用再查找。因为要求动漫列表也显示最大回顾号，所以查询的时候会先查询最大回顾号，然后存放在Anime中
-    if (maxReviewNumber == 0) {
-      maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
-    }
-
     var checkedEpisodeCntList = await _database.rawQuery('''
       select count(anime.anime_id) cnt
       from anime inner join history
-          on anime.anime_id = $animeId and anime.anime_id = history.anime_id and review_number = $maxReviewNumber;
+          on anime.anime_id = $animeId and anime.anime_id = history.anime_id and history.review_number = $reviewNumber;
       ''');
     // debugPrint(
     //     "最大回顾号$maxReviewNumber的进度：checkedEpisodeCnt=${checkedEpisodeCntList[0]["cnt"] as int}");
@@ -662,7 +627,7 @@ class SqliteUtil {
     debugPrint("sql: getAllAnimeBytagName");
 
     var list = await _database.rawQuery('''
-    select anime_id, anime_name, anime_episode_cnt, tag_name, anime_cover_url
+    select *
     from anime
     where tag_name = '$tagName'
     order by last_mode_tag_time desc -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
@@ -672,9 +637,9 @@ class SqliteUtil {
     List<Anime> res = [];
     for (var element in list) {
       int animeId = element['anime_id'] as int;
-      int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+      int reviewNumber = element['review_number'] as int;
       int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-          maxReviewNumber: maxReviewNumber);
+          reviewNumber: reviewNumber);
 
       res.add(Anime(
           animeId: animeId, // 进入详细页面后需要该id
@@ -684,7 +649,7 @@ class SqliteUtil {
               "", // 强制转换为String?，如果为null，则设置为空字符串
           tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
           checkedEpisodeCnt: checkedEpisodeCnt,
-          reviewNumber: maxReviewNumber));
+          reviewNumber: reviewNumber));
     }
     return res;
   }
@@ -1109,9 +1074,9 @@ class SqliteUtil {
     }
 
     int animeId = list[0]['anime_id'] as int;
-    int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+    int reviewNumber = list[0]['review_number'] as int;
     int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        maxReviewNumber: maxReviewNumber);
+        reviewNumber: reviewNumber);
 
     Anime anime = Anime(
       animeId: animeId,
@@ -1121,7 +1086,7 @@ class SqliteUtil {
       animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: maxReviewNumber,
+      reviewNumber: reviewNumber,
       premiereTime: list[0]['premiere_time'] as String? ?? "",
       nameOri: list[0]['name_ori'] as String? ?? "",
       nameAnother: list[0]['name_another'] as String? ?? "",
@@ -1151,9 +1116,9 @@ class SqliteUtil {
     List<Anime> res = [];
     for (var element in list) {
       int animeId = element['anime_id'] as int;
-      int maxReviewNumber = await getMaxReviewNumberByAnimeId(animeId);
+      int reviewNumber = element['review_number'] as int;
       int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-          maxReviewNumber: maxReviewNumber);
+          reviewNumber: reviewNumber);
 
       Anime anime = Anime(
         animeId: element['anime_id'] as int,
@@ -1163,7 +1128,7 @@ class SqliteUtil {
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
         tagName: element['tag_name'] as String,
         checkedEpisodeCnt: checkedEpisodeCnt,
-        reviewNumber: maxReviewNumber,
+        reviewNumber: reviewNumber,
         premiereTime: element['premiere_time'] as String? ?? "",
         nameOri: element['name_ori'] as String? ?? "",
         nameAnother: element['name_another'] as String? ?? "",
