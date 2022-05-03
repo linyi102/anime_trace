@@ -40,9 +40,7 @@ class _TagManageState extends State<TagManage> {
                             labelText: "标签名称",
                             border: InputBorder.none,
                           ),
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(10),
-                          ],
+                          maxLength: 10,
                         ),
                         actions: [
                           TextButton(
@@ -108,6 +106,7 @@ class _TagManageState extends State<TagManage> {
                   content: TextField(
                     controller: inputTagNameController..text = tags[i],
                     autofocus: true,
+                    maxLength: 10,
                     decoration: const InputDecoration(
                       labelText: "标签名称",
                       border: InputBorder.none,
