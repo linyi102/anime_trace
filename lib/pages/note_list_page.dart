@@ -59,50 +59,7 @@ class _NoteListPageState extends State<NoteListPage> {
           ),
         ),
         actions: [
-          PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
-            offset: const Offset(0, 50),
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  // padding: const EdgeInsets.all(0),
-                  child: ListTile(
-                    title: hideAnimeListTile
-                        ? const Text("显示动漫行")
-                        : const Text("隐藏动漫行"),
-                    style: ListTileStyle.drawer,
-                    // trailing: Icon(Icons.remove_red_eye),
-                    onTap: () {
-                      if (hideAnimeListTile) {
-                        SPUtil.setBool("hideAnimeListTile", false);
-                      } else {
-                        SPUtil.setBool("hideAnimeListTile", true);
-                      }
-                      setState(() {
-                        hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-                PopupMenuItem(
-                  // padding: const EdgeInsets.all(0),
-                  child: ListTile(
-                    title: const Text("更多设置"),
-                    style: ListTileStyle.drawer,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, FadeRoute(
-                        builder: (context) {
-                          return const NoteSetting();
-                        },
-                      )).then((value) => _loadData());
-                    },
-                  ),
-                ),
-              ];
-            },
-          ),
+          _buildActions(),
         ],
       ),
       body: AnimatedSwitcher(
@@ -116,13 +73,59 @@ class _NoteListPageState extends State<NoteListPage> {
                   key: UniqueKey(),
                   // color: Colors.white,
                 )
-              : Scrollbar(child: _showNotes()),
+              : Scrollbar(child: _buildNotes()),
         ),
       ),
     );
   }
 
-  _showNotes() {
+  PopupMenuButton<dynamic> _buildActions() {
+    return PopupMenuButton(
+      icon: const Icon(Icons.more_vert),
+      offset: const Offset(0, 50),
+      itemBuilder: (BuildContext context) {
+        return [
+          PopupMenuItem(
+            // padding: const EdgeInsets.all(0),
+            child: ListTile(
+              title:
+                  hideAnimeListTile ? const Text("显示动漫行") : const Text("隐藏动漫行"),
+              style: ListTileStyle.drawer,
+              // trailing: Icon(Icons.remove_red_eye),
+              onTap: () {
+                if (hideAnimeListTile) {
+                  SPUtil.setBool("hideAnimeListTile", false);
+                } else {
+                  SPUtil.setBool("hideAnimeListTile", true);
+                }
+                setState(() {
+                  hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          PopupMenuItem(
+            // padding: const EdgeInsets.all(0),
+            child: ListTile(
+              title: const Text("更多设置"),
+              style: ListTileStyle.drawer,
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, FadeRoute(
+                  builder: (context) {
+                    return const NoteSetting();
+                  },
+                )).then((value) => _loadData());
+              },
+            ),
+          ),
+        ];
+      },
+    );
+  }
+
+  _buildNotes() {
     return episodeNotes.isEmpty
         ? const Center(
             child: Text("暂无笔记，完成某集后点击即可添加笔记"),
@@ -157,76 +160,14 @@ class _NoteListPageState extends State<NoteListPage> {
                     child: Flex(
                       direction: Axis.vertical,
                       children: [
-                        // 显示笔记内容
-                        episodeNotes[index].noteContent.isEmpty
-                            ? Container()
-                            : ListTile(
-                                title: Text(
-                                  episodeNotes[index].noteContent,
-                                  maxLines: 10,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                style: ListTileStyle.drawer,
-                              ),
+                        // 笔记内容
+                        _buildEpisodeNote(index),
+                        // 笔记图片
                         ImageGridView(
-                            relativeLocalImages: episodeNotes[index]
-                                .relativeLocalImages), // 显示动漫行
-                        hideAnimeListTile
-                            ? Container()
-                            : ListTile(
-                                style: ListTileStyle.drawer,
-                                leading: AnimeListCover(
-                                  episodeNotes[index].anime,
-                                  showReviewNumber: true,
-                                  reviewNumber:
-                                      episodeNotes[index].episode.reviewNumber,
-                                ),
-                                trailing: IconButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        FadeRoute(
-                                          builder: (context) {
-                                            return EpisodeNoteSF(
-                                                episodeNotes[index]);
-                                          },
-                                        ),
-                                      ).then((value) {
-                                        episodeNotes[index] = value; // 更新修改
-                                        setState(() {});
-                                      });
-                                    },
-                                    icon: const Icon(Icons.edit)),
-                                title: Text(
-                                  episodeNotes[index].anime.animeName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  // textAlign: TextAlign.right,
-                                ),
-                                subtitle: Text(
-                                  "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
-                                  // textAlign: TextAlign.right,
-                                ),
-                                onTap: () {
-                                  Navigator.of(context)
-                                      .push(
-                                    // MaterialPageRoute(
-                                    //   builder: (context) => AnimeDetailPlus(
-                                    //       episodeNotes[index].anime.animeId),
-                                    // ),
-                                    FadeRoute(
-                                      transitionDuration:
-                                          const Duration(milliseconds: 0),
-                                      builder: (context) {
-                                        return AnimeDetailPlus(
-                                            episodeNotes[index].anime.animeId);
-                                      },
-                                    ),
-                                  )
-                                      .then((value) {
-                                    // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
-                                  });
-                                },
-                              ),
+                            relativeLocalImages:
+                                episodeNotes[index].relativeLocalImages),
+                        // 动漫行
+                        _buildAnimeListTile(index),
                       ],
                     ),
                   ),
@@ -250,5 +191,71 @@ class _NoteListPageState extends State<NoteListPage> {
         setState(() {});
       });
     }
+  }
+
+  _buildAnimeListTile(int index) {
+    if (hideAnimeListTile) return Container();
+    return ListTile(
+      style: ListTileStyle.drawer,
+      leading: AnimeListCover(
+        episodeNotes[index].anime,
+        showReviewNumber: true,
+        reviewNumber: episodeNotes[index].episode.reviewNumber,
+      ),
+      trailing: IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              FadeRoute(
+                builder: (context) {
+                  return EpisodeNoteSF(episodeNotes[index]);
+                },
+              ),
+            ).then((value) {
+              episodeNotes[index] = value; // 更新修改
+              setState(() {});
+            });
+          },
+          icon: const Icon(Icons.edit)),
+      title: Text(
+        episodeNotes[index].anime.animeName,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        // textAlign: TextAlign.right,
+      ),
+      subtitle: Text(
+        "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
+        // textAlign: TextAlign.right,
+      ),
+      onTap: () {
+        Navigator.of(context)
+            .push(
+          // MaterialPageRoute(
+          //   builder: (context) => AnimeDetailPlus(
+          //       episodeNotes[index].anime.animeId),
+          // ),
+          FadeRoute(
+            transitionDuration: const Duration(milliseconds: 0),
+            builder: (context) {
+              return AnimeDetailPlus(episodeNotes[index].anime.animeId);
+            },
+          ),
+        )
+            .then((value) {
+          // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
+        });
+      },
+    );
+  }
+
+  _buildEpisodeNote(int index) {
+    if (episodeNotes[index].noteContent.isEmpty) return Container();
+    return ListTile(
+      title: Text(
+        episodeNotes[index].noteContent,
+        maxLines: 10,
+        overflow: TextOverflow.ellipsis,
+      ),
+      style: ListTileStyle.drawer,
+    );
   }
 }

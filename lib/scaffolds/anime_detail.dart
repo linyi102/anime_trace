@@ -1070,7 +1070,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 onPressed: () {
                   // _dialogUpdateEpisodeCnt();
                   dialogSelectUint(context, "修改集数",
-                          initialValue: _anime.animeEpisodeCnt,
+                          // initialValue: _anime.animeEpisodeCnt,
+                          // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+                          initialValue: _episodes.length,
                           minValue: 0,
                           maxValue: 2000)
                       .then((value) {
@@ -1219,6 +1221,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         tagName: _anime.tagName);
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
     Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);
+    // 如果更新后动漫集数比原来的集数小，则不更新集数
+    // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
+    // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
+    // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
+    // if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
+    //   newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
+    // }
     SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
       // 如果集数变大，则重新加载页面
       if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
