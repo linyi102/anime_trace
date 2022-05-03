@@ -1017,7 +1017,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         builder: (context) {
           return AlertDialog(
             title: const Text("提示"),
-            content: const Text("这将会删除所有相关笔记，\n确认取消收藏吗？"),
+            content: const Text("这将会删除所有相关记录，\n确认取消收藏吗？"),
             actions: [
               TextButton(
                   onPressed: () {

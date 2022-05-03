@@ -10,18 +10,18 @@ List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 List<Anime> directory = []; // 目录动漫
 Filter filter = Filter(); // 目录页中的过滤条件
 
-List<ClimbWebStie> climbWebsites = [
-  ClimbWebStie(
+List<ClimbWebstie> climbWebsites = [
+  ClimbWebstie(
       name: "樱花动漫",
       baseUrl: "https://www.yhdmp.cc",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true)),
-  ClimbWebStie(
+  ClimbWebstie(
       name: "AGE 动漫",
       baseUrl: "https://www.agemys.com",
       spkey: "enableWebSiteAgemys",
       enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true)),
-  ClimbWebStie(
+  ClimbWebstie(
       name: "OmoFun",
       baseUrl: "https://omofun.tv",
       spkey: "enableWebSiteOmofun",

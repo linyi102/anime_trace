@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 class AnimeClimb extends StatefulWidget {
   final int animeId;
   final String keyword;
-  final ClimbWebStie climbWebStie;
+  final ClimbWebstie climbWebStie;
   const AnimeClimb(
       {this.animeId = 0,
       this.keyword = "",
@@ -32,8 +32,8 @@ class _AnimeClimbState extends State<AnimeClimb> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   late bool ismigrate;
 
-  List<Anime> searchedAnimes = [];
-  List<Anime> addedAnimes = [];
+  List<Anime> websiteClimbAnimes = [];
+  List<Anime> mixedAnimes = [];
   bool searchOk = false;
   bool searching = false;
   String addDefaultTag = tags[0];
@@ -60,19 +60,25 @@ class _AnimeClimbState extends State<AnimeClimb> {
     Future(() async {
       return ClimbAnimeUtil.climbAnimesByKeyword(keyword, widget.climbWebStie);
     }).then((value) async {
-      searchedAnimes = value;
+      websiteClimbAnimes = value;
       debugPrint("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-      // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
-      for (var i = 0; i < searchedAnimes.length; i++) {
-        searchedAnimes[i] =
-            await SqliteUtil.getAnimeByAnimeUrl(searchedAnimes[i]);
-      }
 
-      searchOk = true;
-      searching = false;
-      setState(() {});
+      // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
+      _generateMixedAnimes().then((value) {
+        searchOk = true;
+        searching = false;
+        setState(() {});
+      });
     });
+  }
+
+  Future<bool> _generateMixedAnimes() async {
+    mixedAnimes = websiteClimbAnimes;
+    for (var i = 0; i < websiteClimbAnimes.length; i++) {
+      mixedAnimes[i] = await SqliteUtil.getAnimeByAnimeUrl(mixedAnimes[i]);
+    }
+    return true;
   }
 
   @override
@@ -137,9 +143,9 @@ class _AnimeClimbState extends State<AnimeClimb> {
           mainAxisSpacing: 3, // 竖轴距离
           childAspectRatio: 31 / 56, // 每个网格的比例
         ),
-        itemCount: searchedAnimes.length,
+        itemCount: mixedAnimes.length,
         itemBuilder: (BuildContext context, int index) {
-          Anime anime = searchedAnimes[index];
+          Anime anime = mixedAnimes[index];
           return MaterialButton(
             onPressed: () async {
               // 迁移动漫
@@ -159,12 +165,10 @@ class _AnimeClimbState extends State<AnimeClimb> {
                     },
                   ),
                 ).then((value) async {
-                  Anime retAnime = value;
-                  int findIndex = searchedAnimes.lastIndexWhere(
-                      (element) => element.animeName == retAnime.animeName);
-                  searchedAnimes[findIndex] =
-                      await SqliteUtil.getAnimeByAnimeId(retAnime.animeId);
-                  setState(() {});
+                  // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
+                  _generateMixedAnimes().then((value) {
+                    setState(() {});
+                  });
                 });
               } else {
                 debugPrint("添加动漫");

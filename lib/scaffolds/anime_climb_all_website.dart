@@ -25,7 +25,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   String addDefaultTag = tags[0];
   String lastInputName = "";
-  Map<String, List<Anime>> websiteClimbAnimes = {};
+  Map<String, List<Anime>> websiteClimbAnimes = {}; // 爬取的动漫
+  Map<String, List<Anime>> mixedAnimes = {}; // 先赋值为爬取的动漫，后如果已收藏，则赋值为数据库动漫
   Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
   Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
   List<Anime> customAnimes = [];
@@ -97,17 +98,35 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         websiteClimbSearchOk[climbWebsite.name] = true;
         // 根据动漫网址查询是否已经添加了该动漫
         // 需要等更新为数据库动漫完毕后才显示，否则提前显示时，可以迁移到已添加的动漫
-        _updateDBAnimesToClimbAnimes(climbWebsite)
-            .then((value) => setState(() {}));
+        _generateMixedAnimes(climbWebsite).then((value) => setState(() {}));
       });
     }
   }
 
-  Future<bool> _updateDBAnimesToClimbAnimes(ClimbWebStie climbWebsite) async {
+  Future<bool> _generateMixedAnimes(ClimbWebstie climbWebsite) async {
+    mixedAnimes[climbWebsite.name] =
+        websiteClimbAnimes[climbWebsite.name] as List<Anime>;
+
     for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
-      websiteClimbAnimes[climbWebsite.name]![i] =
-          await SqliteUtil.getAnimeByAnimeUrl(
-              websiteClimbAnimes[climbWebsite.name]![i]);
+      mixedAnimes[climbWebsite.name]![i] = await SqliteUtil.getAnimeByAnimeUrl(
+          mixedAnimes[climbWebsite.name]![i]);
+    }
+    return true;
+  }
+
+  // 用于从动漫详细页和详细搜索页返回时调用，从数据库中重新获取所有网站的已收藏的动漫
+  Future<bool> _generateMixedAnimesAllWebsite() async {
+    debugPrint("mixing...");
+    mixedAnimes = websiteClimbAnimes;
+
+    for (var climbWebsite in climbWebsites) {
+      if (!climbWebsite.enable) continue; // 如果没有开启，直接跳过，否则映射的是null
+
+      for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
+        mixedAnimes[climbWebsite.name]![i] =
+            await SqliteUtil.getAnimeByAnimeUrl(
+                mixedAnimes[climbWebsite.name]![i]);
+      }
     }
     return true;
   }
@@ -173,6 +192,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                         ? customSearchOK // 搜索完毕后显示动漫
                             ? AnimeHorizontalCover(
                                 animes: customAnimes,
+                                callback: _generateMixedAnimesAllWebsite,
                               )
                             : customSearching // 正在搜索时显示加载圈
                                 ? const SizedBox(
@@ -207,8 +227,12 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                       } else {
                         // 可能进入详细搜索页后修改了数据库动漫，因此也需要重新搜索数据库(只搜索该搜索源下爬取的动漫网址)
                         // 小问题：进入动漫详细页后，迁移到了其他搜索源的动漫，animeUrl发生变化，此时该函数会通过animeUrl从数据库找到相应的动漫，并赋值，因此会出现原搜索源下面出现了一个其它搜索源的动漫
-                        // 无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
-                        _updateDBAnimesToClimbAnimes(climbWebsites[index])
+                        // 2022.05.01无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
+                        // _generateMixedAnimes(climbWebsites[index])
+                        //     .then((value) => setState(() {}));
+
+                        // 2022.05.03修复
+                        _generateMixedAnimesAllWebsite()
                             .then((value) => setState(() {}));
                       }
                     });
@@ -217,8 +241,9 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                 // 搜索结果
                 websiteClimbSearchOk[websiteName] ?? false
                     ? AnimeHorizontalCover(
-                        animes: websiteClimbAnimes[websiteName] ?? [],
+                        animes: mixedAnimes[websiteName] ?? [],
                         animeId: widget.animeId,
+                        callback: _generateMixedAnimesAllWebsite,
                       ) // 查询好后显示结果
                     : websiteClimbSearching[websiteName] ?? false
                         ? const SizedBox(

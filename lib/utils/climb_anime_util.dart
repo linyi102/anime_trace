@@ -142,7 +142,7 @@ class ClimbAnimeUtil {
 
   // 根据关键字爬取动漫
   static Future<List<Anime>> climbAnimesByKeyword(
-      String keyword, ClimbWebStie climbWebStie) async {
+      String keyword, ClimbWebstie climbWebStie) async {
     List<Anime> climbAnimes = [];
 
     if (climbWebStie.name == "樱花动漫") {

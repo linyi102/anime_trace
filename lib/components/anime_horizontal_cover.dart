@@ -9,11 +9,19 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+typedef Callback = Future<bool> Function();
+
 // ignore: must_be_immutable
 class AnimeHorizontalCover extends StatefulWidget {
   List<Anime> animes;
   int animeId;
-  AnimeHorizontalCover({Key? key, required this.animes, this.animeId = 0})
+  // Future<bool> Function callback;
+  Callback callback;
+  AnimeHorizontalCover(
+      {Key? key,
+      required this.animes,
+      this.animeId = 0,
+      required this.callback})
       : super(key: key);
 
   @override
@@ -74,9 +82,13 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     ),
                   ).then((value) async {
                     // 使用widget.animes[animeIndex]而不是anime，才可以看到变化，比如完成集数
-                    widget.animes[animeIndex] =
-                        await SqliteUtil.getAnimeByAnimeId(anime.animeId);
-                    setState(() {});
+                    // widget.animes[animeIndex] =
+                    //     await SqliteUtil.getAnimeByAnimeId(anime.animeId);
+                    // setState(() {});
+                    widget.callback().then((value) {
+                      debugPrint("callback.then");
+                      setState(() {});
+                    });
                   });
                 } else {
                   debugPrint("添加动漫");
