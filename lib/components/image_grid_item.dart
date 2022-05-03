@@ -23,7 +23,7 @@ class ImageGridItem extends StatelessWidget {
     String imageLocalPath = ImageUtil.getAbsoluteImagePath(relativeImagePath);
 
     return MaterialButton(
-      padding: const EdgeInsets.all(0),
+      padding: const EdgeInsets.all(5),
       onPressed: () {
         Navigator.push(
             context,

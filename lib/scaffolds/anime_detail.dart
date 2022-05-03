@@ -371,6 +371,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   child: MaterialButton(
                     padding: const EdgeInsets.all(0),
                     onPressed: () {
+                      // 没有封面时，直接返回
+                      if (_anime.animeCoverUrl.isEmpty) return;
+
                       showImageViewer(context, imageProvider, immersive: false);
                     },
                     child: AnimeGridCover(_anime),
