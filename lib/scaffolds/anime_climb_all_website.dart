@@ -24,7 +24,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   bool ismigrate = false;
 
   String addDefaultTag = tags[0];
-  String lastInputName = "";
+  String lastInputKeyword = "";
   Map<String, List<Anime>> websiteClimbAnimes = {}; // 爬取的动漫
   Map<String, List<Anime>> mixedAnimes = {}; // 先赋值为爬取的动漫，后如果已收藏，则赋值为数据库动漫
   Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
@@ -37,7 +37,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   void initState() {
     super.initState();
     ismigrate = widget.animeId > 0 ? true : false;
-    lastInputName = widget.keyword;
+    lastInputKeyword = widget.keyword;
 
     for (var climbWebsite in climbWebsites) {
       websiteClimbSearchOk[climbWebsite.name] = false;
@@ -61,25 +61,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       websiteClimbSearching[climbWebsite.name] = false;
     }
 
-    // 迁移时不准备自定义动漫数据
-    if (!ismigrate) {
-      // 先重置数据
-      customAnimes.clear();
-      customSearchOK = false;
-      customSearching = true;
-      setState(() {});
-      // 添加以关键字为名字的自定义动漫
-      // 从数据库中找同名的没有动漫地址的动漫，并赋值给该动漫(可能之前添加过以关键字为名字的自定义动漫)
-      Anime customAnime = await SqliteUtil.getCustomAnimeByAnimeName(keyword);
-      customAnimes.add(customAnime);
-      // 并在数据库中查找包含该名字的且没有动漫地址的动漫
-      customAnimes.addAll(await SqliteUtil.getCustomAnimesIfContainAnimeName(
-          customAnime.animeName));
-
-      customSearchOK = true;
-      customSearching = false;
-      setState(() {});
-    }
+    _generateCustomAnimes();
 
     debugPrint("开始爬取动漫封面");
     for (var climbWebsite in climbWebsites) {
@@ -103,6 +85,29 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     }
   }
 
+  _generateCustomAnimes() async {
+    // 迁移时不准备自定义动漫数据
+    if (!ismigrate) {
+      // 先重置数据
+      customAnimes.clear();
+      customSearchOK = false;
+      customSearching = true;
+      setState(() {});
+      // 添加以关键字为名字的自定义动漫
+      // 从数据库中找同名的没有动漫地址的动漫，并赋值给该动漫(可能之前添加过以关键字为名字的自定义动漫)
+      Anime customAnime =
+          await SqliteUtil.getCustomAnimeByAnimeName(lastInputKeyword);
+      customAnimes.add(customAnime);
+      // 并在数据库中查找包含该名字的且没有动漫地址的动漫
+      customAnimes.addAll(await SqliteUtil.getCustomAnimesIfContainAnimeName(
+          customAnime.animeName));
+
+      customSearchOK = true;
+      customSearching = false;
+      setState(() {});
+    }
+  }
+
   Future<bool> _generateMixedAnimes(ClimbWebstie climbWebsite) async {
     mixedAnimes[climbWebsite.name] =
         websiteClimbAnimes[climbWebsite.name] as List<Anime>;
@@ -116,6 +121,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   // 用于从动漫详细页和详细搜索页返回时调用，从数据库中重新获取所有网站的已收藏的动漫
   Future<bool> _generateMixedAnimesAllWebsite() async {
+    _generateCustomAnimes(); // 也可能会迁移自定义动漫
+
     debugPrint("mixing...");
     mixedAnimes = websiteClimbAnimes;
 
@@ -138,7 +145,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         title: TextField(
           autofocus:
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
-          controller: inputKeywordController..text = lastInputName,
+          controller: inputKeywordController..text = lastInputKeyword,
           decoration: InputDecoration(
               hintText: ismigrate ? "迁移动漫" : "添加动漫",
               border: InputBorder.none,
@@ -153,18 +160,18 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
             if (text.isEmpty) {
               return;
             }
-            lastInputName = text; // 更新上一次输入的名字
+            lastInputKeyword = text; // 更新上一次输入的名字
             _climbAnime(keyword: text);
           },
           onChanged: (inputStr) {
-            lastInputName = inputStr;
+            lastInputKeyword = inputStr;
             // 避免输入好后切换搜索源后，清空了输入的内容
           },
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          _climbAnime(keyword: lastInputName);
+          _climbAnime(keyword: lastInputKeyword);
         },
         child: ListView.builder(
           itemCount: climbWebsites
@@ -192,6 +199,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                         ? customSearchOK // 搜索完毕后显示动漫
                             ? AnimeHorizontalCover(
                                 animes: customAnimes,
+                                animeId: widget.animeId,
                                 callback: _generateMixedAnimesAllWebsite,
                               )
                             : customSearching // 正在搜索时显示加载圈
@@ -217,7 +225,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                     Navigator.of(context).push(FadeRoute(builder: (context) {
                       return AnimeClimb(
                         animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
-                        keyword: lastInputName,
+                        keyword: lastInputKeyword,
                         climbWebStie: climbWebsites[index],
                       );
                     })).then((value) {
