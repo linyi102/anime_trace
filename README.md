@@ -1,4 +1,4 @@
-[Github](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC)
+[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC)
 
 因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。
 所以就尝试做了这么一个软件，只需要每天简单记录一下自己看过哪些动漫的哪些集，就可以在历史页面中得到一个很好的记录。
@@ -16,7 +16,7 @@
 
 为保证转移设备后仍然可以显示笔记图片，需要在转移设备时，将旧设备中设置的根目录下的图片全部转移到新设备下的一个新的根目录。然后在新设备的该软件中设置新的根目录即可。
 
-因为数据库中保存的是图片相对路径，因此为笔记添加图片后，==请不要修改图片名字和路径==，否则会在笔记页面中无法显示该图片。
+因为数据库中保存的是图片相对路径，因此为笔记添加图片后，**请不要修改图片名字和移动图片**，否则会在笔记页面中无法显示该图片。
 
 ## 备份相关问题
 
