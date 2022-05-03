@@ -1069,15 +1069,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             IconButton(
                 onPressed: () {
                   // _dialogUpdateEpisodeCnt();
+                  int initialValue = _episodes.length;
                   dialogSelectUint(context, "修改集数",
                           // initialValue: _anime.animeEpisodeCnt,
                           // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-                          initialValue: _episodes.length,
+                          initialValue: initialValue,
                           minValue: 0,
                           maxValue: 2000)
                       .then((value) {
                     if (value == null) {
                       debugPrint("未选择，直接返回");
+                      return;
+                    }
+                    if (initialValue == _episodes.length) {
+                      debugPrint("设置的集数等于初始值，直接返回");
                       return;
                     }
                     int oldEpisodeCnt = _anime.animeEpisodeCnt;
