@@ -10,4 +10,9 @@ class ClimbWebstie {
     required this.enable,
     required this.spkey,
   });
+
+  @override
+  String toString() {
+    return "[name=$name, enable=$enable]";
+  }
 }

@@ -138,6 +138,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                           actions: [
                             TextButton(
                                 onPressed: () {
+                                  for (var climbWebsite in climbWebsites) {
+                                    debugPrint(climbWebsite.toString());
+                                  }
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("关闭"))

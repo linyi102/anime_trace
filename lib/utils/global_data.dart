@@ -20,7 +20,7 @@ List<ClimbWebstie> climbWebsites = [
       name: "AGE 动漫",
       baseUrl: "https://www.agemys.com",
       spkey: "enableWebSiteAgemys",
-      enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true)),
+      enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: false)),
   ClimbWebstie(
       name: "OmoFun",
       baseUrl: "https://omofun.tv",

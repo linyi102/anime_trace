@@ -29,7 +29,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Map<String, List<Anime>> mixedAnimes = {}; // 先赋值为爬取的动漫，后如果已收藏，则赋值为数据库动漫
   Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
   Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
-  List<Anime> customAnimes = [];
+  List<Anime> customAnimes = []; // 自定义动漫
   bool customSearchOK = false;
   bool customSearching = false;
 
@@ -64,9 +64,11 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     _generateCustomAnimes();
 
     debugPrint("开始爬取动漫封面");
+    // 遍历所有搜素源
     for (var climbWebsite in climbWebsites) {
+      debugPrint(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源
-      if (!climbWebsite.enable) return;
+      if (!climbWebsite.enable) continue; // 不是break啊...
 
       Future(() async {
         // 正在搜索，用于显示加载圈
@@ -121,6 +123,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   // 用于从动漫详细页和详细搜索页返回时调用，从数据库中重新获取所有网站的已收藏的动漫
   Future<bool> _generateMixedAnimesAllWebsite() async {
+    // 进入聚合搜索页后，直接进入详细搜索页，返回后，关键字一直是空的，所以不生产，直接退出
+    if (lastInputKeyword.isEmpty) return true;
     _generateCustomAnimes(); // 也可能会迁移自定义动漫
 
     debugPrint("mixing...");
