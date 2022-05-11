@@ -145,10 +145,6 @@ class _MyAppState extends State<MyApp> {
               iconTheme: IconThemeData(
                 color: Colors.black,
               ),
-              // titleTextStyle: TextStyle(
-              //   color: Colors.black,
-              //   fontWeight: FontWeight.w600,
-              // ),
               // 会影响字体大小，应该和TextStyle有关
             ),
             scrollbarTheme: ScrollbarThemeData(

@@ -11,11 +11,11 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 
-class AnimeClimb extends StatefulWidget {
+class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
   final ClimbWebstie climbWebStie;
-  const AnimeClimb(
+  const AnimeClimbOneWebsite(
       {this.animeId = 0,
       this.keyword = "",
       required this.climbWebStie,
@@ -23,10 +23,10 @@ class AnimeClimb extends StatefulWidget {
       : super(key: key);
 
   @override
-  _AnimeClimbState createState() => _AnimeClimbState();
+  _AnimeClimbOneWebsiteState createState() => _AnimeClimbOneWebsiteState();
 }
 
-class _AnimeClimbState extends State<AnimeClimb> {
+class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   var animeNameController = TextEditingController();
   var endEpisodeController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
@@ -90,7 +90,7 @@ class _AnimeClimbState extends State<AnimeClimb> {
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
           controller: animeNameController..text = lastInputName,
           decoration: InputDecoration(
-              hintText: "添加动漫",
+              hintText: "搜索动漫",
               border: InputBorder.none,
               suffixIcon: IconButton(
                   onPressed: () {
@@ -131,81 +131,76 @@ class _AnimeClimbState extends State<AnimeClimb> {
   }
 
   _displayClimbAnime() {
-    return AnimatedSwitcher(
-      key: UniqueKey(), // 不一样的搜索结果也需要过渡
-      duration: const Duration(milliseconds: 200),
-      child: GridView.builder(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount:
-              SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
-          crossAxisSpacing: 5, // 横轴距离
-          mainAxisSpacing: 3, // 竖轴距离
-          childAspectRatio: 31 / 56, // 每个网格的比例
-        ),
-        itemCount: mixedAnimes.length,
-        itemBuilder: (BuildContext context, int index) {
-          Anime anime = mixedAnimes[index];
-          return MaterialButton(
-            onPressed: () async {
-              // 迁移动漫
-              if (ismigrate) {
-                showDialogOfConfirmMigrate(context, widget.animeId, anime);
-              } else if (anime.animeId != 0) {
-                debugPrint("进入动漫详细页面${anime.animeId}");
-                // 不为0，说明已添加，点击进入动漫详细页面
-                Navigator.of(context).push(
-                  // MaterialPageRoute(
-                  //   builder: (context) =>
-                  //       AnimeDetailPlus(anime.animeId),
-                  // ),
-                  FadeRoute(
-                    builder: (context) {
-                      return AnimeDetailPlus(anime.animeId);
-                    },
-                  ),
-                ).then((value) async {
-                  // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
-                  _generateMixedAnimes().then((value) {
-                    setState(() {});
-                  });
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
+        crossAxisSpacing: 5, // 横轴距离
+        mainAxisSpacing: 3, // 竖轴距离
+        childAspectRatio: 31 / 56, // 每个网格的比例
+      ),
+      itemCount: mixedAnimes.length,
+      itemBuilder: (BuildContext context, int index) {
+        Anime anime = mixedAnimes[index];
+        return MaterialButton(
+          onPressed: () {
+            // 迁移动漫
+            if (ismigrate) {
+              showDialogOfConfirmMigrate(context, widget.animeId, anime);
+            } else if (anime.isCollected()) {
+              debugPrint("进入动漫详细页面${anime.animeId}");
+              // 不为0，说明已添加，点击进入动漫详细页面
+              Navigator.of(context).push(
+                // MaterialPageRoute(
+                //   builder: (context) =>
+                //       AnimeDetailPlus(anime.animeId),
+                // ),
+                FadeRoute(
+                  builder: (context) {
+                    return AnimeDetailPlus(anime.animeId);
+                  },
+                ),
+              ).then((value) {
+                // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
+                _generateMixedAnimes().then((value) {
+                  setState(() {});
                 });
-              } else {
-                debugPrint("添加动漫");
-                dialogSelectTag(setState, context, anime);
-              }
-            },
-            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-            child: Flex(
-              direction: Axis.vertical,
-              children: [
-                Stack(
+              });
+            } else {
+              debugPrint("添加动漫");
+              dialogSelectTag(setState, context, anime);
+            }
+          },
+          padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
+          child: Flex(
+            direction: Axis.vertical,
+            children: [
+              Stack(
+                children: [
+                  AnimeGridCover(anime),
+                  _displayEpisodeState(anime),
+                  _displayReviewNumber(anime),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Row(
                   children: [
-                    AnimeGridCover(anime),
-                    _displayEpisodeState(anime),
-                    _displayReviewNumber(anime),
+                    Expanded(
+                      child: Text(
+                        anime.animeName,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        textScaleFactor: 0.9,
+                      ),
+                    ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          anime.animeName,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          textScaleFactor: 0.9,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

@@ -3,7 +3,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_climb.dart';
+import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -151,7 +151,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
           controller: inputKeywordController..text = lastInputKeyword,
           decoration: InputDecoration(
-              hintText: ismigrate ? "迁移动漫" : "添加动漫",
+              hintText: ismigrate ? "迁移动漫" : "搜索动漫",
               border: InputBorder.none,
               suffixIcon: IconButton(
                   onPressed: () {
@@ -227,7 +227,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                   onTap: () {
                     // 进入详细搜索页
                     Navigator.of(context).push(FadeRoute(builder: (context) {
-                      return AnimeClimb(
+                      return AnimeClimbOneWebsite(
                         animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
                         keyword: lastInputKeyword,
                         climbWebStie: climbWebsites[index],
