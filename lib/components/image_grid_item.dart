@@ -13,8 +13,12 @@ class ImageGridItem extends StatelessWidget {
   final List<RelativeLocalImage>
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
+  final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
   const ImageGridItem(
-      {required this.relativeLocalImages, this.initialIndex = 0, Key? key})
+      {required this.relativeLocalImages,
+      this.initialIndex = 0,
+      this.imageRemainCount = 0,
+      Key? key})
       : super(key: key);
 
   @override
@@ -39,26 +43,42 @@ class ImageGridItem extends StatelessWidget {
                   );
                 }));
       },
-      child: AspectRatio(
-        aspectRatio: 1, // 正方形
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5), // 圆角
-          // child: FadeInImage.memoryNetwork(
-          //     placeholder: kTransparentImage, image: imageLocalPath),
-          child: FadeInImage(
-            placeholder: MemoryImage(kTransparentImage),
-            image: FileImage(File(imageLocalPath)),
-            fit: BoxFit.cover,
-            fadeInDuration: const Duration(milliseconds: 200),
-            imageErrorBuilder: errorImageBuilder(relativeImagePath),
+      child: Stack(children: [
+        AspectRatio(
+          aspectRatio: 1, // 正方形
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5), // 圆角
+            // child: FadeInImage.memoryNetwork(
+            //     placeholder: kTransparentImage, image: imageLocalPath),
+            child: FadeInImage(
+              placeholder: MemoryImage(kTransparentImage),
+              image: FileImage(File(imageLocalPath)),
+              fit: BoxFit.cover,
+              fadeInDuration: const Duration(milliseconds: 200),
+              imageErrorBuilder: errorImageBuilder(relativeImagePath),
+            ),
+            // child: Image.file(
+            //   File(imageLocalPath),
+            //   fit: BoxFit.cover,
+            //   errorBuilder: errorImageBuilder(relativeImagePath),
+            // ),
           ),
-          // child: Image.file(
-          //   File(imageLocalPath),
-          //   fit: BoxFit.cover,
-          //   errorBuilder: errorImageBuilder(relativeImagePath),
-          // ),
         ),
-      ),
+        imageRemainCount > 0
+            ? Container(
+                // color: const Color.fromRGBO(125, 125, 125, 0.2),
+                color: const Color.fromRGBO(0, 0, 0, 0.2),
+                child: Center(
+                  child: Text(
+                    "+$imageRemainCount",
+                    textScaleFactor: 2,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              )
+            : Container()
+      ]),
     );
   }
 }

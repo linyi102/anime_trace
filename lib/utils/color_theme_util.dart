@@ -7,6 +7,25 @@ class ColorThemeUtil {
         // ? const Color.fromRGBO(25, 25, 25, 1)
         ? const Color.fromRGBO(48, 48, 48, 1)
         : const Color.fromRGBO(250, 250, 250, 1);
+    // : const Color.fromRGBO(235, 236, 240, 1);
+    // : const Color.fromRGBO(245, 245, 245, 1);
+  }
+
+  static Color getNoteListBackgroundColor() {
+    return SPUtil.getBool("enableDark")
+        // ? const Color.fromRGBO(25, 25, 25, 1)
+        ? const Color.fromRGBO(48, 48, 48, 1)
+        : const Color.fromRGBO(235, 236, 240, 1);
+    // : const Color.fromRGBO(245, 245, 245, 1);
+  }
+
+  static Color getAppBarBackgroundColor() {
+    return SPUtil.getBool("enableDark")
+        // ? const Color.fromRGBO(25, 25, 25, 1)
+        ? const Color.fromRGBO(48, 48, 48, 1)
+        : const Color.fromRGBO(250, 250, 250, 1);
+    // : const Color.fromRGBO(235, 236, 240, 1);
+    // : const Color.fromRGBO(245, 245, 245, 1);
   }
 
   static Color getAppBarTitleColor() {

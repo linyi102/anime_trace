@@ -133,71 +133,69 @@ class _NoteEditState extends State<NoteEdit> {
       itemBuilder: (BuildContext context, int imageIndex) {
         // 如果是最后一个下标，则设置添加图片图标
         if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
-          return Padding(
+          return Container(
             padding: const EdgeInsets.all(5.0),
-            child: Container(
-              decoration: BoxDecoration(
-                // color: Colors.white,
-                border: Border.all(
-                  width: 2,
-                  style: BorderStyle.solid,
-                  color: addColor,
-                ),
-                borderRadius: BorderRadius.circular(5),
+            decoration: BoxDecoration(
+              // color: Colors.white,
+              border: Border.all(
+                width: 2,
+                style: BorderStyle.solid,
+                color: addColor,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: MaterialButton(
-                    onPressed: () async {
-                      if (!ImageUtil.hasImageRootDirPath()) {
-                        showToast("请先设置图片根目录");
-                        Navigator.of(context).push(
-                          // MaterialPageRoute(
-                          //   builder: (BuildContext context) =>
-                          //       const NoteSetting(),
-                          // ),
-                          FadeRoute(
-                            builder: (context) {
-                              return const NoteSetting();
-                            },
-                          ),
-                        );
-                        return;
-                      }
-                      if (Platform.isWindows || Platform.isAndroid) {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['jpg', 'png', 'gif'],
-                          allowMultiple: true,
-                        );
-                        if (result == null) return;
-                        List<PlatformFile> platformFiles = result.files;
-                        for (var platformFile in platformFiles) {
-                          String absoluteImagePath = platformFile.path ?? "";
-                          if (absoluteImagePath.isEmpty) continue;
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: MaterialButton(
+                  onPressed: () async {
+                    if (!ImageUtil.hasImageRootDirPath()) {
+                      showToast("请先设置图片根目录");
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //   builder: (BuildContext context) =>
+                        //       const NoteSetting(),
+                        // ),
+                        FadeRoute(
+                          builder: (context) {
+                            return const NoteSetting();
+                          },
+                        ),
+                      );
+                      return;
+                    }
+                    if (Platform.isWindows || Platform.isAndroid) {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['jpg', 'png', 'gif'],
+                        allowMultiple: true,
+                      );
+                      if (result == null) return;
+                      List<PlatformFile> platformFiles = result.files;
+                      for (var platformFile in platformFiles) {
+                        String absoluteImagePath = platformFile.path ?? "";
+                        if (absoluteImagePath.isEmpty) continue;
 
-                          String relativeImagePath =
-                              ImageUtil.getRelativeImagePath(absoluteImagePath);
-                          int imageId =
-                              await SqliteUtil.insertNoteIdAndImageLocalPath(
-                                  widget.episodeNote.episodeNoteId,
-                                  relativeImagePath);
-                          widget.episodeNote.relativeLocalImages.add(
-                              RelativeLocalImage(imageId, relativeImagePath));
-                        }
-                      } else if (Platform.isAndroid) {
-                        //
-                      } else {
-                        throw ("未适配平台：${Platform.operatingSystem}");
+                        String relativeImagePath =
+                            ImageUtil.getRelativeImagePath(absoluteImagePath);
+                        int imageId =
+                            await SqliteUtil.insertNoteIdAndImageLocalPath(
+                                widget.episodeNote.episodeNoteId,
+                                relativeImagePath);
+                        widget.episodeNote.relativeLocalImages.add(
+                            RelativeLocalImage(imageId, relativeImagePath));
                       }
-                      setState(() {});
-                    },
-                    child: Icon(
-                      Icons.add,
-                      color: addColor,
-                    )),
-              ),
+                    } else if (Platform.isAndroid) {
+                      //
+                    } else {
+                      throw ("未适配平台：${Platform.operatingSystem}");
+                    }
+                    setState(() {});
+                  },
+                  child: Icon(
+                    Icons.add,
+                    color: addColor,
+                  )),
             ),
           );
         }

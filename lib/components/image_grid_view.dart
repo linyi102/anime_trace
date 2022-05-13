@@ -9,8 +9,10 @@ import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 
 // 用于显示笔记图片网格
+// 使用：笔记列表页
 class ImageGridView extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
+  final limitShowImageNum = true;
   const ImageGridView({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
@@ -66,14 +68,20 @@ class ImageGridView extends StatelessWidget {
           mainAxisSpacing: 5, // 竖轴距离
           childAspectRatio: 1, // 网格比例。31/43为封面比例
         ),
-        itemCount: relativeLocalImages.length,
+        itemCount: _getGridItemCount(),
         itemBuilder: (context, index) {
           return ImageGridItem(
-            relativeLocalImages: relativeLocalImages,
-            initialIndex: index,
-          );
+              relativeLocalImages: relativeLocalImages,
+              initialIndex: index,
+              imageRemainCount:
+                  index == 8 ? relativeLocalImages.length - 9 : 0);
         },
       );
     }
+  }
+
+  _getGridItemCount() {
+    if (relativeLocalImages.length <= 9) return relativeLocalImages.length;
+    if (limitShowImageNum) return 9;
   }
 }

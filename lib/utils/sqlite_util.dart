@@ -874,8 +874,8 @@ class SqliteUtil {
 
   static updateEpisodeNoteContentByNoteId(
       int noteId, String noteContent) async {
-    debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
-    debugPrint("笔记id：$noteId, 笔记内容：$noteContent");
+    debugPrint("sql: updateEpisodeNoteContent($noteId)");
+    // debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     await _database.rawUpdate('''
     update episode_note
     set note_content = '$noteContent'
