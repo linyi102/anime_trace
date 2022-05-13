@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -38,10 +39,10 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyApp> createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
@@ -135,8 +136,11 @@ class _MyAppState extends State<MyApp> {
           home: const MyHome(),
           theme: ThemeData(
             primarySwatch: Colors.blue,
-            // brightness: Brightness.dark,
+            // brightness: SPUtil.getBool("enableDark")
+            //     ? Brightness.dark
+            //     : Brightness.light,
             // fontFamily: "yuan",
+            // textTheme: TextTheme(bodyText2: TextStyle(color: Colors.red)),
             appBarTheme: const AppBarTheme(
               shadowColor: Colors.transparent,
               centerTitle: false,
@@ -166,8 +170,8 @@ class _MyAppState extends State<MyApp> {
             //   highlightColor: Colors.transparent, // 长按时的颜色
             //   splashColor: Colors.transparent, // 点击时的颜色
             // ),
+            // scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
             // scaffoldBackgroundColor: Colors.white,
-            scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
             // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
           ),
           localizationsDelegates: const [
@@ -192,6 +196,8 @@ class MyHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Tabs();
+    return Stack(
+      children: const [Tabs(), UpdateHint(checkLatestVersion: true)],
+    );
   }
 }

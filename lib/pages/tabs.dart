@@ -4,6 +4,7 @@ import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:flutter_test_future/utils/color_theme_util.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 // import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -34,7 +35,6 @@ class _TabsState extends State<Tabs> {
       //   index: _currentIndex,
       //   children: _list,
       // ),
-
       bottomNavigationBar: useSalomonBottomBar
           ? SalomonBottomBar(
               currentIndex: _currentIndex,
@@ -59,11 +59,16 @@ class _TabsState extends State<Tabs> {
               ],
             )
           : BottomNavigationBar(
+              backgroundColor: ColorThemeUtil.getScaffoldBackgroundColor(),
+              selectedItemColor:
+                  ColorThemeUtil.getBottomNaviBarSelectedItemColor(),
+              unselectedItemColor:
+                  ColorThemeUtil.getBottomNaviBarUnselectedItemColor(),
               type:
                   BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
               currentIndex: _currentIndex,
-              elevation: 0,
-              backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+              // elevation: 0,
+              // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
               onTap: (int index) {
                 setState(() {
                   _currentIndex = index;
