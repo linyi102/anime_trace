@@ -5,7 +5,9 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -46,7 +48,6 @@ class _HistoryPageState extends State<HistoryPage> {
         title: const Text(
           "历史",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -176,7 +177,6 @@ class _HistoryPageState extends State<HistoryPage> {
               },
               icon: const Icon(
                 Icons.chevron_left_rounded,
-                color: Colors.black,
               )),
         ),
         Expanded(
@@ -196,11 +196,9 @@ class _HistoryPageState extends State<HistoryPage> {
                   _loadData(selectedYear);
                 });
               },
-              child: Text(
-                "$selectedYear",
-                textScaleFactor: 1.2,
-                style: const TextStyle(color: Colors.black),
-              )),
+              child: Text("$selectedYear",
+                  textScaleFactor: 1.2,
+                  style: TextStyle(color: ThemeUtil.getFontColor()))),
         ),
         Expanded(
           child: IconButton(
@@ -222,7 +220,6 @@ class _HistoryPageState extends State<HistoryPage> {
               },
               icon: const Icon(
                 Icons.chevron_right_rounded,
-                color: Colors.black,
               )),
         ),
       ],

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:flutter_test_future/utils/color_theme_util.dart';
+import 'package:flutter_test_future/pages/setting_page_test.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 // import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -22,12 +25,15 @@ class _TabsState extends State<Tabs> {
     const HistoryPage(),
     const NoteListPage(),
     const SettingPage(),
+    // const SettingPageTest()
   ];
   int _currentIndex = 0;
   bool useSalomonBottomBar = false;
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.put(ThemeController());
+
     return Scaffold(
       body: _list[_currentIndex],
       // body: IndexedStack(
@@ -59,11 +65,6 @@ class _TabsState extends State<Tabs> {
               ],
             )
           : BottomNavigationBar(
-              backgroundColor: ColorThemeUtil.getScaffoldBackgroundColor(),
-              selectedItemColor:
-                  ColorThemeUtil.getBottomNaviBarSelectedItemColor(),
-              unselectedItemColor:
-                  ColorThemeUtil.getBottomNaviBarUnselectedItemColor(),
               type:
                   BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
               currentIndex: _currentIndex,

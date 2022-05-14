@@ -20,6 +20,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -173,7 +174,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       // snap: true,
       pinned: true,
       expandedHeight: 270,
-      stretch: true,
+      // stretch: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           children: [
@@ -193,35 +194,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     );
                   },
                   fit: BoxFit.cover,
-                  // 设置透明度，防止背景太黑看不到顶部栏
-                  color: const Color.fromRGBO(255, 255, 255, 0.9),
+                  // 设置透明度，防止背景太黑或太白看不到顶部栏
+                  color: ThemeUtil.getModulateColor(),
                   colorBlendMode: BlendMode.modulate,
                 ),
               ),
             ),
             // 渐变
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    // Colors.transparent,
-                    // Colors.transparent,
-                    // Colors.transparent,
-                    Color.fromRGBO(250, 250, 250, 0.1),
-                    // Color.fromRGBO(250, 250, 250, 0.2),
-                    // Color.fromRGBO(250, 250, 250, 0.3),
-                    // Color.fromRGBO(250, 250, 250, 0.4),
-                    // Color.fromRGBO(250, 250, 250, 0.5),
-                    // Color.fromRGBO(250, 250, 250, 0.6),
-                    // Color.fromRGBO(250, 250, 250, 0.7),
-                    Color.fromRGBO(250, 250, 250, 0.2),
-                    Color.fromRGBO(250, 250, 250, 0.5),
-                    Color.fromRGBO(250, 250, 250, 1.0),
-                  ],
-                ),
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: ThemeUtil.getGradientColors()),
               ),
             ),
             Padding(
@@ -239,8 +224,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 child: Container(
                   height: 10,
                   width: MediaQuery.of(context).size.width,
-                  // color: Colors.blueGrey,
-                  color: const Color.fromRGBO(250, 250, 250, 1.0),
+                  color: ThemeUtil.getColorBelowGradientAnimeCover(),
                 ))
           ],
         ),
@@ -401,9 +385,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       child: SelectableText(
         animeName,
         textScaleFactor: 1.1,
-        // style: const TextStyle(fontWeight: FontWeight.w600, height: 1.1),
         // maxLines: 1,
-        style: const TextStyle(fontWeight: FontWeight.w600),
+        style: TextStyle(
+            fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
       ),
     );
   }
@@ -416,7 +400,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             padding: const EdgeInsets.fromLTRB(15, 5, 35, 0),
             child: SelectableText(
               nameAnother,
-              style: const TextStyle(color: Colors.black54, height: 1.1),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               maxLines: 1,
             ),
           );
@@ -430,7 +414,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
             child: SelectableText(
               animeInfo,
-              style: const TextStyle(color: Colors.black54, height: 1.1),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               maxLines: 1,
             ),
           );
@@ -478,24 +462,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               title: Text(
                 "第 ${_episodes[episodeIndex].number} 集",
                 style: TextStyle(
-                  color: _episodes[episodeIndex].isChecked()
-                      ? Colors.black54
-                      : Colors.black,
+                  color: ThemeUtil.getEpisodeListTile(
+                      _episodes[episodeIndex].isChecked()),
                 ),
               ),
-              // subtitle: Text(_episodes[i].getDate()),
-              // enabled: !_episodes[i].isChecked(), // 完成后会导致无法长按设置日期
-              // style: ListTileStyle.drawer,
               trailing: Text(
                 _episodes[episodeIndex].getDate(),
-                style: const TextStyle(color: Colors.black54),
+                style: TextStyle(
+                    color: ThemeUtil.getEpisodeListTile(
+                        _episodes[episodeIndex].isChecked())),
               ),
               leading: IconButton(
                 // iconSize: 20,
                 visualDensity: VisualDensity.compact, // 缩小leading
-                hoverColor: Colors.transparent, // 悬停时的颜色
-                highlightColor: Colors.transparent, // 长按时的颜色
-                splashColor: Colors.transparent, // 点击时的颜色
+                // hoverColor: Colors.transparent, // 悬停时的颜色
+                // highlightColor: Colors.transparent, // 长按时的颜色
+                // splashColor: Colors.transparent, // 点击时的颜色
                 onPressed: () async {
                   if (_episodes[episodeIndex].isChecked()) {
                     _dialogRemoveDate(
@@ -532,20 +514,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
-                  // transitionBuilder: (Widget child, Animation<double> animation) {
-                  //   //执行缩放动画
-                  //   return ScaleTransition(child: child, scale: animation);
-                  // },
                   child: _episodes[episodeIndex].isChecked()
                       ? Icon(
                           Icons.check_box_outlined,
-                          // Icons.check_rounded,
-                          color: Colors.black54,
                           key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
+                          color: ThemeUtil.getEpisodeListTile(
+                              _episodes[episodeIndex].isChecked()),
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.check_box_outline_blank_rounded,
-                          color: Colors.black54,
+                          color: ThemeUtil.getEpisodeListTile(
+                              _episodes[episodeIndex].isChecked()),
                         ),
                 ),
               ),
@@ -588,11 +567,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               _episodeNotes[episodeNoteIndex].noteContent.isEmpty
           ? Container()
           : Card(
-              elevation: 1,
+              elevation: 0,
+              color: ThemeUtil.getNoteListBackgroundColor(),
               child: MaterialButton(
                 padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    : const EdgeInsets.fromLTRB(0, 15, 0, 15),
                 onPressed: () {
                   Navigator.of(context).push(
                     // MaterialPageRoute(
@@ -804,7 +784,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
               clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-              color: Colors.white,
               margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -824,7 +803,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         setState(() {});
                       },
                       icon: const Icon(Icons.select_all_rounded),
-                      color: Colors.black,
                     ),
                   ),
                   Expanded(
@@ -863,7 +841,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         _quitMultiSelectState();
                       },
                       icon: const Icon(Icons.date_range),
-                      color: Colors.black,
                     ),
                   ),
                   Expanded(
@@ -872,7 +849,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         _quitMultiSelectState();
                       },
                       icon: const Icon(Icons.exit_to_app_outlined),
-                      color: Colors.black,
                     ),
                   ),
                 ],

@@ -46,8 +46,7 @@ class _ImageViewerState extends State<ImageViewer> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("${currentIndex + 1} / ${imageLocalPaths.length}",
-            style: const TextStyle(color: Colors.black)),
+        title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
       ),
       body: Container(
         padding: const EdgeInsets.all(0),

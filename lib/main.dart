@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -20,7 +23,10 @@ void main() async {
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await ensureLatestData(); // 必须要用await
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(const GetMaterialApp(
+    home: MyApp(),
+  ));
 }
 
 ensureLatestData() async {
@@ -123,68 +129,92 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.put(ThemeController());
+
     return WillPopScope(
       onWillPop: () async {
         return _onBackPressed();
       },
-      child: OKToast(
-        // textStyle: const TextStyle(fontFamily: "yuan"),
-        position: ToastPosition.center,
-        dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
-        child: MaterialApp(
-          title: '漫迹', // 后台应用显示名称
-          home: const MyHome(),
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            // brightness: SPUtil.getBool("enableDark")
-            //     ? Brightness.dark
-            //     : Brightness.light,
-            // fontFamily: "yuan",
-            // textTheme: TextTheme(bodyText2: TextStyle(color: Colors.red)),
-            appBarTheme: const AppBarTheme(
-              shadowColor: Colors.transparent,
-              centerTitle: false,
-              elevation: 0,
-              backgroundColor: Colors.white,
-              iconTheme: IconThemeData(
-                color: Colors.black,
+      child: Obx(() => OKToast(
+            // textStyle: const TextStyle(fontFamily: "yuan"),
+            position: ToastPosition.center,
+            dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
+            child: MaterialApp(
+              title: '漫迹', // 后台应用显示名称
+              home: const MyHome(),
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+                brightness: themeController.isDarkMode.value
+                    ? Brightness.dark
+                    : Brightness.light,
+                // fontFamily: "yuan",
+                appBarTheme: AppBarTheme(
+                  shadowColor: Colors.transparent,
+                  centerTitle: false,
+                  elevation: 0,
+                  foregroundColor: ThemeUtil.getFontColor(),
+                  backgroundColor: themeController.isDarkMode.value
+                      ? const Color.fromRGBO(48, 48, 48, 1)
+                      : Colors.white,
+                  iconTheme: IconThemeData(
+                    color: ThemeUtil.getIconButton(),
+                  ),
+                ),
+                iconTheme: IconThemeData(
+                  color: ThemeUtil.getIconButton(),
+                ),
+                inputDecorationTheme: InputDecorationTheme(
+                  suffixIconColor: ThemeUtil.getIconButton(),
+                ),
+                listTileTheme: ListTileThemeData(
+                    iconColor: themeController.isDarkMode.value
+                        ? Colors.white70
+                        // : Colors.black54,
+                        : Colors.blue,
+                    textColor: ThemeUtil.getFontColor()),
+                radioTheme: RadioThemeData(
+                    fillColor: MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Colors.blue;
+                  }
+                })),
+                bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                    selectedItemColor: Colors.blue),
+                textButtonTheme: TextButtonThemeData(
+                    style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all(
+                            const TextStyle(color: Colors.black)))),
+                tabBarTheme: TabBarTheme(
+                  unselectedLabelColor: themeController.isDarkMode.value
+                      ? Colors.white70
+                      : Colors.black54,
+                  labelColor: Colors.blue, // 选中的tab字体颜色
+                ),
+                scrollbarTheme: ScrollbarThemeData(
+                  showTrackOnHover: true,
+                  thickness: MaterialStateProperty.all(5),
+                  interactive: true,
+                  radius: const Radius.circular(10),
+                  // thumbColor: MaterialStateProperty.all(Colors.blueGrey),
+                ),
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+                  },
+                ),
               ),
-              // 会影响字体大小，应该和TextStyle有关
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
+                GlobalWidgetsLocalizations
+                    .delegate, //定义 widget 默认的文本方向，从左到右或从右到左。GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
+              ],
+              supportedLocales: const [
+                Locale('zh', 'CH'),
+                Locale('en', 'US'),
+              ],
             ),
-            scrollbarTheme: ScrollbarThemeData(
-              showTrackOnHover: true,
-              thickness: MaterialStateProperty.all(5),
-              interactive: true,
-              radius: const Radius.circular(10),
-              // thumbColor: MaterialStateProperty.all(Colors.blueGrey),
-            ),
-            pageTransitionsTheme: const PageTransitionsTheme(
-              builders: <TargetPlatform, PageTransitionsBuilder>{
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-              },
-            ),
-            // 无效，不知道为什么
-            // buttonTheme: const ButtonThemeData(
-            //   hoverColor: Colors.transparent, // 悬停时的颜色
-            //   highlightColor: Colors.transparent, // 长按时的颜色
-            //   splashColor: Colors.transparent, // 点击时的颜色
-            // ),
-            // scaffoldBackgroundColor: const Color.fromRGBO(250, 250, 250, 1),
-            // scaffoldBackgroundColor: Colors.white,
-            // scaffoldBackgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-          ),
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate, //指定本地化的字符串和一些其他的值
-            GlobalWidgetsLocalizations
-                .delegate, //定义 widget 默认的文本方向，从左到右或从右到左。GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
-          ],
-          supportedLocales: const [
-            Locale('zh', 'CH'),
-            Locale('en', 'US'),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }

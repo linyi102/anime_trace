@@ -57,7 +57,7 @@ class _SearchState extends State<Search> {
                   onPressed: () {
                     inputController.clear();
                   },
-                  icon: const Icon(Icons.close, color: Colors.black))),
+                  icon: const Icon(Icons.close))),
           onEditingComplete: () async {
             String text = inputController.text;
             if (text.isEmpty) {
@@ -94,10 +94,6 @@ class _SearchState extends State<Search> {
         trailing: Text(
           "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
           textScaleFactor: 0.9,
-          style: const TextStyle(
-            color: Colors.black,
-            // fontWeight: FontWeight.w400,
-          ),
         ),
         onTap: () {
           Navigator.of(context).push(

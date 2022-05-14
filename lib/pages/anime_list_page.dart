@@ -9,6 +9,7 @@ import 'package:flutter_test_future/scaffolds/search.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -104,7 +105,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                     title: Text(
                       multiSelected ? "${mapSelected.length}" : "动漫",
                       style: const TextStyle(
-                        color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -125,9 +125,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                         child: TabBar(
                           padding: const EdgeInsets.all(2), // 居中，而不是靠左下
                           isScrollable: true, // 标签可以滑动，避免拥挤
-                          unselectedLabelColor: Colors.black54,
                           labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          labelColor: Colors.blue, // 标签字体颜色
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
@@ -143,7 +141,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           indicatorPadding: const EdgeInsets.only(
                               left: 10, right: 10, top: 40),
                           indicatorWeight: 3, // 指示器高度
-                          tabs: _showTagAndAnimeCntPlus(),
+                          tabs: _buildTagAndAnimeCnt(),
                           // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
                           controller: _tabController,
                         ),
@@ -179,7 +177,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         },
         icon: const Icon(Icons.search_outlined),
         tooltip: "搜索动漫",
-        color: Colors.black,
       ),
     );
     return actions;
@@ -195,7 +192,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 ? _getAnimeListView(i)
                 : _getAnimeGridView(i),
             // 一定要叠放在ListView上面，否则点击按钮没有反应
-            _showBottomButton(i),
+            _buildBottomButton(i),
           ]),
         ),
       );
@@ -288,11 +285,12 @@ class _AnimeListPageState extends State<AnimeListPage>
                                   child: Text(anime.animeName,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      textScaleFactor: 0.9),
-                                ),
+                                      textScaleFactor: 0.9,
+                                      style: TextStyle(
+                                          color: ThemeUtil.getFontColor())),
+                                )
                               ],
-                            ),
-                          ),
+                            ))
                   ],
                 ),
                 Container(
@@ -340,10 +338,6 @@ class _AnimeListPageState extends State<AnimeListPage>
           trailing: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
             textScaleFactor: 0.9,
-            style: const TextStyle(
-              color: Colors.black,
-              // fontWeight: FontWeight.w400,
-            ),
           ),
           onTap: () {
             onpress(i, index, anime);
@@ -409,24 +403,6 @@ class _AnimeListPageState extends State<AnimeListPage>
   void _enterPageAnimeDetail(i, index, anime) {
     Navigator.of(context)
         .push(
-      // 1.默认
-      // MaterialPageRoute(
-      //   builder: (context) => AnimeDetailPlus(anime.animeId),
-      // ),
-      // 2.渐进
-      // PageRouteBuilder(
-      //   transitionDuration: const Duration(milliseconds: 0),
-      //   reverseTransitionDuration: const Duration(milliseconds: 200),
-      //   pageBuilder: (BuildContext context, Animation<double> animation,
-      //       Animation secondaryAnimation) {
-      //     return FadeTransition(
-      //       //使用渐隐渐入过渡,
-      //       opacity: animation,
-      //       child: AnimeDetailPlus(anime.animeId),
-      //     );
-      //   },
-      // ),
-      // 3. 将方法2封装到FadeRoute
       FadeRoute(
         transitionDuration: const Duration(milliseconds: 0),
         builder: (context) {
@@ -474,7 +450,6 @@ class _AnimeListPageState extends State<AnimeListPage>
           title: const Text(
             "动漫",
             style: TextStyle(
-              color: Colors.black,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -561,28 +536,21 @@ class _AnimeListPageState extends State<AnimeListPage>
     setState(() {});
   }
 
-  List<Widget> _showTagAndAnimeCntPlus() {
+  List<Widget> _buildTagAndAnimeCnt() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
       list.add(Column(
         children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "${tags[i]} (${animeCntPerTag[i]})",
-            // style: const TextStyle(fontFamily: "yuan"),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
+          Text("${tags[i]} (${animeCntPerTag[i]})"),
+          const SizedBox(height: 10)
         ],
       ));
     }
     return list;
   }
 
-  _showBottomButton(i) {
+  _buildBottomButton(i) {
     return !multiSelected
         ? Container()
         : Container(
@@ -592,7 +560,6 @@ class _AnimeListPageState extends State<AnimeListPage>
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
               clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-              color: Colors.white,
               margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -613,7 +580,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                         setState(() {});
                       },
                       icon: const Icon(Icons.select_all_rounded),
-                      color: Colors.black,
                     ),
                   ),
                   Expanded(
@@ -622,7 +588,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                         _dialogModifyTag(tags[i]);
                       },
                       icon: const Icon(Icons.new_label_outlined),
-                      color: Colors.black,
                     ),
                   ),
                   Expanded(
@@ -631,7 +596,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                         _quitMultiSelectState();
                       },
                       icon: const Icon(Icons.exit_to_app_outlined),
-                      color: Colors.black,
                     ),
                   ),
                 ],

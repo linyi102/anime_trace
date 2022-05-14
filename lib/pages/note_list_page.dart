@@ -6,7 +6,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
-import 'package:flutter_test_future/utils/color_theme_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -51,14 +51,11 @@ class _NoteListPageState extends State<NoteListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: ColorThemeUtil.getScaffoldBackgroundColor(),
-      backgroundColor: ColorThemeUtil.getNoteListBackgroundColor(),
+      backgroundColor: ThemeUtil.getNoteListBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: ColorThemeUtil.getAppBarBackgroundColor(),
         title: const Text(
           "笔记",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -141,39 +138,38 @@ class _NoteListPageState extends State<NoteListPage> {
               _loadExtraData(index);
 
               return Container(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 15),
-                child: Card(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: MaterialButton(
                   elevation: 0,
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
-                        // ),
-                        FadeRoute(
-                          builder: (context) {
-                            return NoteEdit(episodeNotes[index]);
-                          },
-                        ),
-                      ).then((value) {
-                        episodeNotes[index] = value; // 更新修改
-                        setState(() {});
-                      });
-                    },
-                    child: Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        // 动漫行
-                        _buildAnimeListTile(index),
-                        // 笔记内容
-                        _buildEpisodeNote(index),
-                        // 笔记图片
-                        ImageGridView(
-                            relativeLocalImages:
-                                episodeNotes[index].relativeLocalImages),
-                      ],
-                    ),
+                  padding: const EdgeInsets.all(0),
+                  color: ThemeUtil.getNoteCardColor(),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      // MaterialPageRoute(
+                      //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
+                      // ),
+                      FadeRoute(
+                        builder: (context) {
+                          return NoteEdit(episodeNotes[index]);
+                        },
+                      ),
+                    ).then((value) {
+                      episodeNotes[index] = value; // 更新修改
+                      setState(() {});
+                    });
+                  },
+                  child: Flex(
+                    direction: Axis.vertical,
+                    children: [
+                      // 动漫行
+                      _buildAnimeListTile(index),
+                      // 笔记内容
+                      _buildEpisodeNote(index),
+                      // 笔记图片
+                      ImageGridView(
+                          relativeLocalImages:
+                              episodeNotes[index].relativeLocalImages),
+                    ],
                   ),
                 ),
               );
@@ -244,7 +240,10 @@ class _NoteListPageState extends State<NoteListPage> {
             });
           },
           // icon: const Icon(Icons.more_vert_rounded)),
-          icon: const Icon(Icons.edit)),
+          icon: const Icon(
+            Icons.edit,
+            color: Colors.grey,
+          )),
       title: GestureDetector(
         onTap: () {
           _enterAnimeDetail(index);

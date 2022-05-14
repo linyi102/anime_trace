@@ -11,6 +11,7 @@ import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -71,11 +72,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
         title: const Text(
           "目录",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
+          // 聚合搜索按钮
           IconButton(
             onPressed: () {
               Navigator.of(context).push(FadeRoute(
@@ -89,6 +90,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
             },
             icon: const Icon(Icons.search),
           ),
+          // 设置搜索源按钮
           IconButton(
             onPressed: () {
               showDialog(
@@ -166,7 +168,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       child: Scrollbar(
         child: ListView(
           children: [
-            _showFilter(),
+            _buildFilter(),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: _loadOk
@@ -187,7 +189,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   }
 
   bool _expandFilter = false;
-  _showFilter() {
+  _buildFilter() {
     return ExpansionPanelList(
         elevation: 1,
         expansionCallback: (panelIndex, isExpanded) {
@@ -198,6 +200,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
         animationDuration: kThemeAnimationDuration,
         children: <ExpansionPanel>[
           ExpansionPanel(
+            backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
             headerBuilder: (context, isExpanded) {
               return ListTile(
                 title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),
@@ -520,7 +523,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
       child: Text(
         animeName,
         textScaleFactor: 1.1,
-        style: const TextStyle(fontWeight: FontWeight.w600),
+        style: TextStyle(
+            fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
@@ -535,7 +539,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
             padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
             child: Text(
               nameAnother,
-              style: const TextStyle(color: Colors.black54, height: 1.1),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               overflow: TextOverflow.ellipsis,
             ),
           );
@@ -549,7 +553,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
             padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
             child: Text(
               animeInfo,
-              style: const TextStyle(color: Colors.black54, height: 1.1),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               overflow: TextOverflow.ellipsis,
             ),
           );

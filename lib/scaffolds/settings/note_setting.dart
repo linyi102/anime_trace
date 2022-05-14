@@ -30,7 +30,6 @@ class _NoteSettingState extends State<NoteSetting> {
         title: const Text(
           "笔记设置",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),

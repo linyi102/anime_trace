@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/settings/about_version.dart';
 import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/backup_restore.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
-import 'package:flutter_test_future/utils/color_theme_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:get/get.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -43,14 +44,13 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find();
+
     return Scaffold(
-      backgroundColor: ColorThemeUtil.getScaffoldBackgroundColor(),
       appBar: AppBar(
-        backgroundColor: ColorThemeUtil.getScaffoldBackgroundColor(),
-        title: Text(
+        title: const Text(
           "更多",
           style: TextStyle(
-            color: ColorThemeUtil.getAppBarTitleColor(),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -66,10 +66,8 @@ class _SettingPageState extends State<SettingPage> {
                   _showImg(),
                   _showImgButton(),
                   ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
                     leading: const Icon(
                       Icons.settings_backup_restore_outlined,
-                      color: Colors.blue,
                     ),
                     title: const Text("备份还原"),
                     onTap: () {
@@ -87,10 +85,8 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                   // const Divider(),
                   ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
                     leading: const Icon(
                       Icons.new_label_outlined,
-                      color: Colors.blue,
                     ),
                     title: const Text("标签管理"),
                     onTap: () {
@@ -107,10 +103,8 @@ class _SettingPageState extends State<SettingPage> {
                     },
                   ),
                   ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
                     leading: const Icon(
                       Icons.book_outlined,
-                      color: Colors.blue,
                     ),
                     title: const Text("动漫界面"),
                     onTap: () {
@@ -127,10 +121,8 @@ class _SettingPageState extends State<SettingPage> {
                     },
                   ),
                   ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
                     leading: const Icon(
                       Icons.note_alt_outlined,
-                      color: Colors.blue,
                     ),
                     title: const Text("笔记设置"),
                     onTap: () {
@@ -146,26 +138,19 @@ class _SettingPageState extends State<SettingPage> {
                       );
                     },
                   ),
+                  Obx(() => ListTile(
+                        leading: const Icon(Icons.dark_mode_outlined),
+                        title: const Text("夜间模式"),
+                        trailing: themeController.isDarkMode.value
+                            ? const Icon(Icons.toggle_on,
+                                color: Colors.blue, size: 32)
+                            : const Icon(Icons.toggle_off,
+                                color: Colors.grey, size: 32),
+                        onTap: () => themeController.changeTheme(),
+                      )),
                   ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
-                    leading: const Icon(Icons.dark_mode_outlined,
-                        color: Colors.blue),
-                    title: const Text("夜间模式"),
-                    trailing: SPUtil.getBool("enableDark")
-                        ? const Icon(Icons.toggle_on,
-                            color: Colors.blue, size: 32)
-                        : const Icon(Icons.toggle_off, size: 32),
-                    onTap: () {
-                      SPUtil.setBool(
-                          "enableDark", !SPUtil.getBool("enableDark"));
-                      setState(() {});
-                    },
-                  ),
-                  ListTile(
-                    textColor: ColorThemeUtil.getListTileColor(),
                     leading: const Icon(
                       Icons.error_outline,
-                      color: Colors.blue,
                     ),
                     title: const Text("关于版本"),
                     onTap: () {
@@ -211,12 +196,10 @@ class _SettingPageState extends State<SettingPage> {
 
   _showImgButton() {
     return ListTile(
-      textColor: ColorThemeUtil.getListTileColor(),
       leading: const Icon(
         // Icons.image_outlined,
         // Icons.wallpaper_outlined,
         Icons.perm_media_outlined,
-        color: Colors.blue,
       ),
       title: const Text("设置图片"),
       onTap: () async {

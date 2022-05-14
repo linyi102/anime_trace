@@ -61,7 +61,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
         title: const Text(
           "备份还原",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -96,7 +96,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   onPressed: () {
                     animeNameController.clear();
                   },
-                  icon: const Icon(Icons.close, color: Colors.black))),
+                  icon: const Icon(Icons.close))),
           onEditingComplete: () async {
             String text = animeNameController.text;
             // 如果输入的名字为空，则不再爬取

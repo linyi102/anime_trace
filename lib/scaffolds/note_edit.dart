@@ -9,6 +9,7 @@ import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -115,7 +116,7 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _showImages() {
-    Color addColor = Colors.black;
+    Color addColor = SPUtil.getBool("enableDark") ? Colors.grey : Colors.black;
     int itemCount =
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
@@ -192,10 +193,7 @@ class _NoteEditState extends State<NoteEdit> {
                     }
                     setState(() {});
                   },
-                  child: Icon(
-                    Icons.add,
-                    color: addColor,
-                  )),
+                  child: Icon(Icons.add, color: addColor, size: 50)),
             ),
           );
         }
@@ -216,7 +214,7 @@ class _NoteEditState extends State<NoteEdit> {
                 scale: 0.5,
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(100),
                     color: const Color.fromRGBO(255, 255, 255, 0.1),
                   ),
                   child: IconButton(
@@ -225,7 +223,7 @@ class _NoteEditState extends State<NoteEdit> {
                       },
                       icon: const Icon(
                         Icons.close,
-                        color: Colors.black,
+                        color: Colors.black54,
                       )),
                 ),
               ),

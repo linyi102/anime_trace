@@ -19,7 +19,6 @@ class _TagManageState extends State<TagManage> {
         title: const Text(
           "标签管理",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),

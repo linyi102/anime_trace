@@ -9,6 +9,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 // 网格的单个笔记图片构建
+// 使用：笔记列表页
 class ImageGridItem extends StatelessWidget {
   final List<RelativeLocalImage>
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
@@ -27,7 +28,7 @@ class ImageGridItem extends StatelessWidget {
     String imageLocalPath = ImageUtil.getAbsoluteImagePath(relativeImagePath);
 
     return MaterialButton(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(0),
       onPressed: () {
         Navigator.push(
             context,
@@ -48,13 +49,11 @@ class ImageGridItem extends StatelessWidget {
           aspectRatio: 1, // 正方形
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5), // 圆角
-            // child: FadeInImage.memoryNetwork(
-            //     placeholder: kTransparentImage, image: imageLocalPath),
             child: FadeInImage(
               placeholder: MemoryImage(kTransparentImage),
               image: FileImage(File(imageLocalPath)),
               fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 200),
+              fadeInDuration: const Duration(milliseconds: 100),
               imageErrorBuilder: errorImageBuilder(relativeImagePath),
             ),
             // child: Image.file(
@@ -66,7 +65,6 @@ class ImageGridItem extends StatelessWidget {
         ),
         imageRemainCount > 0
             ? Container(
-                // color: const Color.fromRGBO(125, 125, 125, 0.2),
                 color: const Color.fromRGBO(0, 0, 0, 0.2),
                 child: Center(
                   child: Text(

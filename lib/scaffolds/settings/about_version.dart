@@ -41,7 +41,6 @@ class _AboutVersionState extends State<AboutVersion> {
         title: const Text(
           "关于版本",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),

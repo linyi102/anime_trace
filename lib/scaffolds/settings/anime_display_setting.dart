@@ -23,7 +23,6 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
         title: const Text(
           "动漫界面",
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
