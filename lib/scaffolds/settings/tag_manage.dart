@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -86,14 +88,26 @@ class _TagManageState extends State<TagManage> {
     );
   }
 
+  _getDeleteButton(int i) {
+    return IconButton(
+        onPressed: () {
+          _dialogDeleteTag(i + 1, tags[i]);
+        },
+        icon: const Icon(Icons.delete_outline));
+  }
+
   _getTagListWidget() {
     List<Widget> tagListWidget = [];
     for (int i = 0; i < tags.length; ++i) {
       tagListWidget.add(
         ListTile(
           key: ValueKey(i),
-          leading: const Icon(Icons.drag_handle),
           title: Text(tags[i]),
+          // win端会默认提供拖拽按钮在trailing，所以把删除按钮移到leading
+          leading: Platform.isWindows
+              ? _getDeleteButton(i)
+              : const Icon(Icons.drag_handle),
+          trailing: Platform.isWindows ? null : _getDeleteButton(i),
           onTap: () {
             showDialog(
               context: context,
@@ -139,11 +153,6 @@ class _TagManageState extends State<TagManage> {
               },
             );
           },
-          trailing: IconButton(
-              onPressed: () {
-                _dialogDeleteTag(i + 1, tags[i]);
-              },
-              icon: const Icon(Icons.delete_outline)),
         ),
       );
     }

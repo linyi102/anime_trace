@@ -125,7 +125,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
             ListTile(
               iconColor: ThemeUtil.getIconColorOnSettingPage(),
-              leading: const Icon(Icons.note_alt_outlined),
+              leading: const Icon(Icons.edit_road),
               title: const Text("笔记设置"),
               onTap: () {
                 Navigator.of(context).push(
