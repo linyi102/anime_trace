@@ -22,6 +22,7 @@ import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
@@ -186,18 +187,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   sigmaX: 20,
                   sigmaY: 20,
                 ),
-                child: CachedNetworkImage(
-                  imageUrl: _anime.animeCoverUrl,
-                  errorWidget: (context, url, error) {
-                    return Container(
-                      color: const Color.fromRGBO(250, 250, 250, 1.0),
-                    );
-                  },
-                  fit: BoxFit.cover,
-                  // 设置透明度，防止背景太黑或太白看不到顶部栏
-                  color: ThemeUtil.getModulateColor(),
-                  colorBlendMode: BlendMode.modulate,
-                ),
+                child: _anime.animeCoverUrl.isEmpty
+                    ? Image.memory(kTransparentImage)
+                    : CachedNetworkImage(
+                        imageUrl: _anime.animeCoverUrl,
+                        errorWidget: (context, url, error) {
+                          return Container(
+                            color: const Color.fromRGBO(250, 250, 250, 1.0),
+                          );
+                        },
+                        fit: BoxFit.cover,
+                        // 设置透明度，防止背景太黑或太白看不到顶部栏
+                        color: ThemeUtil.getModulateColor(),
+                        colorBlendMode: BlendMode.modulate,
+                      ),
               ),
             ),
             // 渐变

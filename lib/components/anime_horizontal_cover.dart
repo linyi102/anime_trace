@@ -10,6 +10,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 typedef Callback = Future<bool> Function();
 
+// 水平排列动漫封面
+// 使用：聚合搜索页
 // ignore: must_be_immutable
 class AnimeHorizontalCover extends StatefulWidget {
   List<Anime> animes;

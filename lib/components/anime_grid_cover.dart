@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
@@ -19,8 +20,9 @@ class AnimeGridCover extends StatelessWidget {
             borderRadius: BorderRadius.circular(3),
             child: _anime.animeCoverUrl.isEmpty
                 // ? Image.asset("assets/images/defaultAnimeCover.png")
+                // ? Image.memory(kTransparentImage)
                 ? Container(
-                    color: Colors.white,
+                    color: ThemeUtil.getAppBarBackgroundColor(),
                     child: Center(
                       child: Text(
                         _anime.animeName.substring(
@@ -31,6 +33,7 @@ class AnimeGridCover extends StatelessWidget {
                                 : _anime
                                     .animeName.length), // 第二个参数如果只设置为3可能会导致越界
                         textScaleFactor: 1.3,
+                        style: TextStyle(color: ThemeUtil.getFontColor()),
                       ),
                     ),
                   )
