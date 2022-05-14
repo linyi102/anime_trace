@@ -137,7 +137,7 @@ class _TagManageState extends State<TagManage> {
 
                           // 重名
                           if (tags.contains(newTagName)) {
-                            showToast("重名，无法修改！");
+                            showToast("已存在该标签，无法修改！");
                             return;
                           }
                           SqliteUtil.updateTagName(tags[i], newTagName);

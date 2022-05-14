@@ -49,7 +49,7 @@ class _NoteSettingState extends State<NoteSetting> {
           ),
           ListTile(
             title: const Text('注意事项'),
-            subtitle: const Text("添加图片后，移动位置和重命名会无法显示该图片"),
+            subtitle: const Text("添加图片后，改变图片路径和重命名会无法显示"),
             onTap: () {},
             trailing: const Icon(Icons.warning_amber_rounded,
                 color: Colors.orangeAccent),

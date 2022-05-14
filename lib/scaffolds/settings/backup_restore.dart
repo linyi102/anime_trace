@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/scaffolds/backup_file_list.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -23,8 +25,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
       SPUtil.getInt("autoBackupWebDavNumber", defaultValue: 20);
   int autoBackupLocalNumber =
       SPUtil.getInt("autoBackupLocalNumber", defaultValue: 20);
-  late File latestFile;
-
   bool loadOk = false;
 
   @override
@@ -34,24 +34,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
     // 获取最新情况，更新SP中的online
     WebDavUtil.pingWebDav().then((pingOk) {
       setState(() {});
-      // 如果成功，则获取最新备份文件
-      if (pingOk) {
-        _showLatestFile();
-      }
     });
-  }
-
-  _showLatestFile() async {
-    debugPrint("获取最新备份文件ing...");
-    var files = await WebDavUtil.client.readDir("/animetrace");
-    files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
-    files.sort((a, b) {
-      return a.mTime.toString().compareTo(b.mTime.toString());
-    });
-    latestFile = files.last;
-    loadOk = true;
-    debugPrint("获取最新备份文件成功：${latestFile.path}");
-    setState(() {});
   }
 
   @override
@@ -167,10 +150,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
-              latestFile.path = await BackupUtil.backup(
-                  remoteBackupDirPath: await WebDavUtil.getRemoteDirPath());
-              setState(() {});
-              // String remotePath = await WebDavUtil.backupData(false);
             },
           ),
           ListTile(
@@ -213,13 +192,15 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             },
           ),
           ListTile(
-            title: const Text("还原最新数据"),
-            subtitle: loadOk
-                ? Text(latestFile.path!.split("/").last)
-                : const Text(""),
+            title: const Text("还原数据"),
+            // subtitle: const Text(""),
             onTap: () async {
               if (SPUtil.getBool("online")) {
-                BackupUtil.restoreFromWebDav(latestFile);
+                Navigator.of(context).push(FadeRoute(
+                  builder: (context) {
+                    return const BackUpFileList();
+                  },
+                ));
               } else {
                 showToast("配置账号后才可以进行还原");
               }
@@ -290,7 +271,6 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                     return;
                   }
                   showToast("连接成功！");
-                  _showLatestFile();
                   Navigator.of(context).pop();
                 },
                 child: const Text("连接"))

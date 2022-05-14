@@ -40,9 +40,9 @@ class BackupUtil {
     String localRootDirPath = await getLocalRootDirPath();
     String zipName = "";
     if (Platform.isAndroid) {
-      zipName = "animetrace-backup-$time-android.zip";
+      zipName = "manji-backup-$time-android.zip";
     } else if (Platform.isWindows) {
-      zipName = "animetrace-backup-$time-windows.zip";
+      zipName = "manji-backup-$time-windows.zip";
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
