@@ -1,10 +1,10 @@
 [GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [更新日志](https://www.wolai.com/gqSMt2YRuNEzZBwwB5dpVA)
 
-下载地址： [蓝奏云(密码：eocv)](https://wwc.lanzouw.com/b01uyqcrg?password=eocv) | [百度网盘](https://pan.baidu.com/s/1_0uQaPOutt3CoTlumZV-_g?pwd=qgbx)
+下载地址： [蓝奏云(密码：eocv)](https://wwc.lanzouw.com/b01uyqcrg?password=eocv) | [百度网盘](https://pan.baidu.com/s/1_0uQaPOutt3CoTlumZV-_g?pwd=qgbx)<br />
 **注意：如果没有使用备份功能，更新 App 时需要覆盖安装。不要卸载 App 后再安装新版本，这会造成数据丢失！**
 
-因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。
-所以就尝试做了这么一个软件，只需要每天简单记录一下自己看过哪些动漫的哪些集，就可以在历史页面中得到一个很好的记录。
+因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。<br />
+所以就尝试做了这么一个软件，只需要每天简单记录一下自己看过哪些动漫的哪些集，就可以在历史页面中得到一个很好的记录。<br />
 同时也可以很好地跟踪自己正在看哪些动漫，以及想要看的动漫，效果演示如下：
 
 ![](./assets/images/漫迹example.png)
