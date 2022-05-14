@@ -200,7 +200,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
         animationDuration: kThemeAnimationDuration,
         children: <ExpansionPanel>[
           ExpansionPanel(
-            backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
+            backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
             headerBuilder: (context, isExpanded) {
               return ListTile(
                 title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),

@@ -29,6 +29,12 @@ class ImageGridView extends StatelessWidget {
         child: MaterialButton(
           padding: const EdgeInsets.all(0),
           onPressed: () {
+            // Navigator.push(context, MaterialPageRoute(builder: (context) {
+            //   return ImageViewer(
+            //     relativeLocalImages: [relativeLocalImages[0]],
+            //     initialIndex: 0,
+            //   );
+            // }));
             Navigator.push(
                 context,
                 FadeRoute(

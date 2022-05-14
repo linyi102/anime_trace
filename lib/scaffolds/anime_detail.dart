@@ -1303,6 +1303,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             child: Column(
               children: [
                 TextField(
+                  autofocus: true, // 自动弹出输入法
                   // 把TextEditingController对象应用到TextField上，便于获取输入内容
                   controller: animeNameController..text = _anime.animeName,
                   decoration: const InputDecoration(

@@ -87,69 +87,66 @@ class _UpdateHintState extends State<UpdateHint> {
     return showUpdateDialog
         ? Material(
             // 透明
-            color: const Color.fromRGBO(255, 255, 255, 0.5),
-            child: GestureDetector(
-              onTap: () {
-                // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
-                // Navigator.of(context).pop();
-                // 不显示对话框
-                showUpdateDialog = false;
-                setState(() {});
-              },
-              child: Container(
-                color: Colors.transparent, // 必须要有颜色(透明色也可)，否则无法点击
-                // 不需要设置宽高
-                // height: MediaQuery.of(context).size.height,
-                // width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: AlertDialog(
-                        title: const Text("版本更新"),
-                        content:
-                            Text("检测到新版本：$latestVersion\n当前版本：$currentVersion"),
-                        actions: [
-                          // 如果是检查更新，则不显示忽略当前版本
-                          widget.forceShowUpdateDialog
-                              ? Container()
-                              : MaterialButton(
-                                  onPressed: () {
-                                    showUpdateDialog = false;
-                                    SPUtil.setBool(
-                                        "ignore$latestVersion", true);
-                                    setState(() {});
-                                  },
-                                  child: const Text("忽略当前版本"),
-                                ),
-                          MaterialButton(
-                            onPressed: () async {
-                              showUpdateDialog = false;
-                              setState(() {});
+            color: const Color.fromRGBO(100, 100, 100, 0.5),
+            child: Container(
+              color: Colors.transparent, // 必须要有颜色(透明色也可)，否则无法点击
+              // 不需要设置宽高
+              // height: MediaQuery.of(context).size.height,
+              // width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AlertDialog(
+                    title: const Text("版本更新"),
+                    content:
+                        Text("检测到新版本：$latestVersion\n当前版本：$currentVersion"),
+                    actions: [
+                      // 如果是检查更新，则不显示忽略当前版本，而是显示取消
+                      widget.forceShowUpdateDialog
+                          ? TextButton(
+                              onPressed: () {
+                                // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
+                                // Navigator.of(context).pop();
+                                // 不显示对话框
+                                showUpdateDialog = false;
+                                setState(() {});
+                              },
+                              child: const Text("取消"),
+                            )
+                          : TextButton(
+                              onPressed: () {
+                                showUpdateDialog = false;
+                                SPUtil.setBool("ignore$latestVersion", true);
+                                setState(() {});
+                              },
+                              child: const Text("忽略当前版本"),
+                            ),
 
-                              // 打开下载页面
-                              Uri uri = Uri.parse(
-                                  "https://gitee.com/linyi517/anime_trace");
-                              if (!await launchUrl(uri,
-                                  mode: LaunchMode.externalApplication)) {
-                                throw "Could not launch $uri";
-                              }
-                            },
-                            child: const Text("手动更新"),
-                          ),
-                          // MaterialButton(
-                          //   onPressed: () {
-                          //     showUpdateDialog = false;
-                          //     setState(() {});
-                          //   },
-                          //   child: const Text("自动更新"),
-                          // ),
-                        ],
+                      TextButton(
+                        onPressed: () async {
+                          showUpdateDialog = false;
+                          setState(() {});
+
+                          // 打开下载页面
+                          Uri uri = Uri.parse(
+                              "https://gitee.com/linyi517/anime_trace");
+                          if (!await launchUrl(uri,
+                              mode: LaunchMode.externalApplication)) {
+                            throw "Could not launch $uri";
+                          }
+                        },
+                        child: const Text("手动更新"),
                       ),
-                    )
-                  ],
-                ),
+                      // TextButton(
+                      //   onPressed: () {
+                      //     showUpdateDialog = false;
+                      //     setState(() {});
+                      //   },
+                      //   child: const Text("自动更新"),
+                      // ),
+                    ],
+                  )
+                ],
               ),
             ),
           )

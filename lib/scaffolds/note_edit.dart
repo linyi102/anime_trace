@@ -24,6 +24,7 @@ class NoteEdit extends StatefulWidget {
 
 class _NoteEditState extends State<NoteEdit> {
   bool _loadOk = false;
+  bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();
 
   @override
@@ -35,39 +36,37 @@ class _NoteEditState extends State<NoteEdit> {
 
   _loadData() async {
     Future(() {}).then((value) {
-      // 增加添加图片的格子
       setState(() {
         _loadOk = true;
       });
     });
   }
 
+  _onWillpop() {
+    Navigator.pop(context, widget.episodeNote);
+    if (_updateNoteContent) {
+      SqliteUtil.updateEpisodeNoteContentByNoteId(
+          widget.episodeNote.episodeNoteId, widget.episodeNote.noteContent);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        debugPrint("按返回键，返回episodeNote");
-        Navigator.pop(context, widget.episodeNote);
-        SqliteUtil.updateEpisodeNoteContentByNoteId(
-            widget.episodeNote.episodeNoteId, widget.episodeNote.noteContent);
-        debugPrint("返回true");
+        // 返回键
+        _onWillpop();
         return true;
       },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
+              // 返回按钮
               onPressed: () {
-                debugPrint("按返回按钮，返回episodeNote");
-                Navigator.pop(context, widget.episodeNote);
-                SqliteUtil.updateEpisodeNoteContentByNoteId(
-                    widget.episodeNote.episodeNoteId,
-                    widget.episodeNote.noteContent);
+                _onWillpop();
               },
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
-          foregroundColor: Colors.black,
-          // title: Text(
-          //     "${widget.episodeNote.anime.animeName}>第 ${widget.episodeNote.episode.number} 集"),
         ),
         body: _loadOk
             ? Scrollbar(
@@ -83,11 +82,6 @@ class _NoteEditState extends State<NoteEdit> {
                       ),
                       subtitle: Text(
                           "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
-                      // onTap: () {
-                      //   Navigator.of(context).push(MaterialPageRoute(
-                      //       builder: (context) => AnimeDetailPlus(
-                      //           widget.episodeNote.anime.animeId)));
-                      // },
                     ),
                     _showNoteContent(),
                     _showImages(),
@@ -105,11 +99,12 @@ class _NoteEditState extends State<NoteEdit> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 30),
+        contentPadding: EdgeInsets.fromLTRB(10, 15, 10, 15),
       ),
       maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),
       onChanged: (value) {
+        _updateNoteContent = true;
         widget.episodeNote.noteContent = value;
       },
     );
@@ -121,7 +116,7 @@ class _NoteEditState extends State<NoteEdit> {
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
+      padding: const EdgeInsets.fromLTRB(10, 15, 10, 50),
       shrinkWrap: true, // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -214,7 +209,7 @@ class _NoteEditState extends State<NoteEdit> {
                 scale: 0.5,
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(5),
                     color: const Color.fromRGBO(255, 255, 255, 0.1),
                   ),
                   child: IconButton(
@@ -223,7 +218,7 @@ class _NoteEditState extends State<NoteEdit> {
                       },
                       icon: const Icon(
                         Icons.close,
-                        color: Colors.black54,
+                        color: Colors.white70,
                       )),
                 ),
               ),

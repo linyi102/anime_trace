@@ -105,11 +105,10 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   title: const Text("自动备份"),
                   subtitle: const Text("每次进入应用后会自动备份"),
                   trailing: SPUtil.getBool("auto_backup_local")
-                      ? const Icon(
-                          Icons.toggle_on,
-                          color: Colors.blue,
-                        )
-                      : const Icon(Icons.toggle_off),
+                      ? const Icon(Icons.toggle_on,
+                          color: Colors.blue, size: 32)
+                      : const Icon(Icons.toggle_off,
+                          color: Colors.grey, size: 32),
                   onTap: () {
                     if (SPUtil.getString("backup_local_dir",
                             defaultValue: "unset") ==
@@ -121,13 +120,11 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                       // 如果是开启，点击后则关闭
                       SPUtil.setBool("auto_backup_local", false);
                       autoBackupLocal = "关闭";
-                      showToast("关闭自动备份");
                     } else {
                       SPUtil.setBool("auto_backup_local", true);
                       // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
                       // WebDavUtil.backupData(true);
                       autoBackupLocal = "开启";
-                      showToast("开启自动备份");
                     }
                     setState(() {});
                   },
@@ -180,11 +177,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             title: const Text("自动备份"),
             subtitle: const Text("每次进入应用后会自动备份"),
             trailing: SPUtil.getBool("auto_backup_webdav")
-                ? const Icon(
-                    Icons.toggle_on,
-                    color: Colors.blue,
-                  )
-                : const Icon(Icons.toggle_off),
+                ? const Icon(Icons.toggle_on, color: Colors.blue, size: 32)
+                : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
             onTap: () async {
               if (!SPUtil.getBool("login")) {
                 showToast("请先配置账号，再进行备份！");
@@ -194,13 +188,11 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 // 如果是开启，点击后则关闭
                 SPUtil.setBool("auto_backup_webdav", false);
                 autoBackupWebDav = "关闭";
-                showToast("关闭自动备份");
               } else {
                 SPUtil.setBool("auto_backup_webdav", true);
                 // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
                 // WebDavUtil.backupData(true);
                 autoBackupWebDav = "开启";
-                showToast("开启自动备份");
               }
               setState(() {});
             },

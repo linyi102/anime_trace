@@ -10,6 +10,7 @@ import 'package:flutter_test_future/scaffolds/settings/backup_restore.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
 class SettingPage extends StatefulWidget {
@@ -42,153 +43,155 @@ class _SettingPageState extends State<SettingPage> {
     super.dispose();
   }
 
+  final ThemeController themeController = Get.find();
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find();
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "更多",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          title: const Text(
+            "更多",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: !_loadOk
-            ? Container(
-                key: UniqueKey(),
-              )
-            : ListView(
-                children: [
-                  _showImg(),
-                  _showImgButton(),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.settings_backup_restore_outlined,
-                    ),
-                    title: const Text("备份还原"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //     builder: (BuildContext context) =>
-                        //         const BackupAndRestore()),
-                        FadeRoute(
-                          builder: (context) {
-                            return const BackupAndRestore();
-                          },
-                        ),
-                      );
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _buildBody(),
+        ));
+  }
+
+  _buildBody() {
+    if (!_loadOk) {
+      return Container(
+        key: UniqueKey(),
+      );
+    }
+    return Obx(() => ListView(
+          children: [
+            _showImg(),
+            _showImgButton(),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.settings_backup_restore_outlined),
+              title: const Text("备份还原"),
+              onTap: () {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //     builder: (BuildContext context) =>
+                  //         const BackupAndRestore()),
+                  FadeRoute(
+                    builder: (context) {
+                      return const BackupAndRestore();
                     },
                   ),
-                  // const Divider(),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.new_label_outlined,
-                    ),
-                    title: const Text("标签管理"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //     builder: (BuildContext context) =>
-                        //         const TagManage()),
-                        FadeRoute(
-                          builder: (context) {
-                            return const TagManage();
-                          },
-                        ),
-                      );
+                );
+              },
+            ),
+            // const Divider(),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.new_label_outlined),
+              title: const Text("标签管理"),
+              onTap: () {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //     builder: (BuildContext context) =>
+                  //         const TagManage()),
+                  FadeRoute(
+                    builder: (context) {
+                      return const TagManage();
                     },
                   ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.book_outlined,
-                    ),
-                    title: const Text("动漫界面"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //     builder: (BuildContext context) =>
-                        //         const AnimesDisplaySetting()),
-                        FadeRoute(
-                          builder: (context) {
-                            return const AnimesDisplaySetting();
-                          },
-                        ),
-                      );
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.book_outlined),
+              title: const Text("动漫界面"),
+              onTap: () {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //     builder: (BuildContext context) =>
+                  //         const AnimesDisplaySetting()),
+                  FadeRoute(
+                    builder: (context) {
+                      return const AnimesDisplaySetting();
                     },
                   ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.note_alt_outlined,
-                    ),
-                    title: const Text("笔记设置"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //     builder: (BuildContext context) =>
-                        //         const NoteSetting()),
-                        FadeRoute(
-                          builder: (context) {
-                            return const NoteSetting();
-                          },
-                        ),
-                      );
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.note_alt_outlined),
+              title: const Text("笔记设置"),
+              onTap: () {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //     builder: (BuildContext context) =>
+                  //         const NoteSetting()),
+                  FadeRoute(
+                    builder: (context) {
+                      return const NoteSetting();
                     },
                   ),
-                  Obx(() => ListTile(
-                        leading: const Icon(Icons.dark_mode_outlined),
-                        title: const Text("夜间模式"),
-                        trailing: themeController.isDarkMode.value
-                            ? const Icon(Icons.toggle_on,
-                                color: Colors.blue, size: 32)
-                            : const Icon(Icons.toggle_off,
-                                color: Colors.grey, size: 32),
-                        onTap: () => themeController.changeTheme(),
-                      )),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.error_outline,
-                    ),
-                    title: const Text("关于版本"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //     builder: (BuildContext context) =>
-                        //         const AboutVersion()),
-                        FadeRoute(
-                          builder: (context) {
-                            return const AboutVersion();
-                          },
-                        ),
-                      );
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.dark_mode_outlined),
+              title: const Text("夜间模式"),
+              trailing: themeController.isDarkMode.value
+                  ? const Icon(Icons.toggle_on, color: Colors.blue, size: 32)
+                  : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
+              onTap: () => themeController.changeTheme(),
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              leading: const Icon(Icons.error_outline),
+              title: const Text("关于版本"),
+              onTap: () {
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //     builder: (BuildContext context) =>
+                  //         const AboutVersion()),
+                  FadeRoute(
+                    builder: (context) {
+                      return const AboutVersion();
                     },
-                  )
-                ],
-              ),
-      ),
-    );
+                  ),
+                );
+              },
+            )
+          ],
+        ));
   }
 
   _showImg() {
     return _imgFile == null
         ? Container()
-        : SizedBox(
-            height: MediaQuery.of(context).size.height / 4,
-            width: MediaQuery.of(context).size.width,
-            child: Card(
-              elevation: 5,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5))), // 圆角
-              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-              // elevation: 0,
-              // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: Image.file(
-                _imgFile as File,
-                fit: BoxFit.fitWidth,
+        : GestureDetector(
+            onDoubleTap: () {
+              _removeImage();
+            },
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height / 4,
+              width: MediaQuery.of(context).size.width,
+              child: Card(
+                elevation: 5,
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5))), // 圆角
+                clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+                // elevation: 0,
+                // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Image.file(
+                  _imgFile as File,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
           );
@@ -196,11 +199,11 @@ class _SettingPageState extends State<SettingPage> {
 
   _showImgButton() {
     return ListTile(
+      iconColor: ThemeUtil.getIconColorOnSettingPage(),
       leading: const Icon(
-        // Icons.image_outlined,
-        // Icons.wallpaper_outlined,
-        Icons.perm_media_outlined,
-      ),
+          // Icons.image_outlined,
+          // Icons.wallpaper_outlined,
+          Icons.perm_media_outlined),
       title: const Text("设置图片"),
       onTap: () async {
         FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -213,31 +216,32 @@ class _SettingPageState extends State<SettingPage> {
           setState(() {});
         }
       },
-      onLongPress: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("取消图片"),
-                content: const Text("确认取消图片吗？"),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("取消")),
-                  ElevatedButton(
-                      onPressed: () {
-                        SPUtil.setString("img_file_path", "");
-                        _imgFile = null; // 需要将该成员设置会null，setState才有效果
-                        setState(() {});
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("确认")),
-                ],
-              );
-            });
-      },
     );
+  }
+
+  _removeImage() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("取消图片"),
+            content: const Text("确认取消图片吗？"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("取消")),
+              ElevatedButton(
+                  onPressed: () {
+                    SPUtil.setString("img_file_path", "");
+                    _imgFile = null; // 需要将该成员设置会null，setState才有效果
+                    setState(() {});
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("确认")),
+            ],
+          );
+        });
   }
 }

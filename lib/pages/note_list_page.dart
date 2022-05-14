@@ -7,7 +7,6 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -20,7 +19,6 @@ class NoteListPage extends StatefulWidget {
 class _NoteListPageState extends State<NoteListPage> {
   List<EpisodeNote> episodeNotes = [];
   bool _loadOk = false;
-  bool hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
 
   final int _pageSize = 20;
   int _pageIndex = 1;
@@ -86,26 +84,6 @@ class _NoteListPageState extends State<NoteListPage> {
       offset: const Offset(0, 50),
       itemBuilder: (BuildContext context) {
         return [
-          PopupMenuItem(
-            // padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title:
-                  hideAnimeListTile ? const Text("显示动漫行") : const Text("隐藏动漫行"),
-              style: ListTileStyle.drawer,
-              // trailing: Icon(Icons.remove_red_eye),
-              onTap: () {
-                if (hideAnimeListTile) {
-                  SPUtil.setBool("hideAnimeListTile", false);
-                } else {
-                  SPUtil.setBool("hideAnimeListTile", true);
-                }
-                setState(() {
-                  hideAnimeListTile = SPUtil.getBool("hideAnimeListTile");
-                });
-                Navigator.pop(context);
-              },
-            ),
-          ),
           PopupMenuItem(
             // padding: const EdgeInsets.all(0),
             child: ListTile(
@@ -213,7 +191,6 @@ class _NoteListPageState extends State<NoteListPage> {
   }
 
   _buildAnimeListTile(int index) {
-    if (hideAnimeListTile) return Container();
     return ListTile(
       style: ListTileStyle.drawer,
       leading: GestureDetector(
@@ -240,10 +217,7 @@ class _NoteListPageState extends State<NoteListPage> {
             });
           },
           // icon: const Icon(Icons.more_vert_rounded)),
-          icon: const Icon(
-            Icons.edit,
-            color: Colors.grey,
-          )),
+          icon: Icon(Icons.edit, color: ThemeUtil.getIconButtonColor())),
       title: GestureDetector(
         onTap: () {
           _enterAnimeDetail(index);
