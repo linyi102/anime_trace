@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/count_controller.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:get/get.dart';
 
 class SettingPageTest extends StatelessWidget {

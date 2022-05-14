@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
-import 'package:flutter_test_future/pages/setting_page_test.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:get/get.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 // import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -32,8 +28,6 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.put(ThemeController());
-
     return Scaffold(
       body: _list[_currentIndex],
       // body: IndexedStack(
