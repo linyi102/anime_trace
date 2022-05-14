@@ -37,6 +37,10 @@ class _UpdateHintState extends State<UpdateHint> {
   _checkNewVersion() async {
     currentVersion = (await PackageInfo.fromPlatform()).version;
     latestVersion = await _getLatestVersion();
+    if (latestVersion.isEmpty) {
+      debugPrint("获取新版本为空，直接返回");
+      return;
+    }
     if (currentVersion != latestVersion) {
       foundNewVersion = true;
       // 如果忽略了该最新版本，则不进行更新提示
