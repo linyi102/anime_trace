@@ -43,7 +43,11 @@ class _BackUpFileListState extends State<BackUpFileList> {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        body: files.isEmpty ? Container() : _buildFileList());
+        body: files.isEmpty
+            ? const Center(
+                child: RefreshProgressIndicator(),
+              )
+            : _buildFileList());
   }
 
   _buildFileList() {

@@ -7,6 +7,7 @@ import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
 import 'package:webdav_client/webdav_client.dart';
@@ -60,8 +61,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               : Container(),
           Platform.isWindows
               ? ListTile(
-                  title: const Text("点击进行备份"),
-                  subtitle: const Text(""),
+                  title: const Text("立即备份"),
+                  subtitle: const Text("单击进行备份，备份目录为设置的本地目录"),
                   // subtitle: Text(getDuration()),
                   onTap: () {
                     BackupUtil.backup(
@@ -124,11 +125,18 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               }
             },
           ),
-          const ListTile(
-            title: Text(
-              "WebDav 备份",
-              style: TextStyle(color: Colors.blue),
-            ),
+          const Divider(),
+          ListTile(
+            title:
+                const Text("WebDav 备份", style: TextStyle(color: Colors.blue)),
+            // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
+            subtitle: const Text("点击查看教程"),
+            onTap: () async {
+              final uri = Uri.parse("https://help.jianguoyun.com/?p=2064");
+              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                throw "Could not launch $uri";
+              }
+            },
           ),
           ListTile(
             title: const Text("账号配置"),
@@ -143,7 +151,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             },
           ),
           ListTile(
-            title: const Text("手动备份"),
+            title: const Text("立即备份"),
             subtitle: const Text("单击进行备份，备份目录为 /animetrace"),
             onTap: () async {
               if (!SPUtil.getBool("login")) {
@@ -182,7 +190,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             onTap: () async {
               int? number = await dialogSelectUint(context, "自动备份数量",
                   initialValue: autoBackupWebDavNumber,
-                  minValue: 1,
+                  minValue: 10,
                   maxValue: 100);
               if (number != null) {
                 autoBackupWebDavNumber = number;
@@ -192,8 +200,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             },
           ),
           ListTile(
-            title: const Text("还原数据"),
-            // subtitle: const Text(""),
+            title: const Text("还原远程备份"),
+            subtitle: const Text("点击查看所有备份文件"),
             onTap: () async {
               if (SPUtil.getBool("online")) {
                 Navigator.of(context).push(FadeRoute(

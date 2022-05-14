@@ -217,7 +217,8 @@ class _NoteListPageState extends State<NoteListPage> {
             });
           },
           // icon: const Icon(Icons.more_vert_rounded)),
-          icon: Icon(Icons.edit, color: ThemeUtil.getIconButtonColor())),
+          icon:
+              Icon(Icons.navigate_next, color: ThemeUtil.getIconButtonColor())),
       title: GestureDetector(
         onTap: () {
           _enterAnimeDetail(index);
