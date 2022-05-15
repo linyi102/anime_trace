@@ -6,6 +6,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// 更新对话框组件，用于Stack最高层
 class UpdateHint extends StatefulWidget {
   final bool checkLatestVersion; // 刚进入关于版本页面，不检查更新
   final bool forceShowUpdateDialog; // 在关于版本页面中，点击检查更新时，即使取消了忽略新版本，也会提示更新对话框
@@ -41,7 +42,8 @@ class _UpdateHintState extends State<UpdateHint> {
       debugPrint("获取新版本为空，直接返回");
       return;
     }
-    if (currentVersion != latestVersion) {
+    // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
+    if (currentVersion.compareTo(latestVersion) < 0) {
       foundNewVersion = true;
       // 如果忽略了该最新版本，则不进行更新提示
       if (SPUtil.getBool("ignore$latestVersion") == true) {
