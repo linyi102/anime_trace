@@ -63,10 +63,6 @@ class MyAppState extends State<MyApp> {
         SPUtil.getString("webdav_user"),
         SPUtil.getString("webdav_password"),
       );
-      if (!SPUtil.getBool("online") && SPUtil.getBool("auto_backup_webdav")) {
-        debugPrint("WebDav 自动备份失败，请检查网络状态");
-        showToast("WebDav 自动备份失败，请检查网络状态");
-      }
     }
     // 如果都设置了自动备份，则只需要压缩一次
     if (SPUtil.getBool("auto_backup_local") &&

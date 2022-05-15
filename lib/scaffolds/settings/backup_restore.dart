@@ -158,6 +158,10 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
+              String remoteBackupDirPath = await WebDavUtil.getRemoteDirPath();
+              if (remoteBackupDirPath.isNotEmpty) {
+                BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);
+              }
             },
           ),
           ListTile(
@@ -272,14 +276,17 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   SPUtil.setString("webdav_uri", uri);
                   SPUtil.setString("webdav_user", user);
                   SPUtil.setString("webdav_password", password);
-                  if (!(await WebDavUtil.initWebDav(uri, user, password))) {
-                    showToast("无法连接，请确保输入正确和网络正常！");
+                  if (await WebDavUtil.initWebDav(uri, user, password)) {
+                    showToast("连接成功！");
+                    setState(() {});
+                    Navigator.of(context).pop();
+                  } else {
+                    // 无法观察到弹出消息，因为对话框遮住了弹出消息，因此需要移动到最下面
+                    showToast("无法连接，请确保输入正确和网络正常！",
+                        position: ToastPosition.bottom);
                     // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
                     setState(() {});
-                    return;
                   }
-                  showToast("连接成功！");
-                  Navigator.of(context).pop();
                 },
                 child: const Text("连接"))
           ],

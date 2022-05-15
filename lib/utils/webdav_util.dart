@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:webdav_client/webdav_client.dart';
 
 class WebDavUtil {
@@ -63,7 +64,10 @@ class WebDavUtil {
   }
 
   static Future<String> getRemoteDirPath() async {
-    if (!SPUtil.getBool("online")) return "";
+    if (!SPUtil.getBool("online")) {
+      showToast("请先连接账号，再进行备份");
+      return "";
+    }
     // 先判断是否有animetrace目录，没有则创建
     var list = await client.readDir('/');
     bool existBackupDir = false;

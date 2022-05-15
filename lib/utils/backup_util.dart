@@ -96,17 +96,18 @@ class BackupUtil {
       }
     }
     if (remoteBackupDirPath.isNotEmpty) {
-      if (!SPUtil.getBool("online")) return "";
+      if (!SPUtil.getBool("online")) {
+        debugPrint("WebDav 备份失败，请检查网络状态");
+        showToast("WebDav 备份失败，请检查网络状态");
+        File(tempZipFilePath).delete(); // 备份失败后需要删掉临时备份文件
+        return "";
+      }
       String remoteBackupFilePath;
       if (automatic) {
         remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
       } else {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
-      // // 在上传之前检查是否连接正常
-      // if (!await WebDavUtil.pingWebDav()) {
-      //   showToast("WebDav 备份失败，请检查网络状态");
-      // }
       await WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath);
       if (showToastFlag) showToast("WebDav 备份成功：$remoteBackupFilePath");
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
@@ -187,17 +188,16 @@ class BackupUtil {
     }
   }
 
-  static Future<void> restoreFromWebDav(latestFile) async {
+  static Future<void> restoreFromWebDav(file) async {
     String localRootDirPath = await getLocalRootDirPath();
 
-    if (latestFile.path == null) {
+    if (file.path == null) {
       showToast("还原失败");
       return;
     }
-    debugPrint("latestFilePath: ${latestFile.path}");
-    String localBackupFilePath = "$localRootDirPath/${latestFile.name}";
-    await WebDavUtil.client
-        .read2File(latestFile.path as String, localBackupFilePath);
+    debugPrint("latestFilePath: ${file.path}");
+    String localBackupFilePath = "$localRootDirPath/${file.name}";
+    await WebDavUtil.client.read2File(file.path as String, localBackupFilePath);
 
     debugPrint(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
