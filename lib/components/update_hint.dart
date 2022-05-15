@@ -76,7 +76,7 @@ class _UpdateHintState extends State<UpdateHint> {
     }
 
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
-    if (currentVersion.compareTo(latestVersionInfo.version) == 0) {
+    if (currentVersion.compareTo(latestVersionInfo.version) < 0) {
       foundNewVersion = true;
       // 如果忽略了该最新版本，则不进行更新提示
       if (SPUtil.getBool("ignore${latestVersionInfo.version}") == true) {
