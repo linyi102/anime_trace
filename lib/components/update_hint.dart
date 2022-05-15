@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/latest_version_info.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
@@ -24,31 +25,63 @@ class _UpdateHintState extends State<UpdateHint> {
   bool foundNewVersion = false;
   bool showUpdateDialog = false;
   String currentVersion = "";
-  String latestVersion = "";
+  LatestVersionInfo latestVersionInfo = LatestVersionInfo("");
 
   @override
   void initState() {
     super.initState();
     debugPrint(widget.checkLatestVersion.toString());
     if (widget.checkLatestVersion) {
-      _checkNewVersion();
+      // _checkNewVersion();
+      _getLatestVersionInfo();
     }
   }
 
-  _checkNewVersion() async {
+  _getLatestVersionInfo() async {
     currentVersion = (await PackageInfo.fromPlatform()).version;
-    latestVersion = await _getLatestVersion();
-    if (latestVersion.isEmpty) {
-      debugPrint("获取新版本为空，直接返回");
-      return;
+    // 获取最新版本信息
+    try {
+      debugPrint("正在获取最新版本信息...");
+      var response =
+          await Dio().get("https://gitee.com/linyi517/anime_trace/tags");
+      var document = parse(response.data);
+      latestVersionInfo.version = document
+              .getElementsByClassName("tag-item-action tag-name")[0]
+              .getElementsByTagName("a")[0]
+              .attributes["title"] ??
+          "";
+      if (latestVersionInfo.version.isEmpty) {
+        debugPrint("获取新版本为空，直接返回");
+        return;
+      }
+      // 去除前面的v
+      if (latestVersionInfo.version.startsWith("v")) {
+        latestVersionInfo.version = latestVersionInfo.version.substring(1);
+      }
+
+      latestVersionInfo.desc = document
+          .getElementsByClassName("tag-item-action tag-message")[0]
+          .innerHtml;
+      // 格式化：将"- "转为有序列表
+      for (var i = 1; latestVersionInfo.desc.contains("- "); ++i) {
+        latestVersionInfo.desc =
+            latestVersionInfo.desc.replaceFirst("- ", "\n$i. ");
+        if (i == 10) break;
+      }
+      // 去除两边的空白符
+      latestVersionInfo.desc = latestVersionInfo.desc.trim();
+      debugPrint("获取到最新版本：$latestVersionInfo");
+    } catch (e) {
+      debugPrint(e.toString());
     }
+
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
-    if (currentVersion.compareTo(latestVersion) < 0) {
+    if (currentVersion.compareTo(latestVersionInfo.version) == 0) {
       foundNewVersion = true;
       // 如果忽略了该最新版本，则不进行更新提示
-      if (SPUtil.getBool("ignore$latestVersion") == true) {
+      if (SPUtil.getBool("ignore${latestVersionInfo.version}") == true) {
         showUpdateDialog = false;
-        debugPrint("已忽略更新版本：$latestVersion");
+        debugPrint("已忽略更新版本：${latestVersionInfo.version}");
       } else {
         showUpdateDialog = true;
       }
@@ -56,7 +89,7 @@ class _UpdateHintState extends State<UpdateHint> {
       if (widget.forceShowUpdateDialog) {
         showUpdateDialog = true;
       }
-      debugPrint("当前版本：$currentVersion，最新版本：$latestVersion");
+      debugPrint("当前版本：$currentVersion，最新版本：${latestVersionInfo.version}");
       // 显示对话框
       setState(() {});
     } else {
@@ -64,27 +97,6 @@ class _UpdateHintState extends State<UpdateHint> {
       if (widget.forceShowUpdateDialog) {
         showToast("当前已是最新版本");
       }
-    }
-  }
-
-  Future<String> _getLatestVersion() async {
-    try {
-      debugPrint("正在获取最新版本...");
-      var response = await Dio().get("https://gitee.com/linyi517/anime_trace");
-      var document = parse(response.data);
-      var elements = document.getElementsByClassName("tab scrolling menu")[1];
-      String newVersion =
-          elements.getElementsByClassName("item")[0].attributes["data-value"] ??
-              "";
-      // 去除前面的v
-      if (newVersion.startsWith("v")) {
-        newVersion = newVersion.substring(1);
-      }
-      debugPrint("获取到最新版本：$newVersion");
-      return newVersion;
-    } catch (e) {
-      debugPrint(e.toString());
-      return "";
     }
   }
 
@@ -104,8 +116,8 @@ class _UpdateHintState extends State<UpdateHint> {
                 children: [
                   AlertDialog(
                     title: const Text("版本更新"),
-                    content:
-                        Text("检测到新版本：$latestVersion\n当前版本：$currentVersion"),
+                    content: Text(
+                        "检测到新版本：${latestVersionInfo.version}\n当前版本：$currentVersion\n更新内容：\n${latestVersionInfo.desc}"),
                     actions: [
                       // 如果是检查更新，则不显示忽略当前版本，而是显示取消
                       widget.forceShowUpdateDialog
@@ -122,7 +134,8 @@ class _UpdateHintState extends State<UpdateHint> {
                           : TextButton(
                               onPressed: () {
                                 showUpdateDialog = false;
-                                SPUtil.setBool("ignore$latestVersion", true);
+                                SPUtil.setBool(
+                                    "ignore${latestVersionInfo.version}", true);
                                 setState(() {});
                               },
                               child: const Text("忽略当前版本"),
