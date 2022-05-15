@@ -72,8 +72,28 @@ class _BackUpFileListState extends State<BackUpFileList> {
             subtitle:
                 Text("$createdTime ${KBSize.toStringAsFixed(3)}KB"), // 保留3位小数
             onTap: () {
-              BackupUtil.restoreFromWebDav(files[index]);
-              Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("还原数据"),
+                    content: const Text("这会覆盖已有的数据\n确认还原指定文件吗？"),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("取消")),
+                      ElevatedButton(
+                          onPressed: () {
+                            BackupUtil.restoreFromWebDav(files[index]);
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("确认")),
+                    ],
+                  );
+                },
+              );
             },
           );
         },
