@@ -51,18 +51,33 @@ class _BackUpFileListState extends State<BackUpFileList> {
   }
 
   _buildFileList() {
-    return ListView.builder(
-      itemCount: files.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text("${index + 1}: ${files[index].path!.split("/").last}"),
-          subtitle: Text("${files[index].mTime}"),
-          onTap: () {
-            BackupUtil.restoreFromWebDav(files[index]);
-            Navigator.of(context).pop();
-          },
-        );
-      },
+    return Scrollbar(
+      child: ListView.builder(
+        itemCount: files.length,
+        itemBuilder: (context, index) {
+          String fileName = "";
+          // 获取文件名
+          if (files[index].path != null) {
+            fileName = files[index].path!.split("/").last;
+          }
+          // 去除秒后面的.000
+          String createdTime = files[index].mTime.toString().split(".")[0];
+
+          // KB
+          // ignore: non_constant_identifier_names
+          num KBSize = (files[index].size ?? 0) / 1024;
+
+          return ListTile(
+            title: Text("${index + 1}: $fileName"),
+            subtitle:
+                Text("$createdTime ${KBSize.toStringAsFixed(3)}KB"), // 保留3位小数
+            onTap: () {
+              BackupUtil.restoreFromWebDav(files[index]);
+              Navigator.of(context).pop();
+            },
+          );
+        },
+      ),
     );
   }
 }
