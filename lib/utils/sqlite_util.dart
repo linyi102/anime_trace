@@ -8,6 +8,8 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -26,6 +28,19 @@ class SqliteUtil {
   static const sqlFileName = 'mydb.db';
   static late Database _database;
   static late String dbPath;
+
+  static Future<bool> ensureDBTable() async {
+    await ImageUtil.getInstance();
+    await SqliteUtil.getInstance();
+    // 先创建表，再添加列
+    await SqliteUtil.createTableEpisodeNote();
+    await SqliteUtil.createTableImage();
+
+    await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
+    await SqliteUtil.addColumnInfoToAnime(); // 为动漫表添加列
+    tags = await SqliteUtil.getAllTags();
+    return true;
+  }
 
   static _initDatabase() async {
     if (Platform.isAndroid) {
@@ -68,15 +83,6 @@ class SqliteUtil {
   }
 
   static void _createInitTable(Database db) async {
-    // await db.execute('''
-    //   CREATE TABLE tag (
-    //       tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    //       tag_name  TEXT    NOT NULL,
-    //       tag_order INTEGER
-    //       -- UNIQUE(tag_name)
-    //   );
-    //   ''');
-    // 新增
     await db.execute('''
       CREATE TABLE tag (
           -- tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -442,6 +448,9 @@ class SqliteUtil {
     from anime
     where anime_id = $animeId;
     ''');
+    if (list.isEmpty) {
+      return Anime(animeId: 0, animeName: "", animeEpisodeCnt: 0);
+    }
     int reviewNumber = list[0]['review_number'] as int;
     int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
         reviewNumber: reviewNumber);

@@ -12,7 +12,6 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
-import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -62,6 +61,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   @override
   void initState() {
     super.initState();
+    // 如果没有收藏，则不允许进入
+    if (widget.animeId <= 0) {
+      Navigator.of(context).pop();
+      showToast("由于没有收藏，无法进入该动漫");
+    }
+
     if (widget.animeId > 0) {
       _loadData();
     } else {
@@ -82,6 +87,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }).then((value) async {
       _anime = value;
       debugPrint(value.toString());
+      // 如果没有从数据库中找到，则直接退出该页面
+      if (!_anime.isCollected()) {
+        Navigator.of(context).pop();
+        showToast("由于没有收藏，无法进入该动漫");
+      }
       _episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndReviewNumber(
           _anime, _anime.reviewNumber);
       _sortEpisodes(SPUtil.getString("episodeSortMethod",
@@ -1004,16 +1014,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     // 返回两次，跳过动漫详细页(然而并不能)
                     // Navigator.of(context).pop();
                     // Navigator.of(context).pop();
+                    // 关闭当前对话框后，调用函数去关闭动漫详细页，注意两者的context是不同的
+                    Navigator.of(context).pop();
+                    _popAnimeDetailPage();
+                    // Navigator.of(context).popUntil(
+                    //     (route) => ModalRoute.withName("AnimeListPage"));
+                    // 直接使用pushAndRemoveUntil跳转到MyHome会导致备份等操作，直接跳转到Tabs会导致主题失效
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //   // MaterialPageRoute(builder: (context) => const Tabs()),
+                    //   FadeRoute(
+                    //     builder: (context) {
+                    //       return const MyHome();
+                    //     },
+                    //   ),
+                    //   (route) => false,
+                    // );
                     // 直接返回到主页
-                    Navigator.of(context).pushAndRemoveUntil(
-                      // MaterialPageRoute(builder: (context) => const Tabs()),
-                      FadeRoute(
-                        builder: (context) {
-                          return const Tabs();
-                        },
-                      ),
-                      (route) => false,
-                    ); // 返回false就没有左上角的返回按钮了
+                    // Navigator.of(context).pushAndRemoveUntil(
+                    //   // MaterialPageRoute(builder: (context) => const Tabs()),
+                    //   FadeRoute(
+                    //     builder: (context) {
+                    //       return const Tabs();
+                    //     },
+                    //   ),
+                    //   (route) => false,
+                    // ); // 返回false就没有左上角的返回按钮了
                   },
                   child: const Text("确认")),
             ],
@@ -1344,5 +1369,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         );
       },
     );
+  }
+
+  void _popAnimeDetailPage() {
+    // 置为0，用于在收藏页得知已取消收藏
+    _anime.animeId = 0;
+    // 第一个是退出下拉菜单，第二个是退出动漫详细页面
+    // Navigator.of(context).pop();
+    // Navigator.of(context).pop();
+    // 也可
+    Navigator.of(context)
+      ..pop()
+      ..pop(_anime);
   }
 }

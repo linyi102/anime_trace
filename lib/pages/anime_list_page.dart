@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/scaffolds/search.dart';
+import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -167,7 +167,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             // ),
             FadeRoute(
               builder: (context) {
-                return const Search();
+                return const SearchDbAnime();
               },
             ),
           ).then((value) {
@@ -400,7 +400,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     }
   }
 
-  void _enterPageAnimeDetail(i, index, anime) {
+  void _enterPageAnimeDetail(i, index, Anime anime) {
     Navigator.of(context)
         .push(
       FadeRoute(
@@ -411,10 +411,22 @@ class _AnimeListPageState extends State<AnimeListPage>
       ),
     )
         .then((value) async {
-      // debugPrint(value.toString());
-
       // 根据传回的动漫id获取最新的更新进度以及标签
       Anime newAnime = value;
+      if (!newAnime.isCollected()) {
+        // 取消收藏
+        for (int tagIndex = 0; tagIndex < tags.length; ++tagIndex) {
+          int findIndex = animesInTag[tagIndex]
+              .indexWhere((element) => element.animeId == anime.animeId);
+          if (findIndex != -1) {
+            animesInTag[tagIndex].removeAt(findIndex);
+            animeCntPerTag[tagIndex]--;
+            break;
+          }
+        }
+        setState(() {});
+        return;
+      }
       newAnime = await SqliteUtil.getAnimeByAnimeId(newAnime.animeId);
 
       // 找到并更新旧动漫

@@ -3,11 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:get/get.dart';
@@ -22,23 +20,12 @@ void main() async {
       .ensureInitialized(); // 确保初始化，否则Unhandled Exception: Null check operator used on a null value
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
-  await ensureLatestData(); // 必须要用await
+  await SqliteUtil.ensureDBTable(); // 必须要用await
+
   // runApp(const MyApp());
   runApp(const GetMaterialApp(
     home: MyApp(),
   ));
-}
-
-ensureLatestData() async {
-  await ImageUtil.getInstance();
-  await SqliteUtil.getInstance();
-  // 先创建表，再添加列
-  await SqliteUtil.createTableEpisodeNote();
-  await SqliteUtil.createTableImage();
-
-  await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
-  await SqliteUtil.addColumnInfoToAnime(); // 为动漫表添加列
-  tags = await SqliteUtil.getAllTags();
 }
 
 class MyApp extends StatefulWidget {
@@ -110,7 +97,6 @@ class MyAppState extends State<MyApp> {
     final ThemeController themeController = Get.put(ThemeController());
 
     return Obx(() => OKToast(
-          // textStyle: const TextStyle(fontFamily: "yuan"),
           position: ToastPosition.center,
           dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
           child: MaterialApp(

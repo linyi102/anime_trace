@@ -7,14 +7,14 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
-class Search extends StatefulWidget {
-  const Search({Key? key}) : super(key: key);
+class SearchDbAnime extends StatefulWidget {
+  const SearchDbAnime({Key? key}) : super(key: key);
 
   @override
-  _SearchState createState() => _SearchState();
+  _SearchDbAnimeState createState() => _SearchDbAnimeState();
 }
 
-class _SearchState extends State<Search> {
+class _SearchDbAnimeState extends State<SearchDbAnime> {
   bool _searchOk = false;
   late List<Anime> _resAnimes;
   String lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
@@ -106,9 +106,18 @@ class _SearchState extends State<Search> {
               },
             ),
           ).then((value) async {
+            Anime newAnime = value;
+            if (!newAnime.isCollected()) {
+              // 取消收藏
+              int findIndex = _resAnimes
+                  .indexWhere((element) => element.animeId == anime.animeId);
+              _resAnimes.removeAt(findIndex);
+              setState(() {});
+              return;
+            }
             // anime = value; // 无效，因为不是数据成员
-            int findIndex = _resAnimes.indexWhere(
-                (element) => element.animeId == (value as Anime).animeId);
+            int findIndex = _resAnimes
+                .indexWhere((element) => element.animeId == newAnime.animeId);
             if (findIndex != -1) {
               // _resAnimes[findIndex] = value;
               // 直接从数据库中得到最新信息
