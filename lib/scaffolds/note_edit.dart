@@ -35,7 +35,15 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _loadData() async {
-    Future(() {}).then((value) {
+    Future(() {
+      return SqliteUtil.existNoteId(widget.episodeNote.episodeNoteId);
+    }).then((existNoteId) {
+      if (!existNoteId) {
+        // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
+        widget.episodeNote.episodeNoteId = 0;
+        Navigator.of(context).pop(widget.episodeNote);
+        showToast("未找到该笔记");
+      }
       setState(() {
         _loadOk = true;
       });

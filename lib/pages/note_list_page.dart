@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
@@ -132,7 +133,17 @@ class _NoteListPageState extends State<NoteListPage> {
                         },
                       ),
                     ).then((value) {
-                      episodeNotes[index] = value; // 更新修改
+                      // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
+                      EpisodeNote newEpisodeNote = value;
+                      debugPrint(
+                          "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
+                      if (newEpisodeNote.episodeNoteId == 0) {
+                        episodeNotes.removeWhere((element) =>
+                            element.anime.animeId ==
+                            newEpisodeNote.anime.animeId);
+                      } else {
+                        episodeNotes[index] = newEpisodeNote; // 更新修改
+                      }
                       setState(() {});
                     });
                   },
@@ -187,6 +198,14 @@ class _NoteListPageState extends State<NoteListPage> {
     )
         .then((value) {
       // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
+      Anime anime = value;
+      // 如果animeId为0，说明进入动漫详细页后删除了动漫，需要从笔记列表中删除相关笔记
+      if (!anime.isCollected()) {
+        episodeNotes.removeWhere((element) =>
+            element.anime.animeId ==
+            episodeNotes[episodeNoteindex].anime.animeId);
+      }
+      setState(() {});
     });
   }
 

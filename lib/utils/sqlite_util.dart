@@ -373,13 +373,27 @@ class SqliteUtil {
     debugPrint("sql: deleteAnimeByAnimeId");
     // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
     await _database.rawDelete('''
-    delete from history
-    where anime_id = $animeId;
-    ''');
+      delete from history
+      where anime_id = $animeId;
+      ''');
     await _database.rawDelete('''
-    delete from anime
-    where anime_id = $animeId;
-    ''');
+      delete from anime
+      where anime_id = $animeId;
+      ''');
+
+    // 删除相关笔记、图片
+    // 先根据animeId找到所有笔记，然后根据笔记id找到图片，删除图片后再删除笔记
+    await _database.rawDelete('''
+      delete from image
+      where note_id in (
+        select note_id from episode_note
+        where anime_id = $animeId
+      );
+      ''');
+    await _database.rawDelete('''
+      delete from episode_note
+      where anime_id = $animeId;
+      ''');
   }
 
   static void insertTagName(String tagName, int tagOrder) async {
@@ -1030,6 +1044,17 @@ class SqliteUtil {
     insert into image (note_id, image_local_path)
     values ($noteId, '$imageLocalPath');
     ''');
+  }
+
+  static Future<bool> existNoteId(int noteId) async {
+    var list = await _database.rawQuery('''
+      select * from episode_note
+      where note_id = $noteId
+      ''');
+    if (list.isEmpty) {
+      return false;
+    }
+    return true;
   }
 
   static deleteLocalImageByImageId(int imageId) async {
