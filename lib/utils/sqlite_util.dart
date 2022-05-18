@@ -241,6 +241,16 @@ class SqliteUtil {
     return anime;
   }
 
+  static EpisodeNote escapeEpisodeNote(EpisodeNote episodeNote) {
+    episodeNote.noteContent = escapeStr(episodeNote.noteContent);
+    return episodeNote;
+  }
+
+  static EpisodeNote restoreEscapeEpisodeNote(EpisodeNote episodeNote) {
+    episodeNote.noteContent = restoreEscapeStr(episodeNote.noteContent);
+    return episodeNote;
+  }
+
   static String escapeStr(String str) {
     return str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
   }
@@ -883,6 +893,7 @@ class SqliteUtil {
   static Future<int> insertEpisodeNote(EpisodeNote episodeNote) async {
     debugPrint(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
+    episodeNote = escapeEpisodeNote(episodeNote);
     await _database.rawInsert('''
     insert into episode_note (anime_id, episode_number, review_number, note_content)
     values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, ''); -- 空内容
@@ -899,6 +910,7 @@ class SqliteUtil {
       int noteId, String noteContent) async {
     debugPrint("sql: updateEpisodeNoteContent($noteId)");
     // debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
+    noteContent = escapeStr(noteContent);
     await _database.rawUpdate('''
     update episode_note
     set note_content = '$noteContent'
@@ -928,6 +940,7 @@ class SqliteUtil {
     // 查询图片
     episodeNote.relativeLocalImages =
         await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
+    episodeNote = restoreEscapeEpisodeNote(episodeNote);
     return episodeNote;
   }
 
@@ -959,7 +972,7 @@ class SqliteUtil {
       // debugPrint(episodeNote);
       episodeNote.relativeLocalImages =
           await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
-      episodeNotes.add(episodeNote);
+      episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
     }
     return episodeNotes;
   }
@@ -1019,7 +1032,7 @@ class SqliteUtil {
       // // 如果没有图片，且笔记内容为空，则不添加。会导致无法显示分页查询
       // if (episodeNote.relativeLocalImages.isEmpty &&
       //     episodeNote.noteContent.isEmpty) continue;
-      episodeNotes.add(episodeNote);
+      episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
     }
     return episodeNotes;
   }
