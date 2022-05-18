@@ -212,13 +212,15 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateEpisodeCntByAnimeId(int animeId, int episodeCnt) async {
+  static Future<bool> updateEpisodeCntByAnimeId(
+      int animeId, int episodeCnt) async {
     debugPrint("sql: updateEpisodeCntByAnimeId");
-    await _database.rawUpdate('''
+
+    return await _database.rawUpdate('''
       update anime
       set anime_episode_cnt = $episodeCnt
       where anime_id = $animeId;
-    ''');
+      ''') > 0;
   }
 
   // 转义单引号
@@ -568,28 +570,35 @@ class SqliteUtil {
     return list[0]['tag_name'] as String;
   }
 
-  static Future<List<Episode>> getEpisodeHistoryByAnimeIdAndReviewNumber(
-      Anime anime, int reviewNumber) async {
+  // 获取该动漫的[startEpisodeNumber, endEpisodeNumber]集信息
+  static Future<List<Episode>> getEpisodeHistoryByAnimeIdAndRange(
+      Anime anime, int startEpisodeNumber, int endEpisodeNumber) async {
+    if (endEpisodeNumber > anime.animeEpisodeCnt) {
+      endEpisodeNumber = anime.animeEpisodeCnt;
+    }
+
     debugPrint(
-        "sql: getEpisodeHistoryByAnimeIdAndReviewNumber(animeId=${anime.animeId}, reviewNumber=$reviewNumber)");
-    int animeEpisodeCnt = anime.animeEpisodeCnt;
+        "sql: getEpisodeHistoryByAnimeIdAndRange(animeId=${anime.animeId}), range=[$startEpisodeNumber, $endEpisodeNumber]");
 
     var list = await _database.rawQuery('''
-    select date, episode_number
-    from anime inner join history
-        on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id and history.review_number = $reviewNumber;
-    ''');
+      select date, episode_number
+      from anime inner join history
+        on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id and history.review_number = ${anime.reviewNumber}
+      where history.episode_number >= $startEpisodeNumber and history.episode_number <= $endEpisodeNumber;
+      ''');
     // debugPrint("查询结果：$list");
     List<Episode> episodes = [];
-    for (int episodeNumber = 1;
-        episodeNumber <= animeEpisodeCnt;
+    for (int episodeNumber = startEpisodeNumber;
+        episodeNumber <= endEpisodeNumber;
         ++episodeNumber) {
-      episodes.add(Episode(episodeNumber, reviewNumber));
+      episodes.add(Episode(episodeNumber, anime.reviewNumber));
     }
     // 遍历查询结果，每个元素都是一个键值对(列名-值)
     for (var element in list) {
       int episodeNumber = element['episode_number'] as int;
-      episodes[episodeNumber - 1].dateTime = element['date'] as String;
+      // 要减去起始编号，才能从下标0开始
+      episodes[episodeNumber - startEpisodeNumber].dateTime =
+          element['date'] as String;
     }
     return episodes;
   }
@@ -597,10 +606,9 @@ class SqliteUtil {
   static Future<int> getAnimesCntBytagName(String tagName) async {
     debugPrint("sql: getAnimesCntBytagName");
     var list = await _database.rawQuery('''
-    select count(anime.anime_id) cnt
-    from anime
-    where anime.tag_name = '$tagName';
-    ''');
+      select count(anime.anime_id) cnt from anime
+      where anime.tag_name = '$tagName';
+      ''');
     return list[0]["cnt"] as int;
   }
 
@@ -609,10 +617,9 @@ class SqliteUtil {
     keyword = escapeStr(keyword);
 
     var list = await _database.rawQuery('''
-    select *
-    from anime
-    where anime_name LIKE '%$keyword%' or name_another LIKE '%$keyword%';
-    ''');
+      select * from anime
+      where anime_name LIKE '%$keyword%' or name_another LIKE '%$keyword%';
+      ''');
 
     List<Anime> res = [];
     for (var element in list) {
@@ -925,9 +932,9 @@ class SqliteUtil {
     //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
     // 查询内容
     var lm1 = await _database.rawQuery('''
-    select note_id, note_content from episode_note
-    where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number} and review_number = ${episodeNote.episode.reviewNumber};
-    ''');
+      select note_id, note_content from episode_note
+      where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number} and review_number = ${episodeNote.episode.reviewNumber};
+      ''');
     if (lm1.isEmpty) {
       // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
       episodeNote.episodeNoteId = await insertEpisodeNote(episodeNote);

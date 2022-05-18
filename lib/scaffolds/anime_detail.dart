@@ -42,7 +42,8 @@ class AnimeDetailPlus extends StatefulWidget {
 class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late Anime _anime;
   List<Episode> _episodes = [];
-  bool _loadOk = false;
+  bool _loadAnimeOk = false;
+  bool _loadEpisodeOk = false;
   List<EpisodeNote> _episodeNotes = [];
   late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
@@ -58,6 +59,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   bool hideNoteInAnimeDetail =
       SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
 
+  // 选择显示的集范围
+  int currentStartEpisodeNumber = 1;
+  final int episodeRangeSize = 50;
+
   @override
   void initState() {
     super.initState();
@@ -68,55 +73,71 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }
 
     if (widget.animeId > 0) {
+      currentStartEpisodeNumber = SPUtil.getInt(
+          "${widget.animeId}-currentStartEpisodeNumber",
+          defaultValue: 1);
       _loadData();
     } else {
       // widget.parentAnime肯定不为null，因为已经用isCollected判断过了
       _anime = widget.parentAnime ?? Anime(animeName: "", animeEpisodeCnt: 0);
       // 爬取详细信息
       _climbAnimeInfo();
-      _loadOk = true;
+      _loadAnimeOk = true;
     }
   }
 
   void _loadData() async {
     _episodes = [];
     _episodeNotes = [];
+    _loadEpisodeOk = false;
+    // currentStartEpisodeNumber = 1; // 不能重新赋值，因为选择范围后，需要用到currentStartEpisodeNumber来重新_loadData
 
-    Future(() {
-      return SqliteUtil.getAnimeByAnimeId(widget.animeId); // 一定要return，value才有值
-    }).then((value) async {
-      _anime = value;
-      debugPrint(value.toString());
-      // 如果没有从数据库中找到，则直接退出该页面
-      if (!_anime.isCollected()) {
-        Navigator.of(context).pop();
-        showToast("由于没有收藏，无法进入该动漫");
-      }
-      _episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndReviewNumber(
-          _anime, _anime.reviewNumber);
-      _sortEpisodes(SPUtil.getString("episodeSortMethod",
-          defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
+    _anime = await SqliteUtil.getAnimeByAnimeId(
+        widget.animeId); // 一定要return，value才有值
+    // 如果没有从数据库中找到，则直接退出该页面
+    if (!_anime.isCollected()) {
+      Navigator.of(context).pop();
+      showToast("由于没有收藏，无法进入该动漫");
+    }
+    _loadAnimeOk = true;
+    setState(() {});
 
-      for (var episode in _episodes) {
-        EpisodeNote episodeNote = EpisodeNote(
-            anime: _anime,
-            episode: episode,
-            relativeLocalImages: [],
-            imgUrls: []);
-        if (episode.isChecked()) {
-          // 如果该集完成了，就去获取该集笔记（内容+图片）
-          episodeNote = await SqliteUtil
-              .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                  episodeNote);
-          // debugPrint(
-          //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
-        }
-        _episodeNotes.add(episodeNote);
+    // 起始集编号>动漫集数，则从最后一个范围开始
+    if (currentStartEpisodeNumber > _anime.animeEpisodeCnt) {
+      // 修改后集数为260，则(260/50)=5.2=5, 5*50=250, 250+1=251
+      // 修改后集数为250，则(250/50)=5，(5-1)*50=200, 200+1=201，也就是251-50
+      currentStartEpisodeNumber =
+          _anime.animeEpisodeCnt ~/ episodeRangeSize * episodeRangeSize + 1;
+      if (_anime.animeEpisodeCnt % episodeRangeSize == 0) {
+        currentStartEpisodeNumber -= episodeRangeSize;
       }
-    }).then((value) {
-      _loadOk = true;
-      setState(() {});
-    });
+    }
+    _episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndRange(
+        _anime,
+        currentStartEpisodeNumber,
+        currentStartEpisodeNumber + episodeRangeSize - 1);
+    debugPrint("削减后，集长度为${_episodes.length}");
+    _sortEpisodes(SPUtil.getString("episodeSortMethod",
+        defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
+
+    for (var episode in _episodes) {
+      EpisodeNote episodeNote = EpisodeNote(
+          anime: _anime,
+          episode: episode,
+          relativeLocalImages: [],
+          imgUrls: []);
+      if (episode.isChecked()) {
+        // 如果该集完成了，就去获取该集笔记（内容+图片）
+        episodeNote = await SqliteUtil
+            .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+                episodeNote);
+        // debugPrint(
+        //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
+      }
+      _episodeNotes.add(episodeNote);
+    }
+    _loadEpisodeOk = true;
+    setState(() {});
   }
 
   // 用于传回到动漫列表页
@@ -144,7 +165,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       child: Scaffold(
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
-          child: !_loadOk
+          child: !_loadAnimeOk
               ? Container(
                   key: UniqueKey(),
                 )
@@ -319,7 +340,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       },
                     ),
                   ).then((value) {
-                    _loadData();
+                    // _loadData();
                     Navigator.pop(context);
                   });
                 },
@@ -458,6 +479,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   _buildEpisodeInfo() {
+    if (!_loadEpisodeOk) {
+      return const SliverToBoxAdapter(
+          child: Center(child: RefreshProgressIndicator()));
+    }
+
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, episodeIndex) {
@@ -1046,13 +1072,72 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         });
   }
 
+  String _getEpisodeRangeStr(int startEpisodeNumber) {
+    int endEpisodeNumber = startEpisodeNumber + episodeRangeSize - 1;
+    if (endEpisodeNumber > _anime.animeEpisodeCnt) {
+      endEpisodeNumber = _anime.animeEpisodeCnt;
+    }
+    return "$startEpisodeNumber-$endEpisodeNumber";
+  }
+
+  List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
+    List<ListTile> listTiles = [];
+    for (var startEpisodeNumber = 1;
+        startEpisodeNumber < _anime.animeEpisodeCnt;
+        startEpisodeNumber += episodeRangeSize) {
+      listTiles.add(ListTile(
+        title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
+        leading: currentStartEpisodeNumber == startEpisodeNumber
+            ? const Icon(Icons.radio_button_on, color: Colors.blue)
+            : const Icon(Icons.radio_button_off),
+        onTap: () {
+          currentStartEpisodeNumber = startEpisodeNumber;
+          SPUtil.setInt("${widget.animeId}-currentStartEpisodeNumber",
+              currentStartEpisodeNumber);
+          Navigator.of(dialogContext).pop();
+          // 获取集数据
+          _loadData();
+        },
+      ));
+    }
+    return listTiles;
+  }
+
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      // direction: Axis.horizontal,
       children: [
-        // Row(children: []),
+        _anime.animeEpisodeCnt > episodeRangeSize
+            ? Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: MaterialButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("选择范围"),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: _buildEpisodeRangeListTiles(context),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.arrow_right),
+                      const Text(" "),
+                      Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
+                    ],
+                  ),
+                ),
+              )
+            : Container(),
         Expanded(child: Container()),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -1086,12 +1171,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 icon: const Icon(Icons.sort)),
             IconButton(
                 onPressed: () {
-                  // _dialogUpdateEpisodeCnt();
-                  int initialValue = _episodes.length;
                   dialogSelectUint(context, "修改集数",
-                          // initialValue: _anime.animeEpisodeCnt,
+                          initialValue: _anime.animeEpisodeCnt,
                           // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-                          initialValue: initialValue,
+                          // initialValue: initialValue,
+                          // 添加选择集范围后，就不能传入已有的集长度了。
+                          // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
                           minValue: 0,
                           maxValue: 2000)
                       .then((value) {
@@ -1099,60 +1184,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       debugPrint("未选择，直接返回");
                       return;
                     }
-                    if (value == _episodes.length) {
+                    // if (value == _episodes.length) {
+                    if (value == _anime.animeEpisodeCnt) {
                       debugPrint("设置的集数等于初始值，直接返回");
                       return;
                     }
-                    int oldEpisodeCnt = _anime.animeEpisodeCnt;
                     int episodeCnt = value;
                     SqliteUtil.updateEpisodeCntByAnimeId(
-                        _anime.animeId, episodeCnt);
-
-                    _anime.animeEpisodeCnt = episodeCnt;
-                    // 少了就删除，多了就添加
-                    var len = _episodes
-                        .length; // 因为添加或删除时_episodes.length会变化，所以需要保存到一个变量中
-
-                    // 首先要按照编号正序排序，然后再从后面删除或添加到后面
-                    _sortByEpisodeNumberAsc();
-
-                    if (len > episodeCnt) {
-                      for (int i = 0; i < len - episodeCnt; ++i) {
-                        // 还应该删除history表里的记录，否则会误判完成过的集数
-                        SqliteUtil
-                            .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
-                                _anime.animeId,
-                                _episodes.last.number,
-                                _anime.reviewNumber);
-                        // 注意顺序
-                        _episodes.removeLast();
-                        // 记得删除笔记
-                        _episodeNotes.removeLast();
-                      }
-                      // 然后再恢复原来的排序
-                      _sortEpisodes(SPUtil.getString("episodeSortMethod"));
-                    } else {
-                      // 当集数为0时，使用last会导致出错
-                      // 不应该选择last，而是找出最大的编号，因为可能是排过序的，最大的编号不一定在最后面
-                      // 所以采用先获取当前动漫的集数到oldEpisodeCnt中，然后再更新指定的集数
-                      for (int i = 0; i < episodeCnt - len; ++i) {
-                        _episodes.add(Episode(
-                            oldEpisodeCnt + i + 1, _anime.reviewNumber));
-                      }
-                      // 还要添加对应的笔记
-                      for (int i = _episodeNotes.length;
-                          i < _episodes.length;
-                          ++i) {
-                        _episodeNotes.add(EpisodeNote(
-                            anime: _anime,
-                            episode: _episodes[i],
-                            relativeLocalImages: [],
-                            imgUrls: []));
-                      }
-                      // 添加集数后，按照用户选择的方式排序
-                      _sortEpisodes(SPUtil.getString("episodeSortMethod"));
-                    }
-                    setState(() {});
+                            _anime.animeId, episodeCnt)
+                        .then((value) {
+                      // 重新获取数据
+                      _loadData();
+                    });
                   });
                 },
                 tooltip: "更改集数",
@@ -1263,9 +1306,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
     // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
     // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
-    // if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
-    //   newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
-    // }
+    if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
+      newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
+    }
     SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
       // 如果集数变大，则重新加载页面
       if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
@@ -1300,7 +1343,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _buildAppBarTitle() {
     if (!_anime.isCollected()) return Container();
-    return !_loadOk
+    return !_loadAnimeOk
         ? Container()
         : ListTile(
             title: Row(

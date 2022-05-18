@@ -45,7 +45,7 @@ class Anime {
 
   @override
   String toString() {
-    return "animeId=$animeId\nanimeName=$animeName\nanimeEpisodeCnt=$animeEpisodeCnt\ntagName=$tagName\ncheckedEpisodeCnt=$checkedEpisodeCnt\nanimeCoverUrl=$animeCoverUrl\nanimeUrl=$animeUrl\npremiereTime=$premiereTime\nanimeDesc=${reduceStr(animeDesc)}\nplayStatus=$playStatus\ncategory=$category\narea=$area\n";
+    return "animeId=$animeId, animeName=$animeName, animeEpisodeCnt=$animeEpisodeCnt, tagName=$tagName, checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, animeUrl=$animeUrl, premiereTime=$premiereTime, animeDesc=${reduceStr(animeDesc)}, playStatus=$playStatus, category=$category, area=$area, ";
   }
 
   String reduceStr(String str) {
