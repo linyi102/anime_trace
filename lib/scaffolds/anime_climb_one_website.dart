@@ -47,6 +47,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     // 如果传入了关键字，说明是更新封面，此时需要直接爬取
     if (widget.keyword.isNotEmpty) {
       lastInputName = widget.keyword; // 搜索关键字第一次为传入的传健字，还可以进行修改
+      animeNameController.text = lastInputName;
       _climbAnime(keyword: widget.keyword);
     }
   }
@@ -88,7 +89,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
         title: TextField(
           autofocus:
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
-          controller: animeNameController..text = lastInputName,
+          controller: animeNameController..text,
           decoration: InputDecoration(
               hintText: "搜索动漫",
               border: InputBorder.none,

@@ -38,6 +38,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     super.initState();
     ismigrate = widget.animeId > 0 ? true : false;
     lastInputKeyword = widget.keyword;
+    inputKeywordController.text = lastInputKeyword;
 
     for (var climbWebsite in climbWebsites) {
       websiteClimbSearchOk[climbWebsite.name] = false;
@@ -149,7 +150,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         title: TextField(
           autofocus:
               widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
-          controller: inputKeywordController..text = lastInputKeyword,
+          controller: inputKeywordController..text,
           decoration: InputDecoration(
               hintText: ismigrate ? "迁移动漫" : "搜索动漫",
               border: InputBorder.none,

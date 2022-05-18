@@ -30,6 +30,7 @@ class _NoteEditState extends State<NoteEdit> {
   @override
   void initState() {
     super.initState();
+    noteContentController.text = widget.episodeNote.noteContent;
     debugPrint("进入笔记${widget.episodeNote.episodeNoteId}");
     _loadData();
   }
@@ -76,34 +77,36 @@ class _NoteEditState extends State<NoteEdit> {
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
         ),
-        body: _loadOk
-            ? Scrollbar(
-                child: ListView(
-                  children: [
-                    ListTile(
-                      style: ListTileStyle.drawer,
-                      leading: AnimeListCover(widget.episodeNote.anime),
-                      title: Text(
-                        widget.episodeNote.anime.animeName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                          "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
-                    ),
-                    _showNoteContent(),
-                    _showImages(),
-                  ],
-                ),
-              )
-            : Container(),
+        body: _loadOk ? _buildBody() : Container(),
+      ),
+    );
+  }
+
+  _buildBody() {
+    return Scrollbar(
+      child: ListView(
+        children: [
+          ListTile(
+            style: ListTileStyle.drawer,
+            leading: AnimeListCover(widget.episodeNote.anime),
+            title: Text(
+              widget.episodeNote.anime.animeName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+                "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
+          ),
+          _showNoteContent(),
+          _buildGridImages(),
+        ],
       ),
     );
   }
 
   _showNoteContent() {
     return TextField(
-      controller: noteContentController..text = widget.episodeNote.noteContent,
+      controller: noteContentController..text,
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
@@ -118,7 +121,7 @@ class _NoteEditState extends State<NoteEdit> {
     );
   }
 
-  _showImages() {
+  _buildGridImages() {
     Color addColor = SPUtil.getBool("enableDark") ? Colors.grey : Colors.black;
     int itemCount =
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标

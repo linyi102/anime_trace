@@ -585,7 +585,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: MaterialButton(
                 padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                    : const EdgeInsets.fromLTRB(0, 5, 0, 0), // 5是笔记内容和上边界之间的距离
                 onPressed: () {
                   Navigator.of(context).push(
                     // MaterialPageRoute(
