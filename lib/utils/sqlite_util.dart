@@ -6,6 +6,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
+import 'package:flutter_test_future/classes/note_filter.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -618,7 +619,7 @@ class SqliteUtil {
 
     var list = await _database.rawQuery('''
       select * from anime
-      where anime_name LIKE '%$keyword%' or name_another LIKE '%$keyword%';
+      where anime_name like '%$keyword%' or name_another like '%$keyword%';
       ''');
 
     List<Anime> res = [];
@@ -985,8 +986,8 @@ class SqliteUtil {
   }
 
   //↓优化
-  static Future<List<EpisodeNote>> getAllNotesByTableNote(
-      int offset, int number) async {
+  static Future<List<EpisodeNote>> getAllNotesByTableNoteAndKeyword(
+      int offset, int number, NoteFilter noteFilter) async {
     debugPrint("sql: getAllNotesByTableNote");
     List<EpisodeNote> episodeNotes = [];
     // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
@@ -1000,22 +1001,34 @@ class SqliteUtil {
     // ''');
 
     // 优化：不会筛选出笔记内容和图片都没有的行
-    var lm1 = await _database.rawQuery('''
+    String likeAnimeNameSql = "";
+    String likeNoteContentSql = "";
+    if (noteFilter.animeNameKeyword.isNotEmpty) {
+      likeAnimeNameSql =
+          "and anime.anime_name like '%${noteFilter.animeNameKeyword}%'";
+    }
+    if (noteFilter.noteContentKeyword.isNotEmpty) {
+      likeNoteContentSql =
+          "and note_content like '%${noteFilter.noteContentKeyword}%'";
+    }
+    String sql = '''
       select anime.*, history.date, episode_note.episode_number, episode_note.review_number, episode_note.note_id, episode_note.note_content
       from history, episode_note, anime
       where history.anime_id = episode_note.anime_id and history.episode_number = episode_note.episode_number
           and history.review_number = episode_note.review_number
           and anime.anime_id = history.anime_id
+          $likeAnimeNameSql
           and episode_note.note_id in(
               select distinct episode_note.note_id
-              from episode_note inner join image on episode_note.note_id = image.note_id
+              from episode_note inner join image on episode_note.note_id = image.note_id $likeNoteContentSql
               union
               select episode_note.note_id
-              from episode_note where note_content is not null and length(note_content) > 0
+              from episode_note where note_content is not null and length(note_content) > 0 $likeNoteContentSql
           )
       order by history.date desc
       limit $number offset $offset;
-    ''');
+    ''';
+    var lm1 = await _database.rawQuery(sql);
     for (var item in lm1) {
       Anime anime = Anime(
           animeId: item['anime_id'] as int, // 不能写成episode_note.anime_id，下面也是

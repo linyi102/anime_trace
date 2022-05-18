@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/classes/note_filter.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
@@ -20,6 +21,7 @@ class NoteListPage extends StatefulWidget {
 class _NoteListPageState extends State<NoteListPage> {
   List<EpisodeNote> episodeNotes = [];
   bool _loadOk = false;
+  NoteFilter noteFilter = NoteFilter();
 
   final int _pageSize = 20;
   int _pageIndex = 1;
@@ -37,7 +39,8 @@ class _NoteListPageState extends State<NoteListPage> {
     Future(() {
       debugPrint("note_list_page: 开始加载数据");
       // return SqliteUtil.getAllNotesByTableHistory();
-      return SqliteUtil.getAllNotesByTableNote(0, _pageSize);
+      return SqliteUtil.getAllNotesByTableNoteAndKeyword(
+          0, _pageSize, noteFilter);
     }).then((value) {
       episodeNotes = value;
       _loadOk = true;
@@ -45,6 +48,22 @@ class _NoteListPageState extends State<NoteListPage> {
       debugPrint("笔记总数(不包括空笔记)：${episodeNotes.length}");
       setState(() {});
     });
+  }
+
+  void _loadMoreData(index) {
+    if (index + 5 == _pageSize * (_pageIndex)) {
+      _pageIndex++;
+      debugPrint("再次请求$_pageSize个数据");
+      Future(() {
+        return SqliteUtil.getAllNotesByTableNoteAndKeyword(
+            episodeNotes.length, _pageSize, noteFilter); // 偏移量为当前页面显示的数量
+      }).then((value) {
+        debugPrint("请求结束");
+        episodeNotes.addAll(value);
+        debugPrint("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
+        setState(() {});
+      });
+    }
   }
 
   @override
@@ -58,9 +77,7 @@ class _NoteListPageState extends State<NoteListPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          _buildActions(),
-        ],
+        actions: _buildActions(),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -79,30 +96,96 @@ class _NoteListPageState extends State<NoteListPage> {
     );
   }
 
-  PopupMenuButton<dynamic> _buildActions() {
-    return PopupMenuButton(
-      icon: const Icon(Icons.more_vert),
-      offset: const Offset(0, 50),
-      itemBuilder: (BuildContext context) {
-        return [
-          PopupMenuItem(
-            // padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title: const Text("更多设置"),
-              style: ListTileStyle.drawer,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, FadeRoute(
-                  builder: (context) {
-                    return const NoteSetting();
-                  },
-                )).then((value) => _loadData());
+  List<Widget> _buildActions() {
+    var animeNameController = TextEditingController();
+    var noteContentController = TextEditingController();
+    return [
+      IconButton(
+          tooltip: "搜索",
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("搜索"),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: animeNameController
+                            ..text = noteFilter.animeNameKeyword,
+                          decoration: InputDecoration(
+                              labelText: "动漫关键字",
+                              border: InputBorder.none,
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    animeNameController.text = "";
+                                  },
+                                  icon: const Icon(Icons.close),
+                                  iconSize: 18)),
+                        ),
+                        TextField(
+                          controller: noteContentController
+                            ..text = noteFilter.noteContentKeyword,
+                          decoration: InputDecoration(
+                              labelText: "笔记关键字",
+                              border: InputBorder.none,
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    noteContentController.text = "";
+                                  },
+                                  icon: const Icon(Icons.close),
+                                  iconSize: 18)),
+                        )
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("取消")),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          noteFilter.animeNameKeyword =
+                              animeNameController.text;
+                          noteFilter.noteContentKeyword =
+                              noteContentController.text;
+                          _loadData();
+                        },
+                        child: const Text("搜索")),
+                  ],
+                );
               },
+            );
+          },
+          icon: const Icon(Icons.search)),
+      PopupMenuButton(
+        icon: const Icon(Icons.more_vert),
+        offset: const Offset(0, 50),
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem(
+              // padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("更多设置"),
+                style: ListTileStyle.drawer,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, FadeRoute(
+                    builder: (context) {
+                      return const NoteSetting();
+                    },
+                  )).then((value) => _loadData());
+                },
+              ),
             ),
-          ),
-        ];
-      },
-    );
+          ];
+        },
+      )
+    ];
   }
 
   _buildNotes() {
@@ -114,7 +197,7 @@ class _NoteListPageState extends State<NoteListPage> {
             itemCount: episodeNotes.length,
             itemBuilder: (BuildContext context, int index) {
               // debugPrint("index=$index");
-              _loadExtraData(index);
+              _loadMoreData(index);
 
               return Container(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -164,22 +247,6 @@ class _NoteListPageState extends State<NoteListPage> {
               );
             },
           );
-  }
-
-  void _loadExtraData(index) {
-    if (index + 5 == _pageSize * (_pageIndex)) {
-      _pageIndex++;
-      debugPrint("再次请求$_pageSize个数据");
-      Future(() {
-        return SqliteUtil.getAllNotesByTableNote(
-            episodeNotes.length, _pageSize); // 偏移量为当前页面显示的数量
-      }).then((value) {
-        debugPrint("请求结束");
-        episodeNotes.addAll(value);
-        debugPrint("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
-        setState(() {});
-      });
-    }
   }
 
   _enterAnimeDetail(int episodeNoteindex) {
