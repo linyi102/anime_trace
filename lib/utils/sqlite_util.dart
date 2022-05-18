@@ -1005,11 +1005,11 @@ class SqliteUtil {
     String likeNoteContentSql = "";
     if (noteFilter.animeNameKeyword.isNotEmpty) {
       likeAnimeNameSql =
-          "and anime.anime_name like '%${noteFilter.animeNameKeyword}%'";
+          "and anime.anime_name like '%${escapeStr(noteFilter.animeNameKeyword)}%'";
     }
     if (noteFilter.noteContentKeyword.isNotEmpty) {
       likeNoteContentSql =
-          "and note_content like '%${noteFilter.noteContentKeyword}%'";
+          "and note_content like '%${escapeStr(noteFilter.noteContentKeyword)}%'";
     }
     String sql = '''
       select anime.*, history.date, episode_note.episode_number, episode_note.review_number, episode_note.note_id, episode_note.note_content
