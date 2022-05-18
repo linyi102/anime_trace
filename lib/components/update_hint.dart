@@ -75,7 +75,7 @@ class _UpdateHintState extends State<UpdateHint> {
       debugPrint(e.toString());
     }
 
-    latestVersionInfo.version = "9.99";
+    // latestVersionInfo.version = "9.99";
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
     if (currentVersion.compareTo(latestVersionInfo.version) < 0) {
       foundNewVersion = true;
