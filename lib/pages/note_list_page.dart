@@ -62,12 +62,12 @@ class _NoteListPageState extends State<NoteListPage> {
           _buildActions(),
         ],
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            _loadData();
-          },
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _loadData();
+        },
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
           child: !_loadOk
               ? Container(
                   key: UniqueKey(),
@@ -190,7 +190,7 @@ class _NoteListPageState extends State<NoteListPage> {
       //       episodeNotes[index].anime.animeId),
       // ),
       FadeRoute(
-        transitionDuration: const Duration(milliseconds: 0),
+        transitionDuration: const Duration(milliseconds: 200),
         builder: (context) {
           return AnimeDetailPlus(episodeNotes[episodeNoteindex].anime.animeId);
         },

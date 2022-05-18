@@ -490,8 +490,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _buildEpisodeInfo() {
     if (!_loadEpisodeOk) {
-      return const SliverToBoxAdapter(
-          child: Center(child: RefreshProgressIndicator()));
+      // return const SliverToBoxAdapter(
+      //     child: Center(child: RefreshProgressIndicator()));
+      return SliverToBoxAdapter(
+          child: SizedBox(
+        key: UniqueKey(),
+      ));
     }
 
     return SliverList(
