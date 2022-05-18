@@ -302,7 +302,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),
-        itemBuilder: (BuildContext context) {
+        itemBuilder: (BuildContext popMenuContext) {
           return [
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
@@ -332,7 +332,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   } else {
                     showToast("网址为空，请先迁移动漫");
                   }
-                  Navigator.pop(context);
+                  Navigator.pop(popMenuContext);
                 },
               ),
             ),
@@ -343,7 +343,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 style: ListTileStyle.drawer,
                 trailing: const Icon(Icons.change_circle_outlined),
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.of(popMenuContext).push(
                     FadeRoute(
                       builder: (context) {
                         return AnimeClimbAllWebsite(
@@ -354,7 +354,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     ),
                   ).then((value) {
                     _loadData();
-                    Navigator.pop(context);
+                    Navigator.pop(popMenuContext);
                   });
                 },
               ),
@@ -366,7 +366,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 trailing: const Icon(Icons.edit),
                 style: ListTileStyle.drawer,
                 onTap: () {
-                  _dialogUpdateAnimeName();
+                  _dialogUpdateAnimeName(popMenuContext);
                 },
               ),
             ),
@@ -1383,7 +1383,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
   }
 
-  void _dialogUpdateAnimeName() {
+  void _dialogUpdateAnimeName(popMenuContext) {
     var animeNameController = TextEditingController();
     showDialog(
       context: context,
@@ -1424,7 +1424,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 _anime.animeName = animeNameController.text;
                 setState(() {});
                 Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.pop(popMenuContext);
               },
               child: const Text('确定'),
             ),
