@@ -87,11 +87,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   void _loadData() async {
-    _episodes = [];
-    _episodeNotes = [];
-    _loadEpisodeOk = false;
-    // currentStartEpisodeNumber = 1; // 不能重新赋值，因为选择范围后，需要用到currentStartEpisodeNumber来重新_loadData
+    await _loadAnime();
+    _loadEpisode();
+  }
 
+  Future<bool> _loadAnime() async {
     _anime = await SqliteUtil.getAnimeByAnimeId(
         widget.animeId); // 一定要return，value才有值
     // 如果没有从数据库中找到，则直接退出该页面
@@ -101,9 +101,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }
     _loadAnimeOk = true;
     setState(() {});
+    return true;
+  }
 
-    // 起始集编号>动漫集数，则从最后一个范围开始
-    if (currentStartEpisodeNumber > _anime.animeEpisodeCnt) {
+  void _loadEpisode() async {
+    _episodes = [];
+    _episodeNotes = [];
+    _loadEpisodeOk = false;
+    setState(() {});
+
+    if (_anime.animeEpisodeCnt == 0) {
+      // 如果为0，则不修改currentStartEpisodeNumber
+    } else if (currentStartEpisodeNumber > _anime.animeEpisodeCnt) {
+      // 起始集编号>动漫集数，则从最后一个范围开始x
       // 修改后集数为260，则(260/50)=5.2=5, 5*50=250, 250+1=251
       // 修改后集数为250，则(250/50)=5，(5-1)*50=200, 200+1=201，也就是251-50
       currentStartEpisodeNumber =
@@ -1096,7 +1106,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               currentStartEpisodeNumber);
           Navigator.of(dialogContext).pop();
           // 获取集数据
-          _loadData();
+          _loadEpisode();
         },
       ));
     }
@@ -1156,7 +1166,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       //     _anime.animeId, _anime.reviewNumber);
                       SqliteUtil.updateAnime(_anime, _anime);
                       // 不相等才设置并重新加载数据
-                      _loadData();
+                      _loadEpisode();
                     }
                   }
                 });
@@ -1194,7 +1204,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                             _anime.animeId, episodeCnt)
                         .then((value) {
                       // 重新获取数据
-                      _loadData();
+                      _anime.animeEpisodeCnt = episodeCnt;
+                      _loadEpisode();
                     });
                   });
                 },
