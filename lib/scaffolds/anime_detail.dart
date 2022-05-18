@@ -1097,7 +1097,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
     List<ListTile> listTiles = [];
     for (var startEpisodeNumber = 1;
-        startEpisodeNumber < _anime.animeEpisodeCnt;
+        startEpisodeNumber <= _anime.animeEpisodeCnt;
         startEpisodeNumber += episodeRangeSize) {
       listTiles.add(ListTile(
         title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
