@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:url_launcher/url_launcher.dart';
@@ -72,16 +73,16 @@ class _AboutVersionState extends State<AboutVersion> {
       subtitle: loadOk ? Text("当前版本: ${packageInfo.version}") : const Text(""),
       onTap: () {
         if (checkLatestVersion) {
-          // 如果已经点击了一次检查更新，则下次点击不再获取最新版本
-          return;
-          // 下面方法不行，可能是因为合并了setState
-          // // 如果已经点击了一次检查更新，则需要重新渲染没有隐藏更新对话框的页面
-          // checkLatestVersion = false;
-          // setState(() {});
-          // // 然后再渲染有更新对话框的页面
+          checkLatestVersion = false;
+          setState(() {});
         }
-        checkLatestVersion = true;
-        setState(() {});
+        // 必须推迟，否则可能会合并setState
+        // 然后再渲染有更新对话框的页面
+        Future.delayed(const Duration(milliseconds: 200)).then((value) {
+          showToast("正在获取最新版本...");
+          checkLatestVersion = true;
+          setState(() {});
+        });
       },
     ));
     for (var i = 0; i < _uris.length; i++) {

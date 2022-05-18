@@ -75,6 +75,7 @@ class _UpdateHintState extends State<UpdateHint> {
       debugPrint(e.toString());
     }
 
+    latestVersionInfo.version = "9.99";
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
     if (currentVersion.compareTo(latestVersionInfo.version) < 0) {
       foundNewVersion = true;
@@ -103,69 +104,76 @@ class _UpdateHintState extends State<UpdateHint> {
   @override
   Widget build(BuildContext context) {
     return showUpdateDialog
-        ? Material(
-            // 透明
-            color: const Color.fromRGBO(100, 100, 100, 0.5),
-            child: Container(
-              color: Colors.transparent, // 必须要有颜色(透明色也可)，否则无法点击
-              // 不需要设置宽高
-              // height: MediaQuery.of(context).size.height,
-              // width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AlertDialog(
-                    title: const Text("版本更新"),
-                    content: Text(
-                        "检测到新版本：${latestVersionInfo.version}\n当前版本：$currentVersion\n更新内容：\n${latestVersionInfo.desc}"),
-                    actions: [
-                      // 如果是检查更新，则不显示忽略当前版本，而是显示取消
-                      widget.forceShowUpdateDialog
-                          ? TextButton(
-                              onPressed: () {
-                                // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
-                                // Navigator.of(context).pop();
-                                // 不显示对话框
-                                showUpdateDialog = false;
-                                setState(() {});
-                              },
-                              child: const Text("取消"),
-                            )
-                          : TextButton(
-                              onPressed: () {
-                                showUpdateDialog = false;
-                                SPUtil.setBool(
-                                    "ignore${latestVersionInfo.version}", true);
-                                setState(() {});
-                              },
-                              child: const Text("忽略当前版本"),
-                            ),
+        ? WillPopScope(
+            onWillPop: () async {
+              return false;
+            },
+            child: Material(
+              // 透明
+              color: const Color.fromRGBO(100, 100, 100, 0.5),
+              child: Container(
+                color: Colors.transparent, // 必须要有颜色(透明色也可)，否则无法点击
+                // 不需要设置宽高
+                // height: MediaQuery.of(context).size.height,
+                // width: MediaQuery.of(context).size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AlertDialog(
+                      title: const Text("版本更新"),
+                      content: Text(
+                          "检测到新版本：${latestVersionInfo.version}\n当前版本：$currentVersion\n更新内容：\n${latestVersionInfo.desc}"),
+                      actions: [
+                        // 手动检查更新时，不显示忽略当前版本
+                        widget.forceShowUpdateDialog
+                            ? const SizedBox.shrink()
+                            : TextButton(
+                                onPressed: () {
+                                  showUpdateDialog = false;
+                                  SPUtil.setBool(
+                                      "ignore${latestVersionInfo.version}",
+                                      true);
+                                  setState(() {});
+                                },
+                                child: const Text("忽略当前版本"),
+                              ),
+                        TextButton(
+                          onPressed: () {
+                            // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
+                            // Navigator.of(context).pop();
+                            // 不显示对话框
+                            showUpdateDialog = false;
+                            setState(() {});
+                          },
+                          child: const Text("关闭"),
+                        ),
 
-                      TextButton(
-                        onPressed: () async {
-                          showUpdateDialog = false;
-                          setState(() {});
+                        TextButton(
+                          onPressed: () async {
+                            showUpdateDialog = false;
+                            setState(() {});
 
-                          // 打开下载页面
-                          Uri uri = Uri.parse(
-                              "https://gitee.com/linyi517/anime_trace");
-                          if (!await launchUrl(uri,
-                              mode: LaunchMode.externalApplication)) {
-                            throw "Could not launch $uri";
-                          }
-                        },
-                        child: const Text("手动更新"),
-                      ),
-                      // TextButton(
-                      //   onPressed: () {
-                      //     showUpdateDialog = false;
-                      //     setState(() {});
-                      //   },
-                      //   child: const Text("自动更新"),
-                      // ),
-                    ],
-                  )
-                ],
+                            // 打开下载页面
+                            Uri uri = Uri.parse(
+                                "https://gitee.com/linyi517/anime_trace");
+                            if (!await launchUrl(uri,
+                                mode: LaunchMode.externalApplication)) {
+                              throw "Could not launch $uri";
+                            }
+                          },
+                          child: const Text("手动更新"),
+                        ),
+                        // TextButton(
+                        //   onPressed: () {
+                        //     showUpdateDialog = false;
+                        //     setState(() {});
+                        //   },
+                        //   child: const Text("自动更新"),
+                        // ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           )
