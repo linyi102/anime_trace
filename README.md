@@ -2,13 +2,13 @@
 
 ## 下载地址
 
-[蓝奏云(推荐，密码：eocv)](https://wwc.lanzouw.com/b01uyqcrg?password=eocv) / [百度网盘](https://pan.baidu.com/s/1_0uQaPOutt3CoTlumZV-_g?pwd=qgbx)<br />Android 端下载 apk 文件，Windows 端下载 zip 文件。<br />
-**注意：如果没有使用备份功能，更新 App 时需要覆盖安装。不要卸载 App 后再安装新版本，否则会造成数据丢失！**
+[蓝奏云(密码：eocv)](https://wwc.lanzouw.com/b01uyqcrg?password=eocv)<br />Android 端下载 apk 文件，Windows 端下载 zip 文件。<br />
+**注意：如果没有使用备份功能，更新 App 时需要覆盖安装。在没有备份的情况下不要卸载 App 后再安装新版本，否则会造成数据丢失！**
 
 ## 介绍
 
 因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。<br />
-所以就尝试做了这个软件，效果演示如下：
+所以尝试做了个软件，效果演示如下：
 
 ![](./assets/images/漫迹example.png)
 
