@@ -9,7 +9,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 
 class BackupUtil {
-  static String backupZipNamePrefix = "manji-backup";
+  static String backupZipNamePrefix = "backup";
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
@@ -33,9 +33,14 @@ class BackupUtil {
     bool showToastFlag = true,
     bool automatic = false,
   }) async {
-    DateTime dateTime = DateTime.now();
-    String time =
-        "${dateTime.year}-${dateTime.month}-${dateTime.day}-${dateTime.hour}-${dateTime.minute}-${dateTime.second}";
+    // DateTime dateTime = DateTime.now();
+    // String time =
+    //     "${dateTime.year}-${dateTime.month}-${dateTime.day}-${dateTime.hour}-${dateTime.minute}-${dateTime.second}"; // 不足：没有用两位数显示<10的数
+    // 2020-02-22 01:01:01.182096取到秒
+    String time = DateTime.now().toString().split(".")[0];
+    // :和空格转为-
+    time = time.replaceAll(":", "-");
+    time = time.replaceAll(" ", "-");
 
     var encoder = ZipFileEncoder();
     String localRootDirPath = await getLocalRootDirPath();
@@ -150,9 +155,12 @@ class BackupUtil {
         SPUtil.getInt("autoBackupWebDavNumber", defaultValue: 20);
     for (int i = 0; i < totalNumber - autoBackupWebDavNumber; ++i) {
       String? path = files[i].path;
-      if (path != null && path.startsWith(
-          // "/animetrace/automatic/animetrace-backup") && // 注意路径不是以animetrace-backup开头
-          "/animetrace/automatic/$backupZipNamePrefix") && path.endsWith(".zip")) {
+      if (path != null &&
+          path.contains('backup') && // 包含backup
+          // && path.startsWith(
+          // "/animetrace/automatic/animetrace-backup") && // 以animetrace-backup开头
+          // "/animetrace/automatic/$backupZipNamePrefix") && // 以$backupZipNamePrefix开头
+          path.endsWith(".zip")) {
         debugPrint("删除文件：$path");
         WebDavUtil.client.remove(path);
       }
