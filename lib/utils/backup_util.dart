@@ -9,6 +9,8 @@ import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 
 class BackupUtil {
+  static String backupZipNamePrefix = "manji-backup";
+
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
     if (Platform.isAndroid) {
@@ -39,9 +41,9 @@ class BackupUtil {
     String localRootDirPath = await getLocalRootDirPath();
     String zipName = "";
     if (Platform.isAndroid) {
-      zipName = "manji-backup-$time-android.zip";
+      zipName = "$backupZipNamePrefix-$time-android.zip";
     } else if (Platform.isWindows) {
-      zipName = "manji-backup-$time-windows.zip";
+      zipName = "$backupZipNamePrefix-$time-windows.zip";
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -148,10 +150,9 @@ class BackupUtil {
         SPUtil.getInt("autoBackupWebDavNumber", defaultValue: 20);
     for (int i = 0; i < totalNumber - autoBackupWebDavNumber; ++i) {
       String? path = files[i].path;
-      if (path != null &&
-          path.startsWith(
-              "/animetrace/automatic/animetrace-backup") && // 注意路径不是以animetrace-backup开头
-          path.endsWith(".zip")) {
+      if (path != null && path.startsWith(
+          // "/animetrace/automatic/animetrace-backup") && // 注意路径不是以animetrace-backup开头
+          "/animetrace/automatic/$backupZipNamePrefix") && path.endsWith(".zip")) {
         debugPrint("删除文件：$path");
         WebDavUtil.client.remove(path);
       }

@@ -193,7 +193,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               int? number = await dialogSelectUint(context, "自动备份数量",
                   initialValue: autoBackupWebDavNumber,
                   minValue: 10,
-                  maxValue: 100);
+                  maxValue: 20);
               if (number != null) {
                 autoBackupWebDavNumber = number;
                 SPUtil.setInt("autoBackupWebDavNumber", number);

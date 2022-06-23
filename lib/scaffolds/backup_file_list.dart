@@ -68,7 +68,7 @@ class _BackUpFileListState extends State<BackUpFileList> {
           num KBSize = (files[index].size ?? 0) / 1024;
 
           return ListTile(
-            title: Text("${index + 1}: $fileName"),
+            title: Text("${index + 1}. $fileName"),
             subtitle:
                 Text("$createdTime ${KBSize.toStringAsFixed(3)}KB"), // 保留3位小数
             onTap: () {
