@@ -1129,7 +1129,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       children: [
         _anime.animeEpisodeCnt > episodeRangeSize
             ? Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 12),
                 child: MaterialButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
@@ -1149,7 +1149,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   },
                   child: Row(
                     children: [
-                      const Icon(Icons.arrow_right),
+                      const Icon(
+                        Icons.arrow_right_rounded,
+                        size: 28,
+                      ),
                       const Text(" "),
                       Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
                     ],
@@ -1234,8 +1237,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
                 tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                 icon: hideNoteInAnimeDetail
-                    ? const Icon(Icons.expand_more)
-                    : const Icon(Icons.expand_less)),
+                    ? const Icon(Icons.open_in_full_rounded)
+                    : const Icon(Icons.close_fullscreen_outlined)),
           ],
         ),
       ],
@@ -1308,7 +1311,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       return false;
     }
     if (_climbing) {
-      if (_anime.isCollected()) showToast("正在获取信息，请勿重复刷新");
+      if (_anime.isCollected()) showToast("正在获取信息");
       return false;
     }
     if (_anime.isCollected()) showToast("更新中...");
