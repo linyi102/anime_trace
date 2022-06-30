@@ -180,27 +180,27 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   List<Widget> _getActions() {
     List<Widget> actions = [];
-    actions.add(
-      IconButton(
-        onPressed: () async {
-          Navigator.of(context).push(
-            // MaterialPageRoute(
-            //   builder: (context) => const Search(),
-            // ),
-            FadeRoute(
-              builder: (context) {
-                return const SearchDbAnime();
-              },
-            ),
-          ).then((value) {
-            debugPrint("更新在搜索页面里进行的修改");
-            _loadData();
-          });
-        },
-        icon: const Icon(Icons.search_outlined),
-        tooltip: "搜索动漫",
-      ),
-    );
+    // actions.add(
+    //   IconButton(
+    //     onPressed: () async {
+    //       Navigator.of(context).push(
+    //         // MaterialPageRoute(
+    //         //   builder: (context) => const Search(),
+    //         // ),
+    //         FadeRoute(
+    //           builder: (context) {
+    //             return const SearchDbAnime();
+    //           },
+    //         ),
+    //       ).then((value) {
+    //         debugPrint("更新在搜索页面里进行的修改");
+    //         _loadData();
+    //       });
+    //     },
+    //     icon: const Icon(Icons.search_outlined),
+    //     tooltip: "搜索动漫",
+    //   ),
+    // );
     return actions;
   }
 

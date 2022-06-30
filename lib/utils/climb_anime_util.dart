@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 
 class ClimbAnimeUtil {
   // 全局刷新动漫封面
@@ -111,7 +115,11 @@ class ClimbAnimeUtil {
         debugPrint("爬取封面：${anime.animeCoverUrl}");
         animes.add(anime);
       }
+    } on DioError catch (e) {
+      debugPrint(e.toString());
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
+      debugPrint("捕获到其他错误");
       debugPrint(e.toString());
     }
     return animes;
@@ -237,7 +245,11 @@ class ClimbAnimeUtil {
 
         climbAnimes.add(climbAnime);
       }
+    } on DioError catch (e) {
+      debugPrint(e.toString());
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
+      debugPrint("捕获到其他错误");
       debugPrint(e.toString());
     }
     debugPrint("解析完毕√");
@@ -287,7 +299,11 @@ class ClimbAnimeUtil {
         climbAnimes[i].animeUrl = animeUrl == null ? "" : (baseUrl + animeUrl);
         debugPrint("爬取动漫网址：${climbAnimes[i].animeUrl}");
       }
+    } on DioError catch (e) {
+      debugPrint(e.toString());
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
+      debugPrint("捕获到其他错误");
       debugPrint(e.toString());
     }
     debugPrint("解析完毕√");
@@ -350,8 +366,11 @@ class ClimbAnimeUtil {
       // 获取集数
       String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
       anime.animeEpisodeCnt = _parseEpisodeCntOfyhdm(episodeCntStr);
+      showToast("更新信息成功");
+    } on DioError catch (e) {
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("捕获到其他错误");
     }
     debugPrint(anime.toString());
     return anime;
@@ -378,7 +397,11 @@ class ClimbAnimeUtil {
           .getElementsByTagName("a")[0]
           .innerHtml;
       debugPrint("解析完毕√");
+    } on DioError catch (e) {
+      debugPrint(e.toString());
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
+      debugPrint("捕获到其他错误");
       debugPrint(e.toString());
     }
     debugPrint(anime.toString());
@@ -403,10 +426,11 @@ class ClimbAnimeUtil {
           break;
         }
       }
-
       debugPrint("解析完毕√");
+    } on DioError catch (e) {
+      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("捕获到其他错误");
     }
     debugPrint(anime.toString());
     return anime;

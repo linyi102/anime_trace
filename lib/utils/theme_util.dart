@@ -99,8 +99,8 @@ class ThemeUtil {
   // 笔记列表页的背景色
   static Color getNoteListBackgroundColor() {
     return themeController.isDarkMode.value
-        // ? const Color.fromRGBO(25, 25, 25, 1)
-        ? const Color.fromRGBO(66, 66, 66, 1)
+        ? const Color.fromRGBO(39, 39, 39, 0.8)
+        // ? const Color.fromRGBO(66, 66, 66, 1)
         // : const Color.fromRGBO(235, 236, 240, 1);
         : const Color.fromRGBO(245, 245, 245, 1);
   }

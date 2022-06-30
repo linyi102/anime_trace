@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
@@ -22,6 +24,14 @@ void main() async {
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.ensureDBTable(); // 必须要用await
 
+  // runZonedGuarded(() {
+  //   runApp(const GetMaterialApp(
+  //     home: MyApp(),
+  //   ));
+  // }, (e, s) {
+  //   debugPrint("捕获到异常");
+  //   e.printError();
+  // });
   // runApp(const MyApp());
   runApp(const GetMaterialApp(
     home: MyApp(),

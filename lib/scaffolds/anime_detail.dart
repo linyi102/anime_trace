@@ -1343,7 +1343,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     _anime = newAnime;
     _climbing = false;
     setState(() {});
-    if (_anime.isCollected()) showToast("更新信息成功");
     return true;
   }
 
