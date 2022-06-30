@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
@@ -1122,123 +1123,139 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     return listTiles;
   }
 
+  // 动漫信息下面的操作栏
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        _anime.animeEpisodeCnt > episodeRangeSize
-            ? Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: MaterialButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text("选择范围"),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              children: _buildEpisodeRangeListTiles(context),
-                            ),
-                          ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: ExpandText(
+            _anime.animeDesc,
+            textAlign: TextAlign.justify,
+            maxLines: 2,
+            style: TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _anime.animeEpisodeCnt > episodeRangeSize
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: MaterialButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("选择范围"),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children:
+                                      _buildEpisodeRangeListTiles(context),
+                                ),
+                              ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.arrow_right_rounded,
-                        size: 28,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.arrow_right_rounded,
+                            size: 28,
+                          ),
+                          const Text(" "),
+                          Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
+                        ],
                       ),
-                      const Text(" "),
-                      Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
-                    ],
-                  ),
-                ),
-              )
-            : Container(),
-        Expanded(child: Container()),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: () {
-                dialogSelectUint(context, "选择第 n 次观看",
-                        initialValue: _anime.reviewNumber,
-                        minValue: 1,
-                        maxValue: 6)
-                    .then((value) {
-                  if (value != null) {
-                    if (_anime.reviewNumber != value) {
-                      _anime.reviewNumber = value;
-                      // SqliteUtil.updateAnimeReviewNumberByAnimeId(
-                      //     _anime.animeId, _anime.reviewNumber);
-                      SqliteUtil.updateAnime(_anime, _anime);
-                      // 不相等才设置并重新加载数据
-                      _loadEpisode();
-                    }
-                  }
-                });
-              },
-              icon: showReviewNumberIcon(),
-            ),
-            IconButton(
-                onPressed: () {
-                  _dialogSelectSortMethod();
-                },
-                tooltip: "排序方式",
-                icon: const Icon(Icons.sort)),
-            IconButton(
-                onPressed: () {
-                  dialogSelectUint(context, "修改集数",
-                          initialValue: _anime.animeEpisodeCnt,
-                          // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-                          // initialValue: initialValue,
-                          // 添加选择集范围后，就不能传入已有的集长度了。
-                          // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-                          minValue: 0,
-                          maxValue: 2000)
-                      .then((value) {
-                    if (value == null) {
-                      debugPrint("未选择，直接返回");
-                      return;
-                    }
-                    // if (value == _episodes.length) {
-                    if (value == _anime.animeEpisodeCnt) {
-                      debugPrint("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
-                      return;
-                    }
-                    int episodeCnt = value;
-                    SqliteUtil.updateEpisodeCntByAnimeId(
-                            _anime.animeId, episodeCnt)
+                    ),
+                  )
+                : Container(),
+            Expanded(child: Container()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    dialogSelectUint(context, "选择第 n 次观看",
+                            initialValue: _anime.reviewNumber,
+                            minValue: 1,
+                            maxValue: 6)
                         .then((value) {
-                      // 重新获取数据
-                      _anime.animeEpisodeCnt = episodeCnt;
-                      _loadEpisode();
+                      if (value != null) {
+                        if (_anime.reviewNumber != value) {
+                          _anime.reviewNumber = value;
+                          // SqliteUtil.updateAnimeReviewNumberByAnimeId(
+                          //     _anime.animeId, _anime.reviewNumber);
+                          SqliteUtil.updateAnime(_anime, _anime);
+                          // 不相等才设置并重新加载数据
+                          _loadEpisode();
+                        }
+                      }
                     });
-                  });
-                },
-                tooltip: "更改集数",
-                icon: const Icon(Icons.mode)),
-            IconButton(
-                onPressed: () {
-                  if (hideNoteInAnimeDetail) {
-                    // 原先隐藏，则设置为false，表示显示
-                    SPUtil.setBool("hideNoteInAnimeDetail", false);
-                    hideNoteInAnimeDetail = false;
-                  } else {
-                    SPUtil.setBool("hideNoteInAnimeDetail", true);
-                    hideNoteInAnimeDetail = true;
-                  }
-                  setState(() {});
-                },
-                tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
-                icon: hideNoteInAnimeDetail
-                    ? const Icon(Icons.open_in_full_rounded)
-                    : const Icon(Icons.close_fullscreen_outlined)),
+                  },
+                  icon: showReviewNumberIcon(),
+                ),
+                IconButton(
+                    onPressed: () {
+                      _dialogSelectSortMethod();
+                    },
+                    tooltip: "排序方式",
+                    icon: const Icon(Icons.sort)),
+                IconButton(
+                    onPressed: () {
+                      dialogSelectUint(context, "修改集数",
+                              initialValue: _anime.animeEpisodeCnt,
+                              // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+                              // initialValue: initialValue,
+                              // 添加选择集范围后，就不能传入已有的集长度了。
+                              // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
+                              minValue: 0,
+                              maxValue: 2000)
+                          .then((value) {
+                        if (value == null) {
+                          debugPrint("未选择，直接返回");
+                          return;
+                        }
+                        // if (value == _episodes.length) {
+                        if (value == _anime.animeEpisodeCnt) {
+                          debugPrint(
+                              "设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
+                          return;
+                        }
+                        int episodeCnt = value;
+                        SqliteUtil.updateEpisodeCntByAnimeId(
+                                _anime.animeId, episodeCnt)
+                            .then((value) {
+                          // 重新获取数据
+                          _anime.animeEpisodeCnt = episodeCnt;
+                          _loadEpisode();
+                        });
+                      });
+                    },
+                    tooltip: "更改集数",
+                    icon: const Icon(Icons.mode)),
+                IconButton(
+                    onPressed: () {
+                      if (hideNoteInAnimeDetail) {
+                        // 原先隐藏，则设置为false，表示显示
+                        SPUtil.setBool("hideNoteInAnimeDetail", false);
+                        hideNoteInAnimeDetail = false;
+                      } else {
+                        SPUtil.setBool("hideNoteInAnimeDetail", true);
+                        hideNoteInAnimeDetail = true;
+                      }
+                      setState(() {});
+                    },
+                    tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
+                    icon: hideNoteInAnimeDetail
+                        ? const Icon(Icons.open_in_full_rounded)
+                        : const Icon(Icons.close_fullscreen_outlined)),
+              ],
+            ),
           ],
         ),
       ],

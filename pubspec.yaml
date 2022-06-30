@@ -32,10 +32,11 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  expand_widget: ^2.1.0
   get: ^4.6.1 # 4.6.3不支持SDK2.15，必须大于2.15
   # animations: ^2.0.2
   shared_preferences: ^2.0.9
-  sqflite: ^2.0.1  # 不支持windows，可使用sqflite_common_ffi
+  sqflite: ^2.0.1 # 不支持windows，可使用sqflite_common_ffi
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
   # file: ^6.1.2
@@ -132,10 +133,10 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  
+
   # fonts:
   # - family: yuan
   #   fonts:
-  #     - asset: assets/fonts/未来圆SC Regular.ttf  
+  #     - asset: assets/fonts/未来圆SC Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
