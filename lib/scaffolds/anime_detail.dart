@@ -228,8 +228,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               // 模糊
               child: ImageFiltered(
                 imageFilter: ImageFilter.blur(
-                  sigmaX: 20,
-                  sigmaY: 20,
+                  sigmaX: 10,
+                  sigmaY: 10,
                 ),
                 child: _anime.animeCoverUrl.isEmpty
                     ? Image.memory(kTransparentImage)

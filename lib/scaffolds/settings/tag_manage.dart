@@ -24,54 +24,6 @@ class _TagManageState extends State<TagManage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      var inputTagNameController = TextEditingController();
-                      return AlertDialog(
-                        title: const Text("添加标签"),
-                        content: TextField(
-                          controller: inputTagNameController,
-                          autofocus: true,
-                          decoration: const InputDecoration(
-                            labelText: "标签名称",
-                            border: InputBorder.none,
-                          ),
-                          maxLength: 10,
-                        ),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("取消")),
-                          ElevatedButton(
-                              onPressed: () async {
-                                String tagName = inputTagNameController.text;
-                                if (tagName.isEmpty) return;
-
-                                // 重名
-                                if (tags.contains(tagName)) {
-                                  showToast("重名，无法添加！");
-                                  return;
-                                }
-                                SqliteUtil.insertTagName(tagName, tags.length);
-                                // 更新tag表后，不需要重新全部获取，只需要在全局变量中添加即可
-                                // tags = await SqliteUtil.getAllTags();
-                                tags.add(tagName);
-                                setState(() {}); // FutureBuilder会重新build
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("确认")),
-                        ],
-                      );
-                    });
-              },
-              icon: const Icon(Icons.add))
-        ],
       ),
       body: ReorderableListView(
         children: _getTagListWidget(),
@@ -84,6 +36,55 @@ class _TagManageState extends State<TagManage> {
           SqliteUtil.updateTagOrder(tags);
           setState(() {});
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                var inputTagNameController = TextEditingController();
+                return AlertDialog(
+                  title: const Text("添加标签"),
+                  content: TextField(
+                    controller: inputTagNameController,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: "标签名称",
+                      border: InputBorder.none,
+                    ),
+                    maxLength: 10,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("取消")),
+                    ElevatedButton(
+                        onPressed: () async {
+                          String tagName = inputTagNameController.text;
+                          if (tagName.isEmpty) return;
+
+                          // 重名
+                          if (tags.contains(tagName)) {
+                            showToast("重名，无法添加！");
+                            return;
+                          }
+                          SqliteUtil.insertTagName(tagName, tags.length);
+                          // 更新tag表后，不需要重新全部获取，只需要在全局变量中添加即可
+                          // tags = await SqliteUtil.getAllTags();
+                          tags.add(tagName);
+                          setState(() {}); // FutureBuilder会重新build
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("确认")),
+                  ],
+                );
+              });
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
