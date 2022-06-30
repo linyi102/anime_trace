@@ -97,8 +97,16 @@ class MyAppState extends State<MyApp> {
     final ThemeController themeController = Get.put(ThemeController());
 
     return Obx(() => OKToast(
-          position: ToastPosition.center,
+          position: ToastPosition.top,
           dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
+          backgroundColor: Colors.white,
+          radius: 20,
+          textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.none),
           child: MaterialApp(
             title: '漫迹', // 后台应用显示名称
             home: const MyHome(),
