@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
@@ -88,7 +86,13 @@ class ClimbAnimeUtil {
   static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url) async {
     List<Anime> animes = [];
     try {
-      var response = await Dio().get(url);
+      Response response = await Dio().get(url);
+      // Result result = await DioPackage().get(url);
+      // if (result.code != 200) {
+      //   debugPrint("result.code != 200, result=" + result.toString());
+      //   return [];
+      // }
+      // var response = result.data;
       var document = parse(response.data);
       var lpic = document.getElementsByClassName("lpic")[0];
       var lis = lpic.getElementsByTagName("li");

@@ -53,6 +53,7 @@ class WebDavUtil {
       return false;
     } catch (e) {
       debugPrint("捕获到未知类型的错误");
+      return false;
     }
     SPUtil.setBool("online", true);
     SPUtil.setBool("login", true); // 表示用户想要登录，第一次登录后永远为true

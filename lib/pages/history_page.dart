@@ -171,7 +171,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget _buildOpYearButton() {
     int minYear = 1970, maxYear = DateTime.now().year + 2;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
       child: Row(
         children: [
           // Container(
@@ -191,68 +191,72 @@ class _HistoryPageState extends State<HistoryPage> {
           //   ),
           // ),
           Expanded(child: Container()), // 实现一个靠左，一个靠右
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(width: 1, color: Colors.black26)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      if (selectedYear - 1 < minYear) {
-                        return;
-                      }
-                      selectedYear--;
-                      // 没有加载过，才去查询数据库
-                      if (!yearLoadOk.containsKey(selectedYear)) {
-                        debugPrint("之前未查询过$selectedYear年，现查询");
-                        _loadData(selectedYear);
-                      } else {
-                        // 加载过，直接更新状态
-                        debugPrint("查询过$selectedYear年，直接更新状态");
-                        setState(() {});
-                      }
-                    },
-                    icon: const Icon(Icons.remove)),
-                TextButton(
-                    onPressed: () {
-                      dialogSelectUint(context, "选择年份",
-                              initialValue: selectedYear,
-                              minValue: minYear,
-                              maxValue: maxYear)
-                          .then((value) {
-                        if (value == null) {
-                          debugPrint("未选择，直接返回");
+          Transform.scale(
+            scale: 0.9,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(width: 1, color: Colors.black26)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        if (selectedYear - 1 < minYear) {
                           return;
                         }
-                        debugPrint("选择了$value");
-                        selectedYear = value;
-                        _loadData(selectedYear);
-                      });
-                    },
-                    child: Text("$selectedYear",
-                        textScaleFactor: 1.2,
-                        style: TextStyle(color: ThemeUtil.getFontColor()))),
-                IconButton(
-                    onPressed: () {
-                      if (selectedYear + 1 > maxYear) {
-                        showToast("前面的区域，以后再来探索吧！");
-                        return;
-                      }
-                      selectedYear++;
-                      // 没有加载过，才去查询数据库
-                      if (!yearLoadOk.containsKey(selectedYear)) {
-                        debugPrint("之前未查询过$selectedYear年，现查询");
-                        _loadData(selectedYear);
-                      } else {
-                        // 加载过，直接更新状态
-                        debugPrint("查询过$selectedYear年，直接更新状态");
-                        setState(() {});
-                      }
-                    },
-                    icon: const Icon(Icons.add)),
-              ],
+                        selectedYear--;
+                        // 没有加载过，才去查询数据库
+                        if (!yearLoadOk.containsKey(selectedYear)) {
+                          debugPrint("之前未查询过$selectedYear年，现查询");
+                          _loadData(selectedYear);
+                        } else {
+                          // 加载过，直接更新状态
+                          debugPrint("查询过$selectedYear年，直接更新状态");
+                          setState(() {});
+                        }
+                      },
+                      icon: const Icon(Icons.remove)),
+                  TextButton(
+                      onPressed: () {
+                        dialogSelectUint(context, "选择年份",
+                                initialValue: selectedYear,
+                                minValue: minYear,
+                                maxValue: maxYear)
+                            .then((value) {
+                          if (value == null) {
+                            debugPrint("未选择，直接返回");
+                            return;
+                          }
+                          debugPrint("选择了$value");
+                          selectedYear = value;
+                          _loadData(selectedYear);
+                        });
+                      },
+                      child: Text("$selectedYear",
+                          textScaleFactor: 1.2,
+                          style: TextStyle(color: ThemeUtil.getFontColor()))),
+                  IconButton(
+                      onPressed: () {
+                        if (selectedYear + 1 > maxYear) {
+                          showToast("前面的区域，以后再来探索吧！");
+                          return;
+                        }
+                        selectedYear++;
+                        // 没有加载过，才去查询数据库
+                        if (!yearLoadOk.containsKey(selectedYear)) {
+                          debugPrint("之前未查询过$selectedYear年，现查询");
+                          _loadData(selectedYear);
+                        } else {
+                          // 加载过，直接更新状态
+                          debugPrint("查询过$selectedYear年，直接更新状态");
+                          setState(() {});
+                        }
+                      },
+                      icon: const Icon(Icons.add)),
+                ],
+              ),
             ),
           ),
         ],
