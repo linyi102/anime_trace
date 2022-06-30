@@ -171,6 +171,7 @@ class _NoteListPageState extends State<NoteListPage> {
               // padding: const EdgeInsets.all(0),
               child: ListTile(
                 title: const Text("更多设置"),
+                trailing: const Icon(Icons.settings),
                 style: ListTileStyle.drawer,
                 onTap: () {
                   Navigator.pop(context);

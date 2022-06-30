@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SPUtil {
@@ -38,6 +39,7 @@ class SPUtil {
   }
 
   static Future<bool> clear() async {
+    debugPrint("清空sharedPreferences");
     return await _sharedPreferences.clear();
   }
 }

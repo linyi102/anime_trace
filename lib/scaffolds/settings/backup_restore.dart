@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/backup_file_list.dart';
@@ -230,6 +231,13 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
         [inputUriController, inputUserController, inputPasswordController]);
     List<String> keys = ["webdav_uri", "webdav_user", "webdav_password"];
     List<String> labelTexts = ["服务器地址", "账号", "密码"];
+    List<String> defaultContent = ["https://dav.jianguoyun.com/dav/", "", ""];
+    // List<List<String>> autofillHintsList = [
+    //   [],
+    //   [AutofillHints.username],
+    //   [AutofillHints.password]
+    // ];
+
     List<Widget> listTextFields = [];
     for (int i = 0; i < keys.length; ++i) {
       listTextFields.add(
@@ -238,17 +246,18 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               ? true
               : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
           controller: controllers[i]
-            ..text = SPUtil.getString(keys[i], defaultValue: ""),
+            ..text = SPUtil.getString(keys[i], defaultValue: defaultContent[i]),
           decoration: InputDecoration(
             labelText: labelTexts[i],
             border: InputBorder.none,
           ),
+          // autofillHints: autofillHintsList[i],
         ),
       );
     }
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text("账号配置"),
           content: SingleChildScrollView(
@@ -259,7 +268,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(dialogContext).pop();
                 },
                 child: const Text("取消")),
             ElevatedButton(
@@ -268,6 +277,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   String user = inputUserController.text;
                   String password = inputPasswordController.text;
                   if (uri.isEmpty || user.isEmpty || password.isEmpty) {
+                    // TODO 想要将消息显示在对话框上层，可是为什么指定了dialogContext就不会显示消息了？
+                    // showToast("请将信息填入完整！", context: dialogContext);
                     showToast("请将信息填入完整！");
                     return;
                   }
@@ -277,11 +288,10 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   if (await WebDavUtil.initWebDav(uri, user, password)) {
                     showToast("连接成功！");
                     setState(() {});
-                    Navigator.of(context).pop();
+                    Navigator.of(dialogContext).pop();
                   } else {
                     // 无法观察到弹出消息，因为对话框遮住了弹出消息，因此需要移动到最下面
-                    showToast("无法连接，请确保输入正确和网络正常！",
-                        position: ToastPosition.bottom);
+                    showToast("无法连接，请确保输入正确和网络正常！");
                     // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
                     setState(() {});
                   }

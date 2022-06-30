@@ -99,11 +99,14 @@ class MyAppState extends State<MyApp> {
     return Obx(() => OKToast(
           position: ToastPosition.top,
           dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
-          backgroundColor: Colors.white,
+          backgroundColor:
+              themeController.isDarkMode.value ? Colors.white : Colors.black,
           radius: 20,
           textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          textStyle: const TextStyle(
-              color: Colors.black,
+          textStyle: TextStyle(
+              color: themeController.isDarkMode.value
+                  ? Colors.black
+                  : Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.w600,
               decoration: TextDecoration.none),
