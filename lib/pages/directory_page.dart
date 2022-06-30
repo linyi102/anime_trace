@@ -12,6 +12,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -473,6 +474,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
                         directory[index] = value;
                       });
                     });
+                  } else {
+                    showToast("收藏后即可进入详细页面");
                   }
                 },
                 child: Row(
