@@ -1089,12 +1089,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         });
   }
 
+  // 获取当前集范围的字符串形式
   String _getEpisodeRangeStr(int startEpisodeNumber) {
     int endEpisodeNumber = startEpisodeNumber + episodeRangeSize - 1;
     if (endEpisodeNumber > _anime.animeEpisodeCnt) {
       endEpisodeNumber = _anime.animeEpisodeCnt;
     }
-    return "$startEpisodeNumber-$endEpisodeNumber";
+
+    return startEpisodeNumber.toString().padLeft(2, '0') + "-$endEpisodeNumber";
   }
 
   List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
