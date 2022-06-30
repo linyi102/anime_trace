@@ -123,10 +123,26 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
+          // trailing: Container(
+          //   padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(3),
+          //     color: Colors.blue,
+          //   ),
+          //   child: Text(
+          //     record.startEpisodeNumber == record.endEpisodeNumber
+          //         ? "${record.startEpisodeNumber}"
+          //         : "${record.startEpisodeNumber}-${record.endEpisodeNumber}",
+          //     textScaleFactor: 0.9,
+          //     style: const TextStyle(color: Colors.white),
+          //   ),
+          // ),
           trailing: Text(
-            record.startEpisodeNumber == record.endEpisodeNumber
-                ? "${record.startEpisodeNumber}"
-                : "${record.startEpisodeNumber}-${record.endEpisodeNumber}",
+            "[" +
+                (record.startEpisodeNumber == record.endEpisodeNumber
+                    ? record.startEpisodeNumber.toString().padLeft(2, '0')
+                    : "${record.startEpisodeNumber.toString().padLeft(2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}") +
+                "]",
             textScaleFactor: 0.9,
           ),
           onTap: () {

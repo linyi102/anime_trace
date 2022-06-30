@@ -262,7 +262,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                                 child: Container(
                                   // height: 20,
                                   padding:
-                                      const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                      const EdgeInsets.fromLTRB(3, 2, 3, 2),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(3),
                                     color: Colors.blue,
