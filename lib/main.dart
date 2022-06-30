@@ -149,12 +149,17 @@ class MyAppState extends State<MyApp> {
                     : Colors.black54,
                 labelColor: Colors.blue, // 选中的tab字体颜色
               ),
+              // 滚动条主题
               scrollbarTheme: ScrollbarThemeData(
                 showTrackOnHover: true,
                 thickness: MaterialStateProperty.all(5),
                 interactive: true,
                 radius: const Radius.circular(10),
-                // thumbColor: MaterialStateProperty.all(Colors.blueGrey),
+                thumbColor: MaterialStateProperty.all(
+                  themeController.isDarkMode.value
+                      ? const Color.fromRGBO(84, 84, 84, 1)
+                      : null,
+                ),
               ),
               pageTransitionsTheme: const PageTransitionsTheme(
                 builders: <TargetPlatform, PageTransitionsBuilder>{
