@@ -260,11 +260,16 @@ class ClimbAnimeUtil {
   static Future<List<Anime>> _climbAnimesByKeywordOfOmoFun(
       String keyword) async {
     String baseUrl = "https://omofun.tv";
-    String url = baseUrl + "/index.php/vod/search.html?wd=$keyword";
+    String url = baseUrl + "/vod/search.html?wd=$keyword";
     List<Anime> climbAnimes = [];
 
     debugPrint("正在获取文档...");
-    var response = await Dio().get(url);
+    Result result = await DioPackage().get(url);
+    if (result.code != 200) {
+      showToast(result.msg);
+      return [];
+    }
+    Response response = result.data;
     var document = parse(response.data);
     debugPrint("获取文档成功√，正在解析...");
 

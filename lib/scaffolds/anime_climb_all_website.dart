@@ -271,7 +271,11 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                               ),
                             ),
                           ) // 搜索时显示加载圈
-                        : Container() // 没有搜索则什么都不显示
+                        : Container(), // 没有搜索则什么都不显示
+                // 最下面(最后一个搜索源)填充空白
+                index == websiteClimbAnimes.length - 1
+                    ? const SizedBox(height: 50)
+                    : Container()
               ],
             );
           },

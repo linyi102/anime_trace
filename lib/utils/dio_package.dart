@@ -1,4 +1,5 @@
 import 'package:dart_ping/dart_ping.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
@@ -14,7 +15,21 @@ class DioPackage {
 
   Future<Result> get<T>(String path) async {
     try {
-      Response response = await Dio(_baseOptions).request(path);
+      /**
+      I/flutter ( 1540): e.message=HandshakeException: Handshake error in client (OS Error:
+      I/flutter ( 1540):      CERTIFICATE_VERIFY_FAILED: certificate has expired(handshake.cc:359))
+       */
+      // 来源：https://www.cnblogs.com/MingGyGy-Castle/p/13761327.html
+      // OmoFun搜索动漫时会报错，因此添加证书验证，不再直接使用Response response = await Dio(_baseOptions).request(path);
+      Dio dio = Dio();
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (client) {
+        client.badCertificateCallback = (cert, host, port) {
+          return true;
+        };
+      };
+      Response response = await dio.request(path);
+
       return Result.success(response);
     } catch (e) {
       String msg = ErrorFormatUtil.formatError(e);

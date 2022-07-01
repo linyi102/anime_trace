@@ -142,7 +142,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                               borderRadius: BorderRadius.circular(2),
                               color: Colors.blue),
                           indicatorPadding: const EdgeInsets.only(
-                              left: 15, right: 15, top: 40),
+                              left: 20, right: 20, top: 39),
                           indicatorWeight: 3, // 指示器高度
                         ),
                       ),

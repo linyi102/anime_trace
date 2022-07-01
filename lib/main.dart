@@ -156,6 +156,7 @@ class MyAppState extends State<MyApp> {
                   return Colors.blue;
                 }
               })),
+              backgroundColor: Colors.black,
               bottomNavigationBarTheme: const BottomNavigationBarThemeData(
                   selectedItemColor: Colors.blue),
               textButtonTheme: TextButtonThemeData(

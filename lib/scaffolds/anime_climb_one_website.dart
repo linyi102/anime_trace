@@ -117,7 +117,21 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       body: Column(
         children: [
           ListTile(
-            title: Text(widget.climbWebStie.name),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.asset(
+                    widget.climbWebStie.iconAssetUrl,
+                    fit: BoxFit.fitWidth,
+                    width: 25,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(widget.climbWebStie.name)
+              ],
+            ),
           ),
           searchOk
               ? Expanded(child: _displayClimbAnime())

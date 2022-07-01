@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
+import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/scaffolds/source_detail.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -74,7 +76,7 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
           //   },
           // ),
           Container(
-            padding: const EdgeInsets.fromLTRB(0, 10, 20, 0),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -85,20 +87,18 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
                           BorderRadius.all(Radius.circular(50))), // 圆角
                   clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
                   child: MaterialButton(
-                      onPressed: _pingAllWebsites,
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                        child: const Text(
-                          "ping",
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      )),
+                    onPressed: _pingAllWebsites,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                      child: const Text(
+                        // "测试连通",
+                        // "P I N G",
+                        "ping",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                 )
-                // MaterialButton(
-                //     onPressed: () {
-                //       _pingAllWebsites();
-                //     },
-                //     child: const Text("测试连通"))
               ],
             ),
           ),
@@ -163,9 +163,14 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
             width: showPingDetail ? 35 : 25, // 没有副标题用25，有则用35
           ),
         ),
-        trailing: e.enable
-            ? const Icon(Icons.check_box, color: Colors.blue)
-            : const Icon(Icons.check_box_outline_blank),
+        trailing: IconButton(
+          onPressed: () {
+            _invertSource(e);
+          },
+          icon: e.enable
+              ? const Icon(Icons.check_box, color: Colors.blue)
+              : const Icon(Icons.check_box_outline_blank),
+        ),
         // 带缩放动画的开关图标
         // trailing: AnimatedSwitcher(
         //   duration: const Duration(milliseconds: 200),
@@ -182,12 +187,21 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
         //           key: Key(e.enable.toString())),
         // ),
         onTap: () {
-          e.enable = !e.enable;
-          setState(() {}); // 使用的是StatefulBuilder的setState
-          // 保存
-          SPUtil.setBool(e.spkey, e.enable);
+          Navigator.of(context).push(FadeRoute(builder: (context) {
+            return SourceDetail(e);
+          })).then((value) {
+            setState(() {});
+            // 可能从里面取消了启动
+          });
         },
       );
     }).toList();
+  }
+
+  void _invertSource(ClimbWebstie e) {
+    e.enable = !e.enable;
+    setState(() {}); // 使用的是StatefulBuilder的setState
+    // 保存
+    SPUtil.setBool(e.spkey, e.enable);
   }
 }

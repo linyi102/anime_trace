@@ -17,7 +17,7 @@ class AnimeGridCover extends StatelessWidget {
           // aspectRatio: 31 / 45,
           // aspectRatio: 41 / 63,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(5),
             child: _anime.animeCoverUrl.isEmpty
                 // ? Image.asset("assets/images/defaultAnimeCover.png")
                 // ? Image.memory(kTransparentImage)
