@@ -1,4 +1,5 @@
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -109,148 +110,158 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
-  bool _expandFilter = false;
-  _buildFilter() {
-    return ExpansionPanelList(
-        elevation: 1,
-        expansionCallback: (panelIndex, isExpanded) {
-          setState(() {
-            _expandFilter = !isExpanded;
-          });
-        },
-        animationDuration: kThemeAnimationDuration,
-        children: <ExpansionPanel>[
-          ExpansionPanel(
-            backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
-            headerBuilder: (context, isExpanded) {
-              return ListTile(
-                title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),
-                visualDensity: const VisualDensity(vertical: -4),
-              );
-            },
-            isExpanded: _expandFilter,
-            canTapOnHeader: true,
-            body: ListView(
-              shrinkWrap: true, //解决无限高度问题
-              physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+  _buildFilterBody() {
+    return ListView(
+      shrinkWrap: true, //解决无限高度问题
+      physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          child: SizedBox(
+            // 给出高度才可以横向排列
+            height: 30,
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  child: SizedBox(
-                    // 给出高度才可以横向排列
-                    height: 30,
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          child: const Text("年份："),
-                          onTap: () {
-                            int defaultYear = filter.year.isEmpty
-                                ? DateTime.now().year
-                                : int.parse(filter.year);
-                            dialogSelectUint(context, "选择年份",
-                                    minValue: 2000,
-                                    maxValue: DateTime.now().year + 2,
-                                    initialValue: defaultYear)
-                                .then((value) {
-                              if (value == null ||
-                                  value == 0 ||
-                                  value == defaultYear) {
-                                debugPrint("未选择，直接返回");
-                                return;
-                              }
-                              debugPrint("选择了$value");
-                              filter.year = value.toString();
-                              _loadData();
-                            });
-                          },
-                        ),
-                        // Row嵌套ListView，需要使用Expanded嵌套ListView
-                        Expanded(
-                          child: ListView(
-                            // 横向滚动
-                            scrollDirection: Axis.horizontal,
-                            children: _showRadioYear(),
-                          ),
-                        ),
-                      ],
-                    ),
+                GestureDetector(
+                  child: const Text("年份："),
+                  onTap: () {
+                    int defaultYear = filter.year.isEmpty
+                        ? DateTime.now().year
+                        : int.parse(filter.year);
+                    dialogSelectUint(context, "选择年份",
+                            minValue: 2000,
+                            maxValue: DateTime.now().year + 2,
+                            initialValue: defaultYear)
+                        .then((value) {
+                      if (value == null || value == 0 || value == defaultYear) {
+                        debugPrint("未选择，直接返回");
+                        return;
+                      }
+                      debugPrint("选择了$value");
+                      filter.year = value.toString();
+                      _loadData();
+                    });
+                  },
+                ),
+                // Row嵌套ListView，需要使用Expanded嵌套ListView
+                Expanded(
+                  child: ListView(
+                    // 横向滚动
+                    scrollDirection: Axis.horizontal,
+                    children: _showRadioYear(),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  child: SizedBox(
-                    height: 30,
-                    child: Row(
-                      children: [
-                        const Text("季度："),
-                        Expanded(
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: _showRadioSeason(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  child: SizedBox(
-                    height: 30,
-                    child: Row(
-                      children: [
-                        const Text("地区："),
-                        Expanded(
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: _showRadioRegion(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  child: SizedBox(
-                    height: 30,
-                    child: Row(
-                      children: [
-                        const Text("状态："),
-                        Expanded(
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: _showRadioStatus(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  child: SizedBox(
-                    height: 30,
-                    child: Row(
-                      children: [
-                        const Text("类型："),
-                        Expanded(
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: _showRadioCategory(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                )
               ],
             ),
-          )
-        ]);
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          child: SizedBox(
+            height: 30,
+            child: Row(
+              children: [
+                const Text("季度："),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _showRadioSeason(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          child: SizedBox(
+            height: 30,
+            child: Row(
+              children: [
+                const Text("地区："),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _showRadioRegion(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          child: SizedBox(
+            height: 30,
+            child: Row(
+              children: [
+                const Text("状态："),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _showRadioStatus(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          child: SizedBox(
+            height: 30,
+            child: Row(
+              children: [
+                const Text("类型："),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _showRadioCategory(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        )
+      ],
+    );
+  }
+
+  // bool _expandFilter = false;
+  _buildFilter() {
+    // 使用插件expand_widget
+    return ExpandChild(
+      child: _buildFilterBody(),
+      expandArrowStyle: ExpandArrowStyle.both,
+      expandedHint: "收起过滤",
+      collapsedHint: "展开过滤",
+    );
+    // 使用自带的折叠
+    // return ExpansionPanelList(
+    //     elevation: 1,
+    //     expansionCallback: (panelIndex, isExpanded) {
+    //       setState(() {
+    //         _expandFilter = !isExpanded;
+    //       });
+    //     },
+    //     animationDuration: kThemeAnimationDuration,
+    //     children: <ExpansionPanel>[
+    //       ExpansionPanel(
+    //         backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
+    //         headerBuilder: (context, isExpanded) {
+    //           return ListTile(
+    //             title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),
+    //             visualDensity: const VisualDensity(vertical: -4),
+    //           );
+    //         },
+    //         isExpanded: _expandFilter,
+    //         canTapOnHeader: true,
+    //         body: _buildFilterBody(),
+    //       )
+    //     ]);
   }
 
   _showRadioYear() {

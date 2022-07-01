@@ -89,7 +89,7 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
                   child: MaterialButton(
                     onPressed: _pingAllWebsites,
                     child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                       child: const Text(
                         // "测试连通",
                         // "P I N G",
