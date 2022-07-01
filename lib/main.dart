@@ -140,6 +140,7 @@ class MyAppState extends State<MyApp> {
               iconTheme: IconThemeData(
                 color: ThemeUtil.getIconButtonColor(),
               ),
+              scaffoldBackgroundColor:  ThemeUtil.getScaffoldBackgroundColor(),
               inputDecorationTheme: InputDecorationTheme(
                 suffixIconColor: ThemeUtil.getIconButtonColor(),
               ),
@@ -156,7 +157,6 @@ class MyAppState extends State<MyApp> {
                   return Colors.blue;
                 }
               })),
-              backgroundColor: Colors.black,
               bottomNavigationBarTheme: const BottomNavigationBarThemeData(
                   selectedItemColor: Colors.blue),
               textButtonTheme: TextButtonThemeData(

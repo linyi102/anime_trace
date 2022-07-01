@@ -10,11 +10,19 @@ class ThemeUtil {
     return themeController.isDarkMode.value ? Colors.white70 : Colors.blue;
   }
 
+  // 顶部栏背景色
   // 目录页中的过滤组件也使用了该颜色
   static Color getAppBarBackgroundColor() {
     return themeController.isDarkMode.value
         ? const Color.fromRGBO(48, 48, 48, 1)
         : Colors.white;
+  }
+
+  // 主体背景色
+  static Color getScaffoldBackgroundColor() {
+    return themeController.isDarkMode.value
+        ? const Color.fromRGBO(43, 43, 43, 1)
+        : const Color.fromRGBO(250, 250, 250, 1);
   }
 
   // 按钮颜色
@@ -99,7 +107,7 @@ class ThemeUtil {
   // 笔记列表页的背景色
   static Color getNoteListBackgroundColor() {
     return themeController.isDarkMode.value
-        ? const Color.fromRGBO(39, 39, 39, 0.8)
+        ? const Color.fromRGBO(43, 43, 43, 1)
         // ? const Color.fromRGBO(66, 66, 66, 1)
         // : const Color.fromRGBO(235, 236, 240, 1);
         : const Color.fromRGBO(245, 245, 245, 1);

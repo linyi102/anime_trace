@@ -224,6 +224,8 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   GridView _getAnimeGridView(int i) {
     return GridView.builder(
+        shrinkWrap: true, // 解决报错问题
+        physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount:
@@ -284,15 +286,13 @@ class _AnimeListPageState extends State<AnimeListPage>
                                       padding:
                                           const EdgeInsets.fromLTRB(2, 2, 2, 2),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(3),
-                                        color: Colors.orange,
-                                      ),
-                                      child: Text(
-                                        " ${anime.reviewNumber} ",
-                                        textScaleFactor: 0.8,
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      ),
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                          color: Colors.orange),
+                                      child: Text(" ${anime.reviewNumber} ",
+                                          textScaleFactor: 0.8,
+                                          style: const TextStyle(
+                                              color: Colors.white)),
                                     )),
                       ],
                     ),
