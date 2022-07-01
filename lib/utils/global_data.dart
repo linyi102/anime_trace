@@ -13,16 +13,19 @@ Filter filter = Filter(); // 目录页中的过滤条件
 List<ClimbWebstie> climbWebsites = [
   ClimbWebstie(
       name: "樱花动漫",
+      iconAssetUrl: "assets/images/website/樱花动漫.png",
       baseUrl: "https://www.yhdmp.cc",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true)),
   ClimbWebstie(
-      name: "AGE 动漫",
+      name: "AGE动漫",
+      iconAssetUrl: "assets/images/website/AGE动漫.jpg",
       baseUrl: "https://www.agemys.com",
       spkey: "enableWebSiteAgemys",
       enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true)),
   ClimbWebstie(
       name: "OmoFun",
+      iconAssetUrl: "assets/images/website/OmoFun.jpg",
       baseUrl: "https://omofun.tv",
       spkey: "enableWebSiteOmofun",
       enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: false)),
