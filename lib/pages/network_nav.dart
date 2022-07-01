@@ -3,6 +3,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/search_source_page.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 
 // 导航栏，顶部分为搜索源和目录
 class NetWorkNav extends StatefulWidget {
@@ -15,11 +16,24 @@ class NetWorkNav extends StatefulWidget {
 class _NetWorkNavState extends State<NetWorkNav>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
+  final List<String> navs = ["搜索源", "目录"];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
+    // 顶部tab控制器
+    _tabController = TabController(
+      initialIndex: SPUtil.getInt("lastNavIndexInNetWorkNav",
+          defaultValue: 0), // 设置初始index
+      length: navs.length,
+      vsync: this,
+    );
+    // 添加监听器，记录最后一次的topTab的index
+    _tabController.addListener(() {
+      if (_tabController.index == _tabController.animation!.value) {
+        SPUtil.setInt("lastNavIndexInNetWorkNav", _tabController.index);
+      }
+    });
   }
 
   @override
@@ -44,7 +58,7 @@ class _NetWorkNavState extends State<NetWorkNav>
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: TabBar(
-                  tabs: const [Tab(text: "搜索源"), Tab(text: "目录")],
+                  tabs: navs.map((e) => Tab(child: Text(e))).toList(),
                   controller: _tabController, // 指定tab控制器
                   padding: const EdgeInsets.all(2), // 居中，而不是靠左下
                   // isScrollable: true, // 标签可以滑动，避免拥挤
