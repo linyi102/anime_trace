@@ -5,6 +5,7 @@ import 'package:flutter_test_future/scaffolds/source_detail.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 class SearchSourcePage extends StatefulWidget {
   const SearchSourcePage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class SearchSourcePage extends StatefulWidget {
 
 class _SearchSourcePageState extends State<SearchSourcePage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
+  bool canClickPingButton = true; // 限制点击ping按钮(10s一次)
 
   @override
   void initState() {
@@ -29,6 +31,15 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
   }
 
   void _pingAllWebsites() {
+    if (!canClickPingButton) {
+      showToast("测试间隔为10s");
+      return;
+    }
+
+    canClickPingButton = false;
+    Future.delayed(const Duration(seconds: 10))
+        .then((value) => canClickPingButton = true);
+
     for (var website in climbWebsites) {
       website.pingStatus.connectable = false;
       website.pingStatus.pinging = true; // 表示正在ping
@@ -198,6 +209,7 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
     }).toList();
   }
 
+  // 取消/启用搜索源
   void _invertSource(ClimbWebstie e) {
     e.enable = !e.enable;
     setState(() {}); // 使用的是StatefulBuilder的setState
