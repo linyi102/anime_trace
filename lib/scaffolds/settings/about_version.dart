@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
 class AboutVersion extends StatefulWidget {
   const AboutVersion({Key? key}) : super(key: key);
@@ -16,12 +16,6 @@ class _AboutVersionState extends State<AboutVersion> {
   late PackageInfo packageInfo;
   bool loadOk = false;
   bool checkLatestVersion = false;
-  final List<Uri> _uris = [
-    Uri.parse("https://github.com/linyi102/anime_trace"),
-    Uri.parse("https://gitee.com/linyi517/anime_trace"),
-    Uri.parse("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC")
-  ];
-  final List<String> _urisTitle = ["GitHub 地址", "Gitee 地址", "更新进度"];
 
   @override
   void initState() {
@@ -68,6 +62,18 @@ class _AboutVersionState extends State<AboutVersion> {
 
   _showLVC() {
     List<Widget> lvc = [];
+    final List<Uri> _uris = [
+      Uri.parse("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
+      Uri.parse("https://github.com/linyi102/anime_trace"),
+      Uri.parse("https://gitee.com/linyi517/anime_trace")
+    ];
+    final List<String> _urisTitle = ["更新进度", "GitHub 地址", "Gitee 地址"];
+    final List<IconData> _urisIcon = [
+      const IconData(0),
+      SimpleIcons.github,
+      SimpleIcons.gitee,
+    ];
+
     lvc.add(ListTile(
       title: const Text("检查更新"),
       subtitle: loadOk ? Text("当前版本: ${packageInfo.version}") : const Text(""),
@@ -89,12 +95,13 @@ class _AboutVersionState extends State<AboutVersion> {
       lvc.add(
         ListTile(
           title: Text(_urisTitle[i]),
-          subtitle: const Text(
-            "点击打开链接",
-            style: TextStyle(
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          trailing: Icon(_urisIcon[i]),
+          // subtitle: const Text(
+          //   "点击打开链接",
+          //   style: TextStyle(
+          //     overflow: TextOverflow.ellipsis,
+          //   ),
+          // ),
           onTap: () async {
             if (!await launchUrl(_uris[i],
                 mode: LaunchMode.externalApplication)) {

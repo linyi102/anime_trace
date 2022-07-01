@@ -106,11 +106,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
                           title: Text(e.name),
                           leading: ClipRRect(
                               borderRadius: BorderRadius.circular(50),
-                              child: Image.asset(
-                                e.iconAssetUrl,
-                                fit: BoxFit.fitWidth,
-                                width: 25,
-                              )),
+                              child: Image.asset(e.iconAssetUrl,
+                                  fit: BoxFit.fitWidth, width: 25)),
                           trailing: e.enable
                               ? const Icon(Icons.check_box, color: Colors.blue)
                               : const Icon(Icons.check_box_outline_blank),

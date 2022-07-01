@@ -469,6 +469,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
+  simple_icons:
+    dependency: "direct main"
+    description:
+      name: simple_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
