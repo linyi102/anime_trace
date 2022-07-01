@@ -1,20 +1,21 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/result.dart';
 
 class DioPackage {
+  BaseOptions baseOptions = BaseOptions(
+      method: "get",
+      connectTimeout: 8000,
+      sendTimeout: 8000,
+      receiveTimeout: 8000);
+
   Future<Result> get<T>(String path) async {
     try {
-      Response response = await Dio().get(path);
+      Response response = await Dio(baseOptions).request(path);
       return Result.success(response);
-    } on DioError catch (e) {
-      debugPrint(e.toString());
-      ErrorFormatUtil.formatDioError(e);
     } catch (e) {
-      debugPrint("捕获到其他错误");
-      debugPrint(e.toString());
+      String msg = ErrorFormatUtil.formatError(e);
+      return Result.failure(-1, msg);
     }
-    return Result.failure(-1, "未知错误");
   }
 }

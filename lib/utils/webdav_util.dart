@@ -44,15 +44,12 @@ class WebDavUtil {
   static Future<bool> pingWebDav() async {
     try {
       await client.ping();
-    } on DioError catch (e) {
+    } catch (e) {
       // 不应该设置为false，应该假设login为true，这样每次进入应用都会init重新连接
       // SPUtil.setBool("login", false); // 如果之前成功，但现在失败了，所以需要覆盖
       // 应该用online=true表示在线还是
       SPUtil.setBool("online", false);
-      ErrorFormatUtil.formatDioError(e);
-      return false;
-    } catch (e) {
-      debugPrint("捕获到未知类型的错误");
+      ErrorFormatUtil.formatError(e);
       return false;
     }
     SPUtil.setBool("online", true);
