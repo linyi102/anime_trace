@@ -837,11 +837,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         : Container(
             alignment: Alignment.bottomCenter,
             child: Card(
-              elevation: 4,
+              elevation: 8,
               shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15))), // 圆角
+                  borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
               clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-              margin: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+              margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center,
                 children: [

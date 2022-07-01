@@ -170,7 +170,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildOpYearButton() {
     int minYear = 1970, maxYear = DateTime.now().year + 2;
-    return Padding(
+
+    return Container(
       padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
       child: Row(
         children: [
@@ -193,11 +194,22 @@ class _HistoryPageState extends State<HistoryPage> {
           Expanded(child: Container()), // 实现一个靠左，一个靠右
           Transform.scale(
             scale: 0.9,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width: 1, color: Colors.black26)),
+            child: Card(
+              elevation: 6, // z轴高度，即阴影大小
+              shadowColor: Colors.grey,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
+              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景。点击效果也会进行切割
+              // container渐变
+              // decoration: BoxDecoration(
+              //     gradient: const LinearGradient(
+              //         colors: [Colors.red, Colors.blue]), // 渐变色
+              //     borderRadius: BorderRadius.circular(25)),
+              // container简单
+              // padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              // decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(10),
+              //     border: Border.all(width: 1, color: Colors.black12)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -217,26 +229,29 @@ class _HistoryPageState extends State<HistoryPage> {
                           setState(() {});
                         }
                       },
-                      icon: const Icon(Icons.remove)),
-                  TextButton(
-                      onPressed: () {
-                        dialogSelectUint(context, "选择年份",
-                                initialValue: selectedYear,
-                                minValue: minYear,
-                                maxValue: maxYear)
-                            .then((value) {
-                          if (value == null) {
-                            debugPrint("未选择，直接返回");
-                            return;
-                          }
-                          debugPrint("选择了$value");
-                          selectedYear = value;
-                          _loadData(selectedYear);
-                        });
-                      },
-                      child: Text("$selectedYear",
-                          textScaleFactor: 1.2,
-                          style: TextStyle(color: ThemeUtil.getFontColor()))),
+                      icon: const Icon(Icons.arrow_left_rounded)),
+                  GestureDetector(
+                    child: Text("$selectedYear",
+                        textScaleFactor: 1.2,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: ThemeUtil.getFontColor())),
+                    onTap: () {
+                      dialogSelectUint(context, "选择年份",
+                              initialValue: selectedYear,
+                              minValue: minYear,
+                              maxValue: maxYear)
+                          .then((value) {
+                        if (value == null) {
+                          debugPrint("未选择，直接返回");
+                          return;
+                        }
+                        debugPrint("选择了$value");
+                        selectedYear = value;
+                        _loadData(selectedYear);
+                      });
+                    },
+                  ),
                   IconButton(
                       onPressed: () {
                         if (selectedYear + 1 > maxYear) {
@@ -254,7 +269,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           setState(() {});
                         }
                       },
-                      icon: const Icon(Icons.add)),
+                      icon: const Icon(Icons.arrow_right_rounded)),
                 ],
               ),
             ),
