@@ -9,6 +9,7 @@ import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dar
 import 'package:flutter_test_future/scaffolds/settings/backup_restore.dart';
 import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
+import 'package:flutter_test_future/scaffolds/settings/test.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -165,7 +166,21 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 );
               },
-            )
+            ),
+            // ListTile(
+            //   iconColor: ThemeUtil.getIconColorOnSettingPage(),
+            //   leading: const Icon(Icons.bug_report_outlined),
+            //   title: const Text("测试页面"),
+            //   onTap: () {
+            //     Navigator.of(context).push(
+            //       FadeRoute(
+            //         builder: (context) {
+            //           return const TestPage();
+            //         },
+            //       ),
+            //     );
+            //   },
+            // )
           ],
         ));
   }

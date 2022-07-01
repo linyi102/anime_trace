@@ -196,7 +196,6 @@ class _HistoryPageState extends State<HistoryPage> {
             scale: 0.9,
             child: Card(
               elevation: 6, // z轴高度，即阴影大小
-              shadowColor: Colors.grey,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
               clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景。点击效果也会进行切割

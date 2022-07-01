@@ -5,11 +5,9 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -35,6 +33,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
     }
   }
 
+  // 从聚合搜索页返回后需要用到。不过目前用不到了，因为搜索按钮在network_nav中，无法直接处理目录页中的数据。并不影响，如果在聚合搜索页中添加了某个动漫，然后再从目录页中添加动漫，则会添加两个动漫
+  // 切换到目录页也会用到
   void _replaceDbAnimes() async {
     // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
     for (int i = 0; i < directory.length; ++i) {
@@ -69,98 +69,14 @@ class _DirectoryPageState extends State<DirectoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "目录",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          // 聚合搜索按钮
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(FadeRoute(
-                builder: (context) {
-                  return const AnimeClimbAllWebsite();
-                },
-              )).then((value) {
-                // 搜索后添加了动漫，可能就在目录里
-                _replaceDbAnimes();
-              });
-            },
-            icon: const Icon(Icons.search),
-          ),
-          // 设置搜索源按钮
-          IconButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    // 多加一个StatefulBuilder，然后调用其中的setState才能更新对话框
-                    return StatefulBuilder(
-                        builder: (BuildContext context, setState) {
-                      // map方式
-                      List<Widget> buildListTiles = climbWebsites.map((e) {
-                        return ListTile(
-                          title: Text(e.name),
-                          leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.asset(e.iconAssetUrl,
-                                  fit: BoxFit.fitWidth, width: 25)),
-                          trailing: e.enable
-                              ? const Icon(Icons.check_box, color: Colors.blue)
-                              : const Icon(Icons.check_box_outline_blank),
-                          // 带缩放动画的开关图标
-                          // trailing: AnimatedSwitcher(
-                          //   duration: const Duration(milliseconds: 200),
-                          //   transitionBuilder:
-                          //       (Widget child, Animation<double> animation) {
-                          //     return ScaleTransition(
-                          //         child: child, scale: animation); // 缩放
-                          //   },
-                          //   child: e.enable
-                          //       ? Icon(Icons.check_box,
-                          //           key: Key(e.enable.toString()), // 不能用Unique()，否则会影响其他ListTile中的图标
-                          //           color: Colors.blue)
-                          //       : Icon(Icons.check_box_outline_blank,
-                          //           key: Key(e.enable.toString())),
-                          // ),
-                          onTap: () {
-                            e.enable = !e.enable;
-                            setState(() {}); // 使用的是StatefulBuilder的setState
-                            // 保存
-                            SPUtil.setBool(e.spkey, e.enable);
-                          },
-                        );
-                      }).toList();
-
-                      return AlertDialog(
-                          title: const Text("启用搜索源"),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              children: buildListTiles,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  for (var climbWebsite in climbWebsites) {
-                                    debugPrint(climbWebsite.toString());
-                                  }
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("关闭"))
-                          ]);
-                    });
-                  } // for方式
-
-                  );
-            },
-            icon: const Icon(Icons.extension_outlined),
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text(
+      //     "目录",
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.w600,
+      //     ),
+      //   ),
+      // ),
       body: _showBody(),
     );
   }

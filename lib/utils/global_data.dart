@@ -2,6 +2,7 @@
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
 List<String> tags = [];
@@ -15,18 +16,25 @@ List<ClimbWebstie> climbWebsites = [
       name: "樱花动漫",
       iconAssetUrl: "assets/images/website/樱花动漫.png",
       baseUrl: "https://www.yhdmp.cc",
+      keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
-      enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true)),
+      enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
+      pingStatus: PingStatus()),
   ClimbWebstie(
-      name: "AGE动漫",
+      name: "AGE 动漫",
       iconAssetUrl: "assets/images/website/AGE动漫.jpg",
-      baseUrl: "https://www.agemys.com",
+      baseUrl: "https://www.agemys.cc",
+      keyword: "agemys",
       spkey: "enableWebSiteAgemys",
-      enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true)),
+      enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true),
+      pingStatus: PingStatus()),
   ClimbWebstie(
       name: "OmoFun",
       iconAssetUrl: "assets/images/website/OmoFun.jpg",
       baseUrl: "https://omofun.tv",
+      keyword: "omofun",
       spkey: "enableWebSiteOmofun",
-      enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: false)),
+      enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: false),
+      pingStatus: PingStatus(),
+      comment: "图片较大，流量慎用"),
 ];

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
-import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
+import 'package:flutter_test_future/pages/network_nav.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:oktoast/oktoast.dart';
@@ -16,7 +16,9 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   final List<Widget> _list = [
     const AnimeListPage(),
-    const DirectoryPage(),
+    // const DirectoryPage(),
+    // const SearchSourcePage(),
+    const NetWorkNav(),
     const HistoryPage(),
     const NoteListPage(),
     const SettingPage(),
@@ -58,8 +60,9 @@ class _TabsState extends State<Tabs> {
             });
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "动漫"),
-            BottomNavigationBarItem(icon: Icon(Icons.book), label: "目录"),
+            BottomNavigationBarItem(icon: Icon(Icons.book), label: "动漫"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.local_library_outlined), label: "网络"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.history_rounded), label: "历史"),
             BottomNavigationBarItem(

@@ -123,6 +123,9 @@ class _AnimeListPageState extends State<AnimeListPage>
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: TabBar(
+                          tabs: _buildTagAndAnimeCnt(),
+                          // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                          controller: _tabController,
                           padding: const EdgeInsets.all(2), // 居中，而不是靠左下
                           isScrollable: true, // 标签可以滑动，避免拥挤
                           labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -141,9 +144,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                           indicatorPadding: const EdgeInsets.only(
                               left: 10, right: 10, top: 40),
                           indicatorWeight: 3, // 指示器高度
-                          tabs: _buildTagAndAnimeCnt(),
-                          // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                          controller: _tabController,
                         ),
                       ),
                     ),

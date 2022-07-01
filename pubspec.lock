@@ -99,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  dart_ping:
+    dependency: "direct main"
+    description:
+      name: dart_ping
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.1.2"
   dio:
     dependency: "direct main"
     description:

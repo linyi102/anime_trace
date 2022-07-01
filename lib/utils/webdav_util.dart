@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

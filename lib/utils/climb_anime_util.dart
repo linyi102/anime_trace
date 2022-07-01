@@ -3,7 +3,6 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
-import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -51,8 +50,15 @@ class ClimbAnimeUtil {
 
     String source = "未知来源";
     for (var climbWebsite in climbWebsites) {
-      if (animeUrl.startsWith(climbWebsite.baseUrl)) {
+      // 存在animeUrl以https://www.agemys.cc/和https://www.agemys.com/开头的，因此都需要解释为age动漫源
+      // 因此采用contain keyword，而不是startWith baseUrl
+      // if (animeUrl.startsWith(climbWebsite.baseUrl)) {
+      //   source = climbWebsite.name;
+      //   break;
+      // }
+      if (animeUrl.contains(climbWebsite.keyword)) {
         source = climbWebsite.name;
+        break;
       }
     }
     return source;
@@ -169,10 +175,10 @@ class ClimbAnimeUtil {
 
     if (websiteName == "樱花动漫") {
       allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfyhdm(keyword);
-    } else if (websiteName == "OmoFun") {
-      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfOmoFun(keyword);
     } else if (websiteName == "AGE 动漫" || websiteName == "AGE动漫") {
       allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfAGE(keyword);
+    } else if (websiteName == "OmoFun") {
+      allAnimeNameAndCoverUrl = await _climbAnimesByKeywordOfOmoFun(keyword);
     } else {
       throw ("爬取的网站名错误: $websiteName");
     }
@@ -186,7 +192,7 @@ class ClimbAnimeUtil {
   }
 
   static Future<List<Anime>> _climbAnimesByKeywordOfAGE(String keyword) async {
-    String baseUrl = "https://www.agemys.com";
+    String baseUrl = "https://www.agemys.cc";
     String url = baseUrl + "/search?query=$keyword";
     List<Anime> climbAnimes = [];
 
@@ -304,10 +310,10 @@ class ClimbAnimeUtil {
     if (getSourceByAnimeUrl(anime.animeUrl) == "樱花动漫") {
       anime = await _climbAnimeInfoOfyhdm(anime);
       return anime;
-    } else if (getSourceByAnimeUrl(anime.animeUrl) == "OmoFun") {
-      anime = await _climbAnimeInfoOfOmoFun(anime);
     } else if (getSourceByAnimeUrl(anime.animeUrl) == "AGE 动漫") {
       anime = await _climbAnimeInfoOfAGE(anime);
+    } else if (getSourceByAnimeUrl(anime.animeUrl) == "OmoFun") {
+      anime = await _climbAnimeInfoOfOmoFun(anime);
     } else {
       debugPrint("无来源，无法更新，返回旧动漫对象");
     }
