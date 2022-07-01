@@ -73,6 +73,11 @@ class _AboutVersionState extends State<AboutVersion> {
       SimpleIcons.github,
       SimpleIcons.gitee,
     ];
+    final List<Color> _urisIconColor = [
+      Colors.transparent,
+      Colors.black,
+      const Color.fromRGBO(187, 33, 36, 1),
+    ];
 
     lvc.add(ListTile(
       title: const Text("检查更新"),
@@ -95,7 +100,10 @@ class _AboutVersionState extends State<AboutVersion> {
       lvc.add(
         ListTile(
           title: Text(_urisTitle[i]),
-          trailing: Icon(_urisIcon[i]),
+          trailing: Icon(
+            _urisIcon[i],
+            color: _urisIconColor[i],
+          ),
           // subtitle: const Text(
           //   "点击打开链接",
           //   style: TextStyle(
