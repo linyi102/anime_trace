@@ -140,7 +140,7 @@ class MyAppState extends State<MyApp> {
               iconTheme: IconThemeData(
                 color: ThemeUtil.getIconButtonColor(),
               ),
-              scaffoldBackgroundColor:  ThemeUtil.getScaffoldBackgroundColor(),
+              scaffoldBackgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
               inputDecorationTheme: InputDecorationTheme(
                 suffixIconColor: ThemeUtil.getIconButtonColor(),
               ),
@@ -156,6 +156,7 @@ class MyAppState extends State<MyApp> {
                 if (states.contains(MaterialState.selected)) {
                   return Colors.blue;
                 }
+                return null;
               })),
               bottomNavigationBarTheme: const BottomNavigationBarThemeData(
                   selectedItemColor: Colors.blue),

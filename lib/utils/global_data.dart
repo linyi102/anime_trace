@@ -14,7 +14,7 @@ Filter filter = Filter(); // 目录页中的过滤条件
 List<ClimbWebstie> climbWebsites = [
   ClimbWebstie(
       name: "樱花动漫",
-      iconAssetUrl: "assets/images/website/樱花动漫.png",
+      iconAssetUrl: "assets/images/website/yhdm.png",
       baseUrl: "https://www.yhdmp.cc",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
@@ -22,7 +22,7 @@ List<ClimbWebstie> climbWebsites = [
       pingStatus: PingStatus()),
   ClimbWebstie(
       name: "AGE 动漫",
-      iconAssetUrl: "assets/images/website/AGE动漫.jpg",
+      iconAssetUrl: "assets/images/website/agemys.jpg",
       baseUrl: "https://www.agemys.cc",
       keyword: "agemys",
       spkey: "enableWebSiteAgemys",

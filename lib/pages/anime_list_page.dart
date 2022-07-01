@@ -224,8 +224,6 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   GridView _getAnimeGridView(int i) {
     return GridView.builder(
-        shrinkWrap: true, // 解决报错问题
-        physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount:
