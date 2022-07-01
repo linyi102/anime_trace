@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-// import 'package:simple_icons/simple_icons.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutVersion extends StatefulWidget {
@@ -69,11 +69,12 @@ class _AboutVersionState extends State<AboutVersion> {
     ];
     final List<String> _urisTitle = ["更新进度", "GitHub 地址", "Gitee 地址"];
     final List<IconData> _urisIcon = [
-      const IconData(0),
-      const IconData(0),
-      const IconData(0),
-      // SimpleIcons.github,
-      // SimpleIcons.gitee,
+      // const IconData(0),
+      // const IconData(0),
+      // const IconData(0),
+      Icons.ac_unit,
+      SimpleIcons.github,
+      SimpleIcons.gitee,
     ];
     final List<Color> _urisIconColor = [
       Colors.transparent,

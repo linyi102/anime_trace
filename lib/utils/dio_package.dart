@@ -1,4 +1,4 @@
-// import 'package:dart_ping/dart_ping.dart';
+import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -45,36 +45,36 @@ class DioPackage {
       flutter: PingError(response:null, error:UnknownHost)
       flutter: PingSummary(transmitted:0, received:0), time: 0 ms, Errors: [Unknown: Ping process exited with code: 1]
      */
-    // List<String> prefixs = ["https://", "http://"];
-    // for (String prefix in prefixs) {
-    //   if (path.startsWith(prefix)) {
-    //     path = path.replaceFirst(prefix, ""); // 删除前缀
-    //     break;
-    //   }
-    // }
-    // final ping = Ping(path, count: 3, timeout: 8);
-    // await ping.stream.listen((event) {
-    //   // 只需要看Summary，忽略Response
-    //   if (event.toString().contains("PingSummary")) {
-    //     // 3次有1次回复，则返回true
-    //     int reveived = event.summary?.received ?? 0;
-    //     debugPrint("$event, reveived=$reveived");
-    //     if (reveived >= 1) {
-    //       pingStatus.connectable = true;
-    //       pingStatus.time = event.summary?.time?.inMilliseconds ?? -1;
-    //     }
-    //   }
-    // }).asFuture(); // stream改为futrue，并await
-
-    try {
-      int? statusCode = (await Dio(_baseOptions).request(path)).statusCode;
-      debugPrint("状态码：$statusCode");
-      pingStatus.connectable = true; // 不会抛出异常则说明可以连接
-      debugPrint("ping ok");
-    } catch (e) {
-      pingStatus.connectable = false;
-      debugPrint("ping false");
+    List<String> prefixs = ["https://", "http://"];
+    for (String prefix in prefixs) {
+      if (path.startsWith(prefix)) {
+        path = path.replaceFirst(prefix, ""); // 删除前缀
+        break;
+      }
     }
+    final ping = Ping(path, count: 3, timeout: 8);
+    await ping.stream.listen((event) {
+      // 只需要看Summary，忽略Response
+      if (event.toString().contains("PingSummary")) {
+        // 3次有1次回复，则返回true
+        int reveived = event.summary?.received ?? 0;
+        debugPrint("$event, reveived=$reveived");
+        if (reveived >= 1) {
+          pingStatus.connectable = true;
+          pingStatus.time = event.summary?.time?.inMilliseconds ?? -1;
+        }
+      }
+    }).asFuture(); // stream改为futrue，并await
+
+    // try {
+    //   int? statusCode = (await Dio(_baseOptions).request(path)).statusCode;
+    //   debugPrint("状态码：$statusCode");
+    //   pingStatus.connectable = true; // 不会抛出异常则说明可以连接
+    //   debugPrint("ping ok");
+    // } catch (e) {
+    //   pingStatus.connectable = false;
+    //   debugPrint("ping false");
+    // }
 
     // 更新状态并返回
     pingStatus.pinging = false; // ping结束
