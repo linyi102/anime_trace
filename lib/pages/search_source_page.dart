@@ -16,7 +16,7 @@ class SearchSourcePage extends StatefulWidget {
 
 class _SearchSourcePageState extends State<SearchSourcePage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
-  bool canClickPingButton = true; // 限制点击ping按钮(10s一次)
+  bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
 
   @override
   void initState() {
@@ -102,6 +102,7 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                       child: const Text(
+                        // "测试连接",
                         // "测试连通",
                         // "P I N G",
                         "ping",
