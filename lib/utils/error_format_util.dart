@@ -12,6 +12,7 @@ class ErrorFormatUtil {
     if (e is DioError) {
       if (e.type == DioErrorType.connectTimeout) {
         // It occurs when url is opened timeout.
+        debugPrint(e.message);
         msg = "连接超时";
       } else if (e.type == DioErrorType.sendTimeout) {
         // It occurs when url is sent timeout.

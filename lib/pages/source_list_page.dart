@@ -7,14 +7,14 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:oktoast/oktoast.dart';
 
-class SearchSourcePage extends StatefulWidget {
-  const SearchSourcePage({Key? key}) : super(key: key);
+class SourceListPage extends StatefulWidget {
+  const SourceListPage({Key? key}) : super(key: key);
 
   @override
-  State<SearchSourcePage> createState() => _SearchSourcePageState();
+  State<SourceListPage> createState() => _SourceListPageState();
 }
 
-class _SearchSourcePageState extends State<SearchSourcePage> {
+class _SourceListPageState extends State<SourceListPage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
 
@@ -59,74 +59,41 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
       // DioPackage.ping("baidu.com").then((value) {
       DioPackage.ping(website.baseUrl).then((value) {
         website.pingStatus = value;
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
 
         debugPrint("${website.name}:pingStatus=${website.pingStatus}");
       });
     }
   }
 
+  final bool _showPingButton = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     "网络",
-      //     style: TextStyle(
-      //       fontWeight: FontWeight.w600,
-      //     ),
-      //   ),
-      // ),
-      body: ListView(
-        children: [
-          // ListTile(
-          //   title: const Text("显示详细"),
-          //   onTap: () {
-          //     showPingDetail = !showPingDetail;
-          //     setState(() {});
-          //   },
-          // ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Card(
-                  elevation: 6,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(50))), // 圆角
-                  clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-                  child: MaterialButton(
-                    onPressed: _pingAllWebsites,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                      child: const Text(
-                        // "测试连接",
-                        // "测试连通",
-                        // "P I N G",
-                        "ping",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          ListView(
-            shrinkWrap: true, //解决无限高度问题
-            physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-            children: _buildListTiles(),
-          )
-        ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _pingAllWebsites();
+        },
+        child: ListView(
+          children: [
+            _showPingButton ? _buildPingButton() : Container(),
+            ListView(
+              shrinkWrap: true, //解决无限高度问题
+              physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+              children: _buildListTiles(),
+            )
+          ],
+        ),
       ),
     );
   }
 
   String _getPingTimeStr(ClimbWebstie e) {
     if (e.pingStatus.pinging) {
-      return "ping...";
+      return "测试中...";
     }
     // ping...在前，未知在后。因为DioPackage的ping方法只有在ping结束后才会设置pingNone为false
     if (e.pingStatus.notPing) {
@@ -216,5 +183,35 @@ class _SearchSourcePageState extends State<SearchSourcePage> {
     setState(() {}); // 使用的是StatefulBuilder的setState
     // 保存
     SPUtil.setBool(e.spkey, e.enable);
+  }
+
+  _buildPingButton() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Card(
+            elevation: 6,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
+            clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+            child: MaterialButton(
+              onPressed: _pingAllWebsites,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: const Text(
+                  // "测试连接",
+                  // "测试连通",
+                  // "P I N G",
+                  "ping",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -105,7 +105,7 @@ class MyAppState extends State<MyApp> {
     final ThemeController themeController = Get.put(ThemeController());
 
     return Obx(() => OKToast(
-          position: ToastPosition.top,
+          position: ToastPosition.bottom,
           dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
           backgroundColor:
               themeController.isDarkMode.value ? Colors.white : Colors.black,

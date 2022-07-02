@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/pages/directory_page.dart';
-import 'package:flutter_test_future/pages/search_source_page.dart';
+import 'package:flutter_test_future/pages/source_list_page.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
@@ -78,7 +78,7 @@ class _NetWorkNavState extends State<NetWorkNav>
               ))),
       body: TabBarView(controller: _tabController, // 指定tab控制器
           children: const [
-            SearchSourcePage(),
+            SourceListPage(),
             DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(
