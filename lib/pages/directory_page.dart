@@ -30,6 +30,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
       _loadData();
     } else {
       // 如果已有数据，则直接显示，但也要根据重新查询数据库中的动漫来替换
+      _loadOk = true; // 不用显示加载圈
       _replaceDbAnimes();
     }
   }
@@ -70,41 +71,29 @@ class _DirectoryPageState extends State<DirectoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     "目录",
-      //     style: TextStyle(
-      //       fontWeight: FontWeight.w600,
-      //     ),
-      //   ),
-      // ),
-      body: _showBody(),
-    );
-  }
-
-  _showBody() {
-    return RefreshIndicator(
-      onRefresh: () async {
-        _loadData();
-      },
-      child: Scrollbar(
-        child: ListView(
-          children: [
-            _buildFilter(),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _loadOk
-                  ? _showAnimeList()
-                  : Container(
-                      // padding和_showAnimeList()里的暂无数据保持一致，否则没有数据时，「暂无数据」会突然往上移动
-                      padding: const EdgeInsets.only(top: 25),
-                      child: Center(
-                        key: UniqueKey(),
-                        child: const RefreshProgressIndicator(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          _loadData();
+        },
+        child: Scrollbar(
+          child: ListView(
+            children: [
+              _buildFilter(),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: _loadOk
+                    ? _showAnimeList()
+                    : Container(
+                        // padding和_showAnimeList()里的暂无数据保持一致，否则没有数据时，「暂无数据」会突然往上移动
+                        padding: const EdgeInsets.only(top: 25),
+                        child: Center(
+                          key: UniqueKey(),
+                          child: const RefreshProgressIndicator(),
+                        ),
                       ),
-                    ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
