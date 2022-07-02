@@ -219,9 +219,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       // floating: true,
       // snap: true,
       pinned: true,
-      expandedHeight: 270,
+      expandedHeight: 280, // 270, 290都会导致有细线
       // stretch: true,
       flexibleSpace: FlexibleSpaceBar(
+        collapseMode: CollapseMode.parallax,
         background: Stack(
           children: [
             SizedBox(
@@ -248,7 +249,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       ),
               ),
             ),
-            // 渐变
+            // 为底层图片添加渐变效果
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -267,16 +268,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               ),
             ),
             // 遮住背景封面细线
-            Positioned(
-                bottom: -5,
-                child: Container(
-                  height: 10,
-                  width: MediaQuery.of(context).size.width,
-                  color: ThemeUtil.getColorBelowGradientAnimeCover(),
-                ))
+            // Positioned(
+            //     bottom: -5,
+            //     child: Container(
+            //       height: 10,
+            //       width: MediaQuery.of(context).size.width,
+            //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
+            //     ))
           ],
         ),
-        collapseMode: CollapseMode.parallax,
       ),
       leading: IconButton(
           onPressed: () {
@@ -1128,8 +1128,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     if (!_anime.isCollected()) return Container();
     return Column(
       children: [
+        // 显示动漫简介
         Container(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
           child: ExpandText(
             _anime.animeDesc,
             textAlign: TextAlign.justify,

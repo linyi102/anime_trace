@@ -66,15 +66,11 @@ class ThemeUtil {
       // Colors.transparent,
       // Colors.transparent,
       // Colors.transparent,
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0),
+      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0),
       Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.1),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.2),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.3),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.4),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.5),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.6),
       Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.2),
       Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.5),
+      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.8),
       Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 1.0),
     ];
   }
