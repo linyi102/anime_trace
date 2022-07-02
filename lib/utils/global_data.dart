@@ -34,7 +34,7 @@ List<ClimbWebstie> climbWebsites = [
       baseUrl: "https://omofun.tv",
       keyword: "omofun",
       spkey: "enableWebSiteOmofun",
-      enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: false),
+      enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: true),
       pingStatus: PingStatus(),
       comment: "图片较大，流量慎用"),
 ];
