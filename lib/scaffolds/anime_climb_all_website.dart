@@ -215,7 +215,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
               itemCount: climbWebsites
                   .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
               itemBuilder: (context, index) {
-                String websiteName = climbWebsites[index].name;
+                ClimbWebstie webstie = climbWebsites[index];
                 // 如果关闭了，则不显示
                 if (!climbWebsites[index].enable) return Container();
                 // 遍历时，第一次(isFirstEnableSource为false)到达这里，则说明是第一个启动了的搜索源，需要在上面添加自定义
@@ -227,40 +227,17 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                   shrinkWrap: true, //解决无限高度问题
                   physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
                   children: [
-                    // // 在第一个搜索源行上面添加自定义
-                    // ismigrate
-                    //     ? Container() // 迁移时不显示自定义
-                    //     : index == 0
-                    //         ? const ListTile(
-                    //             title: Text("自定义"),
-                    //           )
-                    //         : Container(),
-                    // ismigrate
-                    //     ? Container()
-                    //     : index == 0 // 只在第一个搜索源上面添加
-                    //         ? customSearchOK // 搜索完毕后显示动漫
-                    //             ? AnimeHorizontalCover(
-                    //                 animes: customAnimes,
-                    //                 animeId: widget.animeId,
-                    //                 callback: _generateMixedAnimesAllWebsite,
-                    //               )
-                    //             : customSearching // 正在搜索时显示加载圈
-                    //                 ? const SizedBox(
-                    //                     height: 137 + 60,
-                    //                     child: Center(
-                    //                       child: SizedBox(
-                    //                         width: 20,
-                    //                         height: 20,
-                    //                         child: CircularProgressIndicator(),
-                    //                       ),
-                    //                     ),
-                    //                   )
-                    //                 : Container()
-                    //         : Container(),
-
                     // 搜素源行
                     ListTile(
-                      title: Text(websiteName),
+                      title: Text(webstie.name),
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Image.asset(
+                          webstie.iconAssetUrl,
+                          fit: BoxFit.fitWidth,
+                          width: 25,
+                        ),
+                      ),
                       trailing: const Icon(Icons.arrow_forward),
                       onTap: () {
                         // 进入详细搜索页
@@ -290,13 +267,13 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                       },
                     ),
                     // 搜索结果
-                    websiteClimbSearchOk[websiteName] ?? false
+                    websiteClimbSearchOk[webstie.name] ?? false
                         ? AnimeHorizontalCover(
-                            animes: mixedAnimes[websiteName] ?? [],
+                            animes: mixedAnimes[webstie.name] ?? [],
                             animeId: widget.animeId,
                             callback: _generateMixedAnimesAllWebsite,
                           ) // 查询好后显示结果
-                        : websiteClimbSearching[websiteName] ?? false
+                        : websiteClimbSearching[webstie.name] ?? false
                             ? const SizedBox(
                                 // 每个搜索结果的显示高度(封面+名字高度)
                                 height: 137 + 60,
