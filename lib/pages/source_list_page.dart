@@ -58,7 +58,7 @@ class _SourceListPageState extends State<SourceListPage> {
       // DioPackage.ping("https://fonts.google.com/").then((value) {
       // DioPackage.ping("matcha-jp.com").then((value) {
       // DioPackage.ping("baidu.com").then((value) {
-      DioPackage.ping(website.baseUrl).then((value) {
+      DioPackage.ping(website.climb.baseUrl).then((value) {
         website.pingStatus = value;
         if (mounted) {
           setState(() {});
@@ -141,7 +141,7 @@ class _SourceListPageState extends State<SourceListPage> {
           borderRadius: BorderRadius.circular(50),
           child: Image.asset(
             e.iconAssetUrl,
-            fit: BoxFit.fitWidth,
+            fit: BoxFit.cover,
             width: showPingDetail ? 35 : 25, // 没有副标题用25，有则用35
           ),
         ),

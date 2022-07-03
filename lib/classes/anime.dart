@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 
 class Anime {
   int animeId;
@@ -69,7 +69,7 @@ class Anime {
 
   String getAnimeInfoSecondLine() {
     var list = [];
-    list.add(ClimbAnimeUtil.getSourceByAnimeUrl(animeUrl));
+    list.add(ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义");
     if (playStatus.isNotEmpty) {
       list.add(playStatus);
     }
@@ -82,5 +82,26 @@ class Anime {
   bool isCollected() {
     return animeId > 0;
     // return tagName.isNotEmpty;
+  }
+
+  Anime copy() {
+    Anime anime = Anime(animeName: animeName, animeEpisodeCnt: animeEpisodeCnt);
+    anime.animeId = animeId;
+    anime.tagName = tagName;
+    anime.animeDesc = animeDesc;
+    anime.animeCoverUrl = animeCoverUrl;
+    anime.checkedEpisodeCnt = checkedEpisodeCnt;
+    anime.reviewNumber = reviewNumber;
+    anime.animeUrl = animeUrl;
+    anime.premiereTime = premiereTime;
+    anime.nameAnother = nameAnother;
+    anime.nameOri = nameOri;
+    anime.authorOri = authorOri;
+    anime.area = area;
+    anime.category = category;
+    anime.playStatus = playStatus;
+    anime.productionCompany = productionCompany;
+    anime.officialSite = officialSite;
+    return anime;
   }
 }

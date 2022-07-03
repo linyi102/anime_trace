@@ -72,7 +72,7 @@ class _SourceDetailState extends State<SourceDetail> {
               color: ThemeUtil.getLeadingIconColor(),
             ),
             onTap: () {
-              launchUrl(Uri.parse(climbWebstie.baseUrl),
+              launchUrl(Uri.parse(climbWebstie.climb.baseUrl),
                       mode: LaunchMode.externalApplication) // 浏览器打开
                   .catchError((e) {
                 debugPrint(e);

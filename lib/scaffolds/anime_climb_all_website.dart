@@ -4,7 +4,7 @@ import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
-import 'package:flutter_test_future/utils/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -76,8 +76,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         websiteClimbSearching[climbWebsite.name] = true;
         setState(() {});
 
-        return ClimbAnimeUtil.climbAnimesByKeywordInWebSiteName(
-            keyword, climbWebsite.name);
+        return ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(
+            keyword, climbWebsite);
       }).then((value) async {
         websiteClimbAnimes[climbWebsite.name] = value;
         websiteClimbSearchOk[climbWebsite.name] = true;
@@ -124,6 +124,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   // 用于从动漫详细页和详细搜索页返回时调用，从数据库中重新获取所有网站的已收藏的动漫
   Future<bool> _generateMixedAnimesAllWebsite() async {
+    await Future.delayed(Duration.zero); // 必须等待，否则第一个动漫取消收藏后返回时数据库中仍然是存在的
+
     // 进入聚合搜索页后，直接进入详细搜索页，返回后，关键字一直是空的，所以不生产，直接退出
     if (lastInputKeyword.isEmpty) return true;
     _generateCustomAnimes(); // 也可能会迁移自定义动漫
