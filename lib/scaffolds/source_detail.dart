@@ -1,3 +1,4 @@
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/fade_route.dart';
@@ -32,7 +33,7 @@ class _SourceDetailState extends State<SourceDetail> {
           Container(
             height: 100,
             width: 100,
-            alignment: Alignment.topCenter,
+            alignment: Alignment.center,
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -49,7 +50,11 @@ class _SourceDetailState extends State<SourceDetail> {
                       )
                 ]),
           ),
-          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: ExpandText(climbWebstie.desc,
+                maxLines: 2, textAlign: TextAlign.center),
+          ),
           ListTile(
             title: const Text("启动搜索"),
             leading: climbWebstie.enable

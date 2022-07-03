@@ -10,7 +10,7 @@ class ClimbWebstie {
   String spkey; // shared_preferencens存储的key，用于获取是否开启
   PingStatus pingStatus;
   String comment; // 注释
-  String profile; // 简介
+  String desc; // 描述
   Climb climb; // 爬取工具
 
   ClimbWebstie(
@@ -22,7 +22,7 @@ class ClimbWebstie {
       required this.keyword,
       required this.climb,
       this.comment = "",
-      this.profile = ""});
+      this.desc = ""});
 
   @override
   String toString() {

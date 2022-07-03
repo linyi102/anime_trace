@@ -23,7 +23,8 @@ List<ClimbWebstie> climbWebsites = [
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
       pingStatus: PingStatus(),
-      climb: ClimbYhdm()),
+      climb: ClimbYhdm(),
+      desc: "樱花动漫(pan)——支持网盘下载的樱花动漫，动漫免费在线观看，免费下载，无需注册，更新及时，我们致力打造最好的樱花动漫站！"),
   ClimbWebstie(
       name: "AGE 动漫",
       iconAssetUrl: "assets/images/website/agemys.jpg",
@@ -31,7 +32,8 @@ List<ClimbWebstie> climbWebsites = [
       spkey: "enableWebSiteAgemys",
       enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true),
       pingStatus: PingStatus(),
-      climb: ClimbAgemys()),
+      climb: ClimbAgemys(),
+      desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载"),
   ClimbWebstie(
       name: "OmoFun",
       iconAssetUrl: "assets/images/website/OmoFun.jpg",
@@ -40,7 +42,8 @@ List<ClimbWebstie> climbWebsites = [
       enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: true),
       pingStatus: PingStatus(),
       climb: ClimbOmofun(),
-      comment: "图片较大，流量慎用"),
+      comment: "图片较大，流量慎用",
+      desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
   ClimbWebstie(
       name: "次元城动漫",
       iconAssetUrl: "assets/images/website/cycdm.png",
@@ -48,5 +51,6 @@ List<ClimbWebstie> climbWebsites = [
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
       pingStatus: PingStatus(),
-      climb: ClimbCycdm()),
+      climb: ClimbCycdm(),
+      desc: "高质量在线追番平台！"),
 ];
