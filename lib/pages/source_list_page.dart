@@ -111,7 +111,9 @@ class _SourceListPageState extends State<SourceListPage> {
         size: 12,
         color: (e.pingStatus.notPing || e.pingStatus.pinging)
             ? Colors.grey // 还没ping过，或者正在ping
-            : (e.pingStatus.connectable ? Colors.green : Colors.red));
+            : (e.pingStatus.connectable
+                ? ThemeUtil.getConnectableColor()
+                : Colors.red));
   }
 
   List<Widget> _buildListTiles() {

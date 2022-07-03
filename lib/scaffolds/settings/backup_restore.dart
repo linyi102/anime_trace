@@ -142,7 +142,9 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             trailing: Icon(
               Icons.circle,
               size: 12,
-              color: SPUtil.getBool("online") ? Colors.green : Colors.grey,
+              color: SPUtil.getBool("online")
+                  ? ThemeUtil.getConnectableColor()
+                  : Colors.grey,
             ),
             onTap: () {
               _loginWebDav();
