@@ -4,6 +4,7 @@ import 'package:flutter_test_future/pages/directory_page.dart';
 import 'package:flutter_test_future/pages/source_list_page.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 // 导航栏，顶部分为搜索源和目录
 class NetWorkNav extends StatefulWidget {
@@ -70,7 +71,7 @@ class _NetWorkNavState extends State<NetWorkNav>
                   indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
                   indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
-                      color: Colors.blue),
+                      color: ThemeUtil.getThemePrimaryColor()),
                   indicatorPadding:
                       const EdgeInsets.only(left: 5, right: 5, top: 45),
                   indicatorWeight: 3, // 指示器高度
@@ -82,7 +83,7 @@ class _NetWorkNavState extends State<NetWorkNav>
             DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeUtil.getThemePrimaryColor(),
         foregroundColor: Colors.white,
         child: const Icon(Icons.search_rounded),
         onPressed: () {

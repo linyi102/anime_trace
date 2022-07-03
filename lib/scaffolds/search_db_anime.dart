@@ -6,6 +6,7 @@ import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class SearchDbAnime extends StatefulWidget {
   const SearchDbAnime({Key? key}) : super(key: key);
@@ -137,9 +138,11 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
         // leading: Icon(Icons.search),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("网络搜索更多 ", style: TextStyle(color: Colors.blue)),
-            Icon(Icons.manage_search_outlined, color: Colors.blue)
+          children:  [
+            Text("网络搜索更多 ",
+                style: TextStyle(color: ThemeUtil.getThemePrimaryColor())),
+            Icon(Icons.manage_search_outlined,
+                color: ThemeUtil.getThemePrimaryColor())
           ],
         ),
         onTap: () {

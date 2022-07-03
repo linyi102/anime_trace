@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dar
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 typedef Callback = Future<bool> Function();
@@ -169,7 +170,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
           padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
-            color: Colors.blue,
+            color: ThemeUtil.getThemePrimaryColor(),
           ),
           child: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",

@@ -122,7 +122,7 @@ class MyAppState extends State<MyApp> {
             title: '漫迹', // 后台应用显示名称
             home: const MyHome(),
             theme: ThemeData(
-              primarySwatch: Colors.blue,
+              primaryColor: ThemeUtil.getThemePrimaryColor(),
               brightness: themeController.isDarkMode.value
                   ? Brightness.dark
                   : Brightness.light,
@@ -154,12 +154,12 @@ class MyAppState extends State<MyApp> {
               radioTheme: RadioThemeData(
                   fillColor: MaterialStateProperty.resolveWith((states) {
                 if (states.contains(MaterialState.selected)) {
-                  return Colors.blue;
+                  return ThemeUtil.getThemePrimaryColor();
                 }
                 return null;
               })),
-              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-                  selectedItemColor: Colors.blue),
+              bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                  selectedItemColor: ThemeUtil.getThemePrimaryColor()),
               textButtonTheme: TextButtonThemeData(
                   style: ButtonStyle(
                       textStyle: MaterialStateProperty.all(
@@ -168,7 +168,7 @@ class MyAppState extends State<MyApp> {
                 unselectedLabelColor: themeController.isDarkMode.value
                     ? Colors.white70
                     : Colors.black54,
-                labelColor: Colors.blue, // 选中的tab字体颜色
+                labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
               ),
               // 滚动条主题
               scrollbarTheme: ScrollbarThemeData(

@@ -10,6 +10,7 @@ import 'package:flutter_test_future/utils/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
@@ -230,7 +231,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
-            color: Colors.blue,
+            color: ThemeUtil.getThemePrimaryColor(),
           ),
           child: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",

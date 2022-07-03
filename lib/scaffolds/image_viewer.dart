@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<RelativeLocalImage> relativeLocalImages;
@@ -151,7 +152,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           border: Border.all(
                               width: 4,
                               color: index == currentIndex
-                                  ? Colors.blueAccent
+                                  ? ThemeUtil.getThemePrimaryColor()
                                   : Colors.transparent)),
                       // 切割圆角图片
                       child: ClipRRect(

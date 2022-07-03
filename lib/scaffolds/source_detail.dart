@@ -53,10 +53,10 @@ class _SourceDetailState extends State<SourceDetail> {
           ListTile(
             title: const Text("启动搜索"),
             leading: climbWebstie.enable
-                ? const Icon(Icons.check_box, color: Colors.blue)
+                ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
                 : Icon(
                     Icons.check_box_outline_blank,
-                    color: ThemeUtil.getIconColorOnSettingPage(),
+                    color: ThemeUtil.getLeadingIconColor(),
                   ),
             onTap: () {
               climbWebstie.enable = !climbWebstie.enable;
@@ -69,7 +69,7 @@ class _SourceDetailState extends State<SourceDetail> {
             title: const Text("访问网站"),
             leading: Icon(
               Icons.open_in_browser_rounded,
-              color: ThemeUtil.getIconColorOnSettingPage(),
+              color: ThemeUtil.getLeadingIconColor(),
             ),
             onTap: () {
               launchUrl(Uri.parse(climbWebstie.baseUrl),
@@ -83,7 +83,7 @@ class _SourceDetailState extends State<SourceDetail> {
             title: const Text("搜索动漫"),
             leading: Icon(
               Icons.search_rounded,
-              color: ThemeUtil.getIconColorOnSettingPage(),
+              color: ThemeUtil.getLeadingIconColor(),
             ),
             onTap: () {
               Navigator.of(context).push(FadeRoute(builder: (context) {

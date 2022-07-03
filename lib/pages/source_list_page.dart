@@ -5,6 +5,7 @@ import 'package:flutter_test_future/scaffolds/source_detail.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 class SourceListPage extends StatefulWidget {
@@ -147,7 +148,7 @@ class _SourceListPageState extends State<SourceListPage> {
             _invertSource(e);
           },
           icon: e.enable
-              ? const Icon(Icons.check_box, color: Colors.blue)
+              ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
               : const Icon(Icons.check_box_outline_blank),
         ),
         // 带缩放动画的开关图标
@@ -161,7 +162,7 @@ class _SourceListPageState extends State<SourceListPage> {
         //   child: e.enable
         //       ? Icon(Icons.check_box,
         //           key: Key(e.enable.toString()), // 不能用Unique()，否则会影响其他ListTile中的图标
-        //           color: Colors.blue)
+        //           color: ThemeUtil.getThemePrimaryColor())
         //       : Icon(Icons.check_box_outline_blank,
         //           key: Key(e.enable.toString())),
         // ),

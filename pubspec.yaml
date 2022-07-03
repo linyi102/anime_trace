@@ -34,6 +34,7 @@ dependencies:
   flutter_localizations: # 国际化
     sdk: flutter
   dart_ping: ^6.1.2
+  fluttericon: ^2.0.0
   simple_icons: ^7.1.0
   expand_widget: ^2.1.0
   get: ^4.6.1 # 4.6.3不支持SDK2.15，必须大于2.15

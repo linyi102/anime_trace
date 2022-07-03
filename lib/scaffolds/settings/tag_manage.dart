@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 class TagManage extends StatefulWidget {
@@ -38,7 +39,7 @@ class _TagManageState extends State<TagManage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeUtil.getThemePrimaryColor(),
         foregroundColor: Colors.white,
         onPressed: () {
           showDialog(

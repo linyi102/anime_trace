@@ -31,7 +31,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
-  Color multiSelectedColor = Colors.blueAccent.withOpacity(0.25);
+  Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
   @override
   void initState() {
@@ -140,7 +140,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                               //     topLeft: Radius.circular(2),
                               //     topRight: Radius.circular(2)),
                               borderRadius: BorderRadius.circular(2),
-                              color: Colors.blue),
+                              color: ThemeUtil.getThemePrimaryColor()),
                           indicatorPadding: const EdgeInsets.only(
                               left: 20, right: 20, top: 39),
                           indicatorWeight: 3, // 指示器高度
@@ -153,7 +153,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     children: _getAnimesPlus(),
                   ),
                   // floatingActionButton: FloatingActionButton(
-                  //   backgroundColor: Colors.blue,
+                  //   backgroundColor: ThemeUtil.getThemePrimaryColor(),
                   //   foregroundColor: Colors.white,
                   //   onPressed: () {
                   //     setState(() {
@@ -265,7 +265,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                                       const EdgeInsets.fromLTRB(3, 2, 3, 2),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(3),
-                                    color: Colors.blue,
+                                    color: ThemeUtil.getThemePrimaryColor(),
                                   ),
                                   child: Text(
                                     "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
@@ -316,7 +316,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 Container(
                   decoration: BoxDecoration(
                     // border: mapSelected.containsKey(index)
-                    //     ? Border.all(width: 3, color: Colors.blue)
+                    //     ? Border.all(width: 3, color: ThemeUtil.getThemePrimaryColor())
                     //     : null,
                     borderRadius: BorderRadius.circular(5),
                     color: mapSelected.containsKey(index)
@@ -499,9 +499,9 @@ class _AnimeListPageState extends State<AnimeListPage>
             ListTile(
               title: Text(tags[i]),
               leading: tags[i] == defaultTagName
-                  ? const Icon(
+                  ?  Icon(
                       Icons.radio_button_on_outlined,
-                      color: Colors.blue,
+                      color: ThemeUtil.getThemePrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,

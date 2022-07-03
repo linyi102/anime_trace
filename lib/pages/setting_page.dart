@@ -72,7 +72,7 @@ class _SettingPageState extends State<SettingPage> {
             _showImg(),
             _showImgButton(),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.settings_backup_restore_outlined),
               title: const Text("备份还原"),
               onTap: () {
@@ -90,7 +90,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
             // const Divider(),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.new_label_outlined),
               title: const Text("标签管理"),
               onTap: () {
@@ -107,7 +107,7 @@ class _SettingPageState extends State<SettingPage> {
               },
             ),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.book_outlined),
               title: const Text("动漫界面"),
               onTap: () {
@@ -124,7 +124,7 @@ class _SettingPageState extends State<SettingPage> {
               },
             ),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.edit_road),
               title: const Text("笔记设置"),
               onTap: () {
@@ -141,16 +141,17 @@ class _SettingPageState extends State<SettingPage> {
               },
             ),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.dark_mode_outlined),
               title: const Text("夜间模式"),
               trailing: themeController.isDarkMode.value
-                  ? const Icon(Icons.toggle_on, color: Colors.blue, size: 32)
+                  ? Icon(Icons.toggle_on,
+                      color: ThemeUtil.getThemePrimaryColor(), size: 32)
                   : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
               onTap: () => themeController.changeTheme(),
             ),
             ListTile(
-              iconColor: ThemeUtil.getIconColorOnSettingPage(),
+              iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.error_outline),
               title: const Text("关于版本"),
               onTap: () {
@@ -213,7 +214,7 @@ class _SettingPageState extends State<SettingPage> {
 
   _showImgButton() {
     return ListTile(
-      iconColor: ThemeUtil.getIconColorOnSettingPage(),
+      iconColor: ThemeUtil.getLeadingIconColor(),
       leading: const Icon(
           // Icons.image_outlined,
           // Icons.wallpaper_outlined,

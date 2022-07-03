@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 dialogSelectTag(setState, context, Anime anime) {
@@ -14,9 +15,9 @@ dialogSelectTag(setState, context, Anime anime) {
           ListTile(
             title: Text(tags[i]),
             leading: tags[i] == anime.tagName
-                ? const Icon(
+                ?  Icon(
                     Icons.radio_button_on_outlined,
-                    color: Colors.blue,
+                    color: ThemeUtil.getThemePrimaryColor(),
                   )
                 : const Icon(
                     Icons.radio_button_off_outlined,

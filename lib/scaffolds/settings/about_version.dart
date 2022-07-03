@@ -69,9 +69,6 @@ class _AboutVersionState extends State<AboutVersion> {
     ];
     final List<String> _urisTitle = ["更新进度", "GitHub 地址", "Gitee 地址"];
     final List<IconData> _urisIcon = [
-      // const IconData(0),
-      // const IconData(0),
-      // const IconData(0),
       Icons.ac_unit,
       SimpleIcons.github,
       SimpleIcons.gitee,
@@ -107,20 +104,11 @@ class _AboutVersionState extends State<AboutVersion> {
             _urisIcon[i],
             color: _urisIconColor[i],
           ),
-          // subtitle: const Text(
-          //   "点击打开链接",
-          //   style: TextStyle(
-          //     overflow: TextOverflow.ellipsis,
-          //   ),
-          // ),
           onTap: () async {
             if (!await launchUrl(_uris[i],
                 mode: LaunchMode.externalApplication)) {
               throw "Could not launch $_uris[i]";
             }
-            // Clipboard.setData(const ClipboardData(
-            //         text: _uris[i]))
-            //     .then((value) => showToast("已复制地址"));
           },
         ),
       );

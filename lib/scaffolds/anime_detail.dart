@@ -55,7 +55,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
-  Color multiSelectedColor = Colors.blueAccent.withOpacity(0.25);
+  Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
   bool hideNoteInAnimeDetail =
       SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
@@ -964,9 +964,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ListTile(
               title: Text(tags[i]),
               leading: tags[i] == _anime.tagName
-                  ? const Icon(
+                  ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: Colors.blue,
+                      color: ThemeUtil.getThemePrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,
@@ -1011,9 +1011,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             ListTile(
               title: Text(sortMethodsName[i]),
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
-                  ? const Icon(
+                  ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: Colors.blue,
+                      color: ThemeUtil.getThemePrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,
@@ -1108,7 +1108,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       listTiles.add(ListTile(
         title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
         leading: currentStartEpisodeNumber == startEpisodeNumber
-            ? const Icon(Icons.radio_button_on, color: Colors.blue)
+            ? Icon(Icons.radio_button_on,
+                color: ThemeUtil.getThemePrimaryColor())
             : const Icon(Icons.radio_button_off),
         onTap: () {
           currentStartEpisodeNumber = startEpisodeNumber;

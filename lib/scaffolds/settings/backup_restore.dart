@@ -5,6 +5,7 @@ import 'package:flutter_test_future/scaffolds/backup_file_list.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,10 +51,10 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
       body: ListView(
         children: [
           Platform.isWindows
-              ? const ListTile(
+              ? ListTile(
                   title: Text(
                     "本地备份",
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: ThemeUtil.getThemePrimaryColor()),
                   ),
                 )
               : Container(),
@@ -87,8 +88,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   title: const Text("自动备份"),
                   subtitle: const Text("每次进入应用后会自动备份"),
                   trailing: SPUtil.getBool("auto_backup_local")
-                      ? const Icon(Icons.toggle_on,
-                          color: Colors.blue, size: 32)
+                      ? Icon(Icons.toggle_on,
+                          color: ThemeUtil.getThemePrimaryColor(), size: 32)
                       : const Icon(Icons.toggle_off,
                           color: Colors.grey, size: 32),
                   onTap: () {
@@ -125,8 +126,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           ),
           const Divider(),
           ListTile(
-            title:
-                const Text("WebDav 备份", style: TextStyle(color: Colors.blue)),
+            title: Text("WebDav 备份",
+                style: TextStyle(color: ThemeUtil.getThemePrimaryColor())),
             // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
             subtitle: const Text("点击查看教程"),
             onTap: () async {
@@ -141,8 +142,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             trailing: Icon(
               Icons.circle,
               size: 12,
-              color:
-                  SPUtil.getBool("online") ? Colors.greenAccent : Colors.grey,
+              color: SPUtil.getBool("online") ? Colors.green : Colors.grey,
             ),
             onTap: () {
               _loginWebDav();
@@ -166,7 +166,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             title: const Text("自动备份"),
             subtitle: const Text("每次进入应用后会自动备份"),
             trailing: SPUtil.getBool("auto_backup_webdav")
-                ? const Icon(Icons.toggle_on, color: Colors.blue, size: 32)
+                ? Icon(Icons.toggle_on,
+                    color: ThemeUtil.getThemePrimaryColor(), size: 32)
                 : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
             onTap: () async {
               if (!SPUtil.getBool("login")) {

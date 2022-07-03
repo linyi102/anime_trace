@@ -63,6 +63,8 @@ class _TabsState extends State<Tabs> {
             BottomNavigationBarItem(icon: Icon(Icons.book), label: "动漫"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.local_library_outlined), label: "网络"),
+            // icon: Icon(Entypo.network),
+            // label: "网络"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.history_rounded), label: "历史"),
             BottomNavigationBarItem(
