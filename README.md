@@ -1,4 +1,12 @@
-[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新进度](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [更新日志](https://www.wolai.com/gqSMt2YRuNEzZBwwB5dpVA)
+[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新计划](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [更新日志](https://www.wolai.com/gqSMt2YRuNEzZBwwB5dpVA)
+
+## 声明
+
+该软件并不提供在线观看功能，如有需要，可以访问搜索源网址进行观看。
+
+用户数据存放在本地，用户可使用 WebDav 备份数据到第三方平台，比如坚果云。
+
+笔记添加的图片是通过记录相对地址来实现的，因此备份数据并不会上传图片，只是上传了图片的相对地址。
 
 ## 下载地址
 
@@ -42,6 +50,10 @@ Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一�
 
 | packages                                                     | 开源协议     |
 | ------------------------------------------------------------ | ------------ |
+| [dart_ping \| Dart Package](https://pub.flutter-io.cn/packages/dart_ping) | BSD-3-Clause |
+| [fluttericon \| Flutter Package](https://pub.flutter-io.cn/packages/fluttericon) | unknown      |
+| [simple_icons \| Flutter Package](https://pub.flutter-io.cn/packages/simple_icons) | unknown      |
+| [expand_widget \| Flutter Package](https://pub.flutter-io.cn/packages/expand_widget) | GPL-3.0      |
 | [get \| Flutter Package](https://pub.flutter-io.cn/packages/get) | MIT          |
 | [shared_preferences \| Flutter Package](https://pub.flutter-io.cn/packages/shared_preferences) | BSD-3-Clause |
 | [sqflite \| Flutter Package](https://pub.flutter-io.cn/packages/sqflite) | BSD-2-Clause |
