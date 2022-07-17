@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:path/path.dart';
 
 class ImageUtil {
   static ImageUtil? _instance;
@@ -51,6 +53,11 @@ class ImageUtil {
   }
 
   static String getAbsoluteImagePath(String relativeImagePath) {
-    return imageRootDirPath + relativeImagePath;
+    String absolutePath = imageRootDirPath + relativeImagePath;
+    // debugPrint("修复前，路径为$absolutePath");
+    absolutePath = absolutePath.replaceAll("/", separator);
+    absolutePath = absolutePath.replaceAll("\\", separator);
+    // debugPrint("修复后，路径为$absolutePath");
+    return absolutePath;
   }
 }
