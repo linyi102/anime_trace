@@ -31,7 +31,7 @@ class ClimbYhdm implements Climb {
     String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
     // str内容：
     // <label>别名:</label>古見さんは、コミ ュ症です。2期
-    debugPrint("str=$str");
+    // debugPrint("str=$str");
     anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
 
     // 获取首播时间
@@ -62,6 +62,7 @@ class ClimbYhdm implements Climb {
         .innerHtml;
     // 获取集数
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
+    debugPrint("开始解析集数：${anime.animeName}");
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
     if (showMessage) {
       showToast("更新信息成功");
@@ -77,12 +78,20 @@ class ClimbYhdm implements Climb {
     if (episodeCntStr.contains("[全集]")) {
       episodeCnt = 1;
     } else if (episodeCntStr.contains("第")) {
-      // 例如：第13集(完结)
+      // 例如：第13集(完结)，第59话
+      // 特例：擅长捉弄的高木同学OVA的「第OVA1话」
       int episodeCntStartIndex = episodeCntStr.indexOf("第") + 1;
       int episodeCntEndIndex = episodeCntStr.indexOf("集");
+      if (episodeCntEndIndex == -1) {
+        episodeCntEndIndex = episodeCntStr.indexOf("话");
+      }
       if (episodeCntStartIndex < episodeCntEndIndex) {
-        episodeCnt = int.parse(
-            episodeCntStr.substring(episodeCntStartIndex, episodeCntEndIndex));
+        try {
+          episodeCnt = int.parse(episodeCntStr.substring(
+              episodeCntStartIndex, episodeCntEndIndex));
+        } catch (e) {
+          debugPrint("解析出错：$episodeCntStr");
+        }
       }
     } else if (episodeCntStr.contains("01-")) {
       // 例如：[TV 01-12+OVA+SP]

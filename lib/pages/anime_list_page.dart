@@ -661,17 +661,43 @@ class _AnimeListPageState extends State<AnimeListPage>
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canClimbAllAnimesInfo = true);
 
-    int cnt = 0;
+    showToast("更新动漫中...");
+    int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
     // 异步更新所有动漫信息。由于是分页查询，实际上并不是所有动漫
     for (var i = 0; i < tags.length; i++) {
-      for (var j = 0; j < animesInTag[i].length; j++) {
-        ClimbAnimeUtil.climbAnimeInfoByUrl(animesInTag[i][j],
-            showMessage: false);
-        cnt++;
+      for (var anime in animesInTag[i]) {
+        // 跳过完结动漫
+        if (anime.playStatus.contains("完结")) {
+          skipUpdateCnt++;
+          continue;
+        }
+        debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
+        // 要在爬取前赋值给oldAnime
+        Anime oldAnime = Anime(
+            animeId: anime.animeId,
+            animeName: anime.animeName,
+            animeEpisodeCnt: anime.animeEpisodeCnt,
+            tagName: anime.tagName);
+        // 爬取
+        ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
+            .then((value) {
+          // 更新到数据库
+          SqliteUtil.updateAnime(oldAnime, anime).then((value) {
+            // 数据库更新完毕后计数，更新失败也会正常计数
+            updateOkCnt++;
+            debugPrint("updateOkCnt=$updateOkCnt");
+            if (updateOkCnt == needUpdateCnt) {
+              debugPrint("刷新页面状态");
+              showToast("更新完毕");
+              setState(() {});
+            }
+          });
+        });
+        needUpdateCnt++;
         // debugPrint(
         //     "$cnt: ${animesInTag[i][j].animeName} ${animesInTag[i][j].animeUrl}");
       }
     }
-    debugPrint("共更新$cnt个动漫");
+    debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
   }
 }
