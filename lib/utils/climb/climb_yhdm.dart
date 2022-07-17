@@ -33,7 +33,14 @@ class ClimbYhdm implements Climb {
     // <label>别名:</label>古見さんは、コミ ュ症です。2期
     // debugPrint("str=$str");
     anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
-
+    // 获取封面
+    String? coverUrl = document
+        .getElementsByClassName("thumb")[0]
+        .getElementsByTagName("img")[0]
+        .attributes["src"];
+    if (coverUrl != null && coverUrl.startsWith("//")) {
+      anime.animeCoverUrl = "https:$coverUrl";
+    }
     // 获取首播时间
     // <a href="/list/?year=2020" target="_blank">2020</a>-01-11
     // <a href="/list/?year=2022" target="_blank">2022</a>-10

@@ -93,6 +93,7 @@ class ClimbAgemys implements Climb {
         // 不能直接赋值，因为有id等信息
         anime.animeEpisodeCnt = climbAnime.animeEpisodeCnt;
         anime.playStatus = climbAnime.playStatus;
+        anime.animeCoverUrl = climbAnime.animeCoverUrl;
         break;
       }
     }

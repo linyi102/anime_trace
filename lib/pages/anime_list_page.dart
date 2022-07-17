@@ -694,8 +694,6 @@ class _AnimeListPageState extends State<AnimeListPage>
           });
         });
         needUpdateCnt++;
-        // debugPrint(
-        //     "$cnt: ${animesInTag[i][j].animeName} ${animesInTag[i][j].animeUrl}");
       }
     }
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");

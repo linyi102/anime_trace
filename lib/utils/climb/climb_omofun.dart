@@ -113,6 +113,11 @@ class ClimbOmofun implements Climb {
         .getElementsByClassName("module-info-tag-link")[1]
         .getElementsByTagName("a")[0]
         .innerHtml;
+    anime.animeCoverUrl = document
+            .getElementsByClassName("module module-info")[0]
+            .getElementsByTagName("img")[0]
+            .attributes["data-original"] ??
+        anime.animeCoverUrl;
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
     if (showMessage) {
