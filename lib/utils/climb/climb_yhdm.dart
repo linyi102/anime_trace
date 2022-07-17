@@ -19,7 +19,7 @@ class ClimbYhdm implements Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime) async {
+  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     Result result = await DioPackage().get(anime.animeUrl);
     if (result.code != 200) {
       showToast(result.msg);
@@ -63,7 +63,9 @@ class ClimbYhdm implements Climb {
     // 获取集数
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
-    showToast("更新信息成功");
+    if (showMessage) {
+      showToast("更新信息成功");
+    }
 
     debugPrint(anime.toString());
     return anime;

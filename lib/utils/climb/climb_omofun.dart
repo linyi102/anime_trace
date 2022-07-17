@@ -88,7 +88,7 @@ class ClimbOmofun implements Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime) async {
+  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     debugPrint("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage().get(anime.animeUrl);
     if (result.code != 200) {
@@ -115,7 +115,9 @@ class ClimbOmofun implements Climb {
         .innerHtml;
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
-    showToast("更新信息成功");
+    if (showMessage) {
+      showToast("更新信息成功");
+    }
     return anime;
   }
 

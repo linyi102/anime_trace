@@ -6,10 +6,12 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -201,6 +203,12 @@ class _AnimeListPageState extends State<AnimeListPage>
         tooltip: "搜索动漫",
       ),
     );
+    actions.add(IconButton(
+        onPressed: () {
+          // 刷新所有
+          _updateAllAnimesInfo();
+        },
+        icon: const Icon(Icons.refresh_rounded)));
     return actions;
   }
 
@@ -499,7 +507,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             ListTile(
               title: Text(tags[i]),
               leading: tags[i] == defaultTagName
-                  ?  Icon(
+                  ? Icon(
                       Icons.radio_button_on_outlined,
                       color: ThemeUtil.getThemePrimaryColor(),
                     )
@@ -639,5 +647,31 @@ class _AnimeListPageState extends State<AnimeListPage>
   _getActionsOnMulti() {
     List<Widget> actions = [];
     return actions;
+  }
+
+  bool canClimbAllAnimesInfo = true;
+
+  void _updateAllAnimesInfo() {
+    if (!canClimbAllAnimesInfo) {
+      showToast("刷新间隔为10s");
+      return;
+    }
+
+    canClimbAllAnimesInfo = false;
+    Future.delayed(const Duration(seconds: 10))
+        .then((value) => canClimbAllAnimesInfo = true);
+
+    int cnt = 0;
+    // 异步更新所有动漫信息。由于是分页查询，实际上并不是所有动漫
+    for (var i = 0; i < tags.length; i++) {
+      for (var j = 0; j < animesInTag[i].length; j++) {
+        ClimbAnimeUtil.climbAnimeInfoByUrl(animesInTag[i][j],
+            showMessage: false);
+        cnt++;
+        // debugPrint(
+        //     "$cnt: ${animesInTag[i][j].animeName} ${animesInTag[i][j].animeUrl}");
+      }
+    }
+    debugPrint("共更新$cnt个动漫");
   }
 }

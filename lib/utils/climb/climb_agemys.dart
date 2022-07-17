@@ -80,7 +80,7 @@ class ClimbAgemys implements Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime) async {
+  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     // debugPrint("正在获取文档...");
     // var response = await Dio().get(anime.animeUrl);
     // var document = parse(response.data);
@@ -98,7 +98,9 @@ class ClimbAgemys implements Climb {
     }
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
-    showToast("更新信息成功");
+    if (showMessage) {
+      showToast("更新信息成功");
+    }
     return anime;
   }
 

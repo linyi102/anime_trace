@@ -9,8 +9,8 @@ class ClimbCycdm implements Climb {
   String baseUrl = "https://www.cycacg.com";
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime) async {
-    anime = await ClimbOmofun().climbAnimeInfo(anime);
+  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+    anime = await ClimbOmofun().climbAnimeInfo(anime, showMessage: showMessage);
     return anime;
   }
 

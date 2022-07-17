@@ -37,13 +37,16 @@ class ClimbAnimeUtil {
   }
 
   // 进入该动漫网址，获取详细信息
-  static Future<Anime> climbAnimeInfoByUrl(Anime anime) async {
+  static Future<Anime> climbAnimeInfoByUrl(Anime anime,
+      {bool showMessage = true}) async {
     if (anime.animeUrl.isEmpty) {
       debugPrint("无来源，无法更新，返回旧动漫对象");
       return anime;
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
-    if (climb != null) anime = await climb.climbAnimeInfo(anime);
+    if (climb != null) {
+      anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+    }
     return anime;
   }
 }
