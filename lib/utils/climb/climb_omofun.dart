@@ -92,7 +92,7 @@ class ClimbOmofun implements Climb {
     debugPrint("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage().get(anime.animeUrl);
     if (result.code != 200) {
-      showToast(result.msg);
+      if (showMessage) showToast(result.msg);
       return anime;
     }
     Response response = result.data;
@@ -120,9 +120,8 @@ class ClimbOmofun implements Climb {
         anime.animeCoverUrl;
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
-    if (showMessage) {
-      showToast("更新信息成功");
-    }
+    if (showMessage) showToast("更新信息成功");
+
     return anime;
   }
 

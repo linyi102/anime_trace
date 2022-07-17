@@ -666,11 +666,13 @@ class _AnimeListPageState extends State<AnimeListPage>
     // 异步更新所有动漫信息。由于是分页查询，实际上并不是所有动漫
     for (var i = 0; i < tags.length; i++) {
       for (var anime in animesInTag[i]) {
+        // debugPrint("${anime.animeName}：${anime.playStatus}");
         // 跳过完结动漫
         if (anime.playStatus.contains("完结")) {
           skipUpdateCnt++;
           continue;
         }
+        needUpdateCnt++;
         debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
         // 要在爬取前赋值给oldAnime
         Anime oldAnime = Anime(
@@ -689,11 +691,12 @@ class _AnimeListPageState extends State<AnimeListPage>
             if (updateOkCnt == needUpdateCnt) {
               debugPrint("刷新页面状态");
               showToast("更新完毕");
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             }
           });
         });
-        needUpdateCnt++;
       }
     }
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");

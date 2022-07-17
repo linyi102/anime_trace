@@ -677,7 +677,9 @@ class SqliteUtil {
           animeId: animeId, // 进入详细页面后需要该id
           animeName: element['anime_name'] as String,
           animeEpisodeCnt: element['anime_episode_cnt'] as int,
+          // 详细地址和播放状态用于在收藏页更新全部动漫
           animeUrl: element['anime_url'] as String? ?? "",
+          playStatus: element['play_status'] as String? ?? "",
           animeCoverUrl: element['anime_cover_url'] as String? ??
               "", // 强制转换为String?，如果为null，则设置为空字符串
           tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置

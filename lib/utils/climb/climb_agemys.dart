@@ -14,14 +14,16 @@ class ClimbAgemys implements Climb {
   String baseUrl = "https://www.agemys.cc";
 
   @override
-  Future<List<Anime>> climbAnimesByKeyword(String keyword) async {
+  Future<List<Anime>> climbAnimesByKeyword(String keyword,
+      {bool showMessage = true}) async {
     String url = baseUrl + "/search?query=$keyword";
     List<Anime> climbAnimes = [];
 
     debugPrint("正在获取文档...");
     Result result = await DioPackage().get(url);
     if (result.code != 200) {
-      showToast(result.msg);
+      if (showMessage) showToast(result.msg);
+
       return [];
     }
     Response response = result.data;
@@ -87,7 +89,8 @@ class ClimbAgemys implements Climb {
     // debugPrint("获取文档成功√，正在解析...");
     // 因为该动漫网址集数不容易解析，但又因为查询页面中很多信息都已经写上了，还包括了容易解析的集信息
     // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
-    List<Anime> climbAnimes = await climbAnimesByKeyword(anime.animeName);
+    List<Anime> climbAnimes =
+        await climbAnimesByKeyword(anime.animeName, showMessage: showMessage);
     for (var climbAnime in climbAnimes) {
       if (climbAnime.animeUrl == anime.animeUrl) {
         // 不能直接赋值，因为有id等信息
@@ -99,9 +102,8 @@ class ClimbAgemys implements Climb {
     }
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
-    if (showMessage) {
-      showToast("更新信息成功");
-    }
+    if (showMessage) showToast("更新信息成功");
+
     return anime;
   }
 
