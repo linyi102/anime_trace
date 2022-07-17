@@ -1391,7 +1391,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         : ListTile(
             title: Row(
               children: [
-                Text(_anime.tagName),
+                Text(
+                  _anime.tagName,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(
                   width: 10,
                 ),
