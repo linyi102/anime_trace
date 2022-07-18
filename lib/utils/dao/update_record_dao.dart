@@ -17,6 +17,7 @@ class UpdateRecordDao {
 
   // 先获取最近更新的pageSize个日期，然后循环查询当前日期下的所有记录
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
+    debugPrint("UpdateRecordDao: findAll(pageParams=$pageParams)");
     List<UpdateRecordVo> updateRecordVos = [];
     List<Map<String, Object?>> datesMap =
         await SqliteUtil.database.query("update_record",
@@ -27,7 +28,7 @@ class UpdateRecordDao {
             groupBy: "manual_update_time",
             orderBy: "manual_update_time desc");
     List<String> dates = [];
-    debugPrint("最近${pageParams.pageSize}个日期：");
+    debugPrint("最近${pageParams.pageSize}(${datesMap.length})个日期：");
     for (var dateMap in datesMap) {
       String date = dateMap["manual_update_time"] as String;
       dates.add(date);

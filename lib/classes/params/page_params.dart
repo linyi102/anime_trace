@@ -5,6 +5,7 @@ class PageParams {
   PageParams(this.pageIndex, this.pageSize);
 
   int getOffsetWhenIndexStartZero() {
+    // 如果下标为0，则偏移0个数据
     return pageIndex * pageSize;
   }
 
