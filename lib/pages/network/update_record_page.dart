@@ -44,7 +44,6 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
   @override
   Widget build(BuildContext context) {
-    String preDate = "";
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
@@ -63,6 +62,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                   child: ListView.builder(
                     itemCount: updateRecordController.updateRecordVos.length,
                     itemBuilder: (context, index) {
+                      debugPrint("index=$index");
                       // 下拉到还剩两天的时候请求更多
                       PageParams pageParams = updateRecordController.pageParams;
                       // 即使全部加载了，也会一直加载
@@ -97,8 +97,14 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                           ));
                         },
                       );
-                      if (preDate != curDate) {
-                        preDate = curDate;
+                      // 不能通过该动漫的更新日期和preDate(上一个日期)比较来判断是否进入下一个日期。从下往上移动的时候就会出错
+                      // if (preDate != curDate) {
+                      //   preDate = curDate;
+                      // 可以通过相邻两个index比较：该动漫永远和上一个相邻动漫比较，如果日期不一样，就在该动漫上面添加日期即可
+                      if (index == 0 ||
+                          updateRecordController.updateRecordVos[index - 1]
+                                  .manualUpdateTime !=
+                              updateRecordVo.manualUpdateTime) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

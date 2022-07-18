@@ -41,6 +41,8 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
+  int minYear = 1970, maxYear = DateTime.now().year + 2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +53,25 @@ class _HistoryPageState extends State<HistoryPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                dialogSelectUint(context, "选择年份",
+                        initialValue: selectedYear,
+                        minValue: minYear,
+                        maxValue: maxYear)
+                    .then((value) {
+                  if (value == null) {
+                    debugPrint("未选择，直接返回");
+                    return;
+                  }
+                  debugPrint("选择了$value");
+                  selectedYear = value;
+                  _loadData(selectedYear);
+                });
+              },
+              icon: const Icon(Icons.search))
+        ],
       ),
       body: RefreshIndicator(
           // 下拉刷新
@@ -73,14 +94,16 @@ class _HistoryPageState extends State<HistoryPage> {
     return Stack(children: [
       Column(
         children: [
-          _buildOpYearButton(),
+          // _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
               ? Expanded(
                   child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
                 )
               : Expanded(
                   child: Scrollbar(
-                      child: (ListView.separated(
+                      child: (
+                          // ListView.separated(
+                          ListView.builder(
                     itemCount: yearHistory[selectedYear]!.length,
                     itemBuilder: (BuildContext context, int index) {
                       // debugPrint("$index");
@@ -89,17 +112,17 @@ class _HistoryPageState extends State<HistoryPage> {
                         title: ListTile(
                           title: Text(
                             yearHistory[selectedYear]![index].date,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
+                          style: ListTileStyle.drawer,
                         ),
                         subtitle: Column(
                           children: _buildRecord(index),
                         ),
                       );
                     },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider();
-                    },
+                    // separatorBuilder: (BuildContext context, int index) {
+                    //   return const Divider();
+                    // },
                   ))),
                 ),
         ],
@@ -167,8 +190,6 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Widget _buildOpYearButton() {
-    int minYear = 1970, maxYear = DateTime.now().year + 2;
-
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
       child: Row(
