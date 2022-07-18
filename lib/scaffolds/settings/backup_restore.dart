@@ -26,6 +26,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
   int autoBackupLocalNumber =
       SPUtil.getInt("autoBackupLocalNumber", defaultValue: 20);
   bool loadOk = false;
+  bool canManualBackup = true;
 
   @override
   void initState() {
@@ -64,6 +65,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   subtitle: const Text("单击进行备份，备份目录为设置的本地目录"),
                   // subtitle: Text(getDuration()),
                   onTap: () {
+                    // 注意这里是本地手动备份
+                    showToast("正在备份中...");
                     BackupUtil.backup(
                         localBackupDirPath: SPUtil.getString("backup_local_dir",
                             defaultValue: "unset"));
@@ -158,6 +161,17 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 showToast("请先配置账号，再进行备份！");
                 return;
               }
+
+              if (!canManualBackup) {
+                showToast("备份间隔为1min");
+                return;
+              }
+
+              canManualBackup = false;
+              Future.delayed(const Duration(minutes: 1))
+                  .then((value) => canManualBackup = true);
+
+              showToast("正在备份中...");
               String remoteBackupDirPath = await WebDavUtil.getRemoteDirPath();
               if (remoteBackupDirPath.isNotEmpty) {
                 BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);

@@ -39,9 +39,9 @@ class _BackUpFileListState extends State<BackUpFileList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "备份文件列表",
-            style: TextStyle(fontWeight: FontWeight.w600),
+          title: Text(
+            "备份文件列表 (${files.length})",
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
         body: files.isEmpty

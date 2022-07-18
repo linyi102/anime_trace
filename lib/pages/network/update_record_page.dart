@@ -62,7 +62,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                   child: ListView.builder(
                     itemCount: updateRecordController.updateRecordVos.length,
                     itemBuilder: (context, index) {
-                      debugPrint("index=$index");
+                      // debugPrint("index=$index");
                       // 下拉到还剩两天的时候请求更多
                       PageParams pageParams = updateRecordController.pageParams;
                       // 即使全部加载了，也会一直加载
