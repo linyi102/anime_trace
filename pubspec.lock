@@ -99,13 +99,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.5"
-  dart_numerics:
-    dependency: "direct main"
-    description:
-      name: dart_numerics
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.0.6"
   dart_ping:
     dependency: "direct main"
     description:
@@ -427,13 +420,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.2.4"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.0"
   rxdart:
     dependency: transitive
     description:
@@ -590,13 +576,6 @@ packages:
     dependency: "direct main"
     description:
       name: transparent_image
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.0"
-  tuple:
-    dependency: transitive
-    description:
-      name: tuple
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"

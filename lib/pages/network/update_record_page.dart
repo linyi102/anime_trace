@@ -3,9 +3,11 @@ import 'package:flutter_test_future/classes/params/page_params.dart';
 import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/controllers/count_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:get/get.dart';
 
 class UpdateRecordPage extends StatefulWidget {
@@ -31,13 +33,9 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     if (!updateRecordController.initOk) {
       // doubt：不用then时，第一次打开该页面时不会显示数据
       updateRecordController.updateData().then((value) {
-        setState(() {});
+        // setState(() {});
       });
     }
-  }
-
-  _refreshData() async {
-    updateRecordController.updateData();
   }
 
   _formatDate(String date) {
@@ -50,7 +48,9 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
-          _refreshData();
+          ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+            setState(() {});
+          });
         },
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),

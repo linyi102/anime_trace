@@ -12,7 +12,7 @@ class UpdateRecordController extends GetxController {
   Future<void> updateData() async {
     debugPrint("重新获取数据库内容并覆盖");
     pageParams.pageIndex = 0; // 应该重置为0
-    updateRecordVos = (await UpdateRecordDao.findAll(pageParams)).obs;
+    updateRecordVos.value = await UpdateRecordDao.findAll(pageParams);
     initOk = true;
   }
 
@@ -20,6 +20,7 @@ class UpdateRecordController extends GetxController {
   loadMore() async {
     debugPrint("加载更多更新记录中...");
     pageParams.pageIndex++;
-    updateRecordVos.addAll((await UpdateRecordDao.findAll(pageParams)).obs);
+    updateRecordVos.value =
+        updateRecordVos.toList() + await UpdateRecordDao.findAll(pageParams);
   }
 }

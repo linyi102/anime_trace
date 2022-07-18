@@ -1,33 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/count_controller.dart';
+import 'package:get/get.dart';
 
-class TestPage extends StatefulWidget {
+class TestPage extends StatelessWidget {
   const TestPage({Key? key}) : super(key: key);
 
   @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
-  bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final CountController countController = Get.put(CountController());
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "测试页面",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text("测试"),
       ),
       body: ListView(
-        children: const [],
+        children: [
+          ListTile(
+            title: Obx(() => Text("${countController.count}")),
+            onTap: () => countController.increment(),
+          )
+        ],
       ),
     );
   }

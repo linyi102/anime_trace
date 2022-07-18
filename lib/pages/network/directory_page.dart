@@ -64,7 +64,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
         directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
       }
       _loadOk = true;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

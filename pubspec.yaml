@@ -33,7 +33,6 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
-  dart_numerics: ^0.0.6
   dart_ping: ^6.1.2
   fluttericon: ^2.0.0
   simple_icons: ^7.1.0

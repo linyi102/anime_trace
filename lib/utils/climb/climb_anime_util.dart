@@ -72,6 +72,8 @@ class ClimbAnimeUtil {
     showToast("更新动漫中...");
     int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
     List<Anime> animes = await SqliteUtil.getAllAnimes();
+
+    List<UpdateRecord> updateRecords = [];
     // 异步更新所有动漫信息
     for (var anime in animes) {
       // debugPrint("${anime.animeName}：${anime.playStatus}");
@@ -99,22 +101,25 @@ class ClimbAnimeUtil {
               oldEpisodeCnt: oldAnime.animeEpisodeCnt,
               newEpisodeCnt: anime.animeEpisodeCnt,
               manualUpdateTime:
-                  DateTime.now().toString().substring(0, 10) // 只存入年月日
+                  DateTime.now().toString().substring(0, 10) // 只存入年-月-日
               );
-          UpdateRecordDao.insert(updateRecord);
+          // UpdateRecordDao.insert(updateRecord);
+          updateRecords.add(updateRecord);
         }
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
           // 数据库更新完毕后计数，更新失败也会正常计数
           updateOkCnt++;
           debugPrint("updateOkCnt=$updateOkCnt");
           if (updateOkCnt == needUpdateCnt) {
-            updateOk = true;
-            showToast("更新完毕");
-            // 获取更新记录
-            final UpdateRecordController updateRecordController =
-                Get.put(UpdateRecordController());
-            // 在控制器中查询数据库，来更新数据
-            updateRecordController.updateData();
+            // 动漫全部更新完毕后，批量插入更新记录
+            UpdateRecordDao.batchInsert(updateRecords).then((value) {
+              updateOk = true;
+              showToast("更新完毕");
+              // 获取更新记录
+              final UpdateRecordController updateRecordController = Get.find();
+              // 在控制器中查询数据库，来更新数据
+              updateRecordController.updateData();
+            });
           }
         });
       });

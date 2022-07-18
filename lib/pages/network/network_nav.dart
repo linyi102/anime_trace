@@ -48,8 +48,7 @@ class _NetWorkNavState extends State<NetWorkNav>
 
   tryAddOrDelUpdateAnimeButtonAction() {
     Key updateRecordButtonKey = const Key("20220718224429");
-    final UpdateRecordController updateRecordController =
-        Get.put(UpdateRecordController());
+    // final UpdateRecordController
     if (_tabController.index == 1) {
       // 遍历所有图标，如果不存在该key则添加
       actions.firstWhere((element) => element.key == updateRecordButtonKey,
@@ -57,11 +56,8 @@ class _NetWorkNavState extends State<NetWorkNav>
         actions.add(IconButton(
             key: updateRecordButtonKey,
             onPressed: () {
-              // 先更新动漫信息，再重新获取数据库表中的动漫更新记录
-              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                debugPrint("返回的updateOk=$value");
-                updateRecordController.updateData();
-              });
+              // 先更新动漫信息，再重新获取数据库表中的动漫更新记录(方法内会执行)
+              ClimbAnimeUtil.updateAllAnimesInfo();
             },
             icon: const Icon(Icons.refresh_rounded)));
         return Container();

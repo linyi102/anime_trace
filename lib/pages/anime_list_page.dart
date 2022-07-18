@@ -212,7 +212,8 @@ class _AnimeListPageState extends State<AnimeListPage>
     actions.add(IconButton(
         onPressed: () {
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            _loadData();
+            // TODO 如何确保全部更新完毕后才重新才加载数据
+            // _loadData();
           });
         },
         icon: const Icon(Icons.refresh_rounded)));

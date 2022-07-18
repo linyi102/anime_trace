@@ -15,6 +15,20 @@ class UpdateRecordDao {
     });
   }
 
+  static Future<List<Object?>> batchInsert(
+      List<UpdateRecord> updateRecords) async {
+    var batchInsert = SqliteUtil.database.batch();
+    for (var updateRecord in updateRecords) {
+      batchInsert.insert("update_record", {
+        "anime_id": updateRecord.animeId,
+        "old_episode_cnt": updateRecord.oldEpisodeCnt,
+        "new_episode_cnt": updateRecord.newEpisodeCnt,
+        "manual_update_time": updateRecord.manualUpdateTime
+      });
+    }
+    return await batchInsert.commit();
+  }
+
   // 先获取最近更新的pageSize个日期，然后循环查询当前日期下的所有记录
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
     debugPrint("UpdateRecordDao: findAll(pageParams=$pageParams)");
