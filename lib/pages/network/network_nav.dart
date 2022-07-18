@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/pages/directory_page.dart';
-import 'package:flutter_test_future/pages/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/directory_page.dart';
+import 'package:flutter_test_future/pages/network/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -17,7 +18,7 @@ class NetWorkNav extends StatefulWidget {
 class _NetWorkNavState extends State<NetWorkNav>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
-  final List<String> navs = ["搜索源", "目录"];
+  final List<String> navs = ["搜索源", "更新", "目录"];
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _NetWorkNavState extends State<NetWorkNav>
       body: TabBarView(controller: _tabController, // 指定tab控制器
           children: const [
             SourceListPage(),
+            UpdateRecordPage(),
             DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(

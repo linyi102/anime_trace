@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
-import 'package:flutter_test_future/pages/network_nav.dart';
+import 'package:flutter_test_future/pages/network/network_nav.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
 import 'package:oktoast/oktoast.dart';
