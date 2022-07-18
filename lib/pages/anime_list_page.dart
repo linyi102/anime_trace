@@ -84,7 +84,9 @@ class _AnimeListPageState extends State<AnimeListPage>
     }).then((value) {
       debugPrint("数据加载完毕");
       _loadOk = true; // 放这里啊，之前干嘛放外面...
-      setState(() {}); // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
+      if (mounted) {
+        setState(() {});
+      } // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
     });
   }
 
@@ -209,8 +211,9 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
     actions.add(IconButton(
         onPressed: () {
-          // 刷新所有
-          _updateAllAnimesInfo();
+          ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+            _loadData();
+          });
         },
         icon: const Icon(Icons.refresh_rounded)));
     return actions;
@@ -223,7 +226,9 @@ class _AnimeListPageState extends State<AnimeListPage>
         Scrollbar(
           child: RefreshIndicator(
             onRefresh: () async {
-              _updateAllAnimesInfo();
+              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+                _loadData();
+              });
             },
             child: Stack(children: [
               SPUtil.getBool("display_list")
@@ -656,74 +661,5 @@ class _AnimeListPageState extends State<AnimeListPage>
   _getActionsOnMulti() {
     List<Widget> actions = [];
     return actions;
-  }
-
-  bool canClimbAllAnimesInfo = true;
-
-  void _updateAllAnimesInfo() {
-    if (!canClimbAllAnimesInfo) {
-      showToast("刷新间隔为10s");
-      return;
-    }
-
-    canClimbAllAnimesInfo = false;
-    Future.delayed(const Duration(seconds: 10))
-        .then((value) => canClimbAllAnimesInfo = true);
-
-    showToast("更新动漫中...");
-    int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
-    // 异步更新所有动漫信息。由于是分页查询，实际上并不是所有动漫
-    for (var i = 0; i < tags.length; i++) {
-      for (var anime in animesInTag[i]) {
-        // debugPrint("${anime.animeName}：${anime.playStatus}");
-        // 跳过完结动漫
-        if (anime.playStatus.contains("完结")) {
-          skipUpdateCnt++;
-          continue;
-        }
-        needUpdateCnt++;
-        debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
-        // 要在爬取前赋值给oldAnime
-        Anime oldAnime = Anime(
-            animeId: anime.animeId,
-            animeName: anime.animeName,
-            animeEpisodeCnt: anime.animeEpisodeCnt,
-            tagName: anime.tagName);
-        // 爬取
-        ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
-            .then((value) {
-          // 更新到数据库
-          if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
-            // 集数变化则记录到表中
-            UpdateRecord updateRecord = UpdateRecord(
-                animeId: anime.animeId,
-                oldEpisodeCnt: oldAnime.animeEpisodeCnt,
-                newEpisodeCnt: anime.animeEpisodeCnt,
-                manualUpdateTime:
-                    DateTime.now().toString().substring(0, 10) // 只存入年月日
-                );
-            UpdateRecordDao.insert(updateRecord);
-          }
-          SqliteUtil.updateAnime(oldAnime, anime).then((value) {
-            // 数据库更新完毕后计数，更新失败也会正常计数
-            updateOkCnt++;
-            debugPrint("updateOkCnt=$updateOkCnt");
-            if (updateOkCnt == needUpdateCnt) {
-              debugPrint("刷新页面状态");
-              showToast("更新完毕");
-              if (mounted) {
-                setState(() {});
-              }
-              // 获取更新记录
-              final UpdateRecordController updateRecordController =
-                  Get.put(UpdateRecordController());
-              // 在控制器中查询数据库，来更新数据
-              updateRecordController.updateData();
-            }
-          });
-        });
-      }
-    }
-    debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
   }
 }

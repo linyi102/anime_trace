@@ -11,6 +11,7 @@ class UpdateRecordController extends GetxController {
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
   Future<void> updateData() async {
     debugPrint("重新获取数据库内容并覆盖");
+    pageParams.pageIndex = 0; // 应该重置为0
     updateRecordVos = (await UpdateRecordDao.findAll(pageParams)).obs;
     initOk = true;
   }

@@ -52,62 +52,73 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
         onRefresh: () async {
           _refreshData();
         },
-        child: updateRecordController.updateRecordVos.isEmpty
-            ? emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息")
-            : Scrollbar(
-                child: ListView.builder(
-                  itemCount: updateRecordController.updateRecordVos.length,
-                  itemBuilder: (context, index) {
-                    // 下拉到还剩两天的时候请求更多
-                    PageParams pageParams = updateRecordController.pageParams;
-                    // 即使全部加载了，也会一直加载
-                    // if (index + 2 == updateRecordController.updateRecordVos.length) {
-                    // 必须要pageIndex+1，这样当pageIndex为0时，右值为pageSize
-                    // 该方法可以避免一直加载的原因：即使最后多请求一次，右值会变大，左值不会再与右值相等
-                    if (index + 2 ==
-                        (pageParams.pageIndex + 1) * pageParams.pageSize) {
-                      updateRecordController.loadMore();
-                    }
-                    UpdateRecordVo updateRecordVo =
-                        updateRecordController.updateRecordVos[index];
-                    String curDate = updateRecordVo.manualUpdateTime;
-                    ListTile animeRow = ListTile(
-                      leading: AnimeListCover(updateRecordVo.anime),
-                      trailing: Text(
-                        "${updateRecordVo.oldEpisodeCnt} > ${updateRecordVo.newEpisodeCnt}",
-                        textScaleFactor: 0.9,
-                      ),
-                      title: Text(updateRecordVo.anime.animeName),
-                      onTap: () {
-                        Navigator.of(context).push(FadeRoute(
-                          builder: (context) {
-                            return AnimeDetailPlus(
-                                updateRecordVo.anime.animeId);
-                          },
-                        ));
-                      },
-                    );
-                    if (preDate != curDate) {
-                      preDate = curDate;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            title: Text(_formatDate(curDate)),
-                            style: ListTileStyle.drawer,
-                          ),
-                          // Container(
-                          //   padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
-                          //   child: Text(_formatDate(curDate)),
-                          // ),
-                          animeRow
-                        ],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: updateRecordController.updateRecordVos.isEmpty
+              ? Container(
+                  child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
+                  key: UniqueKey(),
+                )
+              : Scrollbar(
+                  child: ListView.builder(
+                    itemCount: updateRecordController.updateRecordVos.length,
+                    itemBuilder: (context, index) {
+                      // 下拉到还剩两天的时候请求更多
+                      PageParams pageParams = updateRecordController.pageParams;
+                      // 即使全部加载了，也会一直加载
+                      // if (index + 2 == updateRecordController.updateRecordVos.length) {
+                      // 必须要pageIndex+1，这样当pageIndex为0时，右值为pageSize
+                      // 该方法可以避免一直加载的原因：即使最后多请求一次，右值会变大，左值不会再与右值相等
+                      if (index + 2 ==
+                          (pageParams.pageIndex + 1) * pageParams.pageSize) {
+                        updateRecordController.loadMore();
+                      }
+                      UpdateRecordVo updateRecordVo =
+                          updateRecordController.updateRecordVos[index];
+                      String curDate = updateRecordVo.manualUpdateTime;
+                      ListTile animeRow = ListTile(
+                        leading: AnimeListCover(updateRecordVo.anime),
+                        trailing: Text(
+                            "${updateRecordVo.oldEpisodeCnt} → ${updateRecordVo.newEpisodeCnt}",
+                            textScaleFactor: 0.9),
+                        title: Text(
+                          updateRecordVo.anime.animeName,
+                          textScaleFactor: 0.9,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
+                        onTap: () {
+                          Navigator.of(context).push(FadeRoute(
+                            builder: (context) {
+                              return AnimeDetailPlus(
+                                  updateRecordVo.anime.animeId);
+                            },
+                          ));
+                        },
                       );
-                    }
-                    return animeRow;
-                  },
+                      if (preDate != curDate) {
+                        preDate = curDate;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              title: Text(_formatDate(curDate)),
+                              style: ListTileStyle.drawer,
+                            ),
+                            // Container(
+                            //   padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
+                            //   child: Text(_formatDate(curDate)),
+                            // ),
+                            animeRow
+                          ],
+                        );
+                      }
+                      return animeRow;
+                    },
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

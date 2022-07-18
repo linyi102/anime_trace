@@ -696,7 +696,7 @@ class SqliteUtil {
     debugPrint("sql: getAllAnimes");
 
     var list = await database.rawQuery('''
-    select anime_id, anime_name, anime_cover_url
+    select * 
     from anime;
     ''');
 
@@ -705,8 +705,11 @@ class SqliteUtil {
       res.add(Anime(
         animeId: element['anime_id'] as int,
         animeName: element['anime_name'] as String,
-        animeEpisodeCnt: 0,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int, // 更新前的集数
+        animeUrl: element['anime_url'] as String? ?? "", // 爬取网页更新详细信息
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        playStatus:
+            element['play_status'] as String? ?? "", // 获取所有动漫后过滤掉更新未完结的动漫信息
       ));
     }
     return res;

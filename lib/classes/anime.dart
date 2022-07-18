@@ -67,9 +67,13 @@ class Anime {
     return list.join(" / ");
   }
 
+  String getAnimeSource() {
+    return ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义";
+  }
+
   String getAnimeInfoSecondLine() {
     var list = [];
-    list.add(ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义");
+    list.add(getAnimeSource());
     if (playStatus.isNotEmpty) {
       list.add(playStatus);
     }

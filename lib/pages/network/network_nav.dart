@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/pages/network/directory_page.dart';
 import 'package:flutter_test_future/pages/network/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 
 // 导航栏，顶部分为搜索源和目录
 class NetWorkNav extends StatefulWidget {
@@ -19,6 +22,7 @@ class _NetWorkNavState extends State<NetWorkNav>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
   final List<String> navs = ["搜索源", "更新", "目录"];
+  List<Widget> actions = [];
 
   @override
   void initState() {
@@ -30,12 +34,43 @@ class _NetWorkNavState extends State<NetWorkNav>
       length: navs.length,
       vsync: this,
     );
+    tryAddOrDelUpdateAnimeButtonAction(); // 点击网络页面，就是动漫更新记录页面，直接添加。因为下面的监听器监听不到(index没变)
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
+      // debugPrint("切换tab，tab.index=${_tabController.index}"); // doubt win端发现会连续输出两次
       if (_tabController.index == _tabController.animation!.value) {
         SPUtil.setInt("lastNavIndexInNetWorkNav", _tabController.index);
       }
+      tryAddOrDelUpdateAnimeButtonAction();
+      setState(() {});
     });
+  }
+
+  tryAddOrDelUpdateAnimeButtonAction() {
+    Key updateRecordButtonKey = const Key("20220718224429");
+    final UpdateRecordController updateRecordController =
+        Get.put(UpdateRecordController());
+    if (_tabController.index == 1) {
+      // 遍历所有图标，如果不存在该key则添加
+      actions.firstWhere((element) => element.key == updateRecordButtonKey,
+          orElse: () {
+        actions.add(IconButton(
+            key: updateRecordButtonKey,
+            onPressed: () {
+              // 先更新动漫信息，再重新获取数据库表中的动漫更新记录
+              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+                debugPrint("返回的updateOk=$value");
+                updateRecordController.updateData();
+              });
+            },
+            icon: const Icon(Icons.refresh_rounded)));
+        return Container();
+      });
+    } else {
+      // 如果不是更新动漫tab，则删除更新动漫按钮
+      actions.removeWhere((element) => element.key == updateRecordButtonKey);
+    }
+    setState(() {});
   }
 
   @override
@@ -54,6 +89,7 @@ class _NetWorkNavState extends State<NetWorkNav>
               fontWeight: FontWeight.w600,
             ),
           ),
+          actions: actions,
           bottom: PreferredSize(
               // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
               preferredSize: const Size.fromHeight(kToolbarHeight),
