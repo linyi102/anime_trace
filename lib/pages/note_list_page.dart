@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/classes/note_filter.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
@@ -191,9 +192,7 @@ class _NoteListPageState extends State<NoteListPage> {
 
   _buildNotes() {
     return episodeNotes.isEmpty
-        ? const Center(
-            child: Text("暂无笔记，完成某集后点击即可添加笔记"),
-          )
+        ? emptyDataHint("暂无笔记", toastMsg: "点击已完成的集即可添加笔记")
         : ListView.builder(
             itemCount: episodeNotes.length,
             itemBuilder: (BuildContext context, int index) {

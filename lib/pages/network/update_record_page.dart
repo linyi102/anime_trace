@@ -53,7 +53,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
           _refreshData();
         },
         child: updateRecordController.updateRecordVos.isEmpty
-            ? emptyDataHint("暂无更新记录")
+            ? emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息")
             : Scrollbar(
                 child: ListView.builder(
                   itemCount: updateRecordController.updateRecordVos.length,

@@ -3,6 +3,7 @@ import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -75,10 +76,7 @@ class _HistoryPageState extends State<HistoryPage> {
           _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
               ? Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Text("暂无相关记录"),
-                  ),
+                  child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
                 )
               : Expanded(
                   child: Scrollbar(
