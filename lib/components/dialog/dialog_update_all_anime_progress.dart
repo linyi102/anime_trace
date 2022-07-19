@@ -19,6 +19,10 @@ dialogUpdateAllAnimeProgress(parentContext) {
                     int updateOkCnt = updateRecordController.updateOkCnt.value;
                     int needUpdateCnt =
                         updateRecordController.needUpdateCnt.value;
+                    // 更新完毕后自动退出对话框
+                    if (updateOkCnt == needUpdateCnt) {
+                      Navigator.of(context).pop();
+                    }
 
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
@@ -38,7 +42,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                   },
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   child: const Text(
                     "小提示：更新时会跳过已完结动漫",
                     style: TextStyle(color: Colors.grey),

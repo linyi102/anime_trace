@@ -69,7 +69,7 @@ class ClimbAnimeUtil {
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);
 
-    showToast("更新动漫中...");
+    // showToast("更新动漫中...");
     // int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
     int skipUpdateCnt = 0, needUpdateCnt = 0;
     final UpdateRecordController updateRecordController = Get.find();
