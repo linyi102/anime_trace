@@ -204,17 +204,17 @@ class _AnimeListPageState extends State<AnimeListPage>
         tooltip: "搜索动漫",
       ),
     );
-    actions.add(IconButton(
-        onPressed: () {
-          // TODO 如何确保全部更新完毕后才重新才加载数据
-          ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            if (value) {
-              // 为true则会显示更新进度条
-              dialogUpdateAllAnimeProgress(context);
-            }
-          });
-        },
-        icon: const Icon(Icons.refresh_rounded)));
+    // actions.add(IconButton(
+    //     onPressed: () {
+    //       // TODO 如何确保全部更新完毕后才重新才加载数据
+    //       ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+    //         if (value) {
+    //           // 为true则会显示更新进度条
+    //           dialogUpdateAllAnimeProgress(context);
+    //         }
+    //       });
+    //     },
+    //     icon: const Icon(Icons.refresh_rounded)));
     return actions;
   }
 
@@ -223,22 +223,13 @@ class _AnimeListPageState extends State<AnimeListPage>
     for (int i = 0; i < tags.length; ++i) {
       list.add(
         Scrollbar(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                if (value) {
-                  dialogUpdateAllAnimeProgress(context);
-                }
-              });
-            },
-            child: Stack(children: [
-              SPUtil.getBool("display_list")
-                  ? _getAnimeListView(i)
-                  : _getAnimeGridView(i),
-              // 一定要叠放在ListView上面，否则点击按钮没有反应
-              _buildBottomButton(i),
-            ]),
-          ),
+          child: Stack(children: [
+            SPUtil.getBool("display_list")
+                ? _getAnimeListView(i)
+                : _getAnimeGridView(i),
+            // 一定要叠放在ListView上面，否则点击按钮没有反应
+            _buildBottomButton(i),
+          ]),
         ),
       );
     }
