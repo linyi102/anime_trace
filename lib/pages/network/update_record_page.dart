@@ -57,10 +57,13 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: updateRecordController.updateRecordVos.isEmpty
-              ? Container(
-                  child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
-                  key: UniqueKey(),
-                )
+              ? Center(
+                child: ListView(
+                    shrinkWrap: true,
+                    children: [emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息")],
+                    key: UniqueKey(),
+                  ),
+              )
               : Scrollbar(
                   child: ListView.builder(
                     itemCount: updateRecordController.updateRecordVos.length,
