@@ -2,6 +2,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
 import 'package:flutter_test_future/classes/update_record.dart';
+import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
@@ -78,6 +79,8 @@ class ClimbAnimeUtil {
 
     List<Anime> animes = await SqliteUtil.getAllAnimes();
     List<UpdateRecord> updateRecords = [];
+    bool enableBatchInsertUpdateRecord =
+        updateRecordController.enableBatchInsertUpdateRecord;
 
     // 异步更新所有动漫信息
     for (var anime in animes) {
@@ -100,26 +103,60 @@ class ClimbAnimeUtil {
       //   premiereTime: anime.premiereTime,
       //   animeUrl: anime.animeUrl
       // );
+      UpdateRecord updateRecord = UpdateRecord(animeId: 0);
       // 爬取
       ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
           .then((value) {
-        // 更新到数据库
         if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
           // 集数变化则记录到表中
-          UpdateRecord updateRecord = UpdateRecord(
+          updateRecord = UpdateRecord(
               animeId: anime.animeId,
               oldEpisodeCnt: oldAnime.animeEpisodeCnt,
               newEpisodeCnt: anime.animeEpisodeCnt,
               manualUpdateTime:
                   DateTime.now().toString().substring(0, 10) // 只存入年-月-日
               );
-          // UpdateRecordDao.insert(updateRecord);
-          updateRecords.add(updateRecord);
+          if (enableBatchInsertUpdateRecord) {
+            updateRecords.add(updateRecord);
+          } else {
+            // 立即添加到数据库中
+            UpdateRecordDao.batchInsert([updateRecord]);
+          }
         }
+        // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
+
+        // 爬取完毕后，更新数据库中的动漫
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
+          if (enableBatchInsertUpdateRecord) {
+            if (updateOkCnt == needUpdateCnt) {
+              // 动漫全部更新完毕后，批量插入更新记录
+              UpdateRecordDao.batchInsert(updateRecords).then((value) {
+                debugPrint("更新完毕");
+                // showToast("更新完毕");
+                // 在控制器中查询数据库，来更新数据
+                updateRecordController.updateData();
+              });
+            }
+          } else {
+            // 在控制器中单条插入查询数据库，来更新数据(有点糟糕，每次更新动漫都得重新查询更新记录表)
+            // updateRecordController.updateData();
+            // 直接添加到里面，注意需要按更新时间倒序排序，保证与重新查询出来的结果一致
+            // 因为Vo里把animeId改为了anime，所以还转要Vo
+            // BUG：尽管都添加到了controller里的数组，然鹅因为分页的缘故会自动请求数据库中更新记录表中的数据，导致被覆盖，而且此时数据库还没更新完毕，所以数据会不全
+            if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) { // 只手动添加集数变大的更新记录
+              updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
+            }
+          }
+        });
+      }).catchError((obj, e) {
+        if (enableBatchInsertUpdateRecord) {
+          updateRecordController.incrementUpdateOkCnt();
+          int updateOkCnt = updateRecordController.updateOkCnt.value;
+          debugPrint("updateOkCnt=$updateOkCnt");
+
           if (updateOkCnt == needUpdateCnt) {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
@@ -129,20 +166,8 @@ class ClimbAnimeUtil {
               updateRecordController.updateData();
             });
           }
-        });
-      }).catchError((obj, e) {
-        updateRecordController.incrementUpdateOkCnt();
-        int updateOkCnt = updateRecordController.updateOkCnt.value;
-        debugPrint("updateOkCnt=$updateOkCnt");
-        if (updateOkCnt == needUpdateCnt) {
-          // 动漫全部更新完毕后，批量插入更新记录
-          UpdateRecordDao.batchInsert(updateRecords).then((value) {
-            debugPrint("更新完毕");
-            // showToast("更新完毕");
-            // 在控制器中查询数据库，来更新数据
-            updateRecordController.updateData();
-          });
         }
+        // 爬取异常处理，因此不会有更新记录，所以不需要添加到数据库，不用处理else
 
         // 如果刚捕获到就打印，则不会执行上面的更新，所以放在这里
         // 捕获的错误大多是爬取动漫详细信息时数组越界的错误

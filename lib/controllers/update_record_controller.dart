@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class UpdateRecordController extends GetxController {
   PageParams pageParams = PageParams(0, 10); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
+  bool enableBatchInsertUpdateRecord = true; // 一条条插入效率太慢，且有bug，所以开启批量插入
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
 
@@ -48,5 +49,18 @@ class UpdateRecordController extends GetxController {
 
   setNeedUpdateCnt(int value) {
     needUpdateCnt.value = value;
+  }
+
+  // 直接往list中添加，并按更新时间排序，而不是重新查询数据库
+  void addUpdateRecord(UpdateRecordVo updateRecordVo) {
+    // 第二次刷新时，如果已经添加了(old、new、anime、time都一样)，则不进行添加
+    if (updateRecordVos.contains(updateRecordVo)) {
+      debugPrint("已有updateRecordVo=$updateRecordVo，跳过");
+      return;
+    }
+    debugPrint("添加$updateRecordVo，长度=${updateRecordVos.length}");
+    updateRecordVos.add(updateRecordVo);
+    updateRecordVos
+        .sort((a, b) => a.manualUpdateTime.compareTo(b.manualUpdateTime));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/params/page_params.dart';
 import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
@@ -24,8 +26,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     super.initState();
   }
 
-  final UpdateRecordController updateRecordController =
-      Get.find();
+  final UpdateRecordController updateRecordController = Get.find();
 
   _formatDate(String date) {
     return date.replaceAll("-", "/");
@@ -45,12 +46,17 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: updateRecordController.updateRecordVos.isEmpty
-              ? Center(
-                child: ListView(
-                    shrinkWrap: true,
-                    children: [emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息")],
-                    key: UniqueKey(),
-                  ),
+              ? ListView(
+                children: [
+                  SizedBox(
+                    // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
+                    height: MediaQuery.of(context).size.height - MediaQueryData.fromWindow(window).padding.top - kToolbarHeight - kBottomNavigationBarHeight - kMinInteractiveDimension,
+                    // color: Colors.red,
+                    child:
+                        emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
+                  )
+                ],
+                key: UniqueKey(),
               )
               : Scrollbar(
                   child: ListView.builder(
