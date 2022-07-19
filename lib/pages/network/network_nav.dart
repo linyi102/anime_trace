@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/dialog/dialog_update_all_anime_progress.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/pages/network/directory_page.dart';
@@ -106,16 +107,13 @@ class _NetWorkNavState extends State<NetWorkNav>
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
-                  indicatorColor: Colors.transparent,
-                  // 隐藏
-                  indicatorSize: TabBarIndicatorSize.label,
                   // 指示器长短和标签一样
-                  indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      color: ThemeUtil.getThemePrimaryColor()),
-                  indicatorPadding:
-                      const EdgeInsets.only(left: 5, right: 5, top: 45),
-                  indicatorWeight: 3, // 指示器高度
+                  indicatorSize: TabBarIndicatorSize.label,
+                  // 第三方指示器样式
+                  indicator: MaterialIndicator(
+                    color: ThemeUtil.getThemePrimaryColor(),
+                    paintingStyle: PaintingStyle.fill,
+                  ),
                 ),
               ))),
       body: TabBarView(controller: _tabController, // 指定tab控制器

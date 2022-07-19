@@ -11,6 +11,9 @@ import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:fluttericon/typicons_icons.dart';
 import 'package:get/get.dart';
 
 class SettingPage extends StatefulWidget {
@@ -215,6 +218,7 @@ class _SettingPageState extends State<SettingPage> {
   _showImgButton() {
     return ListTile(
       iconColor: ThemeUtil.getLeadingIconColor(),
+      // leading: Icon(FontAwesome.picture),
       leading: const Icon(
           // Icons.image_outlined,
           // Icons.wallpaper_outlined,

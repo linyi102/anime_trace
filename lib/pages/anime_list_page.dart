@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
@@ -131,24 +132,21 @@ class _AnimeListPageState extends State<AnimeListPage>
                           tabs: _buildTagAndAnimeCnt(),
                           // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
                           controller: _tabController,
-                          padding: const EdgeInsets.all(2), // 居中，而不是靠左下
-                          isScrollable: true, // 标签可以滑动，避免拥挤
+                          padding: const EdgeInsets.all(2),
+                          // 居中，而不是靠左下
+                          isScrollable: true,
+                          // 标签可以滑动，避免拥挤
                           labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
-                          // indicatorColor: Colors.transparent, // 隐藏
-                          // indicatorSize:
-                          //     TabBarIndicatorSize.label, // 指示器长短和标签一样
-                          indicator: BoxDecoration(
-                              // borderRadius: BorderRadius.only(
-                              //     topLeft: Radius.circular(2),
-                              //     topRight: Radius.circular(2)),
-                              borderRadius: BorderRadius.circular(2),
-                              color: ThemeUtil.getThemePrimaryColor()),
-                          indicatorPadding: const EdgeInsets.only(
-                              left: 20, right: 20, top: 39),
-                          indicatorWeight: 3, // 指示器高度
+                          indicatorSize: TabBarIndicatorSize.label,
+                          // 第三方指示器样式
+                          indicator: MaterialIndicator(
+                            horizontalPadding: 8.5,
+                            color: ThemeUtil.getThemePrimaryColor(),
+                            paintingStyle: PaintingStyle.fill,
+                          ),
                         ),
                       ),
                     ),
@@ -210,7 +208,8 @@ class _AnimeListPageState extends State<AnimeListPage>
         onPressed: () {
           // TODO 如何确保全部更新完毕后才重新才加载数据
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            if (value) { // 为true则会显示更新进度条
+            if (value) {
+              // 为true则会显示更新进度条
               dialogUpdateAllAnimeProgress(context);
             }
           });
@@ -614,8 +613,10 @@ class _AnimeListPageState extends State<AnimeListPage>
             child: Card(
               elevation: 8,
               shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
-              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+                  borderRadius: BorderRadius.all(Radius.circular(50))),
+              // 圆角
+              clipBehavior: Clip.antiAlias,
+              // 设置抗锯齿，实现圆角背景
               margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center,
