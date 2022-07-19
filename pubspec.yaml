@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  glassmorphism: ^3.0.0
   flutter_tab_indicator_styler: ^2.0.0
   percent_indicator: ^4.2.2
   dart_ping: ^6.1.2

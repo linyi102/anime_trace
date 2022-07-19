@@ -13,18 +13,8 @@ import 'package:get/get.dart';
 
 import '../../components/dialog/dialog_update_all_anime_progress.dart';
 
-class UpdateRecordPage extends StatefulWidget {
-  const UpdateRecordPage({Key? key}) : super(key: key);
-
-  @override
-  State<UpdateRecordPage> createState() => _UpdateRecordPageState();
-}
-
-class _UpdateRecordPageState extends State<UpdateRecordPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class UpdateRecordPage extends StatelessWidget {
+  UpdateRecordPage({Key? key}) : super(key: key);
 
   final UpdateRecordController updateRecordController = Get.find();
 
@@ -47,17 +37,20 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
           duration: const Duration(milliseconds: 200),
           child: updateRecordController.updateRecordVos.isEmpty
               ? ListView(
-                children: [
-                  SizedBox(
-                    // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
-                    height: MediaQuery.of(context).size.height - MediaQueryData.fromWindow(window).padding.top - kToolbarHeight - kBottomNavigationBarHeight - kMinInteractiveDimension,
-                    // color: Colors.red,
-                    child:
-                        emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
-                  )
-                ],
-                key: UniqueKey(),
-              )
+                  children: [
+                    SizedBox(
+                      // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
+                      height: MediaQuery.of(context).size.height -
+                          MediaQueryData.fromWindow(window).padding.top -
+                          kToolbarHeight -
+                          kBottomNavigationBarHeight -
+                          kMinInteractiveDimension,
+                      // color: Colors.red,
+                      child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
+                    )
+                  ],
+                  key: UniqueKey(),
+                )
               : Scrollbar(
                   child: ListView.builder(
                     itemCount: updateRecordController.updateRecordVos.length,

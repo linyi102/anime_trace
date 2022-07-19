@@ -224,6 +224,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.6.5"
+  glassmorphism:
+    dependency: "direct main"
+    description:
+      name: glassmorphism
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.0"
   html:
     dependency: "direct main"
     description:

@@ -2,7 +2,6 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/classes/filter.dart';
 import 'package:flutter_test_future/classes/update_record.dart';
-import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
