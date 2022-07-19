@@ -90,6 +90,10 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
+  _formatDate(String date) {
+    return date.replaceAll("-", "/");
+  }
+
   Widget _buildHistory() {
     return Stack(children: [
       Column(
@@ -111,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         title: ListTile(
                           title: Text(
-                            yearHistory[selectedYear]![index].date,
+                            _formatDate(yearHistory[selectedYear]![index].date),
                           ),
                           style: ListTileStyle.drawer,
                         ),
