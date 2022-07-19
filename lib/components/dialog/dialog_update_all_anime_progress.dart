@@ -11,25 +11,42 @@ dialogUpdateAllAnimeProgress(parentContext) {
       builder: (context) {
         return AlertDialog(
           title: const Text("动漫更新"),
-          content: Obx(
-            () {
-              int updateOkCnt = updateRecordController.updateOkCnt.value;
-              int needUpdateCnt = updateRecordController.needUpdateCnt.value;
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Obx(
+                  () {
+                    int updateOkCnt = updateRecordController.updateOkCnt.value;
+                    int needUpdateCnt =
+                        updateRecordController.needUpdateCnt.value;
 
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: LinearPercentIndicator(
-                  barRadius: const Radius.circular(15), // 圆角
-                  animation: false,
-                  lineHeight: 20.0,
-                  animationDuration: 1000,
-                  percent:
-                  needUpdateCnt > 0 ? (updateOkCnt / needUpdateCnt) : 0,
-                  center: Text("$updateOkCnt / $needUpdateCnt"),
-                  progressColor: Colors.greenAccent,
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                      child: LinearPercentIndicator(
+                        barRadius: const Radius.circular(15),
+                        // 圆角
+                        animation: false,
+                        lineHeight: 20.0,
+                        animationDuration: 1000,
+                        percent: needUpdateCnt > 0
+                            ? (updateOkCnt / needUpdateCnt)
+                            : 0,
+                        center: Text("$updateOkCnt / $needUpdateCnt"),
+                        progressColor: Colors.greenAccent,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+                Container(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  child: const Text(
+                    "小提示：更新时会跳过已完结动漫",
+                    style: TextStyle(color: Colors.grey),
+                    textScaleFactor: 0.8,
+                  ),
+                )
+              ],
+            ),
           ),
           actions: [
             TextButton(
