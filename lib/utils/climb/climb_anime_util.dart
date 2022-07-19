@@ -25,6 +25,7 @@ class ClimbAnimeUtil {
         return climbWebsite;
       }
     }
+    return null;
   }
 
   // 根据过滤查询目录动漫
@@ -65,7 +66,6 @@ class ClimbAnimeUtil {
     }
 
     canUpdateAllAnimesInfo = false;
-    bool updateOk = false;
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);
 
@@ -119,7 +119,6 @@ class ClimbAnimeUtil {
           if (updateOkCnt == needUpdateCnt) {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
-              updateOk = true;
               showToast("更新完毕");
               // 在控制器中查询数据库，来更新数据
               updateRecordController.updateData();
@@ -130,7 +129,6 @@ class ClimbAnimeUtil {
     }
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
-    // return updateOk;
     return true; // 返回true，之后会显示进度条对话框
   }
 }

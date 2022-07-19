@@ -1,21 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/update_record.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/dao/update_record_dao.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
 
 import '../components/dialog/dialog_update_all_anime_progress.dart';
 

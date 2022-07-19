@@ -179,7 +179,7 @@ class MyAppState extends State<MyApp> {
               ),
               // 滚动条主题
               scrollbarTheme: ScrollbarThemeData(
-                showTrackOnHover: true,
+                trackVisibility: MaterialStateProperty.all(true),
                 thickness: MaterialStateProperty.all(5),
                 interactive: true,
                 radius: const Radius.circular(10),

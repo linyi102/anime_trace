@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../controllers/update_record_controller.dart';
-import '../../utils/climb/climb_anime_util.dart';
 
 dialogUpdateAllAnimeProgress(parentContext) {
   final UpdateRecordController updateRecordController = Get.find();
