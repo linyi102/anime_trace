@@ -5,20 +5,11 @@ import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class UpdateRecordDao {
-  static Future<int> insert(UpdateRecord updateRecord) async {
-    debugPrint("sql: insertUpdateRecord(updateRecord=$updateRecord)");
-    return await SqliteUtil.database.insert("update_record", {
-      "anime_id": updateRecord.animeId,
-      "old_episode_cnt": updateRecord.oldEpisodeCnt,
-      "new_episode_cnt": updateRecord.newEpisodeCnt,
-      "manual_update_time": updateRecord.manualUpdateTime
-    });
-  }
-
   static Future<List<Object?>> batchInsert(
       List<UpdateRecord> updateRecords) async {
     var batchInsert = SqliteUtil.database.batch();
     for (var updateRecord in updateRecords) {
+      debugPrint("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
       batchInsert.insert("update_record", {
         "anime_id": updateRecord.animeId,
         "old_episode_cnt": updateRecord.oldEpisodeCnt,
@@ -26,7 +17,7 @@ class UpdateRecordDao {
         "manual_update_time": updateRecord.manualUpdateTime
       });
     }
-    return await batchInsert.commit();
+    return await batchInsert.commit(noResult: true, continueOnError: true);
   }
 
   // 先获取最近更新的pageSize个日期，然后循环查询当前日期下的所有记录

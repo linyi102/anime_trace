@@ -23,7 +23,6 @@ void main() async {
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.ensureDBTable(); // 必须要用await
-  final UpdateRecordController updateRecordController =
   Get.put(UpdateRecordController()); // 确保被find前put
   // runZonedGuarded(() {
   //   runApp(const GetMaterialApp(

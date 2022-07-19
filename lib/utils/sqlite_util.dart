@@ -137,7 +137,7 @@ class SqliteUtil {
     ''');
   }
 
-  // 迁移动漫
+  // 迁移动漫、全局更新动漫
   static Future<int> updateAnime(Anime oldAnime, Anime newAnime) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
