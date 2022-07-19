@@ -26,7 +26,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
   }
 
   final UpdateRecordController updateRecordController =
-      Get.put(UpdateRecordController());
+      Get.find();
 
   _initData() {
     // if (updateRecordController.updateRecordVos.isEmpty) {
@@ -85,7 +85,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                       ListTile animeRow = ListTile(
                         leading: AnimeListCover(updateRecordVo.anime),
                         trailing: Text(
-                            "${updateRecordVo.oldEpisodeCnt} → ${updateRecordVo.newEpisodeCnt}",
+                            "${updateRecordVo.oldEpisodeCnt} > ${updateRecordVo.newEpisodeCnt}",
                             textScaleFactor: 0.9),
                         title: Text(
                           updateRecordVo.anime.animeName,

@@ -141,21 +141,10 @@ class SqliteUtil {
   static Future<int> updateAnime(Anime oldAnime, Anime newAnime) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
-    debugPrint(
-        "oldAnime.tagName=${oldAnime.tagName}, newAnime.tagName=${newAnime.tagName}");
+    debugPrint("oldAnime=$oldAnime, newAnime}=$newAnime");
 
-    // 如果爬取的集数量大于旧数量，则改变，否则不变
-    debugPrint(
-        "新集数：${newAnime.animeEpisodeCnt}，旧集数：${oldAnime.animeEpisodeCnt}");
-    if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
-      await database.rawUpdate('''
-        update anime
-        set anime_episode_cnt = ${newAnime.animeEpisodeCnt}
-        where anime_id = ${oldAnime.animeId};
-      ''');
-    }
-    // 如果标签不一样，则还需要更新最后修改标签的时间
-    if (oldAnime.tagName != newAnime.tagName) {
+    // 如果标签不一样，需要更新最后修改标签的时间
+    if (newAnime.tagName.isNotEmpty && oldAnime.tagName != newAnime.tagName) {
       await database.rawUpdate('''
         update anime
         set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
@@ -165,12 +154,46 @@ class SqliteUtil {
     }
     // 改基础信息
     newAnime = escapeAnime(newAnime);
+    // 如果爬取的集数量大于旧数量，则改变，否则不变(旧的大集数赋值上去)
+    if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
+      newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
+    }
+    // 如果新动漫某些属性为空字符串，则把旧的赋值上去
+    if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
+    if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
+    if (newAnime.animeCoverUrl.isEmpty) {
+      newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
+    }
+    if (newAnime.premiereTime.isEmpty) {
+      newAnime.premiereTime = oldAnime.premiereTime;
+    }
+    if (newAnime.nameAnother.isEmpty) {
+      newAnime.nameAnother = oldAnime.nameAnother;
+    }
+    if (newAnime.nameOri.isEmpty) newAnime.nameOri = oldAnime.nameOri;
+    if (newAnime.authorOri.isEmpty) newAnime.authorOri = oldAnime.authorOri;
+    if (newAnime.area.isEmpty) newAnime.area = oldAnime.area;
+    if (newAnime.playStatus.isEmpty) newAnime.playStatus = oldAnime.playStatus;
+    if (newAnime.productionCompany.isEmpty) {
+      newAnime.productionCompany = oldAnime.productionCompany;
+    }
+    if (newAnime.officialSite.isEmpty) {
+      newAnime.officialSite = oldAnime.officialSite;
+    }
+    if (newAnime.category.isEmpty) newAnime.category = oldAnime.category;
+    if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
+    if (newAnime.reviewNumber == 0) {
+      if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
+      newAnime.reviewNumber = oldAnime.reviewNumber;
+    }
+    // DOUBT 为什么newAnime的有些属性为空字符串，却无法更新为空字符串？不过这样也好
     return await database.rawUpdate('''
       update anime
       set anime_name = '${newAnime.animeName}',
           anime_desc = '${newAnime.animeDesc}',
-          -- tag_name = '${newAnime.tagName}', -- 不能修改标签，因为新动漫没有标签
+          tag_name = '${newAnime.tagName}',
           anime_cover_url = '${newAnime.animeCoverUrl}',
+          anime_episode_cnt = ${newAnime.animeEpisodeCnt},
           premiere_time = '${newAnime.premiereTime}',
           name_another = '${newAnime.nameAnother}',
           name_ori = '${newAnime.nameOri}',
@@ -494,7 +517,8 @@ class SqliteUtil {
       animeId: animeId,
       animeName: list[0]['anime_name'] as String,
       animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-      animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
+      animeDesc: list[0]['anime_desc'] as String? ?? "",
+      // 如果为null，则返回空串
       animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
@@ -538,7 +562,8 @@ class SqliteUtil {
       animeId: animeId,
       animeName: list[0]['anime_name'] as String,
       animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-      animeDesc: list[0]['anime_desc'] as String? ?? "", // 如果为null，则返回空串
+      animeDesc: list[0]['anime_desc'] as String? ?? "",
+      // 如果为null，则返回空串
       animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
       tagName: list[0]['tag_name'] as String,
       checkedEpisodeCnt: checkedEpisodeCnt,
@@ -638,7 +663,8 @@ class SqliteUtil {
           animeId,
           reviewNumber: reviewNumber);
       Anime anime = Anime(
-        animeId: animeId, // 进入详细页面后需要该id
+        animeId: animeId,
+        // 进入详细页面后需要该id
         animeName: element['anime_name'] as String,
         animeEpisodeCnt: element['anime_episode_cnt'] as int,
         checkedEpisodeCnt: checkedEpisodeCnt,
@@ -682,15 +708,17 @@ class SqliteUtil {
           reviewNumber: reviewNumber);
 
       res.add(Anime(
-          animeId: animeId, // 进入详细页面后需要该id
+          animeId: animeId,
+          // 进入详细页面后需要该id
           animeName: element['anime_name'] as String,
           animeEpisodeCnt: element['anime_episode_cnt'] as int,
           // 详细地址和播放状态用于在收藏页更新全部动漫
           animeUrl: element['anime_url'] as String? ?? "",
           playStatus: element['play_status'] as String? ?? "",
-          animeCoverUrl: element['anime_cover_url'] as String? ??
-              "", // 强制转换为String?，如果为null，则设置为空字符串
-          tagName: tagName, // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
+          animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+          // 强制转换为String?，如果为null，则设置为空字符串
+          tagName: tagName,
+          // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
           checkedEpisodeCnt: checkedEpisodeCnt,
           reviewNumber: reviewNumber));
     }
@@ -708,13 +736,27 @@ class SqliteUtil {
     List<Anime> res = [];
     for (var element in list) {
       res.add(Anime(
+        // 其他信息是为了更新时作为oldAnime赋值给newAnime，以避免更新后有些属性为空串
         animeId: element['anime_id'] as int,
         animeName: element['anime_name'] as String,
-        animeEpisodeCnt: element['anime_episode_cnt'] as int, // 更新前的集数
-        animeUrl: element['anime_url'] as String? ?? "", // 爬取网页更新详细信息
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        // 更新前的集数
+        animeDesc: element['anime_desc'] as String? ?? "",
+        // 如果为null，则返回空串
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
-        playStatus:
-            element['play_status'] as String? ?? "", // 获取所有动漫后过滤掉更新未完结的动漫信息
+        tagName: element['tag_name'] as String,
+        reviewNumber: 1,
+        premiereTime: element['premiere_time'] as String? ?? "",
+        nameOri: element['name_ori'] as String? ?? "",
+        nameAnother: element['name_another'] as String? ?? "",
+        authorOri: element['author_ori'] as String? ?? "",
+        area: element['area'] as String? ?? "",
+        playStatus: element['play_status'] as String? ?? "",
+        // 获取所有动漫后过滤掉更新未完结的动漫信息
+        productionCompany: element['production_company'] as String? ?? "",
+        officialSite: element['official_site'] as String? ?? "",
+        category: element['category'] as String? ?? "",
+        animeUrl: element['anime_url'] as String? ?? "", // 爬取网页更新详细信息
       ));
     }
     return res;
@@ -1057,7 +1099,8 @@ class SqliteUtil {
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       EpisodeNote episodeNote = EpisodeNote(
-          episodeNoteId: item['note_id'] as int, // 忘记设置了，导致都是进入笔记0
+          episodeNoteId: item['note_id'] as int,
+          // 忘记设置了，导致都是进入笔记0
           anime: anime,
           episode: episode,
           noteContent: item['note_content'] as String,

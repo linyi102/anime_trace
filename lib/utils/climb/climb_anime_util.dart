@@ -119,7 +119,7 @@ class ClimbAnimeUtil {
           if (updateOkCnt == needUpdateCnt) {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
-              showToast("更新完毕");
+              debugPrint("更新完毕");
               // 在控制器中查询数据库，来更新数据
               updateRecordController.updateData();
             });

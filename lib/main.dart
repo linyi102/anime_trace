@@ -13,6 +13,8 @@ import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'controllers/update_record_controller.dart';
+
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
@@ -21,7 +23,8 @@ void main() async {
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.ensureDBTable(); // 必须要用await
-
+  final UpdateRecordController updateRecordController =
+  Get.put(UpdateRecordController()); // 确保被find前put
   // runZonedGuarded(() {
   //   runApp(const GetMaterialApp(
   //     home: MyApp(),
@@ -187,8 +190,8 @@ class MyAppState extends State<MyApp> {
                 radius: const Radius.circular(10),
                 thumbColor: MaterialStateProperty.all(
                   themeController.isDarkMode.value
-                      ? const Color.fromRGBO(120, 120, 120, 1.0)
-                      : const Color.fromRGBO(154, 154, 154, 1.0),
+                      ? const Color.fromRGBO(80, 80, 80, 1.0)
+                      : const Color.fromRGBO(160, 160, 160, 1.0),
                 ),
               ),
               pageTransitionsTheme: const PageTransitionsTheme(

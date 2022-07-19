@@ -37,6 +37,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                             : 0,
                         center: Text("$updateOkCnt / $needUpdateCnt"),
                         progressColor: Colors.greenAccent,
+                        // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
                       ),
                     );
                   },
