@@ -106,7 +106,8 @@ class MyAppState extends State<MyApp> {
 
     return Obx(() => OKToast(
           position: ToastPosition.top,
-          dismissOtherOnShow: true, // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
+          dismissOtherOnShow: true,
+          // 正在显示第一个时，如果弹出第二个，则会先关闭第一个
           radius: 20,
           textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
           // backgroundColor: Colors.blue,
@@ -126,7 +127,8 @@ class MyAppState extends State<MyApp> {
               fontWeight: FontWeight.w600,
               decoration: TextDecoration.none),
           child: MaterialApp(
-            title: '漫迹', // 后台应用显示名称
+            title: '漫迹',
+            // 后台应用显示名称
             home: const MyHome(),
             theme: ThemeData(
               primaryColor: ThemeUtil.getThemePrimaryColor(),
@@ -185,8 +187,8 @@ class MyAppState extends State<MyApp> {
                 radius: const Radius.circular(10),
                 thumbColor: MaterialStateProperty.all(
                   themeController.isDarkMode.value
-                      ? const Color.fromRGBO(84, 84, 84, 1)
-                      : null,
+                      ? const Color.fromRGBO(120, 120, 120, 1.0)
+                      : const Color.fromRGBO(154, 154, 154, 1.0),
                 ),
               ),
               pageTransitionsTheme: const PageTransitionsTheme(
@@ -197,9 +199,12 @@ class MyAppState extends State<MyApp> {
               ),
             ),
             localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,//指定本地化的字符串和一些其他的值
-              GlobalWidgetsLocalizations.delegate,//定义 widget 默认的文本方向，从左到右或从右到左。
-              GlobalCupertinoLocalizations.delegate,//对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
+              GlobalMaterialLocalizations.delegate,
+              //指定本地化的字符串和一些其他的值
+              GlobalWidgetsLocalizations.delegate,
+              //定义 widget 默认的文本方向，从左到右或从右到左。
+              GlobalCupertinoLocalizations.delegate,
+              //对应的 Cupertino 风格（Cupertino 风格组件即 iOS 风格组件）
             ],
             supportedLocales: const [
               Locale('zh', 'CH'),
