@@ -70,7 +70,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 如果没有收藏，则不允许进入
     if (widget.animeId <= 0) {
       Navigator.of(context).pop();
-      showToast("由于没有收藏，无法进入该动漫");
+      showToast("无法进入未收藏动漫");
     }
 
     if (widget.animeId > 0) {
@@ -101,7 +101,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 如果没有从数据库中找到，则直接退出该页面
     if (!_anime.isCollected()) {
       Navigator.of(context).pop();
-      showToast("由于没有收藏，无法进入该动漫");
+      showToast("无法进入未收藏动漫");
     }
     _loadAnimeOk = true;
     setState(() {});

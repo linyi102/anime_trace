@@ -410,6 +410,11 @@ class SqliteUtil {
       delete from episode_note
       where anime_id = $animeId;
       ''');
+    // 删除相关更新记录
+    await database.rawDelete('''
+      delete from update_record
+      where anime_id = $animeId;
+      ''');
   }
 
   static void insertTagName(String tagName, int tagOrder) async {
