@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../controllers/update_record_controller.dart';
 
 class BackupUtil {
   static String backupZipNamePrefix = "backup";
@@ -173,6 +176,7 @@ class BackupUtil {
   // }
 
   static Future<void> restoreFromLocal(String localBackupFilePath) async {
+    final UpdateRecordController updateRecordController = Get.find();
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
       // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
@@ -182,12 +186,16 @@ class BackupUtil {
       File(SqliteUtil.dbPath).writeAsBytes(content).then((value) async {
         // tags = await SqliteUtil.getAllTags(); // 重新更新标签
         await SqliteUtil.ensureDBTable();
+        // 重新获取动漫更新记录
+        updateRecordController.updateData();
         showToast("还原成功");
       });
     } else if (localBackupFilePath.endsWith(".zip")) {
       unzip(localBackupFilePath).then((value) async {
         // tags = await SqliteUtil.getAllTags(); // 重新更新标签
         await SqliteUtil.ensureDBTable();
+        // 重新获取动漫更新记录
+        updateRecordController.updateData();
         showToast("还原成功");
         File(localBackupFilePath).delete();
       });

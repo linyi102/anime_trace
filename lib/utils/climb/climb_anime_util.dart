@@ -58,6 +58,7 @@ class ClimbAnimeUtil {
   }
 
   static bool canUpdateAllAnimesInfo = true;
+
   // 获取数据库中所有动漫，然后更新未完结的动漫信息
   static Future<bool> updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
@@ -73,7 +74,7 @@ class ClimbAnimeUtil {
     // int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
     int skipUpdateCnt = 0, needUpdateCnt = 0;
     final UpdateRecordController updateRecordController = Get.find();
-    updateRecordController.resetUpdateOkCnt();
+    updateRecordController.resetUpdateOkCnt(); // 重新设置
 
     List<Anime> animes = await SqliteUtil.getAllAnimes();
     List<UpdateRecord> updateRecords = [];
@@ -89,11 +90,16 @@ class ClimbAnimeUtil {
       needUpdateCnt++;
       debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
-      Anime oldAnime = Anime(
-          animeId: anime.animeId,
-          animeName: anime.animeName,
-          animeEpisodeCnt: anime.animeEpisodeCnt,
-          tagName: anime.tagName);
+      Anime oldAnime = anime.copy();
+      // Anime oldAnime = Anime(
+      //     animeId: anime.animeId,
+      //     animeName: anime.animeName,
+      //     animeEpisodeCnt: anime.animeEpisodeCnt,
+      //     tagName: anime.tagName,
+      //     playStatus: anime.playStatus,
+      //   premiereTime: anime.premiereTime,
+      //   animeUrl: anime.animeUrl
+      // );
       // 爬取
       ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
           .then((value) {
@@ -111,8 +117,6 @@ class ClimbAnimeUtil {
           updateRecords.add(updateRecord);
         }
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
-          // 数据库更新完毕后计数，更新失败也会正常计数
-          // updateOkCnt++;
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
@@ -120,13 +124,53 @@ class ClimbAnimeUtil {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
               debugPrint("更新完毕");
+              // showToast("更新完毕");
               // 在控制器中查询数据库，来更新数据
               updateRecordController.updateData();
             });
           }
         });
+      }).catchError((obj, e) {
+        updateRecordController.incrementUpdateOkCnt();
+        int updateOkCnt = updateRecordController.updateOkCnt.value;
+        debugPrint("updateOkCnt=$updateOkCnt");
+        if (updateOkCnt == needUpdateCnt) {
+          // 动漫全部更新完毕后，批量插入更新记录
+          UpdateRecordDao.batchInsert(updateRecords).then((value) {
+            debugPrint("更新完毕");
+            // showToast("更新完毕");
+            // 在控制器中查询数据库，来更新数据
+            updateRecordController.updateData();
+          });
+        }
+
+        // 如果刚捕获到就打印，则不会执行上面的更新，所以放在这里
+        // 捕获的错误大多是爬取动漫详细信息时数组越界的错误
+        e.printError();
       });
     }
+    // // 如果10秒后还是没能全部更新(可能是抛出了异常导致updateOkCnt不会自增)
+    // // 则强制赋值为需要更新的数量，保证已有的更新记录插入到数据库中
+    // Future.delayed(const Duration(seconds: 20)).then((value) {
+    //   // 如果到了10s还在更新，此时超时，强制更新数量，那么之后还在更新时会在该基础上继续自增，导致updateOkCnt>needUpdateCnt
+    //   // 尝试1：自增时如果超过了就-1(！这会导致后面自增后始终和need相等，就会重复添加)
+    //   // 尝试2：不强制更新数量，直接批量插入就好了(尽管会卡在更新界面上)(！会导致重复添加数据)
+    //   // 尝试3：延长时间
+    //   // 尝试4：.catchError仍继续和比较
+    //   // 不相等才强制更新，不然会插入两次
+    //   if (updateRecordController.updateOkCnt.value !=
+    //       updateRecordController.needUpdateCnt.value) {
+    //     updateRecordController.forceUpdateOk(); // 保证强制更新完毕后退出更新界面
+    //     // 因为ClimbAnimeUtil.climbAnimeInfoByUrl抛出异常，所以不会执行then，所以需要手动批量插入
+    //     // 为什么不用.catchError？因为即使在里面自增了，也可能最后一个动漫爬取信息时也进入了这里，这样就只+1了，而不会判断是否更新完毕
+    //     UpdateRecordDao.batchInsert(updateRecords).then((value) {
+    //       debugPrint("更新完毕");
+    //       // 在控制器中查询数据库，来更新数据
+    //       updateRecordController.updateData();
+    //     });
+    //   }
+    // });
+
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     return true; // 返回true，之后会显示进度条对话框

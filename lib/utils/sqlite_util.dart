@@ -43,6 +43,7 @@ class SqliteUtil {
 
     // 创建动漫更新表
     await SqliteUtil.createTableUpdateRecord();
+    // 大多都要用await，才返回true，否则会提前返回，导致表还未创建等错误
     return true;
   }
 
@@ -141,7 +142,7 @@ class SqliteUtil {
   static Future<int> updateAnime(Anime oldAnime, Anime newAnime) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
-    debugPrint("oldAnime=$oldAnime, newAnime}=$newAnime");
+    debugPrint("oldAnime=$oldAnime, newAnime=$newAnime");
 
     // 如果标签不一样，需要更新最后修改标签的时间
     if (newAnime.tagName.isNotEmpty && oldAnime.tagName != newAnime.tagName) {
@@ -729,8 +730,7 @@ class SqliteUtil {
     debugPrint("sql: getAllAnimes");
 
     var list = await database.rawQuery('''
-    select * 
-    from anime;
+    select * from anime;
     ''');
 
     List<Anime> res = [];

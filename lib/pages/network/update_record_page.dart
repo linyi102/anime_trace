@@ -22,22 +22,10 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
   @override
   void initState() {
     super.initState();
-    _initData();
   }
 
   final UpdateRecordController updateRecordController =
       Get.find();
-
-  _initData() {
-    // if (updateRecordController.updateRecordVos.isEmpty) {
-    // 如果表中数据为空，则每次进入该页面都会请求，所以使用initOk
-    if (!updateRecordController.initOk) {
-      // doubt：不用then时，第一次打开该页面时不会显示数据
-      updateRecordController.updateData().then((value) {
-        // setState(() {});
-      });
-    }
-  }
 
   _formatDate(String date) {
     return date.replaceAll("-", "/");

@@ -23,7 +23,8 @@ void main() async {
   await SPUtil.getInstance();
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.ensureDBTable(); // 必须要用await
-  Get.put(UpdateRecordController()); // 确保被find前put
+  // put放在了ensureDBTable执行，因为既要保证在ensureDBTable里获取到，又要保证controller里的init能在表创建后访问。但这又会导致恢复备份时再次put吧...
+  Get.put(UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
   // runZonedGuarded(() {
   //   runApp(const GetMaterialApp(
   //     home: MyApp(),

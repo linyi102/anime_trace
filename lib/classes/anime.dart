@@ -96,6 +96,8 @@ class Anime {
   Anime copy() {
     Anime anime = Anime(animeName: animeName, animeEpisodeCnt: animeEpisodeCnt);
     anime.animeId = animeId;
+    anime.animeName = animeName;
+    anime.animeEpisodeCnt = animeEpisodeCnt;
     anime.tagName = tagName;
     anime.animeDesc = animeDesc;
     anime.animeCoverUrl = animeCoverUrl;
