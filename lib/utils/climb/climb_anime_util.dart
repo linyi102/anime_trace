@@ -60,7 +60,7 @@ class ClimbAnimeUtil {
   // 获取数据库中所有动漫，然后更新未完结的动漫信息
   static Future<bool> updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
-      showToast("刷新间隔为10s");
+      showToast("更新间隔为10s");
       return false;
     }
 
@@ -70,10 +70,14 @@ class ClimbAnimeUtil {
         .then((value) => canUpdateAllAnimesInfo = true);
 
     showToast("更新动漫中...");
-    int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
-    List<Anime> animes = await SqliteUtil.getAllAnimes();
+    // int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
+    int skipUpdateCnt = 0, needUpdateCnt = 0;
+    final UpdateRecordController updateRecordController = Get.find();
+    updateRecordController.resetUpdateOkCnt();
 
+    List<Anime> animes = await SqliteUtil.getAllAnimes();
     List<UpdateRecord> updateRecords = [];
+
     // 异步更新所有动漫信息
     for (var anime in animes) {
       // debugPrint("${anime.animeName}：${anime.playStatus}");
@@ -108,15 +112,15 @@ class ClimbAnimeUtil {
         }
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
           // 数据库更新完毕后计数，更新失败也会正常计数
-          updateOkCnt++;
+          // updateOkCnt++;
+          updateRecordController.incrementUpdateOkCnt();
+          int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
           if (updateOkCnt == needUpdateCnt) {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
               updateOk = true;
               showToast("更新完毕");
-              // 获取更新记录
-              final UpdateRecordController updateRecordController = Get.find();
               // 在控制器中查询数据库，来更新数据
               updateRecordController.updateData();
             });
@@ -124,8 +128,9 @@ class ClimbAnimeUtil {
         });
       });
     }
-
+    updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
-    return updateOk;
+    // return updateOk;
+    return true; // 返回true，之后会显示进度条对话框
   }
 }

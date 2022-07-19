@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/dialog/dialog_update_all_anime_progress.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/pages/network/directory_page.dart';
@@ -57,7 +58,12 @@ class _NetWorkNavState extends State<NetWorkNav>
             key: updateRecordButtonKey,
             onPressed: () {
               // 先更新动漫信息，再重新获取数据库表中的动漫更新记录(方法内会执行)
-              ClimbAnimeUtil.updateAllAnimesInfo();
+              // ClimbAnimeUtil.updateAllAnimesInfo();
+              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+                if (value) {
+                  dialogUpdateAllAnimeProgress(context);
+                }
+              });
             },
             icon: const Icon(Icons.refresh_rounded)));
         return Container();
@@ -93,15 +99,19 @@ class _NetWorkNavState extends State<NetWorkNav>
                 alignment: Alignment.centerLeft,
                 child: TabBar(
                   tabs: navs.map((e) => Tab(child: Text(e))).toList(),
-                  controller: _tabController, // 指定tab控制器
-                  padding: const EdgeInsets.all(2), // 居中，而不是靠左下
+                  controller: _tabController,
+                  // 指定tab控制器
+                  padding: const EdgeInsets.all(2),
+                  // 居中，而不是靠左下
                   // isScrollable: true, // 标签可以滑动，避免拥挤
                   labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
-                  indicatorColor: Colors.transparent, // 隐藏
-                  indicatorSize: TabBarIndicatorSize.label, // 指示器长短和标签一样
+                  indicatorColor: Colors.transparent,
+                  // 隐藏
+                  indicatorSize: TabBarIndicatorSize.label,
+                  // 指示器长短和标签一样
                   indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
                       color: ThemeUtil.getThemePrimaryColor()),

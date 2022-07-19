@@ -17,6 +17,8 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../components/dialog/dialog_update_all_anime_progress.dart';
+
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
 
@@ -211,9 +213,11 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
     actions.add(IconButton(
         onPressed: () {
+          // TODO 如何确保全部更新完毕后才重新才加载数据
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            // TODO 如何确保全部更新完毕后才重新才加载数据
-            // _loadData();
+            if (value) { // 为true则会显示更新进度条
+              dialogUpdateAllAnimeProgress(context);
+            }
           });
         },
         icon: const Icon(Icons.refresh_rounded)));
@@ -228,7 +232,9 @@ class _AnimeListPageState extends State<AnimeListPage>
           child: RefreshIndicator(
             onRefresh: () async {
               ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                _loadData();
+                if (value) {
+                  dialogUpdateAllAnimeProgress(context);
+                }
               });
             },
             child: Stack(children: [

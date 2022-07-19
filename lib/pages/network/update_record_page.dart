@@ -10,6 +10,8 @@ import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:get/get.dart';
 
+import '../../components/dialog/dialog_update_all_anime_progress.dart';
+
 class UpdateRecordPage extends StatefulWidget {
   const UpdateRecordPage({Key? key}) : super(key: key);
 
@@ -48,7 +50,9 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
       () => RefreshIndicator(
         onRefresh: () async {
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            setState(() {});
+            if (value) {
+              dialogUpdateAllAnimeProgress(context);
+            }
           });
         },
         child: AnimatedSwitcher(
