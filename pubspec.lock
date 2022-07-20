@@ -483,6 +483,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.27.4"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.2"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -733,6 +740,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.5.2"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.5"
   xdg_directories:
     dependency: transitive
     description:

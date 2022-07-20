@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/pages/tabs.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -15,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'controllers/update_record_controller.dart';
 
@@ -27,30 +29,42 @@ void main() async {
   sqfliteFfiInit(); // 桌面应用的sqflite初始化
   await SqliteUtil.ensureDBTable(); // 必须要用await
   // put放在了ensureDBTable执行，因为既要保证在ensureDBTable里获取到，又要保证controller里的init能在表创建后访问。但这又会导致恢复备份时再次put吧...
-  Get.put(UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
+  Get.put(
+      UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
+
+  // Windows端窗口设置
+  await windowManager.ensureInitialized();
+  WindowOptions windowOptions = WindowOptions(
+    title: "漫迹",
+    size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
+    minimumSize: Size(900, 600),
+    // DOUBT 没有效果
+    fullScreen: false,
+    center: true,
+    // 不居中则会偏右
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    // titleBarStyle: TitleBarStyle.hidden,
+  );
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
 
   runApp(const GetMaterialApp(
     home: MyApp(),
   ));
 
   // Win端好像不能放大缩小了
-  doWhenWindowReady(() {
-    const initialSize = Size(1200, 720);
-    appWindow.minSize = initialSize;
-    appWindow.size = initialSize;
-    appWindow.alignment = Alignment.center;
-    appWindow.title = "漫迹";
-    appWindow.show();
-  });
-}
-
-// Enable scrolling with mouse dragging
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.mouse,
-  };
+  // doWhenWindowReady(() {
+  //   const initialSize = Size(1200, 720);
+  //   appWindow.minSize = initialSize;
+  //   appWindow.size = initialSize;
+  //   appWindow.alignment = Alignment.center;
+  //   appWindow.title = "漫迹";
+  //   appWindow.show();
+  // });
 }
 
 class MyApp extends StatefulWidget {
@@ -60,11 +74,45 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WindowListener {
+  // StatefulWidget才有initState和dispose
   @override
   void initState() {
     super.initState();
+    windowManager.addListener(this);
+    _init();
     _autoBackup();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  void _init() async {
+    // Add this line to override the default close handler
+    await windowManager.setPreventClose(true);
+    setState(() {});
+  }
+
+  @override
+  void onWindowResize() async {}
+
+  @override
+  void onWindowClose() async {
+    bool _isPreventClose = await windowManager.isPreventClose();
+    if (_isPreventClose) {
+      // 关闭窗口前等待记录窗口大小完毕
+      await SpProfile.setWindowSize(await windowManager.getSize());
+      Navigator.of(context).pop();
+      await windowManager.destroy();
+    }
+  }
+
+  @override
+  void onWindowMaximize() async {
+    debugPrint("全屏");
   }
 
   _autoBackup() async {
@@ -147,7 +195,8 @@ class MyAppState extends State<MyApp> {
             title: '漫迹',
             // 后台应用显示名称
             home: const MyHome(),
-            scrollBehavior: MyCustomScrollBehavior(), // 自定义滚动行为
+            scrollBehavior: MyCustomScrollBehavior(),
+            // 自定义滚动行为
             theme: ThemeData(
               primaryColor: ThemeUtil.getThemePrimaryColor(),
               brightness: themeController.isDarkMode.value
@@ -244,4 +293,13 @@ class MyHome extends StatelessWidget {
       children: const [Tabs(), UpdateHint(checkLatestVersion: true)],
     );
   }
+}
+
+// Enable scrolling with mouse dragging
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +38,37 @@ class SPUtil {
 
   static bool getBool(String key, {bool defaultValue = false}) {
     return _sharedPreferences.getBool(key) ?? defaultValue;
+  }
+
+  /// 根据key存储double类型
+  static Future<bool> setDouble(String key, double value) {
+    return _sharedPreferences.setDouble(key, value);
+  }
+
+  /// 根据key获取double类型
+  static double? getDouble(String key, {double defaultValue = 0.0}) {
+    return _sharedPreferences.getDouble(key) ?? defaultValue;
+  }
+
+  /// 根据key存储字符串类型数组
+  static Future<bool> setStringList(String key, List<String> value) {
+    return _sharedPreferences.setStringList(key, value);
+  }
+
+  /// 根据key获取字符串类型数组
+  static List<String> getStringList(String key, {List<String> defaultValue = const []}) {
+    return _sharedPreferences.getStringList(key) ?? defaultValue;
+  }
+
+  /// 根据key存储Map类型
+  static Future<bool> setMap(String key, Map value) {
+    return _sharedPreferences.setString(key, json.encode(value));
+  }
+
+  /// 根据key获取Map类型
+  static Map getMap(String key) {
+    String jsonStr = _sharedPreferences.getString(key) ?? "";
+    return jsonStr.isEmpty ? Map : json.decode(jsonStr);
   }
 
   static Future<bool> clear() async {
