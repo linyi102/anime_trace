@@ -1,4 +1,3 @@
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/font_awesome5_icons.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -38,7 +36,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   bool multiSelected = false;
   Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
-  List<ScrollController> _scrollControllers = [];
+  final List<ScrollController> _scrollControllers = [];
 
   @override
   void initState() {
@@ -194,7 +192,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     ScrollController scrollController,
     double bottomSheetOffset,
   ) {
-    return AnimesDisplaySetting();
+    return const AnimesDisplaySetting();
   }
 
   List<Widget> _getActions() {

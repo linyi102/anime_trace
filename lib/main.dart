@@ -32,6 +32,7 @@ void main() async {
   Get.put(
       UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
 
+  // 只在Windows系统下开启窗口设置，否则Android端会白屏
   if (Platform.isWindows) {
     // Windows端窗口设置
     await windowManager.ensureInitialized();
@@ -58,16 +59,6 @@ void main() async {
   runApp(const GetMaterialApp(
     home: MyApp(),
   ));
-
-  // Win端好像不能放大缩小了
-  // doWhenWindowReady(() {
-  //   const initialSize = Size(1200, 720);
-  //   appWindow.minSize = initialSize;
-  //   appWindow.size = initialSize;
-  //   appWindow.alignment = Alignment.center;
-  //   appWindow.title = "漫迹";
-  //   appWindow.show();
-  // });
 }
 
 class MyApp extends StatefulWidget {

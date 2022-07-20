@@ -39,6 +39,8 @@ class UpdateRecordPage extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           child: updateRecordController.updateRecordVos.isEmpty
               ? ListView(
+                  // 解决无法下拉刷新
+                  physics: const AlwaysScrollableScrollPhysics(),
                   children: [
                     SizedBox(
                       // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
@@ -56,6 +58,8 @@ class UpdateRecordPage extends StatelessWidget {
               : Scrollbar(
                   controller: _scrollController,
                   child: ListView.builder(
+                    // 解决item太小无法下拉
+                    physics: const AlwaysScrollableScrollPhysics(),
                     controller: _scrollController,
                     itemCount: updateRecordController.updateRecordVos.length,
                     itemBuilder: (context, index) {

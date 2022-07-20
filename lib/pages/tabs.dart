@@ -25,7 +25,6 @@ class _TabsState extends State<Tabs> {
     const HistoryPage(),
     const NoteListPage(),
     const SettingPage(),
-    // const SettingPageTest()
   ];
   final List<String> _names = ["动漫", "网络", "历史", "笔记", "更多"];
   final List<IconData> iconDatas = [
