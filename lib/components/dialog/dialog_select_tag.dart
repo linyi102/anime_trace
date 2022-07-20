@@ -49,7 +49,7 @@ dialogSelectTag(setState, context, Anime anime) {
         );
       }
       return AlertDialog(
-        title: const Text('选择标签'),
+        title: const Text('选择清单'),
         content: SingleChildScrollView(
           child: Column(
             children: radioList,

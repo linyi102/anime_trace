@@ -20,7 +20,7 @@ class _TagManageState extends State<TagManage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "标签管理",
+          "清单管理",
           style: TextStyle(
             fontWeight: FontWeight.w600,
           ),
@@ -47,12 +47,12 @@ class _TagManageState extends State<TagManage> {
               builder: (context) {
                 var inputTagNameController = TextEditingController();
                 return AlertDialog(
-                  title: const Text("添加标签"),
+                  title: const Text("添加清单"),
                   content: TextField(
                     controller: inputTagNameController,
                     autofocus: true,
                     decoration: const InputDecoration(
-                      labelText: "标签名称",
+                      labelText: "清单名称",
                       border: InputBorder.none,
                     ),
                     maxLength: 10,
@@ -116,13 +116,13 @@ class _TagManageState extends State<TagManage> {
               builder: (context) {
                 var inputTagNameController = TextEditingController();
                 return AlertDialog(
-                  title: const Text("修改标签"),
+                  title: const Text("修改清单"),
                   content: TextField(
                     controller: inputTagNameController..text = tags[i],
                     autofocus: true,
                     maxLength: 10,
                     decoration: const InputDecoration(
-                      labelText: "标签名称",
+                      labelText: "清单名称",
                       border: InputBorder.none,
                     ),
                   ),
@@ -139,7 +139,7 @@ class _TagManageState extends State<TagManage> {
 
                           // 重名
                           if (tags.contains(newTagName)) {
-                            showToast("已存在该标签，无法修改！");
+                            showToast("已存在该清单，无法修改！");
                             return;
                           }
                           SqliteUtil.updateTagName(tags[i], newTagName);
@@ -166,8 +166,8 @@ class _TagManageState extends State<TagManage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("删除标签"),
-            content: Text("确认删除「$tagName」标签吗？"),
+            title: const Text("删除清单"),
+            content: Text("确认删除「$tagName」清单吗？"),
             actions: [
               TextButton(
                   onPressed: () {
@@ -177,7 +177,7 @@ class _TagManageState extends State<TagManage> {
               ElevatedButton(
                   onPressed: () async {
                     if (await SqliteUtil.getAnimesCntBytagName(tagName) > 0) {
-                      showToast("当前标签存在动漫，无法删除");
+                      showToast("当前清单存在动漫，无法删除");
                     } else {
                       SqliteUtil.deleteTagByTagName(tagName);
                       tags.remove(tagName);

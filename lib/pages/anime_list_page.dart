@@ -43,7 +43,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     super.initState();
     for (int i = 0; i < tags.length; ++i) {
       animesInTag.add([]); // 先添加元素List，然后才能用下标访问
-      _scrollControllers.add(ScrollController()); // 为每个标签提供单独的滚动控制器
+      _scrollControllers.add(ScrollController()); // 为每个清单提供单独的滚动控制器
     }
     Future.delayed(const Duration(milliseconds: 1)).then((value) {
       setState(() {
@@ -131,7 +131,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     actions:
                         multiSelected ? _getActionsOnMulti() : _getActions(),
                     bottom: PreferredSize(
-                      // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                      // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
                       preferredSize: const Size.fromHeight(kToolbarHeight),
                       child: Align(
                         alignment: Alignment.centerLeft,
@@ -142,7 +142,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           padding: const EdgeInsets.all(2),
                           // 居中，而不是靠左下
                           isScrollable: true,
-                          // 标签可以滑动，避免拥挤
+                          // 清单可以滑动，避免拥挤
                           labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.w600,
@@ -458,7 +458,7 @@ class _AnimeListPageState extends State<AnimeListPage>
       ),
     )
         .then((value) async {
-      // 根据传回的动漫id获取最新的更新进度以及标签
+      // 根据传回的动漫id获取最新的更新进度以及清单
       Anime newAnime = value;
       if (!newAnime.isCollected()) {
         // 取消收藏
@@ -481,18 +481,18 @@ class _AnimeListPageState extends State<AnimeListPage>
         int findIndex = animesInTag[tagIndex]
             .indexWhere((element) => element.animeId == newAnime.animeId);
         if (findIndex != -1) {
-          // 标签改变，则移动到新的标签组
+          // 清单改变，则移动到新的清单组
           Anime oldAnime = animesInTag[tagIndex][findIndex];
           if (oldAnime.tagName != newAnime.tagName) {
             animesInTag[tagIndex].removeAt(findIndex);
             int newTagIndex =
                 tags.indexWhere((element) => element == newAnime.tagName);
             animesInTag[newTagIndex].insert(0, newAnime); // 插到最前面
-            // 还要改变标签的数量
+            // 还要改变清单的数量
             animeCntPerTag[tagIndex]--;
             animeCntPerTag[newTagIndex]++;
           } else {
-            // 标签没变，简单改下进度
+            // 清单没变，简单改下进度
             animesInTag[tagIndex][findIndex] = newAnime;
           }
           break;
@@ -534,7 +534,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       Icons.radio_button_off_outlined,
                     ),
               onTap: () {
-                // 先找到原来标签对应的下标
+                // 先找到原来清单对应的下标
                 int oldTagindex = tags.indexOf(defaultTagName);
                 int newTagindex = i;
                 String newTagName = tags[newTagindex];
@@ -557,7 +557,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   SqliteUtil.updateTagByAnimeId(
                       animesInTag[oldTagindex][pos].animeId, newTagName);
                   debugPrint(
-                      "修改${animesInTag[oldTagindex][pos].animeName}的标签为$newTagName");
+                      "修改${animesInTag[oldTagindex][pos].animeName}的清单为$newTagName");
                   debugPrint("$pos: ${animesInTag[oldTagindex][pos]}");
 
                   animesInTag[newTagindex]
@@ -566,7 +566,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       .removeAt(pos); // 第一次是正确位置key，第二次就需要-1了
                   j++;
                 }
-                // 同时修改标签数量
+                // 同时修改清单数量
                 int modifiedCnt = mapSelected.length;
                 animeCntPerTag[oldTagindex] -= modifiedCnt;
                 animeCntPerTag[newTagindex] += modifiedCnt;
@@ -577,7 +577,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           );
         }
         return AlertDialog(
-          title: const Text('选择标签'),
+          title: const Text('选择清单'),
           content: SingleChildScrollView(
             child: Column(
               children: radioList,
@@ -628,7 +628,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   Expanded(
                     child: IconButton(
                       onPressed: () {
-                        // i就是当前标签的索引
+                        // i就是当前清单的索引
                         if (mapSelected.length == animesInTag[i].length) {
                           // 全选了，点击则会取消全选
                           mapSelected.clear();

@@ -91,8 +91,8 @@ class _SettingPageState extends State<SettingPage> {
             // const Divider(),
             ListTile(
               iconColor: ThemeUtil.getLeadingIconColor(),
-              leading: const Icon(Icons.new_label_outlined),
-              title: const Text("标签管理"),
+              leading: const Icon(Icons.checklist_rounded),
+              title: const Text("清单管理"),
               onTap: () {
                 Navigator.of(context).push(
                   // MaterialPageRoute(

@@ -976,7 +976,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               onTap: () {
                 _anime.tagName = tags[i];
                 SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-                debugPrint("修改标签为${_anime.tagName}");
+                debugPrint("修改清单为${_anime.tagName}");
                 setState(() {});
                 Navigator.pop(context);
               },
@@ -984,7 +984,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           );
         }
         return AlertDialog(
-          title: const Text('选择标签'),
+          title: const Text('选择清单'),
           content: SingleChildScrollView(
             child: Column(
               children: radioList,
