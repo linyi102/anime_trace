@@ -50,6 +50,11 @@ Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一�
 
 | packages                                                     | 开源协议     |
 | ------------------------------------------------------------ | ------------ |
+| [bottom_sheet Flutter Package](https://pub.flutter-io.cn/packages/bottom_sheet) | Apache-2.0   |
+| [sidebarx Flutter Package](https://pub.flutter-io.cn/packages/sidebarx) | MIT          |
+| [window_manager Flutter Package](https://pub.flutter-io.cn/packages/window_manager) | MIT          |
+| [flutter_tab_indicator_styler Flutter Package](https://pub.flutter-io.cn/packages/flutter_tab_indicator_styler) | MIT          |
+| [percent_indicator Flutter Package](https://pub.flutter-io.cn/packages/percent_indicator) | BSD-2-Clause |
 | [dart_ping \| Dart Package](https://pub.flutter-io.cn/packages/dart_ping) | BSD-3-Clause |
 | [fluttericon \| Flutter Package](https://pub.flutter-io.cn/packages/fluttericon) | unknown      |
 | [simple_icons \| Flutter Package](https://pub.flutter-io.cn/packages/simple_icons) | unknown      |
