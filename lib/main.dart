@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
@@ -36,12 +35,13 @@ void main() async {
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = WindowOptions(
     title: "漫迹",
+    // size: Size(1200, 720),
     size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
-    minimumSize: Size(900, 600),
-    // DOUBT 没有效果
+    // TODO 限制最小大小没有效果
+    minimumSize: const Size(900, 600),
     fullScreen: false,
-    center: true,
     // 不居中则会偏右
+    center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     // titleBarStyle: TitleBarStyle.hidden,
@@ -105,6 +105,7 @@ class MyAppState extends State<MyApp> with WindowListener {
     if (_isPreventClose) {
       // 关闭窗口前等待记录窗口大小完毕
       await SpProfile.setWindowSize(await windowManager.getSize());
+      // 退出
       Navigator.of(context).pop();
       await windowManager.destroy();
     }

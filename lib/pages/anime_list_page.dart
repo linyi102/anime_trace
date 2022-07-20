@@ -36,12 +36,14 @@ class _AnimeListPageState extends State<AnimeListPage>
   Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
   final ScrollController _scrollController = ScrollController();
+  List<ScrollController> _scrollControllers = [];
 
   @override
   void initState() {
     super.initState();
     for (int i = 0; i < tags.length; ++i) {
       animesInTag.add([]); // 先添加元素List，然后才能用下标访问
+      _scrollControllers.add(ScrollController()); // 为每个标签提供单独的滚动控制器
     }
     Future.delayed(const Duration(milliseconds: 1)).then((value) {
       setState(() {
@@ -68,21 +70,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         }
       }
     });
-
-    // const _extraScrollSpeed = 80; // your "extra" scroll speed
-    // _scrollController.addListener(() {
-    //   ScrollDirection scrollDirection =
-    //       _scrollController.position.userScrollDirection;
-    //   if (scrollDirection != ScrollDirection.idle) {
-    //     double scrollEnd = _scrollController.offset +
-    //         (scrollDirection == ScrollDirection.reverse
-    //             ? _extraScrollSpeed
-    //             : -_extraScrollSpeed);
-    //     scrollEnd = min(_scrollController.position.maxScrollExtent,
-    //         max(_scrollController.position.minScrollExtent, scrollEnd));
-    //     _scrollController.jumpTo(scrollEnd);
-    //   }
-    // });
   }
 
   void _loadData() async {
@@ -107,6 +94,10 @@ class _AnimeListPageState extends State<AnimeListPage>
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
+    for (int i = 0; i < tags.length; ++i) {
+      _scrollControllers[i].dispose();
+    }
+
     super.dispose();
   }
 
@@ -239,7 +230,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     for (int i = 0; i < tags.length; ++i) {
       list.add(
         Scrollbar(
-          controller: _scrollController,
+          controller: _scrollControllers[i],
           child: Stack(children: [
             SPUtil.getBool("display_list")
                 ? _getAnimeListView(i)
@@ -255,7 +246,7 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   GridView _getAnimeGridView(int i) {
     return GridView.builder(
-        controller: _scrollController,
+        controller: _scrollControllers[i],
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
         // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -367,7 +358,7 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   ListView _getAnimeListView(int i) {
     return ListView.builder(
-      controller: _scrollController,
+      controller: _scrollControllers[i],
       itemCount: animesInTag[i].length,
       // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
       itemBuilder: (BuildContext context, int index) {
