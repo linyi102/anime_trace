@@ -132,7 +132,11 @@ class ThemeUtil {
 
   static getSideBarSelectedItemColor() {
     return themeController.isDarkMode.value
-        ? const Color.fromRGBO(50, 50, 50, 1)
-        : const Color.fromRGBO(240, 240, 240, 1);
+        ? const Color.fromRGBO(56, 56, 56, 1)
+        : const Color.fromRGBO(245, 245, 245, 1);
+  }
+
+  static getSideBarBackgroundColor() {
+    return getAppBarBackgroundColor();
   }
 }

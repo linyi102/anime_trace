@@ -94,6 +94,10 @@ class _TabsState extends State<Tabs> {
                           width: 200,
                         ),
                         theme: SidebarXTheme(
+                          decoration: BoxDecoration(
+                            color: ThemeUtil.getSideBarBackgroundColor(),
+                            // borderRadius: BorderRadius.circular(20),
+                          ),
                           selectedItemDecoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: ThemeUtil.getSideBarSelectedItemColor(),
