@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_icons/simple_icons.dart';
@@ -75,7 +77,7 @@ class _AboutVersionState extends State<AboutVersion> {
     ];
     final List<Color> _urisIconColor = [
       Colors.transparent,
-      Colors.black,
+      SPUtil.getBool("enableDark") ? Colors.white : Colors.black,
       const Color.fromRGBO(187, 33, 36, 1),
     ];
 

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 class ThemeController extends GetxController {
   var isDarkMode = SPUtil.getBool("enableDark").obs;
+
   changeTheme() {
     // 无法实时显示变化
     // isDarkMode = (!(isDarkMode.value)).obs; // 获取bool类型，取反后再转为RxBool
