@@ -175,7 +175,7 @@ class BackupUtil {
   //   await for (FileSystemEntity file in files) {}
   // }
 
-  static Future<void> restoreFromLocal(String localBackupFilePath) async {
+  static Future<void> restoreFromLocal(String localBackupFilePath, {bool delete = false}) async {
     final UpdateRecordController updateRecordController = Get.find();
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
@@ -197,7 +197,7 @@ class BackupUtil {
         // 重新获取动漫更新记录
         updateRecordController.updateData();
         showToast("还原成功");
-        File(localBackupFilePath).delete();
+        if (delete) File(localBackupFilePath).delete(); // Windows端还原本地备份时不删除
       });
     } else {
       showToast("还原文件必须以.zip或.db结尾");
@@ -218,7 +218,7 @@ class BackupUtil {
     debugPrint(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
-    restoreFromLocal(localBackupFilePath); // 这里使用.then里删除，会导致android还原失败
+    restoreFromLocal(localBackupFilePath, delete: true); // 这里使用.then里删除，会导致android还原失败
   }
 
   static Future<void> unzip(String localZipPath) async {
