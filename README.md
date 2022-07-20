@@ -18,7 +18,13 @@
 因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。<br />
 所以尝试做了个软件，效果演示如下：
 
-![](./assets/images/漫迹example.png)
+Android 端：
+
+![](./assets/images/example-android.png)
+
+Windows 端：
+
+![](./assets/images/example-win.png)
 
 ## 笔记相关问题
 

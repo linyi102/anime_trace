@@ -18,7 +18,7 @@ class SpProfile {
   }
 
   static getWindowWidth() {
-    return SPUtil.getDouble("WindowWidth", defaultValue: 1200);
+    return SPUtil.getDouble("WindowWidth", defaultValue: 1280);
   }
 
   static getWindowHeight() {

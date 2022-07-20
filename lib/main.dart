@@ -35,9 +35,9 @@ void main() async {
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = WindowOptions(
     title: "漫迹",
-    // size: Size(1200, 720),
+    // size: Size(1280, 720),
     size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
-    // TODO 限制最小大小没有效果
+    // 最小尺寸
     minimumSize: const Size(900, 600),
     fullScreen: false,
     // 不居中则会偏右
