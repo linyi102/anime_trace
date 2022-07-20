@@ -33,17 +33,17 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
-  sidebarx: ^0.7.0
-  window_manager: ^0.2.5
-  bitsdojo_window: ^0.1.2
-  flutter_tab_indicator_styler: ^2.0.0
-  percent_indicator: ^4.2.2
+  bottom_sheet: ^3.1.1 # 底部弹出菜单
+  sidebarx: ^0.7.0 # 侧边栏
+  window_manager: ^0.2.5 # windwos窗口管理
+  flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
+  percent_indicator: ^4.2.2 # 进度条
   dart_ping: ^6.1.2
   fluttericon: ^2.0.0
   simple_icons: ^7.1.0
   expand_widget: ^2.1.0
   get: ^4.6.1 # 4.6.3不支持SDK2.15，必须大于2.15
-#  animations: ^2.0.3
+  # animations: ^2.0.3
   shared_preferences: ^2.0.9
   sqflite: ^2.0.1 # 不支持windows，可使用sqflite_common_ffi
   sqflite_common_ffi: ^2.1.0

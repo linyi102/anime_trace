@@ -1,3 +1,4 @@
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
@@ -7,11 +8,13 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
+import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -188,29 +191,92 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
   }
 
+  Widget _buildBottomSheet(
+    BuildContext context,
+    ScrollController scrollController,
+    double bottomSheetOffset,
+  ) {
+    return AnimesDisplaySetting();
+  }
+
   List<Widget> _getActions() {
     List<Widget> actions = [];
-    actions.add(
-      IconButton(
-        onPressed: () async {
-          Navigator.of(context).push(
-            // MaterialPageRoute(
-            //   builder: (context) => const Search(),
-            // ),
-            FadeRoute(
-              builder: (context) {
-                return const SearchDbAnime();
-              },
-            ),
-          ).then((value) {
-            debugPrint("更新在搜索页面里进行的修改");
-            _loadData();
-          });
-        },
-        icon: const Icon(Icons.search_rounded),
-        tooltip: "搜索动漫",
-      ),
-    );
+    // actions.add(IconButton(
+    //   onPressed: () {
+    //     showFlexibleBottomSheet(
+    //         minHeight: 0,
+    //         initHeight: 0.1,
+    //         maxHeight: 1,
+    //         context: context,
+    //         builder: _buildBottomSheet,
+    //         isExpand: true);
+    //   },
+    //   icon: const Icon(Icons.widgets_outlined),
+    //   tooltip: "外观设置",
+    // ));
+    actions.add(IconButton(
+      onPressed: () async {
+        Navigator.of(context).push(
+          // MaterialPageRoute(
+          //   builder: (context) => const Search(),
+          // ),
+          FadeRoute(
+            builder: (context) {
+              return const SearchDbAnime();
+            },
+          ),
+        ).then((value) {
+          debugPrint("更新在搜索页面里进行的修改");
+          _loadData();
+        });
+      },
+      icon: const Icon(Icons.search_rounded),
+      tooltip: "搜索动漫",
+    ));
+    // actions.add(IconButton(
+    //   onPressed: () {
+    //     showDialog(
+    //         context: context,
+    //         builder: (context) {
+    //           return AlertDialog(
+    //             title: Text("排序"),
+    //             content: SingleChildScrollView(
+    //               child: Column(
+    //                 children: [
+    //                   ListTile(
+    //                     title: Text("名称"),
+    //                     leading: Icon(Icons.radio_button_off),
+    //                     trailing: Icon(FontAwesome5.sort_amount_up),
+    //                   ),
+    //                   ListTile(
+    //                     title: Text("移动时间"),
+    //                     leading: Icon(Icons.radio_button_on),
+    //                     trailing: Icon(FontAwesome5.sort_amount_up),
+    //                   ),
+    //                   ListTile(
+    //                     title: Text("首播时间"),
+    //                     leading: Icon(Icons.radio_button_on),
+    //                     trailing: Icon(FontAwesome5.sort_amount_up),
+    //                   ),
+    //                   ListTile(
+    //                     title: Text("最近观看"),
+    //                     leading: Icon(Icons.radio_button_on),
+    //                     trailing: Icon(FontAwesome5.sort_amount_up),
+    //                   ),
+    //                   ListTile(
+    //                     title: Text("已观看集数"),
+    //                     leading: Icon(Icons.radio_button_on),
+    //                     trailing: Icon(FontAwesome5.sort_amount_up),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //           );
+    //         });
+    //   },
+    //   icon: const Icon(Icons.sort),
+    //   tooltip: "排序",
+    // ));
     // actions.add(IconButton(
     //     onPressed: () {
     //       // TODO 如何确保全部更新完毕后才重新才加载数据
