@@ -33,6 +33,15 @@ class _NoteListPageState extends State<NoteListPage> {
     _loadData();
   }
 
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    //为了避免内存泄露，需要调用.dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _loadData() {
     _loadOk = false;
     _pageIndex = 1;
@@ -91,7 +100,7 @@ class _NoteListPageState extends State<NoteListPage> {
                   key: UniqueKey(),
                   // color: Colors.white,
                 )
-              : Scrollbar(child: _buildNotes()),
+              : Scrollbar(controller: _scrollController, child: _buildNotes()),
         ),
       ),
     );
@@ -194,6 +203,7 @@ class _NoteListPageState extends State<NoteListPage> {
     return episodeNotes.isEmpty
         ? emptyDataHint("暂无笔记", toastMsg: "点击已完成的集即可添加笔记")
         : ListView.builder(
+            controller: _scrollController,
             itemCount: episodeNotes.length,
             itemBuilder: (BuildContext context, int index) {
               // debugPrint("index=$index");

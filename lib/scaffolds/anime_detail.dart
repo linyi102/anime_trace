@@ -180,9 +180,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: !_loadAnimeOk
-              ? Container(
-                  key: UniqueKey(),
-                )
+              ? Container(key: UniqueKey())
               : Stack(children: [
                   Scrollbar(
                     child: RefreshIndicator(
@@ -219,7 +217,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       // floating: true,
       // snap: true,
       pinned: true,
-      expandedHeight: 280, // 270, 290都会导致有细线
+      expandedHeight: 280,
+      // 270, 290都会导致有细线
       // stretch: true,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.parallax,
@@ -824,7 +823,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   Future<String> _showDatePicker({DateTime? defaultDateTime}) async {
     var picker = await showDatePicker(
         context: context,
-        initialDate: defaultDateTime ?? DateTime.now(), // 没有给默认时间时，设置为今天
+        initialDate: defaultDateTime ?? DateTime.now(),
+        // 没有给默认时间时，设置为今天
         firstDate: DateTime(1986),
         lastDate: DateTime(DateTime.now().year + 2),
         locale: const Locale("zh"));
@@ -839,8 +839,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             child: Card(
               elevation: 8,
               shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
-              clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+                  borderRadius: BorderRadius.all(Radius.circular(50))),
+              // 圆角
+              clipBehavior: Clip.antiAlias,
+              // 设置抗锯齿，实现圆角背景
               margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
               child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center,
@@ -1324,6 +1326,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   bool _climbing = false;
+
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
       if (_anime.isCollected()) showToast("当前动漫没有来源，请先进行迁移");

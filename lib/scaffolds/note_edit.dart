@@ -131,7 +131,7 @@ class _NoteEditState extends State<NoteEdit> {
       shrinkWrap: true, // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: itemCount == 2 ? 2 : 3, // 横轴数量
+        crossAxisCount: Platform.isWindows ? 9 : 3, // 横轴数量
         crossAxisSpacing: 5, // 横轴距离
         mainAxisSpacing: 5, // 竖轴距离
         childAspectRatio: 1, // 网格比例。31/43为封面比例

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
@@ -163,7 +165,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
+        crossAxisCount: SPUtil.getInt("gridColumnCnt", defaultValue: Platform.isWindows ? 8 : 3), // 横轴数量
         crossAxisSpacing: 5, // 横轴距离
         mainAxisSpacing: 3, // 竖轴距离
         childAspectRatio: 31 / 56, // 每个网格的比例

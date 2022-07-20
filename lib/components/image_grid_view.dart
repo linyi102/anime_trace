@@ -23,53 +23,53 @@ class ImageGridView extends StatelessWidget {
       return Container();
     }
     // 只有一张图片，则16/9比例显示
-    if (relativeLocalImages.length == 1) {
-      return Container(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: MaterialButton(
-          padding: const EdgeInsets.all(0),
-          onPressed: () {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) {
-            //   return ImageViewer(
-            //     relativeLocalImages: [relativeLocalImages[0]],
-            //     initialIndex: 0,
-            //   );
-            // }));
-            Navigator.push(
-                context,
-                FadeRoute(
-                    // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
-                    transitionDuration: Duration.zero,
-                    reverseTransitionDuration: Duration.zero,
-                    builder: (context) {
-                      return ImageViewer(
-                        relativeLocalImages: [relativeLocalImages[0]],
-                        initialIndex: 0,
-                      );
-                    }));
-          },
-          child: AspectRatio(
-            aspectRatio: 16 / 9, // 固定长宽
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5), // 圆角
-              child: Image.file(
-                File(ImageUtil.getAbsoluteImagePath(
-                    relativeLocalImages[0].path)),
-                fit: BoxFit.cover,
-                errorBuilder: errorImageBuilder(relativeLocalImages[0].path),
-              ),
-            ),
-          ),
-        ),
-      );
-    } else {
+    // if (relativeLocalImages.length == 1) {
+    //   return Container(
+    //     padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+    //     child: MaterialButton(
+    //       padding: const EdgeInsets.all(0),
+    //       onPressed: () {
+    //         // Navigator.push(context, MaterialPageRoute(builder: (context) {
+    //         //   return ImageViewer(
+    //         //     relativeLocalImages: [relativeLocalImages[0]],
+    //         //     initialIndex: 0,
+    //         //   );
+    //         // }));
+    //         Navigator.push(
+    //             context,
+    //             FadeRoute(
+    //                 // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
+    //                 transitionDuration: Duration.zero,
+    //                 reverseTransitionDuration: Duration.zero,
+    //                 builder: (context) {
+    //                   return ImageViewer(
+    //                     relativeLocalImages: [relativeLocalImages[0]],
+    //                     initialIndex: 0,
+    //                   );
+    //                 }));
+    //       },
+    //       child: AspectRatio(
+    //         aspectRatio: 16 / 9, // 固定长宽
+    //         child: ClipRRect(
+    //           borderRadius: BorderRadius.circular(5), // 圆角
+    //           child: Image.file(
+    //             File(ImageUtil.getAbsoluteImagePath(
+    //                 relativeLocalImages[0].path)),
+    //             fit: BoxFit.cover,
+    //             errorBuilder: errorImageBuilder(relativeLocalImages[0].path),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // } else {
       // 构建网格图片
       return GridView.builder(
         padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
         shrinkWrap: true, // ListView嵌套GridView
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: relativeLocalImages.length == 2 ? 2 : 3, // 横轴数量
+          crossAxisCount: Platform.isWindows ? 9 : 3, // 横轴数量
           crossAxisSpacing: 5, // 横轴距离
           mainAxisSpacing: 5, // 竖轴距离
           childAspectRatio: 1, // 网格比例。31/43为封面比例
@@ -83,7 +83,7 @@ class ImageGridView extends StatelessWidget {
                   index == 8 ? relativeLocalImages.length - 9 : 0);
         },
       );
-    }
+    // }
   }
 
   _getGridItemCount() {

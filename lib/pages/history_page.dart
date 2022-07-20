@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/history_plus.dart';
 import 'package:flutter_test_future/classes/record.dart';
@@ -27,6 +29,14 @@ class _HistoryPageState extends State<HistoryPage> {
     super.initState();
 
     _loadData(selectedYear);
+  }
+
+  final ScrollController _scrollController = ScrollController();
+  @override
+  void dispose() {
+    //为了避免内存泄露，需要调用.dispose
+    _scrollController.dispose();
+    super.dispose();
   }
 
   _loadData(int year) async {
@@ -105,29 +115,33 @@ class _HistoryPageState extends State<HistoryPage> {
                 )
               : Expanded(
                   child: Scrollbar(
+                      controller: _scrollController,
                       child: (
                           // ListView.separated(
                           ListView.builder(
-                    itemCount: yearHistory[selectedYear]!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      // debugPrint("$index");
-                      return ListTile(
-                        contentPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        title: ListTile(
-                          title: Text(
-                            _formatDate(yearHistory[selectedYear]![index].date),
-                          ),
-                          style: ListTileStyle.drawer,
-                        ),
-                        subtitle: Column(
-                          children: _buildRecord(index),
-                        ),
-                      );
-                    },
-                    // separatorBuilder: (BuildContext context, int index) {
-                    //   return const Divider();
-                    // },
-                  ))),
+                        controller: _scrollController,
+                        itemCount: yearHistory[selectedYear]!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          // debugPrint("$index");
+                          return ListTile(
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            title: ListTile(
+                              title: Text(
+                                _formatDate(
+                                    yearHistory[selectedYear]![index].date),
+                              ),
+                              style: ListTileStyle.drawer,
+                            ),
+                            subtitle: Column(
+                              children: _buildRecord(index),
+                            ),
+                          );
+                        },
+                        // separatorBuilder: (BuildContext context, int index) {
+                        //   return const Divider();
+                        // },
+                      ))),
                 ),
         ],
       ),

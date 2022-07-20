@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
@@ -25,18 +28,29 @@ void main() async {
   await SqliteUtil.ensureDBTable(); // 必须要用await
   // put放在了ensureDBTable执行，因为既要保证在ensureDBTable里获取到，又要保证controller里的init能在表创建后访问。但这又会导致恢复备份时再次put吧...
   Get.put(UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
-  // runZonedGuarded(() {
-  //   runApp(const GetMaterialApp(
-  //     home: MyApp(),
-  //   ));
-  // }, (e, s) {
-  //   debugPrint("捕获到异常");
-  //   e.printError();
-  // });
-  // runApp(const MyApp());
+
   runApp(const GetMaterialApp(
     home: MyApp(),
   ));
+
+  // Win端好像不能放大缩小了
+  doWhenWindowReady(() {
+    const initialSize = Size(1200, 720);
+    appWindow.minSize = initialSize;
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.center;
+    appWindow.title = "漫迹";
+    appWindow.show();
+  });
+}
+
+// Enable scrolling with mouse dragging
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+  };
 }
 
 class MyApp extends StatefulWidget {
@@ -133,6 +147,7 @@ class MyAppState extends State<MyApp> {
             title: '漫迹',
             // 后台应用显示名称
             home: const MyHome(),
+            scrollBehavior: MyCustomScrollBehavior(), // 自定义滚动行为
             theme: ThemeData(
               primaryColor: ThemeUtil.getThemePrimaryColor(),
               brightness: themeController.isDarkMode.value

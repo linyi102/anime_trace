@@ -31,6 +31,14 @@ class _SourceListPageState extends State<SourceListPage> {
     }
   }
 
+  final ScrollController _scrollController = ScrollController();
+  @override
+  void dispose() {
+    //为了避免内存泄露，需要调用.dispose
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _pingAllWebsites() {
     if (!canClickPingButton) {
       showToast("测试间隔为10s");
@@ -79,6 +87,7 @@ class _SourceListPageState extends State<SourceListPage> {
           _pingAllWebsites();
         },
         child: ListView(
+          controller: _scrollController,
           children: [
             _showPingButton ? _buildPingButton() : Container(),
             ListView(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -11,7 +12,7 @@ class AnimesDisplaySetting extends StatefulWidget {
 }
 
 class _AnimesDisplaySettingState extends State<AnimesDisplaySetting> {
-  int gridColumnCnt = SPUtil.getInt("gridColumnCnt", defaultValue: 3);
+  int gridColumnCnt = SpProfile.getGridColumnCnt();
   bool hideGridAnimeName = SPUtil.getBool("hideGridAnimeName");
   bool hideGridAnimeProgress = SPUtil.getBool("hideGridAnimeProgress");
   bool hideReviewNumber = SPUtil.getBool("hideReviewNumber");

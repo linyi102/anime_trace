@@ -22,6 +22,8 @@ class UpdateRecordPage extends StatelessWidget {
     return date.replaceAll("-", "/");
   }
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -52,7 +54,9 @@ class UpdateRecordPage extends StatelessWidget {
                   key: UniqueKey(),
                 )
               : Scrollbar(
+                  controller: _scrollController,
                   child: ListView.builder(
+                    controller: _scrollController,
                     itemCount: updateRecordController.updateRecordVos.length,
                     itemBuilder: (context, index) {
                       // debugPrint("index=$index");

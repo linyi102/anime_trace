@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -7,10 +11,12 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:simple_icons/simple_icons.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -33,6 +39,8 @@ class _AnimeListPageState extends State<AnimeListPage>
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
   Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -65,6 +73,21 @@ class _AnimeListPageState extends State<AnimeListPage>
         }
       }
     });
+
+    // const _extraScrollSpeed = 80; // your "extra" scroll speed
+    // _scrollController.addListener(() {
+    //   ScrollDirection scrollDirection =
+    //       _scrollController.position.userScrollDirection;
+    //   if (scrollDirection != ScrollDirection.idle) {
+    //     double scrollEnd = _scrollController.offset +
+    //         (scrollDirection == ScrollDirection.reverse
+    //             ? _extraScrollSpeed
+    //             : -_extraScrollSpeed);
+    //     scrollEnd = min(_scrollController.position.maxScrollExtent,
+    //         max(_scrollController.position.minScrollExtent, scrollEnd));
+    //     _scrollController.jumpTo(scrollEnd);
+    //   }
+    // });
   }
 
   void _loadData() async {
@@ -88,6 +111,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -220,6 +244,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     for (int i = 0; i < tags.length; ++i) {
       list.add(
         Scrollbar(
+          controller: _scrollController,
           child: Stack(children: [
             SPUtil.getBool("display_list")
                 ? _getAnimeListView(i)
@@ -235,12 +260,16 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   GridView _getAnimeGridView(int i) {
     return GridView.builder(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+        // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount:
-              SPUtil.getInt("gridColumnCnt", defaultValue: 3), // 横轴数量
-          crossAxisSpacing: 5, // 横轴距离
-          mainAxisSpacing: 3, // 竖轴距离
+          crossAxisCount: SpProfile.getGridColumnCnt(),
+          // 横轴数量
+          crossAxisSpacing: 5,
+          // 横轴距离
+          mainAxisSpacing: 3,
+          // 竖轴距离
           childAspectRatio: SPUtil.getBool("hideGridAnimeName")
               ? 31 / 48
               : 31 / 56, // 每个网格的比例
@@ -343,6 +372,7 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   ListView _getAnimeListView(int i) {
     return ListView.builder(
+      controller: _scrollController,
       itemCount: animesInTag[i].length,
       // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
       itemBuilder: (BuildContext context, int index) {
