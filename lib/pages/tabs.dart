@@ -6,6 +6,8 @@ import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/network/network_nav.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sidebarx/sidebarx.dart';
 
@@ -71,9 +73,33 @@ class _TabsState extends State<Tabs> {
           ? Scaffold(
               body: Row(
                 children: [
-                  SidebarX(
-                      controller: SidebarXController(selectedIndex: _currentIndex),
-                      items: _buildSidebarXItem()),
+                  Obx(() => SidebarX(
+                        showToggleButton: false,
+                        // 不显示展开按钮
+                        controller:
+                            SidebarXController(selectedIndex: _currentIndex),
+                        items: _buildSidebarXItem(),
+                        animationDuration: const Duration(milliseconds: 200),
+                        headerBuilder: (context, extended) {
+                          return SizedBox(
+                            height: 100,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Image.asset('assets/images/logo.png'),
+                            ),
+                          );
+                        },
+                        extendedTheme: const SidebarXTheme(
+                          textStyle: TextStyle(color: Colors.black),
+                          width: 200,
+                        ),
+                        theme: SidebarXTheme(
+                          selectedItemDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: ThemeUtil.getSideBarSelectedItemColor(),
+                          ),
+                        ),
+                      )),
                   // 必须要用Expanded
                   Expanded(child: _list[_currentIndex])
                 ],

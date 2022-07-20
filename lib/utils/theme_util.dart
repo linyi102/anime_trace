@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 class ThemeUtil {
   static final ThemeController themeController = Get.find();
+
   // 主题色
   static Color getThemePrimaryColor() {
     Color color = Colors.blue;
@@ -127,5 +128,11 @@ class ThemeUtil {
         // ? const Color.fromRGBO(66, 66, 66, 1)
         // : const Color.fromRGBO(235, 236, 240, 1);
         : const Color.fromRGBO(245, 245, 245, 1);
+  }
+
+  static getSideBarSelectedItemColor() {
+    return themeController.isDarkMode.value
+        ? const Color.fromRGBO(50, 50, 50, 1)
+        : const Color.fromRGBO(240, 240, 240, 1);
   }
 }
