@@ -38,7 +38,6 @@ class _AnimeListPageState extends State<AnimeListPage>
   bool multiSelected = false;
   Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
-  final ScrollController _scrollController = ScrollController();
   List<ScrollController> _scrollControllers = [];
 
   @override
@@ -96,7 +95,6 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollController.dispose();
     for (int i = 0; i < tags.length; ++i) {
       _scrollControllers[i].dispose();
     }

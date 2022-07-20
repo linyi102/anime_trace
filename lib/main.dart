@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -31,26 +32,28 @@ void main() async {
   Get.put(
       UpdateRecordController()); // 确保被find前put。放在ensureDBTable后，因为init中访问到了表
 
-  // Windows端窗口设置
-  await windowManager.ensureInitialized();
-  WindowOptions windowOptions = WindowOptions(
-    title: "漫迹",
-    // size: Size(1280, 720),
-    size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
-    // 最小尺寸
-    minimumSize: const Size(900, 600),
-    fullScreen: false,
-    // 不居中则会偏右
-    center: true,
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    // titleBarStyle: TitleBarStyle.hidden,
-  );
+  if (Platform.isWindows) {
+    // Windows端窗口设置
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = WindowOptions(
+      title: "漫迹",
+      // size: Size(1280, 720),
+      size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
+      // 最小尺寸
+      minimumSize: const Size(900, 600),
+      fullScreen: false,
+      // 不居中则会偏右
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      // titleBarStyle: TitleBarStyle.hidden,
+    );
 
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   runApp(const GetMaterialApp(
     home: MyApp(),
