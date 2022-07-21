@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/params/page_params.dart';
+import 'package:flutter_test_future/classes/update_record.dart';
 import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/dao/update_record_dao.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,7 @@ class UpdateRecordController extends GetxController {
     updateData();
   }
 
+  // 更新记录页全局更新
   Future<void> updateData() async {
     debugPrint("重新获取数据库内容并覆盖");
     pageParams.pageIndex = 0; // 应该重置为0
@@ -30,6 +33,26 @@ class UpdateRecordController extends GetxController {
     pageParams.pageIndex++;
     updateRecordVos.value =
         updateRecordVos.toList() + await UpdateRecordDao.findAll(pageParams);
+  }
+
+  // 动漫详细页更新
+  updateSingaleAnimeData(Anime oldAnime, Anime newAnime) {
+    if (newAnime.animeEpisodeCnt <= oldAnime.animeEpisodeCnt) return;
+
+    UpdateRecord updateRecord = UpdateRecord(
+        animeId: newAnime.animeId,
+        oldEpisodeCnt: oldAnime.animeEpisodeCnt,
+        newEpisodeCnt: newAnime.animeEpisodeCnt,
+        manualUpdateTime: DateTime.now().toString().substring(0, 10));
+    UpdateRecordDao.batchInsert([updateRecord]);
+
+    // 要么重新获取所有数据，要么直接转Vo添加
+    UpdateRecordVo updateRecordVo = updateRecord.toVo(newAnime);
+    updateRecordVos.add(updateRecordVo);
+    debugPrint("添加$updateRecordVo，长度=${updateRecordVos.length}");
+    // 排序
+    updateRecordVos
+        .sort((a, b) => a.manualUpdateTime.compareTo(b.manualUpdateTime));
   }
 
   incrementUpdateOkCnt() {

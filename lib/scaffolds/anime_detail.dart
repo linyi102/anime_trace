@@ -10,6 +10,7 @@ import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
+import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
@@ -21,6 +22,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1358,9 +1360,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
     }
     SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
-      // 如果集数变大，则重新加载页面
+      // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
       if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
         _loadData();
+        // 调用控制器，添加更新记录到数据库并更新内存数据
+        final UpdateRecordController updateRecordController = Get.find();
+        updateRecordController.updateSingaleAnimeData(oldAnime, newAnime);
       }
     });
     _anime = newAnime;
