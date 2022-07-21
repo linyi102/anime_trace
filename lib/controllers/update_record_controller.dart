@@ -52,7 +52,7 @@ class UpdateRecordController extends GetxController {
     debugPrint("添加$updateRecordVo，长度=${updateRecordVos.length}");
     // 排序
     updateRecordVos
-        .sort((a, b) => a.manualUpdateTime.compareTo(b.manualUpdateTime));
+        .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
   }
 
   incrementUpdateOkCnt() {
@@ -84,6 +84,6 @@ class UpdateRecordController extends GetxController {
     debugPrint("添加$updateRecordVo，长度=${updateRecordVos.length}");
     updateRecordVos.add(updateRecordVo);
     updateRecordVos
-        .sort((a, b) => a.manualUpdateTime.compareTo(b.manualUpdateTime));
+        .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
   }
 }
