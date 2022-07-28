@@ -24,7 +24,7 @@ Android 端：
 
 Windows 端：
 
-![](./assets/images/example-win.png)
+![](./assets/images/example-win.jpg)
 
 ## 笔记相关问题
 
