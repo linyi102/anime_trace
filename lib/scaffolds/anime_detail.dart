@@ -1306,11 +1306,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     _episodes.sort((a, b) {
       return a.number.compareTo(b.number);
     });
+    _episodeNotes.sort((a, b) {
+      return a.episode.number.compareTo(b.episode.number);
+    });
   }
 
   void _sortByEpisodeNumberDesc() {
     _episodes.sort((a, b) {
       return b.number.compareTo(a.number);
+    });
+    _episodeNotes.sort((a, b) {
+      return b.episode.number.compareTo(a.episode.number);
     });
   }
 
@@ -1324,6 +1330,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       // 双方都没有完成或都完成(状态一致)时，按number升序排序
       if (a.isChecked() == b.isChecked()) {
         return a.number.compareTo(b.number);
+      } else {
+        // 否则未完成的靠前
+        return ac.compareTo(bc);
+      }
+    });
+    _episodeNotes.sort((a, b) {
+      int ac, bc;
+      ac = a.episode.isChecked() ? 1 : 0;
+      bc = b.episode.isChecked() ? 1 : 0;
+      // 双方都没有完成或都完成(状态一致)时，按number升序排序
+      if (a.episode.isChecked() == b.episode.isChecked()) {
+        return a.episode.number.compareTo(b.episode.number);
       } else {
         // 否则未完成的靠前
         return ac.compareTo(bc);
