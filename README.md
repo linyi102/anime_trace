@@ -1,17 +1,19 @@
 [GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新计划](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [更新日志](https://www.wolai.com/gqSMt2YRuNEzZBwwB5dpVA)
 
+## 下载地址
+
+[下载地址 1：蓝奏云](https://wwc.lanzouw.com/b01uyqcrg?password=eocv) 密码：eocv
+
+**注意：如果没有使用备份功能，更新 App 时需要覆盖安装。**
+**在没有备份的情况下请不要在安装新版本前卸载 App，否则会造成数据丢失！**
+
 ## 声明
 
-该软件并不提供在线观看功能，如有需要，可以访问搜索源网址进行观看。
+该软件并没有在线观看功能，如有需要，可以打开搜索源网址进行观看。
 
 用户数据存放在本地，用户可使用 WebDav 备份数据到第三方平台，比如坚果云。
 
 笔记添加的图片是通过记录相对地址来实现的，因此备份数据并不会上传图片，只是上传了图片的相对地址。
-
-## 下载地址
-
-[蓝奏云(密码：eocv)](https://wwc.lanzouw.com/b01uyqcrg?password=eocv)<br />Android 端下载 apk 文件，Windows 端下载 zip 文件。<br />
-**注意：如果没有使用备份功能，更新 App 时需要覆盖安装。在没有备份的情况下不要卸载 App 后再安装新版本，否则会造成数据丢失！**
 
 ## 介绍
 
@@ -40,7 +42,7 @@ Windows 端：
 
 Android 平台暂时只能进行 WebDav 备份，Windows 平台可以进行本地备份和 WebDav 备份。
 
-WebDav 备份推荐使用坚果云备份，详细步骤可以参考[坚果云第三方应用授权WebDAV开启方法 | 坚果云帮助中心](https://help.jianguoyun.com/?p=2064)
+WebDav 备份推荐使用坚果云备份，[点击查看使用方式](https://help.jianguoyun.com/?p=2064)。
 
 **卸载 App 会导致数据丢失，因此一定要做好相关备份。**
 

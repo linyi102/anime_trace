@@ -66,55 +66,87 @@ class _AboutVersionState extends State<AboutVersion> {
     List<Widget> lvc = [];
     final List<Uri> _uris = [
       Uri.parse("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
-      Uri.parse("https://github.com/linyi102/anime_trace"),
-      Uri.parse("https://gitee.com/linyi517/anime_trace")
+      Uri.parse("https://jq.qq.com/?_wv=1027&k=qOpUIx7x")
     ];
-    final List<String> _urisTitle = ["更新进度", "GitHub 地址", "Gitee 地址"];
+    final List<String> _urisTitle = ["更新进度", "QQ 交流群"];
     final List<IconData> _urisIcon = [
-      Icons.ac_unit,
-      SimpleIcons.github,
-      SimpleIcons.gitee,
+      Icons.open_in_new_outlined,
+      Icons.open_in_new_outlined,
     ];
     final List<Color> _urisIconColor = [
-      Colors.transparent,
-      SPUtil.getBool("enableDark") ? Colors.white : Colors.black,
-      const Color.fromRGBO(187, 33, 36, 1),
+      Colors.grey,
+      Colors.grey
     ];
 
-    lvc.add(ListTile(
-      title: const Text("检查更新"),
-      subtitle: loadOk ? Text("当前版本: ${packageInfo.version}") : const Text(""),
-      onTap: () {
-        if (checkLatestVersion) {
-          checkLatestVersion = false;
-          setState(() {});
-        }
-        // 必须推迟，否则可能会合并setState
-        // 然后再渲染有更新对话框的页面
-        Future.delayed(const Duration(milliseconds: 200)).then((value) {
-          showToast("正在获取最新版本...");
-          checkLatestVersion = true;
-          setState(() {});
-        });
-      },
-    ));
-    for (var i = 0; i < _uris.length; i++) {
-      lvc.add(
-        ListTile(
-          title: Text(_urisTitle[i]),
-          trailing: Icon(
-            _urisIcon[i],
-            color: _urisIconColor[i],
-          ),
-          onTap: () async {
-            if (!await launchUrl(_uris[i],
-                mode: LaunchMode.externalApplication)) {
-              throw "Could not launch $_uris[i]";
-            }
-          },
+    lvc.add(Column(
+      children: [
+        Container(
+          height: 100,
+          width: 100,
+          margin: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+          alignment: Alignment.center,
+          child: Image.asset('assets/images/logo.png'),
         ),
-      );
-    }
+        loadOk ? Text("当前版本: ${packageInfo.version}") : const Text(""),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: () {
+                  _launchUrl("https://gitee.com/linyi517/anime_trace");
+                },
+                icon: Icon(
+                  SimpleIcons.github,
+                  color: SPUtil.getBool("enableDark")
+                      ? Colors.white
+                      : Colors.black,
+                )),
+            IconButton(
+              onPressed: () {
+                _launchUrl("https://github.com/linyi102/anime_trace");
+              },
+              icon: const Icon(SimpleIcons.gitee),
+              color: Color.fromRGBO(187, 33, 36, 1),
+            )
+          ],
+        ),
+      ],
+    ));
+    lvc.add(ListTile(
+        onTap: () {
+          if (checkLatestVersion) {
+            checkLatestVersion = false;
+            setState(() {});
+          }
+          // 必须推迟，否则可能会合并setState
+          // 然后再渲染有更新对话框的页面
+          Future.delayed(const Duration(milliseconds: 200)).then((value) {
+            showToast("正在获取最新版本...");
+            checkLatestVersion = true;
+            setState(() {});
+          });
+        },
+        title: const Text("检查更新")));
+    lvc.add(ListTile(
+        title: const Text("更新进度"),
+        trailing: const Icon(Icons.open_in_new_outlined),
+        onTap: () {
+          _launchUrl("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC");
+        }));
+    lvc.add(ListTile(
+        title: const Text("QQ 交流群"),
+        subtitle: const Text("414226908"),
+        trailing: const Icon(Icons.open_in_new_outlined),
+        onTap: ()  {
+          _launchUrl("https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
+        }));
     return lvc;
+  }
+
+  _launchUrl(String uriStr, {bool inApp = false}) async {
+    Uri uri = Uri.parse(uriStr);
+    if (!await launchUrl(uri, mode: inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication)) {
+      throw "无法打开链接：$uri";
+    }
   }
 }
