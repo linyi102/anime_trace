@@ -372,6 +372,43 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 },
               ),
             ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                  style: ListTileStyle.drawer,
+                  onTap: () {
+                    dialogSelectUint(context, "修改集数",
+                            initialValue: _anime.animeEpisodeCnt,
+                            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+                            // initialValue: initialValue,
+                            // 添加选择集范围后，就不能传入已有的集长度了。
+                            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
+                            minValue: 0,
+                            maxValue: 2000)
+                        .then((value) {
+                      if (value == null) {
+                        debugPrint("未选择，直接返回");
+                        return;
+                      }
+                      // if (value == _episodes.length) {
+                      if (value == _anime.animeEpisodeCnt) {
+                        debugPrint("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
+                        return;
+                      }
+                      int episodeCnt = value;
+                      SqliteUtil.updateEpisodeCntByAnimeId(
+                              _anime.animeId, episodeCnt)
+                          .then((value) {
+                        // 重新获取数据
+                        _anime.animeEpisodeCnt = episodeCnt;
+                        _loadEpisode();
+                      });
+                    });
+                    Navigator.of(context).pop(); // 关闭下拉菜单
+                  },
+                  title: const Text("更改集数"),
+                  trailing: const Icon(Icons.mode)),
+            )
           ];
         },
       ),
@@ -530,6 +567,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     color: ThemeUtil.getEpisodeListTile(
                         _episodes[episodeIndex].isChecked())),
               ),
+              trailing: PopupMenuButton(
+                  icon: const Icon(Icons.more_horiz),
+                  offset: const Offset(0, 50),
+                  itemBuilder: (BuildContext popMenuContext) {
+                    return [
+                      PopupMenuItem(
+                        padding: const EdgeInsets.all(0),
+                        child: ListTile(
+                          title: const Text("设置日期"),
+                          trailing: const Icon(Icons.calendar_today_outlined),
+                          style: ListTileStyle.drawer,
+                          onTap: () {},
+                        ),
+                      ),
+                    ];
+                  }),
               leading: IconButton(
                 // iconSize: 20,
                 visualDensity: VisualDensity.compact, // 缩小leading
@@ -739,31 +792,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  void pickDate(i) async {
-    DateTime defaultDateTime = DateTime.now();
-    if (_episodes[i].isChecked()) {
-      defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
-    }
-    String dateTime = await _showDatePicker(defaultDateTime: defaultDateTime);
-
-    if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
-
-    // 选择日期后，如果之前有日期，则更新。没有则直接插入
-    // 注意：对于_episodes[i]，它是第_episodes[i].number集
-    int episodeNumber = _episodes[i].number;
-    if (_episodes[i].isChecked()) {
-      SqliteUtil.updateHistoryItem(
-          _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
-    } else {
-      SqliteUtil.insertHistoryItem(
-          _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
-    }
-    // 更新页面
-    setState(() {
-      // 改的是i，而不是episodeNumber
-      _episodes[i].dateTime = dateTime;
-    });
-  }
+  // void pickDate(i) async {
+  //   DateTime defaultDateTime = DateTime.now();
+  //   if (_episodes[i].isChecked()) {
+  //     defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
+  //   }
+  //   String dateTime = await _showDatePicker(defaultDateTime: defaultDateTime);
+  //
+  //   if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
+  //
+  //   // 选择日期后，如果之前有日期，则更新。没有则直接插入
+  //   // 注意：对于_episodes[i]，它是第_episodes[i].number集
+  //   int episodeNumber = _episodes[i].number;
+  //   if (_episodes[i].isChecked()) {
+  //     SqliteUtil.updateHistoryItem(
+  //         _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
+  //   } else {
+  //     SqliteUtil.insertHistoryItem(
+  //         _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
+  //   }
+  //   // 更新页面
+  //   setState(() {
+  //     // 改的是i，而不是episodeNumber
+  //     _episodes[i].dateTime = dateTime;
+  //   });
+  // }
 
   void onpressEpisode(int episodeIndex) {
     // 多选
@@ -823,14 +876,21 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   }
 
   Future<String> _showDatePicker({DateTime? defaultDateTime}) async {
-    var picker = await showDatePicker(
+    DateTime? datePicker = await showDatePicker(
         context: context,
         initialDate: defaultDateTime ?? DateTime.now(),
         // 没有给默认时间时，设置为今天
         firstDate: DateTime(1986),
         lastDate: DateTime(DateTime.now().year + 2),
         locale: const Locale("zh"));
-    return picker == null ? "" : picker.toString();
+    TimeOfDay? timePicker =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    if (datePicker != null && timePicker != null) {
+      return DateTime(datePicker.year, datePicker.month, datePicker.day,
+              timePicker.hour, timePicker.minute)
+          .toString();
+    }
+    return "";
   }
 
   _buildButtonsBarAboutEpisodeMulti() {
@@ -1096,12 +1156,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   // 获取当前集范围的字符串形式
   String _getEpisodeRangeStr(int startEpisodeNumber) {
+    if (_anime.animeEpisodeCnt == 0) {
+      return "00-00";
+    }
     int endEpisodeNumber = startEpisodeNumber + episodeRangeSize - 1;
     if (endEpisodeNumber > _anime.animeEpisodeCnt) {
       endEpisodeNumber = _anime.animeEpisodeCnt;
     }
 
-    return startEpisodeNumber.toString().padLeft(2, '0') + "-$endEpisodeNumber";
+    return startEpisodeNumber.toString().padLeft(2, '0') +
+        "-" +
+        endEpisodeNumber.toString().padLeft(2, '0');
   }
 
   List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
@@ -1212,39 +1277,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     icon: const Icon(Icons.sort)),
                 IconButton(
                     onPressed: () {
-                      dialogSelectUint(context, "修改集数",
-                              initialValue: _anime.animeEpisodeCnt,
-                              // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-                              // initialValue: initialValue,
-                              // 添加选择集范围后，就不能传入已有的集长度了。
-                              // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-                              minValue: 0,
-                              maxValue: 2000)
-                          .then((value) {
-                        if (value == null) {
-                          debugPrint("未选择，直接返回");
-                          return;
-                        }
-                        // if (value == _episodes.length) {
-                        if (value == _anime.animeEpisodeCnt) {
-                          debugPrint(
-                              "设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
-                          return;
-                        }
-                        int episodeCnt = value;
-                        SqliteUtil.updateEpisodeCntByAnimeId(
-                                _anime.animeId, episodeCnt)
-                            .then((value) {
-                          // 重新获取数据
-                          _anime.animeEpisodeCnt = episodeCnt;
-                          _loadEpisode();
-                        });
-                      });
-                    },
-                    tooltip: "更改集数",
-                    icon: const Icon(Icons.mode)),
-                IconButton(
-                    onPressed: () {
                       if (hideNoteInAnimeDetail) {
                         // 原先隐藏，则设置为false，表示显示
                         SPUtil.setBool("hideNoteInAnimeDetail", false);
@@ -1257,8 +1289,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                     },
                     tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                     icon: hideNoteInAnimeDetail
-                        ? const Icon(Icons.open_in_full_rounded)
-                        : const Icon(Icons.close_fullscreen_outlined)),
+                        ? const Icon(Icons.unfold_more)
+                        : const Icon(Icons.unfold_less)),
               ],
             ),
           ],
