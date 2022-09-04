@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 
-class NoteSetting extends StatefulWidget {
-  const NoteSetting({Key? key}) : super(key: key);
+class ImagePathSetting extends StatefulWidget {
+  const ImagePathSetting({Key? key}) : super(key: key);
 
   @override
-  _NoteSettingState createState() => _NoteSettingState();
+  _ImagePathSettingState createState() => _ImagePathSettingState();
 }
 
-class _NoteSettingState extends State<NoteSetting> {
+class _ImagePathSettingState extends State<ImagePathSetting> {
   // String imageRootDirPath = ImageUtil.imageRootDirPath;
 
   @override
@@ -28,7 +28,7 @@ class _NoteSettingState extends State<NoteSetting> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "笔记设置",
+          "图片设置",
           style: TextStyle(
             fontWeight: FontWeight.w600,
           ),

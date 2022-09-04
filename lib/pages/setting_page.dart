@@ -7,7 +7,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/settings/about_version.dart';
 import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/backup_restore.dart';
-import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
+import 'package:flutter_test_future/scaffolds/settings/image_path_setting.dart';
 import 'package:flutter_test_future/scaffolds/settings/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -69,8 +69,8 @@ class _SettingPageState extends State<SettingPage> {
     }
     return Obx(() => ListView(
           children: [
-            _showImg(),
-            _showImgButton(),
+            // _showImg(),
+            // _showImgButton(),
             ListTile(
               iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.settings_backup_restore_outlined),
@@ -125,8 +125,8 @@ class _SettingPageState extends State<SettingPage> {
             ),
             ListTile(
               iconColor: ThemeUtil.getLeadingIconColor(),
-              leading: const Icon(Icons.edit_road),
-              title: const Text("笔记设置"),
+              leading: const Icon(Icons.image_outlined),
+              title: const Text("图片设置"),
               onTap: () {
                 Navigator.of(context).push(
                   // MaterialPageRoute(
@@ -134,7 +134,7 @@ class _SettingPageState extends State<SettingPage> {
                   //         const NoteSetting()),
                   FadeRoute(
                     builder: (context) {
-                      return const NoteSetting();
+                      return const ImagePathSetting();
                     },
                   ),
                 );
@@ -219,8 +219,8 @@ class _SettingPageState extends State<SettingPage> {
       leading: const Icon(
           // Icons.image_outlined,
           // Icons.wallpaper_outlined,
-          Icons.perm_media_outlined),
-      title: const Text("设置图片"),
+          Icons.flag_outlined),
+      title: const Text("顶部图片"),
       onTap: () async {
         FilePickerResult? result = await FilePicker.platform.pickFiles(
             type: FileType.custom, allowedExtensions: ["jpg", "png", "gif"]);

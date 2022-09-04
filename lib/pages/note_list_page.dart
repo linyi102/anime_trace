@@ -8,7 +8,7 @@ import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
-import 'package:flutter_test_future/scaffolds/settings/note_setting.dart';
+import 'package:flutter_test_future/scaffolds/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
@@ -187,7 +187,7 @@ class _NoteListPageState extends State<NoteListPage> {
                   Navigator.pop(context);
                   Navigator.push(context, FadeRoute(
                     builder: (context) {
-                      return const NoteSetting();
+                      return const ImagePathSetting();
                     },
                   )).then((value) => _loadData());
                 },
