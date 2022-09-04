@@ -19,12 +19,13 @@ class SpProfile {
   }
 
   // 1280*720
+  // 1024*720
   // 900*600
   static getWindowWidth() {
-    return SPUtil.getDouble("WindowWidth", defaultValue: 900);
+    return SPUtil.getDouble("WindowWidth", defaultValue: 1024);
   }
 
   static getWindowHeight() {
-    return SPUtil.getDouble("WindowHeight", defaultValue: 600);
+    return SPUtil.getDouble("WindowHeight", defaultValue: 720);
   }
 }

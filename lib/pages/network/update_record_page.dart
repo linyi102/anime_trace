@@ -76,7 +76,7 @@ class UpdateRecordPage extends StatelessWidget {
                       String curDate = updateRecordVo.manualUpdateTime;
                       ListTile animeRow = ListTile(
                         leading: AnimeListCover(updateRecordVo.anime),
-                        subtitle: Text(
+                        trailing: Text(
                             "${updateRecordVo.oldEpisodeCnt} >> ${updateRecordVo.newEpisodeCnt}",
                             textScaleFactor: 0.9),
                         // trailing: Text(
@@ -110,7 +110,7 @@ class UpdateRecordPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.fromLTRB(18, 20, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
                               child: Text(TimeShowUtil.getShowDateStr(curDate)),
                             ),
                             animeRow

@@ -126,7 +126,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             children: [
                               Container(
                                   padding:
-                                      const EdgeInsets.fromLTRB(18, 20, 0, 0),
+                                      const EdgeInsets.fromLTRB(18, 15, 0, 15),
                                   child: Row(children: [
                                     Text(_formatDate(
                                         yearHistory[selectedYear]![index].date))
@@ -136,24 +136,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               )
                             ],
                           );
-                          return ListTile(
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            title: ListTile(
-                              title: Text(
-                                _formatDate(
-                                    yearHistory[selectedYear]![index].date),
-                              ),
-                              style: ListTileStyle.drawer,
-                            ),
-                            subtitle: Column(
-                              children: _buildRecord(index),
-                            ),
-                          );
                         },
-                        // separatorBuilder: (BuildContext context, int index) {
-                        //   return const Divider();
-                        // },
                       ))),
                 ),
         ],
@@ -175,33 +158,12 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
-          // trailing: Container(
-          //   padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(3),
-          //     color: ThemeUtil.getThemePrimaryColor(),
-          //   ),
-          //   child: Text(
-          //     record.startEpisodeNumber == record.endEpisodeNumber
-          //         ? "${record.startEpisodeNumber}"
-          //         : "${record.startEpisodeNumber}-${record.endEpisodeNumber}",
-          //     textScaleFactor: 0.9,
-          //     style: const TextStyle(color: Colors.white),
-          //   ),
-          // ),
-          subtitle: Text(
+          trailing: Text(
             (record.startEpisodeNumber == record.endEpisodeNumber
-                ? record.startEpisodeNumber.toString().padLeft(2, '0')
-                : "${record.startEpisodeNumber.toString().padLeft(2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}"),
+                ? record.startEpisodeNumber.toString()
+                : "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
             textScaleFactor: 0.9,
           ),
-          //   "[" +
-          //       (record.startEpisodeNumber == record.endEpisodeNumber
-          //           ? record.startEpisodeNumber.toString().padLeft(2, '0')
-          //           : "${record.startEpisodeNumber.toString().padLeft(2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}") +
-          //       "]",
-          //   textScaleFactor: 0.9,
-          // ),
           onTap: () {
             Navigator.of(context)
                 .push(
