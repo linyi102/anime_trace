@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'sp_util.dart';
 
+/// 记录和修改shared_preferences的值
 class SpProfile {
   static getGridColumnCnt() {
     return SPUtil.getInt("gridColumnCnt",
