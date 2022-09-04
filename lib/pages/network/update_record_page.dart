@@ -19,10 +19,6 @@ class UpdateRecordPage extends StatelessWidget {
 
   final UpdateRecordController updateRecordController = Get.find();
 
-  _formatDate(String date) {
-    return date.replaceAll("-", "/");
-  }
-
   final ScrollController _scrollController = ScrollController();
 
   @override
