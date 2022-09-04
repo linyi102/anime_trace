@@ -578,7 +578,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                           title: const Text("设置日期"),
                           trailing: const Icon(Icons.calendar_today_outlined),
                           style: ListTileStyle.drawer,
-                          onTap: () {},
+                          onTap: () {
+                            mapSelected[episodeIndex] = true;
+                            multiPickDateTime();
+                            // 退出下拉菜单
+                            Navigator.of(context).pop();
+                          },
                         ),
                       ),
                     ];
@@ -643,7 +648,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 onpressEpisode(episodeIndex);
               },
               onLongPress: () async {
-                // pickDate(episodeIndex);
                 onLongPressEpisode(episodeIndex);
               },
             ),
@@ -792,32 +796,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
-  // void pickDate(i) async {
-  //   DateTime defaultDateTime = DateTime.now();
-  //   if (_episodes[i].isChecked()) {
-  //     defaultDateTime = DateTime.parse(_episodes[i].dateTime as String);
-  //   }
-  //   String dateTime = await _showDatePicker(defaultDateTime: defaultDateTime);
-  //
-  //   if (dateTime.isEmpty) return; // 没有选择日期，则直接返回
-  //
-  //   // 选择日期后，如果之前有日期，则更新。没有则直接插入
-  //   // 注意：对于_episodes[i]，它是第_episodes[i].number集
-  //   int episodeNumber = _episodes[i].number;
-  //   if (_episodes[i].isChecked()) {
-  //     SqliteUtil.updateHistoryItem(
-  //         _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
-  //   } else {
-  //     SqliteUtil.insertHistoryItem(
-  //         _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
-  //   }
-  //   // 更新页面
-  //   setState(() {
-  //     // 改的是i，而不是episodeNumber
-  //     _episodes[i].dateTime = dateTime;
-  //   });
-  // }
-
   void onpressEpisode(int episodeIndex) {
     // 多选
     if (multiSelected) {
@@ -929,40 +907,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: () async {
-                        DateTime defaultDateTime = DateTime.now();
-                        String dateTime = await _showDatePicker(
-                            defaultDateTime: defaultDateTime);
-                        if (dateTime.isEmpty) return;
-
-                        // 遍历选中的下标
-                        mapSelected.forEach((episodeIndex, value) {
-                          int episodeNumber = _episodes[episodeIndex].number;
-                          if (_episodes[episodeIndex].isChecked()) {
-                            SqliteUtil.updateHistoryItem(_anime.animeId,
-                                episodeNumber, dateTime, _anime.reviewNumber);
-                          } else {
-                            SqliteUtil.insertHistoryItem(_anime.animeId,
-                                episodeNumber, dateTime, _anime.reviewNumber);
-                            // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-                            EpisodeNote episodeNote = EpisodeNote(
-                                anime: _anime,
-                                episode: _episodes[episodeIndex],
-                                relativeLocalImages: [],
-                                imgUrls: []);
-                            // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                            () async {
-                              _episodeNotes[episodeIndex] = await SqliteUtil
-                                  .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                                      episodeNote);
-                            }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
-                          }
-                          _episodes[episodeIndex].dateTime = dateTime;
-                        });
-                        // 退出多选模式
-                        _quitMultiSelectState();
-                      },
-                      icon: const Icon(Icons.date_range),
+                      onPressed: multiPickDateTime,
+                      icon: const Icon(Icons.calendar_today_outlined),
                     ),
                   ),
                   Expanded(
@@ -977,6 +923,41 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               ),
             ),
           );
+  }
+
+  // 多选后，选择日期，并更新数据库
+  // 尾部的选择日期按钮也可以使用该方法，记得提前加入到多选中
+  void multiPickDateTime() async {
+    DateTime defaultDateTime = DateTime.now();
+    String dateTime = await _showDatePicker(defaultDateTime: defaultDateTime);
+    if (dateTime.isEmpty) return;
+
+    // 遍历选中的下标
+    mapSelected.forEach((episodeIndex, value) {
+      int episodeNumber = _episodes[episodeIndex].number;
+      if (_episodes[episodeIndex].isChecked()) {
+        SqliteUtil.updateHistoryItem(
+            _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
+      } else {
+        SqliteUtil.insertHistoryItem(
+            _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
+        // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+        EpisodeNote episodeNote = EpisodeNote(
+            anime: _anime,
+            episode: _episodes[episodeIndex],
+            relativeLocalImages: [],
+            imgUrls: []);
+        // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+        () async {
+          _episodeNotes[episodeIndex] = await SqliteUtil
+              .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+                  episodeNote);
+        }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
+      }
+      _episodes[episodeIndex].dateTime = dateTime;
+    });
+    // 退出多选模式
+    _quitMultiSelectState();
   }
 
   void _quitMultiSelectState() {
