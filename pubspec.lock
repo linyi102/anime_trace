@@ -531,7 +531,7 @@ packages:
       name: sidebarx
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.7.0"
+    version: "0.11.0"
   simple_icons:
     dependency: "direct main"
     description:

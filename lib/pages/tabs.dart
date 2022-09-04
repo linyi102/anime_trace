@@ -53,6 +53,9 @@ class _TabsState extends State<Tabs> {
     return sidebarXItems;
   }
 
+  final _sidebarXController =
+      SidebarXController(selectedIndex: 0, extended: true);
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -73,10 +76,8 @@ class _TabsState extends State<Tabs> {
               body: Row(
                 children: [
                   Obx(() => SidebarX(
-                        showToggleButton: false,
-                        // 不显示展开按钮
-                        controller:
-                            SidebarXController(selectedIndex: _currentIndex),
+                        showToggleButton: true,
+                        controller: _sidebarXController,
                         items: _buildSidebarXItem(),
                         animationDuration: const Duration(milliseconds: 200),
                         headerBuilder: (context, extended) {
@@ -88,15 +89,23 @@ class _TabsState extends State<Tabs> {
                             ),
                           );
                         },
+                        footerDivider: const Divider(),
+                        // 展开时的主题
                         extendedTheme: const SidebarXTheme(
-                          textStyle: TextStyle(color: Colors.black),
-                          width: 200,
+                          width: 150,
                         ),
                         theme: SidebarXTheme(
+                          // margin: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: ThemeUtil.getSideBarBackgroundColor(),
                             // borderRadius: BorderRadius.circular(20),
                           ),
+                          // 图标和标签的距离
+                          itemTextPadding: const EdgeInsets.only(left: 30),
+                          selectedItemTextPadding:
+                              const EdgeInsets.only(left: 30),
+                          // itemPadding: EdgeInsets.only(top: 20),
+                          // selectedItemPadding: EdgeInsets.only(top: 20),
                           selectedItemDecoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: ThemeUtil.getSideBarSelectedItemColor(),

@@ -34,7 +34,7 @@ dependencies:
   flutter_localizations: # 国际化
     sdk: flutter
   bottom_sheet: ^3.1.1 # 底部弹出菜单
-  sidebarx: ^0.7.0 # 侧边栏
+  sidebarx: ^0.11.0 # 侧边栏
   window_manager: ^0.2.5 # windwos窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条
