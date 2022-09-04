@@ -126,7 +126,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             children: [
                               Container(
                                   padding:
-                                      const EdgeInsets.fromLTRB(18, 5, 0, 5),
+                                      const EdgeInsets.fromLTRB(18, 20, 0, 0),
                                   child: Row(children: [
                                     Text(_formatDate(
                                         yearHistory[selectedYear]![index].date))

@@ -110,7 +110,7 @@ class UpdateRecordPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.fromLTRB(18, 5, 0, 5),
+                              padding: const EdgeInsets.fromLTRB(18, 20, 0, 0),
                               child: Text(TimeShowUtil.getShowDateStr(curDate)),
                             ),
                             animeRow

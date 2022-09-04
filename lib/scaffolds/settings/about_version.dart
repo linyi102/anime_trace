@@ -73,17 +73,14 @@ class _AboutVersionState extends State<AboutVersion> {
       Icons.open_in_new_outlined,
       Icons.open_in_new_outlined,
     ];
-    final List<Color> _urisIconColor = [
-      Colors.grey,
-      Colors.grey
-    ];
+    final List<Color> _urisIconColor = [Colors.grey, Colors.grey];
 
     lvc.add(Column(
       children: [
         Container(
-          height: 100,
-          width: 100,
-          margin: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+          height: 120,
+          width: 120,
+          margin: const EdgeInsets.fromLTRB(0, 20, 0, 10),
           alignment: Alignment.center,
           child: Image.asset('assets/images/logo.png'),
         ),
@@ -106,7 +103,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 _launchUrl("https://github.com/linyi102/anime_trace");
               },
               icon: const Icon(SimpleIcons.gitee),
-              color: Color.fromRGBO(187, 33, 36, 1),
+              color: const Color.fromRGBO(187, 33, 36, 1),
             )
           ],
         ),
@@ -137,7 +134,7 @@ class _AboutVersionState extends State<AboutVersion> {
         title: const Text("QQ 交流群"),
         subtitle: const Text("414226908"),
         trailing: const Icon(Icons.open_in_new_outlined),
-        onTap: ()  {
+        onTap: () {
           _launchUrl("https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
         }));
     return lvc;
@@ -145,7 +142,9 @@ class _AboutVersionState extends State<AboutVersion> {
 
   _launchUrl(String uriStr, {bool inApp = false}) async {
     Uri uri = Uri.parse(uriStr);
-    if (!await launchUrl(uri, mode: inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication)) {
+    if (!await launchUrl(uri,
+        mode:
+            inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication)) {
       throw "无法打开链接：$uri";
     }
   }
