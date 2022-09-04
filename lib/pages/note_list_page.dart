@@ -178,10 +178,10 @@ class _NoteListPageState extends State<NoteListPage> {
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(
-              // padding: const EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text("更多设置"),
-                trailing: const Icon(Icons.settings),
+                title: const Text("图片设置"),
+                leading: const Icon(Icons.image_outlined),
                 style: ListTileStyle.drawer,
                 onTap: () {
                   Navigator.pop(context);

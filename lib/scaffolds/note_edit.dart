@@ -13,7 +13,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
-// ignore: must_be_immutable
 class NoteEdit extends StatefulWidget {
   EpisodeNote episodeNote; // 可能会修改笔记内容，因此不能用final
   NoteEdit(this.episodeNote, {Key? key}) : super(key: key);
