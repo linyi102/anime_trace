@@ -883,14 +883,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         firstDate: DateTime(1986),
         lastDate: DateTime(DateTime.now().year + 2),
         locale: const Locale("zh"));
+    // 如果没有选择日期，则直接返回
+    if (datePicker == null) return "";
     TimeOfDay? timePicker =
         await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    if (datePicker != null && timePicker != null) {
-      return DateTime(datePicker.year, datePicker.month, datePicker.day,
-              timePicker.hour, timePicker.minute)
-          .toString();
-    }
-    return "";
+    // 同理
+    if (timePicker == null) return "";
+    return DateTime(datePicker.year, datePicker.month, datePicker.day,
+            timePicker.hour, timePicker.minute)
+        .toString();
   }
 
   _buildButtonsBarAboutEpisodeMulti() {
