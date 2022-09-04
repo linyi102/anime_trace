@@ -524,7 +524,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       _episodes[episodeIndex].isChecked()),
                 ),
               ),
-              trailing: Text(
+              subtitle: Text(
                 _episodes[episodeIndex].getDate(),
                 style: TextStyle(
                     color: ThemeUtil.getEpisodeListTile(
@@ -1146,40 +1146,39 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _anime.animeEpisodeCnt > episodeRangeSize
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: MaterialButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text("选择范围"),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  children:
-                                      _buildEpisodeRangeListTiles(context),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.arrow_right_rounded,
-                            size: 28,
+            // _anime.animeEpisodeCnt > episodeRangeSize ?
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: MaterialButton(
+                padding: const EdgeInsets.all(0),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("选择范围"),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: _buildEpisodeRangeListTiles(context),
                           ),
-                          const Text(" "),
-                          Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
-                        ],
-                      ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.arrow_right_rounded,
+                      size: 28,
                     ),
-                  )
-                : Container(),
+                    const Text(" "),
+                    Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
+                  ],
+                ),
+              ),
+            ),
+            // : Container(),
             Expanded(child: Container()),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,

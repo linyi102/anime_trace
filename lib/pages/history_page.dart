@@ -20,7 +20,9 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   Map<int, List<HistoryPlus>> yearHistory = {};
   Map<int, bool> yearLoadOk = {};
-  int selectedYear = DateTime.now().year;
+  int selectedYear = DateTime
+      .now()
+      .year;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   final ScrollController _scrollController = ScrollController();
+
   @override
   void dispose() {
     //为了避免内存泄露，需要调用.dispose
@@ -49,7 +52,10 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
-  int minYear = 1970, maxYear = DateTime.now().year + 2;
+  int minYear = 1970,
+      maxYear = DateTime
+          .now()
+          .year + 2;
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +71,9 @@ class _HistoryPageState extends State<HistoryPage> {
           IconButton(
               onPressed: () {
                 dialogSelectUint(context, "选择年份",
-                        initialValue: selectedYear,
-                        minValue: minYear,
-                        maxValue: maxYear)
+                    initialValue: selectedYear,
+                    minValue: minYear,
+                    maxValue: maxYear)
                     .then((value) {
                   if (value == null) {
                     debugPrint("未选择，直接返回");
@@ -82,7 +88,7 @@ class _HistoryPageState extends State<HistoryPage> {
         ],
       ),
       body: RefreshIndicator(
-          // 下拉刷新
+        // 下拉刷新
           onRefresh: () async {
             _loadData(selectedYear);
           },
@@ -90,9 +96,9 @@ class _HistoryPageState extends State<HistoryPage> {
             duration: const Duration(milliseconds: 200),
             child: !yearLoadOk.containsKey(selectedYear)
                 ? Container(
-                    key: UniqueKey(),
-                    // color: Colors.white,
-                  )
+              key: UniqueKey(),
+              // color: Colors.white,
+            )
                 : _buildHistory(),
           )),
     );
@@ -109,38 +115,38 @@ class _HistoryPageState extends State<HistoryPage> {
           // _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
               ? Expanded(
-                  child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
-                )
+            child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
+          )
               : Expanded(
-                  child: Scrollbar(
+            child: Scrollbar(
+                controller: _scrollController,
+                child: (
+                    // ListView.separated(
+                    ListView.builder(
                       controller: _scrollController,
-                      child: (
-                          // ListView.separated(
-                          ListView.builder(
-                        controller: _scrollController,
-                        itemCount: yearHistory[selectedYear]!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          // debugPrint("$index");
-                          return ListTile(
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            title: ListTile(
-                              title: Text(
-                                _formatDate(
-                                    yearHistory[selectedYear]![index].date),
-                              ),
-                              style: ListTileStyle.drawer,
+                      itemCount: yearHistory[selectedYear]!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        // debugPrint("$index");
+                        return ListTile(
+                          contentPadding:
+                          const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          title: ListTile(
+                            title: Text(
+                              _formatDate(
+                                  yearHistory[selectedYear]![index].date),
                             ),
-                            subtitle: Column(
-                              children: _buildRecord(index),
-                            ),
-                          );
-                        },
-                        // separatorBuilder: (BuildContext context, int index) {
-                        //   return const Divider();
-                        // },
-                      ))),
-                ),
+                            style: ListTileStyle.drawer,
+                          ),
+                          subtitle: Column(
+                            children: _buildRecord(index),
+                          ),
+                        );
+                      },
+                      // separatorBuilder: (BuildContext context, int index) {
+                      //   return const Divider();
+                      // },
+                    ))),
+          ),
         ],
       ),
     ]);
@@ -174,14 +180,20 @@ class _HistoryPageState extends State<HistoryPage> {
           //     style: const TextStyle(color: Colors.white),
           //   ),
           // ),
-          trailing: Text(
-            "[" +
-                (record.startEpisodeNumber == record.endEpisodeNumber
-                    ? record.startEpisodeNumber.toString().padLeft(2, '0')
-                    : "${record.startEpisodeNumber.toString().padLeft(2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}") +
-                "]",
+          subtitle: Text(
+            (record.startEpisodeNumber == record.endEpisodeNumber
+                ? record.startEpisodeNumber.toString().padLeft(2, '0')
+                : "${record.startEpisodeNumber.toString().padLeft(
+                2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}"),
             textScaleFactor: 0.9,
           ),
+          //   "[" +
+          //       (record.startEpisodeNumber == record.endEpisodeNumber
+          //           ? record.startEpisodeNumber.toString().padLeft(2, '0')
+          //           : "${record.startEpisodeNumber.toString().padLeft(2, '0')}-${record.endEpisodeNumber.toString().padLeft(2, '0')}") +
+          //       "]",
+          //   textScaleFactor: 0.9,
+          // ),
           onTap: () {
             Navigator.of(context)
                 .push(
@@ -232,11 +244,11 @@ class _HistoryPageState extends State<HistoryPage> {
             child: Container(
               // container渐变
               decoration: BoxDecoration(
-                  // color: ThemeUtil.getThemePrimaryColor(),
-                  // gradient: const LinearGradient(colors: [
-                  //   Color.fromRGBO(79, 172, 254, 1),
-                  //   Color.fromRGBO(0, 242, 254, 1),
-                  // ]), // 渐变色
+                // color: ThemeUtil.getThemePrimaryColor(),
+                // gradient: const LinearGradient(colors: [
+                //   Color.fromRGBO(79, 172, 254, 1),
+                //   Color.fromRGBO(0, 242, 254, 1),
+                // ]), // 渐变色
                   borderRadius: BorderRadius.circular(25)),
               child: Card(
                 elevation: 6, // z轴高度，即阴影大小
@@ -275,9 +287,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                       onTap: () {
                         dialogSelectUint(context, "选择年份",
-                                initialValue: selectedYear,
-                                minValue: minYear,
-                                maxValue: maxYear)
+                            initialValue: selectedYear,
+                            minValue: minYear,
+                            maxValue: maxYear)
                             .then((value) {
                           if (value == null) {
                             debugPrint("未选择，直接返回");

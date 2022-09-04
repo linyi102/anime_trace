@@ -9,6 +9,7 @@ import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
 
 import '../../components/dialog/dialog_update_all_anime_progress.dart';
@@ -79,9 +80,12 @@ class UpdateRecordPage extends StatelessWidget {
                       String curDate = updateRecordVo.manualUpdateTime;
                       ListTile animeRow = ListTile(
                         leading: AnimeListCover(updateRecordVo.anime),
-                        trailing: Text(
-                            "${updateRecordVo.oldEpisodeCnt} > ${updateRecordVo.newEpisodeCnt}",
+                        subtitle: Text(
+                            "${updateRecordVo.oldEpisodeCnt} >> ${updateRecordVo.newEpisodeCnt}",
                             textScaleFactor: 0.9),
+                        // trailing: Text(
+                        //     "${updateRecordVo.oldEpisodeCnt} > ${updateRecordVo.newEpisodeCnt}",
+                        //     textScaleFactor: 0.9),
                         title: Text(
                           updateRecordVo.anime.animeName,
                           textScaleFactor: 0.9,
@@ -110,7 +114,8 @@ class UpdateRecordPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ListTile(
-                              title: Text(_formatDate(curDate)),
+                              // title: Text(_formatDate(curDate)),
+                              title: Text(TimeShowUtil.getShowDateStr(curDate)),
                               style: ListTileStyle.drawer,
                             ),
                             // Container(
