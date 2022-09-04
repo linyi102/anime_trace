@@ -14,6 +14,7 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
+import 'package:flutter_test_future/scaffolds/anime_info_edit.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -365,11 +366,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text("修改名字"),
-                leading: const Icon(Icons.edit),
+                title: const Text("编辑信息"),
+                leading: const Icon(Icons.info_outline),
                 style: ListTileStyle.drawer,
                 onTap: () {
-                  _dialogUpdateAnimeName(popMenuContext);
+                  // 先关闭下拉菜单
+                  Navigator.of(context).pop();
+                  // 再进入编辑页面
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AnimeInfoEdit(_anime),
+                    ),
+                  );
+                  // _dialogUpdateAnimeName(popMenuContext);
                 },
               ),
             ),
@@ -1471,7 +1480,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('修改名字'),
+          title: const Text('编辑信息'),
           content: SingleChildScrollView(
             child: Column(
               children: [
