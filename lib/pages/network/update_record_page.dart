@@ -113,15 +113,10 @@ class UpdateRecordPage extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ListTile(
-                              // title: Text(_formatDate(curDate)),
-                              title: Text(TimeShowUtil.getShowDateStr(curDate)),
-                              style: ListTileStyle.drawer,
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(18, 5, 0, 5),
+                              child: Text(TimeShowUtil.getShowDateStr(curDate)),
                             ),
-                            // Container(
-                            //   padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
-                            //   child: Text(_formatDate(curDate)),
-                            // ),
                             animeRow
                           ],
                         );

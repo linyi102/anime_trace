@@ -1,14 +1,13 @@
 class TimeShowUtil {
   // 显示年月日
-  static String getShowDateStr(String time) {
+  static String getShowDateStr(String time, {bool hideCurYear = false}) {
     DateTime dateTime = DateTime.parse(time);
     String dateTimeStr = dateTime.toString();
     DateTime now = DateTime.now();
-    if (now.year == dateTime.year) {
+    if (hideCurYear && now.year == dateTime.year) {
       return dateTimeStr.substring(5, 10).replaceAll("-", "/");
-    } else {
-      return dateTimeStr.substring(0, 10).replaceAll("-", "/");
     }
+    return dateTimeStr.substring(0, 10).replaceAll("-", "/");
   }
 
   // 显示年月日时分
