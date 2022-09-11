@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../controllers/update_record_controller.dart';
 
@@ -26,7 +27,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                         updateRecordController.needUpdateCnt.value;
                     // 更新完毕后自动退出对话框
                     if (updateOkCnt == needUpdateCnt) {
-                      Navigator.of(context).pop();
+                      showToast("动漫更新完毕！");
                     }
 
                     return Padding(
@@ -62,7 +63,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
           ),
           actions: [
             TextButton(
-              child: const Text("后台运行"), // 不要写关闭，否则用户可能会因为点击这个而暂停更新，一直在等待更新界面
+              child: const Text("结束后提醒我"), // 不要写关闭，否则用户可能会因为点击这个而暂停更新，一直在等待更新界面
               onPressed: () {
                 Navigator.of(context).pop();
               },

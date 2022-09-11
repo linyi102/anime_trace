@@ -189,7 +189,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           child: MaterialApp(
             title: '漫迹',
             // 后台应用显示名称
-            home: const MyHome(),
+            home: MyHome(),
             scrollBehavior: MyCustomScrollBehavior(),
             // 自定义滚动行为
             theme: ThemeData(
@@ -278,15 +278,26 @@ class MyAppState extends State<MyApp> with WindowListener {
 }
 
 class MyHome extends StatelessWidget {
-  const MyHome({
+  MyHome({
     Key? key,
   }) : super(key: key);
 
+  final UpdateRecordController updateRecordController = Get.find();
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: const [Tabs(), UpdateHint(checkLatestVersion: true)],
-    );
+    return Obx(() {
+      int updateOkCnt = updateRecordController.updateOkCnt.value;
+      int needUpdateCnt = updateRecordController.needUpdateCnt.value;
+      // 最初需要更新的数量为0，所以需要避免刚进入App就提示该信息
+      if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
+        showToast("动漫更新完毕！");
+      }
+
+      return Stack(
+        children: const [Tabs(), UpdateHint(checkLatestVersion: true)],
+      );
+    });
   }
 }
 
