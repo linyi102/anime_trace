@@ -123,6 +123,8 @@ class _NoteEditState extends State<NoteEdit> {
     );
   }
 
+  int columnCnt = Platform.isWindows ? 6 : 3;
+
   _buildGridImages() {
     Color addColor = SPUtil.getBool("enableDark") ? Colors.grey : Colors.black;
     int itemCount =
@@ -134,7 +136,7 @@ class _NoteEditState extends State<NoteEdit> {
       // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: Platform.isWindows ? 9 : 3, // 横轴数量
+        crossAxisCount: columnCnt, // 横轴数量
         crossAxisSpacing: 5, // 横轴距离
         mainAxisSpacing: 5, // 竖轴距离
         childAspectRatio: 1, // 网格比例。31/43为封面比例
