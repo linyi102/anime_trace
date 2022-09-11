@@ -68,6 +68,7 @@ class _NoteEditState extends State<NoteEdit> {
       },
       child: Scaffold(
         appBar: AppBar(
+          // title: const Text("笔记编辑"),
           leading: IconButton(
               // 返回按钮
               onPressed: () {
@@ -85,17 +86,19 @@ class _NoteEditState extends State<NoteEdit> {
     return Scrollbar(
       child: ListView(
         children: [
-          ListTile(
-            style: ListTileStyle.drawer,
-            leading: AnimeListCover(widget.episodeNote.anime),
-            title: Text(
-              widget.episodeNote.anime.animeName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-                "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
-          ),
+          widget.episodeNote.episode.number == 0
+              ? Container() // 若为0，表明是评价，不显示该行
+              : ListTile(
+                  style: ListTileStyle.drawer,
+                  leading: AnimeListCover(widget.episodeNote.anime),
+                  title: Text(
+                    widget.episodeNote.anime.animeName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                      "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
+                ),
           _showNoteContent(),
           _buildGridImages(),
         ],
@@ -109,7 +112,7 @@ class _NoteEditState extends State<NoteEdit> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 15),
       ),
       maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),
@@ -126,8 +129,9 @@ class _NoteEditState extends State<NoteEdit> {
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(10, 15, 10, 50),
-      shrinkWrap: true, // ListView嵌套GridView
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
+      shrinkWrap: true,
+      // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: Platform.isWindows ? 9 : 3, // 横轴数量

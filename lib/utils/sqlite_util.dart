@@ -46,6 +46,8 @@ class SqliteUtil {
     await SqliteUtil.createTableUpdateRecord();
     // 为动漫表增加评分列
     await SqliteUtil.addColumnRateToAnime();
+    // 为笔记增加创建时间和修改时间列，主要用于评分时显示
+    await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     return true;
   }
 
@@ -406,6 +408,32 @@ class SqliteUtil {
       update anime
       set rate = 0
       where rate is NULL;
+      ''');
+    }
+  }
+
+  static addColumnTwoTimeToEpisodeNote() async {
+    var list = await database.rawQuery('''
+    select * from sqlite_master where name = 'episode_note' and sql like '%create_time%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnCreateTimeToAnime");
+      await database.execute('''
+      alter table episode_note
+      add column create_time TEXT;
+      ''');
+    }
+
+    list = await database.rawQuery('''
+    select * from sqlite_master where name = 'episode_note' and sql like '%update_time%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnUpdateTimeToAnime");
+      await database.execute('''
+      alter table episode_note
+      add column update_time TEXT;
       ''');
     }
   }
@@ -992,9 +1020,11 @@ class SqliteUtil {
     debugPrint(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
     episodeNote = escapeEpisodeNote(episodeNote);
+    String createTime = DateTime.now().toString();
+
     await database.rawInsert('''
-    insert into episode_note (anime_id, episode_number, review_number, note_content)
-    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, ''); -- 空内容
+    insert into episode_note (anime_id, episode_number, review_number, note_content, create_time)
+    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, '', '$createTime'); -- 空内容
     ''');
 
     var lm2 = await database.rawQuery('''
@@ -1146,6 +1176,35 @@ class SqliteUtil {
       episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
     }
     return episodeNotes;
+  }
+
+  static Future<List<EpisodeNote>> getRateNotesByAnimeId(int animeId) async {
+    debugPrint("sql: getRateNotesByAnimeId");
+    List<EpisodeNote> notes = [];
+    var lm1 = await database.rawQuery('''
+      select note_id, note_content, create_time, update_time from episode_note
+      where anime_id = $animeId and episode_number = 0 order by note_id desc;
+    ''');
+
+    // 遍历每个评价笔记
+    for (var item in lm1) {
+      // 查询这个笔记的图片
+      int noteId = item['note_id'] as int;
+      List<RelativeLocalImage> relativeLocalImages =
+          await getRelativeLocalImgsByNoteId(noteId);
+      // 然后再添加到列表中
+      notes.add(EpisodeNote(
+          episodeNoteId: noteId,
+          anime: Anime(animeName: "", animeEpisodeCnt: 0),
+          episode: Episode(0, 1),
+          noteContent: item['note_content'] as String,
+          createTime: item['create_time'] as String? ?? "",
+          updateTime: item['update_time'] as String? ?? "",
+          relativeLocalImages: relativeLocalImages,
+          imgUrls: []));
+    }
+
+    return notes;
   }
 
   static createTableImage() async {

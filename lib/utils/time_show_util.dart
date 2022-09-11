@@ -14,6 +14,8 @@ class TimeShowUtil {
 
   // 显示年月日时分
   static String getShowDateTimeStr(String time) {
+    if (time.isEmpty) return "";
+
     DateTime dateTime = DateTime.parse(time);
     String dateTimeStr = dateTime.toString();
     DateTime now = DateTime.now();

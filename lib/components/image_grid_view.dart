@@ -49,8 +49,9 @@ class ImageGridView extends StatelessWidget {
   }
 
   _getGridItemCount() {
-    if (relativeLocalImages.length <= maxDisplayCount)
+    if (relativeLocalImages.length <= maxDisplayCount) {
       return relativeLocalImages.length;
+    }
     if (limitShowImageNum) return maxDisplayCount;
   }
 }

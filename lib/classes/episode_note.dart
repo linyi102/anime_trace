@@ -9,6 +9,8 @@ class EpisodeNote {
   String noteContent;
   List<RelativeLocalImage> relativeLocalImages;
   List<String> imgUrls;
+  String createTime;
+  String updateTime;
 
   EpisodeNote({
     this.episodeNoteId = 0,
@@ -17,6 +19,8 @@ class EpisodeNote {
     this.noteContent = "",
     required this.relativeLocalImages,
     required this.imgUrls,
+    this.createTime = "",
+    this.updateTime = "",
   });
   @override
   String toString() {

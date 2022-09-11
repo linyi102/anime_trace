@@ -502,7 +502,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                       starColor: const Color.fromRGBO(255, 167, 2, 1),
                     ),
                     TextButton(onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => RateListPage(_anime)));
+                      Navigator.push(context, FadeRoute(builder: (BuildContext context) => RateListPage(_anime)));
                     }  , child: const Text("评价"))
                   ],
                 ),
