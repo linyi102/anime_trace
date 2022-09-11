@@ -11,6 +11,8 @@ Widget emptyDataHint(String msg, {String toastMsg = ""}) {
             // const Icon(Fontelico.emo_sleep, size: 80),
             // const Icon(Icons.hourglass_empty, size: 80),
             const SizedBox(height: 10),
+            const Text("(°ー°〃)", style: TextStyle(fontWeight: FontWeight.w600,fontSize: 30)),
+            const SizedBox(height: 10),
             Text(msg, style: const TextStyle(fontWeight: FontWeight.w600)),
             toastMsg.isEmpty
                 ? Container()

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -85,9 +86,11 @@ class _RateListPageState extends State<RateListPage> {
             Expanded(
               child: Scrollbar(
                 child: noteOk
-                    ? ListView(
-                        children: _buildRateNoteList(),
-                      )
+                    ? notes.isEmpty
+                        ? emptyDataHint("什么都没有")
+                        : ListView(
+                            children: _buildRateNoteList(),
+                          )
                     : Container(),
               ),
             ),

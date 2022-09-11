@@ -369,14 +369,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               padding: const EdgeInsets.all(0),
               child: ListTile(
                 title: const Text("编辑信息"),
-                leading: const Icon(Icons.info_outline),
+                leading: const Icon(Icons.edit),
                 style: ListTileStyle.drawer,
                 onTap: () {
                   // 先关闭下拉菜单
                   Navigator.of(context).pop();
                   // 再进入编辑页面
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    FadeRoute(
                       builder: (context) => AnimeInfoEdit(_anime),
                     ),
                   );
