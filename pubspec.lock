@@ -207,6 +207,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.6"
+  flutter_rating_stars:
+    dependency: "direct main"
+    description:
+      name: flutter_rating_stars
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.3+4"
   flutter_tab_indicator_styler:
     dependency: "direct main"
     description:

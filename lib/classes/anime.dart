@@ -7,6 +7,7 @@ class Anime {
   String tagName;
   String animeDesc;
   String animeCoverUrl;
+  int rate;
 
   int checkedEpisodeCnt;
   int reviewNumber;
@@ -41,6 +42,7 @@ class Anime {
     this.playStatus = "",
     this.productionCompany = "",
     this.officialSite = "",
+    this.rate = 0
   });
 
   @override
@@ -50,7 +52,7 @@ class Anime {
         "checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, "
         "animeUrl=$animeUrl, premiereTime=$premiereTime, "
         "animeDesc=${reduceStr(animeDesc)}, playStatus=$playStatus, "
-        "category=$category, area=$area]";
+        "category=$category, area=$area, rate=$rate]";
   }
 
   String reduceStr(String str) {
@@ -113,6 +115,7 @@ class Anime {
     anime.playStatus = playStatus;
     anime.productionCompany = productionCompany;
     anime.officialSite = officialSite;
+    anime.rate = rate;
     return anime;
   }
 }

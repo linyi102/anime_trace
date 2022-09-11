@@ -31,6 +31,7 @@ class SqliteUtil {
   static late String dbPath;
 
   static Future<bool> ensureDBTable() async {
+    // 大多都要用await，才返回true，否则会提前返回，导致表还未创建等错误
     await ImageUtil.getInstance();
     await SqliteUtil.getInstance();
     // 先创建表，再添加列
@@ -43,7 +44,8 @@ class SqliteUtil {
 
     // 创建动漫更新表
     await SqliteUtil.createTableUpdateRecord();
-    // 大多都要用await，才返回true，否则会提前返回，导致表还未创建等错误
+    // 为动漫表增加评分列
+    await SqliteUtil.addColumnRateToAnime();
     return true;
   }
 
@@ -207,6 +209,15 @@ class SqliteUtil {
           anime_url = '${newAnime.animeUrl}',
           review_number = ${newAnime.reviewNumber}
       where anime_id = ${oldAnime.animeId};
+    ''');
+  }
+
+  static void updateAnimeRate(int animeId, int rate) async {
+    debugPrint("sql: updateAnimeRate");
+    await database.rawUpdate('''
+    update anime
+    set rate = $rate
+    where anime_id = $animeId;
     ''');
   }
 
@@ -378,6 +389,27 @@ class SqliteUtil {
     }
   }
 
+  static addColumnRateToAnime() async {
+    var list = await database.rawQuery('''
+    select * from sqlite_master where name = 'anime' and sql like '%rate%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnRateToAnime");
+      await database.execute('''
+      alter table anime
+      add column rate INTEGER;
+      ''');
+
+      // 新增列才会修改NULL→1，之后就不修改了
+      await database.rawUpdate('''
+      update anime
+      set rate = 0
+      where rate is NULL;
+      ''');
+    }
+  }
+
   static void insertHistoryItem(
       int animeId, int episodeNumber, String date, int reviewNumber) async {
     debugPrint(
@@ -534,6 +566,7 @@ class SqliteUtil {
       officialSite: list[0]['official_site'] as String? ?? "",
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
+      rate: list[0]['rate'] as int? ?? 0,
     );
     anime = restoreEscapeAnime(anime);
     return anime;
@@ -579,6 +612,7 @@ class SqliteUtil {
       officialSite: list[0]['official_site'] as String? ?? "",
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
+      rate: list[0]['rate'] as int? ?? 0,
     );
     searchedanime = restoreEscapeAnime(searchedanime);
     return searchedanime;
@@ -1212,6 +1246,7 @@ class SqliteUtil {
       officialSite: list[0]['official_site'] as String? ?? "",
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
+      rate: list[0]['rate'] as int? ?? 0,
     );
     anime = restoreEscapeAnime(anime);
     return anime;
@@ -1254,6 +1289,7 @@ class SqliteUtil {
         officialSite: element['official_site'] as String? ?? "",
         category: element['category'] as String? ?? "",
         animeUrl: element['anime_url'] as String? ?? "",
+        rate: list[0]['rate'] as int? ?? 0,
       );
       // 如果名字完全一样，则去掉，因为已经有了
       if (anime.animeName == animeName) continue;

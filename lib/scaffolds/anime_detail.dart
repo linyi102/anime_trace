@@ -6,6 +6,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_info_edit.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
+import 'package:flutter_test_future/scaffolds/rate_list_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -461,6 +463,50 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               _showNameAnother(_anime.nameAnother),
               _showAnimeInfo(_anime.getAnimeInfoFirstLine()),
               _showAnimeInfo(_anime.getAnimeInfoSecondLine()),
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start, // 保证星星移动到上面，和评价文字对齐
+                  children: [
+                    RatingStars(
+                      value: _anime.rate.toDouble(),
+                      onValueChanged: (v) {
+                        setState(() {
+                          _anime.rate = v.toInt();
+                        });
+                        SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
+                      },
+                      starBuilder: (index, color) => Icon(
+                        Icons.star_rate_rounded,
+                        color: color,
+                      ),
+                      starCount: 5,
+                      starSize: 20,
+                      valueLabelColor: const Color(0xff9b9b9b),
+                      valueLabelTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          fontStyle: FontStyle.normal,
+                          fontSize: 12.0),
+                      valueLabelRadius: 10,
+                      maxValue: 5,
+                      starSpacing: 2,
+                      maxValueVisibility: false,
+                      valueLabelVisibility: false,
+                      // animationDuration: Duration(milliseconds: 1000),
+                      valueLabelPadding:
+                          const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
+                      valueLabelMargin: const EdgeInsets.only(right: 8),
+                      starOffColor: const Color.fromRGBO(206, 214, 224, 1),
+                      starColor: const Color.fromRGBO(255, 167, 2, 1),
+                    ),
+                    TextButton(onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => RateListPage(_anime)));
+                    }  , child: const Text("评价"))
+                  ],
+                ),
+              ),
               // _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
               // _displayDesc(),
             ],
