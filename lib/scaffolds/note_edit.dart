@@ -112,7 +112,7 @@ class _NoteEditState extends State<NoteEdit> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 50),
       ),
       maxLines: null,
       style: const TextStyle(height: 1.5, fontSize: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -46,14 +47,14 @@ class _RateListPageState extends State<RateListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "动漫评价",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        // appBar: AppBar(
+        //   title: const Text(
+        //     "动漫评价",
+        //     style: TextStyle(
+        //       fontWeight: FontWeight.w600,
+        //     ),
+        //   ),
+        // ),
         floatingActionButton: FloatingActionButton(
             onPressed: () {
               debugPrint("添加评价");
@@ -74,15 +75,47 @@ class _RateListPageState extends State<RateListPage> {
             child: const Icon(Icons.edit)),
         body: Column(
           children: [
-            ListTile(
-              style: ListTileStyle.drawer,
-              leading: AnimeListCover(anime),
-              title: Text(
-                widget.anime.animeName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+            RatingStars(
+              value: anime.rate.toDouble(),
+              onValueChanged: (v) {
+                setState(() {
+                  anime.rate = v.toInt();
+                });
+                SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
+              },
+              starBuilder: (index, color) => Icon(
+                Icons.star_rate_rounded,
+                color: color,
               ),
+              starCount: 5,
+              starSize: 50,
+              valueLabelColor: const Color(0xff9b9b9b),
+              valueLabelTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 12.0),
+              valueLabelRadius: 10,
+              maxValue: 5,
+              starSpacing: 2,
+              maxValueVisibility: false,
+              valueLabelVisibility: false,
+              animationDuration: const Duration(milliseconds: 1000),
+              valueLabelPadding: const EdgeInsets.symmetric(
+                  vertical: 1, horizontal: 8),
+              valueLabelMargin: const EdgeInsets.only(right: 8),
+              starOffColor: const Color.fromRGBO(206, 214, 224, 1),
+              starColor: const Color.fromRGBO(255, 167, 2, 1),
             ),
+            // ListTile(
+            //   style: ListTileStyle.drawer,
+            //   leading: AnimeListCover(anime),
+            //   title: Text(
+            //     widget.anime.animeName,
+            //     maxLines: 1,
+            //     overflow: TextOverflow.ellipsis,
+            //   ),
+            // ),
             Expanded(
               child: Scrollbar(
                 child: noteOk

@@ -7,6 +7,7 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -46,7 +47,8 @@ class AnimeDetailPlus extends StatefulWidget {
   _AnimeDetailPlusState createState() => _AnimeDetailPlusState();
 }
 
-class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
+class _AnimeDetailPlusState extends State<AnimeDetailPlus>
+    with SingleTickerProviderStateMixin {
   late Anime _anime;
   List<Episode> _episodes = [];
   bool _loadAnimeOk = false;
@@ -70,9 +72,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   int currentStartEpisodeNumber = 1;
   final int episodeRangeSize = 50;
 
+  late TabController _tabController; // 创建tab控制器
+  final List<String> _tabNames = ["选集", "评价", "简介"];
+
   @override
   void initState() {
     super.initState();
+    _tabController =
+        TabController(length: _tabNames.length, vsync: this, initialIndex: 0);
     // 如果没有收藏，则不允许进入
     if (widget.animeId <= 0) {
       Navigator.of(context).pop();
@@ -194,20 +201,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                         // 使用await后，只有当获取信息完成后，加载圈才会消失
                         await _climbAnimeInfo();
                       },
-                      child: CustomScrollView(
-                        slivers: [
-                          _buildSliverAppBar(context),
-                          SliverToBoxAdapter(
-                            child: _buildButtonsAboutEpisode(),
-                          ),
-                          _anime.isCollected()
-                              ? _buildEpisodeInfo()
-                              : SliverList(
-                                  delegate: SliverChildBuilderDelegate(
-                                      (context, index) {
-                                  return _showCollectIcon();
-                                }, childCount: 1)),
-                        ],
+                      child: NestedScrollView(
+                        headerSliverBuilder:
+                            (BuildContext context, bool innerBoxIsScrolled) {
+                          return [
+                            _buildSliverAppBar(context),
+                          ];
+                        },
+                        body: _anime.isCollected()
+                            ? TabBarView(
+                                children: [
+                                  _buildEpisodeInfo(),
+                                  _buildRatePage(),
+                                  _buildProfile()
+                                ],
+                                controller: _tabController,
+                              )
+                            : _showCollectIcon(),
                       ),
                     ),
                   ),
@@ -218,68 +228,130 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     );
   }
 
+  _buildTabs() {
+    List<Widget> tabs = [];
+    for (String tabName in _tabNames) {
+      tabs.add(Tab(
+        text: tabName,
+      ));
+    }
+    return tabs;
+  }
+
+  _buildRatePage() {
+    return RateListPage(_anime);
+  }
+
+  _buildProfile() {
+    return ListView(
+      padding: const EdgeInsets.all(0),
+      children: [_showAnimeDesc()],
+    );
+  }
+
   SliverAppBar _buildSliverAppBar(BuildContext context) {
+    double appBarHeight = 320, animeRowHeight = 280;
     return SliverAppBar(
+      bottom: PreferredSize(
+        // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Material(
+          color: ThemeUtil.getScaffoldBackgroundColor(),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              tabs: _buildTabs(),
+              controller: _tabController,
+              // 居中，而不是靠左下
+              padding: const EdgeInsets.all(10),
+              // 标签可以滑动，避免拥挤
+              isScrollable: true,
+              labelPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+              // 指示器长短和标签一样
+              indicatorSize: TabBarIndicatorSize.label,
+              // 第三方指示器样式
+              indicator: MaterialIndicator(
+                color: ThemeUtil.getThemePrimaryColor(),
+                paintingStyle: PaintingStyle.fill,
+              ),
+            ),
+          ),
+        ),
+      ),
       // floating: true,
       // snap: true,
       pinned: true,
-      expandedHeight: 280,
+      expandedHeight: appBarHeight,
       // 270, 290都会导致有细线
       // stretch: true,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.parallax,
-        background: Stack(
+        background: Column(
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width,
-              // 模糊
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(
-                  sigmaX: 10,
-                  sigmaY: 10,
-                ),
-                child: _anime.animeCoverUrl.isEmpty
-                    ? Image.memory(kTransparentImage)
-                    : CachedNetworkImage(
-                        imageUrl: _anime.animeCoverUrl,
-                        errorWidget: (context, url, error) {
-                          return Container(
-                            color: const Color.fromRGBO(250, 250, 250, 1.0),
-                          );
-                        },
-                        fit: BoxFit.cover,
-                        // 设置透明度，防止背景太黑或太白看不到顶部栏
-                        color: ThemeUtil.getModulateColor(),
-                        colorBlendMode: BlendMode.modulate,
-                      ),
-              ),
-            ),
-            // 为底层图片添加渐变效果
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: ThemeUtil.getGradientColors()),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+              height: animeRowHeight,
+              child: Stack(
                 children: [
-                  _showAnimeRow(),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: animeRowHeight,
+                    // 模糊
+                    child: ImageFiltered(
+                      imageFilter: ImageFilter.blur(
+                        sigmaX: 10,
+                        sigmaY: 10,
+                      ),
+                      child: _anime.animeCoverUrl.isEmpty
+                          ? Image.memory(kTransparentImage)
+                          : CachedNetworkImage(
+                              imageUrl: _anime.animeCoverUrl,
+                              errorWidget: (context, url, error) {
+                                return Container(
+                                  color:
+                                      const Color.fromRGBO(250, 250, 250, 1.0),
+                                );
+                              },
+                              fit: BoxFit.cover,
+                              // 设置透明度，防止背景太黑或太白看不到顶部栏
+                              color: ThemeUtil.getModulateColor(),
+                              colorBlendMode: BlendMode.modulate,
+                            ),
+                    ),
+                  ),
+                  // 为底层图片添加渐变效果
+                  Container(
+                    height: animeRowHeight,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: ThemeUtil.getGradientColors()),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _showAnimeRow(),
+                      ],
+                    ),
+                  ),
+                  // _showAnimeDesc()
+                  // 遮住背景封面细线
+                  // Positioned(
+                  //     bottom: -5,
+                  //     child: Container(
+                  //       height: 10,
+                  //       width: MediaQuery.of(context).size.width,
+                  //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
+                  //     ))
                 ],
               ),
             ),
-            // 遮住背景封面细线
-            // Positioned(
-            //     bottom: -5,
-            //     child: Container(
-            //       height: 10,
-            //       width: MediaQuery.of(context).size.width,
-            //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
-            //     ))
           ],
         ),
       ),
@@ -293,6 +365,28 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
           icon: const Icon(Icons.arrow_back_rounded)),
       title: _buildAppBarTitle(),
       actions: _buildActions(),
+    );
+  }
+
+  _showAnimeDesc() {
+    return Column(
+      children: [
+        const ListTile(
+          title: Text("描述"),
+        ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+          child: Text(_anime.animeDesc,
+              style:
+                  TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14)),
+          // child: ExpandText(
+          //   _anime.animeDesc,
+          //   textAlign: TextAlign.justify,
+          //   maxLines: 5,
+          //   style: TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14),
+          // ),
+        )
+      ],
     );
   }
 
@@ -463,52 +557,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               _showNameAnother(_anime.nameAnother),
               _showAnimeInfo(_anime.getAnimeInfoFirstLine()),
               _showAnimeInfo(_anime.getAnimeInfoSecondLine()),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start, // 保证星星移动到上面，和评价文字对齐
-                  children: [
-                    RatingStars(
-                      value: _anime.rate.toDouble(),
-                      onValueChanged: (v) {
-                        setState(() {
-                          _anime.rate = v.toInt();
-                        });
-                        SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
-                      },
-                      starBuilder: (index, color) => Icon(
-                        Icons.star_rate_rounded,
-                        color: color,
-                      ),
-                      starCount: 5,
-                      starSize: 20,
-                      valueLabelColor: const Color(0xff9b9b9b),
-                      valueLabelTextStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 12.0),
-                      valueLabelRadius: 10,
-                      maxValue: 5,
-                      starSpacing: 2,
-                      maxValueVisibility: false,
-                      valueLabelVisibility: false,
-                      // animationDuration: Duration(milliseconds: 1000),
-                      valueLabelPadding:
-                          const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
-                      valueLabelMargin: const EdgeInsets.only(right: 8),
-                      starOffColor: const Color.fromRGBO(206, 214, 224, 1),
-                      starColor: const Color.fromRGBO(255, 167, 2, 1),
-                    ),
-                    TextButton(onPressed: () {
-                      Navigator.push(context, FadeRoute(builder: (BuildContext context) => RateListPage(_anime)));
-                    }  , child: const Text("评价"))
-                  ],
-                ),
-              ),
-              // _showSource(ClimbAnimeUtil.getSourceByAnimeUrl(_anime.animeUrl)),
-              // _displayDesc(),
+              // Container(
+              //   alignment: Alignment.centerLeft,
+              //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              //   child: Row(
+              //     children: [
+              //
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -588,13 +645,152 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   _buildEpisodeInfo() {
     if (!_loadEpisodeOk) {
-      // return const SliverToBoxAdapter(
-      //     child: Center(child: RefreshProgressIndicator()));
-      return SliverToBoxAdapter(
-          child: SizedBox(
+      return SizedBox(
         key: UniqueKey(),
-      ));
+      );
     }
+
+    return Column(
+      children: [
+        _buildButtonsAboutEpisode(),
+        // _showAnimeDesc(),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0), // 避免与上面的行距离太大
+            itemCount: _episodes.length,
+            itemBuilder: (BuildContext context, int episodeIndex) {
+              // debugPrint("$episodeIndex");
+              List<Widget> columnChildren = [];
+
+              // 添加每集
+              columnChildren.add(
+                ListTile(
+                  selectedTileColor: multiSelectedColor,
+                  selected: mapSelected.containsKey(episodeIndex),
+                  // visualDensity: const VisualDensity(vertical: -2),
+                  // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                  title: Text(
+                    "第 ${_episodes[episodeIndex].number} 集",
+                    style: TextStyle(
+                      color: ThemeUtil.getEpisodeListTile(
+                          _episodes[episodeIndex].isChecked()),
+                    ),
+                  ),
+                  // 没有完成时不显示subtitle
+                  subtitle: _episodes[episodeIndex].isChecked()
+                      ? Text(
+                          _episodes[episodeIndex].getDate(),
+                          style: TextStyle(
+                              color: ThemeUtil.getEpisodeListTile(
+                                  _episodes[episodeIndex].isChecked())),
+                        )
+                      : null,
+                  trailing: PopupMenuButton(
+                      icon: const Icon(Icons.more_horiz),
+                      offset: const Offset(0, 50),
+                      itemBuilder: (BuildContext popMenuContext) {
+                        return [
+                          PopupMenuItem(
+                            padding: const EdgeInsets.all(0),
+                            child: ListTile(
+                              title: const Text("设置日期"),
+                              leading:
+                                  const Icon(Icons.calendar_today_outlined),
+                              style: ListTileStyle.drawer,
+                              onTap: () {
+                                mapSelected[episodeIndex] = true;
+                                multiPickDateTime();
+                                // 退出下拉菜单
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        ];
+                      }),
+                  leading: IconButton(
+                    // iconSize: 20,
+                    visualDensity: VisualDensity.compact, // 缩小leading
+                    // hoverColor: Colors.transparent, // 悬停时的颜色
+                    // highlightColor: Colors.transparent, // 长按时的颜色
+                    // splashColor: Colors.transparent, // 点击时的颜色
+                    onPressed: () async {
+                      if (_episodes[episodeIndex].isChecked()) {
+                        _dialogRemoveDate(
+                          _episodes[episodeIndex].number,
+                          _episodes[episodeIndex].dateTime,
+                        ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+                      } else {
+                        String date = DateTime.now().toString();
+                        SqliteUtil.insertHistoryItem(
+                            _anime.animeId,
+                            _episodes[episodeIndex].number,
+                            date,
+                            _anime.reviewNumber);
+                        _episodes[episodeIndex].dateTime = date;
+                        // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+                        EpisodeNote episodeNote = EpisodeNote(
+                            anime: _anime,
+                            episode: _episodes[episodeIndex],
+                            relativeLocalImages: [],
+                            imgUrls: []);
+
+                        // 一定要先添加笔记，否则episodeIndex会越界
+                        _episodeNotes.add(episodeNote);
+                        // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+                        _episodeNotes[episodeIndex] = await SqliteUtil
+                            .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+                                episodeNote);
+                        // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
+                        // episodeNote.episodeNoteId =
+                        //     await SqliteUtil.insertEpisodeNote(episodeNote);
+                        // episodeNotes[i] = episodeNote; // 更新
+                        setState(() {});
+                      }
+                    },
+                    icon: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: _episodes[episodeIndex].isChecked()
+                          ? Icon(
+                              Icons.check_box_outlined,
+                              key: Key(
+                                  "$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
+                              color: ThemeUtil.getEpisodeListTile(
+                                  _episodes[episodeIndex].isChecked()),
+                            )
+                          : Icon(
+                              Icons.check_box_outline_blank_rounded,
+                              color: ThemeUtil.getEpisodeListTile(
+                                  _episodes[episodeIndex].isChecked()),
+                            ),
+                    ),
+                  ),
+                  onTap: () {
+                    onpressEpisode(episodeIndex);
+                  },
+                  onLongPress: () async {
+                    onLongPressEpisode(episodeIndex);
+                  },
+                ),
+              );
+              // 在每一集下面添加笔记
+              if (!hideNoteInAnimeDetail &&
+                  _episodes[episodeIndex].isChecked()) {
+                columnChildren.add(_buildNote(episodeIndex, context));
+              }
+
+              // 在最后一集下面添加空白
+              if (episodeIndex == _episodes.length - 1) {
+                columnChildren.add(const ListTile());
+                columnChildren.add(const ListTile());
+              }
+              return Column(
+                children: columnChildren,
+              );
+            },
+          ),
+        ),
+      ],
+    );
 
     return SliverList(
       delegate: SliverChildBuilderDelegate(
@@ -1249,106 +1445,92 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   // 动漫信息下面的操作栏
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
-    return Column(
-      children: [
-        // 显示动漫简介
-        Container(
-          padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
-          child: ExpandText(
-            _anime.animeDesc,
-            textAlign: TextAlign.justify,
-            maxLines: 2,
-            style: TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // _anime.animeEpisodeCnt > episodeRangeSize ?
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: MaterialButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text("选择范围"),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: _buildEpisodeRangeListTiles(context),
-                          ),
-                        ),
-                      );
-                    },
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // _anime.animeEpisodeCnt > episodeRangeSize ?
+          MaterialButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("选择范围"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: _buildEpisodeRangeListTiles(context),
+                      ),
+                    ),
                   );
                 },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.arrow_right_rounded,
-                      size: 28,
-                    ),
-                    const Text(" "),
-                    Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
-                  ],
-                ),
-              ),
-            ),
-            // : Container(),
-            Expanded(child: Container()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              );
+            },
+            child: Row(
               children: [
-                IconButton(
-                  onPressed: () {
-                    dialogSelectUint(context, "选择第 n 次观看",
-                            initialValue: _anime.reviewNumber,
-                            minValue: 1,
-                            maxValue: 6)
-                        .then((value) {
-                      if (value != null) {
-                        if (_anime.reviewNumber != value) {
-                          _anime.reviewNumber = value;
-                          // SqliteUtil.updateAnimeReviewNumberByAnimeId(
-                          //     _anime.animeId, _anime.reviewNumber);
-                          SqliteUtil.updateAnime(_anime, _anime);
-                          // 不相等才设置并重新加载数据
-                          _loadEpisode();
-                        }
-                      }
-                    });
-                  },
-                  icon: showReviewNumberIcon(),
+                const Icon(
+                  Icons.arrow_right_rounded,
+                  size: 28,
                 ),
-                IconButton(
-                    onPressed: () {
-                      _dialogSelectSortMethod();
-                    },
-                    tooltip: "排序方式",
-                    icon: const Icon(Icons.sort)),
-                IconButton(
-                    onPressed: () {
-                      if (hideNoteInAnimeDetail) {
-                        // 原先隐藏，则设置为false，表示显示
-                        SPUtil.setBool("hideNoteInAnimeDetail", false);
-                        hideNoteInAnimeDetail = false;
-                      } else {
-                        SPUtil.setBool("hideNoteInAnimeDetail", true);
-                        hideNoteInAnimeDetail = true;
-                      }
-                      setState(() {});
-                    },
-                    tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
-                    icon: hideNoteInAnimeDetail
-                        ? const Icon(Icons.unfold_more)
-                        : const Icon(Icons.unfold_less)),
+                const Text(" "),
+                Text(_getEpisodeRangeStr(currentStartEpisodeNumber)),
               ],
             ),
-          ],
-        ),
-      ],
+          ),
+          // : Container(),
+          Expanded(child: Container()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: () {
+                  dialogSelectUint(context, "选择第 n 次观看",
+                          initialValue: _anime.reviewNumber,
+                          minValue: 1,
+                          maxValue: 6)
+                      .then((value) {
+                    if (value != null) {
+                      if (_anime.reviewNumber != value) {
+                        _anime.reviewNumber = value;
+                        // SqliteUtil.updateAnimeReviewNumberByAnimeId(
+                        //     _anime.animeId, _anime.reviewNumber);
+                        SqliteUtil.updateAnime(_anime, _anime);
+                        // 不相等才设置并重新加载数据
+                        _loadEpisode();
+                      }
+                    }
+                  });
+                },
+                icon: showReviewNumberIcon(),
+              ),
+              IconButton(
+                  onPressed: () {
+                    _dialogSelectSortMethod();
+                  },
+                  tooltip: "排序方式",
+                  icon: const Icon(Icons.sort)),
+              IconButton(
+                  onPressed: () {
+                    if (hideNoteInAnimeDetail) {
+                      // 原先隐藏，则设置为false，表示显示
+                      SPUtil.setBool("hideNoteInAnimeDetail", false);
+                      hideNoteInAnimeDetail = false;
+                    } else {
+                      SPUtil.setBool("hideNoteInAnimeDetail", true);
+                      hideNoteInAnimeDetail = true;
+                    }
+                    setState(() {});
+                  },
+                  tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
+                  icon: hideNoteInAnimeDetail
+                      ? const Icon(Icons.unfold_more)
+                      : const Icon(Icons.unfold_less)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
