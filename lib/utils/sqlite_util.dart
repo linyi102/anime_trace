@@ -1373,4 +1373,19 @@ class SqliteUtil {
       );
       ''');
   }
+
+  // 删除笔记前，先删除与笔记相关的图片，再删除该笔记
+  static Future<bool> deleteNoteById(int noteId) async {
+    int num = await database.rawDelete('''
+    delete from image
+    where note_id = $noteId;
+    ''');
+    debugPrint("删除了$num个与该笔记相关的图片");
+    num = await database.rawDelete('''
+    delete from episode_note
+    where note_id = $noteId;
+    ''');
+    debugPrint("删除了$num条笔记(id=$noteId)");
+    return true;
+  }
 }

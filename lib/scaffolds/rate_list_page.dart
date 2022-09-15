@@ -160,7 +160,7 @@ class _RateListPageState extends State<RateListPage> {
               // 笔记图片
               ImageGridView(relativeLocalImages: note.relativeLocalImages),
               // 创建时间
-              _buildCreateTime(note)
+              _buildCreateTimeAndMoreAction(note)
             ],
           ),
         ),
@@ -185,12 +185,63 @@ class _RateListPageState extends State<RateListPage> {
     );
   }
 
-  _buildCreateTime(note) {
+  _buildCreateTimeAndMoreAction(EpisodeNote note) {
     String timeStr = TimeShowUtil.getShowDateTimeStr(note.createTime);
     if (timeStr.isEmpty) return Container();
     return ListTile(
-      style: ListTileStyle.drawer,
-      subtitle: Text("创建于 $timeStr"),
-    );
+        style: ListTileStyle.drawer,
+        title: Text(
+          "创建于 $timeStr",
+          style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: ThemeUtil.getCommentColor()),
+        ),
+        trailing: PopupMenuButton(
+          icon: const Icon(Icons.more_horiz),
+          offset: const Offset(0, 50),
+          itemBuilder: (BuildContext popUpMenuContext) {
+            return [
+              PopupMenuItem(
+                padding: const EdgeInsets.all(0), // 变小
+                child: ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text("删除笔记"),
+                  style: ListTileStyle.drawer, // 变小
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          title: const Text("确定删除笔记吗？"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(dialogContext);
+                              },
+                              child: const Text("取消"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // 关闭对话框
+                                Navigator.pop(dialogContext);
+                                SqliteUtil.deleteNoteById(note.episodeNoteId)
+                                    .then((val) {
+                                  // 关闭下拉菜单，并重新获取评价列表
+                                  Navigator.pop(popUpMenuContext);
+                                  _loadData();
+                                });
+                              },
+                              child: const Text("确定"),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ];
+          },
+        ));
   }
 }
