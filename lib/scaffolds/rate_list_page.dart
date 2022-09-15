@@ -84,7 +84,7 @@ class _RateListPageState extends State<RateListPage> {
                 SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
               },
               starBuilder: (index, color) => Icon(
-                Icons.star_rate_rounded,
+                Icons.star,
                 color: color,
               ),
               starCount: 5,
@@ -100,9 +100,9 @@ class _RateListPageState extends State<RateListPage> {
               starSpacing: 2,
               maxValueVisibility: false,
               valueLabelVisibility: false,
-              animationDuration: const Duration(milliseconds: 1000),
-              valueLabelPadding: const EdgeInsets.symmetric(
-                  vertical: 1, horizontal: 8),
+              animationDuration: const Duration(milliseconds: 0),
+              valueLabelPadding:
+                  const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
               valueLabelMargin: const EdgeInsets.only(right: 8),
               starOffColor: const Color.fromRGBO(206, 214, 224, 1),
               starColor: const Color.fromRGBO(255, 167, 2, 1),
@@ -117,16 +117,14 @@ class _RateListPageState extends State<RateListPage> {
             //   ),
             // ),
             Expanded(
-              child: Scrollbar(
-                child: noteOk
-                    ? notes.isEmpty
-                        ? emptyDataHint("什么都没有")
-                        : ListView(
-                            children: _buildRateNoteList(),
-                          )
-                    : Container(),
-              ),
-            ),
+                child: Scrollbar(
+                    child: noteOk
+                        ?
+                        // notes.isEmpty
+                        //         ? emptyDataHint("什么都没有")
+                        //         :
+                        ListView(children: _buildRateNoteList())
+                        : Container()))
           ],
         ));
   }
