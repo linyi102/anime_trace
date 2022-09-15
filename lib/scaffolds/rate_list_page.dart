@@ -117,14 +117,11 @@ class _RateListPageState extends State<RateListPage> {
             //   ),
             // ),
             Expanded(
-                child: Scrollbar(
-                    child: noteOk
-                        ?
-                        // notes.isEmpty
-                        //         ? emptyDataHint("什么都没有")
-                        //         :
-                        ListView(children: _buildRateNoteList())
-                        : Container()))
+                child: noteOk
+                    ? ListView(
+                    padding: const EdgeInsets.only(top: 0), // 缩小星级和笔记列表的距离
+                    children: _buildRateNoteList())
+                    : Container())
           ],
         ));
   }
@@ -174,15 +171,25 @@ class _RateListPageState extends State<RateListPage> {
 
   _buildNoteContent(EpisodeNote note) {
     if (note.noteContent.isEmpty) return Container();
-    return ListTile(
-      title: Text(
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+      child: Text(
         note.noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(height: 1.5, fontSize: 16),
       ),
-      style: ListTileStyle.drawer,
     );
+    // return ListTile(
+    //   title: Text(
+    //     note.noteContent,
+    //     maxLines: 10,
+    //     overflow: TextOverflow.ellipsis,
+    //     style: const TextStyle(height: 1.5, fontSize: 16),
+    //   ),
+    //   style: ListTileStyle.drawer,
+    // );
   }
 
   _buildCreateTimeAndMoreAction(EpisodeNote note) {
