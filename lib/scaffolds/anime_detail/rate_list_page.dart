@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 
-import '../classes/anime.dart';
-import '../components/anime_list_cover.dart';
-import '../components/image_grid_view.dart';
-import '../utils/theme_util.dart';
+import '../../classes/anime.dart';
+import '../../components/image_grid_view.dart';
+import '../../utils/theme_util.dart';
 
 class RateListPage extends StatefulWidget {
   final Anime anime;

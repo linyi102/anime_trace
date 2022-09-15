@@ -4,7 +4,7 @@ import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/search_db_anime.dart';
 import 'package:flutter_test_future/scaffolds/settings/anime_display_setting.dart';

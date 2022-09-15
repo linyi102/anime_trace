@@ -19,7 +19,7 @@ import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_info_edit.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
-import 'package:flutter_test_future/scaffolds/rate_list_page.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail/rate_list_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -31,6 +31,8 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'anime_properties_page.dart';
 
 // ignore: must_be_immutable
 class AnimeDetailPlus extends StatefulWidget {
@@ -248,10 +250,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _buildProfile() {
-    return ListView(
-      padding: const EdgeInsets.all(0),
-      children: [_showAnimeDesc()],
-    );
+    return AnimePropertiesPage(_anime);
   }
 
   _buildSliverAppBar(BuildContext context) {
@@ -383,22 +382,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           icon: const Icon(Icons.arrow_back_rounded)),
       title: _buildAppBarTitle(),
       actions: _buildActions(),
-    );
-  }
-
-  _showAnimeDesc() {
-    return Column(
-      children: [
-        const ListTile(
-          title: Text("简介"),
-        ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: Text(_anime.animeDesc,
-              style:
-                  TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14)),
-        )
-      ],
     );
   }
 

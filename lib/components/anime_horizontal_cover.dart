@@ -5,7 +5,7 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
