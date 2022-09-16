@@ -51,37 +51,43 @@ class _RateListPageState extends State<RateListPage>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        RatingStars(
-          value: anime.rate.toDouble(),
-          onValueChanged: (v) {
-            setState(() {
-              anime.rate = v.toInt();
-            });
-            SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
-          },
-          starBuilder: (index, color) => Icon(
-            Icons.star,
-            color: color,
-          ),
-          starCount: 5,
-          starSize: 50,
-          valueLabelColor: const Color(0xff9b9b9b),
-          valueLabelTextStyle: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-              fontStyle: FontStyle.normal,
-              fontSize: 12.0),
-          valueLabelRadius: 10,
-          maxValue: 5,
-          starSpacing: 2,
-          maxValueVisibility: false,
-          valueLabelVisibility: false,
-          animationDuration: const Duration(milliseconds: 0),
-          valueLabelPadding:
-              const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
-          valueLabelMargin: const EdgeInsets.only(right: 8),
-          starOffColor: const Color.fromRGBO(206, 214, 224, 1),
-          starColor: const Color.fromRGBO(255, 167, 2, 1),
+        Padding(
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            RatingStars(
+                value: anime.rate.toDouble(),
+                onValueChanged: (v) {
+                  setState(() {
+                    anime.rate = v.toInt();
+                  });
+                  SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
+                },
+                starBuilder: (index, color) => Icon(Icons.star, color: color),
+                starCount: 5,
+                starSize: 50,
+                valueLabelColor: const Color(0xff9b9b9b),
+                valueLabelTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.normal,
+                  // fontSize: 12.0
+                ),
+                valueLabelRadius: 10,
+                maxValue: 5,
+                starSpacing: 2,
+                maxValueVisibility: true,
+                valueLabelVisibility: true,
+                animationDuration: const Duration(milliseconds: 0),
+                valueLabelPadding:
+                    const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
+                valueLabelMargin: const EdgeInsets.only(right: 8),
+                starOffColor: const Color.fromRGBO(206, 214, 224, 1),
+                starColor: const Color.fromRGBO(255, 167, 2, 1)),
+            IconButton(
+                onPressed: () => createRateNote(context),
+                icon: const Icon(Icons.edit))
+          ]),
         ),
         noteOk ? Column(children: _buildRateNoteList()) : Container()
       ],
@@ -204,6 +210,7 @@ class _RateListPageState extends State<RateListPage>
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(dialogContext);
+                                Navigator.pop(popUpMenuContext);
                               },
                               child: const Text("取消"),
                             ),
