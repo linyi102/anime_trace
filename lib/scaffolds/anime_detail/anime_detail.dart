@@ -316,76 +316,67 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   _buildSliverAppBar(BuildContext context) {
     // 状态栏高度
-    double statusBarHeight = MediaQueryData.fromWindow(window).padding.top;
+    // double statusBarHeight = MediaQueryData.fromWindow(window).padding.top;
     // AppBar的toolbar高度(状态栏下面紧接着的一行)
-    double toolbarHeight = kToolbarHeight;
+    // double toolbarHeight = kToolbarHeight;
     // AppBar总高度
-    double appBarHeight = 240;
+    // double appBarHeight = 280;
 
     return Obx(() => SliverAppBar(
           // floating: true,
           // snap: true,
           pinned: true,
-          expandedHeight: appBarHeight,
+          expandedHeight: 260,
           // stretch: true,
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
-            background: Column(
+            background: Stack(
               children: [
+                // 底层背景
                 SizedBox(
-                  height: appBarHeight,
-                  child: Stack(
+                  width: MediaQuery.of(context).size.width,
+                  // 模糊
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(
+                      sigmaX: 10,
+                      sigmaY: 10,
+                    ),
+                    child: _buildBgCover(),
+                  ),
+                ),
+                // 为底层背景添加渐变效果
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: ThemeUtil.getGradientColors()),
+                  ),
+                ),
+                // 动漫信息
+                // Column(
+                //   children: [
+                //     SizedBox(height: statusBarHeight + toolbarHeight),
+                //     _showAnimeRow()
+                //   ],
+                // )
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // 底层背景
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: appBarHeight,
-                        // 模糊
-                        child: ImageFiltered(
-                          imageFilter: ImageFilter.blur(
-                            sigmaX: 10,
-                            sigmaY: 10,
-                          ),
-                          child: _buildBgCover(),
-                        ),
-                      ),
-                      // 为底层背景添加渐变效果
-                      Container(
-                        height: appBarHeight,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: ThemeUtil.getGradientColors()),
-                        ),
-                      ),
-                      // 动漫信息
-                      // Column(
-                      //   children: [
-                      //     SizedBox(height: statusBarHeight + toolbarHeight),
-                      //     _showAnimeRow()
-                      //   ],
-                      // )
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            _showAnimeRow(),
-                          ],
-                        ),
-                      ),
-                      // 遮住背景封面细线
-                      // Positioned(
-                      //     bottom: -5,
-                      //     child: Container(
-                      //       height: 10,
-                      //       width: MediaQuery.of(context).size.width,
-                      //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
-                      //     ))
+                      _showAnimeRow(),
                     ],
                   ),
                 ),
+                // 遮住背景封面细线
+                // Positioned(
+                //     bottom: -5,
+                //     child: Container(
+                //       height: 10,
+                //       width: MediaQuery.of(context).size.width,
+                //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
+                //     ))
               ],
             ),
           ),
