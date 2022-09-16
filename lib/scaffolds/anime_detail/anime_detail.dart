@@ -240,7 +240,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   _buildSliverListBody() {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      padding: const EdgeInsets.all(0),
       sliver: SliverList(
         delegate: SliverChildListDelegate([_buildTabRow(), _buildTabBody()]),
       ),
@@ -346,21 +346,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                             sigmaX: 10,
                             sigmaY: 10,
                           ),
-                          child: _anime.animeCoverUrl.isEmpty
-                              ? Image.memory(kTransparentImage)
-                              : CachedNetworkImage(
-                                  imageUrl: _anime.animeCoverUrl,
-                                  errorWidget: (context, url, error) {
-                                    return Container(
-                                      color: const Color.fromRGBO(
-                                          250, 250, 250, 1.0),
-                                    );
-                                  },
-                                  fit: BoxFit.cover,
-                                  // 设置透明度，防止背景太黑或太白看不到顶部栏
-                                  color: ThemeUtil.getModulateColor(),
-                                  colorBlendMode: BlendMode.modulate,
-                                ),
+                          child: _buildBgCover(),
                         ),
                       ),
                       // 为底层背景添加渐变效果
@@ -414,6 +400,35 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           title: _buildAppBarTitle(),
           actions: _buildActions(),
         ));
+  }
+
+  _buildBgCover() {
+    String coverUrl = animeController.anime.value.animeCoverUrl;
+    if (coverUrl.isEmpty) {
+      return Image.memory(kTransparentImage);
+    }
+    // 网络封面
+    if (coverUrl.startsWith("http")) {
+      return CachedNetworkImage(
+        imageUrl: coverUrl,
+        errorWidget: (context, url, error) {
+          return Container(
+            color: const Color.fromRGBO(250, 250, 250, 1.0),
+          );
+        },
+        fit: BoxFit.cover,
+        // 设置透明度，防止背景太黑或太白看不到顶部栏
+        color: ThemeUtil.getModulateColor(),
+        colorBlendMode: BlendMode.modulate,
+      );
+    }
+    //  本地封面
+    return Image.file(
+        File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
+        fit: BoxFit.cover,
+        // 设置透明度，防止背景太黑或太白看不到顶部栏
+        color: ThemeUtil.getModulateColor(),
+        colorBlendMode: BlendMode.modulate);
   }
 
   List<Widget> _buildActions() {

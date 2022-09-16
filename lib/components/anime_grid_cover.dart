@@ -28,7 +28,7 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildCover() {
-    if (_anime.animeCoverUrl.isEmpty)
+    if (_anime.animeCoverUrl.isEmpty) {
       return Container(
         color: ThemeUtil.getAppBarBackgroundColor(),
         child: Center(
@@ -43,6 +43,7 @@ class AnimeGridCover extends StatelessWidget {
           ),
         ),
       );
+    }
 
     // 网络封面
     if (_anime.animeCoverUrl.startsWith("http")) {

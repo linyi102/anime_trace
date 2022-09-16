@@ -55,7 +55,9 @@ class AnimePropertiesPage extends StatelessWidget {
   // 以http开头就提供访问功能，否则以灰色字体显示
   _buildUrlText(String url) {
     if (url.startsWith("http")) {
-      return TextButton(
+      return MaterialButton(
+        // TextButton无法取消填充，所以使用MaterialButton
+        padding: const EdgeInsets.all(0),
         onPressed: () async {
           Uri uri;
           if (url.isNotEmpty) {
@@ -65,11 +67,20 @@ class AnimePropertiesPage extends StatelessWidget {
             }
           }
         },
-        child: Text(url),
+        child: Text(url,
+            style: const TextStyle(
+                color: Colors.blue, fontWeight: FontWeight.normal)),
       );
     } else {
-      return Text(url.isEmpty ? "什么都没有~" : url,
-          style: const TextStyle(color: Colors.grey));
+      // 本地封面地址
+      return MaterialButton(
+        padding: const EdgeInsets.all(0),
+        child: Text(url.isEmpty ? "什么都没有~" : url,
+            style: TextStyle(
+                color: ThemeUtil.getCommentColor(),
+                fontWeight: FontWeight.normal)),
+        onPressed: () {},
+      );
     }
   }
 
@@ -82,15 +93,30 @@ class AnimePropertiesPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text("从本地图库中选择"),
+                    title: const Text("1. 从本地图库中选择"),
                     onTap: () {
-                      _selectCoverFromLocal(context, howToEditCoverUrlDialogContext);
+                      _selectCoverFromLocal(
+                          context, howToEditCoverUrlDialogContext);
                     },
                   ),
+                  ListTile(
+                      dense: true,
+                      style: ListTileStyle.drawer,
+                      title: const Text("去设置封面根目录"),
+                      onTap: () {
+                        Navigator.pop(howToEditCoverUrlDialogContext);
+                        Navigator.of(context).push(
+                          FadeRoute(
+                            builder: (context) {
+                              return const ImagePathSetting();
+                            },
+                          ),
+                        );
+                      }),
                   // const SizedBox(height: 20),
                   const Divider(),
                   ListTile(
-                    title: const Text("提供封面链接"),
+                    title: const Text("2. 提供封面链接"),
                     onTap: () {
                       _showDialogAboutEditCoverUrl(
                           howToEditCoverUrlDialogContext);

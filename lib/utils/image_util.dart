@@ -76,6 +76,11 @@ class ImageUtil {
     if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
       relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
     }
+    // MuMu模拟器
+    cacheNameStr = "st_future/cache/file_picker";
+    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
+      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
+    }
     // debugPrint("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
