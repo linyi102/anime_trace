@@ -34,9 +34,9 @@ class _SourceListPageState extends State<SourceListPage> {
   final ScrollController _scrollController = ScrollController();
   @override
   void dispose() {
+    super.dispose();
     //为了避免内存泄露，需要调用.dispose
     _scrollController.dispose();
-    super.dispose();
   }
 
   void _pingAllWebsites() {

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import '../classes/anime.dart';
-import '../components/anime_grid_cover.dart';
+import '../../classes/anime.dart';
+import '../../components/anime_grid_cover.dart';
 
 class AnimeInfoEdit extends StatefulWidget {
   final Anime anime;

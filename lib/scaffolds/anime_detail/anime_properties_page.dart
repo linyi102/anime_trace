@@ -16,8 +16,13 @@ class AnimePropertiesPage extends StatefulWidget {
   State<AnimePropertiesPage> createState() => _AnimePropertiesPageState();
 }
 
-class _AnimePropertiesPageState extends State<AnimePropertiesPage> {
+class _AnimePropertiesPageState extends State<AnimePropertiesPage>
+    with AutomaticKeepAliveClientMixin {
   late Anime anime;
+
+  // 实现AutomaticKeepAliveClientMixin并重载wantKeepAlive来实现切换tabber时保持该页面状态
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -29,8 +34,8 @@ class _AnimePropertiesPageState extends State<AnimePropertiesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(0),
+    // 不能使用ListView，因为外部是SliverChildListDelegate
+    return Column(
       children: [
         ListTile(
           title: const Text("网址"),
@@ -57,7 +62,9 @@ class _AnimePropertiesPageState extends State<AnimePropertiesPage> {
                                       child: const Text("清空")),
                                   TextButton(
                                       onPressed: () async {
-                                        ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+                                        ClipboardData? data =
+                                            await Clipboard.getData(
+                                                Clipboard.kTextPlain);
                                         if (data != null) {
                                           textController.text = data.text ?? "";
                                         }
@@ -122,7 +129,7 @@ class _AnimePropertiesPageState extends State<AnimePropertiesPage> {
           child: Text(anime.animeDesc,
               style:
                   TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14)),
-        )
+        ),
       ],
     );
   }

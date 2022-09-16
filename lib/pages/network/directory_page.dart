@@ -38,9 +38,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
   final ScrollController _scrollController = ScrollController();
   @override
   void dispose() {
+    super.dispose();
     //为了避免内存泄露，需要调用.dispose
     _scrollController.dispose();
-    super.dispose();
   }
 
   // 从聚合搜索页返回后需要用到。不过目前用不到了，因为搜索按钮在network_nav中，无法直接处理目录页中的数据。并不影响，如果在聚合搜索页中添加了某个动漫，然后再从目录页中添加动漫，则会添加两个动漫

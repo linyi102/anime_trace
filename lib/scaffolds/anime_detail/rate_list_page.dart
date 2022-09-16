@@ -20,10 +20,15 @@ class RateListPage extends StatefulWidget {
   State<RateListPage> createState() => _RateListPageState();
 }
 
-class _RateListPageState extends State<RateListPage> {
+class _RateListPageState extends State<RateListPage>
+    with AutomaticKeepAliveClientMixin {
   late Anime anime;
   List<EpisodeNote> notes = [];
   bool noteOk = false;
+
+  // 实现AutomaticKeepAliveClientMixin并重载wantKeepAlive来实现切换tabber时保持该页面状态
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -44,84 +49,60 @@ class _RateListPageState extends State<RateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        // appBar: AppBar(
-        //   title: const Text(
-        //     "动漫评价",
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.w600,
-        //     ),
-        //   ),
-        // ),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              debugPrint("添加评价");
-              EpisodeNote episodeNote =
-                  EpisodeNote(anime: anime, episode: Episode(0, 1), // 第0集作为评价
-                      relativeLocalImages: [], imgUrls: []);
-              SqliteUtil.insertEpisodeNote(episodeNote).then((value) {
-                // 获取到刚插入的笔记id，然后再进入笔记
-                episodeNote.episodeNoteId = value;
-                Navigator.push(context,
-                        FadeRoute(builder: (context) => NoteEdit(episodeNote)))
-                    .then((value) {
-                  // 重新获取列表
-                  _loadData();
-                });
-              });
-            },
-            child: const Icon(Icons.edit)),
-        body: Column(
-          children: [
-            RatingStars(
-              value: anime.rate.toDouble(),
-              onValueChanged: (v) {
-                setState(() {
-                  anime.rate = v.toInt();
-                });
-                SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
-              },
-              starBuilder: (index, color) => Icon(
-                Icons.star,
-                color: color,
-              ),
-              starCount: 5,
-              starSize: 50,
-              valueLabelColor: const Color(0xff9b9b9b),
-              valueLabelTextStyle: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 12.0),
-              valueLabelRadius: 10,
-              maxValue: 5,
-              starSpacing: 2,
-              maxValueVisibility: false,
-              valueLabelVisibility: false,
-              animationDuration: const Duration(milliseconds: 0),
-              valueLabelPadding:
-                  const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
-              valueLabelMargin: const EdgeInsets.only(right: 8),
-              starOffColor: const Color.fromRGBO(206, 214, 224, 1),
-              starColor: const Color.fromRGBO(255, 167, 2, 1),
-            ),
-            // ListTile(
-            //   style: ListTileStyle.drawer,
-            //   leading: AnimeListCover(anime),
-            //   title: Text(
-            //     widget.anime.animeName,
-            //     maxLines: 1,
-            //     overflow: TextOverflow.ellipsis,
-            //   ),
-            // ),
-            Expanded(
-                child: noteOk
-                    ? ListView(
-                    padding: const EdgeInsets.only(top: 0), // 缩小星级和笔记列表的距离
-                    children: _buildRateNoteList())
-                    : Container())
-          ],
-        ));
+    return Column(
+      children: [
+        RatingStars(
+          value: anime.rate.toDouble(),
+          onValueChanged: (v) {
+            setState(() {
+              anime.rate = v.toInt();
+            });
+            SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
+          },
+          starBuilder: (index, color) => Icon(
+            Icons.star,
+            color: color,
+          ),
+          starCount: 5,
+          starSize: 50,
+          valueLabelColor: const Color(0xff9b9b9b),
+          valueLabelTextStyle: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.normal,
+              fontSize: 12.0),
+          valueLabelRadius: 10,
+          maxValue: 5,
+          starSpacing: 2,
+          maxValueVisibility: false,
+          valueLabelVisibility: false,
+          animationDuration: const Duration(milliseconds: 0),
+          valueLabelPadding:
+              const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
+          valueLabelMargin: const EdgeInsets.only(right: 8),
+          starOffColor: const Color.fromRGBO(206, 214, 224, 1),
+          starColor: const Color.fromRGBO(255, 167, 2, 1),
+        ),
+        noteOk ? Column(children: _buildRateNoteList()) : Container()
+      ],
+    );
+  }
+
+  void createRateNote(BuildContext context) {
+    debugPrint("添加评价");
+    EpisodeNote episodeNote =
+        EpisodeNote(anime: anime, episode: Episode(0, 1), // 第0集作为评价
+            relativeLocalImages: [], imgUrls: []);
+    SqliteUtil.insertEpisodeNote(episodeNote).then((value) {
+      // 获取到刚插入的笔记id，然后再进入笔记
+      episodeNote.episodeNoteId = value;
+      Navigator.push(
+              context, FadeRoute(builder: (context) => NoteEdit(episodeNote)))
+          .then((value) {
+        // 重新获取列表
+        _loadData();
+      });
+    });
   }
 
   _buildRateNoteList() {
@@ -192,11 +173,12 @@ class _RateListPageState extends State<RateListPage> {
 
   _buildCreateTimeAndMoreAction(EpisodeNote note) {
     String timeStr = TimeShowUtil.getShowDateTimeStr(note.createTime);
-    if (timeStr.isEmpty) return Container();
+    timeStr = timeStr.isEmpty ? "" : "创建于 $timeStr";
+
     return ListTile(
         style: ListTileStyle.drawer,
         title: Text(
-          "创建于 $timeStr",
+          timeStr,
           style: TextStyle(
               fontWeight: FontWeight.normal,
               color: ThemeUtil.getCommentColor()),
