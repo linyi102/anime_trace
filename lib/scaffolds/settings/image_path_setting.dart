@@ -37,12 +37,23 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('设置图片根目录'),
-            subtitle: Text(ImageUtil.imageRootDirPath),
+            title: const Text('设置笔记图片根目录'),
+            subtitle: Text(ImageUtil.noteImageRootDirPath),
             onTap: () async {
-              String selectIimageRootDirPath = (await selectDirectory()) ?? "";
-              if (selectIimageRootDirPath.isNotEmpty) {
-                ImageUtil.setImageRootDirPath(selectIimageRootDirPath);
+              String selectImageRootDirPath = (await selectDirectory()) ?? "";
+              if (selectImageRootDirPath.isNotEmpty) {
+                ImageUtil.setNoteImageRootDirPath(selectImageRootDirPath);
+                setState(() {});
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('设置动漫封面图片根目录'),
+            subtitle: Text(ImageUtil.coverImageRootDirPath),
+            onTap: () async {
+              String selectImageRootDirPath = (await selectDirectory()) ?? "";
+              if (selectImageRootDirPath.isNotEmpty) {
+                ImageUtil.setCoverImageRootDirPath(selectImageRootDirPath);
                 setState(() {});
               }
             },

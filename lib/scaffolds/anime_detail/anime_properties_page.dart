@@ -1,12 +1,18 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 
+import '../../fade_route.dart';
+import '../../utils/image_util.dart';
 import '../../utils/theme_util.dart';
+import '../settings/image_path_setting.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimeController animeController = Get.find();
@@ -77,7 +83,9 @@ class AnimePropertiesPage extends StatelessWidget {
                 children: [
                   ListTile(
                     title: const Text("从本地图库中选择"),
-                    onTap: () {},
+                    onTap: () {
+                      _selectCoverFromLocal(context, howToEditCoverUrlDialogContext);
+                    },
                   ),
                   // const SizedBox(height: 20),
                   const Divider(),
@@ -93,6 +101,47 @@ class AnimePropertiesPage extends StatelessWidget {
             ),
           );
         });
+  }
+
+  _selectCoverFromLocal(context, howToEditCoverUrlDialogContext) async {
+    if (!ImageUtil.hasCoverImageRootDirPath()) {
+      showToast("请先设置封面根目录");
+      Navigator.pop(howToEditCoverUrlDialogContext);
+      Navigator.of(context).push(
+        FadeRoute(
+          builder: (context) {
+            return const ImagePathSetting();
+          },
+        ),
+      );
+      return;
+    }
+
+    if (Platform.isWindows || Platform.isAndroid) {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'png', 'gif'],
+        allowMultiple: false,
+      );
+      if (result == null) return;
+      List<PlatformFile> platformFiles = result.files;
+      for (var platformFile in platformFiles) {
+        String absoluteImagePath = platformFile.path ?? "";
+        if (absoluteImagePath.isEmpty) continue;
+
+        String relativeImagePath =
+            ImageUtil.getRelativeImagePath(absoluteImagePath);
+
+        // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
+        SqliteUtil.updateAnimeCoverUrl(
+            animeController.anime.value.animeId, relativeImagePath);
+        animeController.updateAnimeCoverUrl(relativeImagePath);
+        // 退出选择
+        Navigator.pop(howToEditCoverUrlDialogContext);
+      }
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
   }
 
   Column _buildAnimeUrl(BuildContext context) {
@@ -156,7 +205,8 @@ class AnimePropertiesPage extends StatelessWidget {
                           child: const Text("取消")),
                       ElevatedButton(
                           onPressed: () {
-                            animeController.updateAnimeCoverUrl(textController.text);
+                            animeController
+                                .updateAnimeCoverUrl(textController.text);
 
                             SqliteUtil.updateAnimeCoverUrl(
                                 animeController.anime.value.animeId,

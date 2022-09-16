@@ -323,97 +323,97 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     double appBarHeight = 240;
 
     return Obx(() => SliverAppBar(
-      // floating: true,
-      // snap: true,
-      pinned: true,
-      expandedHeight: appBarHeight,
-      // stretch: true,
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.parallax,
-        background: Column(
-          children: [
-            SizedBox(
-              height: appBarHeight,
-              child: Stack(
-                children: [
-                  // 底层背景
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: appBarHeight,
-                    // 模糊
-                    child: ImageFiltered(
-                      imageFilter: ImageFilter.blur(
-                        sigmaX: 10,
-                        sigmaY: 10,
+          // floating: true,
+          // snap: true,
+          pinned: true,
+          expandedHeight: appBarHeight,
+          // stretch: true,
+          flexibleSpace: FlexibleSpaceBar(
+            collapseMode: CollapseMode.parallax,
+            background: Column(
+              children: [
+                SizedBox(
+                  height: appBarHeight,
+                  child: Stack(
+                    children: [
+                      // 底层背景
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: appBarHeight,
+                        // 模糊
+                        child: ImageFiltered(
+                          imageFilter: ImageFilter.blur(
+                            sigmaX: 10,
+                            sigmaY: 10,
+                          ),
+                          child: _anime.animeCoverUrl.isEmpty
+                              ? Image.memory(kTransparentImage)
+                              : CachedNetworkImage(
+                                  imageUrl: _anime.animeCoverUrl,
+                                  errorWidget: (context, url, error) {
+                                    return Container(
+                                      color: const Color.fromRGBO(
+                                          250, 250, 250, 1.0),
+                                    );
+                                  },
+                                  fit: BoxFit.cover,
+                                  // 设置透明度，防止背景太黑或太白看不到顶部栏
+                                  color: ThemeUtil.getModulateColor(),
+                                  colorBlendMode: BlendMode.modulate,
+                                ),
+                        ),
                       ),
-                      child: _anime.animeCoverUrl.isEmpty
-                          ? Image.memory(kTransparentImage)
-                          : CachedNetworkImage(
-                              imageUrl: _anime.animeCoverUrl,
-                              errorWidget: (context, url, error) {
-                                return Container(
-                                  color:
-                                      const Color.fromRGBO(250, 250, 250, 1.0),
-                                );
-                              },
-                              fit: BoxFit.cover,
-                              // 设置透明度，防止背景太黑或太白看不到顶部栏
-                              color: ThemeUtil.getModulateColor(),
-                              colorBlendMode: BlendMode.modulate,
-                            ),
-                    ),
+                      // 为底层背景添加渐变效果
+                      Container(
+                        height: appBarHeight,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: ThemeUtil.getGradientColors()),
+                        ),
+                      ),
+                      // 动漫信息
+                      // Column(
+                      //   children: [
+                      //     SizedBox(height: statusBarHeight + toolbarHeight),
+                      //     _showAnimeRow()
+                      //   ],
+                      // )
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _showAnimeRow(),
+                          ],
+                        ),
+                      ),
+                      // 遮住背景封面细线
+                      // Positioned(
+                      //     bottom: -5,
+                      //     child: Container(
+                      //       height: 10,
+                      //       width: MediaQuery.of(context).size.width,
+                      //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
+                      //     ))
+                    ],
                   ),
-                  // 为底层背景添加渐变效果
-                  Container(
-                    height: appBarHeight,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: ThemeUtil.getGradientColors()),
-                    ),
-                  ),
-                  // 动漫信息
-                  // Column(
-                  //   children: [
-                  //     SizedBox(height: statusBarHeight + toolbarHeight),
-                  //     _showAnimeRow()
-                  //   ],
-                  // )
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        _showAnimeRow(),
-                      ],
-                    ),
-                  ),
-                  // 遮住背景封面细线
-                  // Positioned(
-                  //     bottom: -5,
-                  //     child: Container(
-                  //       height: 10,
-                  //       width: MediaQuery.of(context).size.width,
-                  //       color: ThemeUtil.getColorBelowGradientAnimeCover(),
-                  //     ))
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-      leading: IconButton(
-          onPressed: () {
-            debugPrint("按返回按钮，返回anime");
-            _refreshAnime();
-            Navigator.pop(context, _anime);
-          },
-          tooltip: "返回上一级",
-          icon: const Icon(Icons.arrow_back_rounded)),
-      title: _buildAppBarTitle(),
-      actions: _buildActions(),
-    ));
+          ),
+          leading: IconButton(
+              onPressed: () {
+                debugPrint("按返回按钮，返回anime");
+                _refreshAnime();
+                Navigator.pop(context, _anime);
+              },
+              tooltip: "返回上一级",
+              icon: const Icon(Icons.arrow_back_rounded)),
+          title: _buildAppBarTitle(),
+          actions: _buildActions(),
+        ));
   }
 
   List<Widget> _buildActions() {
@@ -512,59 +512,76 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   // 使用obx来实现监听其它页面修改controller中的动漫信息变化
   _showAnimeRow() {
-    final imageProvider = Image.network(animeController.anime.value.animeCoverUrl).image;
     return Obx(() => Row(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: SizedBox(
-                width: 120,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      // 没有封面时，直接返回
-                      if (animeController.anime.value.animeCoverUrl.isEmpty) return;
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: SizedBox(
+                    width: 120,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: MaterialButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () {
+                          String coverUrl =
+                              animeController.anime.value.animeCoverUrl;
+                          final ImageProvider<Object> imageProvider;
 
-                      showImageViewer(context, imageProvider, immersive: false);
-                    },
-                    child: AnimeGridCover(animeController.anime.value),
+                          if (coverUrl.isEmpty) {
+                            // 没有封面，直接返回
+                            return;
+                          } else if (coverUrl.startsWith("http")) {
+                            // 网络封面
+                            imageProvider = Image.network(coverUrl).image;
+                          } else {
+                            // 本地封面
+                            imageProvider = Image.file(File(
+                                    ImageUtil.getAbsoluteCoverImagePath(
+                                        coverUrl)))
+                                .image;
+                          }
+
+                          showImageViewer(context, imageProvider,
+                              immersive: false);
+                        },
+                        child: AnimeGridCover(animeController.anime.value),
+                      ),
+                    ),
                   ),
                 ),
+              ],
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _showAnimeName(animeController.anime.value.animeName),
+                  _showNameAnother(animeController.anime.value.nameAnother),
+                  _showAnimeInfo(
+                      animeController.anime.value.getAnimeInfoFirstLine()),
+                  _showAnimeInfo(
+                      animeController.anime.value.getAnimeInfoSecondLine()),
+                  // Container(
+                  //   alignment: Alignment.centerLeft,
+                  //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  //   child: Row(
+                  //     children: [
+                  //
+                  //     ],
+                  //   ),
+                  // ),
+                ],
               ),
             ),
+            // Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [_showCollectIcon(animeController.anime.value)],
+            // ),
           ],
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _showAnimeName(animeController.anime.value.animeName),
-              _showNameAnother(animeController.anime.value.nameAnother),
-              _showAnimeInfo(animeController.anime.value.getAnimeInfoFirstLine()),
-              _showAnimeInfo(animeController.anime.value.getAnimeInfoSecondLine()),
-              // Container(
-              //   alignment: Alignment.centerLeft,
-              //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-              //   child: Row(
-              //     children: [
-              //
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-        // Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [_showCollectIcon(animeController.anime.value)],
-        // ),
-      ],
-    ));
+        ));
   }
 
   _showAnimeName(animeName) {
@@ -856,7 +873,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                       borderRadius: BorderRadius.circular(5),
                                       child: Image.file(
                                         File(
-                                          ImageUtil.getAbsoluteImagePath(
+                                          ImageUtil.getAbsoluteNoteImagePath(
                                               _episodeNotes[episodeNoteIndex]
                                                   .relativeLocalImages[
                                                       imageIndex]

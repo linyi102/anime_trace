@@ -31,7 +31,7 @@ class _ImageViewerState extends State<ImageViewer> {
     currentIndex = widget.initialIndex;
     for (var relativeLocalImage in widget.relativeLocalImages) {
       imageLocalPaths
-          .add(ImageUtil.getAbsoluteImagePath(relativeLocalImage.path));
+          .add(ImageUtil.getAbsoluteNoteImagePath(relativeLocalImage.path));
     }
     imagesCount = imageLocalPaths.length;
 

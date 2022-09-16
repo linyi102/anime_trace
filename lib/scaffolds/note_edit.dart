@@ -160,7 +160,7 @@ class _NoteEditState extends State<NoteEdit> {
               borderRadius: BorderRadius.circular(5),
               child: MaterialButton(
                   onPressed: () async {
-                    if (!ImageUtil.hasImageRootDirPath()) {
+                    if (!ImageUtil.hasNoteImageRootDirPath()) {
                       showToast("请先设置图片根目录");
                       Navigator.of(context).push(
                         // MaterialPageRoute(
@@ -197,8 +197,6 @@ class _NoteEditState extends State<NoteEdit> {
                         widget.episodeNote.relativeLocalImages.add(
                             RelativeLocalImage(imageId, relativeImagePath));
                       }
-                    } else if (Platform.isAndroid) {
-                      //
                     } else {
                       throw ("未适配平台：${Platform.operatingSystem}");
                     }

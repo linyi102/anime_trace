@@ -25,7 +25,7 @@ class ImageGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String relativeImagePath = relativeLocalImages[initialIndex].path;
-    String imageLocalPath = ImageUtil.getAbsoluteImagePath(relativeImagePath);
+    String imageLocalPath = ImageUtil.getAbsoluteNoteImagePath(relativeImagePath);
 
     return MaterialButton(
       padding: const EdgeInsets.all(0),
