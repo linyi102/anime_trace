@@ -65,7 +65,7 @@ class _RateListPageState extends State<RateListPage>
                 },
                 starBuilder: (index, color) => Icon(Icons.star, color: color),
                 starCount: 5,
-                starSize: 50,
+                starSize: 40,
                 valueLabelColor: const Color(0xff9b9b9b),
                 valueLabelTextStyle: const TextStyle(
                   color: Colors.white,
@@ -76,8 +76,8 @@ class _RateListPageState extends State<RateListPage>
                 valueLabelRadius: 10,
                 maxValue: 5,
                 starSpacing: 2,
-                maxValueVisibility: true,
-                valueLabelVisibility: true,
+                maxValueVisibility: false,
+                valueLabelVisibility: false,
                 animationDuration: const Duration(milliseconds: 0),
                 valueLabelPadding:
                     const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
@@ -86,7 +86,7 @@ class _RateListPageState extends State<RateListPage>
                 starColor: const Color.fromRGBO(255, 167, 2, 1)),
             IconButton(
                 onPressed: () => createRateNote(context),
-                icon: const Icon(Icons.edit))
+                icon: Icon(Icons.edit, color: ThemeUtil.getIconButtonColor(),))
           ]),
         ),
         noteOk ? Column(children: _buildRateNoteList()) : Container()
