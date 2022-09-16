@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history_page.dart';
@@ -26,8 +27,8 @@ class _TabsState extends State<Tabs> {
     const NoteListPage(),
     const SettingPage(),
   ];
-  final List<String> _names = ["动漫", "网络", "历史", "笔记", "更多"];
-  final List<IconData> iconDatas = [
+  final List<String> _tabNames = ["动漫", "网络", "历史", "笔记", "更多"];
+  final List<IconData> _tabIconDatas = [
     Icons.book,
     Icons.local_library_outlined,
     Icons.history_rounded,
@@ -42,8 +43,8 @@ class _TabsState extends State<Tabs> {
     for (int i = 0; i < _list.length; ++i) {
       sidebarXItems.add(
         SidebarXItem(
-            icon: iconDatas[i],
-            label: _names[i],
+            icon: _tabIconDatas[i],
+            label: _tabNames[i],
             onTap: () {
               _currentIndex = i;
               setState(() {});
@@ -72,86 +73,155 @@ class _TabsState extends State<Tabs> {
         return false;
       },
       child: Platform.isWindows
-          ? Scaffold(
-              body: Row(
-                children: [
-                  Obx(() => SidebarX(
-                        showToggleButton: true,
-                        controller: _sidebarXController,
-                        items: _buildSidebarXItem(),
-                        animationDuration: const Duration(milliseconds: 200),
-                        headerBuilder: (context, extended) {
-                          return SizedBox(
-                            height: 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Image.asset('assets/images/logo.png'),
-                            ),
-                          );
-                        },
-                        footerDivider: const Divider(),
-                        // 展开时的主题
-                        extendedTheme: const SidebarXTheme(
-                          width: 150,
-                        ),
-                        theme: SidebarXTheme(
-                          // margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: ThemeUtil.getSideBarBackgroundColor(),
-                            // borderRadius: BorderRadius.circular(20),
-                          ),
-                          // 图标和标签的距离
-                          itemTextPadding: const EdgeInsets.only(left: 30),
-                          selectedItemTextPadding:
-                              const EdgeInsets.only(left: 30),
-                          // itemPadding: EdgeInsets.only(top: 20),
-                          // selectedItemPadding: EdgeInsets.only(top: 20),
-                          selectedItemDecoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: ThemeUtil.getSideBarSelectedItemColor(),
-                          ),
-                        ),
-                      )),
-                  // 必须要用Expanded
-                  Expanded(child: _list[_currentIndex])
-                ],
-              ),
-            )
-          : Scaffold(
-              body: _list[_currentIndex],
-              // body: IndexedStack(
-              //   // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
-              //   index: _currentIndex,
-              //   children: _list,
-              // ),
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType
-                    .fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
-                currentIndex: _currentIndex,
-                // elevation: 0,
-                // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-                onTap: (int index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
+          // ? _buildSidebarX()
+          ? _buildSideBar()
+          : _buildBottomNavigationBar(),
+    );
+  }
+
+  // 不能放到方法内部，否则选中的item颜色不会改变
+  List<SideMenuItem> items = [];
+  PageController pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 0; i < _tabNames.length; ++i) {
+      items.add(
+        SideMenuItem(
+          // Priority of item to show on SideMenu, lower value is displayed at the top
+          priority: i,
+          title: "  ${_tabNames[i]}", // 添加空格，否则太靠近图标
+          onTap: () => pageController.jumpToPage(i),
+          icon: Icon(_tabIconDatas[i]),
+        ),
+      );
+    }
+  }
+
+  Scaffold _buildSideBar() {
+    return Scaffold(
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // 左侧显示侧边栏
+          Obx(() => SideMenu(
+                title: SizedBox(
+                  height: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Image.asset('assets/images/logo.png'),
+                  ),
+                ),
+                items: items,
+                controller: pageController,
+                style: SideMenuStyle(
+                  displayMode: SideMenuDisplayMode.auto,
+                  decoration: BoxDecoration(),
+                  openSideMenuWidth: 120,
+                  compactSideMenuWidth: 60,
+                  // hoverColor: Colors.blue[100],
+                  // selectedColor: Colors.blue,
+                  selectedIconColor: ThemeUtil.getIconButtonColor(),
+                  unselectedIconColor: ThemeUtil.getIconButtonColor(),
+                  backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
+                  selectedTitleTextStyle:
+                      TextStyle(color: ThemeUtil.getFontColor()),
+                  unselectedTitleTextStyle:
+                      TextStyle(color: ThemeUtil.getFontColor()),
+                ),
+              )),
+          // 右侧显示body
+          Expanded(
+              child: PageView(
+            controller: pageController,
+            children: _list,
+          ))
+        ],
+      ),
+    );
+  }
+
+  Scaffold _buildBottomNavigationBar() {
+    return Scaffold(
+      body: _list[_currentIndex],
+      // body: IndexedStack(
+      //   // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
+      //   index: _currentIndex,
+      //   children: _list,
+      // ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
+        currentIndex: _currentIndex,
+        // elevation: 0,
+        // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "动漫"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.local_library_outlined), label: "网络"),
+          // icon: Icon(Entypo.network),
+          // label: "网络"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.history_rounded), label: "历史"),
+          BottomNavigationBarItem(
+              // icon: Icon(Icons.note_alt_outlined),
+              icon: Icon(Icons.edit_road),
+              label: "笔记"),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "更多"),
+        ],
+      ),
+    );
+  }
+
+  Scaffold _buildSidebarX() {
+    return Scaffold(
+      body: Row(
+        children: [
+          Obx(() => SidebarX(
+                showToggleButton: true,
+                controller: _sidebarXController,
+                items: _buildSidebarXItem(),
+                animationDuration: const Duration(milliseconds: 200),
+                headerBuilder: (context, extended) {
+                  return SizedBox(
+                    height: 100,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset('assets/images/logo.png'),
+                    ),
+                  );
                 },
-                items: const [
-                  BottomNavigationBarItem(icon: Icon(Icons.book), label: "动漫"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.local_library_outlined), label: "网络"),
-                  // icon: Icon(Entypo.network),
-                  // label: "网络"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.history_rounded), label: "历史"),
-                  BottomNavigationBarItem(
-                      // icon: Icon(Icons.note_alt_outlined),
-                      icon: Icon(Icons.edit_road),
-                      label: "笔记"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.more_horiz), label: "更多"),
-                ],
-              ),
-            ),
+                footerDivider: const Divider(),
+                // 展开时的主题
+                extendedTheme: const SidebarXTheme(
+                  width: 150,
+                ),
+                theme: SidebarXTheme(
+                  // margin: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: ThemeUtil.getSideBarBackgroundColor(),
+                    // borderRadius: BorderRadius.circular(20),
+                  ),
+                  // 图标和标签的距离
+                  itemTextPadding: const EdgeInsets.only(left: 30),
+                  selectedItemTextPadding: const EdgeInsets.only(left: 30),
+                  // itemPadding: EdgeInsets.only(top: 20),
+                  // selectedItemPadding: EdgeInsets.only(top: 20),
+                  selectedItemDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: ThemeUtil.getSideBarSelectedItemColor(),
+                  ),
+                ),
+              )),
+          // 必须要用Expanded
+          Expanded(child: _list[_currentIndex])
+        ],
+      ),
     );
   }
 }
