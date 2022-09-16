@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/linearicons_free_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -93,7 +95,8 @@ class AnimePropertiesPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text("1. 从本地图库中选择"),
+                    leading: const Icon(Entypo.picture),
+                    title: const Text("从本地图库中选择"),
                     onTap: () {
                       _selectCoverFromLocal(
                           context, howToEditCoverUrlDialogContext);
@@ -102,7 +105,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   ListTile(
                       dense: true,
                       style: ListTileStyle.drawer,
-                      title: const Text("去设置封面根目录"),
+                      title: const Text("点击前往设置封面根目录"),
                       onTap: () {
                         Navigator.pop(howToEditCoverUrlDialogContext);
                         Navigator.of(context).push(
@@ -116,7 +119,8 @@ class AnimePropertiesPage extends StatelessWidget {
                   // const SizedBox(height: 20),
                   const Divider(),
                   ListTile(
-                    title: const Text("2. 提供封面链接"),
+                    leading: const Icon(Entypo.network),
+                    title: const Text("提供封面链接"),
                     onTap: () {
                       _showDialogAboutEditCoverUrl(
                           howToEditCoverUrlDialogContext);
