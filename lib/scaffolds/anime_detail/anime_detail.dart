@@ -17,6 +17,7 @@ import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_info_edit.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/rate_list_page.dart';
@@ -77,6 +78,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   late TabController _tabController; // 创建tab控制器
   final List<String> _tabNames = ["选集", "评价", "详情"];
 
+  final AnimeController animeController = Get.put(AnimeController());
+
   @override
   void initState() {
     super.initState();
@@ -116,6 +119,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   void _loadData() async {
     await _loadAnime();
+    animeController.setAnime(_anime);
     _loadEpisode();
   }
 
@@ -307,7 +311,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _buildProfile() {
-    return AnimePropertiesPage(_anime);
+    return AnimePropertiesPage();
   }
 
   _buildSliverAppBar(BuildContext context) {
@@ -318,7 +322,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // AppBar总高度
     double appBarHeight = 240;
 
-    return SliverAppBar(
+    return Obx(() => SliverAppBar(
       // floating: true,
       // snap: true,
       pinned: true,
@@ -409,7 +413,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           icon: const Icon(Icons.arrow_back_rounded)),
       title: _buildAppBarTitle(),
       actions: _buildActions(),
-    );
+    ));
   }
 
   List<Widget> _buildActions() {
@@ -481,71 +485,35 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 },
               ),
             ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text("编辑信息"),
-                leading: const Icon(Icons.edit),
-                style: ListTileStyle.drawer,
-                onTap: () {
-                  // 先关闭下拉菜单
-                  Navigator.of(context).pop();
-                  // 再进入编辑页面
-                  Navigator.of(context).push(
-                    FadeRoute(
-                      builder: (context) => AnimeInfoEdit(_anime),
-                    ),
-                  );
-                  // _dialogUpdateAnimeName(popMenuContext);
-                },
-              ),
-            ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                  style: ListTileStyle.drawer,
-                  onTap: () {
-                    dialogSelectUint(context, "修改集数",
-                            initialValue: _anime.animeEpisodeCnt,
-                            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-                            // initialValue: initialValue,
-                            // 添加选择集范围后，就不能传入已有的集长度了。
-                            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-                            minValue: 0,
-                            maxValue: 2000)
-                        .then((value) {
-                      if (value == null) {
-                        debugPrint("未选择，直接返回");
-                        return;
-                      }
-                      // if (value == _episodes.length) {
-                      if (value == _anime.animeEpisodeCnt) {
-                        debugPrint("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
-                        return;
-                      }
-                      int episodeCnt = value;
-                      SqliteUtil.updateEpisodeCntByAnimeId(
-                              _anime.animeId, episodeCnt)
-                          .then((value) {
-                        // 重新获取数据
-                        _anime.animeEpisodeCnt = episodeCnt;
-                        _loadEpisode();
-                      });
-                    });
-                    Navigator.of(context).pop(); // 关闭下拉菜单
-                  },
-                  title: const Text("更改集数"),
-                  leading: const Icon(Icons.mode)),
-            )
+            // PopupMenuItem(
+            //   padding: const EdgeInsets.all(0),
+            //   child: ListTile(
+            //     title: const Text("编辑信息"),
+            //     leading: const Icon(Icons.edit),
+            //     style: ListTileStyle.drawer,
+            //     onTap: () {
+            //       // 先关闭下拉菜单
+            //       Navigator.of(context).pop();
+            //       // 再进入编辑页面
+            //       Navigator.of(context).push(
+            //         FadeRoute(
+            //           builder: (context) => AnimeInfoEdit(_anime),
+            //         ),
+            //       );
+            //       // _dialogUpdateAnimeName(popMenuContext);
+            //     },
+            //   ),
+            // ),
           ];
         },
       ),
     ];
   }
 
+  // 使用obx来实现监听其它页面修改controller中的动漫信息变化
   _showAnimeRow() {
-    final imageProvider = Image.network(_anime.animeCoverUrl).image;
-    return Row(
+    final imageProvider = Image.network(animeController.anime.value.animeCoverUrl).image;
+    return Obx(() => Row(
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -560,11 +528,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     padding: const EdgeInsets.all(0),
                     onPressed: () {
                       // 没有封面时，直接返回
-                      if (_anime.animeCoverUrl.isEmpty) return;
+                      if (animeController.anime.value.animeCoverUrl.isEmpty) return;
 
                       showImageViewer(context, imageProvider, immersive: false);
                     },
-                    child: AnimeGridCover(_anime),
+                    child: AnimeGridCover(animeController.anime.value),
                   ),
                 ),
               ),
@@ -575,10 +543,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _showAnimeName(_anime.animeName),
-              _showNameAnother(_anime.nameAnother),
-              _showAnimeInfo(_anime.getAnimeInfoFirstLine()),
-              _showAnimeInfo(_anime.getAnimeInfoSecondLine()),
+              _showAnimeName(animeController.anime.value.animeName),
+              _showNameAnother(animeController.anime.value.nameAnother),
+              _showAnimeInfo(animeController.anime.value.getAnimeInfoFirstLine()),
+              _showAnimeInfo(animeController.anime.value.getAnimeInfoSecondLine()),
               // Container(
               //   alignment: Alignment.centerLeft,
               //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
@@ -593,10 +561,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         ),
         // Column(
         //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [_showCollectIcon(_anime)],
+        //   children: [_showCollectIcon(animeController.anime.value)],
         // ),
       ],
-    );
+    ));
   }
 
   _showAnimeName(animeName) {
@@ -677,7 +645,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     for (int episodeIndex = 0;
         episodeIndex < _episodes.length;
         ++episodeIndex) {
-      debugPrint("$episodeIndex");
+      // debugPrint("$episodeIndex");
       // 添加每集
       columnChildren.add(
         ListTile(
@@ -1402,6 +1370,37 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   icon: hideNoteInAnimeDetail
                       ? const Icon(Icons.unfold_more)
                       : const Icon(Icons.unfold_less)),
+              IconButton(
+                  onPressed: () {
+                    dialogSelectUint(context, "修改集数",
+                            initialValue: _anime.animeEpisodeCnt,
+                            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+                            // initialValue: initialValue,
+                            // 添加选择集范围后，就不能传入已有的集长度了。
+                            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
+                            minValue: 0,
+                            maxValue: 2000)
+                        .then((value) {
+                      if (value == null) {
+                        debugPrint("未选择，直接返回");
+                        return;
+                      }
+                      // if (value == _episodes.length) {
+                      if (value == _anime.animeEpisodeCnt) {
+                        debugPrint("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
+                        return;
+                      }
+                      int episodeCnt = value;
+                      SqliteUtil.updateEpisodeCntByAnimeId(
+                              _anime.animeId, episodeCnt)
+                          .then((value) {
+                        // 重新获取数据
+                        _anime.animeEpisodeCnt = episodeCnt;
+                        _loadEpisode();
+                      });
+                    });
+                  },
+                  icon: const Icon(Icons.add)),
             ],
           ),
         ],

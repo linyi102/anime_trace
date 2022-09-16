@@ -223,6 +223,24 @@ class SqliteUtil {
     ''');
   }
 
+  static void updateAnimeUrl(int animeId, String animeUrl) async {
+    debugPrint("sql: updateAnimeUrl");
+    await database.rawUpdate('''
+    update anime
+    set anime_url = '$animeUrl'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeCoverUrl(int animeId, String animeCoverUrl) async {
+    debugPrint("sql: updateAnimeCoverUrl");
+    await database.rawUpdate('''
+    update anime
+    set anime_cover_url = '$animeCoverUrl'
+    where anime_id = $animeId;
+    ''');
+  }
+
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
     debugPrint("sql: updateAnimeNameByAnimeId");
     newAnimeName =

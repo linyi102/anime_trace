@@ -262,10 +262,6 @@ class _NoteListPageState extends State<NoteListPage> {
   _enterAnimeDetail(int episodeNoteindex) {
     Navigator.of(context)
         .push(
-      // MaterialPageRoute(
-      //   builder: (context) => AnimeDetailPlus(
-      //       episodeNotes[index].anime.animeId),
-      // ),
       FadeRoute(
         transitionDuration: const Duration(milliseconds: 200),
         builder: (context) {
