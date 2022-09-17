@@ -36,4 +36,9 @@ class AnimeController extends GetxController {
     });
   }
 
+  updateAnimeDesc(String newDesc) {
+    anime.update((anime) {
+      anime?.animeDesc = newDesc;
+    });
+  }
 }

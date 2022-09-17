@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../classes/anime.dart';
 import '../../utils/theme_util.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
@@ -23,7 +24,8 @@ class AnimePropertiesPage extends StatelessWidget {
             _buildAnimeName(context),
             _buildAnotherName(context),
             _buildAnimeUrl(context),
-            _buildAnimeDesc()
+            _buildAnimeDesc(context),
+            const SizedBox(height: 80)
           ],
         ));
   }
@@ -111,11 +113,25 @@ class AnimePropertiesPage extends StatelessWidget {
     );
   }
 
-  Column _buildAnimeDesc() {
+  Column _buildAnimeDesc(BuildContext context) {
+    Anime anime = animeController.anime.value;
     return Column(
       children: [
-        const ListTile(title: Text("简介")),
-        _buildContent(animeController.anime.value.animeDesc)
+        ListTile(
+            title: const Text("简介"),
+            trailing: IconButton(
+                onPressed: () {
+                  _showDialogAboutEdit(context,
+                      title: "编辑简介",
+                      property: anime.animeDesc, confirm: (newDesc) {
+                    debugPrint("更新简介：$newDesc");
+                    animeController.updateAnimeDesc(newDesc);
+                    SqliteUtil.updateAnimeDescByAnimeId(
+                        animeController.anime.value.animeId, newDesc);
+                  });
+                },
+                icon: const Icon(Icons.edit))),
+        _buildContent(anime.animeDesc)
       ],
     );
   }

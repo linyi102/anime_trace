@@ -231,6 +231,7 @@ class SqliteUtil {
 
   static void updateAnimeUrl(int animeId, String animeUrl) async {
     debugPrint("sql: updateAnimeUrl");
+    animeUrl = escapeStr(animeUrl);
     await database.rawUpdate('''
     update anime
     set anime_url = '$animeUrl'
@@ -241,6 +242,7 @@ class SqliteUtil {
   static Future<void> updateAnimeCoverUrl(
       int animeId, String animeCoverUrl) async {
     debugPrint("sql: updateAnimeCoverUrl");
+    animeCoverUrl = escapeStr(animeCoverUrl);
     await database.rawUpdate('''
     update anime
     set anime_cover_url = '$animeCoverUrl'
@@ -258,12 +260,23 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateAnimeNameAnotherByAnimeId(int animeId, String newNameAnother) async {
+  static void updateAnimeNameAnotherByAnimeId(
+      int animeId, String newNameAnother) async {
     debugPrint("sql: updateAnimeNameAnotherByAnimeId");
     newNameAnother = escapeStr(newNameAnother);
     await database.rawUpdate('''
     update anime
     set name_another = '$newNameAnother'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeDescByAnimeId(int animeId, String newDesc) async {
+    debugPrint("sql: updateAnimeDescByAnimeId");
+    newDesc = escapeStr(newDesc);
+    await database.rawUpdate('''
+    update anime
+    set anime_desc = '$newDesc'
     where anime_id = $animeId;
     ''');
   }
