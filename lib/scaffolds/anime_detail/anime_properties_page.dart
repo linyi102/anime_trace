@@ -98,7 +98,7 @@ class AnimePropertiesPage extends StatelessWidget {
                     dialogContent: TextField(
                         controller: textController..text = animeUrl,
                         minLines: 1,
-                        maxLines: 5,
+                        maxLines: 10,
                         maxLength: 999,
                         decoration: const InputDecoration(
                           helperText: "修改后可能导致无法更新动漫",
@@ -151,7 +151,7 @@ class AnimePropertiesPage extends StatelessWidget {
                 TextField(
                     controller: textController..text = property,
                     minLines: 1,
-                    maxLines: 5,
+                    maxLines: 10,
                     maxLength: 999),
             actions: [
               Row(
