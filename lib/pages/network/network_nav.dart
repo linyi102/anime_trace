@@ -102,7 +102,7 @@ class _NetWorkNavState extends State<NetWorkNav>
                   // 指定tab控制器
                   padding: const EdgeInsets.all(2),
                   // 居中，而不是靠左下
-                  // isScrollable: true, // 标签可以滑动，避免拥挤
+                  isScrollable: true, // 标签可以滑动，避免拥挤
                   labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.w600,

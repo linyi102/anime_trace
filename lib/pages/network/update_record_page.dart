@@ -16,9 +16,7 @@ import '../../components/dialog/dialog_update_all_anime_progress.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
-
   final UpdateRecordController updateRecordController = Get.find();
-
   final ScrollController _scrollController = ScrollController();
 
   @override
