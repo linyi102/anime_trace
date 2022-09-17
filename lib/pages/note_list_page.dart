@@ -211,47 +211,50 @@ class _NoteListPageState extends State<NoteListPage> {
 
               return Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: MaterialButton(
-                  elevation: 0,
-                  padding: const EdgeInsets.all(0),
-                  color: ThemeUtil.getNoteCardColor(),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      // MaterialPageRoute(
-                      //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
-                      // ),
-                      FadeRoute(
-                        builder: (context) {
-                          return NoteEdit(episodeNotes[index]);
-                        },
-                      ),
-                    ).then((value) {
-                      // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
-                      EpisodeNote newEpisodeNote = value;
-                      debugPrint(
-                          "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
-                      if (newEpisodeNote.episodeNoteId == 0) {
-                        episodeNotes.removeWhere((element) =>
-                            element.anime.animeId ==
-                            newEpisodeNote.anime.animeId);
-                      } else {
-                        episodeNotes[index] = newEpisodeNote; // 更新修改
-                      }
-                      setState(() {});
-                    });
-                  },
-                  child: Flex(
-                    direction: Axis.vertical,
-                    children: [
-                      // 动漫行
-                      _buildAnimeListTile(index),
-                      // 笔记内容
-                      _buildEpisodeNote(index),
-                      // 笔记图片
-                      ImageGridView(
-                          relativeLocalImages:
-                              episodeNotes[index].relativeLocalImages),
-                    ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: MaterialButton(
+                    elevation: 0,
+                    padding: const EdgeInsets.all(0),
+                    color: ThemeUtil.getNoteCardColor(),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        // MaterialPageRoute(
+                        //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
+                        // ),
+                        FadeRoute(
+                          builder: (context) {
+                            return NoteEdit(episodeNotes[index]);
+                          },
+                        ),
+                      ).then((value) {
+                        // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
+                        EpisodeNote newEpisodeNote = value;
+                        debugPrint(
+                            "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
+                        if (newEpisodeNote.episodeNoteId == 0) {
+                          episodeNotes.removeWhere((element) =>
+                              element.anime.animeId ==
+                              newEpisodeNote.anime.animeId);
+                        } else {
+                          episodeNotes[index] = newEpisodeNote; // 更新修改
+                        }
+                        setState(() {});
+                      });
+                    },
+                    child: Flex(
+                      direction: Axis.vertical,
+                      children: [
+                        // 动漫行
+                        _buildAnimeListTile(index),
+                        // 笔记内容
+                        _buildEpisodeNote(index),
+                        // 笔记图片
+                        ImageGridView(
+                            relativeLocalImages:
+                                episodeNotes[index].relativeLocalImages),
+                      ],
+                    ),
                   ),
                 ),
               );

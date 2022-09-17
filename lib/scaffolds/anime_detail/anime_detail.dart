@@ -242,12 +242,37 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return SliverPadding(
       padding: const EdgeInsets.all(0),
       sliver: SliverList(
-        delegate: SliverChildListDelegate([_buildTabRow(), _buildTabBody()]),
+        delegate: SliverChildListDelegate([
+          _buildTabRow(),
+          GestureDetector(
+            // onHorizontalDragEnd: _swipeFunction,
+            child: _buildTabBody(),
+          )
+        ]),
       ),
     );
   }
 
   int selectedTabIdx = 0;
+
+  // 左右滑动切换tab
+  // 注意如果body没有元素，则无法切换，可以试着填充
+  // 不采用该方式，原因：有些元素不整齐，所以滑动时有时正常有时不行
+  void _swipeFunction(DragEndDetails dragEndDetails) {
+    // 右滑
+    if (dragEndDetails.primaryVelocity! < 0 &&
+        selectedTabIdx + 1 < _tabNames.length) {
+      selectedTabIdx++;
+      _tabController.index = selectedTabIdx;
+      setState(() {});
+    }
+    // 左滑
+    if (dragEndDetails.primaryVelocity! > 0 && selectedTabIdx - 1 >= 0) {
+      selectedTabIdx--;
+      _tabController.index = selectedTabIdx;
+      setState(() {});
+    }
+  }
 
   _buildTabRow() {
     return PreferredSize(

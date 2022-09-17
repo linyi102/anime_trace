@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -55,46 +56,57 @@ class _RateListPageState extends State<RateListPage>
           padding: const EdgeInsets.only(left: 15, right: 15),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            RatingStars(
-                value: anime.rate.toDouble(),
-                onValueChanged: (v) {
-                  setState(() {
-                    anime.rate = v.toInt();
-                  });
-                  SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
-                },
-                starBuilder: (index, color) => Icon(Icons.star, color: color),
-                starCount: 5,
-                starSize: 40,
-                valueLabelColor: const Color(0xff9b9b9b),
-                valueLabelTextStyle: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.normal,
-                  // fontSize: 12.0
-                ),
-                valueLabelRadius: 10,
-                maxValue: 5,
-                starSpacing: 2,
-                maxValueVisibility: false,
-                valueLabelVisibility: false,
-                animationDuration: const Duration(milliseconds: 0),
-                valueLabelPadding:
-                    const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
-                valueLabelMargin: const EdgeInsets.only(right: 8),
-                starOffColor: const Color.fromRGBO(206, 214, 224, 1),
-                starColor: const Color.fromRGBO(255, 167, 2, 1)),
+            _buildRatingStars(),
             IconButton(
-                onPressed: () => createRateNote(context),
-                icon: Icon(Icons.edit, color: ThemeUtil.getIconButtonColor(),))
+                onPressed: () => _createRateNote(context),
+                icon: Icon(
+                  Icons.edit,
+                  color: ThemeUtil.getIconButtonColor(),
+                ))
           ]),
         ),
-        noteOk ? Column(children: _buildRateNoteList()) : Container()
+        noteOk
+            ? notes.isNotEmpty
+                ? Column(children: _buildRateNoteList())
+                : Container()
+            : Container()
       ],
     );
   }
 
-  void createRateNote(BuildContext context) {
+  RatingStars _buildRatingStars() {
+    return RatingStars(
+        value: anime.rate.toDouble(),
+        onValueChanged: (v) {
+          setState(() {
+            anime.rate = v.toInt();
+          });
+          SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
+        },
+        starBuilder: (index, color) => Icon(Icons.star, color: color),
+        starCount: 5,
+        starSize: 40,
+        valueLabelColor: const Color(0xff9b9b9b),
+        valueLabelTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+          fontStyle: FontStyle.normal,
+          // fontSize: 12.0
+        ),
+        valueLabelRadius: 10,
+        maxValue: 5,
+        starSpacing: 2,
+        maxValueVisibility: false,
+        valueLabelVisibility: false,
+        animationDuration: const Duration(milliseconds: 0),
+        valueLabelPadding:
+            const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
+        valueLabelMargin: const EdgeInsets.only(right: 8),
+        starOffColor: const Color.fromRGBO(206, 214, 224, 1),
+        starColor: const Color.fromRGBO(255, 167, 2, 1));
+  }
+
+  void _createRateNote(BuildContext context) {
     debugPrint("添加评价");
     EpisodeNote episodeNote =
         EpisodeNote(anime: anime, episode: Episode(0, 1), // 第0集作为评价
@@ -118,32 +130,35 @@ class _RateListPageState extends State<RateListPage>
     for (EpisodeNote note in notes) {
       list.add(Container(
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-        child: MaterialButton(
-          elevation: 0,
-          padding: const EdgeInsets.all(0),
-          color: ThemeUtil.getNoteCardColor(),
-          onPressed: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return NoteEdit(note);
-                },
-              ),
-            ).then((value) {
-              // 重新获取列表
-              _loadData();
-            });
-          },
-          child: Flex(
-            direction: Axis.vertical,
-            children: [
-              // 笔记内容
-              _buildNoteContent(note),
-              // 笔记图片
-              ImageGridView(relativeLocalImages: note.relativeLocalImages),
-              // 创建时间
-              _buildCreateTimeAndMoreAction(note)
-            ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: MaterialButton(
+            elevation: 0,
+            padding: const EdgeInsets.all(0),
+            color: ThemeUtil.getNoteCardColor(),
+            onPressed: () {
+              Navigator.of(context).push(
+                FadeRoute(
+                  builder: (context) {
+                    return NoteEdit(note);
+                  },
+                ),
+              ).then((value) {
+                // 重新获取列表
+                _loadData();
+              });
+            },
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                // 笔记内容
+                _buildNoteContent(note),
+                // 笔记图片
+                ImageGridView(relativeLocalImages: note.relativeLocalImages),
+                // 创建时间
+                _buildCreateTimeAndMoreAction(note)
+              ],
+            ),
           ),
         ),
       ));
