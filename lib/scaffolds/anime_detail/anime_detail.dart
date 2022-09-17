@@ -14,6 +14,7 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
+import 'package:flutter_test_future/scaffolds/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
@@ -547,30 +548,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     width: 120,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child:
-                      MaterialButton(
+                      child: MaterialButton(
                         padding: const EdgeInsets.all(0),
                         onPressed: () {
-                          String coverUrl =
-                              animeController.anime.value.animeCoverUrl;
-                          final ImageProvider<Object> imageProvider;
-
-                          if (coverUrl.isEmpty) {
-                            // 没有封面，直接返回
-                            return;
-                          } else if (coverUrl.startsWith("http")) {
-                            // 网络封面
-                            imageProvider = Image.network(coverUrl).image;
-                          } else {
-                            // 本地封面
-                            imageProvider = Image.file(File(
-                                    ImageUtil.getAbsoluteCoverImagePath(
-                                        coverUrl)))
-                                .image;
-                          }
-
-                          showImageViewer(context, imageProvider,
-                              immersive: false);
+                          Navigator.of(context).push(FadeRoute(
+                              builder: (context) => AnimeCoverDetail()));
+                          // String coverUrl =
+                          //     animeController.anime.value.animeCoverUrl;
+                          // final ImageProvider<Object> imageProvider;
+                          //
+                          // if (coverUrl.isEmpty) {
+                          //   // 没有封面，直接返回
+                          //   return;
+                          // } else if (coverUrl.startsWith("http")) {
+                          //   // 网络封面
+                          //   imageProvider = Image.network(coverUrl).image;
+                          // } else {
+                          //   // 本地封面
+                          //   imageProvider = Image.file(File(
+                          //           ImageUtil.getAbsoluteCoverImagePath(
+                          //               coverUrl)))
+                          //       .image;
+                          // }
+                          //
+                          // showImageViewer(context, imageProvider,
+                          //     immersive: false);
                         },
                         child: AnimeGridCover(animeController.anime.value),
                       ),
