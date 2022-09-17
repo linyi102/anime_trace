@@ -260,14 +260,18 @@ class AnimePropertiesPage extends StatelessWidget {
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text("网址编辑"),
+            title: const Text("修改网址"),
             content: TextField(
-              controller: textController
-                ..text = animeController.anime.value.animeUrl,
-              minLines: 1,
-              maxLines: 5,
-              maxLength: 999,
-            ),
+                controller: textController
+                  ..text = animeController.anime.value.animeUrl,
+                minLines: 1,
+                maxLines: 5,
+                maxLength: 999,
+                decoration: const InputDecoration(
+                  helperText: "修改后可能导致无法更新动漫",
+                  helperStyle: TextStyle(color: Colors.orangeAccent),
+                  counterStyle: TextStyle(color: Colors.grey),
+                )),
             actions: [
               Row(
                 children: [

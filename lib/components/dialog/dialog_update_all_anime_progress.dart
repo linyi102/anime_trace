@@ -53,7 +53,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                 Container(
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   child: const Text(
-                    "小提示：更新时会跳过已完结动漫",
+                    "提示：更新时会跳过已完结动漫",
                     style: TextStyle(color: Colors.grey),
                     textScaleFactor: 0.8,
                   ),
