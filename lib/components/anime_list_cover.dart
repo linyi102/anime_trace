@@ -1,11 +1,17 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 
+import '../utils/image_util.dart';
+
+// 列表样式时的动漫封面
 class AnimeListCover extends StatelessWidget {
   final Anime _anime;
   final bool showReviewNumber;
   final int reviewNumber;
+
   const AnimeListCover(this._anime,
       {this.showReviewNumber = false, this.reviewNumber = 0, Key? key})
       : super(key: key);
@@ -20,14 +26,7 @@ class AnimeListCover extends StatelessWidget {
               aspectRatio: 1 / 1, // 正方形
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: _anime.animeCoverUrl.isEmpty
-                    ? null
-                    : CachedNetworkImage(
-                        imageUrl: _anime.animeCoverUrl,
-                        fit: BoxFit.fitWidth,
-                        errorWidget: (context, url, error) =>
-                            const Placeholder(),
-                      ),
+                child: _buildAnimeCover(),
               ),
             ),
             showReviewNumber && reviewNumber > 1
@@ -51,5 +50,24 @@ class AnimeListCover extends StatelessWidget {
                 : const SizedBox.shrink(),
           ],
         ));
+  }
+
+  _buildAnimeCover() {
+    if (_anime.animeCoverUrl.isEmpty) return null;
+
+    // 网络封面
+    if (_anime.animeCoverUrl.startsWith("http")) {
+      return CachedNetworkImage(
+        imageUrl: _anime.animeCoverUrl,
+        fit: BoxFit.fitWidth,
+        errorWidget: (context, url, error) => const Placeholder(),
+      );
+    }
+
+    // 本地封面
+    return Image.file(
+      File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
+      fit: BoxFit.cover,
+    );
   }
 }

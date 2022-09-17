@@ -50,7 +50,7 @@ class AnimeGridCover extends StatelessWidget {
     if (_anime.animeCoverUrl.startsWith("http")) {
       return CachedNetworkImage(
         imageUrl: _anime.animeCoverUrl,
-        fit: BoxFit.fitHeight,
+        fit: BoxFit.cover,
         errorWidget: (context, url, error) => const Placeholder(),
       );
     }
@@ -58,7 +58,7 @@ class AnimeGridCover extends StatelessWidget {
     // 本地封面
     return Image.file(
       File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
-      fit: BoxFit.fitHeight,
+      fit: BoxFit.cover,
     );
   }
 }

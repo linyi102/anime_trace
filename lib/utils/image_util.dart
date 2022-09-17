@@ -69,18 +69,9 @@ class ImageUtil {
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
     String relativeImagePath =
-    absoluteImagePath.substring(ImageUtil.coverImageRootDirPath.length);
+        absoluteImagePath.substring(ImageUtil.coverImageRootDirPath.length);
     // debugPrint("relativeImagePath: $relativeImagePath");
-    // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
-    String cacheNameStr = "test_future/cache/file_picker";
-    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
-      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
-    }
-    // MuMu模拟器
-    cacheNameStr = "st_future/cache/file_picker";
-    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
-      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
-    }
+    relativeImagePath = _removeCachePrefix(relativeImagePath);
     // debugPrint("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
@@ -90,35 +81,42 @@ class ImageUtil {
     String relativeImagePath =
         absoluteImagePath.substring(ImageUtil.noteImageRootDirPath.length);
     // debugPrint("relativeImagePath: $relativeImagePath");
-    // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
-    String cacheNameStr = "test_future/cache/file_picker";
-    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
-      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
-    }
-    // MuMu模拟器
-    cacheNameStr = "st_future/cache/file_picker";
-    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
-      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
-    }
+    relativeImagePath = _removeCachePrefix(relativeImagePath);
     // debugPrint("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
 
   static String getAbsoluteNoteImagePath(String relativeImagePath) {
     String absolutePath = noteImageRootDirPath + relativeImagePath;
-    // debugPrint("修复前，路径为$absolutePath");
-    absolutePath = absolutePath.replaceAll("/", separator);
-    absolutePath = absolutePath.replaceAll("\\", separator);
-    // debugPrint("修复后，路径为$absolutePath");
+    absolutePath = _fixPathSeparator(absolutePath);
     return absolutePath;
   }
 
   static String getAbsoluteCoverImagePath(String relativeImagePath) {
     String absolutePath = coverImageRootDirPath + relativeImagePath;
-    // debugPrint("修复前，路径为$absolutePath");
-    absolutePath = absolutePath.replaceAll("/", separator);
-    absolutePath = absolutePath.replaceAll("\\", separator);
-    // debugPrint("修复后，路径为$absolutePath");
+    absolutePath = _fixPathSeparator(absolutePath);
     return absolutePath;
+  }
+
+  static String _removeCachePrefix(String path) {
+    // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
+    String cacheNameStr = "test_future/cache/file_picker";
+    if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
+      path = path.substring(cacheNameStr.length);
+    }
+    // MuMu模拟器
+    cacheNameStr = "st_future/cache/file_picker";
+    if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
+      path = path.substring(cacheNameStr.length);
+    }
+    return path;
+  }
+
+  static String _fixPathSeparator(String path) {
+    // debugPrint("修复前，路径为$path");
+    path = path.replaceAll("/", separator);
+    path = path.replaceAll("\\", separator);
+    // debugPrint("修复后，路径为$path");
+    return path;
   }
 }
