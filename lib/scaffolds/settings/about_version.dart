@@ -90,7 +90,7 @@ class _AboutVersionState extends State<AboutVersion> {
           children: [
             IconButton(
                 onPressed: () {
-                  _launchUrl("https://gitee.com/linyi517/anime_trace");
+                  _launchUrl("https://github.com/linyi102/anime_trace");
                 },
                 icon: Icon(
                   SimpleIcons.github,
@@ -100,7 +100,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 )),
             IconButton(
               onPressed: () {
-                _launchUrl("https://github.com/linyi102/anime_trace");
+                _launchUrl("https://gitee.com/linyi517/anime_trace");
               },
               icon: const Icon(SimpleIcons.gitee),
               color: const Color.fromRGBO(187, 33, 36, 1),
