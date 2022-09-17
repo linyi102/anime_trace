@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -135,8 +136,30 @@ class AnimeCoverDetail extends StatelessWidget {
     // 本地封面
     return Image.file(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
         fit: BoxFit.cover, errorBuilder: (context, object, stackTrace) {
-      return TextButton(
-          onPressed: () {}, child: Text("无法正常显示图片\n封面链接：$coverUrl"));
+      return Padding(
+        padding: const EdgeInsets.only(left: 25, right: 25),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("(´。＿。｀)", style: TextStyle(fontSize: 30)),
+            const SizedBox(height: 5),
+            const Text("很抱歉，无法正常显示图片"),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  // SizedBox(height: 10),
+                  // Text("图片链接：$coverUrl"),
+                  SizedBox(height: 10),
+                  Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
+                  SizedBox(height: 10),
+                  Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
+                ],
+              ),
+            )
+          ],
+        ),
+      );
     });
   }
 
