@@ -515,8 +515,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 leading: const Icon(Icons.edit),
                 style: ListTileStyle.drawer,
                 onTap: () {
-                  // 先关闭下拉菜单
-                  Navigator.of(context).pop();
+                  // // 先关闭下拉菜单
+                  // Navigator.of(popMenuContext).pop();
                   // // 再进入编辑页面
                   // Navigator.of(context).push(
                   //   FadeRoute(
