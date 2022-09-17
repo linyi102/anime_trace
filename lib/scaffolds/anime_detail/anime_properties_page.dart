@@ -4,6 +4,7 @@ import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_cont
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/theme_util.dart';
@@ -19,80 +20,123 @@ class AnimePropertiesPage extends StatelessWidget {
     // 不能使用ListView，因为外部是SliverChildListDelegate
     return Obx(() => Column(
           children: [
+            _buildAnimeName(context),
+            _buildAnotherName(context),
             _buildAnimeUrl(context),
             _buildAnimeDesc()
           ],
         ));
   }
 
-  // 以http开头就提供访问功能，否则以灰色字体显示
-  _buildUrlText(String url) {
-    if (url.startsWith("http")) {
-      return MaterialButton(
-        // TextButton无法取消填充，所以使用MaterialButton
-        padding: const EdgeInsets.all(0),
-        onPressed: () async {
-          LaunchUrlUtil.launch(url);
-        },
-        child: Text(url,
-            style: const TextStyle(
-                color: Colors.blue, fontWeight: FontWeight.normal)),
-      );
-    } else {
-      // 本地封面地址
-      return MaterialButton(
-        padding: const EdgeInsets.all(0),
-        child: Text(url.isEmpty ? "什么都没有~" : url,
-            style: TextStyle(
-                color: ThemeUtil.getCommentColor(),
-                fontWeight: FontWeight.normal)),
-        onPressed: () {},
-      );
-    }
+  Column _buildAnimeName(BuildContext context) {
+    String animeName = animeController.anime.value.animeName;
+    return Column(
+      children: [
+        ListTile(
+          title: const Text("名称"),
+          trailing: IconButton(
+              onPressed: () {
+                _showDialogAboutEdit(context,
+                    title: "编辑别名", property: animeName, confirm: (newName) {
+                  if (newName.isEmpty) {
+                    showToast("动漫名不允许为空");
+                    return;
+                  }
+                  debugPrint("更新别名：$newName");
+                  animeController.updateAnimeName(newName);
+                  SqliteUtil.updateAnimeNameByAnimeId(
+                      animeController.anime.value.animeId, newName);
+                });
+              },
+              icon: const Icon(Icons.edit)),
+        ),
+        _buildContent(animeName)
+      ],
+    );
   }
 
-
+  Column _buildAnotherName(BuildContext context) {
+    String nameAnother = animeController.anime.value.nameAnother;
+    return Column(
+      children: [
+        ListTile(
+          title: const Text("别名"),
+          trailing: IconButton(
+              onPressed: () {
+                _showDialogAboutEdit(context,
+                    title: "编辑别名",
+                    property: nameAnother, confirm: (newNameAnother) {
+                  debugPrint("更新别名：$newNameAnother");
+                  animeController.updateAnimeNameAnother(newNameAnother);
+                  SqliteUtil.updateAnimeNameAnotherByAnimeId(
+                      animeController.anime.value.animeId, newNameAnother);
+                });
+              },
+              icon: const Icon(Icons.edit)),
+        ),
+        _buildContent(nameAnother)
+      ],
+    );
+  }
 
   Column _buildAnimeUrl(BuildContext context) {
+    String animeUrl = animeController.anime.value.animeUrl;
     return Column(
       children: [
         ListTile(
           title: const Text("网址"),
           trailing: IconButton(
               onPressed: () {
-                _showDialogAboutEditAnimeUrl(context);
+                _showDialogAboutEdit(context, title: "编辑网址", property: animeUrl,
+                    confirm: (newUrl) {
+                  animeController.updateAnimeUrl(textController.text);
+                  SqliteUtil.updateAnimeUrl(animeController.anime.value.animeId,
+                      animeController.anime.value.animeUrl);
+                },
+                    dialogContent: TextField(
+                        controller: textController..text = animeUrl,
+                        minLines: 1,
+                        maxLines: 5,
+                        maxLength: 999,
+                        decoration: const InputDecoration(
+                          helperText: "修改后可能导致无法更新动漫",
+                          helperStyle: TextStyle(color: Colors.orangeAccent),
+                          counterStyle: TextStyle(color: Colors.grey),
+                        )));
               },
               icon: const Icon(Icons.edit)),
         ),
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: _buildUrlText(animeController.anime.value.animeUrl),
-          // Text(anime.animeUrl, style: TextStyle(color: Colors.blue, fontSize: 14))
-        ),
+        _buildContent(animeUrl)
       ],
     );
   }
 
+  Column _buildAnimeDesc() {
+    return Column(
+      children: [
+        const ListTile(title: Text("简介")),
+        _buildContent(animeController.anime.value.animeDesc)
+      ],
+    );
+  }
 
-
-  _showDialogAboutEditAnimeUrl(BuildContext context) {
+  _showDialogAboutEdit(BuildContext context,
+      {required String title,
+      required dynamic property,
+      Widget? dialogContent,
+      required Function(String) confirm}) {
     showDialog(
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text("修改网址"),
-            content: TextField(
-                controller: textController
-                  ..text = animeController.anime.value.animeUrl,
-                minLines: 1,
-                maxLines: 5,
-                maxLength: 999,
-                decoration: const InputDecoration(
-                  helperText: "修改后可能导致无法更新动漫",
-                  helperStyle: TextStyle(color: Colors.orangeAccent),
-                  counterStyle: TextStyle(color: Colors.grey),
-                )),
+            title: Text(title),
+            // 如果传了dialogContent，就显示传入的，否则默认显示该文本输入框
+            content: dialogContent ??
+                TextField(
+                    controller: textController..text = property,
+                    minLines: 1,
+                    maxLines: 5,
+                    maxLength: 999),
             actions: [
               Row(
                 children: [
@@ -120,11 +164,7 @@ class AnimePropertiesPage extends StatelessWidget {
                           child: const Text("取消")),
                       ElevatedButton(
                           onPressed: () {
-                            animeController.updateAnimeUrl(textController.text);
-
-                            SqliteUtil.updateAnimeUrl(
-                                animeController.anime.value.animeId,
-                                animeController.anime.value.animeUrl);
+                            confirm(textController.text);
                             Navigator.pop(dialogContext); // 退出编辑对话框
                           },
                           child: const Text("确认"))
@@ -137,23 +177,32 @@ class AnimePropertiesPage extends StatelessWidget {
         });
   }
 
-  Column _buildAnimeDesc() {
-    return Column(
-      children: [
-        const ListTile(
-          title: Text("简介"),
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: Text(
-              animeController.anime.value.animeDesc.isEmpty
-                  ? "什么都没有~"
-                  : animeController.anime.value.animeDesc,
-              style:
-                  TextStyle(color: ThemeUtil.getCommentColor(), fontSize: 14)),
-        ),
-      ],
+  _buildContent(String content) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+      child: _buildUrlText(content),
     );
+  }
+
+  // 以http开头就提供访问功能
+  _buildUrlText(String url) {
+    if (url.startsWith("http")) {
+      return MaterialButton(
+        // TextButton无法取消填充，所以使用MaterialButton
+        padding: const EdgeInsets.all(0),
+        onPressed: () async {
+          LaunchUrlUtil.launch(url);
+        },
+        child: Text(url,
+            style: const TextStyle(
+                color: Colors.blue, fontWeight: FontWeight.normal)),
+      );
+    } else {
+      return Text(url.isEmpty ? "什么都没有~" : url,
+          style: TextStyle(
+              color: ThemeUtil.getCommentColor(),
+              fontWeight: FontWeight.normal));
+    }
   }
 }

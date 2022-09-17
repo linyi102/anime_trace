@@ -24,4 +24,16 @@ class AnimeController extends GetxController {
     });
   }
 
+  updateAnimeName(String newName) {
+    anime.update((anime) {
+      anime?.animeName = newName;
+    });
+  }
+
+  updateAnimeNameAnother(String newNameAnother) {
+    anime.update((anime) {
+      anime?.nameAnother = newNameAnother;
+    });
+  }
+
 }

@@ -250,11 +250,20 @@ class SqliteUtil {
 
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
     debugPrint("sql: updateAnimeNameByAnimeId");
-    newAnimeName =
-        newAnimeName.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
+    newAnimeName = escapeStr(newAnimeName);
     await database.rawUpdate('''
     update anime
     set anime_name = '$newAnimeName'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeNameAnotherByAnimeId(int animeId, String newNameAnother) async {
+    debugPrint("sql: updateAnimeNameAnotherByAnimeId");
+    newNameAnother = escapeStr(newNameAnother);
+    await database.rawUpdate('''
+    update anime
+    set name_another = '$newNameAnother'
     where anime_id = $animeId;
     ''');
   }

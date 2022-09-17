@@ -507,27 +507,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   });
                 },
               ),
-            ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text("修改名字"),
-                leading: const Icon(Icons.edit),
-                style: ListTileStyle.drawer,
-                onTap: () {
-                  // // 先关闭下拉菜单
-                  // Navigator.of(popMenuContext).pop();
-                  // // 再进入编辑页面
-                  // Navigator.of(context).push(
-                  //   FadeRoute(
-                  //     builder: (context) => AnimeInfoEdit(_anime),
-                  //   ),
-                  // );
-                  // 编辑动漫名
-                  _dialogUpdateAnimeName(popMenuContext);
-                },
-              ),
-            ),
+            )
           ];
         },
       ),
@@ -1599,57 +1579,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               // dialogSelectTag(setState, context, _anime);
             },
           );
-  }
-
-  void _dialogUpdateAnimeName(popMenuContext) {
-    var animeNameController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('编辑信息'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  autofocus: true, // 自动弹出输入法
-                  // 把TextEditingController对象应用到TextField上，便于获取输入内容
-                  controller: animeNameController..text = _anime.animeName,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                  maxLength: 50,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('取消'),
-            ),
-            ElevatedButton(
-              // 修改动漫集数
-              onPressed: () {
-                if (animeNameController.text.isEmpty) {
-                  showToast("名字不能为空");
-                  return;
-                }
-                SqliteUtil.updateAnimeNameByAnimeId(
-                    _anime.animeId, animeNameController.text);
-                _anime.animeName = animeNameController.text;
-                setState(() {});
-                Navigator.pop(context);
-                Navigator.pop(popMenuContext);
-              },
-              child: const Text('确定'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _popAnimeDetailPage() {
