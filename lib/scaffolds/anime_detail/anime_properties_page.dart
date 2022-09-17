@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,13 +32,7 @@ class AnimePropertiesPage extends StatelessWidget {
         // TextButton无法取消填充，所以使用MaterialButton
         padding: const EdgeInsets.all(0),
         onPressed: () async {
-          Uri uri;
-          if (url.isNotEmpty) {
-            uri = Uri.parse(url);
-            if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-              throw "Could not launch $uri";
-            }
-          }
+          LaunchUrlUtil.launch(url);
         },
         child: Text(url,
             style: const TextStyle(

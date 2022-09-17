@@ -21,6 +21,7 @@ import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/rate_list_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/classes/episode.dart';
@@ -474,14 +475,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 title: const Text("访问网址"),
                 style: ListTileStyle.drawer,
                 leading: const Icon(Icons.open_in_new),
-                onTap: () async {
-                  Uri uri;
+                onTap: () {
                   if (_anime.animeUrl.isNotEmpty) {
-                    uri = Uri.parse(_anime.animeUrl);
-                    if (!await launchUrl(uri,
-                        mode: LaunchMode.externalApplication)) {
-                      throw "Could not launch $uri";
-                    }
+                    LaunchUrlUtil.launch(_anime.animeUrl);
                   } else {
                     showToast("网址为空，请先迁移动漫");
                   }

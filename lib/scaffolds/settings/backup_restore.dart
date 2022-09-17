@@ -4,6 +4,7 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/backup_file_list.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -133,11 +134,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                 style: TextStyle(color: ThemeUtil.getThemePrimaryColor())),
             // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
             subtitle: const Text("点击查看教程"),
-            onTap: () async {
-              final uri = Uri.parse("https://help.jianguoyun.com/?p=2064");
-              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                throw "Could not launch $uri";
-              }
+            onTap: () {
+              LaunchUrlUtil.launch("https://help.jianguoyun.com/?p=2064");
             },
           ),
           ListTile(

@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/latest_version_info.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // 更新对话框组件，用于Stack最高层
 class UpdateHint extends StatefulWidget {
@@ -156,12 +156,8 @@ class _UpdateHintState extends State<UpdateHint> {
                               setState(() {});
 
                               // 打开下载页面
-                              Uri uri = Uri.parse(
+                              LaunchUrlUtil.launch(
                                   "https://gitee.com/linyi517/anime_trace");
-                              if (!await launchUrl(uri,
-                                  mode: LaunchMode.externalApplication)) {
-                                throw "Could not launch $uri";
-                              }
                             },
                             child: const Text("手动更新"),
                           ),

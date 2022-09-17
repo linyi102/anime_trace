@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -64,16 +65,6 @@ class _AboutVersionState extends State<AboutVersion> {
 
   _showLVC() {
     List<Widget> lvc = [];
-    final List<Uri> _uris = [
-      Uri.parse("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC"),
-      Uri.parse("https://jq.qq.com/?_wv=1027&k=qOpUIx7x")
-    ];
-    final List<String> _urisTitle = ["更新进度", "QQ 交流群"];
-    final List<IconData> _urisIcon = [
-      Icons.open_in_new_outlined,
-      Icons.open_in_new_outlined,
-    ];
-    final List<Color> _urisIconColor = [Colors.grey, Colors.grey];
 
     lvc.add(Column(
       children: [
@@ -90,7 +81,7 @@ class _AboutVersionState extends State<AboutVersion> {
           children: [
             IconButton(
                 onPressed: () {
-                  _launchUrl("https://github.com/linyi102/anime_trace");
+                  LaunchUrlUtil.launch("https://github.com/linyi102/anime_trace");
                 },
                 icon: Icon(
                   SimpleIcons.github,
@@ -100,7 +91,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 )),
             IconButton(
               onPressed: () {
-                _launchUrl("https://gitee.com/linyi517/anime_trace");
+                LaunchUrlUtil.launch("https://gitee.com/linyi517/anime_trace");
               },
               icon: const Icon(SimpleIcons.gitee),
               color: const Color.fromRGBO(187, 33, 36, 1),
@@ -128,24 +119,15 @@ class _AboutVersionState extends State<AboutVersion> {
         title: const Text("更新进度"),
         trailing: const Icon(Icons.open_in_new_outlined),
         onTap: () {
-          _launchUrl("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC");
+          LaunchUrlUtil.launch("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC");
         }));
     lvc.add(ListTile(
         title: const Text("QQ 交流群"),
         subtitle: const Text("414226908"),
         trailing: const Icon(Icons.open_in_new_outlined),
         onTap: () {
-          _launchUrl("https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
+          LaunchUrlUtil.launch("https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
         }));
     return lvc;
-  }
-
-  _launchUrl(String uriStr, {bool inApp = false}) async {
-    Uri uri = Uri.parse(uriStr);
-    if (!await launchUrl(uri,
-        mode:
-            inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication)) {
-      throw "无法打开链接：$uri";
-    }
   }
 }

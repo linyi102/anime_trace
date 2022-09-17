@@ -75,22 +75,28 @@ class ImageUtil {
   // TODO 如果根目录设置的是 "/动漫截图"，而封面是放在 "/动漫截图/封面" 下，而数据库中保存的是图片名称，此时根目录+动漫名字，缺少了一级目录 "/封面"
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
-    debugPrint("absoluteImagePath=$absoluteImagePath");
-    String relativeImagePath =
-        absoluteImagePath.substring(ImageUtil.coverImageRootDirPath.length);
-    debugPrint("根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
+    debugPrint("绝对路径absoluteImagePath=$absoluteImagePath");
+    String relativeImagePath = _removeRootDirPath(absoluteImagePath, ImageUtil.coverImageRootDirPath);
+    debugPrint("图片根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
+    debugPrint("去除图片根路径后，relativeImagePath: $relativeImagePath");
     relativeImagePath = _removeCachePrefix(relativeImagePath);
     return relativeImagePath;
   }
 
   static String getRelativeNoteImagePath(String absoluteImagePath) {
-    // 绝对路径去掉根路径的长度，就是相对路径
-    String relativeImagePath =
-        absoluteImagePath.substring(ImageUtil.noteImageRootDirPath.length);
+    // 绝对路径去掉根目录的长度，就是相对路径。
+    // 修正：Android端选择的图片路径在缓存目录，因此没有设置的根目录，不能去掉根目录的长度，而是进行替换
+    // String relativeImagePath =
+    //     absoluteImagePath.substring(ImageUtil.noteImageRootDirPath.length);
+    String relativeImagePath = _removeRootDirPath(absoluteImagePath, ImageUtil.noteImageRootDirPath);
     // debugPrint("relativeImagePath: $relativeImagePath");
     relativeImagePath = _removeCachePrefix(relativeImagePath);
     // debugPrint("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
+  }
+
+  static String _removeRootDirPath(String path, String rootDirPath) {
+    return path.replaceFirst(rootDirPath, "");
   }
 
   static String getAbsoluteNoteImagePath(String relativeImagePath) {
@@ -106,16 +112,13 @@ class ImageUtil {
   }
 
   static String _removeCachePrefix(String path) {
-    // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
-    debugPrint("去掉根路径后，relativeImagePath: $path");
+    // 对于Android，会把选中的图片都缓存在一级目录/data/user/0/com.example.flutter_test_future/cache/file_picker下
+    // 因此找到/cache/file_picker并删除该字符串在内的前面所有字符串
     String cacheNameStr = "test_future/cache/file_picker";
-    if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
-      path = path.substring(cacheNameStr.length);
-    }
-    // MuMu模拟器
-    cacheNameStr = "st_future/cache/file_picker";
-    if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
-      path = path.substring(cacheNameStr.length);
+    if (Platform.isAndroid) {
+      String patternStr = "/cache/file_picker";
+      int validIndex = path.indexOf(patternStr) + patternStr.length;
+      path = path.substring(validIndex); // 获取validIndex开始的字符串
     }
     debugPrint("去除缓存路径后，relativeImagePath: $path");
     return path;

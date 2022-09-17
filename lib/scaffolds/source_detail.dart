@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -77,11 +78,7 @@ class _SourceDetailState extends State<SourceDetail> {
               color: ThemeUtil.getLeadingIconColor(),
             ),
             onTap: () {
-              launchUrl(Uri.parse(climbWebstie.climb.baseUrl),
-                      mode: LaunchMode.externalApplication) // 浏览器打开
-                  .catchError((e) {
-                debugPrint(e);
-              });
+              LaunchUrlUtil.launch(climbWebstie.climb.baseUrl);
             },
           ),
           ListTile(
