@@ -76,6 +76,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
             subtitle: const Text("点击查看使用帮助"),
             onTap: () => LaunchUrlUtil.launch(
                 "https://www.yuque.com/linyi517/fzfxr0/xpx4xq"),
+            trailing: const Icon(Icons.launch),
           ),
         ],
       ),

@@ -70,9 +70,13 @@ class AnimeCoverDetail extends StatelessWidget {
                     ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(dialogContext);
+                          Anime anime = animeController.anime.value;
+                          if (anime.animeUrl.isEmpty) {
+                            showToast("无来源，无法获取封面");
+                            return;
+                          }
                           showToast("正在获取封面...");
 
-                          Anime anime = animeController.anime.value;
                           anime =
                               await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
                           // 爬取后，只更新动漫封面

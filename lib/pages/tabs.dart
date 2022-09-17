@@ -99,6 +99,7 @@ class _TabsState extends State<Tabs> {
     }
   }
 
+  // TODO：win端如果最初没有点击中间3个tab，切换夜间模式时会导致tav按钮和文字颜色没变，鼠标滑过后才会变化
   Scaffold _buildSideBar() {
     return Scaffold(
       body: Row(
@@ -117,7 +118,7 @@ class _TabsState extends State<Tabs> {
                 controller: pageController,
                 style: SideMenuStyle(
                   displayMode: SideMenuDisplayMode.auto,
-                  decoration: BoxDecoration(),
+                  decoration: const BoxDecoration(),
                   openSideMenuWidth: 120,
                   compactSideMenuWidth: 60,
                   // hoverColor: Colors.blue[100],
