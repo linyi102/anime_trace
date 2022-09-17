@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
+// 点击笔记图片，进入浏览页面
 class ImageViewer extends StatefulWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   final int initialIndex;
@@ -48,6 +49,29 @@ class _ImageViewerState extends State<ImageViewer> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return AlertDialog(
+                        title: const Text("图片属性"),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                  title: const Text("完全路径"),
+                                  subtitle:
+                                  SelectableText(imageLocalPaths[currentIndex])),
+                            ],
+                          ),
+                        ),
+                      );
+                    });
+              },
+              icon: Icon(Icons.error_outline))
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(0),
