@@ -114,7 +114,6 @@ class ImageUtil {
   static String _removeCachePrefix(String path) {
     // 对于Android，会把选中的图片都缓存在一级目录/data/user/0/com.example.flutter_test_future/cache/file_picker下
     // 因此找到/cache/file_picker并删除该字符串在内的前面所有字符串
-    String cacheNameStr = "test_future/cache/file_picker";
     if (Platform.isAndroid) {
       String patternStr = "/cache/file_picker";
       int validIndex = path.indexOf(patternStr) + patternStr.length;

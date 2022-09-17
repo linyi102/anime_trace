@@ -14,15 +14,21 @@ Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
-        // Clipboard.setData(ClipboardData(text: path))
-        //     .then((value) => showToast("已复制图片相对路径：\n$path"));
+
         if (dialog) {
           showDialog(
               context: buildContext,
               builder: (dialogContext) {
                 return AlertDialog(
                   title: const Text("无法显示图片"),
-                  content: Text("图片地址：$path"),
+                  content: ListTile(
+                    title: Text("图片地址：$path"),
+                    subtitle: const Text("点击复制地址"),
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: path))
+                          .then((value) => showToast("已复制图片相对路径：\n$path"));
+                    },
+                  ),
                 );
               });
         }
