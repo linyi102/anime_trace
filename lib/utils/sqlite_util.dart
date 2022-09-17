@@ -163,6 +163,11 @@ class SqliteUtil {
     if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
     }
+    // 如果已有封面，则不更新。只有在动漫封面详细页中更新才调用updateAnimeCoverUrl更新封面
+    if (oldAnime.animeCoverUrl.isNotEmpty) {
+      newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
+    }
+
     // 如果新动漫某些属性为空字符串，则把旧的赋值上去
     if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
     if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
@@ -187,6 +192,7 @@ class SqliteUtil {
     }
     if (newAnime.category.isEmpty) newAnime.category = oldAnime.category;
     if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
+
     if (newAnime.reviewNumber == 0) {
       if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
       newAnime.reviewNumber = oldAnime.reviewNumber;
@@ -232,7 +238,8 @@ class SqliteUtil {
     ''');
   }
 
-  static void updateAnimeCoverUrl(int animeId, String animeCoverUrl) async {
+  static Future<void> updateAnimeCoverUrl(
+      int animeId, String animeCoverUrl) async {
     debugPrint("sql: updateAnimeCoverUrl");
     await database.rawUpdate('''
     update anime

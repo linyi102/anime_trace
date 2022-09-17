@@ -11,7 +11,9 @@ import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../classes/anime.dart';
 import '../../fade_route.dart';
+import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';
 import '../../utils/sqlite_util.dart';
 import '../settings/image_path_setting.dart';
@@ -28,6 +30,47 @@ class AnimeCoverDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return AlertDialog(
+                        title: const Text("封面更新"),
+                        content: const Text(
+                            "该操作会通过动漫网址更新封面，\n如果有自定义封面，会进行覆盖，\n确定更新吗？"),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(dialogContext);
+                              },
+                              child: const Text("取消")),
+                          ElevatedButton(
+                              onPressed: () async {
+                                Navigator.pop(dialogContext);
+                                showToast("正在获取封面...");
+
+                                Anime anime = animeController.anime.value;
+                                anime =
+                                    await ClimbAnimeUtil.climbAnimeInfoByUrl(
+                                        anime);
+                                // 爬取后，只更新动漫封面
+                                SqliteUtil.updateAnimeCoverUrl(
+                                        anime.animeId, anime.animeCoverUrl)
+                                    .then((value) {
+                                  // 更新控制器中的动漫封面
+                                  animeController
+                                      .updateAnimeCoverUrl(anime.animeCoverUrl);
+
+                                  showToast("更新封面成功！");
+                                });
+                              },
+                              child: const Text("确定")),
+                        ],
+                      );
+                    });
+              },
+              icon: Icon(Icons.refresh)),
           IconButton(
               onPressed: () => _showDialogAboutHowToEditCoverUrl(context),
               icon: const Icon(Icons.edit))
