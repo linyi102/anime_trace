@@ -203,6 +203,9 @@ class AnimePropertiesPage extends StatelessWidget {
 
   // 以http开头就提供访问功能
   _buildUrlText(String url) {
+    FontWeight fontWeight = FontWeight.normal;
+    double fontSize = 14.0;
+
     if (url.startsWith("http")) {
       return MaterialButton(
         // TextButton无法取消填充，所以使用MaterialButton
@@ -211,14 +214,17 @@ class AnimePropertiesPage extends StatelessWidget {
           LaunchUrlUtil.launch(url);
         },
         child: Text(url,
-            style: const TextStyle(
-                color: Colors.blue, fontWeight: FontWeight.normal)),
+            style: TextStyle(
+                color: Colors.blue,
+                fontWeight: fontWeight,
+                fontSize: fontSize)),
       );
     } else {
       return Text(url.isEmpty ? "什么都没有~" : url,
           style: TextStyle(
               color: ThemeUtil.getCommentColor(),
-              fontWeight: FontWeight.normal));
+              fontWeight: fontWeight,
+              fontSize: fontSize));
     }
   }
 }
