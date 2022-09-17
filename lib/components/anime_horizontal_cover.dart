@@ -9,6 +9,8 @@ import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../utils/image_util.dart';
+
 typedef Callback = Future<bool> Function();
 
 // 水平排列动漫封面
@@ -17,8 +19,10 @@ typedef Callback = Future<bool> Function();
 class AnimeHorizontalCover extends StatefulWidget {
   List<Anime> animes;
   int animeId;
+
   // Future<bool> Function callback;
   Callback callback;
+
   AnimeHorizontalCover(
       {Key? key,
       required this.animes,
@@ -104,40 +108,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   Stack(children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      // 渐变图片，如果断网，则显示向右滑动后，左边的图片又会显示失败
-                      // 可能传入的自定义动漫没有封面链接，此时需要显示文字
-                      child: anime.animeCoverUrl.isEmpty
-                          ? Container(
-                              color: Colors.white,
-                              height: _coverHeight,
-                              width: _coverWidth,
-                              child: Image.asset(
-                                  "assets/images/defaultAnimeCover.png"),
-                            )
-                          : FadeInImage(
-                              placeholder: MemoryImage(kTransparentImage),
-                              image: NetworkImage(anime.animeCoverUrl),
-                              height: _coverHeight,
-                              width: _coverWidth,
-                              fit: BoxFit.cover,
-                              fadeInDuration: const Duration(milliseconds: 200),
-                              imageErrorBuilder: (context, error, stackTrace) =>
-                                  Placeholder(
-                                fallbackHeight: _coverHeight,
-                                fallbackWidth: _coverWidth,
-                              ), // 窄高度，不会随FadeInImage里设置的宽高，需要指出宽高
-                            ),
-                      // 普通图片
-                      // child: Image.network(anime.animeCoverUrl,
-                      //     height: _coverHeight, width: _coverWidth)),
-                      // 缓存图片(增大应用体积大小，因此没有使用)
-                      // child: CachedNetworkImage(
-                      //   imageUrl: anime.animeCoverUrl,
-                      //   height: _coverHeight,
-                      //   width: _coverWidth,
-                      //   errorWidget: (context, url, error) =>
-                      //       const Placeholder(), // 会随CachedNetworkImage里设置的宽高
-                      // ),
+                      child: _buildAnimeCover(anime.animeCoverUrl),
                     ),
                     _displayEpisodeState(anime),
                     _displayReviewNumber(anime),
@@ -157,6 +128,51 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
             );
           }),
     );
+  }
+
+  _buildAnimeCover(String coverUrl) {
+    if (coverUrl.isEmpty) {
+      return Container(
+        color: Colors.white,
+        height: _coverHeight,
+        width: _coverWidth,
+        child: Image.asset("assets/images/defaultAnimeCover.png"),
+      );
+    }
+    // 网络图片
+    if (coverUrl.startsWith("http")) {
+      return FadeInImage(
+        placeholder: MemoryImage(kTransparentImage),
+        image: NetworkImage(coverUrl),
+        height: _coverHeight,
+        width: _coverWidth,
+        fit: BoxFit.cover,
+        fadeInDuration: const Duration(milliseconds: 200),
+        imageErrorBuilder: (context, error, stackTrace) => Placeholder(
+          fallbackHeight: _coverHeight,
+          fallbackWidth: _coverWidth,
+        ), // 窄高度，不会随FadeInImage里设置的宽高，需要指出宽高
+      );
+    }
+    // 自定义图片
+    return Image.file(
+      File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
+      height: _coverHeight,
+      width: _coverWidth,
+      fit: BoxFit.cover,
+    );
+
+    // 普通图片
+    // child: Image.network(anime.animeCoverUrl,
+    //     height: _coverHeight, width: _coverWidth)),
+    // 缓存图片(增大应用体积大小，因此没有使用)
+    // child: CachedNetworkImage(
+    //   imageUrl: anime.animeCoverUrl,
+    //   height: _coverHeight,
+    //   width: _coverWidth,
+    //   errorWidget: (context, url, error) =>
+    //       const Placeholder(), // 会随CachedNetworkImage里设置的宽高
+    // ),
   }
 
   _displayEpisodeState(Anime anime) {
