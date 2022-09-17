@@ -3,10 +3,8 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
-import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
@@ -16,7 +14,6 @@ import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/anime_info_edit.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/scaffolds/image_viewer.dart';
@@ -259,14 +256,14 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 注意如果body没有元素，则无法切换，可以试着填充
   // 不采用该方式，原因：有些元素不整齐，所以滑动时有时正常有时不行
   void _swipeFunction(DragEndDetails dragEndDetails) {
-    // 右滑
+    // 切换到右边tab
     if (dragEndDetails.primaryVelocity! < 0 &&
         selectedTabIdx + 1 < _tabNames.length) {
       selectedTabIdx++;
       _tabController.index = selectedTabIdx;
       setState(() {});
     }
-    // 左滑
+    // 切换到左边tab
     if (dragEndDetails.primaryVelocity! > 0 && selectedTabIdx - 1 >= 0) {
       selectedTabIdx--;
       _tabController.index = selectedTabIdx;
@@ -379,12 +376,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   ),
                 ),
                 // 动漫信息
-                // Column(
-                //   children: [
-                //     SizedBox(height: statusBarHeight + toolbarHeight),
-                //     _showAnimeRow()
-                //   ],
-                // )
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
                   child: Column(
@@ -545,6 +536,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _showAnimeRow() {
     return Obx(() => Row(
           children: [
+            // 动漫封面
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -554,7 +546,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     width: 120,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: MaterialButton(
+                      child:
+                      MaterialButton(
                         padding: const EdgeInsets.all(0),
                         onPressed: () {
                           String coverUrl =
@@ -585,6 +578,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 ),
               ],
             ),
+            // 动漫信息
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

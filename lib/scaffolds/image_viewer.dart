@@ -61,68 +61,80 @@ class _ImageViewerState extends State<ImageViewer> {
     );
   }
 
+  void _swipeFunction(DragEndDetails dragEndDetails) {
+    // 切换到下一张
+    if (dragEndDetails.primaryVelocity! < 0 &&
+        currentIndex + 1 < imageLocalPaths.length) {
+      currentIndex++;
+      setState(() {});
+    }
+    // 切换到上一张
+    if (dragEndDetails.primaryVelocity! > 0 && currentIndex - 1 >= 0) {
+      currentIndex--;
+      setState(() {});
+    }
+    // 移动图片轴
+    scrollToCurrentImage();
+  }
+
   Offset? _initialOffset, _finalOffset;
+
   _showImage() {
     return Expanded(
       flex: 3,
       child: GestureDetector(
+        onHorizontalDragEnd: _swipeFunction,
         onHorizontalDragStart: (details) {
           _initialOffset = details.globalPosition;
         },
         onHorizontalDragUpdate: (details) {
           _finalOffset = details.globalPosition;
         },
-        onHorizontalDragEnd: (details) {
-          if (_initialOffset != null && _finalOffset != null) {
-            final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
-            if (offsetDiff > 0) {
-              debugPrint("从左滑到右，右滑，上一个图片");
-              if (currentIndex - 1 >= 0) {
-                setState(() {
-                  currentIndex--;
-                });
-              }
-            } else {
-              debugPrint("从右滑到左，左滑，下一个图片");
-              if (currentIndex + 1 < imageLocalPaths.length) {
-                setState(() {
-                  currentIndex++;
-                });
-              }
-            }
-            scrollToCurrentImage();
-          }
-        },
+        // onHorizontalDragEnd: (details) {
+        //   if (_initialOffset != null && _finalOffset != null) {
+        //     final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
+        //     if (offsetDiff > 0) {
+        //       debugPrint("从左滑到右，右滑，上一个图片");
+        //       if (currentIndex - 1 >= 0) {
+        //         setState(() {
+        //           currentIndex--;
+        //         });
+        //       }
+        //     } else {
+        //       debugPrint("从右滑到左，左滑，下一个图片");
+        //       if (currentIndex + 1 < imageLocalPaths.length) {
+        //         setState(() {
+        //           currentIndex++;
+        //         });
+        //       }
+        //     }
+        //     scrollToCurrentImage();
+        //   }
+        // },
         child: Container(
           // color: Colors.redAccent,
           color: Colors.transparent, // 必须要添加颜色，不然手势检测不到Container，只能检测到图片
-          // 左右滑动图片。取消过渡动画
-          child: Container(
-            key: UniqueKey(),
-            child: Image.file(
-              File(imageLocalPaths[currentIndex]),
-              fit: BoxFit.fitWidth,
-              errorBuilder: errorImageBuilder(
-                  widget.relativeLocalImages[currentIndex].path),
-            ),
+          // 左右滑动图片
+          // 缩放手势和切换图片冲突
+          // child: GestureZoomBox(
+          //     maxScale: 5.0,
+          //     doubleTapScale: 2.0,
+          //     duration: Duration(milliseconds: 200),
+          //     child: Image.file(File(imageLocalPaths[currentIndex]),
+          //         fit: BoxFit.fitWidth)),
+          child: Image.file(
+            File(imageLocalPaths[currentIndex]),
+            fit: BoxFit.fitWidth,
+            errorBuilder: errorImageBuilder(
+                widget.relativeLocalImages[currentIndex].path),
           ),
-          // child: AnimatedSwitcher(
-          //   duration: const Duration(milliseconds: 200),
-          //   child: Container(
-          //     key: UniqueKey(),
-          //     child: Image.file(
-          //       File(imageLocalPaths[currentIndex]),
-          //       errorBuilder: errorImageBuilder(
-          //           widget.relativeLocalImages[currentIndex].path),
-          //     ),
-          //   ),
-          // ),
         ),
       ),
     );
   }
 
   ScrollController scrollController = ScrollController();
+
   _showScrollImages() {
     return Expanded(
         flex: 1,

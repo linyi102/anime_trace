@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+#  gesture_zoom_box: ^0.0.4 # 图片手势缩放
   flutter_rating_stars: ^1.0.3+4 # 动漫评分
   bottom_sheet: ^3.1.1 # 底部弹出菜单
   easy_sidemenu: ^0.3.1 # 侧边栏
