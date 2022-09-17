@@ -507,25 +507,26 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 },
               ),
             ),
-            // PopupMenuItem(
-            //   padding: const EdgeInsets.all(0),
-            //   child: ListTile(
-            //     title: const Text("编辑信息"),
-            //     leading: const Icon(Icons.edit),
-            //     style: ListTileStyle.drawer,
-            //     onTap: () {
-            //       // 先关闭下拉菜单
-            //       Navigator.of(context).pop();
-            //       // 再进入编辑页面
-            //       Navigator.of(context).push(
-            //         FadeRoute(
-            //           builder: (context) => AnimeInfoEdit(_anime),
-            //         ),
-            //       );
-            //       // _dialogUpdateAnimeName(popMenuContext);
-            //     },
-            //   ),
-            // ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("修改名字"),
+                leading: const Icon(Icons.edit),
+                style: ListTileStyle.drawer,
+                onTap: () {
+                  // 先关闭下拉菜单
+                  Navigator.of(context).pop();
+                  // // 再进入编辑页面
+                  // Navigator.of(context).push(
+                  //   FadeRoute(
+                  //     builder: (context) => AnimeInfoEdit(_anime),
+                  //   ),
+                  // );
+                  // 编辑动漫名
+                  _dialogUpdateAnimeName(popMenuContext);
+                },
+              ),
+            ),
           ];
         },
       ),

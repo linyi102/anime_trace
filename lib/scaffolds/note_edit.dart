@@ -189,7 +189,7 @@ class _NoteEditState extends State<NoteEdit> {
                         if (absoluteImagePath.isEmpty) continue;
 
                         String relativeImagePath =
-                            ImageUtil.getRelativeImagePath(absoluteImagePath);
+                            ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
                         int imageId =
                             await SqliteUtil.insertNoteIdAndImageLocalPath(
                                 widget.episodeNote.episodeNoteId,

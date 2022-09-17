@@ -160,7 +160,7 @@ class AnimePropertiesPage extends StatelessWidget {
         if (absoluteImagePath.isEmpty) continue;
 
         String relativeImagePath =
-            ImageUtil.getRelativeImagePath(absoluteImagePath);
+            ImageUtil.getRelativeCoverImagePath(absoluteImagePath);
 
         // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
         SqliteUtil.updateAnimeCoverUrl(

@@ -66,7 +66,26 @@ class ImageUtil {
     return ImageUtil.coverImageRootDirPath.isNotEmpty;
   }
 
-  static String getRelativeImagePath(String absoluteImagePath) {
+  static String getRelativeCoverImagePath(String absoluteImagePath) {
+    // 绝对路径去掉根路径的长度，就是相对路径
+    String relativeImagePath =
+    absoluteImagePath.substring(ImageUtil.coverImageRootDirPath.length);
+    // debugPrint("relativeImagePath: $relativeImagePath");
+    // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
+    String cacheNameStr = "test_future/cache/file_picker";
+    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
+      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
+    }
+    // MuMu模拟器
+    cacheNameStr = "st_future/cache/file_picker";
+    if (Platform.isAndroid && relativeImagePath.startsWith(cacheNameStr)) {
+      relativeImagePath = relativeImagePath.substring(cacheNameStr.length);
+    }
+    // debugPrint("relativeImagePath: $relativeImagePath");
+    return relativeImagePath;
+  }
+
+  static String getRelativeNoteImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
     String relativeImagePath =
         absoluteImagePath.substring(ImageUtil.noteImageRootDirPath.length);
