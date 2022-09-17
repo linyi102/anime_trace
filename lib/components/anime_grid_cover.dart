@@ -6,6 +6,8 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
+import 'error_image_builder.dart';
+
 // 用于显示完整的动漫封面
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
@@ -59,6 +61,8 @@ class AnimeGridCover extends StatelessWidget {
     return Image.file(
       File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
       fit: BoxFit.cover,
+      // 这里不能使用errorImageBuilder，否则无法进入动漫封面详细页
+      errorBuilder: (context, url, error) => const Placeholder(),
     );
   }
 }

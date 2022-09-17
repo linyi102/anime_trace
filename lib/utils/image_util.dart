@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:path/path.dart';
 
@@ -66,13 +67,19 @@ class ImageUtil {
     return ImageUtil.coverImageRootDirPath.isNotEmpty;
   }
 
+  // win没有缓存，可以直接得到完整路径：
+  // absoluteImagePath=D:\Syfolder\pictures\动漫截图\封面\8d5494eef01f3a292df59aa89a6eab315c6034a8d608.jpg
+  // mumu模拟器：
+  // absoluteImagePath=/data/user/0/com.example.flutter_test_future/cache/file_picker/2c9d072bd73e8b4bfd629a6a17484e38.png
+  // 可以看到，选择的图片会存放到缓存目录中，和设定的根目录无关，直接删除/cache/file_picker以及前面的字符串就好
+  // TODO 如果根目录设置的是 "/动漫截图"，而封面是放在 "/动漫截图/封面" 下，而数据库中保存的是图片名称，此时根目录+动漫名字，缺少了一级目录 "/封面"
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
+    debugPrint("absoluteImagePath=$absoluteImagePath");
     String relativeImagePath =
         absoluteImagePath.substring(ImageUtil.coverImageRootDirPath.length);
-    // debugPrint("relativeImagePath: $relativeImagePath");
+    debugPrint("根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
     relativeImagePath = _removeCachePrefix(relativeImagePath);
-    // debugPrint("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
 
@@ -100,6 +107,7 @@ class ImageUtil {
 
   static String _removeCachePrefix(String path) {
     // 对于Android，会有缓存，因此文件名是test_future/cache/file_picker/Screenshot...，需要删除
+    debugPrint("去掉根路径后，relativeImagePath: $path");
     String cacheNameStr = "test_future/cache/file_picker";
     if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
       path = path.substring(cacheNameStr.length);
@@ -109,6 +117,7 @@ class ImageUtil {
     if (Platform.isAndroid && path.startsWith(cacheNameStr)) {
       path = path.substring(cacheNameStr.length);
     }
+    debugPrint("去除缓存路径后，relativeImagePath: $path");
     return path;
   }
 

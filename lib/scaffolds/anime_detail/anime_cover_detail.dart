@@ -30,47 +30,8 @@ class AnimeCoverDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (dialogContext) {
-                      return AlertDialog(
-                        title: const Text("封面更新"),
-                        content: const Text(
-                            "该操作会通过动漫网址更新封面，\n如果有自定义封面，会进行覆盖，\n确定更新吗？"),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(dialogContext);
-                              },
-                              child: const Text("取消")),
-                          ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pop(dialogContext);
-                                showToast("正在获取封面...");
-
-                                Anime anime = animeController.anime.value;
-                                anime =
-                                    await ClimbAnimeUtil.climbAnimeInfoByUrl(
-                                        anime);
-                                // 爬取后，只更新动漫封面
-                                SqliteUtil.updateAnimeCoverUrl(
-                                        anime.animeId, anime.animeCoverUrl)
-                                    .then((value) {
-                                  // 更新控制器中的动漫封面
-                                  animeController
-                                      .updateAnimeCoverUrl(anime.animeCoverUrl);
-
-                                  showToast("更新封面成功！");
-                                });
-                              },
-                              child: const Text("确定")),
-                        ],
-                      );
-                    });
-              },
-              icon: Icon(Icons.refresh)),
+          _buildInfoButton(context),
+          _buildRefreshButton(context),
           IconButton(
               onPressed: () => _showDialogAboutHowToEditCoverUrl(context),
               icon: const Icon(Icons.edit))
@@ -89,6 +50,74 @@ class AnimeCoverDetail extends StatelessWidget {
     );
   }
 
+  IconButton _buildRefreshButton(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (dialogContext) {
+                return AlertDialog(
+                  title: const Text("封面更新"),
+                  content:
+                      const Text("该操作会通过动漫网址更新封面，\n如果有自定义封面，会进行覆盖，\n确定更新吗？"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                        },
+                        child: const Text("取消")),
+                    ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(dialogContext);
+                          showToast("正在获取封面...");
+
+                          Anime anime = animeController.anime.value;
+                          anime =
+                              await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
+                          // 爬取后，只更新动漫封面
+                          SqliteUtil.updateAnimeCoverUrl(
+                                  anime.animeId, anime.animeCoverUrl)
+                              .then((value) {
+                            // 更新控制器中的动漫封面
+                            animeController
+                                .updateAnimeCoverUrl(anime.animeCoverUrl);
+
+                            // 获取失败后会提示连接超时，所以这里不显示
+                            // showToast("更新封面成功！");
+                          });
+                        },
+                        child: const Text("确定")),
+                  ],
+                );
+              });
+        },
+        icon: const Icon(Icons.refresh));
+  }
+
+  IconButton _buildInfoButton(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (dialogContext) {
+                return AlertDialog(
+                  content: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Obx(() => ListTile(
+                              title: const Text("封面链接"),
+                              subtitle: Text(
+                                  animeController.anime.value.animeCoverUrl),
+                            ))
+                      ],
+                    ),
+                  ),
+                );
+              });
+        },
+        icon: const Icon(Icons.error_outline));
+  }
+
   _buildAnimeCover(String coverUrl) {
     if (coverUrl.isEmpty) {
       return emptyDataHint("没有封面~");
@@ -104,10 +133,11 @@ class AnimeCoverDetail extends StatelessWidget {
     }
 
     // 本地封面
-    return Image.file(
-      File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
-      fit: BoxFit.cover,
-    );
+    return Image.file(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
+        fit: BoxFit.cover, errorBuilder: (context, object, stackTrace) {
+      return TextButton(
+          onPressed: () {}, child: Text("无法正常显示图片\n封面链接：$coverUrl"));
+    });
   }
 
   _showDialogAboutHowToEditCoverUrl(context) {
@@ -238,21 +268,19 @@ class AnimeCoverDetail extends StatelessWidget {
         allowMultiple: false,
       );
       if (result == null) return;
-      List<PlatformFile> platformFiles = result.files;
-      for (var platformFile in platformFiles) {
-        String absoluteImagePath = platformFile.path ?? "";
-        if (absoluteImagePath.isEmpty) continue;
+      // List<PlatformFile> platformFiles = result.files;
+      PlatformFile platformFile = result.files.single;
+      String absoluteImagePath = platformFile.path ?? "";
+      if (absoluteImagePath.isEmpty) return;
 
-        String relativeImagePath =
-            ImageUtil.getRelativeCoverImagePath(absoluteImagePath);
-
-        // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
-        SqliteUtil.updateAnimeCoverUrl(
-            animeController.anime.value.animeId, relativeImagePath);
-        animeController.updateAnimeCoverUrl(relativeImagePath);
-        // 退出选择
-        Navigator.pop(howToEditCoverUrlDialogContext);
-      }
+      String relativeImagePath =
+          ImageUtil.getRelativeCoverImagePath(absoluteImagePath);
+      // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
+      SqliteUtil.updateAnimeCoverUrl(
+          animeController.anime.value.animeId, relativeImagePath);
+      animeController.updateAnimeCoverUrl(relativeImagePath);
+      // 退出选择
+      Navigator.pop(howToEditCoverUrlDialogContext);
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }

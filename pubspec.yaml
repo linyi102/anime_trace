@@ -52,7 +52,7 @@ dependencies:
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
   # file: ^6.1.2
-  file_picker: ^4.2.8
+  file_picker: ^5.1.0
   # image_picker: ^0.8.4+4 # 不是从图库中选择
   # images_picker: ^1.2.10 # 要求minSdkVersion 21，但不行
   # multi_image_picker2: ^5.0.2 # 自己生成的图库，很不好找

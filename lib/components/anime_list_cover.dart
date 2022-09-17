@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/components/error_image_builder.dart';
 
 import '../utils/image_util.dart';
 
@@ -68,6 +69,7 @@ class AnimeListCover extends StatelessWidget {
     return Image.file(
       File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
       fit: BoxFit.cover,
+      errorBuilder: errorImageBuilder(_anime.animeCoverUrl),
     );
   }
 }

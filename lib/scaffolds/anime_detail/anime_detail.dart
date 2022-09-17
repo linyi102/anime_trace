@@ -432,11 +432,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     }
     //  本地封面
     return Image.file(
-        File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
-        fit: BoxFit.cover,
-        // 设置透明度，防止背景太黑或太白看不到顶部栏
-        color: ThemeUtil.getModulateColor(),
-        colorBlendMode: BlendMode.modulate);
+      File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
+      fit: BoxFit.cover,
+      // 设置透明度，防止背景太黑或太白看不到顶部栏
+      color: ThemeUtil.getModulateColor(),
+      colorBlendMode: BlendMode.modulate,
+      errorBuilder: (buildContext, object, stackTrace) {
+        return Container();
+      },
+    );
   }
 
   List<Widget> _buildActions() {
@@ -553,26 +557,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                         onPressed: () {
                           Navigator.of(context).push(FadeRoute(
                               builder: (context) => AnimeCoverDetail()));
-                          // String coverUrl =
-                          //     animeController.anime.value.animeCoverUrl;
-                          // final ImageProvider<Object> imageProvider;
-                          //
-                          // if (coverUrl.isEmpty) {
-                          //   // 没有封面，直接返回
-                          //   return;
-                          // } else if (coverUrl.startsWith("http")) {
-                          //   // 网络封面
-                          //   imageProvider = Image.network(coverUrl).image;
-                          // } else {
-                          //   // 本地封面
-                          //   imageProvider = Image.file(File(
-                          //           ImageUtil.getAbsoluteCoverImagePath(
-                          //               coverUrl)))
-                          //       .image;
-                          // }
-                          //
-                          // showImageViewer(context, imageProvider,
-                          //     immersive: false);
                         },
                         child: AnimeGridCover(animeController.anime.value),
                       ),
