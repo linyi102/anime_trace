@@ -62,20 +62,20 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
           const Divider(),
           ListTile(
             title: const Text(
+              '无法显示图片',
+            ),
+            subtitle: const Text("点击查看使用帮助"),
+            onTap: () => LaunchUrlUtil.launch(
+                "https://www.wolai.com/4mk7mBvSu1LtWLunvaRkpN"),
+            trailing: const Icon(Icons.launch),
+          ),
+          ListTile(
+            title: const Text(
               '注意事项',
               style: TextStyle(color: Colors.red),
             ),
             subtitle: const Text("添加图片后，请不要修改图片文件的名称，否则无法显示"),
             onTap: () {},
-          ),
-          ListTile(
-            title: const Text(
-              '无法显示图片？',
-            ),
-            subtitle: const Text("点击查看使用帮助"),
-            onTap: () => LaunchUrlUtil.launch(
-                "https://www.yuque.com/linyi517/fzfxr0/xpx4xq"),
-            trailing: const Icon(Icons.launch),
           ),
         ],
       ),
