@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/history_page.dart';
 import 'package:flutter_test_future/pages/network/network_nav.dart';
 import 'package:flutter_test_future/pages/note_list_page.dart';
 import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -99,6 +100,9 @@ class _TabsState extends State<Tabs> {
     }
   }
 
+  bool expandSideBar = SpProfile.getExpandSideBar();
+
+  // Windows端左侧导航栏
   // TODO：win端如果最初没有点击中间3个tab，切换夜间模式时会导致tav按钮和文字颜色没变，鼠标滑过后才会变化
   Scaffold _buildSideBar() {
     return Scaffold(
@@ -107,20 +111,59 @@ class _TabsState extends State<Tabs> {
         children: [
           // 左侧显示侧边栏
           Obx(() => SideMenu(
-                title: SizedBox(
-                  height: 100,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Image.asset('assets/images/logo.png'),
+                // title: SizedBox(
+                //   height: 100,
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(16.0),
+                //     child: Image.asset('assets/images/logo.png'),
+                //   ),
+                // ),
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 5, bottom: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            expandSideBar = !expandSideBar;
+                          });
+                          SpProfile.setExpandSideBar(expandSideBar);
+                        },
+                        icon: const Icon(Icons.menu),
+                        tooltip: expandSideBar ? "最小化侧边栏" : "最大化侧边栏",
+                      )
+                    ],
                   ),
                 ),
+                // 收缩后，不会显示footer
+                // footer: Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     IconButton(
+                //       icon: Icon(
+                //           expandSideBar
+                //               ? Icons.arrow_back_ios
+                //               : Icons.arrow_forward_ios,
+                //           size: 15),
+                //       onPressed: () {
+                //         setState(() {
+                //           expandSideBar = !expandSideBar;
+                //         });
+                //         SpProfile.setExpandSideBar(expandSideBar);
+                //       },
+                //     ),
+                //   ],
+                // ),
                 items: items,
                 controller: pageController,
                 style: SideMenuStyle(
-                  displayMode: SideMenuDisplayMode.auto,
+                  displayMode: expandSideBar
+                      ? SideMenuDisplayMode.open
+                      : SideMenuDisplayMode.compact,
                   decoration: const BoxDecoration(),
                   openSideMenuWidth: 120,
-                  compactSideMenuWidth: 60,
+                  compactSideMenuWidth: 50,
                   // hoverColor: Colors.blue[100],
                   // selectedColor: Colors.blue,
                   selectedIconColor: ThemeUtil.getIconButtonColor(),
@@ -143,6 +186,7 @@ class _TabsState extends State<Tabs> {
     );
   }
 
+  // 手机端底部导航栏
   Scaffold _buildBottomNavigationBar() {
     return Scaffold(
       body: _list[_currentIndex],

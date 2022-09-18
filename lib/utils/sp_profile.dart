@@ -28,4 +28,13 @@ class SpProfile {
   static getWindowHeight() {
     return SPUtil.getDouble("WindowHeight", defaultValue: 720);
   }
+
+  //  Windows侧边栏展开或收缩
+  static getExpandSideBar() {
+    return SPUtil.getBool("expandSideBar", defaultValue: false);
+  }
+
+  static setExpandSideBar(bool expandSideBar) {
+    return SPUtil.setBool("expandSideBar", expandSideBar);
+  }
 }
