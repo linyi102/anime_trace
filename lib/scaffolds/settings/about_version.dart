@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_icons/simple_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AboutVersion extends StatefulWidget {
   const AboutVersion({Key? key}) : super(key: key);

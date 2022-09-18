@@ -5,7 +5,6 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../classes/anime.dart';
 import '../../utils/theme_util.dart';

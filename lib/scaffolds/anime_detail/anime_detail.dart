@@ -2,11 +2,11 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
@@ -16,21 +16,19 @@ import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
-import 'package:flutter_test_future/scaffolds/note_edit.dart';
-import 'package:flutter_test_future/scaffolds/image_viewer.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/rate_list_page.dart';
+import 'package:flutter_test_future/scaffolds/image_viewer.dart';
+import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'anime_properties_page.dart';
 

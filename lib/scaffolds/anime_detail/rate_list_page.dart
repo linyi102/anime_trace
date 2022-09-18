@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -21,15 +20,10 @@ class RateListPage extends StatefulWidget {
   State<RateListPage> createState() => _RateListPageState();
 }
 
-class _RateListPageState extends State<RateListPage>
-    with AutomaticKeepAliveClientMixin {
+class _RateListPageState extends State<RateListPage> {
   late Anime anime;
   List<EpisodeNote> notes = [];
   bool noteOk = false;
-
-  // 实现AutomaticKeepAliveClientMixin并重载wantKeepAlive来实现切换tabber时保持该页面状态
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {

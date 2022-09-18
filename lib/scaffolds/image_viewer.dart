@@ -70,7 +70,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       );
                     });
               },
-              icon: Icon(Icons.error_outline))
+              icon: const Icon(Icons.error_outline))
         ],
       ),
       body: Container(
@@ -100,41 +100,12 @@ class _ImageViewerState extends State<ImageViewer> {
     // 移动图片轴
     scrollToCurrentImage();
   }
-
-  Offset? _initialOffset, _finalOffset;
-
+  
   _showImage() {
     return Expanded(
       flex: 3,
       child: GestureDetector(
         onHorizontalDragEnd: _swipeFunction,
-        onHorizontalDragStart: (details) {
-          _initialOffset = details.globalPosition;
-        },
-        onHorizontalDragUpdate: (details) {
-          _finalOffset = details.globalPosition;
-        },
-        // onHorizontalDragEnd: (details) {
-        //   if (_initialOffset != null && _finalOffset != null) {
-        //     final offsetDiff = _finalOffset!.dx - _initialOffset!.dx;
-        //     if (offsetDiff > 0) {
-        //       debugPrint("从左滑到右，右滑，上一个图片");
-        //       if (currentIndex - 1 >= 0) {
-        //         setState(() {
-        //           currentIndex--;
-        //         });
-        //       }
-        //     } else {
-        //       debugPrint("从右滑到左，左滑，下一个图片");
-        //       if (currentIndex + 1 < imageLocalPaths.length) {
-        //         setState(() {
-        //           currentIndex++;
-        //         });
-        //       }
-        //     }
-        //     scrollToCurrentImage();
-        //   }
-        // },
         child: Container(
           // color: Colors.redAccent,
           color: Colors.transparent, // 必须要添加颜色，不然手势检测不到Container，只能检测到图片

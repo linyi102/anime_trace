@@ -6,8 +6,6 @@ import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
-import 'error_image_builder.dart';
-
 // 用于显示完整的动漫封面
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;

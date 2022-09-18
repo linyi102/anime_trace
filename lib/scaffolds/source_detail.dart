@@ -6,7 +6,6 @@ import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SourceDetail extends StatefulWidget {
   final ClimbWebstie climbWebstie;

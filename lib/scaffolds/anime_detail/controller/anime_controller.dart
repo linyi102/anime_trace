@@ -1,4 +1,3 @@
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 
 import '../../../classes/anime.dart';
