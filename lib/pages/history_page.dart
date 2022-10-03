@@ -124,6 +124,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           // debugPrint("$index");
                           return Column(
                             children: [
+                              //显示日期
                               Container(
                                   padding:
                                       const EdgeInsets.fromLTRB(18, 15, 0, 15),
@@ -159,11 +160,10 @@ class _HistoryPageState extends State<HistoryPage> {
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
           trailing: Text(
-            (record.startEpisodeNumber == record.endEpisodeNumber
-                ? record.startEpisodeNumber.toString()
-                : "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
-            textScaleFactor: 0.9,
-          ),
+              (record.startEpisodeNumber == record.endEpisodeNumber
+                  ? record.startEpisodeNumber.toString()
+                  : "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
+              textScaleFactor: 0.9),
           onTap: () {
             Navigator.of(context)
                 .push(

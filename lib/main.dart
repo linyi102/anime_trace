@@ -176,7 +176,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           //     fontSize: 15,
           //     fontWeight: FontWeight.w600,
           //     decoration: TextDecoration.none),
-
           backgroundColor:
               themeController.isDarkMode.value ? Colors.white : Colors.black,
           textStyle: TextStyle(
@@ -185,7 +184,8 @@ class MyAppState extends State<MyApp> with WindowListener {
                   : Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              decoration: TextDecoration.none),
+              decoration: TextDecoration.none,
+              fontFamilyFallback: themeController.fontFamilyFallback),
           child: MaterialApp(
             title: '漫迹',
             // 后台应用显示名称
@@ -197,7 +197,41 @@ class MyAppState extends State<MyApp> with WindowListener {
               brightness: themeController.isDarkMode.value
                   ? Brightness.dark
                   : Brightness.light,
-              // fontFamily: "yuan",
+              // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
+              fontFamily: "invalidFont",
+              textTheme: TextTheme(
+                // ListTile标题
+                subtitle1: TextStyle(
+                    fontFamilyFallback: themeController.fontFamilyFallback),
+                // 按钮里的文字
+                button: TextStyle(
+                    fontFamilyFallback: themeController.fontFamilyFallback),
+                // 底部tab，ListTile副标题
+                bodyText2: TextStyle(
+                    fontFamilyFallback: themeController.fontFamilyFallback),
+                // Text
+                bodyText1: TextStyle(
+                    fontFamilyFallback: themeController.fontFamilyFallback),
+                // 未知
+                // subtitle2: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // overline: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // caption: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline1: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline2: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline3: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline4: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline5: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+                // headline6: TextStyle(
+                //     fontFamilyFallback: themeController.fontFamilyFallback),
+              ),
               appBarTheme: AppBarTheme(
                 shadowColor: Colors.transparent,
                 centerTitle: false,
@@ -240,6 +274,15 @@ class MyAppState extends State<MyApp> with WindowListener {
                     ? Colors.white70
                     : Colors.black54,
                 labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
+                // tabbar不要再添加labelStyle，否则此处设置无效
+                labelStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamilyFallback: themeController.fontFamilyFallback
+                ),
+                unselectedLabelStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamilyFallback: themeController.fontFamilyFallback
+                ),
               ),
               // 滚动条主题
               scrollbarTheme: ScrollbarThemeData(

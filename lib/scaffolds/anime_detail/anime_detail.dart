@@ -287,9 +287,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             // 标签可以滑动，避免拥挤
             isScrollable: true,
             labelPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
             // 指示器长短和标签一样
             indicatorSize: TabBarIndicatorSize.label,
             // 第三方指示器样式
@@ -669,7 +666,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   _episodes[episodeIndex].getDate(),
                   style: TextStyle(
                       color: ThemeUtil.getEpisodeListTile(
-                          _episodes[episodeIndex].isChecked())),
+                          _episodes[episodeIndex].isChecked()),
+
+                  ),
                 )
               : null,
           trailing: PopupMenuButton(

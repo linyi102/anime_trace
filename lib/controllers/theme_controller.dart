@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 class ThemeController extends GetxController {
   var isDarkMode = SPUtil.getBool("enableDark").obs;
+  RxList<String> fontFamilyFallback = ['苹方-简', 'PingFang SC', 'Microsoft YaHei UI'].obs;
 
   changeTheme() {
     // 无法实时显示变化

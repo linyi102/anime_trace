@@ -75,11 +75,9 @@ class UpdateRecordPage extends StatelessWidget {
                       ListTile animeRow = ListTile(
                         leading: AnimeListCover(updateRecordVo.anime),
                         trailing: Text(
-                            "${updateRecordVo.oldEpisodeCnt} >> ${updateRecordVo.newEpisodeCnt}",
-                            textScaleFactor: 0.9),
-                        // trailing: Text(
-                        //     "${updateRecordVo.oldEpisodeCnt} > ${updateRecordVo.newEpisodeCnt}",
-                        //     textScaleFactor: 0.9),
+                          "${updateRecordVo.oldEpisodeCnt} >> ${updateRecordVo.newEpisodeCnt}",
+                          textScaleFactor: 0.9
+                        ),
                         title: Text(
                           updateRecordVo.anime.animeName,
                           textScaleFactor: 0.9,
@@ -107,6 +105,7 @@ class UpdateRecordPage extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // 显示日期
                             Container(
                               padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
                               child: Text(TimeShowUtil.getShowDateStr(curDate)),

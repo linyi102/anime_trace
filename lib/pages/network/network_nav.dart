@@ -104,9 +104,6 @@ class _NetWorkNavState extends State<NetWorkNav>
                   // 居中，而不是靠左下
                   isScrollable: false, // 标签可以滑动，避免拥挤
                   labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
                   // 指示器长短和标签一样
                   indicatorSize: TabBarIndicatorSize.label,
                   // 第三方指示器样式

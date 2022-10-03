@@ -143,9 +143,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                           isScrollable: true,
                           // 清单可以滑动，避免拥挤
                           labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
                           indicatorSize: TabBarIndicatorSize.label,
                           // 第三方指示器样式
                           indicator: MaterialIndicator(
@@ -444,10 +441,8 @@ class _AnimeListPageState extends State<AnimeListPage>
             showReviewNumber: !SPUtil.getBool("hideReviewNumber"),
             reviewNumber: anime.reviewNumber,
           ),
-          trailing: Text(
-            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-            textScaleFactor: 0.9,
-          ),
+          trailing: Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+              textScaleFactor: 0.9),
           onTap: () {
             onpress(i, index, anime);
           },

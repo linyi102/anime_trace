@@ -154,9 +154,9 @@ flutter:
   #         weight: 700
   #
 
-  # fonts:
-  # - family: yuan
-  #   fonts:
-  #     - asset: assets/fonts/未来圆SC Regular.ttf
+#  fonts:
+#    - family: myfont
+#      fonts:
+#        - asset: assets/fonts/Alibaba-PuHuiTi-Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

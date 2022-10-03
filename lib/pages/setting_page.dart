@@ -74,7 +74,7 @@ class _SettingPageState extends State<SettingPage> {
             ListTile(
               iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.settings_backup_restore_outlined),
-              title: const Text("备份还原"),
+              title: Text("备份还原"),
               onTap: () {
                 Navigator.of(context).push(
                   // MaterialPageRoute(
