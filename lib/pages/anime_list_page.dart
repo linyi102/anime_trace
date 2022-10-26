@@ -115,8 +115,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             ? _waitDataScaffold()
             : !_transitOk
                 ? _waitDataScaffold()
-                : Obx(
-                    () => Scaffold(
+                : Scaffold(
                       // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
                       appBar: AppBar(
                         title: Text(
@@ -188,7 +187,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       //   child: const Icon(Icons.search_rounded),
                       // ),
                     ),
-                  ));
+                  );
   }
 
   Widget _buildBottomSheet(
@@ -299,9 +298,9 @@ class _AnimeListPageState extends State<AnimeListPage>
         Scrollbar(
           controller: _scrollControllers[i],
           child: Stack(children: [
-            _animeDisplayController.displayList.value
+            Obx(() => _animeDisplayController.displayList.value
                 ? _getAnimeListView(i)
-                : _getAnimeGridView(i),
+                : _getAnimeGridView(i)),
             // 一定要叠放在ListView上面，否则点击按钮没有反应
             _buildBottomButton(i),
           ]),

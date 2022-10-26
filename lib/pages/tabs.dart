@@ -190,12 +190,13 @@ class _TabsState extends State<Tabs> {
   // 手机端底部导航栏
   Scaffold _buildBottomNavigationBar() {
     return Scaffold(
-      // body: _list[_currentIndex],
-      body: IndexedStack(
-        // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
-        index: _currentIndex,
-        children: _list,
-      ),
+      body: _list[_currentIndex],
+      // 会导致第一次打开App时有点慢
+      // body: IndexedStack(
+      //   // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
+      //   index: _currentIndex,
+      //   children: _list,
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
         currentIndex: _currentIndex,
