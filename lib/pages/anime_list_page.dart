@@ -196,7 +196,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     ScrollController scrollController,
     double bottomSheetOffset,
   ) {
-    return const AnimesDisplaySetting();
+    return const AnimesDisplaySetting(showAppBar: false);
   }
 
   List<Widget> _getActions() {

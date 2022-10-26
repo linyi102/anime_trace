@@ -7,21 +7,21 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 class AnimesDisplaySetting extends StatelessWidget {
-  const AnimesDisplaySetting({Key? key}) : super(key: key);
+  final showAppBar;
+
+  const AnimesDisplaySetting({Key? key, this.showAppBar = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final AnimeDisplayController animeDisplayController = Get.find();
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "动漫界面",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        appBar: showAppBar
+            ? AppBar(
+                title: const Text("动漫界面",
+                    style: TextStyle(fontWeight: FontWeight.w600)))
+            : null,
         body: Obx(
           () => ListView(
             children: [
