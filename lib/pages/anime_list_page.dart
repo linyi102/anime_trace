@@ -1,8 +1,10 @@
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/classes/anime.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -37,6 +40,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
 
   final List<ScrollController> _scrollControllers = [];
+  final AnimeDisplayController _animeDisplayController = Get.find();
 
   @override
   void initState() {
@@ -103,85 +107,88 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
-      // 然后再通过_loadData覆盖掉旧数据
-      // 美化：显示旧数据时也由空白页面过渡
-      child: !_loadOk && animeCntPerTag.isEmpty
-          ? _waitDataScaffold()
-          : !_transitOk
-              ? _waitDataScaffold()
-              : Scaffold(
-                  // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-                  appBar: AppBar(
-                    title: Text(
-                      multiSelected ? "${mapSelected.length}" : "动漫",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    leading: multiSelected
-                        ? IconButton(
-                            onPressed: () {
-                              _quitMultiSelectState();
-                            },
-                            icon: const Icon(Icons.close))
-                        : null,
-                    actions:
-                        multiSelected ? _getActionsOnMulti() : _getActions(),
-                    bottom: PreferredSize(
-                      // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                      preferredSize: const Size.fromHeight(kToolbarHeight),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: TabBar(
-                          tabs: _buildTagAndAnimeCnt(),
-                          // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                          controller: _tabController,
-                          padding: const EdgeInsets.all(2),
-                          // 居中，而不是靠左下
-                          isScrollable: true,
-                          // 清单可以滑动，避免拥挤
-                          labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          indicatorSize: TabBarIndicatorSize.label,
-                          // 第三方指示器样式
-                          indicator: MaterialIndicator(
-                            horizontalPadding: 8.5,
-                            color: ThemeUtil.getThemePrimaryColor(),
-                            paintingStyle: PaintingStyle.fill,
+        duration: const Duration(milliseconds: 200),
+        // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+        // 然后再通过_loadData覆盖掉旧数据
+        // 美化：显示旧数据时也由空白页面过渡
+        child: !_loadOk && animeCntPerTag.isEmpty
+            ? _waitDataScaffold()
+            : !_transitOk
+                ? _waitDataScaffold()
+                : Obx(
+                    () => Scaffold(
+                      // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+                      appBar: AppBar(
+                        title: Text(
+                          multiSelected ? "${mapSelected.length}" : "动漫",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        leading: multiSelected
+                            ? IconButton(
+                                onPressed: () {
+                                  _quitMultiSelectState();
+                                },
+                                icon: const Icon(Icons.close))
+                            : null,
+                        actions: multiSelected
+                            ? _getActionsOnMulti()
+                            : _getActions(),
+                        bottom: PreferredSize(
+                          // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                          preferredSize: const Size.fromHeight(kToolbarHeight),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: TabBar(
+                              tabs: _buildTagAndAnimeCnt(),
+                              // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                              controller: _tabController,
+                              padding: const EdgeInsets.all(2),
+                              // 居中，而不是靠左下
+                              isScrollable: true,
+                              // 清单可以滑动，避免拥挤
+                              labelPadding:
+                                  const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              indicatorSize: TabBarIndicatorSize.label,
+                              // 第三方指示器样式
+                              indicator: MaterialIndicator(
+                                horizontalPadding: 8.5,
+                                color: ThemeUtil.getThemePrimaryColor(),
+                                paintingStyle: PaintingStyle.fill,
+                              ),
+                            ),
                           ),
                         ),
                       ),
+                      body: TabBarView(
+                        controller: _tabController,
+                        children: _getAnimesPlus(),
+                      ),
+                      // floatingActionButton: FloatingActionButton(
+                      //   backgroundColor: ThemeUtil.getThemePrimaryColor(),
+                      //   foregroundColor: Colors.white,
+                      //   onPressed: () {
+                      //     setState(() {
+                      //       Navigator.of(context).push(
+                      //         // MaterialPageRoute(
+                      //         //   builder: (context) => const Search(),
+                      //         // ),
+                      //         FadeRoute(
+                      //           builder: (context) {
+                      //             return const SearchDbAnime();
+                      //           },
+                      //         ),
+                      //       ).then((value) {
+                      //         debugPrint("更新在搜索页面里进行的修改");
+                      //         _loadData();
+                      //       });
+                      //     });
+                      //   },
+                      //   child: const Icon(Icons.search_rounded),
+                      // ),
                     ),
-                  ),
-                  body: TabBarView(
-                    controller: _tabController,
-                    children: _getAnimesPlus(),
-                  ),
-                  // floatingActionButton: FloatingActionButton(
-                  //   backgroundColor: ThemeUtil.getThemePrimaryColor(),
-                  //   foregroundColor: Colors.white,
-                  //   onPressed: () {
-                  //     setState(() {
-                  //       Navigator.of(context).push(
-                  //         // MaterialPageRoute(
-                  //         //   builder: (context) => const Search(),
-                  //         // ),
-                  //         FadeRoute(
-                  //           builder: (context) {
-                  //             return const SearchDbAnime();
-                  //           },
-                  //         ),
-                  //       ).then((value) {
-                  //         debugPrint("更新在搜索页面里进行的修改");
-                  //         _loadData();
-                  //       });
-                  //     });
-                  //   },
-                  //   child: const Icon(Icons.search_rounded),
-                  // ),
-                ),
-    );
+                  ));
   }
 
   Widget _buildBottomSheet(
@@ -194,19 +201,20 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   List<Widget> _getActions() {
     List<Widget> actions = [];
-    // actions.add(IconButton(
-    //   onPressed: () {
-    //     showFlexibleBottomSheet(
-    //         minHeight: 0,
-    //         initHeight: 0.1,
-    //         maxHeight: 1,
-    //         context: context,
-    //         builder: _buildBottomSheet,
-    //         isExpand: true);
-    //   },
-    //   icon: const Icon(Icons.widgets_outlined),
-    //   tooltip: "外观设置",
-    // ));
+    actions.add(IconButton(
+      onPressed: () {
+        showFlexibleBottomSheet(
+            duration: const Duration(milliseconds: 200),
+            minHeight: 0,
+            initHeight: 0.5,
+            maxHeight: 1,
+            context: context,
+            builder: _buildBottomSheet,
+            isExpand: true);
+      },
+      icon: const Icon(Icons.widgets_outlined),
+      tooltip: "外观设置",
+    ));
     actions.add(IconButton(
       onPressed: () async {
         Navigator.of(context).push(
@@ -291,7 +299,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         Scrollbar(
           controller: _scrollControllers[i],
           child: Stack(children: [
-            SPUtil.getBool("display_list")
+            _animeDisplayController.displayList.value
                 ? _getAnimeListView(i)
                 : _getAnimeGridView(i),
             // 一定要叠放在ListView上面，否则点击按钮没有反应
@@ -309,13 +317,13 @@ class _AnimeListPageState extends State<AnimeListPage>
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
         // 整体的填充
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: SpProfile.getGridColumnCnt(),
+          crossAxisCount: _animeDisplayController.gridColumnCnt.value,
           // 横轴数量
           crossAxisSpacing: 5,
           // 横轴距离
           mainAxisSpacing: 3,
           // 竖轴距离
-          childAspectRatio: SPUtil.getBool("hideGridAnimeName")
+          childAspectRatio: _animeDisplayController.hideGridAnimeName.value
               ? 31 / 48
               : 31 / 56, // 每个网格的比例
         ),
@@ -336,50 +344,53 @@ class _AnimeListPageState extends State<AnimeListPage>
               child: Stack(children: [
                 Column(
                   children: [
-                    Stack(
-                      children: [
-                        AnimeGridCover(anime),
-                        SPUtil.getBool("hideGridAnimeProgress")
-                            ? Container()
-                            : Positioned(
-                                left: 5,
-                                top: 5,
-                                child: Container(
-                                  // height: 20,
-                                  padding:
-                                      const EdgeInsets.fromLTRB(3, 2, 3, 2),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    color: ThemeUtil.getThemePrimaryColor(),
-                                  ),
-                                  child: Text(
-                                    "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                                    textScaleFactor: 0.8,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                )),
-                        SPUtil.getBool("hideReviewNumber")
-                            ? Container()
-                            : anime.reviewNumber == 1
+                    // 很奇怪，已经用obx嵌套scaffold了，下面的名字却能检测到，这里却不能监测到变化
+                    // 所以这里又添加了个obx
+                    Obx(() => Stack(
+                          children: [
+                            AnimeGridCover(anime),
+                            _animeDisplayController.hideGridAnimeProgress.value
                                 ? Container()
                                 : Positioned(
-                                    right: 5,
+                                    left: 5,
                                     top: 5,
                                     child: Container(
+                                      // height: 20,
                                       padding:
-                                          const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                          const EdgeInsets.fromLTRB(3, 2, 3, 2),
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                          color: Colors.orange),
-                                      child: Text(" ${anime.reviewNumber} ",
-                                          textScaleFactor: 0.8,
-                                          style: const TextStyle(
-                                              color: Colors.white)),
+                                        borderRadius: BorderRadius.circular(3),
+                                        color: ThemeUtil.getThemePrimaryColor(),
+                                      ),
+                                      child: Text(
+                                        "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+                                        textScaleFactor: 0.8,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
                                     )),
-                      ],
-                    ),
-                    SPUtil.getBool("hideGridAnimeName")
+                            _animeDisplayController.hideReviewNumber.value
+                                ? Container()
+                                : anime.reviewNumber == 1
+                                    ? Container()
+                                    : Positioned(
+                                        right: 5,
+                                        top: 5,
+                                        child: Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              2, 2, 2, 2),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(3),
+                                              color: Colors.orange),
+                                          child: Text(" ${anime.reviewNumber} ",
+                                              textScaleFactor: 0.8,
+                                              style: const TextStyle(
+                                                  color: Colors.white)),
+                                        )),
+                          ],
+                        )),
+                    _animeDisplayController.hideGridAnimeName.value
                         ? Container()
                         : Padding(
                             padding: const EdgeInsets.only(
@@ -436,11 +447,12 @@ class _AnimeListPageState extends State<AnimeListPage>
             textScaleFactor: 0.9,
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
-          leading: AnimeListCover(
-            anime,
-            showReviewNumber: !SPUtil.getBool("hideReviewNumber"),
-            reviewNumber: anime.reviewNumber,
-          ),
+          leading: Obx(() => AnimeListCover(
+                anime,
+                showReviewNumber:
+                    !_animeDisplayController.hideReviewNumber.value,
+                reviewNumber: anime.reviewNumber,
+              )),
           trailing: Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
               textScaleFactor: 0.9),
           onTap: () {

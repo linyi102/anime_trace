@@ -18,6 +18,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'controllers/anime_display_controller.dart';
 import 'controllers/update_record_controller.dart';
 
 void main() async {
@@ -163,6 +164,7 @@ class MyAppState extends State<MyApp> with WindowListener {
   @override
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.put(ThemeController());
+    final animeDisplayController = Get.put(AnimeDisplayController());
 
     return Obx(() => OKToast(
           position: ToastPosition.top,

@@ -58,6 +58,9 @@ class AnimeListCover extends StatelessWidget {
 
     // 网络封面
     if (_anime.animeCoverUrl.startsWith("http")) {
+      // 一定要缓存起来，否则断开网络后，无法显示图片
+      // return Image.network(_anime.animeCoverUrl, fit: BoxFit.fitWidth);
+
       return CachedNetworkImage(
         imageUrl: _anime.animeCoverUrl,
         fit: BoxFit.fitWidth,

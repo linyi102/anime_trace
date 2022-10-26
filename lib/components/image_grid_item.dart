@@ -49,6 +49,7 @@ class ImageGridItem extends StatelessWidget {
           aspectRatio: 1, // 正方形
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5), // 圆角
+            // 增加过渡效果，否则突然显示会很突兀
             child: FadeInImage(
               placeholder: MemoryImage(kTransparentImage),
               image: FileImage(File(imageLocalPath)),

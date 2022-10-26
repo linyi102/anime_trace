@@ -55,10 +55,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
           ),
         ),
-        body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: _buildBody(),
-        ));
+        body: _buildBody());
   }
 
   _buildBody() {

@@ -198,6 +198,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, _anime.animeName);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -211,6 +213,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         return true;
       },
       child: Scaffold(
+        // body: !_loadAnimeOk ? Container() : Row(
+        //   children: [
+        //     Expanded(flex: 1, child: Text("123"),),
+        //     Expanded(flex: 2,child: Scaffold(
+        //       body: SingleChildScrollView(child: _buildTabBody(),),
+        //       appBar: AppBar(
+        //           leading: IconButton(
+        //               onPressed: () {
+        //                 debugPrint("按返回按钮，返回anime");
+        //                 _refreshAnime();
+        //                 Navigator.pop(context, _anime);
+        //               },
+        //               tooltip: "返回上一级",
+        //               icon: const Icon(Icons.arrow_back_rounded)),
+        //           title: _buildAppBarTitle(),
+        //           actions: _buildActions()),
+        //     )),
+        //   ],
+        // )
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: !_loadAnimeOk

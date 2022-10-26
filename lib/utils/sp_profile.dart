@@ -6,7 +6,7 @@ import 'sp_util.dart';
 
 /// 记录和修改shared_preferences的值
 class SpProfile {
-  static getGridColumnCnt() {
+  static int getGridColumnCnt() {
     return SPUtil.getInt("gridColumnCnt",
         defaultValue: Platform.isWindows ? 6 : 3);
   }

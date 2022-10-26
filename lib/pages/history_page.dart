@@ -88,7 +88,7 @@ class _HistoryPageState extends State<HistoryPage> {
             _loadData(selectedYear);
           },
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 0),
             child: !yearLoadOk.containsKey(selectedYear)
                 ? Container(
                     key: UniqueKey(),
