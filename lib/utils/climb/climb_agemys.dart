@@ -11,7 +11,8 @@ import 'package:oktoast/oktoast.dart';
 
 class ClimbAgemys implements Climb {
   @override
-  String baseUrl = "https://www.agemys.cc";
+  // String baseUrl = "https://www.agemys.cc";
+  String baseUrl = "https://www.agemys.net"; // 2022.10.27
 
   @override
   Future<List<Anime>> climbAnimesByKeyword(String keyword,

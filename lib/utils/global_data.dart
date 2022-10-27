@@ -26,7 +26,7 @@ List<ClimbWebstie> climbWebsites = [
       climb: ClimbYhdm(),
       desc: "樱花动漫(pan)——支持网盘下载的樱花动漫，动漫免费在线观看，免费下载，无需注册，更新及时，我们致力打造最好的樱花动漫站！"),
   ClimbWebstie(
-      name: "AGE 动漫",
+      name: "AGE动漫",
       iconAssetUrl: "assets/images/website/agemys.jpg",
       keyword: "agemys",
       spkey: "enableWebSiteAgemys",
@@ -47,7 +47,7 @@ List<ClimbWebstie> climbWebsites = [
   ClimbWebstie(
       name: "次元城动漫",
       iconAssetUrl: "assets/images/website/cycdm.png",
-      keyword: "cycacg", // 关键字用于根据某个动漫的详细网址来推出属于哪个动漫，因此应该是17skr
+      keyword: "cyc",
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
       pingStatus: PingStatus(),
