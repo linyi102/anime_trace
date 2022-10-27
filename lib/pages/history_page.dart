@@ -63,23 +63,23 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                dialogSelectUint(context, "选择年份",
-                        initialValue: selectedYear,
-                        minValue: minYear,
-                        maxValue: maxYear)
-                    .then((value) {
-                  if (value == null) {
-                    debugPrint("未选择，直接返回");
-                    return;
-                  }
-                  debugPrint("选择了$value");
-                  selectedYear = value;
-                  _loadData(selectedYear);
-                });
-              },
-              icon: const Icon(Icons.search))
+          // IconButton(
+          //     onPressed: () {
+          //       dialogSelectUint(context, "选择年份",
+          //               initialValue: selectedYear,
+          //               minValue: minYear,
+          //               maxValue: maxYear)
+          //           .then((value) {
+          //         if (value == null) {
+          //           debugPrint("未选择，直接返回");
+          //           return;
+          //         }
+          //         debugPrint("选择了$value");
+          //         selectedYear = value;
+          //         _loadData(selectedYear);
+          //       });
+          //     },
+          //     icon: const Icon(Icons.search))
         ],
       ),
       body: RefreshIndicator(
@@ -107,7 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Stack(children: [
       Column(
         children: [
-          // _buildOpYearButton(),
+          _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
               ? Expanded(
                   child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
@@ -122,20 +122,31 @@ class _HistoryPageState extends State<HistoryPage> {
                         itemCount: yearHistory[selectedYear]!.length,
                         itemBuilder: (BuildContext context, int index) {
                           // debugPrint("$index");
-                          return Column(
-                            children: [
-                              //显示日期
-                              Container(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(18, 15, 0, 15),
-                                  child: Row(children: [
-                                    Text(_formatDate(
-                                        yearHistory[selectedYear]![index].date))
-                                  ])),
-                              Column(
-                                children: _buildRecord(index),
-                              )
-                            ],
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                            child: Card(
+                              color: ThemeUtil.getNoteCardColor(),
+                              elevation: 0,
+                              child: Column(
+                                children: [
+                                  //显示日期
+                                  ListTile(title: Text(_formatDate(
+                                      yearHistory[selectedYear]![index].date),textScaleFactor: 0.9,),),
+                                  // Container(
+                                  //     padding:
+                                  //         const EdgeInsets.fromLTRB(18, 15, 0, 15),
+                                  //     child: Row(children: [
+                                  //       Text(_formatDate(
+                                  //           yearHistory[selectedYear]![index].date))
+                                  //     ])),
+                                  Column(
+                                    children: _buildRecord(index),
+                                  ),
+                                  // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+                                  const SizedBox(height: 5,)
+                                ],
+                              ),
+                            ),
                           );
                         },
                       ))),
@@ -159,11 +170,15 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
-          trailing: Text(
-              (record.startEpisodeNumber == record.endEpisodeNumber
-                  ? record.startEpisodeNumber.toString()
-                  : "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
-              textScaleFactor: 0.9),
+          trailing: Transform.scale(
+            scale: 0.9,
+            child: Chip(
+                label: Text(
+                (record.startEpisodeNumber == record.endEpisodeNumber
+                    ? record.startEpisodeNumber.toString()
+                    : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+                textScaleFactor: 0.9)),
+          ),
           onTap: () {
             Navigator.of(context)
                 .push(
@@ -191,109 +206,78 @@ class _HistoryPageState extends State<HistoryPage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Container(
-          //   decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(4),
-          //       border: Border.all(width: 1, color: Colors.black12)),
-          //   child: Row(
-          //     children: [
-          //       Container(
-          //         padding: const EdgeInsets.all(5),
-          //         child: const Text(
-          //           "年",
-          //           textScaleFactor: 1.2,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          Expanded(child: Container()), // 实现一个靠左，一个靠右
           Transform.scale(
-            scale: 0.9,
-            child: Container(
-              // container渐变
-              decoration: BoxDecoration(
-                  // color: ThemeUtil.getThemePrimaryColor(),
-                  // gradient: const LinearGradient(colors: [
-                  //   Color.fromRGBO(79, 172, 254, 1),
-                  //   Color.fromRGBO(0, 242, 254, 1),
-                  // ]), // 渐变色
-                  borderRadius: BorderRadius.circular(25)),
-              child: Card(
-                elevation: 6, // z轴高度，即阴影大小
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
-                clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景。点击效果也会进行切割
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          if (selectedYear - 1 < minYear) {
-                            return;
-                          }
-                          selectedYear--;
-                          // 没有加载过，才去查询数据库
-                          if (!yearLoadOk.containsKey(selectedYear)) {
-                            debugPrint("之前未查询过$selectedYear年，现查询");
-                            _loadData(selectedYear);
-                          } else {
-                            // 加载过，直接更新状态
-                            debugPrint("查询过$selectedYear年，直接更新状态");
-                            setState(() {});
-                          }
-                        },
-                        icon: const Icon(Icons.arrow_left_rounded)),
-                    GestureDetector(
-                      child: Container(
-                        width: 50,
-                        alignment: Alignment.center,
-                        child: Text("$selectedYear",
-                            textScaleFactor: 1.2,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: ThemeUtil.getFontColor())),
-                      ),
-                      onTap: () {
-                        dialogSelectUint(context, "选择年份",
-                                initialValue: selectedYear,
-                                minValue: minYear,
-                                maxValue: maxYear)
-                            .then((value) {
-                          if (value == null) {
-                            debugPrint("未选择，直接返回");
-                            return;
-                          }
-                          debugPrint("选择了$value");
-                          selectedYear = value;
+            scale: 1,
+            child:Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        if (selectedYear - 1 < minYear) {
+                          return;
+                        }
+                        selectedYear--;
+                        // 没有加载过，才去查询数据库
+                        if (!yearLoadOk.containsKey(selectedYear)) {
+                          debugPrint("之前未查询过$selectedYear年，现查询");
                           _loadData(selectedYear);
-                        });
+                        } else {
+                          // 加载过，直接更新状态
+                          debugPrint("查询过$selectedYear年，直接更新状态");
+                          setState(() {});
+                        }
                       },
+                      icon: const Icon(Icons.arrow_left_rounded)),
+                  GestureDetector(
+                    child: Container(
+                      width: 50,
+                      alignment: Alignment.center,
+                      child: Text("$selectedYear",
+                          textScaleFactor: 1.2,
+                          style: TextStyle(
+                              // fontWeight: FontWeight.w600,
+                              color: ThemeUtil.getFontColor())),
                     ),
-                    IconButton(
-                        onPressed: () {
-                          if (selectedYear + 1 > maxYear) {
-                            showToast("前面的区域，以后再来探索吧！");
-                            return;
-                          }
-                          selectedYear++;
-                          // 没有加载过，才去查询数据库
-                          if (!yearLoadOk.containsKey(selectedYear)) {
-                            debugPrint("之前未查询过$selectedYear年，现查询");
-                            _loadData(selectedYear);
-                          } else {
-                            // 加载过，直接更新状态
-                            debugPrint("查询过$selectedYear年，直接更新状态");
-                            setState(() {});
-                          }
-                        },
-                        icon: const Icon(Icons.arrow_right_rounded)),
-                  ],
-                ),
+                    onTap: () {
+                      dialogSelectUint(context, "选择年份",
+                              initialValue: selectedYear,
+                              minValue: minYear,
+                              maxValue: maxYear)
+                          .then((value) {
+                        if (value == null) {
+                          debugPrint("未选择，直接返回");
+                          return;
+                        }
+                        debugPrint("选择了$value");
+                        selectedYear = value;
+                        _loadData(selectedYear);
+                      });
+                    },
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        if (selectedYear + 1 > maxYear) {
+                          showToast("前面的区域，以后再来探索吧！");
+                          return;
+                        }
+                        selectedYear++;
+                        // 没有加载过，才去查询数据库
+                        if (!yearLoadOk.containsKey(selectedYear)) {
+                          debugPrint("之前未查询过$selectedYear年，现查询");
+                          _loadData(selectedYear);
+                        } else {
+                          // 加载过，直接更新状态
+                          debugPrint("查询过$selectedYear年，直接更新状态");
+                          setState(() {});
+                        }
+                      },
+                      icon: const Icon(Icons.arrow_right_rounded)),
+                ],
               ),
             ),
-          ),
+
         ],
       ),
     );
