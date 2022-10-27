@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/fav_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class FavWebsiteListPage extends StatelessWidget {
@@ -16,11 +17,46 @@ class FavWebsiteListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool openWebInApp = SPUtil.getBool("openWebInApp", defaultValue: true);
+
     return Column(
       children: [
-        const ListTile(
-          title: Text("网站导航"),
+        ListTile(
+          title: const Text("网站导航"),
           style: ListTileStyle.drawer,
+          trailing: IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      // 返回有状态的builder，从而实现对话框内实时更新
+                      return StatefulBuilder(builder: (context, setState) {
+                        return AlertDialog(
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                    title: const Text("应用内打开网页"),
+                                    subtitle: const Text("仅对Android端有效"),
+                                    trailing: openWebInApp
+                                        ? const Icon(Icons.toggle_on,
+                                            color: Colors.blue)
+                                        : const Icon(Icons.toggle_off),
+                                    onTap: () {
+                                      setState(() {
+                                        openWebInApp = !openWebInApp;
+                                      });
+                                      SPUtil.setBool(
+                                          "openWebInApp", openWebInApp);
+                                    })
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                    });
+              },
+              icon: const Icon(Icons.settings)),
         ),
         ListView.builder(
             // 解决报错问题
@@ -33,14 +69,15 @@ class FavWebsiteListPage extends StatelessWidget {
               return ListTile(
                 title: Text(favWebsite.name),
                 onTap: () {
-                  LaunchUrlUtil.launch(favWebsite.url);
+                  LaunchUrlUtil.launch(favWebsite.url, inApp: openWebInApp);
                 },
                 leading: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: favWebsite.icoUrl,
                     fit: BoxFit.cover,
                     // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
-                    placeholder: (context, str) => Image.memory(kTransparentImage),
+                    placeholder: (context, str) =>
+                        Image.memory(kTransparentImage),
                     width: 35,
                   ),
                 ),
