@@ -354,8 +354,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           children: [
                             AnimeGridCover(anime, showName: showNameInCover),
                             _animeDisplayController.showGridAnimeProgress.value
-                                ? Container()
-                                : Positioned(
+                                ? Positioned(
                                     left: 5,
                                     top: 5,
                                     child: Container(
@@ -372,10 +371,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                                         style: const TextStyle(
                                             color: Colors.white),
                                       ),
-                                    )),
+                                    ))
+                                : Container(),
                             _animeDisplayController.showReviewNumber.value
-                                ? Container()
-                                : anime.reviewNumber == 1
+                                ? anime.reviewNumber == 1
                                     ? Container()
                                     : Positioned(
                                         right: 5,
@@ -391,7 +390,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                                               textScaleFactor: 0.8,
                                               style: const TextStyle(
                                                   color: Colors.white)),
-                                        )),
+                                        ))
+                                : Container(),
                           ],
                         ),
                         showNameBelowCover
