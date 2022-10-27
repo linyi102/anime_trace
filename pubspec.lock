@@ -147,7 +147,7 @@ packages:
       name: easy_sidemenu
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.1"
+    version: "0.4.1"
   expand_widget:
     dependency: "direct main"
     description:
@@ -559,7 +559,7 @@ packages:
       name: sidebarx
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.12.0"
+    version: "0.14.0"
   simple_icons:
     dependency: "direct main"
     description:

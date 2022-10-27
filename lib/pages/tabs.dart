@@ -111,50 +111,32 @@ class _TabsState extends State<Tabs> {
         children: [
           // 左侧显示侧边栏
           Obx(() => SideMenu(
-                // title: SizedBox(
-                //   height: 100,
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(16.0),
-                //     child: Image.asset('assets/images/logo.png'),
-                //   ),
-                // ),
-                title: Padding(
-                  padding: const EdgeInsets.only(left: 5, bottom: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            expandSideBar = !expandSideBar;
-                          });
-                          SpProfile.setExpandSideBar(expandSideBar);
-                        },
-                        icon: const Icon(Icons.menu),
-                        tooltip: expandSideBar ? "最小化侧边栏" : "最大化侧边栏",
-                      )
-                    ],
+                title: SizedBox(
+                  height: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset('assets/images/logo.png'),
                   ),
                 ),
-                // 收缩后，不会显示footer
-                // footer: Row(
-                //   mainAxisAlignment: MainAxisAlignment.end,
-                //   children: [
-                //     IconButton(
-                //       icon: Icon(
-                //           expandSideBar
-                //               ? Icons.arrow_back_ios
-                //               : Icons.arrow_forward_ios,
-                //           size: 15),
-                //       onPressed: () {
-                //         setState(() {
-                //           expandSideBar = !expandSideBar;
-                //         });
-                //         SpProfile.setExpandSideBar(expandSideBar);
-                //       },
-                //     ),
-                //   ],
-                // ),
+                alwaysShowFooter: true,
+                footer: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                          expandSideBar
+                              ? Icons.arrow_back_ios
+                              : Icons.arrow_forward_ios,
+                          size: 15),
+                      onPressed: () {
+                        setState(() {
+                          expandSideBar = !expandSideBar;
+                        });
+                        SpProfile.setExpandSideBar(expandSideBar);
+                      },
+                    ),
+                  ],
+                ),
                 items: items,
                 controller: pageController,
                 style: SideMenuStyle(
