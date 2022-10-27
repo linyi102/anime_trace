@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/fav_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FavWebsiteListPage extends StatelessWidget {
   FavWebsiteListPage({Key? key}) : super(key: key);
@@ -18,13 +19,13 @@ class FavWebsiteListPage extends StatelessWidget {
     return Column(
       children: [
         const ListTile(
-          title: Text("常用网站"),
+          title: Text("网站导航"),
           style: ListTileStyle.drawer,
         ),
         ListView.builder(
             // 解决报错问题
             shrinkWrap: true,
-            //解决不滚动问题
+            // 解决不滚动问题
             physics: const NeverScrollableScrollPhysics(),
             itemCount: defaultList.length,
             itemBuilder: (context, index) {
@@ -34,11 +35,12 @@ class FavWebsiteListPage extends StatelessWidget {
                 onTap: () {
                   LaunchUrlUtil.launch(favWebsite.url);
                 },
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
+                leading: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: favWebsite.icoUrl,
                     fit: BoxFit.cover,
+                    // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
+                    placeholder: (context, str) => Image.memory(kTransparentImage),
                     width: 35,
                   ),
                 ),
