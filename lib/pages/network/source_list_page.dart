@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/scaffolds/source_detail.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -90,7 +91,8 @@ class _SourceListPageState extends State<SourceListPage> {
               shrinkWrap: true, //解决无限高度问题
               physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
               children: _buildListTiles(),
-            )
+            ),
+            FavWebsiteListPage()
           ],
         ),
       ),
@@ -158,21 +160,6 @@ class _SourceListPageState extends State<SourceListPage> {
               ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
               : const Icon(Icons.check_box_outline_blank),
         ),
-        // 带缩放动画的开关图标
-        // trailing: AnimatedSwitcher(
-        //   duration: const Duration(milliseconds: 200),
-        //   transitionBuilder:
-        //       (Widget child, Animation<double> animation) {
-        //     return ScaleTransition(
-        //         child: child, scale: animation); // 缩放
-        //   },
-        //   child: e.enable
-        //       ? Icon(Icons.check_box,
-        //           key: Key(e.enable.toString()), // 不能用Unique()，否则会影响其他ListTile中的图标
-        //           color: ThemeUtil.getThemePrimaryColor())
-        //       : Icon(Icons.check_box_outline_blank,
-        //           key: Key(e.enable.toString())),
-        // ),
         onTap: () {
           Navigator.of(context).push(FadeRoute(builder: (context) {
             return SourceDetail(e);
