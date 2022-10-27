@@ -57,11 +57,8 @@ class AnimesDisplaySetting extends StatelessWidget {
               SPUtil.getBool("display_list")
                   ? Container()
                   : ListTile(
-                      title: const Text("是否显示动漫名称"),
-                      subtitle: Text(
-                          animeDisplayController.hideGridAnimeName.value
-                              ? "隐藏"
-                              : "显示"),
+                      title: const Text("显示动漫名称"),
+                      trailing: showToggleButton(animeDisplayController.hideGridAnimeName.value),
                       onTap: () {
                         animeDisplayController.turnHideGridAnimeName();
                       },
@@ -70,19 +67,14 @@ class AnimesDisplaySetting extends StatelessWidget {
                   ? Container()
                   : ListTile(
                       title: const Text("是否显示动漫进度"),
-                      subtitle: Text(
-                          animeDisplayController.hideGridAnimeProgress.value
-                              ? "隐藏"
-                              : "显示"),
+                      trailing: showToggleButton(animeDisplayController.hideGridAnimeProgress.value),
                       onTap: () {
                         animeDisplayController.turnHideGridAnimeProgress();
                       },
                     ),
               ListTile(
                 title: const Text("是否显示动漫第几次观看"),
-                subtitle: Text(animeDisplayController.hideReviewNumber.value
-                    ? "隐藏"
-                    : "显示"),
+                trailing: showToggleButton(animeDisplayController.hideReviewNumber.value),
                 onTap: () {
                   animeDisplayController.turnHideReviewNumber();
                 },
@@ -91,4 +83,10 @@ class AnimesDisplaySetting extends StatelessWidget {
           ),
         ));
   }
+
+  showToggleButton(bool on) {
+    return on ? const Icon(Icons.toggle_off_outlined)
+        : const Icon(Icons.toggle_on, color: Colors.blue);
+  }
+
 }
