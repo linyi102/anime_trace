@@ -6,9 +6,10 @@ import '../utils/sp_util.dart';
 class AnimeDisplayController extends GetxController {
   RxBool displayList = SPUtil.getBool("display_list").obs; // 列表或网格
   RxInt gridColumnCnt = SpProfile.getGridColumnCnt().obs; // 网格列数
-  RxBool hideGridAnimeName = SPUtil.getBool("hideGridAnimeName").obs; // 隐藏动漫名
-  RxBool hideGridAnimeProgress = SPUtil.getBool("hideGridAnimeProgress").obs; // 隐藏进度
-  RxBool hideReviewNumber = SPUtil.getBool("hideReviewNumber").obs; // 隐藏第几次观看
+  RxBool showGridAnimeName = SPUtil.getBool("showGridAnimeName", defaultValue: true).obs; // 网格样式下显示动漫名
+  RxBool showGridAnimeProgress = SPUtil.getBool("showGridAnimeProgress", defaultValue: true).obs; // 网格样式下显示进度
+  RxBool showNameInCover = SPUtil.getBool("showNameInCover", defaultValue: true).obs; // 网格样式下动漫名字显示在封面内底部
+  RxBool showReviewNumber = SPUtil.getBool("showReviewNumber", defaultValue: true).obs; // 显示第几次观看
 
   turnDisplayList() {
     displayList.value = !displayList.value;
@@ -20,19 +21,24 @@ class AnimeDisplayController extends GetxController {
     SPUtil.setInt("gridColumnCnt", cnt);
   }
 
-  turnHideGridAnimeName() {
-    hideGridAnimeName.value = !hideGridAnimeName.value;
-    SPUtil.setBool("hideGridAnimeName", hideGridAnimeName.value);
+  turnShowGridAnimeName() {
+    showGridAnimeName.value = !showGridAnimeName.value;
+    SPUtil.setBool("showGridAnimeName", showGridAnimeName.value);
   }
 
-  turnHideGridAnimeProgress() {
-    hideGridAnimeProgress.value = !hideGridAnimeProgress.value;
-    SPUtil.setBool("hideGridAnimeProgress", hideGridAnimeProgress.value);
+  turnShowGridAnimeProgress() {
+    showGridAnimeProgress.value = !showGridAnimeProgress.value;
+    SPUtil.setBool("showGridAnimeProgress", showGridAnimeProgress.value);
   }
 
-  turnHideReviewNumber() {
-    hideReviewNumber.value = !hideReviewNumber.value;
-    SPUtil.setBool("hideReviewNumber", hideReviewNumber.value);
+  turnShowReviewNumber() {
+    showReviewNumber.value = !showReviewNumber.value;
+    SPUtil.setBool("showReviewNumber", showReviewNumber.value);
+  }
+
+  turnShowNameInCover() {
+    showNameInCover.value = !showNameInCover.value;
+    SPUtil.setBool("showNameInCover", showNameInCover.value);
   }
 
 }

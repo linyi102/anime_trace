@@ -47,7 +47,7 @@ class _RateListPageState extends State<RateListPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
+          padding: const EdgeInsets.only(left: 10, right: 10),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
@@ -123,7 +123,7 @@ class _RateListPageState extends State<RateListPage> {
 
     for (EpisodeNote note in notes) {
       list.add(Container(
-        padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: MaterialButton(
@@ -167,7 +167,7 @@ class _RateListPageState extends State<RateListPage> {
     if (note.noteContent.isEmpty) return Container();
     return Container(
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Text(
         note.noteContent,
         maxLines: 10,

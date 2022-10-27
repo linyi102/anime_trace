@@ -24,69 +24,84 @@ class AnimesDisplaySetting extends StatelessWidget {
             : null,
         body: Obx(
           () => ListView(
-            children: [
-              ListTile(
-                title: animeDisplayController.displayList.value
-                    ? const Text("列表样式")
-                    : const Text("网格样式"),
-                subtitle: const Text("单击切换列表样式/网格样式"),
-                onTap: () {
-                  animeDisplayController.turnDisplayList();
-                },
-              ),
-              SPUtil.getBool("display_list")
-                  ? Container()
-                  : ListTile(
-                      title: const Text("修改动漫列数"),
-                      subtitle: Text("${animeDisplayController.gridColumnCnt}"),
-                      onTap: () {
-                        dialogSelectUint(context, "选择列数",
-                                initialValue:
-                                    animeDisplayController.gridColumnCnt.value,
-                                minValue: 1,
-                                maxValue: 10)
-                            .then((value) {
-                          if (value == null) {
-                            debugPrint("未选择，直接返回");
-                            return;
-                          }
-                          animeDisplayController.setGridColumnCnt(value);
-                        });
-                      },
-                    ),
-              SPUtil.getBool("display_list")
-                  ? Container()
-                  : ListTile(
-                      title: const Text("显示动漫名称"),
-                      trailing: showToggleButton(animeDisplayController.hideGridAnimeName.value),
-                      onTap: () {
-                        animeDisplayController.turnHideGridAnimeName();
-                      },
-                    ),
-              SPUtil.getBool("display_list")
-                  ? Container()
-                  : ListTile(
-                      title: const Text("是否显示动漫进度"),
-                      trailing: showToggleButton(animeDisplayController.hideGridAnimeProgress.value),
-                      onTap: () {
-                        animeDisplayController.turnHideGridAnimeProgress();
-                      },
-                    ),
-              ListTile(
-                title: const Text("是否显示动漫第几次观看"),
-                trailing: showToggleButton(animeDisplayController.hideReviewNumber.value),
-                onTap: () {
-                  animeDisplayController.turnHideReviewNumber();
-                },
-              ),
-            ],
+            children: _buildListTiles(context, animeDisplayController),
           ),
         ));
   }
 
-  showToggleButton(bool on) {
-    return on ? const Icon(Icons.toggle_off_outlined)
-        : const Icon(Icons.toggle_on, color: Colors.blue);
+  List<ListTile> _buildListTiles(
+      BuildContext context, AnimeDisplayController animeDisplayController) {
+    bool displayList = animeDisplayController.displayList.value;
+    List<ListTile> list = [];
+    list.add(ListTile(
+      title: displayList ? const Text("列表样式") : const Text("网格样式"),
+      subtitle: const Text("单击切换列表样式/网格样式"),
+      onTap: () {
+        animeDisplayController.turnDisplayList();
+      },
+    ));
+
+    // 如果显示网格，则添加更多修改选项
+    if (!displayList) {
+      list.add(ListTile(
+        title: const Text("修改动漫列数"),
+        subtitle: Text("${animeDisplayController.gridColumnCnt}"),
+        onTap: () {
+          dialogSelectUint(context, "选择列数",
+                  initialValue: animeDisplayController.gridColumnCnt.value,
+                  minValue: 1,
+                  maxValue: 10)
+              .then((value) {
+            if (value == null) {
+              debugPrint("未选择，直接返回");
+              return;
+            }
+            animeDisplayController.setGridColumnCnt(value);
+          });
+        },
+      ));
+      list.add(ListTile(
+        title: const Text("显示动漫名称"),
+        trailing:
+            showToggleButton(animeDisplayController.showGridAnimeName.value),
+        onTap: () {
+          animeDisplayController.turnShowGridAnimeName();
+        },
+      ));
+      list.add(ListTile(
+        title: const Text("动漫名称显示在内部"),
+        trailing:
+            showToggleButton(animeDisplayController.showNameInCover.value),
+        enabled: animeDisplayController.showGridAnimeName.value, // 确保先开启显示动漫名称
+        onTap: () {
+          animeDisplayController.turnShowNameInCover();
+        },
+      ));
+      list.add(ListTile(
+        title: const Text("显示动漫进度"),
+        trailing: showToggleButton(
+            animeDisplayController.showGridAnimeProgress.value),
+        onTap: () {
+          animeDisplayController.turnShowGridAnimeProgress();
+        },
+      ));
+    }
+
+    // 其他公共选项
+    list.add(ListTile(
+      title: const Text("显示动漫第几次观看"),
+      trailing: showToggleButton(animeDisplayController.showReviewNumber.value),
+      onTap: () {
+        animeDisplayController.turnShowReviewNumber();
+      },
+    ));
+
+    return list;
   }
 
+  showToggleButton(bool on) {
+    return on
+        ? const Icon(Icons.toggle_on, color: Colors.blue)
+        : const Icon(Icons.toggle_off_outlined);
+  }
 }

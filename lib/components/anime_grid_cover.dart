@@ -9,13 +9,18 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 // 用于显示完整的动漫封面
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
+  final bool showName;
 
-  const AnimeGridCover(this._anime, {Key? key}) : super(key: key);
+  const AnimeGridCover(this._anime, {Key? key, this.showName = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
         padding: const EdgeInsets.all(3.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: AspectRatio(
           // 固定大小
           aspectRatio: 198 / 275,
@@ -23,7 +28,17 @@ class AnimeGridCover extends StatelessWidget {
           // aspectRatio: 41 / 63,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: _buildCover(),
+            child: Stack(
+              children: [
+                // 确保图片填充
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: _buildCover(),
+                ),
+                showName ? _buildBottomName() : Container()
+              ],
+            ),
           ),
         ));
   }
@@ -61,6 +76,45 @@ class AnimeGridCover extends StatelessWidget {
       fit: BoxFit.cover,
       // 这里不能使用errorImageBuilder，否则无法进入动漫封面详细页
       errorBuilder: (context, url, error) => const Placeholder(),
+    );
+  }
+
+  _buildBottomName() {
+    return Stack(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              height: 80,
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                    Colors.transparent,
+                    Color.fromRGBO(0, 0, 0, 0.6)
+                  ])),
+            ),
+          ],
+        ),
+        // 使用Align替换Positioned，可以保证在Stack下自适应父元素宽度
+        Container(
+          alignment: Alignment.bottomLeft,
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Container(
+            // TODO 字体溢出，没有换行，可能是因为Stack，Container没有宽度限制
+            padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
+            child: Text(
+              _anime.animeName,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textScaleFactor: 0.9,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        )
+      ],
     );
   }
 }
