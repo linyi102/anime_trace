@@ -3,7 +3,7 @@ import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_test_future/classes/episode.dart';
 import 'package:flutter_test_future/classes/episode_note.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/note_edit.dart';
+import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 

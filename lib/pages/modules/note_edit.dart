@@ -7,7 +7,7 @@ import 'package:flutter_test_future/classes/relative_local_image.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/settings/image_path_setting.dart';
+import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';

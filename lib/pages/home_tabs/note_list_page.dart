@@ -6,9 +6,9 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/scaffolds/note_edit.dart';
-import 'package:flutter_test_future/scaffolds/settings/image_path_setting.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/modules/note_edit.dart';
+import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 

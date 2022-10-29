@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';

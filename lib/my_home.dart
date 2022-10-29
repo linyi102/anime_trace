@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_test_future/pages/tabs.dart';
+import 'package:flutter_test_future/pages/home_tabs/home_tabs.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -24,7 +24,7 @@ class MyHome extends StatelessWidget {
       }
 
       return Stack(
-        children: const [Tabs(), UpdateHint(checkLatestVersion: true)],
+        children: const [HomeTabs(), UpdateHint(checkLatestVersion: true)],
       );
     });
   }

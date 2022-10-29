@@ -13,12 +13,12 @@ import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/anime_cover_detail.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/rate_list_page.dart';
-import 'package:flutter_test_future/scaffolds/image_viewer.dart';
-import 'package:flutter_test_future/scaffolds/note_edit.dart';
+import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
+import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/rate_list_page.dart';
+import 'package:flutter_test_future/pages/modules/image_viewer.dart';
+import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -31,6 +31,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'anime_properties_page.dart';
+
 
 // ignore: must_be_immutable
 class AnimeDetailPlus extends StatefulWidget {

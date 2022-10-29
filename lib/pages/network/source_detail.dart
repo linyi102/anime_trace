@@ -2,11 +2,12 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
+import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
+/// 单个搜索源详细页面
 class SourceDetail extends StatefulWidget {
   final ClimbWebstie climbWebstie;
   const SourceDetail(this.climbWebstie, {Key? key}) : super(key: key);

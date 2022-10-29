@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';
+import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:get/get.dart';

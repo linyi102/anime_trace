@@ -2,28 +2,29 @@ import 'dart:io';
 
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/anime_list_page.dart';
-import 'package:flutter_test_future/pages/history_page.dart';
-import 'package:flutter_test_future/pages/network/network_nav.dart';
-import 'package:flutter_test_future/pages/note_list_page.dart';
-import 'package:flutter_test_future/pages/setting_page.dart';
+import 'package:flutter_test_future/pages/home_tabs/anime_list_page.dart';
+import 'package:flutter_test_future/pages/home_tabs/history_page.dart';
+import 'package:flutter_test_future/pages/home_tabs/note_list_page.dart';
+import 'package:flutter_test_future/pages/home_tabs/setting_page.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sidebarx/sidebarx.dart';
 
-class Tabs extends StatefulWidget {
-  const Tabs({Key? key}) : super(key: key);
+import 'network_page.dart';
+
+class HomeTabs extends StatefulWidget {
+  const HomeTabs({Key? key}) : super(key: key);
 
   @override
-  _TabsState createState() => _TabsState();
+  _HomeTabsState createState() => _HomeTabsState();
 }
 
-class _TabsState extends State<Tabs> {
+class _HomeTabsState extends State<HomeTabs> {
   final List<Widget> _list = [
     const AnimeListPage(),
-    const NetWorkNav(),
+    const NetWorkPage(),
     const HistoryPage(),
     const NoteListPage(),
     const SettingPage(),
