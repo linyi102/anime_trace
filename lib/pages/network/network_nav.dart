@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/dialog/dialog_update_all_anime_progress.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/network/directory_page.dart';
 import 'package:flutter_test_future/pages/network/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/update_record_page.dart';

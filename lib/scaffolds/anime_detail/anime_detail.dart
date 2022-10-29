@@ -12,7 +12,7 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/controller/anime_controller.dart';

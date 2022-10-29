@@ -1,7 +1,7 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_all_website.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

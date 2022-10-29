@@ -6,7 +6,7 @@ import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';

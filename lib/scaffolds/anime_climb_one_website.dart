@@ -6,7 +6,7 @@ import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

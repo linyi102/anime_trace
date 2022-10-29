@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/classes/anime.dart';
 import 'package:flutter_test_future/classes/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
-import 'package:flutter_test_future/fade_route.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/scaffolds/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';

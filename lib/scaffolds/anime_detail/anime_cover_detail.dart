@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 import '../../classes/anime.dart';
-import '../../fade_route.dart';
+import '../../animation/fade_route.dart';
 import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';
 import '../../utils/sqlite_util.dart';
