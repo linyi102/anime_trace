@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/modules/image_viewer.dart';

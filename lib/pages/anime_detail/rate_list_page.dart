@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
-import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 
-import '../../classes/anime.dart';
+import '../../models/anime.dart';
 import '../../components/image_grid_view.dart';
 import '../../utils/theme_util.dart';
 
@@ -22,7 +22,7 @@ class RateListPage extends StatefulWidget {
 
 class _RateListPageState extends State<RateListPage> {
   late Anime anime;
-  List<EpisodeNote> notes = [];
+  List<Note> notes = [];
   bool noteOk = false;
 
   @override
@@ -102,8 +102,8 @@ class _RateListPageState extends State<RateListPage> {
 
   void _createRateNote(BuildContext context) {
     debugPrint("添加评价");
-    EpisodeNote episodeNote =
-        EpisodeNote(anime: anime, episode: Episode(0, 1), // 第0集作为评价
+    Note episodeNote =
+        Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
             relativeLocalImages: [], imgUrls: []);
     SqliteUtil.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
@@ -121,7 +121,7 @@ class _RateListPageState extends State<RateListPage> {
     List<Widget> list = [];
     debugPrint("渲染1次笔记列表"); // TODO：多次渲染
 
-    for (EpisodeNote note in notes) {
+    for (Note note in notes) {
       list.add(Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: ClipRRect(
@@ -163,7 +163,7 @@ class _RateListPageState extends State<RateListPage> {
     return list;
   }
 
-  _buildNoteContent(EpisodeNote note) {
+  _buildNoteContent(Note note) {
     if (note.noteContent.isEmpty) return Container();
     return Container(
       alignment: Alignment.centerLeft,
@@ -186,7 +186,7 @@ class _RateListPageState extends State<RateListPage> {
     // );
   }
 
-  _buildCreateTimeAndMoreAction(EpisodeNote note) {
+  _buildCreateTimeAndMoreAction(Note note) {
     String timeStr = TimeShowUtil.getShowDateTimeStr(note.createTime);
     timeStr = timeStr.isEmpty ? "" : "创建于 $timeStr";
 

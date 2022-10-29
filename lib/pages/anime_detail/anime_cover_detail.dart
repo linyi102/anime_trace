@@ -12,7 +12,7 @@ import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
-import '../../classes/anime.dart';
+import '../../models/anime.dart';
 import '../../animation/fade_route.dart';
 import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';

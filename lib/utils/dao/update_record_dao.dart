@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/params/page_params.dart';
-import 'package:flutter_test_future/classes/update_record.dart';
-import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/anime_update_record.dart';
+import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class UpdateRecordDao {
   static Future<List<Object?>> batchInsert(
-      List<UpdateRecord> updateRecords) async {
+      List<AnimeUpdateRecord> updateRecords) async {
     var batchInsert = SqliteUtil.database.batch();
     for (var updateRecord in updateRecords) {
       debugPrint("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");

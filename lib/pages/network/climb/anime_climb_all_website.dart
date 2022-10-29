@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
@@ -111,7 +111,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     }
   }
 
-  Future<bool> _generateMixedAnimes(ClimbWebstie climbWebsite) async {
+  Future<bool> _generateMixedAnimes(ClimbWebsite climbWebsite) async {
     mixedAnimes[climbWebsite.name] =
         websiteClimbAnimes[climbWebsite.name] as List<Anime>;
 
@@ -217,7 +217,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
               itemCount: climbWebsites
                   .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
               itemBuilder: (context, index) {
-                ClimbWebstie webstie = climbWebsites[index];
+                ClimbWebsite webstie = climbWebsites[index];
                 // 如果关闭了，则不显示
                 if (!climbWebsites[index].enable) return Container();
                 // 遍历时，第一次(isFirstEnableSource为false)到达这里，则说明是第一个启动了的搜索源，需要在上面添加自定义

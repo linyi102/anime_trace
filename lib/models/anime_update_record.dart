@@ -1,15 +1,15 @@
-import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
+import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 
 import 'anime.dart';
 
-class UpdateRecord {
+class AnimeUpdateRecord {
   int id;
   int animeId;
   int oldEpisodeCnt;
   int newEpisodeCnt;
   String manualUpdateTime;
 
-  UpdateRecord(
+  AnimeUpdateRecord(
       {required this.animeId,
       this.id = 0,
       this.oldEpisodeCnt = 0,

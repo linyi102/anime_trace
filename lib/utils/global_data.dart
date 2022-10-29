@@ -1,7 +1,7 @@
 // List tags = ["拾", "途", "终", "搁", "弃"];
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
-import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
@@ -13,10 +13,10 @@ List<String> tags = [];
 List<int> animeCntPerTag = []; // 各个标签下的动漫数量
 List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 List<Anime> directory = []; // 目录动漫
-Filter filter = Filter(); // 目录页中的过滤条件
+AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 
-List<ClimbWebstie> climbWebsites = [
-  ClimbWebstie(
+List<ClimbWebsite> climbWebsites = [
+  ClimbWebsite(
       name: "樱花动漫",
       iconAssetUrl: "assets/images/website/yhdm.png",
       keyword: "yhdm",
@@ -25,7 +25,7 @@ List<ClimbWebstie> climbWebsites = [
       pingStatus: PingStatus(),
       climb: ClimbYhdm(),
       desc: "樱花动漫(pan)——支持网盘下载的樱花动漫，动漫免费在线观看，免费下载，无需注册，更新及时，我们致力打造最好的樱花动漫站！"),
-  ClimbWebstie(
+  ClimbWebsite(
       name: "AGE动漫",
       iconAssetUrl: "assets/images/website/agemys.jpg",
       keyword: "agemys",
@@ -34,7 +34,7 @@ List<ClimbWebstie> climbWebsites = [
       pingStatus: PingStatus(),
       climb: ClimbAgemys(),
       desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载"),
-  ClimbWebstie(
+  ClimbWebsite(
       name: "OmoFun",
       iconAssetUrl: "assets/images/website/OmoFun.jpg",
       keyword: "omofun",
@@ -44,7 +44,7 @@ List<ClimbWebstie> climbWebsites = [
       climb: ClimbOmofun(),
       comment: "图片较大，流量慎用",
       desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
-  ClimbWebstie(
+  ClimbWebsite(
       name: "次元城动漫",
       iconAssetUrl: "assets/images/website/cycdm.png",
       keyword: "cyc",

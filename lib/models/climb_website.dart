@@ -1,7 +1,7 @@
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 
-class ClimbWebstie {
+class ClimbWebsite {
   String name;
   String iconAssetUrl;
   bool enable;
@@ -13,7 +13,7 @@ class ClimbWebstie {
   String desc; // 描述
   Climb climb; // 爬取工具
 
-  ClimbWebstie(
+  ClimbWebsite(
       {required this.name,
       required this.iconAssetUrl,
       required this.enable,

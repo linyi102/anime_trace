@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
@@ -17,7 +17,7 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
-  final ClimbWebstie climbWebStie;
+  final ClimbWebsite climbWebStie;
   const AnimeClimbOneWebsite(
       {this.animeId = 0,
       this.keyword = "",

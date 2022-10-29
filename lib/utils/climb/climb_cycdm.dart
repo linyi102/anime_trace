@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 
@@ -24,7 +24,7 @@ class ClimbCycdm implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(Filter filter) async {
+  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
     return [];
   }
 }

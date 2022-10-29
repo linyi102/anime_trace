@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/params/page_params.dart';
-import 'package:flutter_test_future/classes/update_record.dart';
-import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/anime_update_record.dart';
+import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/dao/update_record_dao.dart';
 import 'package:get/get.dart';
 
@@ -39,7 +39,7 @@ class UpdateRecordController extends GetxController {
   updateSingaleAnimeData(Anime oldAnime, Anime newAnime) {
     if (newAnime.animeEpisodeCnt <= oldAnime.animeEpisodeCnt) return;
 
-    UpdateRecord updateRecord = UpdateRecord(
+    AnimeUpdateRecord updateRecord = AnimeUpdateRecord(
         animeId: newAnime.animeId,
         oldEpisodeCnt: oldAnime.animeEpisodeCnt,
         newEpisodeCnt: newAnime.animeEpisodeCnt,

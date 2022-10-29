@@ -5,9 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/classes/episode_note.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
@@ -54,7 +54,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   List<Episode> _episodes = [];
   bool _loadAnimeOk = false;
   bool _loadEpisodeOk = false;
-  List<EpisodeNote> _episodeNotes = [];
+  List<Note> _episodeNotes = [];
   late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
@@ -164,7 +164,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
 
     for (var episode in _episodes) {
-      EpisodeNote episodeNote = EpisodeNote(
+      Note episodeNote = Note(
           anime: _anime,
           episode: episode,
           relativeLocalImages: [],
@@ -732,7 +732,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _episodes[episodeIndex].number, date, _anime.reviewNumber);
                 _episodes[episodeIndex].dateTime = date;
                 // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-                EpisodeNote episodeNote = EpisodeNote(
+                Note episodeNote = Note(
                     anime: _anime,
                     episode: _episodes[episodeIndex],
                     relativeLocalImages: [],
@@ -1076,7 +1076,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         SqliteUtil.insertHistoryItem(
             _anime.animeId, episodeNumber, dateTime, _anime.reviewNumber);
         // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-        EpisodeNote episodeNote = EpisodeNote(
+        Note episodeNote = Note(
             anime: _anime,
             episode: _episodes[episodeIndex],
             relativeLocalImages: [],

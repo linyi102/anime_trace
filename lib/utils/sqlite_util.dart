@@ -2,13 +2,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/classes/episode_note.dart';
-import 'package:flutter_test_future/classes/history_plus.dart';
-import 'package:flutter_test_future/classes/note_filter.dart';
-import 'package:flutter_test_future/classes/record.dart';
-import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/models/history_plus.dart';
+import 'package:flutter_test_future/models/note_filter.dart';
+import 'package:flutter_test_future/models/anime_history_record.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -331,12 +331,12 @@ class SqliteUtil {
     return anime;
   }
 
-  static EpisodeNote escapeEpisodeNote(EpisodeNote episodeNote) {
+  static Note escapeEpisodeNote(Note episodeNote) {
     episodeNote.noteContent = escapeStr(episodeNote.noteContent);
     return episodeNote;
   }
 
-  static EpisodeNote restoreEscapeEpisodeNote(EpisodeNote episodeNote) {
+  static Note restoreEscapeEpisodeNote(Note episodeNote) {
     episodeNote.noteContent = restoreEscapeStr(episodeNote.noteContent);
     return episodeNote;
   }
@@ -1011,7 +1011,7 @@ class SqliteUtil {
       }
       if (animes.isEmpty) continue; // 没有观看记录时直接跳过
 
-      List<Record> records = [];
+      List<AnimeHistoryRecord> records = [];
       // 对于每个动漫，找到当月观看的最小值和最大值
       // 如果该月存在多个回顾号，注意要挑选的最小值和最大值的回顾号一样
       // 因此需要先找出该月存在的该动漫的所有回顾号(注意去重)，对与每个回顾号
@@ -1037,8 +1037,8 @@ class SqliteUtil {
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
           int endEpisodeNumber = list[0]['end'] as int;
-          Record record =
-              Record(anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
+          AnimeHistoryRecord record =
+              AnimeHistoryRecord(anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
           // debugPrint(record);
           records.add(record);
         }
@@ -1063,7 +1063,7 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<int> insertEpisodeNote(EpisodeNote episodeNote) async {
+  static Future<int> insertEpisodeNote(Note episodeNote) async {
     debugPrint(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
     episodeNote = escapeEpisodeNote(episodeNote);
@@ -1093,9 +1093,9 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<EpisodeNote>
+  static Future<Note>
       getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-          EpisodeNote episodeNote) async {
+          Note episodeNote) async {
     // debugPrint(
     //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
     // 查询内容
@@ -1119,9 +1119,9 @@ class SqliteUtil {
     return episodeNote;
   }
 
-  static Future<List<EpisodeNote>> getAllNotesByTableHistory() async {
+  static Future<List<Note>> getAllNotesByTableHistory() async {
     debugPrint("sql: getAllNotesByTableHistory");
-    List<EpisodeNote> episodeNotes = [];
+    List<Note> episodeNotes = [];
     // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
     var lm1 = await database.rawQuery('''
     select date, history.anime_id, episode_number, anime_name, anime_cover_url, review_number
@@ -1139,7 +1139,7 @@ class SqliteUtil {
         item['review_number'] as int,
         dateTime: item['date'] as String,
       );
-      EpisodeNote episodeNote = EpisodeNote(
+      Note episodeNote = Note(
           anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
       episodeNote =
           await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
@@ -1153,10 +1153,10 @@ class SqliteUtil {
   }
 
   //↓优化
-  static Future<List<EpisodeNote>> getAllNotesByTableNoteAndKeyword(
+  static Future<List<Note>> getAllNotesByTableNoteAndKeyword(
       int offset, int number, NoteFilter noteFilter) async {
     debugPrint("sql: getAllNotesByTableNote");
-    List<EpisodeNote> episodeNotes = [];
+    List<Note> episodeNotes = [];
     // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
     // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
     // var lm1 = await _database.rawQuery('''
@@ -1209,7 +1209,7 @@ class SqliteUtil {
       );
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
-      EpisodeNote episodeNote = EpisodeNote(
+      Note episodeNote = Note(
           episodeNoteId: item['note_id'] as int,
           // 忘记设置了，导致都是进入笔记0
           anime: anime,
@@ -1225,9 +1225,9 @@ class SqliteUtil {
     return episodeNotes;
   }
 
-  static Future<List<EpisodeNote>> getRateNotesByAnimeId(int animeId) async {
+  static Future<List<Note>> getRateNotesByAnimeId(int animeId) async {
     debugPrint("sql: getRateNotesByAnimeId");
-    List<EpisodeNote> notes = [];
+    List<Note> notes = [];
     var lm1 = await database.rawQuery('''
       select note_id, note_content, create_time, update_time from episode_note
       where anime_id = $animeId and episode_number = 0 order by note_id desc;
@@ -1240,7 +1240,7 @@ class SqliteUtil {
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(noteId);
       // 然后再添加到列表中
-      notes.add(EpisodeNote(
+      notes.add(Note(
           episodeNoteId: noteId,
           anime: Anime(animeName: "", animeEpisodeCnt: 0),
           episode: Episode(0, 1),

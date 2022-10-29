@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail.dart';
@@ -99,7 +99,7 @@ class _SourceListPageState extends State<SourceListPage> {
     );
   }
 
-  String _getPingTimeStr(ClimbWebstie e) {
+  String _getPingTimeStr(ClimbWebsite e) {
     if (e.pingStatus.pinging) {
       return "测试中...";
     }
@@ -113,7 +113,7 @@ class _SourceListPageState extends State<SourceListPage> {
     return "超时";
   }
 
-  _getPingStatusIcon(ClimbWebstie e) {
+  _getPingStatusIcon(ClimbWebsite e) {
     return Icon(Icons.circle,
         size: 12,
         color: (e.pingStatus.notPing || e.pingStatus.pinging)
@@ -173,7 +173,7 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   // 取消/启用搜索源
-  void _invertSource(ClimbWebstie e) {
+  void _invertSource(ClimbWebsite e) {
     e.enable = !e.enable;
     setState(() {}); // 使用的是StatefulBuilder的setState
     // 保存

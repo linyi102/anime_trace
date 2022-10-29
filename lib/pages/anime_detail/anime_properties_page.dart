@@ -6,7 +6,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
-import '../../classes/anime.dart';
+import '../../models/anime.dart';
 import '../../utils/theme_util.dart';
 
 class AnimePropertiesPage extends StatelessWidget {

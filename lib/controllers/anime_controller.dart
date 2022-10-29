@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
-import '../classes/anime.dart';
+import '../models/anime.dart';
+
 
 class AnimeController extends GetxController {
   Rx<Anime> anime = Anime(animeName: "", animeEpisodeCnt: 0).obs;

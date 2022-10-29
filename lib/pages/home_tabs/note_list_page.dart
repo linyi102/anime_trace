@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/episode_note.dart';
-import 'package:flutter_test_future/classes/note_filter.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/image_grid_view.dart';
@@ -20,7 +20,7 @@ class NoteListPage extends StatefulWidget {
 }
 
 class _NoteListPageState extends State<NoteListPage> {
-  List<EpisodeNote> episodeNotes = [];
+  List<Note> episodeNotes = [];
   bool _loadOk = false;
   NoteFilter noteFilter = NoteFilter();
 
@@ -229,7 +229,7 @@ class _NoteListPageState extends State<NoteListPage> {
                         ),
                       ).then((value) {
                         // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
-                        EpisodeNote newEpisodeNote = value;
+                        Note newEpisodeNote = value;
                         debugPrint(
                             "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
                         if (newEpisodeNote.episodeNoteId == 0) {

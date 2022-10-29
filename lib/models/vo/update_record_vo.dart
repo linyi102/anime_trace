@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/models/anime.dart';
 
 class UpdateRecordVo {
   int id;

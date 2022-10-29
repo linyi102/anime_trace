@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 
 // 用于显示笔记图片网格

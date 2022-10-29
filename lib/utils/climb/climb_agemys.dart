@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
@@ -109,7 +109,7 @@ class ClimbAgemys implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(Filter filter) async {
+  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
     return [];
   }
 }

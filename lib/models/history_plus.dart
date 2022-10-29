@@ -1,8 +1,8 @@
-import 'package:flutter_test_future/classes/record.dart';
+import 'package:flutter_test_future/models/anime_history_record.dart';
 
 class HistoryPlus {
   String date;
-  List<Record> records;
+  List<AnimeHistoryRecord> records;
 
   HistoryPlus(this.date, this.records);
 

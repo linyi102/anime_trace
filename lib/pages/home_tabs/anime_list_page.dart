@@ -7,7 +7,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

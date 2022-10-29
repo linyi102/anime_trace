@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/params/page_params.dart';
-import 'package:flutter_test_future/classes/vo/update_record_vo.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';

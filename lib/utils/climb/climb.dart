@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/filter.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
 
 abstract class Climb {
   late String baseUrl;
@@ -8,5 +8,5 @@ abstract class Climb {
   // 根据关键字搜索相关动漫
   Future<List<Anime>> climbAnimesByKeyword(String keyword);
   // 爬取目录
-  Future<List<Anime>> climbDirectory(Filter filter);
+  Future<List<Anime>> climbDirectory(AnimeFilter filter);
 }

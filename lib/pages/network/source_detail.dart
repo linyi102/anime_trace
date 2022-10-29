@@ -1,6 +1,6 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 
 /// 单个搜索源详细页面
 class SourceDetail extends StatefulWidget {
-  final ClimbWebstie climbWebstie;
+  final ClimbWebsite climbWebstie;
   const SourceDetail(this.climbWebstie, {Key? key}) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class SourceDetail extends StatefulWidget {
 }
 
 class _SourceDetailState extends State<SourceDetail> {
-  late ClimbWebstie climbWebstie = widget.climbWebstie;
+  late ClimbWebsite climbWebstie = widget.climbWebstie;
 
   @override
   Widget build(BuildContext context) {

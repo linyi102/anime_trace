@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/history_plus.dart';
-import 'package:flutter_test_future/classes/record.dart';
+import 'package:flutter_test_future/models/history_plus.dart';
+import 'package:flutter_test_future/models/anime_history_record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -158,7 +158,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   List<Widget> _buildRecord(int index) {
     List<Widget> listWidget = [];
-    List<Record> records = yearHistory[selectedYear]![index].records;
+    List<AnimeHistoryRecord> records = yearHistory[selectedYear]![index].records;
     for (var record in records) {
       listWidget.add(
         ListTile(

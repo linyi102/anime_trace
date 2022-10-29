@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/classes/episode_note.dart';
-import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/image_grid_item.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 class NoteEdit extends StatefulWidget {
-  EpisodeNote episodeNote; // 可能会修改笔记内容，因此不能用final
+  Note episodeNote; // 可能会修改笔记内容，因此不能用final
   NoteEdit(this.episodeNote, {Key? key}) : super(key: key);
 
   @override

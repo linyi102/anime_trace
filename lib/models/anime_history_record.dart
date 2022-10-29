@@ -1,12 +1,12 @@
-import 'package:flutter_test_future/classes/anime.dart';
+import 'package:flutter_test_future/models/anime.dart';
 
-class Record {
+class AnimeHistoryRecord {
   Anime anime;
   int reviewNumber;
   int startEpisodeNumber;
   int endEpisodeNumber;
 
-  Record(this.anime, this.reviewNumber, this.startEpisodeNumber,
+  AnimeHistoryRecord(this.anime, this.reviewNumber, this.startEpisodeNumber,
       this.endEpisodeNumber);
 
   @override

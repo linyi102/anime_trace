@@ -1,7 +1,7 @@
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/climb_website.dart';
-import 'package:flutter_test_future/classes/filter.dart';
-import 'package:flutter_test_future/classes/update_record.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
@@ -14,7 +14,7 @@ import 'package:oktoast/oktoast.dart';
 
 class ClimbAnimeUtil {
   // 根据动漫网址中的关键字来判断来源
-  static ClimbWebstie? getClimbWebsiteByAnimeUrl(String animeUrl) {
+  static ClimbWebsite? getClimbWebsiteByAnimeUrl(String animeUrl) {
     for (var climbWebsite in climbWebsites) {
       // 存在animeUrl以https://www.agemys.cc/和https://www.agemys.com/开头的，因此都需要解释为age动漫源
       // 因此采用contain keyword，而不是startWith baseUrl
@@ -29,7 +29,7 @@ class ClimbAnimeUtil {
   }
 
   // 根据过滤查询目录动漫
-  static Future<List<Anime>> climbDirectory(Filter filter) async {
+  static Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
     Climb climb = ClimbYhdm();
     List<Anime> directory = await climb.climbDirectory(filter);
     return directory;
@@ -37,7 +37,7 @@ class ClimbAnimeUtil {
 
   // 多搜索源。根据关键字搜索动漫
   static Future<List<Anime>> climbAnimesByKeywordAndWebSite(
-      String keyword, ClimbWebstie climbWebStie) async {
+      String keyword, ClimbWebsite climbWebStie) async {
     List<Anime> climbAnimes = [];
     climbAnimes = await climbWebStie.climb.climbAnimesByKeyword(keyword);
     return climbAnimes;
@@ -77,7 +77,7 @@ class ClimbAnimeUtil {
     updateRecordController.resetUpdateOkCnt(); // 重新设置
 
     List<Anime> animes = await SqliteUtil.getAllAnimes();
-    List<UpdateRecord> updateRecords = [];
+    List<AnimeUpdateRecord> updateRecords = [];
     bool enableBatchInsertUpdateRecord =
         updateRecordController.enableBatchInsertUpdateRecord;
 
@@ -102,13 +102,13 @@ class ClimbAnimeUtil {
       //   premiereTime: anime.premiereTime,
       //   animeUrl: anime.animeUrl
       // );
-      UpdateRecord updateRecord = UpdateRecord(animeId: 0);
+      AnimeUpdateRecord updateRecord = AnimeUpdateRecord(animeId: 0);
       // 爬取
       ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
           .then((value) {
         if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
           // 集数变化则记录到表中
-          updateRecord = UpdateRecord(
+          updateRecord = AnimeUpdateRecord(
               animeId: anime.animeId,
               oldEpisodeCnt: oldAnime.animeEpisodeCnt,
               newEpisodeCnt: anime.animeEpisodeCnt,

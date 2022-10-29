@@ -1,8 +1,8 @@
-import 'package:flutter_test_future/classes/anime.dart';
-import 'package:flutter_test_future/classes/episode.dart';
-import 'package:flutter_test_future/classes/relative_local_image.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 
-class EpisodeNote {
+class Note {
   int episodeNoteId;
   Anime anime;
   Episode episode;
@@ -12,7 +12,7 @@ class EpisodeNote {
   String createTime;
   String updateTime;
 
-  EpisodeNote({
+  Note({
     this.episodeNoteId = 0,
     required this.anime,
     required this.episode,
@@ -22,6 +22,7 @@ class EpisodeNote {
     this.createTime = "",
     this.updateTime = "",
   });
+
   @override
   String toString() {
     return "${anime.animeName}-${episode.number}: $noteContent";
