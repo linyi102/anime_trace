@@ -44,7 +44,7 @@ class AnimeGridCover extends StatelessWidget {
                   // 使用obx会导致多搜索源搜索时报错。而动漫收藏列表页没有影响
                   // Obx(() => _buildEpisodeState(_animeDisplayController)),
                   // Obx(() => _buildReviewNumber(_animeDisplayController)),
-                  // 不使用obx会导致动漫收藏列表页无法实时更新
+                  // TODO 不使用obx会导致动漫收藏列表页无法实时更新
                   _buildEpisodeState(_animeDisplayController),
                   _buildReviewNumber(_animeDisplayController)
                 ],

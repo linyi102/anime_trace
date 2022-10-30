@@ -77,9 +77,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
             Anime anime = widget.animes[animeIndex];
 
             return MaterialButton(
-              padding: Platform.isAndroid
-                  ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
-                  : const EdgeInsets.fromLTRB(10, 5, 10, 5),
+              padding: const EdgeInsets.all(0),
               onPressed: () async {
                 // 迁移动漫
                 if (ismigrate) {

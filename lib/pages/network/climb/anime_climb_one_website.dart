@@ -144,7 +144,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: buildWebSiteIcon(url: widget.climbWebStie.iconUrl, size: 25),
+                  child: buildWebSiteIcon(
+                      url: widget.climbWebStie.iconUrl, size: 25),
                 ),
                 const SizedBox(width: 10),
                 Text(widget.climbWebStie.name)
@@ -171,37 +172,36 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       itemBuilder: (BuildContext context, int index) {
         Anime anime = mixedAnimes[index];
         return MaterialButton(
-          onPressed: () {
-            // 迁移动漫
-            if (ismigrate) {
-              showDialogOfConfirmMigrate(context, widget.animeId, anime);
-            } else if (anime.isCollected()) {
-              debugPrint("进入动漫详细页面${anime.animeId}");
-              // 不为0，说明已添加，点击进入动漫详细页面
-              Navigator.of(context).push(
-                // MaterialPageRoute(
-                //   builder: (context) =>
-                //       AnimeDetailPlus(anime.animeId),
-                // ),
-                FadeRoute(
-                  builder: (context) {
-                    return AnimeDetailPlus(anime.animeId);
-                  },
-                ),
-              ).then((value) {
-                // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
-                _generateMixedAnimes().then((value) {
-                  setState(() {});
+            padding: const EdgeInsets.all(0),
+            child: AnimeGridCover(anime),
+            onPressed: () {
+              // 迁移动漫
+              if (ismigrate) {
+                showDialogOfConfirmMigrate(context, widget.animeId, anime);
+              } else if (anime.isCollected()) {
+                debugPrint("进入动漫详细页面${anime.animeId}");
+                // 不为0，说明已添加，点击进入动漫详细页面
+                Navigator.of(context).push(
+                  // MaterialPageRoute(
+                  //   builder: (context) =>
+                  //       AnimeDetailPlus(anime.animeId),
+                  // ),
+                  FadeRoute(
+                    builder: (context) {
+                      return AnimeDetailPlus(anime.animeId);
+                    },
+                  ),
+                ).then((value) {
+                  // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
+                  _generateMixedAnimes().then((value) {
+                    setState(() {});
+                  });
                 });
-              });
-            } else {
-              debugPrint("添加动漫");
-              dialogSelectTag(setState, context, anime);
-            }
-          },
-          padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-          child: AnimeGridCover(anime),
-        );
+              } else {
+                debugPrint("添加动漫");
+                dialogSelectTag(setState, context, anime);
+              }
+            });
       },
     );
   }
