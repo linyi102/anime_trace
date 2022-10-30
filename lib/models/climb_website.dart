@@ -12,6 +12,7 @@ class ClimbWebsite {
   String comment; // 注释
   String desc; // 描述
   Climb climb; // 爬取工具
+  bool discard; // 放弃使用
 
   ClimbWebsite(
       {required this.name,
@@ -21,6 +22,7 @@ class ClimbWebsite {
       required this.pingStatus,
       required this.keyword,
       required this.climb,
+      this.discard = false,
       this.comment = "",
       this.desc = ""});
 

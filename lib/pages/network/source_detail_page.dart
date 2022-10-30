@@ -8,6 +8,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 /// 单个搜索源详细页面
 class SourceDetail extends StatefulWidget {
@@ -42,13 +43,17 @@ class _SourceDetailState extends State<SourceDetail> {
           ),
           ListTile(
             title: const Text("启动搜索"),
-            leading: climbWebstie.enable
+            leading: !climbWebstie.discard && climbWebstie.enable
                 ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
                 : Icon(
                     Icons.check_box_outline_blank,
                     color: ThemeUtil.getLeadingIconColor(),
                   ),
             onTap: () {
+              if (climbWebstie.discard) {
+                showToast("很抱歉，该搜索源已经无法使用");
+                return;
+              }
               climbWebstie.enable = !climbWebstie.enable;
               setState(() {});
               // 保存

@@ -6,6 +6,7 @@ import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -117,12 +118,12 @@ class _SourceListPageState extends State<SourceListPage> {
     return "超时";
   }
 
-  _getPingStatusIcon(ClimbWebsite e) {
+  _getPingStatusIcon(PingStatus pingStatus) {
     return Icon(Icons.circle,
         size: 12,
-        color: (e.pingStatus.notPing || e.pingStatus.pinging)
+        color: (pingStatus.notPing || pingStatus.pinging)
             ? Colors.grey // 还没ping过，或者正在ping
-            : (e.pingStatus.connectable
+            : (pingStatus.connectable
                 ? ThemeUtil.getConnectableColor()
                 : Colors.red));
   }
@@ -132,7 +133,9 @@ class _SourceListPageState extends State<SourceListPage> {
       return ListTile(
         title: Row(
           children: [
-            showPingDetail ? Container() : _getPingStatusIcon(climbWebsite),
+            showPingDetail
+                ? Container()
+                : _getPingStatusIcon(climbWebsite.pingStatus),
             showPingDetail ? Container() : const SizedBox(width: 10),
             Text(climbWebsite.name),
           ],
@@ -140,9 +143,13 @@ class _SourceListPageState extends State<SourceListPage> {
         subtitle: showPingDetail
             ? Row(
                 children: [
-                  _getPingStatusIcon(climbWebsite),
+                  climbWebsite.discard
+                      ? _getPingStatusIcon(PingStatus())
+                      : _getPingStatusIcon(climbWebsite.pingStatus),
                   const SizedBox(width: 10),
-                  Text(_getPingTimeStr(climbWebsite)),
+                  climbWebsite.discard
+                      ? const Text("无法使用")
+                      : Text(_getPingTimeStr(climbWebsite)),
                   const SizedBox(width: 10),
                   // Text(e.comment)
                 ],
@@ -151,9 +158,13 @@ class _SourceListPageState extends State<SourceListPage> {
         leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
         trailing: IconButton(
           onPressed: () {
+            if (climbWebsite.discard) {
+              showToast("很抱歉，该搜索源已经无法使用");
+              return;
+            }
             _invertSource(climbWebsite);
           },
-          icon: climbWebsite.enable
+          icon: !climbWebsite.discard && climbWebsite.enable
               ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
               : const Icon(Icons.check_box_outline_blank),
         ),
