@@ -1,6 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({Key? key}) : super(key: key);
@@ -124,45 +126,38 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   List<Widget> _buildListTiles() {
-    return climbWebsites.map((e) {
+    return climbWebsites.map((climbWebsite) {
       return ListTile(
         title: Row(
           children: [
-            showPingDetail ? Container() : _getPingStatusIcon(e),
+            showPingDetail ? Container() : _getPingStatusIcon(climbWebsite),
             showPingDetail ? Container() : const SizedBox(width: 10),
-            Text(e.name),
+            Text(climbWebsite.name),
           ],
         ),
         subtitle: showPingDetail
             ? Row(
                 children: [
-                  _getPingStatusIcon(e),
+                  _getPingStatusIcon(climbWebsite),
                   const SizedBox(width: 10),
-                  Text(_getPingTimeStr(e)),
+                  Text(_getPingTimeStr(climbWebsite)),
                   const SizedBox(width: 10),
                   // Text(e.comment)
                 ],
               )
             : null,
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(50),
-          child: Image.asset(
-            e.iconAssetUrl,
-            fit: BoxFit.cover,
-            width: showPingDetail ? 35 : 25, // 没有副标题用25，有则用35
-          ),
-        ),
+        leading: _buildSourceItemLeading(climbWebsite),
         trailing: IconButton(
           onPressed: () {
-            _invertSource(e);
+            _invertSource(climbWebsite);
           },
-          icon: e.enable
+          icon: climbWebsite.enable
               ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
               : const Icon(Icons.check_box_outline_blank),
         ),
         onTap: () {
           Navigator.of(context).push(FadeRoute(builder: (context) {
-            return SourceDetail(e);
+            return SourceDetail(climbWebsite);
           })).then((value) {
             setState(() {});
             // 可能从里面取消了启动
@@ -207,6 +202,25 @@ class _SourceListPageState extends State<SourceListPage> {
           )
         ],
       ),
+    );
+  }
+
+  _buildSourceItemLeading(ClimbWebsite climbWebsite) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50),
+      child: climbWebsite.iconUrl.startsWith("http")
+          ? CachedNetworkImage(
+              imageUrl: climbWebsite.iconUrl,
+              fit: BoxFit.cover,
+              width: showPingDetail ? 35 : 25,
+              // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
+              placeholder: (context, str) => Image.memory(kTransparentImage),
+            )
+          : Image.asset(
+              climbWebsite.iconUrl,
+              fit: BoxFit.cover,
+              width: showPingDetail ? 35 : 25, // 没有副标题用25，有则用35
+            ),
     );
   }
 }

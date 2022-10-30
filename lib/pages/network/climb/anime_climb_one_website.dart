@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -18,6 +19,7 @@ class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
   final ClimbWebsite climbWebStie;
+
   const AnimeClimbOneWebsite(
       {this.animeId = 0,
       this.keyword = "",
@@ -103,8 +105,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-          autofocus:
-              widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
+          autofocus: widget.keyword.isEmpty ? true : false,
+          // 自动弹出键盘，如果是修改封面，则为false
           controller: animeNameController..text,
           decoration: InputDecoration(
               hintText: "搜索动漫",
@@ -138,11 +140,17 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    widget.climbWebStie.iconAssetUrl,
-                    fit: BoxFit.fitWidth,
-                    width: 25,
-                  ),
+                  child: widget.climbWebStie.iconUrl.startsWith("http")
+                      ? CachedNetworkImage(
+                          imageUrl: widget.climbWebStie.iconUrl,
+                          fit: BoxFit.cover,
+                          width: 25,
+                        )
+                      : Image.asset(
+                          widget.climbWebStie.iconUrl,
+                          fit: BoxFit.fitWidth,
+                          width: 25,
+                        ),
                 ),
                 const SizedBox(width: 10),
                 Text(widget.climbWebStie.name)
@@ -165,7 +173,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: SPUtil.getInt("gridColumnCnt", defaultValue: Platform.isWindows ? 8 : 3), // 横轴数量
+        crossAxisCount: SPUtil.getInt("gridColumnCnt",
+            defaultValue: Platform.isWindows ? 8 : 3), // 横轴数量
         crossAxisSpacing: 5, // 横轴距离
         mainAxisSpacing: 3, // 竖轴距离
         childAspectRatio: 31 / 56, // 每个网格的比例

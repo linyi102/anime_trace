@@ -31,7 +31,7 @@ class DioPackage {
     return dio;
   }
 
-  Future<Result> get<T>(String path) async {
+  static Future<Result> get<T>(String path) async {
     try {
       Dio dio = _getDio();
       Response response = await dio.request(path);

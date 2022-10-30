@@ -3,7 +3,7 @@ import 'package:flutter_test_future/utils/ping_result.dart';
 
 class ClimbWebsite {
   String name;
-  String iconAssetUrl;
+  String iconUrl;
   bool enable;
   String
       keyword; // 网址中的关键字。比如根据baseUrl=https://www.agemys.cc/和https://www.agemys.com/，他们都含有agemys，则可以根据收藏的动漫的原网址来退出动漫源
@@ -15,7 +15,7 @@ class ClimbWebsite {
 
   ClimbWebsite(
       {required this.name,
-      required this.iconAssetUrl,
+      required this.iconUrl,
       required this.enable,
       required this.spkey,
       required this.pingStatus,

@@ -20,7 +20,7 @@ class ClimbYhdm implements Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    Result result = await DioPackage().get(anime.animeUrl);
+    Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
       return anime;
@@ -111,7 +111,7 @@ class ClimbYhdm implements Climb {
   // 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
   static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url) async {
     List<Anime> animes = [];
-    Result result = await DioPackage().get(url);
+    Result result = await DioPackage.get(url);
     if (result.code != 200) {
       showToast(result.msg);
       return [];

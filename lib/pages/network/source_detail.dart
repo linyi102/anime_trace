@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 /// 单个搜索源详细页面
 class SourceDetail extends StatefulWidget {
   final ClimbWebsite climbWebstie;
+
   const SourceDetail(this.climbWebstie, {Key? key}) : super(key: key);
 
   @override
@@ -34,14 +36,16 @@ class _SourceDetailState extends State<SourceDetail> {
           Container(
             height: 100,
             width: 100,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: climbWebstie.iconUrl.startsWith("http")
+                  ? CachedNetworkImage(
+                      imageUrl: climbWebstie.iconUrl, fit: BoxFit.cover)
+                  : Image.asset(climbWebstie.iconUrl, fit: BoxFit.cover),
+            ),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(150),
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage(climbWebstie.iconAssetUrl)),
+                borderRadius: BorderRadius.circular(50),
                 boxShadow: const [
                   BoxShadow(
                       color: Colors.black12,

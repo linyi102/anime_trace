@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
+import 'package:flutter_test_future/utils/climb/climb_douban.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
@@ -18,7 +19,7 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "樱花动漫",
-      iconAssetUrl: "assets/images/website/yhdm.png",
+      iconUrl: "assets/images/website/yhdm.png",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
@@ -27,30 +28,38 @@ List<ClimbWebsite> climbWebsites = [
       desc: "樱花动漫(pan)——支持网盘下载的樱花动漫，动漫免费在线观看，免费下载，无需注册，更新及时，我们致力打造最好的樱花动漫站！"),
   ClimbWebsite(
       name: "AGE动漫",
-      iconAssetUrl: "assets/images/website/agemys.jpg",
+      iconUrl: "assets/images/website/agemys.jpg",
       keyword: "agemys",
       spkey: "enableWebSiteAgemys",
       enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true),
       pingStatus: PingStatus(),
       climb: ClimbAgemys(),
       desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载"),
-  ClimbWebsite(
-      name: "OmoFun",
-      iconAssetUrl: "assets/images/website/OmoFun.jpg",
-      keyword: "omofun",
-      spkey: "enableWebSiteOmofun",
-      enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: true),
-      pingStatus: PingStatus(),
-      climb: ClimbOmofun(),
-      comment: "图片较大，流量慎用",
-      desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
+  // ClimbWebsite(
+  //     name: "OmoFun",
+  //     iconAssetUrl: "assets/images/website/OmoFun.jpg",
+  //     keyword: "omofun",
+  //     spkey: "enableWebSiteOmofun",
+  //     enable: SPUtil.getBool("enableWebSiteOmofun", defaultValue: true),
+  //     pingStatus: PingStatus(),
+  //     climb: ClimbOmofun(),
+  //     comment: "图片较大，流量慎用",
+  //     desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
   ClimbWebsite(
       name: "次元城动漫",
-      iconAssetUrl: "assets/images/website/cycdm.png",
+      iconUrl: "assets/images/website/cycdm.png",
       keyword: "cyc",
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
       pingStatus: PingStatus(),
       climb: ClimbCycdm(),
       desc: "高质量在线追番平台！"),
+  ClimbWebsite(
+      name: "豆瓣",
+      iconUrl: "https://www.douban.com/favicon.ico",
+      enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: true),
+      spkey: "enableWebSiteDouban",
+      pingStatus: PingStatus(),
+      keyword: "douban",
+      climb: ClimbDouban())
 ];

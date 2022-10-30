@@ -21,7 +21,7 @@ class ClimbAgemys implements Climb {
     List<Anime> climbAnimes = [];
 
     debugPrint("正在获取文档...");
-    Result result = await DioPackage().get(url);
+    Result result = await DioPackage.get(url);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
 

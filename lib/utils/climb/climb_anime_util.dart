@@ -84,8 +84,8 @@ class ClimbAnimeUtil {
     // 异步更新所有动漫信息
     for (var anime in animes) {
       // debugPrint("${anime.animeName}：${anime.playStatus}");
-      // 跳过完结动漫
-      if (anime.playStatus.contains("完结")) {
+      // 跳过完结动漫，还要豆瓣
+      if (anime.playStatus.contains("完结") || anime.animeUrl.contains("douban")) {
         skipUpdateCnt++;
         continue;
       }

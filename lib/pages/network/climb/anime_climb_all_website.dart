@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 class AnimeClimbAllWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
+
   const AnimeClimbAllWebsite({this.animeId = 0, this.keyword = "", Key? key})
       : super(key: key);
 
@@ -151,8 +153,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-          autofocus:
-              widget.keyword.isEmpty ? true : false, // 自动弹出键盘，如果是修改封面，则为false
+          autofocus: widget.keyword.isEmpty ? true : false,
+          // 自动弹出键盘，如果是修改封面，则为false
           controller: inputKeywordController..text,
           decoration: InputDecoration(
               hintText: ismigrate ? "迁移动漫" : "搜索动漫",
@@ -234,11 +236,13 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                       title: Text(webstie.name),
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(
-                          webstie.iconAssetUrl,
-                          fit: BoxFit.fitWidth,
-                          width: 25,
-                        ),
+                        child: webstie.iconUrl.startsWith("http")
+                            ? CachedNetworkImage(
+                                imageUrl: webstie.iconUrl,
+                                fit: BoxFit.cover,
+                                width: 25)
+                            : Image.asset(webstie.iconUrl,
+                                fit: BoxFit.cover, width: 25),
                       ),
                       trailing: const Icon(Icons.arrow_forward),
                       onTap: () {

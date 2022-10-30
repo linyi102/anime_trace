@@ -22,7 +22,7 @@ class ClimbOmofun implements Climb {
     List<Anime> climbAnimes = [];
 
     debugPrint("正在获取文档...");
-    Result result = await DioPackage().get(url);
+    Result result = await DioPackage.get(url);
     if (result.code != 200) {
       showToast(result.msg);
       return [];
@@ -90,7 +90,7 @@ class ClimbOmofun implements Climb {
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     debugPrint("爬取动漫详细网址：${anime.animeUrl}");
-    Result result = await DioPackage().get(anime.animeUrl);
+    Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
       return anime;
