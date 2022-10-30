@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
-import 'package:flutter_test_future/components/image_grid_item.dart';
+import 'package:flutter_test_future/components/note_img_item.dart';
 
 // 用于显示笔记图片网格
 // 使用：笔记列表页
-class ImageGridView extends StatelessWidget {
+class NoteImgView extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   final limitShowImageNum = true;
 
-  ImageGridView({Key? key, required this.relativeLocalImages})
+  NoteImgView({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
   // 手机端最多显示9张，每行3个；电脑端最多显示12张，每行6个
@@ -37,7 +37,7 @@ class ImageGridView extends StatelessWidget {
       ),
       itemCount: _getGridItemCount(),
       itemBuilder: (context, index) {
-        return ImageGridItem(
+        return NoteImgItem(
             relativeLocalImages: relativeLocalImages,
             initialIndex: index,
             imageRemainCount: index == maxDisplayCount - 1

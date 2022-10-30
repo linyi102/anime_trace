@@ -10,12 +10,12 @@ import 'package:transparent_image/transparent_image.dart';
 
 // 网格的单个笔记图片构建
 // 使用：笔记列表页
-class ImageGridItem extends StatelessWidget {
+class NoteImgItem extends StatelessWidget {
   final List<RelativeLocalImage>
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
-  const ImageGridItem(
+  const NoteImgItem(
       {required this.relativeLocalImages,
       this.initialIndex = 0,
       this.imageRemainCount = 0,

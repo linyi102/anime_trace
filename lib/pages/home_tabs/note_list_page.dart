@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/image_grid_view.dart';
+import 'package:flutter_test_future/components/note_img_view.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
@@ -250,7 +250,7 @@ class _NoteListPageState extends State<NoteListPage> {
                         // 笔记内容
                         _buildEpisodeNote(index),
                         // 笔记图片
-                        ImageGridView(
+                        NoteImgView(
                             relativeLocalImages:
                                 episodeNotes[index].relativeLocalImages),
                       ],

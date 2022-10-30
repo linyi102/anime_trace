@@ -551,7 +551,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                           Navigator.of(context).push(FadeRoute(
                               builder: (context) => AnimeCoverDetail()));
                         },
-                        child: AnimeGridCover(animeController.anime.value),
+                        child: AnimeGridCover(animeController.anime.value, onlyShowCover: true),
                       ),
                     ),
                   ),

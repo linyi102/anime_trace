@@ -1,37 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/count_controller.dart';
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:get/get.dart';
 
-class TestPage extends StatelessWidget {
+class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final CountController countController = Get.put(CountController());
-    final UpdateRecordController updateRecordController = Get.find();
+  State<TestPage> createState() => _TestPageState();
+}
 
+class _TestPageState extends State<TestPage> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("测试"),
       ),
       body: ListView(
         children: [
+          // 不管用
           ListTile(
-            title: Obx(() => Text("${countController.count}")),
-            onTap: () => countController.increment(),
-          ),
-          ListTile(
-            title: const Text("更新所有动漫"),
-            subtitle: Obx(
-              () => Text(
-                  "${updateRecordController.updateOkCnt.value} / ${updateRecordController.needUpdateCnt.value}"),
-            ),
+            title: const Text("清除缓存"),
+            subtitle: Text("${imageCache.currentSizeBytes / 1024 / 1024}MB"),
             onTap: () {
-              ClimbAnimeUtil.updateAllAnimesInfo();
+              imageCache.clear();
             },
-          ),
+          )
         ],
       ),
     );

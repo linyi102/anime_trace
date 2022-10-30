@@ -13,6 +13,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
+import '../settings/test.dart';
+
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
 
@@ -44,6 +46,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   final ThemeController themeController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,20 +167,22 @@ class _SettingPageState extends State<SettingPage> {
                 );
               },
             ),
-            // ListTile(
-            //   iconColor: ThemeUtil.getLeadingIconColor(),
-            //   leading: const Icon(Icons.bug_report_outlined),
-            //   title: const Text("测试页面"),
-            //   onTap: () {
-            //     Navigator.of(context).push(
-            //       FadeRoute(
-            //         builder: (context) {
-            //           return const TestPage();
-            //         },
-            //       ),
-            //     );
-            //   },
-            // )
+            const bool.fromEnvironment("dart.vm.product")
+                ? Container()
+                : ListTile(
+                    iconColor: ThemeUtil.getLeadingIconColor(),
+                    leading: const Icon(Icons.bug_report_outlined),
+                    title: const Text("测试页面"),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        FadeRoute(
+                          builder: (context) {
+                            return const TestPage();
+                          },
+                        ),
+                      );
+                    },
+                  )
           ],
         ));
   }
@@ -196,8 +201,10 @@ class _SettingPageState extends State<SettingPage> {
                 elevation: 5,
                 margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                 shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5))), // 圆角
-                clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                // 圆角
+                clipBehavior: Clip.antiAlias,
+                // 设置抗锯齿，实现圆角背景
                 // elevation: 0,
                 // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: Image.file(

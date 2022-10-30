@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/image_grid_item.dart';
+import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -210,7 +210,7 @@ class _NoteEditState extends State<NoteEdit> {
         // 否则显示图片
         return Stack(
           children: [
-            ImageGridItem(
+            NoteImgItem(
               relativeLocalImages: widget.episodeNote.relativeLocalImages,
               initialIndex: imageIndex,
             ),

@@ -424,7 +424,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                               showImageViewer(context, imageProvider,
                                   immersive: false);
                             },
-                            child: AnimeGridCover(anime),
+                            child: AnimeGridCover(anime, onlyShowCover: true),
                           ),
                         ),
                       ),

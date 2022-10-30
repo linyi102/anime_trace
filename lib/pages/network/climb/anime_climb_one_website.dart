@@ -9,11 +9,15 @@ import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dar
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/home_tabs/anime_list_page.dart';
+import 'package:flutter_test_future/pages/modules/website_icon.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+
+import '../../../components/common/common_function.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
@@ -140,17 +144,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: widget.climbWebStie.iconUrl.startsWith("http")
-                      ? CachedNetworkImage(
-                          imageUrl: widget.climbWebStie.iconUrl,
-                          fit: BoxFit.cover,
-                          width: 25,
-                        )
-                      : Image.asset(
-                          widget.climbWebStie.iconUrl,
-                          fit: BoxFit.fitWidth,
-                          width: 25,
-                        ),
+                  child: buildWebSiteIcon(url: widget.climbWebStie.iconUrl, size: 25),
                 ),
                 const SizedBox(width: 10),
                 Text(widget.climbWebStie.name)
@@ -172,13 +166,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   _displayClimbAnime() {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: SPUtil.getInt("gridColumnCnt",
-            defaultValue: Platform.isWindows ? 8 : 3), // 横轴数量
-        crossAxisSpacing: 5, // 横轴距离
-        mainAxisSpacing: 3, // 竖轴距离
-        childAspectRatio: 31 / 56, // 每个网格的比例
-      ),
+      gridDelegate: getAnimeGridDelegate(),
       itemCount: mixedAnimes.length,
       itemBuilder: (BuildContext context, int index) {
         Anime anime = mixedAnimes[index];
@@ -212,78 +200,9 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
             }
           },
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5), // 设置按钮填充
-          child: Flex(
-            direction: Axis.vertical,
-            children: [
-              Stack(
-                children: [
-                  AnimeGridCover(anime),
-                  _displayEpisodeState(anime),
-                  _displayReviewNumber(anime),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        anime.animeName,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        textScaleFactor: 0.9,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          child: AnimeGridCover(anime),
         );
       },
     );
-  }
-
-  _displayEpisodeState(Anime anime) {
-    if (anime.animeId == 0) return Container(); // 没有id，说明未添加
-
-    return Positioned(
-        left: 5,
-        top: 5,
-        child: Container(
-          // height: 20,
-          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            color: ThemeUtil.getThemePrimaryColor(),
-          ),
-          child: Text(
-            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-            textScaleFactor: 0.9,
-            style: const TextStyle(color: Colors.white),
-          ),
-        ));
-  }
-
-  _displayReviewNumber(Anime anime) {
-    if (anime.animeId == 0) return Container(); // 没有id，说明未添加
-
-    return anime.reviewNumber == 1
-        ? Container()
-        : Positioned(
-            right: 5,
-            top: 5,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: Colors.orange,
-              ),
-              child: Text(
-                " ${anime.reviewNumber} ",
-                textScaleFactor: 0.9,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ));
   }
 }

@@ -16,6 +16,8 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
+import '../../components/common/common_function.dart';
+
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
 
@@ -308,30 +310,11 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   GridView _getAnimeGridView(int i) {
-    bool showNameInCover = false, showNameBelowCover = false, showName = false;
-    if (_animeDisplayController.showGridAnimeName.value) {
-      showName = true;
-      if (_animeDisplayController.showNameInCover.value) {
-        showNameInCover = true;
-      } else {
-        showNameBelowCover = true;
-      }
-    }
-
     return GridView.builder(
         controller: _scrollControllers[i],
         // 整体的填充
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // 横轴数量
-          crossAxisCount: _animeDisplayController.gridColumnCnt.value,
-          // 横轴距离
-          crossAxisSpacing: 5,
-          // 竖轴距离
-          mainAxisSpacing: 3,
-          // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
-          childAspectRatio: !showName || showNameInCover ? 31 / 45 : 31 / 56,
-        ),
+        gridDelegate: getAnimeGridDelegate(),
         itemCount: animesInTag[i].length,
         itemBuilder: (BuildContext context, int index) {
           _loadExtraData(i, index);
@@ -347,71 +330,8 @@ class _AnimeListPageState extends State<AnimeListPage>
               },
               padding: const EdgeInsets.all(0),
               child: Stack(children: [
-                Obx(() => Column(
-                      children: [
-                        Stack(
-                          children: [
-                            AnimeGridCover(anime, showName: showNameInCover),
-                            _animeDisplayController.showGridAnimeProgress.value
-                                ? Positioned(
-                                    left: 5,
-                                    top: 5,
-                                    child: Container(
-                                      // height: 20,
-                                      padding:
-                                          const EdgeInsets.fromLTRB(3, 2, 3, 2),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(3),
-                                        color: ThemeUtil.getThemePrimaryColor(),
-                                      ),
-                                      child: Text(
-                                        "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-                                        textScaleFactor: 0.8,
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      ),
-                                    ))
-                                : Container(),
-                            _animeDisplayController.showReviewNumber.value
-                                ? anime.reviewNumber == 1
-                                    ? Container()
-                                    : Positioned(
-                                        right: 5,
-                                        top: 5,
-                                        child: Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              2, 2, 2, 2),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(3),
-                                              color: Colors.orange),
-                                          child: Text(" ${anime.reviewNumber} ",
-                                              textScaleFactor: 0.8,
-                                              style: const TextStyle(
-                                                  color: Colors.white)),
-                                        ))
-                                : Container(),
-                          ],
-                        ),
-                        showNameBelowCover
-                            ? Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 2, left: 3, right: 3),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(anime.animeName,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          textScaleFactor: 0.9,
-                                          style: TextStyle(
-                                              color: ThemeUtil.getFontColor())),
-                                    )
-                                  ],
-                                ))
-                            : Container()
-                      ],
-                    )),
+                AnimeGridCover(anime),
+                // 多选时的效果
                 Container(
                   decoration: BoxDecoration(
                     // border: mapSelected.containsKey(index)
@@ -453,7 +373,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           leading: Obx(() => AnimeListCover(
                 anime,
                 showReviewNumber:
-                    !_animeDisplayController.showReviewNumber.value,
+                    _animeDisplayController.showReviewNumber.value,
                 reviewNumber: anime.reviewNumber,
               )),
           trailing: Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",

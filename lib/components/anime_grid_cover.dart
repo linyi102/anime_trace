@@ -5,24 +5,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
+
+import '../controllers/anime_display_controller.dart';
 
 // 用于显示完整的动漫封面
+// 包括进度、第几次观看、名字
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
-  final bool showName;
+  final bool onlyShowCover; // 动漫详细页只显示封面
+  final double coverWidth; // 传入固定宽度，用于水平列表
 
-  const AnimeGridCover(this._anime, {Key? key, this.showName = false})
+  const AnimeGridCover(this._anime,
+      {Key? key, this.onlyShowCover = false, this.coverWidth = 0})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final AnimeDisplayController _animeDisplayController = Get.find();
+    bool showNameInCover = false, showNameBelowCover = false;
+    if (_animeDisplayController.showGridAnimeName.value) {
+      if (_animeDisplayController.showNameInCover.value) {
+        showNameInCover = true;
+      } else {
+        showNameBelowCover = true;
+      }
+    }
+
+    return onlyShowCover
+        ? _buildCover(context, false)
+        : Column(
+            children: [
+              // 封面
+              Stack(
+                children: [
+                  // 动漫收藏列表页有obx嵌套gridview，这会让这里的实时变化(改变名字)，而下面的必须要加obx
+                  _buildCover(context, showNameInCover),
+                  // 使用obx会导致多搜索源搜索时报错。而动漫收藏列表页没有影响
+                  // Obx(() => _buildEpisodeState(_animeDisplayController)),
+                  // Obx(() => _buildReviewNumber(_animeDisplayController)),
+                  // 不使用obx会导致动漫收藏列表页无法实时更新
+                  _buildEpisodeState(_animeDisplayController),
+                  _buildReviewNumber(_animeDisplayController)
+                ],
+              ),
+              // 名字
+              _buildNameBelowCover(showNameBelowCover),
+            ],
+          );
+  }
+
+  _buildCover(BuildContext context, bool showNameInCover) {
     return Container(
+        width: coverWidth == 0 ? null : coverWidth,
         padding: const EdgeInsets.all(3.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
         ),
         child: AspectRatio(
-          // 固定大小
+          // 固定宽高比
           aspectRatio: 198 / 275,
           // aspectRatio: 31 / 45,
           // aspectRatio: 41 / 63,
@@ -34,16 +75,60 @@ class AnimeGridCover extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  child: _buildCover(),
+                  child: _buildCoverImg(),
                 ),
-                showName ? _buildBottomName() : Container()
+                _buildNameInCover(showNameInCover)
               ],
             ),
           ),
         ));
   }
 
-  _buildCover() {
+  _buildEpisodeState(AnimeDisplayController _animeDisplayController) {
+    if (_anime.isCollected() &&
+        _animeDisplayController.showGridAnimeProgress.value) {
+      return Positioned(
+          left: 5,
+          top: 5,
+          child: Container(
+            // height: 20,
+            padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              color: ThemeUtil.getThemePrimaryColor(),
+            ),
+            child: Text(
+              "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
+              textScaleFactor: 0.8,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  _buildReviewNumber(AnimeDisplayController _animeDisplayController) {
+    if (_anime.isCollected() &&
+        _animeDisplayController.showReviewNumber.value &&
+        _anime.reviewNumber > 1) {
+      return Positioned(
+          right: 5,
+          top: 5,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3), color: Colors.orange),
+            child: Text(" ${_anime.reviewNumber} ",
+                textScaleFactor: 0.8,
+                style: const TextStyle(color: Colors.white)),
+          ));
+    } else {
+      return Container();
+    }
+  }
+
+  _buildCoverImg() {
     if (_anime.animeCoverUrl.isEmpty) {
       return Container(
         color: ThemeUtil.getAppBarBackgroundColor(),
@@ -63,6 +148,13 @@ class AnimeGridCover extends StatelessWidget {
 
     // 网络封面
     if (_anime.animeCoverUrl.startsWith("http")) {
+      // 断网后```访问不了图片，所以使用CachedNetworkImage缓存起来
+      // return FadeInImage(
+      //     placeholder: MemoryImage(kTransparentImage),
+      //     fit: BoxFit.cover,
+      //     image: NetworkImage(
+      //       _anime.animeCoverUrl,
+      //     ));
       return CachedNetworkImage(
         // memCacheHeight: 500,
         imageUrl: _anime.animeCoverUrl,
@@ -80,7 +172,8 @@ class AnimeGridCover extends StatelessWidget {
     );
   }
 
-  _buildBottomName() {
+  _buildNameInCover(bool show) {
+    if (!show) return Container();
     return Stack(
       children: [
         Column(
@@ -117,5 +210,20 @@ class AnimeGridCover extends StatelessWidget {
         )
       ],
     );
+  }
+
+  _buildNameBelowCover(bool show) {
+    return show
+        ? Container(
+            width: coverWidth == 0 ? null : coverWidth,
+            padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
+            // 保证文字左对齐
+            alignment: Alignment.centerLeft,
+            child: Text(_anime.animeName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: 0.9,
+                style: TextStyle(color: ThemeUtil.getFontColor())))
+        : Container();
   }
 }
