@@ -64,6 +64,7 @@ class AnimeGridCover extends StatelessWidget {
     // 网络封面
     if (_anime.animeCoverUrl.startsWith("http")) {
       return CachedNetworkImage(
+        // memCacheHeight: 500,
         imageUrl: _anime.animeCoverUrl,
         fit: BoxFit.cover,
         errorWidget: (context, url, error) => const Placeholder(),

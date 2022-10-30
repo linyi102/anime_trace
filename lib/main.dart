@@ -33,6 +33,8 @@ Future<void> beforeRunApp() async {
   putGetController();
   // 设置Windows窗口
   handleWindowsManager();
+  // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
+  HttpOverrides.global = MyHttpOverrides();
 }
 
 void putGetController() {
@@ -65,3 +67,11 @@ void handleWindowsManager() async {
   }
 }
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}

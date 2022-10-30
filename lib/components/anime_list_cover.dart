@@ -62,6 +62,7 @@ class AnimeListCover extends StatelessWidget {
       // return Image.network(_anime.animeCoverUrl, fit: BoxFit.fitWidth);
 
       return CachedNetworkImage(
+        // memCacheHeight: 500,
         imageUrl: _anime.animeCoverUrl,
         fit: BoxFit.fitWidth,
         errorWidget: (context, url, error) => const Placeholder(),
