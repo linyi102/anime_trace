@@ -20,7 +20,7 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "樱花动漫",
-      iconUrl: "assets/images/website/yhdm.png",
+      iconUrl: "https://www.yhdmp.cc/yxsf/yh_pic/favicon.ico",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
@@ -48,7 +48,7 @@ List<ClimbWebsite> climbWebsites = [
   //     desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
   ClimbWebsite(
       name: "次元城动漫",
-      iconUrl: "assets/images/website/cycdm.png",
+      iconUrl: "https://www.cycdm01.top/upload/mxprocms/20220825-1/94f5bbad3547f250ed2ed3684d11e19d.png",
       keyword: "cyc",
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),

@@ -122,9 +122,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/defaultAnimeCover.png
-    - assets/images/website/yhdm.png
     - assets/images/website/agemys.jpg
-    - assets/images/website/cycdm.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
