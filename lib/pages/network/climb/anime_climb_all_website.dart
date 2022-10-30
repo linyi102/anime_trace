@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/pages/modules/website_icon.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -234,16 +235,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                     // 搜素源行
                     ListTile(
                       title: Text(webstie.name),
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: webstie.iconUrl.startsWith("http")
-                            ? CachedNetworkImage(
-                                imageUrl: webstie.iconUrl,
-                                fit: BoxFit.cover,
-                                width: 25)
-                            : Image.asset(webstie.iconUrl,
-                                fit: BoxFit.cover, width: 25),
-                      ),
+                      leading: buildWebSiteIcon(url: webstie.iconUrl, size: 25),
                       trailing: const Icon(Icons.arrow_forward),
                       onTap: () {
                         // 进入详细搜索页

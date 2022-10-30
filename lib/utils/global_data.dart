@@ -3,6 +3,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
+import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
@@ -55,11 +56,21 @@ List<ClimbWebsite> climbWebsites = [
       climb: ClimbCycdm(),
       desc: "高质量在线追番平台！"),
   ClimbWebsite(
+      name: "艾米动漫",
+      iconUrl: "https://img.gejiba.com/images/f1f102fc413011625bd2a610cac6c83b.png",
+      keyword: "aimi",
+      spkey: "enableWebSiteAimi",
+      enable: SPUtil.getBool("enableWebSiteAimi", defaultValue: false),
+      pingStatus: PingStatus(),
+      climb: ClimbAimi(),
+      desc: "艾米动漫致力于收集动漫资源，为广大网友提供各种好番而生。"),
+  ClimbWebsite(
       name: "豆瓣",
       iconUrl: "https://www.douban.com/favicon.ico",
-      enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: true),
+      enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: false),
       spkey: "enableWebSiteDouban",
       pingStatus: PingStatus(),
       keyword: "douban",
-      climb: ClimbDouban())
+      climb: ClimbDouban(),
+  )
 ];

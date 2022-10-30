@@ -3,6 +3,7 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/pages/modules/website_icon.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -33,28 +34,7 @@ class _SourceDetailState extends State<SourceDetail> {
       body: Column(
         children: [
           const SizedBox(height: 10),
-          Container(
-            height: 100,
-            width: 100,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: climbWebstie.iconUrl.startsWith("http")
-                  ? CachedNetworkImage(
-                      imageUrl: climbWebstie.iconUrl, fit: BoxFit.cover)
-                  : Image.asset(climbWebstie.iconUrl, fit: BoxFit.cover),
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Colors.black12,
-                      offset: Offset(0.0, 15.0), //阴影xy轴偏移量
-                      blurRadius: 15.0, //阴影模糊程度
-                      spreadRadius: 1.0 //阴影扩散程度
-                      )
-                ]),
-          ),
+          buildWebSiteIcon(url: climbWebstie.iconUrl, size: 100, addShadow: true),
           Container(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: ExpandText(climbWebstie.desc,

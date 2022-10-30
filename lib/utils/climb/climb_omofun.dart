@@ -100,14 +100,10 @@ class ClimbOmofun implements Climb {
     var document = parse(response.data);
     debugPrint("获取文档成功√，正在解析...");
 
-    // 没有集时，不会有small标签，导致[0]越界抛出异常
-    // anime.animeEpisodeCnt =
-    //     int.parse(document.getElementsByTagName("small")[0].innerHtml);
-    // 解决方法
     List elements;
-    if ((elements = document.getElementsByTagName("small")).isNotEmpty) {
+    if ((elements = document.getElementsByTagName("small")).length >= 2) {
       anime.animeEpisodeCnt =
-          int.parse(elements[0].innerHtml);
+          int.parse(elements[1].innerHtml); // 0对应今日更新，1对应该动漫的集数
     }
     anime.playStatus = document
         .getElementsByClassName("module-info-item-content")[3]

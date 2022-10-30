@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
-import 'package:flutter_test_future/pages/network/source_detail.dart';
+import 'package:flutter_test_future/pages/network/source_detail_page.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import '../modules/website_icon.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({Key? key}) : super(key: key);
@@ -146,7 +148,7 @@ class _SourceListPageState extends State<SourceListPage> {
                 ],
               )
             : null,
-        leading: _buildSourceItemLeading(climbWebsite),
+        leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
         trailing: IconButton(
           onPressed: () {
             _invertSource(climbWebsite);
@@ -202,25 +204,6 @@ class _SourceListPageState extends State<SourceListPage> {
           )
         ],
       ),
-    );
-  }
-
-  _buildSourceItemLeading(ClimbWebsite climbWebsite) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(50),
-      child: climbWebsite.iconUrl.startsWith("http")
-          ? CachedNetworkImage(
-              imageUrl: climbWebsite.iconUrl,
-              fit: BoxFit.cover,
-              width: showPingDetail ? 35 : 25,
-              // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
-              placeholder: (context, str) => Image.memory(kTransparentImage),
-            )
-          : Image.asset(
-              climbWebsite.iconUrl,
-              fit: BoxFit.cover,
-              width: showPingDetail ? 35 : 25, // 没有副标题用25，有则用35
-            ),
     );
   }
 }
