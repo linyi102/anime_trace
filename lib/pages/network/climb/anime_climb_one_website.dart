@@ -18,6 +18,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
 import '../../../components/common/common_function.dart';
+import '../../../components/empty_data_hint.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
@@ -165,6 +166,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   }
 
   _displayClimbAnime() {
+    if (mixedAnimes.isEmpty) return emptyDataHint("什么都没找到");
+
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
       gridDelegate: getAnimeGridDelegate(),
