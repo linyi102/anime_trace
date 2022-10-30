@@ -53,6 +53,7 @@ class _SourceListPageState extends State<SourceListPage> {
         .then((value) => canClickPingButton = true);
 
     for (var website in climbWebsites) {
+      if (website.discard) continue;
       website.pingStatus.connectable = false;
       website.pingStatus.pinging = true; // 表示正在ping
     }
@@ -66,9 +67,7 @@ class _SourceListPageState extends State<SourceListPage> {
     // 推荐then：同时执行
     for (var website in climbWebsites) {
       // debugPrint("${website.name} ping...");
-      // DioPackage.ping("https://fonts.google.com/").then((value) {
-      // DioPackage.ping("matcha-jp.com").then((value) {
-      // DioPackage.ping("baidu.com").then((value) {
+      if (website.discard) continue;
       DioPackage.ping(website.climb.baseUrl).then((value) {
         website.pingStatus = value;
         if (mounted) {
