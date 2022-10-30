@@ -23,36 +23,30 @@ class AnimeGridCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AnimeDisplayController _animeDisplayController = Get.find();
-    bool showNameInCover = false, showNameBelowCover = false;
-    if (_animeDisplayController.showGridAnimeName.value) {
-      if (_animeDisplayController.showNameInCover.value) {
-        showNameInCover = true;
-      } else {
-        showNameBelowCover = true;
-      }
-    }
 
     return onlyShowCover
         ? _buildCover(context, false)
-        : Column(
-            children: [
-              // 封面
-              Stack(
-                children: [
-                  // 动漫收藏列表页有obx嵌套gridview，这会让这里的实时变化(改变名字)，而下面的必须要加obx
-                  _buildCover(context, showNameInCover),
-                  // 使用obx会导致多搜索源搜索时报错。而动漫收藏列表页没有影响
-                  // Obx(() => _buildEpisodeState(_animeDisplayController)),
-                  // Obx(() => _buildReviewNumber(_animeDisplayController)),
-                  // TODO 不使用obx会导致动漫收藏列表页无法实时更新
-                  _buildEpisodeState(_animeDisplayController),
-                  _buildReviewNumber(_animeDisplayController)
-                ],
-              ),
-              // 名字
-              _buildNameBelowCover(showNameBelowCover),
-            ],
-          );
+        : Obx(() => Column(
+              children: [
+                // 封面
+                Stack(
+                  children: [
+                    _buildCover(
+                        context,
+                        _animeDisplayController.showGridAnimeName.value &&
+                            _animeDisplayController.showNameInCover.value),
+                    _buildEpisodeState(_anime.isCollected() &&
+                        _animeDisplayController.showGridAnimeProgress.value),
+                    _buildReviewNumber(_anime.isCollected() &&
+                        _animeDisplayController.showReviewNumber.value &&
+                        _anime.reviewNumber > 1)
+                  ],
+                ),
+                // 名字
+                _buildNameBelowCover(
+                    _animeDisplayController.showNameBelowCover),
+              ],
+            ));
   }
 
   _buildCover(BuildContext context, bool showNameInCover) {
@@ -84,9 +78,8 @@ class AnimeGridCover extends StatelessWidget {
         ));
   }
 
-  _buildEpisodeState(AnimeDisplayController _animeDisplayController) {
-    if (_anime.isCollected() &&
-        _animeDisplayController.showGridAnimeProgress.value) {
+  _buildEpisodeState(bool show) {
+    if (show) {
       return Positioned(
           left: 5,
           top: 5,
@@ -108,10 +101,8 @@ class AnimeGridCover extends StatelessWidget {
     }
   }
 
-  _buildReviewNumber(AnimeDisplayController _animeDisplayController) {
-    if (_anime.isCollected() &&
-        _animeDisplayController.showReviewNumber.value &&
-        _anime.reviewNumber > 1) {
+  _buildReviewNumber(bool show) {
+    if (show) {
       return Positioned(
           right: 5,
           top: 5,

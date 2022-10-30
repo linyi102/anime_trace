@@ -5,13 +5,6 @@ import '../../controllers/anime_display_controller.dart';
 
 SliverGridDelegate getAnimeGridDelegate() {
   final AnimeDisplayController _animeDisplayController = Get.find();
-  bool showNameInCover = false, showName = false;
-  if (_animeDisplayController.showGridAnimeName.value) {
-    showName = true;
-    if (_animeDisplayController.showNameInCover.value) {
-      showNameInCover = true;
-    }
-  }
 
   return SliverGridDelegateWithFixedCrossAxisCount(
     // 横轴数量
@@ -21,6 +14,6 @@ SliverGridDelegate getAnimeGridDelegate() {
     // 竖轴距离
     mainAxisSpacing: 6,
     // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
-    childAspectRatio: !showName || showNameInCover ? 31 / 43 : 31 / 56,
+    childAspectRatio: _animeDisplayController.showNameBelowCover ? 31 / 56 : 31 / 43,
   );
 }
