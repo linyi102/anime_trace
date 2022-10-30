@@ -14,7 +14,10 @@ Widget buildWebSiteIcon(
                 imageUrl: url,
                 fit: BoxFit.cover,
                 // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
-                placeholder: (context, str) => Image.memory(kTransparentImage))
+                placeholder: (context, str) => Image.memory(kTransparentImage),
+                // 获取不到图片时，显示空Container
+                errorWidget: (context, str, dynamic) => Container(),
+              )
             : Image.asset(url, fit: BoxFit.cover),
       ),
       decoration: addShadow
