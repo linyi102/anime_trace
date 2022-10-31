@@ -51,7 +51,8 @@ void handleWindowsManager() async {
       title: "漫迹",
       size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
       // 最小尺寸
-      minimumSize: const Size(900, 600),
+      // minimumSize: const Size(900, 600),
+      minimumSize: const Size(300, 300),
       fullScreen: false,
       // 需要居中，否则会偏右
       center: true,

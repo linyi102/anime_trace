@@ -6,6 +6,7 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
+import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
@@ -85,6 +86,8 @@ class _SourceListPageState extends State<SourceListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -93,7 +96,10 @@ class _SourceListPageState extends State<SourceListPage> {
         child: ListView(
           children: [
             _showPingButton ? _buildPingButton() : Container(),
-            Platform.isWindows ? _buildGridView() : _buildListView(),
+            Responsive(
+                mobile: _buildListView(),
+                tablet: _buildGridView(crossAxisCount: size.width > 820 ? 3 : 2),
+                desktop: _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
             FavWebsiteListPage()
           ],
         ),
@@ -101,15 +107,15 @@ class _SourceListPageState extends State<SourceListPage> {
     );
   }
 
-  GridView _buildGridView() {
+  GridView _buildGridView(
+      {int crossAxisCount = 3, double childAspectRatio = 3}) {
     return GridView.builder(
         // 解决报错问题
         shrinkWrap: true,
         //解决不滚动问题
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: Platform.isWindows ? 3 : 1,
-            childAspectRatio: Platform.isWindows ? 3 / 1 : 4 / 1),
+            crossAxisCount: crossAxisCount, childAspectRatio: childAspectRatio),
         itemCount: climbWebsites.length,
         itemBuilder: (context, index) {
           ClimbWebsite climbWebsite = climbWebsites[index];
@@ -123,7 +129,7 @@ class _SourceListPageState extends State<SourceListPage> {
                 children: [
                   ListTile(
                     title: Text(climbWebsite.name,
-                        overflow: TextOverflow.ellipsis),
+                        overflow: TextOverflow.ellipsis, textScaleFactor: 0.9),
                     subtitle: _buildPingStatusRow(climbWebsite),
                     leading:
                         buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
@@ -142,6 +148,7 @@ class _SourceListPageState extends State<SourceListPage> {
         physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
         children: climbWebsites.map((climbWebsite) {
           return ListTile(
+              // dense: true,
               title: Row(
                 children: [
                   showPingDetail
@@ -159,7 +166,7 @@ class _SourceListPageState extends State<SourceListPage> {
         }).toList());
   }
 
-  Row _buildPingStatusRow(ClimbWebsite climbWebsite) {
+  _buildPingStatusRow(ClimbWebsite climbWebsite) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -168,8 +175,8 @@ class _SourceListPageState extends State<SourceListPage> {
             : _getPingStatusIcon(climbWebsite.pingStatus),
         const SizedBox(width: 10),
         climbWebsite.discard
-            ? const Text("无法使用")
-            : Text(_getPingTimeStr(climbWebsite)),
+            ? const Text("无法使用", textScaleFactor: 0.8)
+            : Text(_getPingTimeStr(climbWebsite), textScaleFactor: 0.8),
         const SizedBox(width: 10),
         // Text(e.comment)
       ],

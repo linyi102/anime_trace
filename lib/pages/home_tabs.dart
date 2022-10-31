@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sidebarx/sidebarx.dart';
 
-import 'network_page.dart';
+import 'home_tabs/network_page.dart';
 
 class HomeTabs extends StatefulWidget {
   const HomeTabs({Key? key}) : super(key: key);
