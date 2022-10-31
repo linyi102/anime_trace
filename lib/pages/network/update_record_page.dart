@@ -18,15 +18,16 @@ import '../../components/dialog/dialog_update_all_anime_progress.dart';
 import '../../utils/theme_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
-  UpdateRecordPage({Key? key}) : super(key: key);
-  final UpdateRecordController updateRecordController = Get.find();
-  final ScrollController _scrollController = ScrollController();
+  const UpdateRecordPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final UpdateRecordController updateRecordController = Get.find();
+
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
+          // 如果返回false，则不会弹出更新进度消息
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
             if (value) {
               dialogUpdateAllAnimeProgress(context);
@@ -43,7 +44,7 @@ class UpdateRecordPage extends StatelessWidget {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(top: 5),
-                      child: _buildUpdateRecordList(),
+                      child: _buildUpdateRecordList(updateRecordController),
                     )),
                   ],
                 ),
@@ -52,7 +53,7 @@ class UpdateRecordPage extends StatelessWidget {
     );
   }
 
-  _buildUpdateRecordList() {
+  _buildUpdateRecordList(UpdateRecordController updateRecordController) {
     List<String> dateList = [];
     Map<String, List<UpdateRecordVo>> map = {};
     for (var updateRecordVo in updateRecordController.updateRecordVos) {
@@ -65,7 +66,7 @@ class UpdateRecordPage extends StatelessWidget {
     }
 
     return ListView.builder(
-        controller: _scrollController,
+        controller: ScrollController(),
         // 解决item太小无法下拉
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: dateList.length,
@@ -119,7 +120,7 @@ class UpdateRecordPage extends StatelessWidget {
     return recordsWidget;
   }
 
-  _buildUpdateProgressBar() {
+  _buildUpdateProgressBar(UpdateRecordController updateRecordController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

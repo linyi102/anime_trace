@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
@@ -91,15 +93,86 @@ class _SourceListPageState extends State<SourceListPage> {
         child: ListView(
           children: [
             _showPingButton ? _buildPingButton() : Container(),
-            ListView(
-              shrinkWrap: true, //解决无限高度问题
-              physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-              children: _buildListTiles(),
-            ),
+            Platform.isWindows ? _buildGridView() : _buildListView(),
             FavWebsiteListPage()
           ],
         ),
       ),
+    );
+  }
+
+  GridView _buildGridView() {
+    return GridView.builder(
+        // 解决报错问题
+        shrinkWrap: true,
+        //解决不滚动问题
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: Platform.isWindows ? 3 : 1,
+            childAspectRatio: Platform.isWindows ? 3 / 1 : 4 / 1),
+        itemCount: climbWebsites.length,
+        itemBuilder: (context, index) {
+          ClimbWebsite climbWebsite = climbWebsites[index];
+          return Card(
+            elevation: 0,
+            child: MaterialButton(
+              padding: const EdgeInsets.all(0),
+              onPressed: () => enterSourceDetail(climbWebsite),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ListTile(
+                    title: Text(climbWebsite.name,
+                        overflow: TextOverflow.ellipsis),
+                    subtitle: _buildPingStatusRow(climbWebsite),
+                    leading:
+                        buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
+                    trailing: _buildSwitchButton(climbWebsite),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  ListView _buildListView() {
+    return ListView(
+        shrinkWrap: true, //解决无限高度问题
+        physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+        children: climbWebsites.map((climbWebsite) {
+          return ListTile(
+              title: Row(
+                children: [
+                  showPingDetail
+                      ? Container()
+                      : _getPingStatusIcon(climbWebsite.pingStatus),
+                  showPingDetail ? Container() : const SizedBox(width: 10),
+                  Text(climbWebsite.name),
+                ],
+              ),
+              subtitle:
+                  showPingDetail ? _buildPingStatusRow(climbWebsite) : null,
+              leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
+              trailing: _buildSwitchButton(climbWebsite),
+              onTap: () => enterSourceDetail(climbWebsite));
+        }).toList());
+  }
+
+  Row _buildPingStatusRow(ClimbWebsite climbWebsite) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        climbWebsite.discard
+            ? _getPingStatusIcon(PingStatus())
+            : _getPingStatusIcon(climbWebsite.pingStatus),
+        const SizedBox(width: 10),
+        climbWebsite.discard
+            ? const Text("无法使用")
+            : Text(_getPingTimeStr(climbWebsite)),
+        const SizedBox(width: 10),
+        // Text(e.comment)
+      ],
     );
   }
 
@@ -127,56 +200,28 @@ class _SourceListPageState extends State<SourceListPage> {
                 : Colors.red));
   }
 
-  List<Widget> _buildListTiles() {
-    return climbWebsites.map((climbWebsite) {
-      return ListTile(
-        title: Row(
-          children: [
-            showPingDetail
-                ? Container()
-                : _getPingStatusIcon(climbWebsite.pingStatus),
-            showPingDetail ? Container() : const SizedBox(width: 10),
-            Text(climbWebsite.name),
-          ],
-        ),
-        subtitle: showPingDetail
-            ? Row(
-                children: [
-                  climbWebsite.discard
-                      ? _getPingStatusIcon(PingStatus())
-                      : _getPingStatusIcon(climbWebsite.pingStatus),
-                  const SizedBox(width: 10),
-                  climbWebsite.discard
-                      ? const Text("无法使用")
-                      : Text(_getPingTimeStr(climbWebsite)),
-                  const SizedBox(width: 10),
-                  // Text(e.comment)
-                ],
-              )
-            : null,
-        leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
-        trailing: IconButton(
-          onPressed: () {
-            if (climbWebsite.discard) {
-              showToast("很抱歉，该搜索源已经无法使用");
-              return;
-            }
-            _invertSource(climbWebsite);
-          },
-          icon: !climbWebsite.discard && climbWebsite.enable
-              ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
-              : const Icon(Icons.check_box_outline_blank),
-        ),
-        onTap: () {
-          Navigator.of(context).push(FadeRoute(builder: (context) {
-            return SourceDetail(climbWebsite);
-          })).then((value) {
-            setState(() {});
-            // 可能从里面取消了启动
-          });
-        },
-      );
-    }).toList();
+  void enterSourceDetail(ClimbWebsite climbWebsite) {
+    Navigator.of(context).push(FadeRoute(builder: (context) {
+      return SourceDetail(climbWebsite);
+    })).then((value) {
+      setState(() {});
+      // 可能从里面取消了启动
+    });
+  }
+
+  IconButton _buildSwitchButton(ClimbWebsite climbWebsite) {
+    return IconButton(
+      onPressed: () {
+        if (climbWebsite.discard) {
+          showToast("很抱歉，该搜索源已经无法使用");
+          return;
+        }
+        _invertSource(climbWebsite);
+      },
+      icon: !climbWebsite.discard && climbWebsite.enable
+          ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
+          : const Icon(Icons.check_box_outline_blank),
+    );
   }
 
   // 取消/启用搜索源
