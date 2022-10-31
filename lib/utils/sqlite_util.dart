@@ -143,7 +143,7 @@ class SqliteUtil {
   }
 
   // 迁移动漫、全局更新动漫
-  static Future<int> updateAnime(Anime oldAnime, Anime newAnime) async {
+  static Future<int> updateAnime(Anime oldAnime, Anime newAnime, {bool migrateCover = false}) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
     debugPrint("oldAnime=$oldAnime, newAnime=$newAnime");
@@ -163,8 +163,8 @@ class SqliteUtil {
     if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
     }
-    // 如果已有封面，则不更新。只有在动漫封面详细页中更新才调用updateAnimeCoverUrl更新封面
-    if (oldAnime.animeCoverUrl.isNotEmpty) {
+    // 如果不迁移封面，则恢复为旧动漫的封面地址
+    if (!migrateCover) {
       newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
     }
 
