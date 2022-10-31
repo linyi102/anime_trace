@@ -11,8 +11,11 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../components/dialog/dialog_update_all_anime_progress.dart';
+import '../../utils/theme_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -33,93 +36,153 @@ class UpdateRecordPage extends StatelessWidget {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: updateRecordController.updateRecordVos.isEmpty
-              ? ListView(
-                  // 解决无法下拉刷新
-                  physics: const AlwaysScrollableScrollPhysics(),
+              ? _buildEmptyDataPage(context)
+              : Column(
                   children: [
-                    SizedBox(
-                      // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
-                      height: MediaQuery.of(context).size.height -
-                          MediaQueryData.fromWindow(window).padding.top -
-                          kToolbarHeight -
-                          kBottomNavigationBarHeight -
-                          kMinInteractiveDimension,
-                      // color: Colors.red,
-                      child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
-                    )
+                    // _buildUpdateProgressBar(),
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      child: _buildUpdateRecordList(),
+                    )),
                   ],
-                  key: UniqueKey(),
-                )
-              : Scrollbar(
-                  controller: _scrollController,
-                  child: ListView.builder(
-                    // 解决item太小无法下拉
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: _scrollController,
-                    itemCount: updateRecordController.updateRecordVos.length,
-                    itemBuilder: (context, index) {
-                      // debugPrint("index=$index");
-                      // 下拉到还剩两天的时候请求更多
-                      PageParams pageParams = updateRecordController.pageParams;
-                      // 即使全部加载了，也会一直加载
-                      // if (index + 2 == updateRecordController.updateRecordVos.length) {
-                      // 必须要pageIndex+1，这样当pageIndex为0时，右值为pageSize
-                      // 该方法可以避免一直加载的原因：即使最后多请求一次，右值会变大，左值不会再与右值相等
-                      if (index + 2 ==
-                          (pageParams.pageIndex + 1) * pageParams.pageSize) {
-                        updateRecordController.loadMore();
-                      }
-                      UpdateRecordVo updateRecordVo =
-                          updateRecordController.updateRecordVos[index];
-                      String curDate = updateRecordVo.manualUpdateTime;
-                      ListTile animeRow = ListTile(
-                        leading: AnimeListCover(updateRecordVo.anime),
-                        trailing: Text(
-                          "${updateRecordVo.oldEpisodeCnt} >> ${updateRecordVo.newEpisodeCnt}",
-                          textScaleFactor: 0.9
-                        ),
-                        title: Text(
-                          updateRecordVo.anime.animeName,
-                          textScaleFactor: 0.9,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
-                        onTap: () {
-                          Navigator.of(context).push(FadeRoute(
-                            builder: (context) {
-                              return AnimeDetailPlus(
-                                  updateRecordVo.anime.animeId);
-                            },
-                          ));
-                        },
-                      );
-                      // 不能通过该动漫的更新日期和preDate(上一个日期)比较来判断是否进入下一个日期。从下往上移动的时候就会出错
-                      // if (preDate != curDate) {
-                      //   preDate = curDate;
-                      // 可以通过相邻两个index比较：该动漫永远和上一个相邻动漫比较，如果日期不一样，就在该动漫上面添加日期即可
-                      if (index == 0 ||
-                          updateRecordController.updateRecordVos[index - 1]
-                                  .manualUpdateTime !=
-                              updateRecordVo.manualUpdateTime) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 显示日期
-                            Container(
-                              padding: const EdgeInsets.fromLTRB(18, 15, 0, 15),
-                              child: Text(TimeShowUtil.getShowDateStr(curDate)),
-                            ),
-                            animeRow
-                          ],
-                        );
-                      }
-                      return animeRow;
-                    },
-                  ),
                 ),
         ),
       ),
+    );
+  }
+
+  _buildUpdateRecordList() {
+    List<String> dateList = [];
+    Map<String, List<UpdateRecordVo>> map = {};
+    for (var updateRecordVo in updateRecordController.updateRecordVos) {
+      String key = updateRecordVo.manualUpdateTime;
+      if (!map.containsKey(key)) {
+        map[key] = [];
+        dateList.add(key);
+      }
+      map[key]!.add(updateRecordVo);
+    }
+
+    return ListView.builder(
+        controller: _scrollController,
+        // 解决item太小无法下拉
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: dateList.length,
+        itemBuilder: (context, index) {
+          String date = dateList[index];
+          PageParams pageParams = updateRecordController.pageParams;
+          if (index + 2 == (pageParams.pageIndex + 1) * pageParams.pageSize) {
+            updateRecordController.loadMore();
+          }
+
+          return Card(
+            color: ThemeUtil.getNoteCardColor(),
+            elevation: 0,
+            child: Column(
+              children: [
+                ListTile(
+                    title: Text(TimeShowUtil.getShowDateStr(date),
+                        textScaleFactor: 0.9)),
+                Column(children: _buildRecords(context, map[date]!)),
+                // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+                const SizedBox(height: 5)
+              ],
+            ),
+          );
+        });
+  }
+
+  _buildRecords(context, List<UpdateRecordVo> records) {
+    List<Widget> recordsWidget = [];
+    for (var record in records) {
+      recordsWidget.add(ListTile(
+        leading: AnimeListCover(record.anime),
+        trailing: Chip(label: Text("${record.oldEpisodeCnt}>${record.newEpisodeCnt}",
+            textScaleFactor: 0.9)),
+        title: Text(
+          record.anime.animeName,
+          textScaleFactor: 0.9,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
+        onTap: () {
+          Navigator.of(context).push(FadeRoute(
+            builder: (context) {
+              return AnimeDetailPlus(record.anime.animeId);
+            },
+          ));
+        },
+      ));
+    }
+    return recordsWidget;
+  }
+
+  _buildUpdateProgressBar() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(
+          () {
+            int updateOkCnt = updateRecordController.updateOkCnt.value;
+            int needUpdateCnt = updateRecordController.needUpdateCnt.value;
+            // 更新完毕后自动退出对话框
+            // TODO 切换tab也会触发消息
+            if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
+              showToast("动漫更新完毕！");
+            }
+            return Row(
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: LinearPercentIndicator(
+                    barRadius: const Radius.circular(15),
+                    // 圆角
+                    animation: false,
+                    lineHeight: 20.0,
+                    animationDuration: 1000,
+                    percent:
+                        needUpdateCnt > 0 ? (updateOkCnt / needUpdateCnt) : 0,
+                    center: Text("$updateOkCnt / $needUpdateCnt",
+                        style: const TextStyle(color: Colors.black54)),
+                    progressColor: Colors.greenAccent,
+                    // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: const Text(
+            "提示：更新时会跳过已完结动漫",
+            style: TextStyle(color: Colors.grey),
+            textScaleFactor: 0.8,
+          ),
+        )
+      ],
+    );
+  }
+
+  _buildEmptyDataPage(BuildContext context) {
+    return ListView(
+      // 解决无法下拉刷新
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
+          height: MediaQuery.of(context).size.height -
+              MediaQueryData.fromWindow(window).padding.top -
+              kToolbarHeight -
+              kBottomNavigationBarHeight -
+              kMinInteractiveDimension,
+          // color: Colors.red,
+          child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
+        )
+      ],
+      key: UniqueKey(),
     );
   }
 }

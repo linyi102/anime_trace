@@ -23,8 +23,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                     int updateOkCnt = updateRecordController.updateOkCnt.value;
                     int needUpdateCnt =
                         updateRecordController.needUpdateCnt.value;
-                    // 更新完毕后自动退出对话框
-                    if (updateOkCnt == needUpdateCnt) {
+                    if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
                       showToast("动漫更新完毕！");
                     }
 
