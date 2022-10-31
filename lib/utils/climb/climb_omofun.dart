@@ -64,11 +64,6 @@ class ClimbOmofun implements Climb {
           .split("<span class=\"slash\">/</span>");
       climbAnimes[i].premiereTime = strs[0];
       climbAnimes[i].area = strs[1];
-
-      // 获取简介
-      climbAnimes[i].animeDesc = elementsInfo[i]
-          .getElementsByClassName("module-info-item-content")[1]
-          .innerHtml;
     }
 
     // 获取播放状态
@@ -105,9 +100,10 @@ class ClimbOmofun implements Climb {
       anime.animeEpisodeCnt =
           int.parse(elements[1].innerHtml); // 0对应今日更新，1对应该动漫的集数
     }
-    anime.playStatus = document
-        .getElementsByClassName("module-info-item-content")[3]
-        .innerHtml;
+    // 次元城的备注(播放状态)是第5个，而艾米是第4个，但都是最后一个
+    var moduleInfoItemContents = document.getElementsByClassName("module-info-item-content");
+    anime.playStatus = moduleInfoItemContents.last.innerHtml;
+
     anime.premiereTime = document
         .getElementsByClassName("module-info-tag-link")[0]
         .getElementsByTagName("a")[0]
@@ -121,6 +117,8 @@ class ClimbOmofun implements Climb {
             .getElementsByTagName("img")[0]
             .attributes["data-original"] ??
         anime.animeCoverUrl;
+    anime.animeDesc = document.getElementsByClassName("show-desc")[0].getElementsByTagName("p")[0].innerHtml;
+
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
     if (showMessage) showToast("更新信息成功");

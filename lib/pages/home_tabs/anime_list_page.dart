@@ -334,9 +334,9 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // 多选时的效果
                 Container(
                   decoration: BoxDecoration(
-                    border: mapSelected.containsKey(index)
-                        ? Border.all(width: 4, color: ThemeUtil.getThemePrimaryColor())
-                        : null,
+                    // border: mapSelected.containsKey(index)
+                    //     ? Border.all(width: 4, color: ThemeUtil.getThemePrimaryColor())
+                    //     : null,
                     borderRadius: BorderRadius.circular(5),
                     color: mapSelected.containsKey(index)
                         ? multiSelectedColor
