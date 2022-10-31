@@ -123,7 +123,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         itemBuilder: (BuildContext context, int index) {
                           // debugPrint("$index");
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                            padding: const EdgeInsets.only(top: 5),
                             child: Card(
                               color: ThemeUtil.getNoteCardColor(),
                               elevation: 0,

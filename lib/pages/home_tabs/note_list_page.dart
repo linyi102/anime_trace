@@ -210,9 +210,9 @@ class _NoteListPageState extends State<NoteListPage> {
               _loadMoreData(index);
 
               return Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                padding: const EdgeInsets.only(top: 5),
+                child: Card(
+                  elevation: 0,
                   child: MaterialButton(
                     elevation: 0,
                     padding: const EdgeInsets.all(0),

@@ -42,7 +42,7 @@ class UpdateRecordPage extends StatelessWidget {
                     // _buildUpdateProgressBar(),
                     Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      padding: const EdgeInsets.only(top: 5),
                       child: _buildUpdateRecordList(),
                     )),
                   ],
