@@ -1,8 +1,9 @@
 class TimeShowUtil {
   // 显示年月日
   // 默认始终显示年，将-替换为/
-  static String getShowDateStr(String time, {bool hideCurYear = false, bool isSlash = true}) {
-    DateTime dateTime = DateTime.parse(time);
+  static String getShowDateStr(String date,
+      {bool hideCurYear = false, bool isSlash = true}) {
+    DateTime dateTime = DateTime.parse(date);
     String dateTimeStr = dateTime.toString();
     DateTime now = DateTime.now();
     String sep = isSlash ? "/" : "-";
@@ -13,7 +14,7 @@ class TimeShowUtil {
   }
 
   // 显示年月日时分
-  static String getShowDateTimeStr(String time) {
+  static String getHumanReadableDateTimeStr(String time, {bool showTime = true}) {
     if (time.isEmpty) return "";
 
     DateTime dateTime = DateTime.parse(time);
@@ -37,7 +38,11 @@ class TimeShowUtil {
         showTimeStr = "昨天";
       }
     }
-    // 最后加上时分
-    return "$showTimeStr ${dateTimeStr.substring(11, 16)}";
+    // 如果允许，则加上时分
+    if (showTime) {
+      return "$showTimeStr ${dateTimeStr.substring(11, 16)}";
+    } else {
+      return showTimeStr;
+    }
   }
 }

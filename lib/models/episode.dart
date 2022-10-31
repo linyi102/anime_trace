@@ -26,6 +26,6 @@ class Episode {
     // 2022-09-04 00:00:00.000Z
     // String date = dateTime!.split(' ')[0]; // 2022-09-04
     // return date.replaceAll("-", "/"); // 2022/09/04
-    return TimeShowUtil.getShowDateTimeStr(dateTime.toString());
+    return TimeShowUtil.getHumanReadableDateTimeStr(dateTime.toString());
   }
 }

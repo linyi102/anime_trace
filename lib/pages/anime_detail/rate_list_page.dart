@@ -187,7 +187,7 @@ class _RateListPageState extends State<RateListPage> {
   }
 
   _buildCreateTimeAndMoreAction(Note note) {
-    String timeStr = TimeShowUtil.getShowDateTimeStr(note.createTime);
+    String timeStr = TimeShowUtil.getHumanReadableDateTimeStr(note.createTime);
     timeStr = timeStr.isEmpty ? "" : "创建于 $timeStr";
 
     return ListTile(
