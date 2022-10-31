@@ -34,44 +34,14 @@ class _NetWorkPageState extends State<NetWorkPage>
       length: navs.length,
       vsync: this,
     );
-    tryAddOrDelUpdateAnimeButtonAction(); // 点击网络页面，就是动漫更新记录页面，直接添加。因为下面的监听器监听不到(index没变)
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
       // debugPrint("切换tab，tab.index=${_tabController.index}"); // doubt win端发现会连续输出两次
       if (_tabController.index == _tabController.animation!.value) {
         SPUtil.setInt("lastNavIndexInNetWorkNav", _tabController.index);
       }
-      tryAddOrDelUpdateAnimeButtonAction();
       setState(() {});
     });
-  }
-
-  tryAddOrDelUpdateAnimeButtonAction() {
-    Key updateRecordButtonKey = const Key("20220718224429");
-    // final UpdateRecordController
-    if (_tabController.index == 1) {
-      // 遍历所有图标，如果不存在该key则添加
-      actions.firstWhere((element) => element.key == updateRecordButtonKey,
-          orElse: () {
-        actions.add(IconButton(
-            key: updateRecordButtonKey,
-            onPressed: () {
-              // 先更新动漫信息，再重新获取数据库表中的动漫更新记录(方法内会执行)
-              // ClimbAnimeUtil.updateAllAnimesInfo();
-              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                if (value) {
-                  dialogUpdateAllAnimeProgress(context);
-                }
-              });
-            },
-            icon: const Icon(Icons.refresh_rounded)));
-        return Container();
-      });
-    } else {
-      // 如果不是更新动漫tab，则删除更新动漫按钮
-      actions.removeWhere((element) => element.key == updateRecordButtonKey);
-    }
-    setState(() {});
   }
 
   @override
