@@ -28,6 +28,15 @@ class NoteImgItem extends StatelessWidget {
     String imageLocalPath =
         ImageUtil.getAbsoluteNoteImagePath(relativeImagePath);
 
+    FileImage? fileImage;
+    try {
+      // FileImage中final Uint8List bytes = await file.readAsBytes();
+      // 如果找不到图片，会出现异常，但这里捕获不到
+      fileImage = FileImage(File(imageLocalPath));
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
@@ -51,18 +60,15 @@ class NoteImgItem extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5), // 圆角
             // 增加过渡效果，否则突然显示会很突兀
-            child: FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: FileImage(File(imageLocalPath)),
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 100),
-              imageErrorBuilder: errorImageBuilder(relativeImagePath),
-            ),
-            // child: Image.file(
-            //   File(imageLocalPath),
-            //   fit: BoxFit.cover,
-            //   errorBuilder: errorImageBuilder(relativeImagePath),
-            // ),
+            child: fileImage != null
+                ? FadeInImage(
+                    placeholder: MemoryImage(kTransparentImage),
+                    image: fileImage,
+                    fit: BoxFit.cover,
+                    fadeInDuration: const Duration(milliseconds: 100),
+                    imageErrorBuilder: errorImageBuilder(relativeImagePath),
+                  )
+                : Container(),
           ),
         ),
         imageRemainCount > 0
