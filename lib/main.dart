@@ -345,8 +345,8 @@ class MyAppState extends State<MyApp> with WindowListener {
         radius: const Radius.circular(10),
         thumbColor: MaterialStateProperty.all(
           themeController.isDarkMode.value
-              ? const Color.fromRGBO(80, 80, 80, 1.0)
-              : const Color.fromRGBO(160, 160, 160, 1.0),
+              ? Colors.white.withOpacity(0.2)
+              : Colors.black.withOpacity(0.2),
         ),
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
