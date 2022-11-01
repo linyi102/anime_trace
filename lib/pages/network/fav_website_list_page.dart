@@ -43,10 +43,7 @@ class FavWebsiteListPage extends StatelessWidget {
         itemBuilder: (context, index) {
           FavWebsite favWebsite = defaultList[index];
           return ListTile(
-            title: Text(
-              favWebsite.name,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
-            ),
+            title: Text(favWebsite.name),
             leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
             onTap: () => _launchUrl(favWebsite.url),
           );

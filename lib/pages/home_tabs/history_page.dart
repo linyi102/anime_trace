@@ -143,7 +143,7 @@ class _HistoryPageState extends State<HistoryPage> {
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
-            textScaleFactor: ThemeUtil.smallScaleFactor,
+            // textScaleFactor: ThemeUtil.smallScaleFactor,
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),

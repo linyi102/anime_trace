@@ -127,8 +127,7 @@ class _SourceListPageState extends State<SourceListPage> {
                 children: [
                   ListTile(
                     title: Text(climbWebsite.name,
-                        overflow: TextOverflow.ellipsis,
-                        textScaleFactor: ThemeUtil.smallScaleFactor),
+                        overflow: TextOverflow.ellipsis),
                     subtitle: _buildPingStatusRow(climbWebsite),
                     leading:
                         buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
@@ -153,8 +152,7 @@ class _SourceListPageState extends State<SourceListPage> {
                       ? Container()
                       : _getPingStatusIcon(climbWebsite.pingStatus),
                   showPingDetail ? Container() : const SizedBox(width: 10),
-                  Text(climbWebsite.name,
-                      textScaleFactor: ThemeUtil.smallScaleFactor),
+                  Text(climbWebsite.name),
                 ],
               ),
               subtitle:

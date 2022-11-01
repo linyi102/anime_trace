@@ -108,7 +108,7 @@ class UpdateRecordPage extends StatelessWidget {
             textScaleFactor: ThemeUtil.tinyScaleFactor),
         title: Text(
           record.anime.animeName,
-          textScaleFactor: ThemeUtil.smallScaleFactor,
+          // textScaleFactor: ThemeUtil.smallScaleFactor,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
