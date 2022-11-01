@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_test_future/pages/home_tabs.dart';
 import 'package:flutter_test_future/pages/main_screen.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -27,7 +26,6 @@ class MyHome extends StatelessWidget {
       return Stack(
         children: const [
           MainScreen(),
-          // HomeTabs(),
           UpdateHint(checkLatestVersion: true)],
       );
     });

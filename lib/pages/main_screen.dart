@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 import 'home_tabs/anime_list_page.dart';
 import 'home_tabs/history_page.dart';
@@ -28,7 +29,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedTabIdx = 0;
-
+  int _clickBackCnt = 0;
   final List<MainTab> _mainTabs = [
     MainTab(name: "动漫", iconData: Icons.book, page: const AnimeListPage()),
     MainTab(
@@ -45,24 +46,42 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Platform.isAndroid &&
-            MediaQuery.of(context).orientation == Orientation.portrait
-        ? _buildBottomNavigationBar() // 手机竖向时显示底部栏
-        : Scaffold(
-            body: SafeArea(
-              child: Row(
-                children: [
-                  // 展开侧边栏时，占1/6，如果不展开侧边栏，则固定宽度
-                  size.width > 800
-                      ? Expanded(child: _buildSideBar())
-                      : SizedBox(width: 60, child: _buildSideBar(expandSideBar: false)),
-                  // 主体 5/6
-                  Expanded(flex: 5, child: _mainTabs[_selectedTabIdx].page)
-                ],
+    return WillPopScope(
+      onWillPop: clickTwiceToExitApp,
+      child: Platform.isAndroid &&
+              MediaQuery.of(context).orientation == Orientation.portrait
+          ? _buildBottomNavigationBar() // 手机竖向时显示底部栏
+          : Scaffold(
+              body: SafeArea(
+                child: Row(
+                  children: [
+                    // 展开侧边栏时，占1/6，如果不展开侧边栏，则固定宽度
+                    size.width > 800
+                        ? Expanded(child: _buildSideBar())
+                        : SizedBox(
+                            width: 60,
+                            child: _buildSideBar(expandSideBar: false)),
+                    // 主体 5/6
+                    Expanded(flex: 5, child: _mainTabs[_selectedTabIdx].page)
+                  ],
+                ),
               ),
             ),
-          );
+    );
   }
+
+  Future<bool> clickTwiceToExitApp() async {
+      _clickBackCnt++;
+      if (_clickBackCnt == 2) {
+        return true;
+      }
+      Future.delayed(const Duration(seconds: 2)).then((value) {
+        _clickBackCnt = 0;
+        debugPrint("点击返回次数重置为0");
+      });
+      showToast("再次点击退出应用");
+      return false;
+    }
 
   Drawer _buildSideBar({bool expandSideBar = true}) {
     return Drawer(
