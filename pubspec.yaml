@@ -34,10 +34,8 @@ dependencies:
   flutter_localizations: # 国际化
     sdk: flutter
   gesture_zoom_box: ^0.0.4 # 图片手势缩放
-  flutter_rating_stars: ^1.0.3+4 # 动漫评分
+  flutter_rating_stars: ^1.0.3+4 # 评分
   bottom_sheet: ^3.1.1 # 底部弹出菜单
-  easy_sidemenu: ^0.4.1 # 侧边栏
-  sidebarx: ^0.14.0 # 侧边栏
   window_manager: ^0.2.5 # windwos窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条
@@ -79,7 +77,7 @@ dependencies:
   # keyboard_utils: ^1.3.3
   dio: ^4.0.4
   html: ^0.15.0
-  cached_network_image: ^3.2.1 # 缓存图片。不支持windows
+  cached_network_image: ^3.2.1 # 缓存图片
   # photo_view: ^0.13.0 # 点击查看图片
   easy_image_viewer: ^1.0.3
   archive: ^3.1.8
