@@ -5,6 +5,7 @@ import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 
 // 点击笔记图片，进入浏览页面
 class ImageViewer extends StatefulWidget {
@@ -25,6 +26,7 @@ class _ImageViewerState extends State<ImageViewer> {
   List<String> imageLocalPaths = [];
   int imagesCount = 0;
   int currentIndex = 0;
+  bool showScrollAxis = true;
 
   @override
   void initState() {
@@ -38,7 +40,6 @@ class _ImageViewerState extends State<ImageViewer> {
 
     // 首次进入可能选的是后面的图片，也需要移动
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
-      // 如果推迟，则会报错：Failed assertion: line 151 pos 12: '_positions.isNotEmpty': ScrollController not attached to any scroll views.
       scrollToCurrentImage();
     });
   }
@@ -49,40 +50,57 @@ class _ImageViewerState extends State<ImageViewer> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (dialogContext) {
-                      return AlertDialog(
-                        title: const Text("图片属性"),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                  title: const Text("完全路径"),
-                                  subtitle: SelectableText(
-                                      imageLocalPaths[currentIndex])),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-              },
-              icon: const Icon(Icons.error_outline))
-        ],
+        actions: _buildActions(context),
       ),
       body: Container(
         padding: const EdgeInsets.all(0),
         child: Column(
           children: [
-            _showImage(),
-            _showScrollImages(),
+            _buildImage(),
+            if (showScrollAxis) _buildScrollAxis(),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          showScrollAxis = !showScrollAxis;
+          setState(() {});
+          if (showScrollAxis) {
+            Future.delayed(const Duration(milliseconds: 200)).then((value) {
+              scrollToCurrentImage();
+            });
+          }
+        },
+        icon: Icon(showScrollAxis ? Icons.fullscreen : Icons.fullscreen_exit),
+        tooltip: "全屏显示",
+      ),
+      IconButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (dialogContext) {
+                  return AlertDialog(
+                    title: const Text("图片属性"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ListTile(
+                              title: const Text("完全路径"),
+                              subtitle: SelectableText(
+                                  imageLocalPaths[currentIndex])),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
+          icon: const Icon(Icons.error_outline))
+    ];
   }
 
   void _swipeFunction(DragEndDetails dragEndDetails) {
@@ -101,7 +119,7 @@ class _ImageViewerState extends State<ImageViewer> {
     scrollToCurrentImage();
   }
 
-  _showImage() {
+  _buildImage() {
     return Expanded(
       flex: 3,
       child: GestureDetector(
@@ -111,18 +129,18 @@ class _ImageViewerState extends State<ImageViewer> {
           color: Colors.transparent, // 必须要添加颜色，不然手势检测不到Container，只能检测到图片
           // 左右滑动图片
           // 缩放手势和切换图片冲突
-          // child: GestureZoomBox(
-          //     maxScale: 5.0,
-          //     doubleTapScale: 2.0,
-          //     duration: Duration(milliseconds: 200),
-          //     child: Image.file(File(imageLocalPaths[currentIndex]),
-          //         fit: BoxFit.fitWidth)),
-          child: Image.file(
-            File(imageLocalPaths[currentIndex]),
-            fit: BoxFit.fitWidth,
-            errorBuilder: errorImageBuilder(
-                widget.relativeLocalImages[currentIndex].path),
-          ),
+          child: GestureZoomBox(
+              maxScale: 5.0,
+              doubleTapScale: 2.0,
+              duration: const Duration(milliseconds: 200),
+              child: Image.file(File(imageLocalPaths[currentIndex]),
+                  fit: BoxFit.fitWidth)),
+          // child: Image.file(
+          //   File(imageLocalPaths[currentIndex]),
+          //   fit: BoxFit.fitWidth,
+          //   errorBuilder: errorImageBuilder(
+          //       widget.relativeLocalImages[currentIndex].path),
+          // ),
         ),
       ),
     );
@@ -130,7 +148,7 @@ class _ImageViewerState extends State<ImageViewer> {
 
   ScrollController scrollController = ScrollController();
 
-  _showScrollImages() {
+  _buildScrollAxis() {
     return Expanded(
         flex: 1,
         child: ListView.builder(
