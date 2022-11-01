@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/error_image_builder.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../utils/image_util.dart';
 
@@ -65,7 +66,7 @@ class AnimeListCover extends StatelessWidget {
         // memCacheHeight: 500,
         imageUrl: _anime.animeCoverUrl,
         fit: BoxFit.fitWidth,
-        errorWidget: (context, url, error) => const Placeholder(),
+        errorWidget: (context, url, error) => Image.memory(kTransparentImage),
       );
     }
 

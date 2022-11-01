@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 // 错误图片
 // 提供可以点击
@@ -8,13 +9,12 @@ import 'package:oktoast/oktoast.dart';
 Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
     String path,
     {bool dialog = true,
-    double fallbackHeight = 400.0,
-    double fallbackWidth = 400.0}) {
+    double height = 400.0,
+    double width = 400.0}) {
   return (buildContext, object, stackTrace) {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
-
         if (dialog) {
           showDialog(
               context: buildContext,
@@ -37,10 +37,8 @@ Widget Function(BuildContext, Object, StackTrace?)? errorImageBuilder(
       //   "未找到图片",
       //   style: TextStyle(color: Colors.black),
       // ),
-      child: Placeholder(
-        fallbackHeight: fallbackHeight,
-        fallbackWidth: fallbackWidth,
-      ),
+      child: Image.memory(kTransparentImage,
+          height: height, width: width),
     );
   };
 }

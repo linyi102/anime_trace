@@ -1,4 +1,3 @@
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:photo_view/photo_view.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -36,6 +36,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   }
 
   final ScrollController _scrollController = ScrollController();
+
   @override
   void dispose() {
     super.dispose();
@@ -421,8 +422,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
                           child: MaterialButton(
                             padding: const EdgeInsets.all(0),
                             onPressed: () {
-                              showImageViewer(context, imageProvider,
-                                  immersive: false);
+                              Navigator.of(context).push(FadeRoute(
+                                  builder: (context) => PhotoView(
+                                      imageProvider: imageProvider,
+                                      onTapDown: (arg1, arg2, arg3) =>
+                                          Navigator.of(context).pop())));
                             },
                             child: AnimeGridCover(anime, onlyShowCover: true),
                           ),
@@ -510,7 +514,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                       color: Colors.red,
                     )
                   : const Icon(Icons.favorite_border)),
-          anime.isCollected() ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor) : Container()
+          anime.isCollected()
+              ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor)
+              : Container()
         ],
       ),
     );

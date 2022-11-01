@@ -307,15 +307,15 @@ class MyAppState extends State<MyApp> with WindowListener {
         suffixIconColor: ThemeUtil.getCommonIconColor(),
       ),
       listTileTheme: ListTileThemeData(
-        iconColor: themeController.themeColor.value.isDarkMode
-            ? Colors.white70
-            : Colors.black54,
-        style: ListTileStyle.drawer,
-        selectedColor: ThemeUtil.getThemePrimaryColor()
-        // dense: true,
-        // 会影响副标题颜色
-        // textColor: ThemeUtil.getFontColor(),
-      ),
+          iconColor: themeController.themeColor.value.isDarkMode
+              ? Colors.white70
+              : Colors.black54,
+          style: ListTileStyle.drawer,
+          selectedColor: ThemeUtil.getThemePrimaryColor()
+          // dense: true,
+          // 会影响副标题颜色
+          // textColor: ThemeUtil.getFontColor(),
+          ),
       radioTheme:
           RadioThemeData(fillColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {

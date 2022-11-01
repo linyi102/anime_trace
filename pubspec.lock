@@ -127,13 +127,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
-  easy_image_viewer:
-    dependency: "direct main"
-    description:
-      name: easy_image_viewer
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.4"
   expand_widget:
     dependency: "direct main"
     description:
@@ -238,13 +231,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
-  gesture_zoom_box:
-    dependency: "direct main"
-    description:
-      name: gesture_zoom_box
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.0.4"
   get:
     dependency: "direct main"
     description:
@@ -448,6 +434,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.4.0"
+  photo_view:
+    dependency: "direct main"
+    description:
+      name: photo_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.14.0"
   platform:
     dependency: transitive
     description:

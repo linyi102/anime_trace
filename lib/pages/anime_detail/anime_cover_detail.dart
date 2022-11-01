@@ -7,9 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:fluttericon/entypo_icons.dart';
-import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../../animation/fade_route.dart';
 import '../../models/anime.dart';
@@ -38,14 +39,9 @@ class AnimeCoverDetail extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: GestureZoomBox(
-          maxScale: 5.0,
-          doubleTapScale: 2.0,
-          duration: const Duration(milliseconds: 200),
-          // obx监听封面修改
-          child: Obx(() =>
-              _buildAnimeCover(animeController.anime.value.animeCoverUrl)),
-        ),
+        // obx监听封面修改
+        child: Obx(
+            () => _buildAnimeCover(animeController.anime.value.animeCoverUrl)),
       ),
     );
   }
@@ -129,41 +125,38 @@ class AnimeCoverDetail extends StatelessWidget {
 
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      return CachedNetworkImage(
-        imageUrl: coverUrl,
-        fit: BoxFit.cover,
-        errorWidget: (context, url, error) => const Placeholder(),
-      );
+      return PhotoView(
+          errorBuilder: (context, url, error) => _buildErrorInfo(),
+          imageProvider: CachedNetworkImageProvider(coverUrl));
     }
+    //CachedNetworkImage(
+    //         imageUrl: coverUrl,
+    //         fit: BoxFit.cover,
+    //         errorWidget: (context, url, error) => const Placeholder(),
+    //       )
 
     // 本地封面
     return Image.file(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
         fit: BoxFit.cover, errorBuilder: (context, object, stackTrace) {
       return Padding(
         padding: const EdgeInsets.only(left: 25, right: 25),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("(´。＿。｀)", style: TextStyle(fontSize: 30)),
-            const SizedBox(height: 5),
-            const Text("很抱歉，无法正常显示图片"),
-            Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  // SizedBox(height: 10),
-                  // Text("图片链接：$coverUrl"),
-                  SizedBox(height: 10),
-                  Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
-                  SizedBox(height: 10),
-                  Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
-                ],
-              ),
-            )
-          ],
-        ),
+        child: _buildErrorInfo(),
       );
     });
+  }
+
+  Column _buildErrorInfo() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Text("X_X"),
+        Text("无法正常显示图片"),
+        SizedBox(height: 10),
+        Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
+        SizedBox(height: 10),
+        Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
+      ],
+    );
   }
 
   _showDialogAboutHowToEditCoverUrl(context) {

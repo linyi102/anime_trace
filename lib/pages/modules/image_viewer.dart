@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:gesture_zoom_box/gesture_zoom_box.dart';
+import 'package:photo_view/photo_view.dart';
 
 // 点击笔记图片，进入浏览页面
 class ImageViewer extends StatefulWidget {
@@ -25,7 +25,7 @@ class _ImageViewerState extends State<ImageViewer> {
   List<String> imageLocalPaths = [];
   int imagesCount = 0;
   int currentIndex = 0;
-  bool showScrollAxis = true;
+  bool fullScreen = false; // 全屏显示图片，此时因此顶部栏和滚动轴
 
   @override
   void initState() {
@@ -45,37 +45,55 @@ class _ImageViewerState extends State<ImageViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
-        actions: _buildActions(context),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          children: [
-            _buildImage(),
-            if (showScrollAxis) _buildScrollAxis(),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        // 如果处于全屏，则退出全屏模式，否则退出该页面
+        if (fullScreen) {
+          fullScreen = false;
+          setState(() {});
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: fullScreen
+            ? null
+            : AppBar(
+                centerTitle: true,
+                title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
+                actions: _buildActions(context),
+              ),
+        body: Container(
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            children: [
+              _buildImage(),
+              if (!fullScreen) _buildScrollAxis(),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  _exitFullScreen() {
+    fullScreen = false;
+    setState(() {});
+    // 延时，确保滚动轴出来后再移动
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
+      scrollToCurrentImage(); // 退出全屏后移动图片轴```到当前图片
+    });
   }
 
   List<Widget> _buildActions(BuildContext context) {
     return [
       IconButton(
         onPressed: () {
-          showScrollAxis = !showScrollAxis;
+          fullScreen = true;
           setState(() {});
-          if (showScrollAxis) {
-            Future.delayed(const Duration(milliseconds: 200)).then((value) {
-              scrollToCurrentImage();
-            });
-          }
         },
-        icon: Icon(showScrollAxis ? Icons.fullscreen : Icons.fullscreen_exit),
+        icon: const Icon(Icons.fullscreen),
         tooltip: "全屏显示",
       ),
       IconButton(
@@ -102,44 +120,50 @@ class _ImageViewerState extends State<ImageViewer> {
     ];
   }
 
-  void _swipeFunction(DragEndDetails dragEndDetails) {
+  void _swipeFunction(ScaleEndDetails scaleEndDetails) {
+    int newIdx = currentIndex;
+    debugPrint(scaleEndDetails.toString());
+    // 往右滑，大于0，要切换到上一张
+    double dx = scaleEndDetails.velocity.pixelsPerSecond.dx;
     // 切换到下一张
-    if (dragEndDetails.primaryVelocity! < 0 &&
-        currentIndex + 1 < imageLocalPaths.length) {
-      currentIndex++;
-      setState(() {});
+    if (dx < 0) {
+      newIdx++;
     }
     // 切换到上一张
-    if (dragEndDetails.primaryVelocity! > 0 && currentIndex - 1 >= 0) {
-      currentIndex--;
-      setState(() {});
+    else if (dx > 0) {
+      newIdx--;
     }
-    // 移动图片轴
-    scrollToCurrentImage();
+    if (0 <= newIdx && newIdx < imageLocalPaths.length) {
+      currentIndex = newIdx;
+      setState(() {});
+      // 移动图片轴
+      scrollToCurrentImage();
+    }
   }
 
   _buildImage() {
     return Expanded(
       flex: 3,
-      child: GestureDetector(
-        onHorizontalDragEnd: _swipeFunction,
-        child: Container(
-          // color: Colors.redAccent,
-          color: Colors.transparent, // 必须要添加颜色，不然手势检测不到Container，只能检测到图片
-          // 左右滑动图片
-          // 缩放手势和切换图片冲突
-          child: GestureZoomBox(
-              maxScale: 5.0,
-              doubleTapScale: 2.0,
-              duration: const Duration(milliseconds: 200),
-              child: Image.file(File(imageLocalPaths[currentIndex]),
-                  fit: BoxFit.fitWidth)),
-          // child: Image.file(
-          //   File(imageLocalPaths[currentIndex]),
-          //   fit: BoxFit.fitWidth,
-          //   errorBuilder: errorImageBuilder(
-          //       widget.relativeLocalImages[currentIndex].path),
-          // ),
+      child: Container(
+        // color: Colors.redAccent,
+        color: Colors.transparent, // 必须要添加颜色，不然手势检测不到Container，只能检测到图片
+        child: PhotoView(
+          backgroundDecoration:
+              BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
+          // 切换图片
+          onScaleEnd:
+              (buildContext, scaleEndDetails, photoViewControllerValue) {
+            // 放大图片后移动也会导致切换图片，所以没有使用
+            // _swipeFunction(scaleEndDetails);
+          },
+          // 全屏状态下单击，松开后退出全屏
+          onTapUp: fullScreen
+              ? (buildContext, details, photoViewControllerValue) =>
+                  _exitFullScreen()
+              : null,
+          imageProvider: FileImage(
+            File(imageLocalPaths[currentIndex]),
+          ),
         ),
       ),
     );
@@ -170,7 +194,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       setState(() {});
                     },
                     child: Container(
-                      margin: const EdgeInsets.only(left: 8, right: 8),
+                      margin: const EdgeInsets.all(0),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
@@ -200,7 +224,7 @@ class _ImageViewerState extends State<ImageViewer> {
 
   void scrollToCurrentImage() {
     if (currentIndex == 0) return; // 如果访问的是第一个图片，不需要移动共用轴
-    scrollController.animateTo(180.0 * (currentIndex - 1),
+    scrollController.animateTo(150.0 * (currentIndex - 1),
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 }

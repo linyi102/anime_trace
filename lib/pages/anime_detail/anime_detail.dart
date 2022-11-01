@@ -337,7 +337,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _buildTabs() {
     List<Widget> tabs = [];
     for (String tabName in _tabNames) {
-      tabs.add(Tab(child: Text(tabName, textScaleFactor: ThemeUtil.smallScaleFactor),));
+      tabs.add(Tab(
+        child: Text(tabName, textScaleFactor: ThemeUtil.smallScaleFactor),
+      ));
     }
     return tabs;
   }
@@ -432,11 +434,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     if (coverUrl.startsWith("http")) {
       return CachedNetworkImage(
         imageUrl: coverUrl,
-        errorWidget: (context, url, error) {
-          return Container(
-            color: const Color.fromRGBO(250, 250, 250, 1.0),
-          );
-        },
+        errorWidget: (context, url, error) => Image.memory(kTransparentImage),
         fit: BoxFit.cover,
         // 设置透明度，防止背景太黑或太白看不到顶部栏
         color: ThemeUtil.getModulateColor(),
@@ -875,15 +873,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                           _episodeNotes[episodeNoteIndex]
                                               .relativeLocalImages[imageIndex]
                                               .path,
-                                          fallbackHeight: 100,
-                                          fallbackWidth: 100,
+                                          height: 100,
+                                          width: 100,
                                         ),
-                                        // errorBuilder:
-                                        //     (context, error, stackTrace) =>
-                                        //         const Placeholder(
-                                        //   fallbackHeight: 100,
-                                        //   fallbackWidth: 100,
-                                        // ),
                                         height: 100,
                                         width: 100,
                                         fit: BoxFit.cover,

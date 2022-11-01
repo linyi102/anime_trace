@@ -6,6 +6,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../controllers/anime_display_controller.dart';
 
@@ -150,7 +151,7 @@ class AnimeGridCover extends StatelessWidget {
         // memCacheHeight: 500,
         imageUrl: _anime.animeCoverUrl,
         fit: BoxFit.cover,
-        errorWidget: (context, url, error) => const Placeholder(),
+        errorWidget: (context, url, error) => Image.memory(kTransparentImage),
       );
     }
 
@@ -159,7 +160,7 @@ class AnimeGridCover extends StatelessWidget {
       File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
       fit: BoxFit.cover,
       // 这里不能使用errorImageBuilder，否则无法进入动漫封面详细页
-      errorBuilder: (context, url, error) => const Placeholder(),
+      errorBuilder: (context, url, error) => Image.memory(kTransparentImage),
     );
   }
 
