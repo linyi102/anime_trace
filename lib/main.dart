@@ -60,7 +60,7 @@ void handleWindowsManager() async {
       size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
       // 最小尺寸
       // minimumSize: const Size(900, 600),
-      minimumSize: const Size(300, 300),
+      minimumSize: const Size(400, 400),
       fullScreen: false,
       // 需要居中，否则会偏右
       center: true,
@@ -275,6 +275,8 @@ class MyAppState extends State<MyApp> with WindowListener {
         bodyText2: textStyle,
         // Text
         bodyText1: textStyle,
+        // AppBar里的title
+        headline6: textStyle,
         // 未知
         // subtitle2: textStyle,
         // overline: textStyle,
@@ -284,8 +286,6 @@ class MyAppState extends State<MyApp> with WindowListener {
         // headline3: textStyle,
         // headline4: textStyle,
         // headline5: textStyle,
-        // AppBar里的title
-        // headline6: textStyle,
       ),
       appBarTheme: AppBarTheme(
         shadowColor: Colors.transparent,
