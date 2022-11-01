@@ -195,9 +195,9 @@ class MyAppState extends State<MyApp> with WindowListener {
           radius: 20,
           textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
           backgroundColor:
-              themeController.isDarkMode.value ? Colors.white : Colors.black,
+              themeController.themeColor.value.isDarkMode ? Colors.white : Colors.black,
           textStyle: TextStyle(
-              color: themeController.isDarkMode.value
+              color: themeController.themeColor.value.isDarkMode
                   ? Colors.black
                   : Colors.white,
               fontSize: 15,
@@ -259,7 +259,7 @@ class MyAppState extends State<MyApp> with WindowListener {
     return ThemeData(
       // primarySwatch: createMaterialColor(Colors.amber),
       brightness:
-          themeController.isDarkMode.value ? Brightness.dark : Brightness.light,
+          themeController.themeColor.value.isDarkMode ? Brightness.dark : Brightness.light,
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
@@ -306,7 +306,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       ),
       listTileTheme: ListTileThemeData(
         iconColor:
-            themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+            themeController.themeColor.value.isDarkMode ? Colors.white70 : Colors.black54,
         style: ListTileStyle.drawer,
         // dense: true,
         // 会影响副标题颜色
@@ -327,7 +327,7 @@ class MyAppState extends State<MyApp> with WindowListener {
                   const TextStyle(color: Colors.black)))),
       tabBarTheme: TabBarTheme(
         unselectedLabelColor:
-            themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+            themeController.themeColor.value.isDarkMode ? Colors.white70 : Colors.black54,
         labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
         // tabbar不要再添加labelStyle，否则此处设置无效
         labelStyle: TextStyle(
@@ -344,7 +344,7 @@ class MyAppState extends State<MyApp> with WindowListener {
         interactive: true,
         radius: const Radius.circular(10),
         thumbColor: MaterialStateProperty.all(
-          themeController.isDarkMode.value
+          themeController.themeColor.value.isDarkMode
               ? Colors.white.withOpacity(0.2)
               : Colors.black.withOpacity(0.2),
         ),
