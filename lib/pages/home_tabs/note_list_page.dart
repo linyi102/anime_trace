@@ -287,7 +287,8 @@ class _NoteListPageState extends State<NoteListPage> {
 
   _buildAnimeListTile(int index) {
     return ListTile(
-      style: ListTileStyle.drawer,
+      // style: ListTileStyle.drawer,
+      // dense: true,
       leading: GestureDetector(
         onTap: () {
           _enterAnimeDetail(index);
@@ -322,6 +323,7 @@ class _NoteListPageState extends State<NoteListPage> {
           episodeNotes[index].anime.animeName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          textScaleFactor: ThemeUtil.smallScaleFactor,
           // textAlign: TextAlign.right,
         ),
       ),
@@ -330,9 +332,10 @@ class _NoteListPageState extends State<NoteListPage> {
           _enterAnimeDetail(index);
         },
         child: Text(
-          "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
-          // textAlign: TextAlign.right,
-        ),
+            "第 ${episodeNotes[index].episode.number} 集 ${episodeNotes[index].episode.getDate()}",
+            textScaleFactor: ThemeUtil.tinyScaleFactor
+            // textAlign: TextAlign.right,
+            ),
       ),
     );
   }
@@ -344,7 +347,7 @@ class _NoteListPageState extends State<NoteListPage> {
         episodeNotes[index].noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(height: 1.5, fontSize: 16),
+        style: const TextStyle(height: 1.5, fontSize: 14),
       ),
       style: ListTileStyle.drawer,
     );

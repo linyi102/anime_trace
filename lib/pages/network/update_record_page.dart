@@ -83,8 +83,10 @@ class UpdateRecordPage extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                    title: Text(TimeShowUtil.getHumanReadableDateTimeStr(date, showTime: false),
-                        textScaleFactor: 0.9)),
+                    title: Text(
+                        TimeShowUtil.getHumanReadableDateTimeStr(date,
+                            showTime: false),
+                        textScaleFactor: ThemeUtil.smallScaleFactor)),
                 Column(children: _buildRecords(context, map[date]!)),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5)
@@ -99,11 +101,17 @@ class UpdateRecordPage extends StatelessWidget {
     for (var record in records) {
       recordsWidget.add(ListTile(
         leading: AnimeListCover(record.anime),
-        trailing: Chip(label: Text("${record.oldEpisodeCnt}>${record.newEpisodeCnt}",
-            textScaleFactor: 0.9)),
+        // trailing: Transform.scale(
+        //   scale: 0.8,
+        //   child: Chip(
+        //       label: Text("${record.oldEpisodeCnt}>${record.newEpisodeCnt}",
+        //           textScaleFactor: ThemeUtil.smallScaleFactor)),
+        // ),
+        subtitle: Text("更新至${record.newEpisodeCnt}集",
+            textScaleFactor: ThemeUtil.tinyScaleFactor),
         title: Text(
           record.anime.animeName,
-          textScaleFactor: 0.9,
+          textScaleFactor: ThemeUtil.smallScaleFactor,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

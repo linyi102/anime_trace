@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 import 'home_tabs/anime_list_page.dart';
@@ -71,28 +72,28 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<bool> clickTwiceToExitApp() async {
-      _clickBackCnt++;
-      if (_clickBackCnt == 2) {
-        return true;
-      }
-      Future.delayed(const Duration(seconds: 2)).then((value) {
-        _clickBackCnt = 0;
-        debugPrint("点击返回次数重置为0");
-      });
-      showToast("再次点击退出应用");
-      return false;
+    _clickBackCnt++;
+    if (_clickBackCnt == 2) {
+      return true;
     }
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      _clickBackCnt = 0;
+      debugPrint("点击返回次数重置为0");
+    });
+    showToast("再次点击退出应用");
+    return false;
+  }
 
-  Drawer _buildSideBar({bool expandSideBar = true}) {
-    return Drawer(
-      backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-      // 缩小界面后可以滚动，防止溢出
-      child: SingleChildScrollView(
-        child: Column(
-          children: _buildSideMenu(expandSideBar: expandSideBar),
-        ),
-      ),
-    );
+  _buildSideBar({bool expandSideBar = true}) {
+    return Obx(() => Drawer(
+          backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
+          // 缩小界面后可以滚动，防止溢出
+          child: SingleChildScrollView(
+            child: Column(
+              children: _buildSideMenu(expandSideBar: expandSideBar),
+            ),
+          ),
+        ));
   }
 
   _buildSideMenu({bool expandSideBar = true}) {
@@ -121,10 +122,7 @@ class _MainScreenState extends State<MainScreen> {
         selected: _selectedTabIdx == i,
         enableFeedback: false,
         title: expandSideBar
-            ? Text(
-                mainTab.name,
-                textScaleFactor: 0.9,
-              )
+            ? Text(mainTab.name)
             : Icon(mainTab.iconData, size: 20),
         leading: expandSideBar ? Icon(mainTab.iconData, size: 20) : null,
         onTap: () {

@@ -67,16 +67,19 @@ class _NetWorkPageState extends State<NetWorkPage>
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: TabBar(
-                  tabs: navs.map((e) => Tab(child: Text(e))).toList(),
-                  controller: _tabController,
+                  tabs: navs
+                      .map((e) => Tab(
+                          child: Text(e,
+                              textScaleFactor: ThemeUtil.smallScaleFactor)))
+                      .toList(),
                   // 指定tab控制器
-                  padding: const EdgeInsets.all(2),
-                  // 居中，而不是靠左下
-                  isScrollable: false, // 标签可以滑动，避免拥挤
-                  labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  controller: _tabController,
+                  // 标签可以滑动，避免拥挤
+                  isScrollable: false,
                   // 指示器长短和标签一样
-                  indicatorSize: TabBarIndicatorSize.label,
+                  labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   // 第三方指示器样式
+                  indicatorSize: TabBarIndicatorSize.label,
                   indicator: MaterialIndicator(
                     color: ThemeUtil.getThemePrimaryColor(),
                     paintingStyle: PaintingStyle.fill,
@@ -84,7 +87,7 @@ class _NetWorkPageState extends State<NetWorkPage>
                 ),
               ))),
       body: TabBarView(controller: _tabController, // 指定tab控制器
-          children:  const [
+          children: const [
             SourceListPage(),
             UpdateRecordPage(),
             DirectoryPage(),

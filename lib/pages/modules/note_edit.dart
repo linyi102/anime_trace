@@ -13,6 +13,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../utils/theme_util.dart';
+
 class NoteEdit extends StatefulWidget {
   Note episodeNote; // 可能会修改笔记内容，因此不能用final
   NoteEdit(this.episodeNote, {Key? key}) : super(key: key);
@@ -95,9 +97,12 @@ class _NoteEditState extends State<NoteEdit> {
                     widget.episodeNote.anime.animeName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textScaleFactor: ThemeUtil.smallScaleFactor,
                   ),
                   subtitle: Text(
-                      "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}"),
+                    "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}",
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                  ),
                 ),
           _showNoteContent(),
           _buildGridImages(),
@@ -112,10 +117,10 @@ class _NoteEditState extends State<NoteEdit> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 15, 15, 50),
+        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
       ),
+      style: const TextStyle(height: 1.5, fontSize: 14),
       maxLines: null,
-      style: const TextStyle(height: 1.5, fontSize: 16),
       onChanged: (value) {
         _updateNoteContent = true;
         widget.episodeNote.noteContent = value;
@@ -189,7 +194,8 @@ class _NoteEditState extends State<NoteEdit> {
                         if (absoluteImagePath.isEmpty) continue;
 
                         String relativeImagePath =
-                            ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
+                            ImageUtil.getRelativeNoteImagePath(
+                                absoluteImagePath);
                         int imageId =
                             await SqliteUtil.insertNoteIdAndImageLocalPath(
                                 widget.episodeNote.episodeNoteId,

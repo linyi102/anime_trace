@@ -591,8 +591,9 @@ class _AnimeListPageState extends State<AnimeListPage>
         children: [
           const SizedBox(height: 10),
           Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
-              ? Text("${tags[i]} (${animeCntPerTag[i]})")
-              : Text(tags[i])),
+              ? Text("${tags[i]} (${animeCntPerTag[i]})",
+                  textScaleFactor: ThemeUtil.smallScaleFactor)
+              : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
           const SizedBox(height: 10)
         ],
       ));

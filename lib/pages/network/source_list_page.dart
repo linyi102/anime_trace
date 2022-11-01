@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -13,7 +10,6 @@ import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../modules/website_icon.dart';
 
@@ -132,7 +128,8 @@ class _SourceListPageState extends State<SourceListPage> {
                 children: [
                   ListTile(
                     title: Text(climbWebsite.name,
-                        overflow: TextOverflow.ellipsis, textScaleFactor: 0.9),
+                        overflow: TextOverflow.ellipsis,
+                        textScaleFactor: ThemeUtil.smallScaleFactor),
                     subtitle: _buildPingStatusRow(climbWebsite),
                     leading:
                         buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
@@ -151,14 +148,14 @@ class _SourceListPageState extends State<SourceListPage> {
         physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
         children: climbWebsites.map((climbWebsite) {
           return ListTile(
-              // dense: true,
               title: Row(
                 children: [
                   showPingDetail
                       ? Container()
                       : _getPingStatusIcon(climbWebsite.pingStatus),
                   showPingDetail ? Container() : const SizedBox(width: 10),
-                  Text(climbWebsite.name),
+                  Text(climbWebsite.name,
+                      textScaleFactor: ThemeUtil.smallScaleFactor),
                 ],
               ),
               subtitle:
@@ -178,8 +175,9 @@ class _SourceListPageState extends State<SourceListPage> {
             : _getPingStatusIcon(climbWebsite.pingStatus),
         const SizedBox(width: 10),
         climbWebsite.discard
-            ? const Text("无法使用", textScaleFactor: 0.8)
-            : Text(_getPingTimeStr(climbWebsite), textScaleFactor: 0.8),
+            ? const Text("无法使用", textScaleFactor: ThemeUtil.tinyScaleFactor)
+            : Text(_getPingTimeStr(climbWebsite),
+                textScaleFactor: ThemeUtil.tinyScaleFactor),
         const SizedBox(width: 10),
         // Text(e.comment)
       ],

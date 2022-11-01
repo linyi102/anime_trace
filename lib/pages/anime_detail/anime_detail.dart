@@ -32,7 +32,6 @@ import 'package:transparent_image/transparent_image.dart';
 
 import 'anime_properties_page.dart';
 
-
 // ignore: must_be_immutable
 class AnimeDetailPlus extends StatefulWidget {
   final int animeId;
@@ -198,8 +197,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // SqliteUtil.updateDescByAnimeId(_anime.animeId, _anime.animeDesc);
     // SqliteUtil.updateAnimeNameByAnimeId(_anime.animeId, _anime.animeName);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -551,7 +548,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                           Navigator.of(context).push(FadeRoute(
                               builder: (context) => AnimeCoverDetail()));
                         },
-                        child: AnimeGridCover(animeController.anime.value, onlyShowCover: true),
+                        child: AnimeGridCover(animeController.anime.value,
+                            onlyShowCover: true),
                       ),
                     ),
                   ),
@@ -569,22 +567,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       animeController.anime.value.getAnimeInfoFirstLine()),
                   _showAnimeInfo(
                       animeController.anime.value.getAnimeInfoSecondLine()),
-                  // Container(
-                  //   alignment: Alignment.centerLeft,
-                  //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                  //   child: Row(
-                  //     children: [
-                  //
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             ),
-            // Column(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [_showCollectIcon(animeController.anime.value)],
-            // ),
           ],
         ));
   }
@@ -595,7 +580,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: SelectableText(
         animeName,
-        textScaleFactor: 1.1,
         // maxLines: 1,
         style: TextStyle(
             fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
@@ -613,6 +597,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               nameAnother,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               maxLines: 1,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );
   }
@@ -627,6 +612,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               animeInfo,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               maxLines: 1,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );
   }
@@ -681,16 +667,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               color: ThemeUtil.getEpisodeListTile(
                   _episodes[episodeIndex].isChecked()),
             ),
+            // textScaleFactor: ThemeUtil.smallScaleFactor,
           ),
           // 没有完成时不显示subtitle
           subtitle: _episodes[episodeIndex].isChecked()
               ? Text(
                   _episodes[episodeIndex].getDate(),
                   style: TextStyle(
-                      color: ThemeUtil.getEpisodeListTile(
-                          _episodes[episodeIndex].isChecked()),
-
+                    color: ThemeUtil.getEpisodeListTile(
+                        _episodes[episodeIndex].isChecked()),
                   ),
+                  textScaleFactor: ThemeUtil.smallScaleFactor,
                 )
               : null,
           trailing: PopupMenuButton(

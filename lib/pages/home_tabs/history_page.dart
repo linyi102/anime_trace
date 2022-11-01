@@ -135,7 +135,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                         _formatDate(
                                             yearHistory[selectedYear]![index]
                                                 .date),
-                                        textScaleFactor: 0.9),
+                                        textScaleFactor:
+                                            ThemeUtil.smallScaleFactor),
                                   ),
                                   Column(children: _buildRecords(index)),
                                   // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
@@ -159,23 +160,27 @@ class _HistoryPageState extends State<HistoryPage> {
     for (var record in records) {
       listWidget.add(
         ListTile(
-          // visualDensity: const VisualDensity(vertical: -1),
           title: Text(
             record.anime.animeName,
             overflow: TextOverflow.ellipsis,
-            textScaleFactor: 0.9,
+            textScaleFactor: ThemeUtil.smallScaleFactor,
           ),
           leading: AnimeListCover(record.anime,
               showReviewNumber: true, reviewNumber: record.reviewNumber),
-          trailing: Transform.scale(
-            scale: 0.9,
-            child: Chip(
-                label: Text(
-                    (record.startEpisodeNumber == record.endEpisodeNumber
-                        ? record.startEpisodeNumber.toString()
-                        : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
-                    textScaleFactor: 0.9)),
-          ),
+          subtitle: Text(
+              (record.startEpisodeNumber == record.endEpisodeNumber
+                  ? record.startEpisodeNumber.toString()
+                  : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+              textScaleFactor: ThemeUtil.tinyScaleFactor),
+          // trailing: Transform.scale(
+          //   scale: 0.8,
+          //   child: Chip(
+          //       label: Text(
+          //           (record.startEpisodeNumber == record.endEpisodeNumber
+          //               ? record.startEpisodeNumber.toString()
+          //               : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+          //           textScaleFactor: ThemeUtil.smallScaleFactor)),
+          // ),
           onTap: () {
             Navigator.of(context)
                 .push(

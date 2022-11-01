@@ -79,7 +79,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       debugPrint("准备本地和WebDav自动备份");
       BackupUtil.backup(
         localBackupDirPath:
-        SPUtil.getString("backup_local_dir", defaultValue: "unset"),
+            SPUtil.getString("backup_local_dir", defaultValue: "unset"),
         remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
         showToastFlag: false,
         automatic: true,
@@ -88,7 +88,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       debugPrint("准备本地自动备份");
       BackupUtil.backup(
         localBackupDirPath:
-        SPUtil.getString("backup_local_dir", defaultValue: "unset"),
+            SPUtil.getString("backup_local_dir", defaultValue: "unset"),
         showToastFlag: false,
         automatic: true,
       );
@@ -119,81 +119,72 @@ class MyAppState extends State<MyApp> with WindowListener {
     final ThemeController themeController = Get.put(ThemeController());
 
     return Obx(() => OKToast(
-      position: ToastPosition.top,
-      // true表示弹出消息时会先关闭前一个消息
-      dismissOtherOnShow: true,
-      radius: 20,
-      textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-      backgroundColor:
-      themeController.isDarkMode.value ? Colors.white : Colors.black,
-      textStyle: TextStyle(
-          color: themeController.isDarkMode.value
-              ? Colors.black
-              : Colors.white,
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          decoration: TextDecoration.none,
-          fontFamilyFallback: themeController.fontFamilyFallback),
-      child: MaterialApp(
-        // 后台应用显示名称
-        title: '漫迹',
-        home: MyHome(),
-        // 自定义滚动行为
-        scrollBehavior: MyCustomScrollBehavior(),
-        theme: buildThemeData(themeController),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          //对应的Cupertino风格（iOS风格组件）
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('zh', 'CH'),
-          Locale('en', 'US'),
-        ],
-      ),
-    ));
+          position: ToastPosition.top,
+          // true表示弹出消息时会先关闭前一个消息
+          dismissOtherOnShow: true,
+          radius: 20,
+          textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          backgroundColor:
+              themeController.isDarkMode.value ? Colors.white : Colors.black,
+          textStyle: TextStyle(
+              color: themeController.isDarkMode.value
+                  ? Colors.black
+                  : Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.none,
+              fontFamilyFallback: themeController.fontFamilyFallback),
+          child: MaterialApp(
+            // 后台应用显示名称
+            title: '漫迹',
+            home: MyHome(),
+            // 自定义滚动行为
+            scrollBehavior: MyCustomScrollBehavior(),
+            theme: buildThemeData(themeController),
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              //对应的Cupertino风格（iOS风格组件）
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('zh', 'CH'),
+              Locale('en', 'US'),
+            ],
+          ),
+        ));
   }
 
   ThemeData buildThemeData(ThemeController themeController) {
+    TextStyle textStyle = TextStyle(
+        fontFamilyFallback: themeController.fontFamilyFallback);
+
     return ThemeData(
       primaryColor: ThemeUtil.getThemePrimaryColor(),
       brightness:
-      themeController.isDarkMode.value ? Brightness.dark : Brightness.light,
+          themeController.isDarkMode.value ? Brightness.dark : Brightness.light,
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       textTheme: TextTheme(
         // ListTile标题
-        subtitle1:
-        TextStyle(fontFamilyFallback: themeController.fontFamilyFallback),
+        subtitle1: textStyle,
         // 按钮里的文字
-        button:
-        TextStyle(fontFamilyFallback: themeController.fontFamilyFallback),
+        button: textStyle,
         // 底部tab，ListTile副标题
-        bodyText2:
-        TextStyle(fontFamilyFallback: themeController.fontFamilyFallback),
+        bodyText2: textStyle,
         // Text
-        bodyText1:
-        TextStyle(fontFamilyFallback: themeController.fontFamilyFallback),
+        bodyText1: textStyle,
         // 未知
-        // subtitle2: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // overline: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // caption: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline1: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline2: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline3: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline4: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline5: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
-        // headline6: TextStyle(
-        //     fontFamilyFallback: themeController.fontFamilyFallback),
+        // subtitle2: textStyle,
+        // overline: textStyle,
+        // caption: textStyle,
+        // headline1: textStyle,
+        // headline2: textStyle,
+        // headline3: textStyle,
+        // headline4: textStyle,
+        // headline5: textStyle,
+        // AppBar里的title
+        // headline6: textStyle,
       ),
       appBarTheme: AppBarTheme(
         shadowColor: Colors.transparent,
@@ -214,12 +205,14 @@ class MyAppState extends State<MyApp> with WindowListener {
       ),
       listTileTheme: ListTileThemeData(
         iconColor:
-        themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+            themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+        style: ListTileStyle.drawer,
+        // dense: true,
         // 会影响副标题颜色
         // textColor: ThemeUtil.getFontColor(),
       ),
       radioTheme:
-      RadioThemeData(fillColor: MaterialStateProperty.resolveWith((states) {
+          RadioThemeData(fillColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
           return ThemeUtil.getThemePrimaryColor();
         }
@@ -233,7 +226,7 @@ class MyAppState extends State<MyApp> with WindowListener {
                   const TextStyle(color: Colors.black)))),
       tabBarTheme: TabBarTheme(
         unselectedLabelColor:
-        themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
+            themeController.isDarkMode.value ? Colors.white70 : Colors.black54,
         labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
         // tabbar不要再添加labelStyle，否则此处设置无效
         labelStyle: TextStyle(
@@ -269,7 +262,7 @@ class MyAppState extends State<MyApp> with WindowListener {
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.mouse,
-  };
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }

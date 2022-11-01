@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 class ThemeUtil {
   static final ThemeController themeController = Get.find();
+  static const smallScaleFactor = 0.9;
+  static const tinyScaleFactor = 0.8;
 
   // 主题色
   static Color getThemePrimaryColor() {

@@ -457,7 +457,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Text(
         animeName,
-        textScaleFactor: 1.1,
         style: TextStyle(
             fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
         maxLines: 2,
@@ -476,6 +475,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
               nameAnother,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               overflow: TextOverflow.ellipsis,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );
   }
@@ -490,6 +490,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
               animeInfo,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               overflow: TextOverflow.ellipsis,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );
   }
@@ -509,7 +510,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                       color: Colors.red,
                     )
                   : const Icon(Icons.favorite_border)),
-          anime.isCollected() ? Text(anime.tagName) : Container()
+          anime.isCollected() ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor) : Container()
         ],
       ),
     );
