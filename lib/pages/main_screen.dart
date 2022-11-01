@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
     List<Widget> widgets = [];
 
     widgets.add(SizedBox(
-      height: expandSideBar ? 120 : 80,
+      height: expandSideBar ? 120 : 60,
       // 手机横屏时，图片很占空间
       child: DrawerHeader(
           padding: const EdgeInsets.all(0),
