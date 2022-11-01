@@ -22,8 +22,8 @@ class NoteImgView extends StatelessWidget {
     // 构建网格图片
     return Responsive(
         mobile: _buildGridView(columnCnt: 3, maxDisplayCount: 9),
-        tablet: _buildGridView(columnCnt: 4, maxDisplayCount: 8),
-        desktop: _buildGridView(columnCnt: 6, maxDisplayCount: 12));
+        tablet: _buildGridView(columnCnt: 5, maxDisplayCount: 10),
+        desktop: _buildGridView(columnCnt: 7, maxDisplayCount: 14));
     // }
   }
 
@@ -36,8 +36,8 @@ class NoteImgView extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columnCnt, // 横轴数量
-        crossAxisSpacing: 5, // 横轴距离
-        mainAxisSpacing: 5, // 竖轴距离
+        crossAxisSpacing: 2, // 横轴距离
+        mainAxisSpacing: 2, // 竖轴距离
         childAspectRatio: 1, // 网格比例。31/43为封面比例
       ),
       itemCount: _getGridItemCount(maxDisplayCount),

@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
+import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -105,7 +106,10 @@ class _NoteEditState extends State<NoteEdit> {
                   ),
                 ),
           _showNoteContent(),
-          _buildGridImages(),
+          Responsive(
+              mobile: _buildGridImages(crossAxisCount: 3),
+              tablet: _buildGridImages(crossAxisCount: 5),
+              desktop: _buildGridImages(crossAxisCount: 7))
         ],
       ),
     );
@@ -128,9 +132,7 @@ class _NoteEditState extends State<NoteEdit> {
     );
   }
 
-  int columnCnt = Platform.isWindows ? 6 : 3;
-
-  _buildGridImages() {
+  _buildGridImages({required int crossAxisCount}) {
     Color addColor = SPUtil.getBool("enableDark") ? Colors.grey : Colors.black;
     int itemCount =
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
@@ -141,9 +143,9 @@ class _NoteEditState extends State<NoteEdit> {
       // ListView嵌套GridView
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columnCnt, // 横轴数量
-        crossAxisSpacing: 5, // 横轴距离
-        mainAxisSpacing: 5, // 竖轴距离
+        crossAxisCount: crossAxisCount, // 横轴数量
+        crossAxisSpacing: 2, // 横轴距离
+        mainAxisSpacing: 2, // 竖轴距离
         childAspectRatio: 1, // 网格比例。31/43为封面比例
       ),
       itemCount: itemCount,
@@ -161,55 +163,51 @@ class _NoteEditState extends State<NoteEdit> {
               ),
               borderRadius: BorderRadius.circular(5),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: MaterialButton(
-                  onPressed: () async {
-                    if (!ImageUtil.hasNoteImageRootDirPath()) {
-                      showToast("请先设置图片根目录");
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //   builder: (BuildContext context) =>
-                        //       const NoteSetting(),
-                        // ),
-                        FadeRoute(
-                          builder: (context) {
-                            return const ImagePathSetting();
-                          },
-                        ),
-                      );
-                      return;
-                    }
-                    if (Platform.isWindows || Platform.isAndroid) {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['jpg', 'png', 'gif'],
-                        allowMultiple: true,
-                      );
-                      if (result == null) return;
-                      List<PlatformFile> platformFiles = result.files;
-                      for (var platformFile in platformFiles) {
-                        String absoluteImagePath = platformFile.path ?? "";
-                        if (absoluteImagePath.isEmpty) continue;
+            child: MaterialButton(
+                onPressed: () async {
+                  if (!ImageUtil.hasNoteImageRootDirPath()) {
+                    showToast("请先设置图片根目录");
+                    Navigator.of(context).push(
+                      // MaterialPageRoute(
+                      //   builder: (BuildContext context) =>
+                      //       const NoteSetting(),
+                      // ),
+                      FadeRoute(
+                        builder: (context) {
+                          return const ImagePathSetting();
+                        },
+                      ),
+                    );
+                    return;
+                  }
+                  if (Platform.isWindows || Platform.isAndroid) {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['jpg', 'png', 'gif'],
+                      allowMultiple: true,
+                    );
+                    if (result == null) return;
+                    List<PlatformFile> platformFiles = result.files;
+                    for (var platformFile in platformFiles) {
+                      String absoluteImagePath = platformFile.path ?? "";
+                      if (absoluteImagePath.isEmpty) continue;
 
-                        String relativeImagePath =
-                            ImageUtil.getRelativeNoteImagePath(
-                                absoluteImagePath);
-                        int imageId =
-                            await SqliteUtil.insertNoteIdAndImageLocalPath(
-                                widget.episodeNote.episodeNoteId,
-                                relativeImagePath);
-                        widget.episodeNote.relativeLocalImages.add(
-                            RelativeLocalImage(imageId, relativeImagePath));
-                      }
-                    } else {
-                      throw ("未适配平台：${Platform.operatingSystem}");
+                      String relativeImagePath =
+                          ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
+                      int imageId =
+                          await SqliteUtil.insertNoteIdAndImageLocalPath(
+                              widget.episodeNote.episodeNoteId,
+                              relativeImagePath);
+                      widget.episodeNote.relativeLocalImages
+                          .add(RelativeLocalImage(imageId, relativeImagePath));
                     }
-                    setState(() {});
-                  },
-                  child: Icon(Icons.add, color: addColor, size: 50)),
-            ),
+                  } else {
+                    throw ("未适配平台：${Platform.operatingSystem}");
+                  }
+                  setState(() {});
+                },
+                child: Icon(Icons.add, color: addColor, size: 50)),
           );
         }
 
