@@ -62,8 +62,8 @@ class _ImageViewerState extends State<ImageViewer> {
                             children: [
                               ListTile(
                                   title: const Text("完全路径"),
-                                  subtitle:
-                                  SelectableText(imageLocalPaths[currentIndex])),
+                                  subtitle: SelectableText(
+                                      imageLocalPaths[currentIndex])),
                             ],
                           ),
                         ),
@@ -100,7 +100,7 @@ class _ImageViewerState extends State<ImageViewer> {
     // 移动图片轴
     scrollToCurrentImage();
   }
-  
+
   _showImage() {
     return Expanded(
       flex: 3,

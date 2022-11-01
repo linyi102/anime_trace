@@ -25,10 +25,10 @@ class MyHome extends StatelessWidget {
       }
 
       return Stack(
-        children: [
+        children: const [
           MainScreen(),
           // HomeTabs(),
-          const UpdateHint(checkLatestVersion: true)],
+          UpdateHint(checkLatestVersion: true)],
       );
     });
   }
