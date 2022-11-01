@@ -98,8 +98,10 @@ class _SourceListPageState extends State<SourceListPage> {
             _showPingButton ? _buildPingButton() : Container(),
             Responsive(
                 mobile: _buildListView(),
-                tablet: _buildGridView(crossAxisCount: size.width > 820 ? 3 : 2),
-                desktop: _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
+                tablet:
+                    _buildGridView(crossAxisCount: size.width > 820 ? 3 : 2),
+                desktop:
+                    _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
             FavWebsiteListPage()
           ],
         ),
@@ -218,15 +220,18 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   IconButton _buildSwitchButton(ClimbWebsite climbWebsite) {
+    if (climbWebsite.discard) {
+      return IconButton(
+          onPressed: () {
+            showToast("很抱歉，该搜索源已经无法使用");
+          },
+          icon: const Icon(Icons.not_interested));
+    }
     return IconButton(
       onPressed: () {
-        if (climbWebsite.discard) {
-          showToast("很抱歉，该搜索源已经无法使用");
-          return;
-        }
         _invertSource(climbWebsite);
       },
-      icon: !climbWebsite.discard && climbWebsite.enable
+      icon: climbWebsite.enable
           ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
           : const Icon(Icons.check_box_outline_blank),
     );

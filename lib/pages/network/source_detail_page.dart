@@ -44,9 +44,11 @@ class _SourceDetailState extends State<SourceDetail> {
                   maxLines: 2, textAlign: TextAlign.center),
             ),
             ListTile(
+              enabled: !climbWebstie.discard,
               title: const Text("启动搜索"),
               leading: !climbWebstie.discard && climbWebstie.enable
-                  ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
+                  ? Icon(Icons.check_box,
+                      color: ThemeUtil.getThemePrimaryColor())
                   : Icon(
                       Icons.check_box_outline_blank,
                       color: ThemeUtil.getLeadingIconColor(),
@@ -73,6 +75,7 @@ class _SourceDetailState extends State<SourceDetail> {
               },
             ),
             ListTile(
+              enabled: !climbWebstie.discard,
               title: const Text("搜索动漫"),
               leading: Icon(
                 Icons.search_rounded,
