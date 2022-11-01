@@ -32,57 +32,60 @@ class _SourceDetailState extends State<SourceDetail> {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-          buildWebSiteIcon(url: climbWebstie.iconUrl, size: 100, addShadow: true),
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-            child: ExpandText(climbWebstie.desc,
-                maxLines: 2, textAlign: TextAlign.center),
-          ),
-          ListTile(
-            title: const Text("启动搜索"),
-            leading: !climbWebstie.discard && climbWebstie.enable
-                ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
-                : Icon(
-                    Icons.check_box_outline_blank,
-                    color: ThemeUtil.getLeadingIconColor(),
-                  ),
-            onTap: () {
-              if (climbWebstie.discard) {
-                showToast("很抱歉，该搜索源已经无法使用");
-                return;
-              }
-              climbWebstie.enable = !climbWebstie.enable;
-              setState(() {});
-              // 保存
-              SPUtil.setBool(climbWebstie.spkey, climbWebstie.enable);
-            },
-          ),
-          ListTile(
-            title: const Text("访问网站"),
-            leading: Icon(
-              Icons.open_in_browser_rounded,
-              color: ThemeUtil.getLeadingIconColor(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            buildWebSiteIcon(
+                url: climbWebstie.iconUrl, size: 100, addShadow: true),
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: ExpandText(climbWebstie.desc,
+                  maxLines: 2, textAlign: TextAlign.center),
             ),
-            onTap: () {
-              LaunchUrlUtil.launch(climbWebstie.climb.baseUrl);
-            },
-          ),
-          ListTile(
-            title: const Text("搜索动漫"),
-            leading: Icon(
-              Icons.search_rounded,
-              color: ThemeUtil.getLeadingIconColor(),
+            ListTile(
+              title: const Text("启动搜索"),
+              leading: !climbWebstie.discard && climbWebstie.enable
+                  ? Icon(Icons.check_box, color: ThemeUtil.getThemePrimaryColor())
+                  : Icon(
+                      Icons.check_box_outline_blank,
+                      color: ThemeUtil.getLeadingIconColor(),
+                    ),
+              onTap: () {
+                if (climbWebstie.discard) {
+                  showToast("很抱歉，该搜索源已经无法使用");
+                  return;
+                }
+                climbWebstie.enable = !climbWebstie.enable;
+                setState(() {});
+                // 保存
+                SPUtil.setBool(climbWebstie.spkey, climbWebstie.enable);
+              },
             ),
-            onTap: () {
-              Navigator.of(context).push(FadeRoute(builder: (context) {
-                return AnimeClimbOneWebsite(climbWebStie: climbWebstie);
-              }));
-            },
-          ),
-        ],
+            ListTile(
+              title: const Text("访问网站"),
+              leading: Icon(
+                Icons.open_in_browser_rounded,
+                color: ThemeUtil.getLeadingIconColor(),
+              ),
+              onTap: () {
+                LaunchUrlUtil.launch(climbWebstie.climb.baseUrl);
+              },
+            ),
+            ListTile(
+              title: const Text("搜索动漫"),
+              leading: Icon(
+                Icons.search_rounded,
+                color: ThemeUtil.getLeadingIconColor(),
+              ),
+              onTap: () {
+                Navigator.of(context).push(FadeRoute(builder: (context) {
+                  return AnimeClimbOneWebsite(climbWebStie: climbWebstie);
+                }));
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
