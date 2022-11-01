@@ -93,6 +93,12 @@ class AnimesDisplaySetting extends StatelessWidget {
       },
     ));
 
+    list.add(ListTile(
+      title: const Text("显示动漫数量"),
+      trailing: showToggleButton(animeDisplayController.showAnimeCntAfterTag.value),
+      onTap: () => animeDisplayController.turnShowAnimeCntAfterTag(),
+    ));
+
     return list;
   }
 

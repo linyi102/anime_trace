@@ -189,14 +189,6 @@ class _AnimeListPageState extends State<AnimeListPage>
     );
   }
 
-  Widget _buildBottomSheet(
-    BuildContext context,
-    ScrollController scrollController,
-    double bottomSheetOffset,
-  ) {
-    return const AnimesDisplaySetting(showAppBar: false);
-  }
-
   List<Widget> _getActions() {
     List<Widget> actions = [];
     actions.add(IconButton(
@@ -207,7 +199,12 @@ class _AnimeListPageState extends State<AnimeListPage>
             initHeight: 0.5,
             maxHeight: 1,
             context: context,
-            builder: _buildBottomSheet,
+            builder: (
+              BuildContext context,
+              ScrollController scrollController,
+              double bottomSheetOffset,
+            ) =>
+                const AnimesDisplaySetting(showAppBar: false),
             isExpand: true);
       },
       icon: const Icon(Icons.widgets_outlined),
@@ -593,7 +590,9 @@ class _AnimeListPageState extends State<AnimeListPage>
       list.add(Column(
         children: [
           const SizedBox(height: 10),
-          Text("${tags[i]} (${animeCntPerTag[i]})"),
+          Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
+              ? Text("${tags[i]} (${animeCntPerTag[i]})")
+              : Text(tags[i])),
           const SizedBox(height: 10)
         ],
       ));
