@@ -110,7 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
           _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
               ? Expanded(
-                  child: emptyDataHint("暂无观看记录", toastMsg: "进入动漫详细页完成某集即可看到变化"),
+                  child: emptyDataHint("暂无观看记录"),
                 )
               : Expanded(
                   child: Scrollbar(

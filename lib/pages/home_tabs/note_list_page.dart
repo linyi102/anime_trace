@@ -201,7 +201,7 @@ class _NoteListPageState extends State<NoteListPage> {
 
   _buildNotes() {
     return episodeNotes.isEmpty
-        ? emptyDataHint("暂无笔记", toastMsg: "点击已完成的集即可添加笔记")
+        ? emptyDataHint("什么都没有", toastMsg: "点击已完成的集即可添加笔记")
         : ListView.builder(
             controller: _scrollController,
             itemCount: episodeNotes.length,
