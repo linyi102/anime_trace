@@ -120,6 +120,7 @@ class _SourceListPageState extends State<SourceListPage> {
         itemBuilder: (context, index) {
           ClimbWebsite climbWebsite = climbWebsites[index];
           return Card(
+            color: ThemeUtil.getNoteCardColor(),
             elevation: 0,
             child: MaterialButton(
               padding: const EdgeInsets.all(0),
