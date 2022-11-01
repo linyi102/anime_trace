@@ -102,9 +102,8 @@ class _RateListPageState extends State<RateListPage> {
 
   void _createRateNote(BuildContext context) {
     debugPrint("添加评价");
-    Note episodeNote =
-        Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
-            relativeLocalImages: [], imgUrls: []);
+    Note episodeNote = Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
+        relativeLocalImages: [], imgUrls: []);
     SqliteUtil.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
       episodeNote.episodeNoteId = value;
@@ -126,32 +125,34 @@ class _RateListPageState extends State<RateListPage> {
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: MaterialButton(
+          child: Card(
             elevation: 0,
-            padding: const EdgeInsets.all(0),
-            color: ThemeUtil.getNoteCardColor(),
-            onPressed: () {
-              Navigator.of(context).push(
-                FadeRoute(
-                  builder: (context) {
-                    return NoteEdit(note);
-                  },
-                ),
-              ).then((value) {
-                // 重新获取列表
-                _loadData();
-              });
-            },
-            child: Flex(
-              direction: Axis.vertical,
-              children: [
-                // 笔记内容
-                _buildNoteContent(note),
-                // 笔记图片
-                NoteImgView(relativeLocalImages: note.relativeLocalImages),
-                // 创建时间
-                _buildCreateTimeAndMoreAction(note)
-              ],
+            child: MaterialButton(
+              elevation: 0,
+              padding: const EdgeInsets.all(0),
+              onPressed: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return NoteEdit(note);
+                    },
+                  ),
+                ).then((value) {
+                  // 重新获取列表
+                  _loadData();
+                });
+              },
+              child: Flex(
+                direction: Axis.vertical,
+                children: [
+                  // 笔记内容
+                  _buildNoteContent(note),
+                  // 笔记图片
+                  NoteImgView(relativeLocalImages: note.relativeLocalImages),
+                  // 创建时间
+                  _buildCreateTimeAndMoreAction(note)
+                ],
+              ),
             ),
           ),
         ),

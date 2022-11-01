@@ -79,7 +79,7 @@ class _NoteListPageState extends State<NoteListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeUtil.getNoteListBackgroundColor(),
+      backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
       appBar: AppBar(
         title: const Text(
           "笔记",
@@ -216,7 +216,6 @@ class _NoteListPageState extends State<NoteListPage> {
                   child: MaterialButton(
                     elevation: 0,
                     padding: const EdgeInsets.all(0),
-                    color: ThemeUtil.getNoteCardColor(),
                     onPressed: () {
                       Navigator.of(context).push(
                         // MaterialPageRoute(

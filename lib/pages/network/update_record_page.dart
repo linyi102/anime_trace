@@ -76,7 +76,6 @@ class UpdateRecordPage extends StatelessWidget {
           }
 
           return Card(
-            color: ThemeUtil.getNoteCardColor(),
             elevation: 0,
             child: Column(
               children: [

@@ -106,7 +106,6 @@ class _HistoryPageState extends State<HistoryPage> {
                           return Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Card(
-                              color: ThemeUtil.getNoteCardColor(),
                               elevation: 0,
                               child: Column(
                                 children: [

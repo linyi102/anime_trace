@@ -47,6 +47,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
+      // child: _buildBottomNavigationBar(),
       child: Platform.isAndroid &&
               MediaQuery.of(context).orientation == Orientation.portrait
           ? _buildBottomNavigationBar() // 手机竖向时显示底部栏
@@ -142,21 +143,23 @@ class _MainScreenState extends State<MainScreen> {
       //   index: _currentIndex,
       //   children: _list,
       // ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
-        currentIndex: _selectedTabIdx,
-        // elevation: 0,
-        // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        onTap: (int index) {
-          setState(() {
-            _selectedTabIdx = index;
-          });
-        },
-        items: [
-          for (var tab in _mainTabs)
-            BottomNavigationBarItem(icon: Icon(tab.iconData), label: tab.name)
-        ],
-      ),
+      bottomNavigationBar: Obx(() => BottomNavigationBar(
+            backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
+            type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
+            currentIndex: _selectedTabIdx,
+            // elevation: 0,
+            // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+            onTap: (int index) {
+              setState(() {
+                _selectedTabIdx = index;
+              });
+            },
+            items: [
+              for (var tab in _mainTabs)
+                BottomNavigationBarItem(
+                    icon: Icon(tab.iconData), label: tab.name)
+            ],
+          )),
     );
   }
 }

@@ -39,16 +39,17 @@ class ThemeUtil {
   // 目录页中的过滤组件也使用了该颜色
   static Color getAppBarBackgroundColor() {
     return themeController.isDarkMode.value
-        ? const Color.fromRGBO(48, 48, 48, 1)
+        // ? const Color.fromRGBO(48, 48, 48, 1)
+        ? const Color.fromRGBO(8, 9, 27, 1)
         : Colors.white;
   }
 
   // 主体背景色
   static Color getScaffoldBackgroundColor() {
     return themeController.isDarkMode.value
-        ? const Color.fromRGBO(43, 43, 43, 1)
-        : const Color.fromRGBO(250, 250, 250, 1);
-    // : const Color.fromRGBO(250, 251, 254, 1);
+        // ? const Color.fromRGBO(43, 43, 43, 1)
+        ? const Color.fromRGBO(12, 19, 35, 1)
+        : const Color.fromRGBO(248, 248, 248, 1);
   }
 
   // 按钮颜色
@@ -81,20 +82,14 @@ class ThemeUtil {
 
   // 动漫详细页图片背景渐变
   static List<Color> getGradientColors() {
-    int baseColorInt;
-    if (themeController.isDarkMode.value) {
-      baseColorInt = 43; // 对应动漫详细页面下面的背景色
-    } else {
-      baseColorInt = 250;
-    }
+    Color color = ThemeUtil.getScaffoldBackgroundColor();
     return [
       // Colors.transparent,
-      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0),
-      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.1),
-      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.2),
-      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.5),
-      // Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 0.8),
-      Color.fromRGBO(baseColorInt, baseColorInt, baseColorInt, 1.0),
+      color.withOpacity(0),
+      color.withOpacity(0.1),
+      color.withOpacity(0.2),
+      color.withOpacity(0.5),
+      color.withOpacity(1),
     ];
   }
 
@@ -102,7 +97,7 @@ class ThemeUtil {
   static Color getColorBelowGradientAnimeCover() {
     return themeController.isDarkMode.value
         ? const Color.fromRGBO(48, 48, 48, 1)
-        : const Color.fromRGBO(250, 250, 250, 1);
+        : const Color.fromRGBO(248, 248, 248, 1);
   }
 
   // 动漫详细页集ListTile颜色
@@ -117,19 +112,11 @@ class ThemeUtil {
   }
 
   // 笔记列表页中笔记的背景色
-  static Color getNoteCardColor() {
+  static Color getCardColor() {
     return themeController.isDarkMode.value
-        ? const Color.fromRGBO(48, 48, 48, 1)
+        // ? const Color.fromRGBO(48, 48, 48, 1)
+        ? const Color.fromRGBO(24, 25, 43, 1)
         : Colors.white;
-  }
-
-  // 笔记列表页的背景色
-  static Color getNoteListBackgroundColor() {
-    return themeController.isDarkMode.value
-        ? const Color.fromRGBO(43, 43, 43, 1)
-        // ? const Color.fromRGBO(66, 66, 66, 1)
-        // : const Color.fromRGBO(235, 236, 240, 1);
-        : const Color.fromRGBO(245, 245, 245, 1);
   }
 
   static getSideBarSelectedItemColor() {

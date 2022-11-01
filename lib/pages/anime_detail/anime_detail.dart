@@ -791,7 +791,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           ? Container()
           : Card(
               elevation: 0,
-              color: ThemeUtil.getNoteListBackgroundColor(),
+              color: ThemeUtil.getScaffoldBackgroundColor(),
               child: MaterialButton(
                 padding: _episodeNotes[episodeNoteIndex].noteContent.isEmpty
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
