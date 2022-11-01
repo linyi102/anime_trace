@@ -214,7 +214,7 @@ class AnimePropertiesPage extends StatelessWidget {
         },
         child: Text(url,
             style: TextStyle(
-                color: Colors.blue,
+                color: ThemeUtil.getPrimaryIconColor(),
                 fontWeight: fontWeight,
                 fontSize: fontSize)),
       );

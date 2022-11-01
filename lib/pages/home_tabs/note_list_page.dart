@@ -313,7 +313,7 @@ class _NoteListPageState extends State<NoteListPage> {
           },
           // icon: const Icon(Icons.more_vert_rounded)),
           icon:
-              Icon(Icons.navigate_next, color: ThemeUtil.getIconButtonColor())),
+              Icon(Icons.navigate_next, color: ThemeUtil.getCommonIconColor())),
       title: GestureDetector(
         onTap: () {
           _enterAnimeDetail(index);

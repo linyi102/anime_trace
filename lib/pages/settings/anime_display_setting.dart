@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
 class AnimesDisplaySetting extends StatelessWidget {
@@ -105,7 +106,7 @@ class AnimesDisplaySetting extends StatelessWidget {
 
   showToggleButton(bool on) {
     return on
-        ? const Icon(Icons.toggle_on, color: Colors.blue)
+        ? Icon(Icons.toggle_on, color: ThemeUtil.getPrimaryIconColor())
         : const Icon(Icons.toggle_off_outlined);
   }
 }

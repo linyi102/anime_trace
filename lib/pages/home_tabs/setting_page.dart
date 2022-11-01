@@ -67,115 +67,118 @@ class _SettingPageState extends State<SettingPage> {
         key: UniqueKey(),
       );
     }
-    return ListView(
-      children: [
-        // _showImg(),
-        // _showImgButton(),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.settings_backup_restore_outlined),
-          title: const Text("备份还原"),
-          onTap: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return const BackupAndRestore();
-                },
-              ),
-            );
-          },
-        ),
-        // const Divider(),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.checklist_rounded),
-          title: const Text("清单管理"),
-          onTap: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return const TagManage();
-                },
-              ),
-            );
-          },
-        ),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.book_outlined),
-          title: const Text("动漫界面"),
-          onTap: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return const AnimesDisplaySetting();
-                },
-              ),
-            );
-          },
-        ),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.image_outlined),
-          title: const Text("图片设置"),
-          onTap: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return const ImagePathSetting();
-                },
-              ),
-            );
-          },
-        ),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.color_lens_outlined),
-          title: const Text("主题样式"),
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (dialogContext) {
-                  return AlertDialog(
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: _buildColorAtlasList(dialogContext),
-                      ),
+    // 监听切换主题后的primaryColor(leadingIconColor)
+    return Obx(() =>
+        ListView(
+          children: [
+            // _showImg(),
+            // _showImgButton(),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.settings_backup_restore_outlined),
+              title: const Text("备份还原"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const BackupAndRestore();
+                    },
+                  ),
+                );
+              },
+            ),
+            // const Divider(),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.checklist_rounded),
+              title: const Text("清单管理"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const TagManage();
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.book_outlined),
+              title: const Text("动漫界面"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const AnimesDisplaySetting();
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.image_outlined),
+              title: const Text("图片设置"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const ImagePathSetting();
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.color_lens_outlined),
+              title: const Text("主题样式"),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return AlertDialog(
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: _buildColorAtlasList(dialogContext),
+                          ),
+                        ),
+                      );
+                    });
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.error_outline),
+              title: const Text("关于版本"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const AboutVersion();
+                    },
+                  ),
+                );
+              },
+            ),
+            if (!const bool.fromEnvironment("dart.vm.product"))
+              ListTile(
+                iconColor: ThemeUtil.getPrimaryIconColor(),
+                leading: const Icon(Icons.bug_report_outlined),
+                title: const Text("测试页面"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    FadeRoute(
+                      builder: (context) {
+                        return const TestPage();
+                      },
                     ),
                   );
-                });
-          },
-        ),
-        ListTile(
-          iconColor: ThemeUtil.getLeadingIconColor(),
-          leading: const Icon(Icons.error_outline),
-          title: const Text("关于版本"),
-          onTap: () {
-            Navigator.of(context).push(
-              FadeRoute(
-                builder: (context) {
-                  return const AboutVersion();
                 },
-              ),
-            );
-          },
-        ),
-        if (!const bool.fromEnvironment("dart.vm.product"))
-          ListTile(
-            iconColor: ThemeUtil.getLeadingIconColor(),
-            leading: const Icon(Icons.bug_report_outlined),
-            title: const Text("测试页面"),
-            onTap: () {
-              Navigator.of(context).push(
-                FadeRoute(
-                  builder: (context) {
-                    return const TestPage();
-                  },
-                ),
-              );
-            },
-          )
-      ],
+              )
+          ],
+        )
     );
   }
 
@@ -216,7 +219,7 @@ class _SettingPageState extends State<SettingPage> {
 
   _showImgButton() {
     return ListTile(
-      iconColor: ThemeUtil.getLeadingIconColor(),
+      iconColor: ThemeUtil.getPrimaryIconColor(),
       // leading: Icon(FontAwesome.picture),
       leading: const Icon(
         // Icons.image_outlined,
@@ -266,7 +269,7 @@ class _SettingPageState extends State<SettingPage> {
   _buildColorAtlasList(dialogContext) {
     List<Widget> dayList = [],
         nightList = [];
-    for (var themeColor in ThemeUtil.themeColors.values) {
+    for (var themeColor in ThemeUtil.themeColors) {
       debugPrint("themeColor=$themeColor");
       if (themeColor.isDarkMode) {
         nightList.add(_buildColorAtlasItem(themeColor, dialogContext));
@@ -295,7 +298,7 @@ class _SettingPageState extends State<SettingPage> {
               height: 30,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: themeColor.primaryColor,
+                color: themeColor.representativeColor,
                 // border: Border.all(width: 2, color: Colors.red.shade200),
               )),
           title: Text(themeColor.name),

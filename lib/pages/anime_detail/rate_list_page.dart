@@ -55,7 +55,7 @@ class _RateListPageState extends State<RateListPage> {
                 onPressed: () => _createRateNote(context),
                 icon: Icon(
                   Icons.edit,
-                  color: ThemeUtil.getIconButtonColor(),
+                  color: ThemeUtil.getCommonIconColor(),
                 ))
           ]),
         ),

@@ -4,10 +4,8 @@ import 'package:get/get.dart';
 import '../utils/theme_util.dart';
 
 class ThemeController extends GetxController {
-  // 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor
   // 夜间模式由ThemeColor里的isDarkMode决定
-  Rx<ThemeColor> themeColor = ThemeUtil
-      .themeColors[SPUtil.getString("themeColor", defaultValue: "white")]!.obs;
+  Rx<ThemeColor> themeColor = acquireSelectedTheme();
 
   // 字体
   RxList<String> fontFamilyFallback = [
@@ -18,9 +16,15 @@ class ThemeController extends GetxController {
     '微软雅黑'
   ].obs;
 
-  changeTheme(String id) {
-    themeColor.value = ThemeUtil.themeColors[id]!;
-    SPUtil.setString("themeColor", id);
+  // 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor
+  static acquireSelectedTheme() {
+    String key = SPUtil.getString("themeColor", defaultValue: "white");
+    return ThemeUtil.getThemeColorByKey(key).obs;
+  }
+
+  changeTheme(String key) {
+    themeColor.value = ThemeUtil.getThemeColorByKey(key);
+    SPUtil.setString("themeColor", key);
   }
 
   changeFontFamily(String fontFamily) {

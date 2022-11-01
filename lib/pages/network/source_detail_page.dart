@@ -50,7 +50,7 @@ class _SourceDetailState extends State<SourceDetail> {
                       color: ThemeUtil.getThemePrimaryColor())
                   : Icon(
                       Icons.check_box_outline_blank,
-                      color: ThemeUtil.getLeadingIconColor(),
+                      color: ThemeUtil.getPrimaryIconColor(),
                     ),
               onTap: () {
                 if (climbWebstie.discard) {
@@ -67,7 +67,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("访问网站"),
               leading: Icon(
                 Icons.open_in_browser_rounded,
-                color: ThemeUtil.getLeadingIconColor(),
+                color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
                 LaunchUrlUtil.launch(climbWebstie.climb.baseUrl);
@@ -78,7 +78,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("搜索动漫"),
               leading: Icon(
                 Icons.search_rounded,
-                color: ThemeUtil.getLeadingIconColor(),
+                color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
                 Navigator.of(context).push(FadeRoute(builder: (context) {

@@ -101,8 +101,8 @@ class FavWebsiteListPage extends StatelessWidget {
                               title: const Text("应用内打开网页"),
                               subtitle: const Text("仅对Android端有效"),
                               trailing: openWebInApp
-                                  ? const Icon(Icons.toggle_on,
-                                      color: Colors.blue)
+                                  ? Icon(Icons.toggle_on,
+                                      color: ThemeUtil.getPrimaryIconColor())
                                   : const Icon(Icons.toggle_off),
                               onTap: () {
                                 setState(() {

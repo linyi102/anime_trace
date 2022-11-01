@@ -194,8 +194,9 @@ class MyAppState extends State<MyApp> with WindowListener {
           dismissOtherOnShow: true,
           radius: 20,
           textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          backgroundColor:
-              themeController.themeColor.value.isDarkMode ? Colors.white : Colors.black,
+          backgroundColor: themeController.themeColor.value.isDarkMode
+              ? Colors.white
+              : Colors.black,
           textStyle: TextStyle(
               color: themeController.themeColor.value.isDarkMode
                   ? Colors.black
@@ -258,8 +259,9 @@ class MyAppState extends State<MyApp> with WindowListener {
 
     return ThemeData(
       // primarySwatch: createMaterialColor(Colors.amber),
-      brightness:
-          themeController.themeColor.value.isDarkMode ? Brightness.dark : Brightness.light,
+      brightness: themeController.themeColor.value.isDarkMode
+          ? Brightness.dark
+          : Brightness.light,
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
@@ -294,20 +296,22 @@ class MyAppState extends State<MyApp> with WindowListener {
         foregroundColor: ThemeUtil.getFontColor(),
         backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
         iconTheme: IconThemeData(
-          color: ThemeUtil.getIconButtonColor(),
+          color: ThemeUtil.getCommonIconColor(),
         ),
       ),
       iconTheme: IconThemeData(
-        color: ThemeUtil.getIconButtonColor(),
+        color: ThemeUtil.getCommonIconColor(),
       ),
       scaffoldBackgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
       inputDecorationTheme: InputDecorationTheme(
-        suffixIconColor: ThemeUtil.getIconButtonColor(),
+        suffixIconColor: ThemeUtil.getCommonIconColor(),
       ),
       listTileTheme: ListTileThemeData(
-        iconColor:
-            themeController.themeColor.value.isDarkMode ? Colors.white70 : Colors.black54,
+        iconColor: themeController.themeColor.value.isDarkMode
+            ? Colors.white70
+            : Colors.black54,
         style: ListTileStyle.drawer,
+        selectedColor: ThemeUtil.getThemePrimaryColor()
         // dense: true,
         // 会影响副标题颜色
         // textColor: ThemeUtil.getFontColor(),
@@ -323,11 +327,18 @@ class MyAppState extends State<MyApp> with WindowListener {
           selectedItemColor: ThemeUtil.getThemePrimaryColor()),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
+              foregroundColor:
+                  MaterialStateProperty.all(ThemeUtil.getThemePrimaryColor()),
               textStyle: MaterialStateProperty.all(
                   const TextStyle(color: Colors.black)))),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all(ThemeUtil.getThemePrimaryColor()))),
       tabBarTheme: TabBarTheme(
-        unselectedLabelColor:
-            themeController.themeColor.value.isDarkMode ? Colors.white70 : Colors.black54,
+        unselectedLabelColor: themeController.themeColor.value.isDarkMode
+            ? Colors.white70
+            : Colors.black54,
         labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
         // tabbar不要再添加labelStyle，否则此处设置无效
         labelStyle: TextStyle(

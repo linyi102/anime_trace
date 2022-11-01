@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
@@ -29,7 +30,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                     dense: true,
                     title: const Text("包括封面"),
                     leading: migrateCover
-                        ? const Icon(Icons.check_box, color: Colors.blue)
+                        ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryIconColor())
                         : const Icon(Icons.check_box_outline_blank),
                     onTap: () {
                       migrateCover = !migrateCover;

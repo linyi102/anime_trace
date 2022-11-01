@@ -337,9 +337,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _buildTabs() {
     List<Widget> tabs = [];
     for (String tabName in _tabNames) {
-      tabs.add(Tab(
-        text: tabName,
-      ));
+      tabs.add(Tab(child: Text(tabName, textScaleFactor: ThemeUtil.smallScaleFactor),));
     }
     return tabs;
   }

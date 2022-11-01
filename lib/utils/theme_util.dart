@@ -6,7 +6,8 @@ class ThemeColor {
   bool isDarkMode;
   String key;
   String name;
-  Color primaryColor; // 代表色
+  Color representativeColor; // 代表色
+  Color primaryColor; // 主要色。按钮、选中的ListTile颜色
   Color appBarColor; // 顶部栏颜色。用于顶部栏、底部栏、侧边栏
   Color bodyColor; // 主体颜色。最底的背景
   Color cardColor; // 卡片颜色。用于卡片、对话框
@@ -15,6 +16,7 @@ class ThemeColor {
       {required this.isDarkMode,
       required this.key,
       required this.name,
+      required this.representativeColor,
       required this.primaryColor,
       required this.appBarColor,
       required this.bodyColor,
@@ -22,7 +24,7 @@ class ThemeColor {
 
   @override
   String toString() {
-    return 'ThemeColor{isDarkMode: $isDarkMode, name: $name, primaryColor: $primaryColor, appBarColor: $appBarColor, bodyColor: $bodyColor, cardColor: $cardColor}';
+    return 'ThemeColor{isDarkMode: $isDarkMode, name: $name, primaryColor: $representativeColor, appBarColor: $appBarColor, bodyColor: $bodyColor, cardColor: $cardColor}';
   }
 }
 
@@ -31,53 +33,63 @@ class ThemeUtil {
   static const smallScaleFactor = 0.9;
   static const tinyScaleFactor = 0.8;
 
-  static Map<String, ThemeColor> themeColors = {
-    "white": ThemeColor(
+  static List<ThemeColor> themeColors = [
+    ThemeColor(
         isDarkMode: false,
         key: "white",
         name: "白色",
-        primaryColor: const Color.fromRGBO(248, 248, 248, 1),
+        representativeColor: const Color.fromRGBO(248, 248, 248, 1),
+        primaryColor: Colors.blue,
         appBarColor: Colors.white,
         bodyColor: const Color.fromRGBO(248, 248, 248, 1),
         cardColor: Colors.white),
-    "black": ThemeColor(
+    ThemeColor(
         isDarkMode: true,
         key: "black",
         name: "黑色",
-        primaryColor: Colors.black,
+        primaryColor: Colors.blue,
+        representativeColor: Colors.black,
         appBarColor: const Color.fromRGBO(48, 48, 48, 1),
         bodyColor: const Color.fromRGBO(43, 43, 43, 1),
         cardColor: const Color.fromRGBO(48, 48, 48, 1)),
-    "nightBlue": ThemeColor(
+    ThemeColor(
         isDarkMode: true,
-        key: "nightBlue",
-        name: "夜蓝",
-        primaryColor: const Color.fromRGBO(12, 19, 35, 1),
+        key: "nightPurple",
+        name: "夜紫",
+        primaryColor: const Color.fromRGBO(90, 106, 213, 1.0),
+        representativeColor: const Color.fromRGBO(12, 19, 35, 1),
         appBarColor: const Color.fromRGBO(8, 9, 27, 1),
         bodyColor: const Color.fromRGBO(12, 19, 35, 1),
         cardColor: const Color.fromRGBO(24, 25, 43, 1))
-  };
+  ];
+
+  // 根据key从list中查找主题
+  static ThemeColor getThemeColorByKey(String key) {
+    return themeColors
+            .firstWhereOrNull((themeColor) => themeColor.key == key) ??
+        getDefaultThemeColor();
+  }
+
+  // 第一个为默认主题
+  static ThemeColor getDefaultThemeColor() {
+    return themeColors[0];
+  }
 
   // 主题色
   static Color getThemePrimaryColor() {
-    Color color = Colors.blue;
-    // color = const Color.fromRGBO(0, 206, 209, 1); // 深绿宝石
-    // color = const Color.fromRGBO(82, 82, 136, 1); // 野菊紫
-    // color = const Color.fromRGBO(239, 71, 93, 1); // 草茉莉红
-    // color = const Color.fromRGBO(255, 127, 80, 1); // 珊瑚
-    // color = const Color.fromRGBO(32, 178, 170, 1); // 浅海洋绿
-    // color = const Color.fromRGBO(192, 72, 81, 1); // 玉红
-    // color = Colors.amber;
-    // color = Colors.lightBlue;
-    // color = const Color.fromRGBO(86, 152, 195, 1); // 睛蓝
-    // color = const Color.fromRGBO(0, 191, 255, 1); // 深天蓝
-    // color = const Color.fromRGBO(7, 176, 242, 1);
-    return color;
+    return themeController.themeColor.value.primaryColor;
   }
 
-  // ListTile>leading按钮颜色
-  static Color getLeadingIconColor() {
+  // ListTile>leading按钮颜色，以及选中的按钮的颜色
+  static Color getPrimaryIconColor() {
     return ThemeUtil.getThemePrimaryColor();
+  }
+
+  // 普通按钮的颜色
+  static Color getCommonIconColor() {
+    return themeController.themeColor.value.isDarkMode
+        ? Colors.white70
+        : Colors.black87;
   }
 
   static Color getConnectableColor() {
@@ -93,13 +105,6 @@ class ThemeUtil {
   // 主体背景色
   static Color getScaffoldBackgroundColor() {
     return themeController.themeColor.value.bodyColor;
-  }
-
-  // 按钮颜色
-  static Color getIconButtonColor() {
-    return themeController.themeColor.value.isDarkMode
-        ? Colors.white70
-        : Colors.black87;
   }
 
   // 普通字体颜色
