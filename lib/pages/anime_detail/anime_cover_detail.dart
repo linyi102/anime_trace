@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -12,8 +11,8 @@ import 'package:gesture_zoom_box/gesture_zoom_box.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
-import '../../models/anime.dart';
 import '../../animation/fade_route.dart';
+import '../../models/anime.dart';
 import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';
 import '../../utils/sqlite_util.dart';

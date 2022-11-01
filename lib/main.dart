@@ -187,7 +187,6 @@ class MyAppState extends State<MyApp> with WindowListener {
   @override
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.put(ThemeController());
-    final UpdateRecordController updateRecordController = Get.find();
 
     return Obx(() => OKToast(
           position: ToastPosition.top,

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
@@ -43,11 +42,14 @@ class ClimbDouban implements Climb {
       }
     }
     if (!existResult) return animes;
-    
-    var elements = document.getElementsByClassName("result-list")[0].getElementsByClassName("result");
+
+    var elements = document
+        .getElementsByClassName("result-list")[0]
+        .getElementsByClassName("result");
     for (var element in elements) {
       // debugPrint("element=${element.innerHtml}");
-      String coverUrl = element.getElementsByTagName("img")[0].attributes["src"] ?? "";
+      String coverUrl =
+          element.getElementsByTagName("img")[0].attributes["src"] ?? "";
       String name = element
           .getElementsByTagName("h3")[0]
           .getElementsByTagName("a")[0]

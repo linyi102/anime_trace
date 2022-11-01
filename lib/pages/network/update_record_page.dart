@@ -1,18 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/vo/update_record_vo.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../components/dialog/dialog_update_all_anime_progress.dart';
 import '../../utils/theme_util.dart';
@@ -126,53 +124,6 @@ class UpdateRecordPage extends StatelessWidget {
       ));
     }
     return recordsWidget;
-  }
-
-  _buildUpdateProgressBar(UpdateRecordController updateRecordController) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(
-          () {
-            int updateOkCnt = updateRecordController.updateOkCnt.value;
-            int needUpdateCnt = updateRecordController.needUpdateCnt.value;
-            // 更新完毕后自动退出对话框
-            // TODO 切换tab也会触发消息
-            if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
-              showToast("动漫更新完毕！");
-            }
-            return Row(
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: LinearPercentIndicator(
-                    barRadius: const Radius.circular(15),
-                    // 圆角
-                    animation: false,
-                    lineHeight: 20.0,
-                    animationDuration: 1000,
-                    percent:
-                        needUpdateCnt > 0 ? (updateOkCnt / needUpdateCnt) : 0,
-                    center: Text("$updateOkCnt / $needUpdateCnt",
-                        style: const TextStyle(color: Colors.black54)),
-                    progressColor: Colors.greenAccent,
-                    // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
-                  ),
-                )
-              ],
-            );
-          },
-        ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: const Text(
-            "提示：更新时会跳过已完结动漫",
-            style: TextStyle(color: Colors.grey),
-            textScaleFactor: 0.8,
-          ),
-        )
-      ],
-    );
   }
 
   _buildEmptyDataPage(BuildContext context) {

@@ -1,18 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
-import 'package:transparent_image/transparent_image.dart';
-
-import '../utils/image_util.dart';
 
 typedef Callback = Future<bool> Function();
 

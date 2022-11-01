@@ -62,25 +62,6 @@ class _HistoryPageState extends State<HistoryPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          // IconButton(
-          //     onPressed: () {
-          //       dialogSelectUint(context, "选择年份",
-          //               initialValue: selectedYear,
-          //               minValue: minYear,
-          //               maxValue: maxYear)
-          //           .then((value) {
-          //         if (value == null) {
-          //           debugPrint("未选择，直接返回");
-          //           return;
-          //         }
-          //         debugPrint("选择了$value");
-          //         selectedYear = value;
-          //         _loadData(selectedYear);
-          //       });
-          //     },
-          //     icon: const Icon(Icons.search))
-        ],
       ),
       body: RefreshIndicator(
           // 下拉刷新

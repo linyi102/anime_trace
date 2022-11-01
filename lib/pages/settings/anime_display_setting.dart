@@ -4,7 +4,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:get/get.dart';
 
 class AnimesDisplaySetting extends StatelessWidget {
-  final showAppBar;
+  final bool showAppBar;
 
   const AnimesDisplaySetting({Key? key, this.showAppBar = true})
       : super(key: key);
@@ -95,7 +95,8 @@ class AnimesDisplaySetting extends StatelessWidget {
 
     list.add(ListTile(
       title: const Text("显示动漫数量"),
-      trailing: showToggleButton(animeDisplayController.showAnimeCntAfterTag.value),
+      trailing:
+          showToggleButton(animeDisplayController.showAnimeCntAfterTag.value),
       onTap: () => animeDisplayController.turnShowAnimeCntAfterTag(),
     ));
 

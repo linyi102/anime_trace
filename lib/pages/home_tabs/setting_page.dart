@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
@@ -74,7 +74,7 @@ class _SettingPageState extends State<SettingPage> {
             ListTile(
               iconColor: ThemeUtil.getLeadingIconColor(),
               leading: const Icon(Icons.settings_backup_restore_outlined),
-              title: Text("备份还原"),
+              title: const Text("备份还原"),
               onTap: () {
                 Navigator.of(context).push(
                   // MaterialPageRoute(
@@ -167,22 +167,21 @@ class _SettingPageState extends State<SettingPage> {
                 );
               },
             ),
-            const bool.fromEnvironment("dart.vm.product")
-                ? Container()
-                : ListTile(
-                    iconColor: ThemeUtil.getLeadingIconColor(),
-                    leading: const Icon(Icons.bug_report_outlined),
-                    title: const Text("测试页面"),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        FadeRoute(
-                          builder: (context) {
-                            return const TestPage();
-                          },
-                        ),
-                      );
-                    },
-                  )
+            if (!const bool.fromEnvironment("dart.vm.product"))
+              ListTile(
+                iconColor: ThemeUtil.getLeadingIconColor(),
+                leading: const Icon(Icons.bug_report_outlined),
+                title: const Text("测试页面"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    FadeRoute(
+                      builder: (context) {
+                        return const TestPage();
+                      },
+                    ),
+                  );
+                },
+              )
           ],
         ));
   }

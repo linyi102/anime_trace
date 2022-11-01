@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/responsive.dart';
 
 // 用于显示笔记图片网格
@@ -11,7 +9,8 @@ class NoteImgView extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   final limitShowImageNum = true;
 
-  NoteImgView({Key? key, required this.relativeLocalImages}) : super(key: key);
+  const NoteImgView({Key? key, required this.relativeLocalImages})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

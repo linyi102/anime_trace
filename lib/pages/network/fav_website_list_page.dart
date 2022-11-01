@@ -1,12 +1,10 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../modules/website_icon.dart';
 
@@ -45,7 +43,10 @@ class FavWebsiteListPage extends StatelessWidget {
         itemBuilder: (context, index) {
           FavWebsite favWebsite = defaultList[index];
           return ListTile(
-            title: Text(favWebsite.name, textScaleFactor: ThemeUtil.smallScaleFactor,),
+            title: Text(
+              favWebsite.name,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
+            ),
             leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
             onTap: () => _launchUrl(favWebsite.url),
           );
