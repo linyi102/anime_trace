@@ -133,7 +133,7 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildGridImages({required int crossAxisCount}) {
-    Color addColor = SPUtil.getBool("enableDark") ? Colors.grey : Colors.black;
+    Color addColor = ThemeUtil.getCommonIconColor();
     int itemCount =
         widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 

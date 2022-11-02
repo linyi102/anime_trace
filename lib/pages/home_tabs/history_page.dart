@@ -85,9 +85,7 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           _buildOpYearButton(),
           yearHistory[selectedYear]!.isEmpty
-              ? Expanded(
-                  child: emptyDataHint("暂无观看记录"),
-                )
+              ? Expanded(child: emptyDataHint("什么都没有"))
               : Expanded(
                   child: Scrollbar(
                       controller: _scrollController,

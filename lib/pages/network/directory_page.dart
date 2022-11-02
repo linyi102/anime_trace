@@ -411,43 +411,45 @@ class _DirectoryPageState extends State<DirectoryPage> {
                     showToast("收藏后即可进入详细页面");
                   }
                 },
-                child: Row(
+                child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
-                      child: SizedBox(
-                        width: 90,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: MaterialButton(
-                            padding: const EdgeInsets.all(0),
-                            onPressed: () {
-                              Navigator.of(context).push(FadeRoute(
-                                  builder: (context) => PhotoView(
-                                      imageProvider: imageProvider,
-                                      onTapDown: (arg1, arg2, arg3) =>
-                                          Navigator.of(context).pop())));
-                            },
-                            child: AnimeGridCover(anime, onlyShowCover: true),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                          child: SizedBox(
+                            width: 90,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: MaterialButton(
+                                padding: const EdgeInsets.all(0),
+                                onPressed: () {
+                                  Navigator.of(context).push(FadeRoute(
+                                      builder: (context) => PhotoView(
+                                          imageProvider: imageProvider,
+                                          onTapDown: (arg1, arg2, arg3) =>
+                                              Navigator.of(context).pop())));
+                                },
+                                child:
+                                    AnimeGridCover(anime, onlyShowCover: true),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
+                              _showAnimeName(anime.animeName),
+                              _showNameAnother(anime.nameAnother),
+                              _showAnimeInfo(anime.getAnimeInfoFirstLine()),
+                              _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                            ],
+                          ),
+                        ),
+                        _showCollectIcon(anime)
+                      ],
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
-                          _showAnimeName(anime.animeName),
-                          _showNameAnother(anime.nameAnother),
-                          _showAnimeInfo(anime.getAnimeInfoFirstLine()),
-                          _showAnimeInfo(anime.getAnimeInfoSecondLine()),
-                          // _showSource(
-                          //     ClimbAnimeUtil.getSourceByAnimeUrl(anime.animeUrl)),
-                          // _displayDesc(),
-                        ],
-                      ),
-                    ),
-                    _showCollectIcon(anime)
                   ],
                 ),
               );
