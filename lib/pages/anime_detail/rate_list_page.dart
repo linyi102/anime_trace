@@ -8,7 +8,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 
 import '../../models/anime.dart';
-import '../../components/note_img_view.dart';
+import '../../components/note_img_grid.dart';
 import '../../utils/theme_util.dart';
 
 class RateListPage extends StatefulWidget {
@@ -148,7 +148,7 @@ class _RateListPageState extends State<RateListPage> {
                   // 笔记内容
                   _buildNoteContent(note),
                   // 笔记图片
-                  NoteImgView(relativeLocalImages: note.relativeLocalImages),
+                  NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
                   // 创建时间
                   _buildCreateTimeAndMoreAction(note)
                 ],

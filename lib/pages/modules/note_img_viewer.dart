@@ -1,10 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:photo_view/photo_view.dart';
+
+import '../settings/image_path_setting.dart';
 
 // 点击笔记图片，进入浏览页面
 class ImageViewer extends StatefulWidget {
@@ -27,16 +31,24 @@ class _ImageViewerState extends State<ImageViewer> {
   int currentIndex = 0;
   bool fullScreen = false; // 全屏显示图片，此时因此顶部栏和滚动轴
 
+  // 在图片浏览器中进入图片设置页面，可能会更改目录，为true时，用于图片浏览页的上级页面重新加载图片。
+  // 暂时没有办法，因为上一级是NoteImgItem，是无状态组件，不能更新
+  bool dirChangedWrapper = false;
+
   @override
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
+    _getImageLocalPaths();
+  }
+
+  _getImageLocalPaths() {
+    imageLocalPaths.clear();
     for (var relativeLocalImage in widget.relativeLocalImages) {
       imageLocalPaths
           .add(ImageUtil.getAbsoluteNoteImagePath(relativeLocalImage.path));
     }
     imagesCount = imageLocalPaths.length;
-
     // 首次进入可能选的是后面的图片，也需要移动
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
       scrollToCurrentImage();
@@ -53,6 +65,7 @@ class _ImageViewerState extends State<ImageViewer> {
           setState(() {});
           return false;
         } else {
+          Navigator.of(context).pop(dirChangedWrapper);
           return true;
         }
       },
@@ -60,6 +73,15 @@ class _ImageViewerState extends State<ImageViewer> {
         appBar: fullScreen
             ? null
             : AppBar(
+                // 隐藏自带的返回按钮
+                automaticallyImplyLeading: false,
+                // 返回按钮
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(dirChangedWrapper);
+                  },
+                  icon: const Icon(Icons.arrow_back_outlined),
+                ),
                 centerTitle: true,
                 title: Text("${currentIndex + 1}/${imageLocalPaths.length}"),
                 actions: _buildActions(context),
@@ -110,6 +132,10 @@ class _ImageViewerState extends State<ImageViewer> {
                               title: const Text("完全路径"),
                               subtitle: SelectableText(
                                   imageLocalPaths[currentIndex])),
+                          ListTile(
+                              title: const Text("相对路径"),
+                              subtitle: SelectableText(widget
+                                  .relativeLocalImages[currentIndex].path)),
                         ],
                       ),
                     ),
@@ -161,9 +187,32 @@ class _ImageViewerState extends State<ImageViewer> {
               ? (buildContext, details, photoViewControllerValue) =>
                   _exitFullScreen()
               : null,
-          imageProvider: FileImage(
-            File(imageLocalPaths[currentIndex]),
-          ),
+          imageProvider: FileImage(File(imageLocalPaths[currentIndex])),
+          // 错误时显示提示
+          errorBuilder: (buildContext, object, stackTrace) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("无法正常显示图片"),
+                const Text("请检查图片所在目录是否正确"),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(FadeRoute(
+                              builder: (context) => const ImagePathSetting()))
+                          .then((dirChanged) {
+                        if (dirChanged) {
+                          debugPrint("修改了图片目录，重新获取本地图片");
+                          _getImageLocalPaths();
+                          setState(() {});
+                          dirChangedWrapper = true; // 用于图片浏览器的上级页面更新状态
+                        }
+                      });
+                    },
+                    child: const Text("点此处设置目录"))
+              ],
+            );
+          },
         ),
       ),
     );
@@ -205,14 +254,14 @@ class _ImageViewerState extends State<ImageViewer> {
                       // 切割圆角图片
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(6),
-                        child: Image.file(
-                          File(imageLocalPaths[index]),
-                          fit: BoxFit.cover,
+                        child: SizedBox(
                           height: 100,
                           width: 140,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container();
-                          },
+                          child: buildImgWidget(
+                              // 传入相对路径
+                              url: widget.relativeLocalImages[index].path,
+                              showErrorDialog: false,
+                              isNoteImg: true),
                         ),
                       ),
                     ),

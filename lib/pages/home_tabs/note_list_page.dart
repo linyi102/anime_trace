@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/note_img_view.dart';
+import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
@@ -189,7 +189,12 @@ class _NoteListPageState extends State<NoteListPage> {
                     builder: (context) {
                       return const ImagePathSetting();
                     },
-                  )).then((value) => _loadData());
+                  )).then((dirChanged) {
+                    if (dirChanged) {
+                      debugPrint("修改了图片目录，更新状态");
+                      setState(() {});
+                    }
+                  });
                 },
               ),
             ),
@@ -249,7 +254,7 @@ class _NoteListPageState extends State<NoteListPage> {
                         // 笔记内容
                         _buildEpisodeNote(index),
                         // 笔记图片
-                        NoteImgView(
+                        NoteImgGrid(
                             relativeLocalImages:
                                 episodeNotes[index].relativeLocalImages),
                       ],

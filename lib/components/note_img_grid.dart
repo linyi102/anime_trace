@@ -5,11 +5,11 @@ import 'package:flutter_test_future/responsive.dart';
 
 // 用于显示笔记图片网格
 // 使用：笔记列表页
-class NoteImgView extends StatelessWidget {
+class NoteImgGrid extends StatelessWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   final limitShowImageNum = true;
 
-  const NoteImgView({Key? key, required this.relativeLocalImages})
+  const NoteImgGrid({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
   @override
