@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -15,6 +16,24 @@ class TagManage extends StatefulWidget {
 
 // 在全局变量tags拖拽、修改、添加的基础上，改变数据库tag表信息
 class _TagManageState extends State<TagManage> {
+
+  // 来自ReorderableListView里的默认proxyDecorator
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        final double animValue = Curves.easeInOut.transform(animation.value);
+        final double elevation = lerpDouble(0, 6, animValue)!;
+        return Material(
+          color: ThemeUtil.getCardColor(), // 改变颜色
+          elevation: elevation,
+          child: child,
+        );
+      },
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +46,7 @@ class _TagManageState extends State<TagManage> {
         ),
       ),
       body: ReorderableListView(
+        proxyDecorator: _proxyDecorator,
         children: _getTagListWidget(),
         onReorder: (int oldIndex, int newIndex) async {
           if (oldIndex < newIndex) {
