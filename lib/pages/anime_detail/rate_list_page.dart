@@ -53,18 +53,18 @@ class _RateListPageState extends State<RateListPage> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
-            ElevatedButton(
-                onPressed: () {},
-                child: Row(
-                  children: [
-                    Text("评价"),
-                    SizedBox(width: 5),
-                    Icon(Entypo.feather,size: 15,),
-                  ],
-                ))
-            // IconButton(
-            //     onPressed: () => _createRateNote(context),
-            //     icon: Icon(Icons.edit, color: ThemeUtil.getCommonIconColor()))
+            // ElevatedButton(
+            //     onPressed: () {},
+            //     child: Row(
+            //       children: [
+            //         Text("评价"),
+            //         SizedBox(width: 5),
+            //         Icon(Entypo.feather,size: 15,),
+            //       ],
+            //     ))
+            IconButton(
+                onPressed: () => _createRateNote(context),
+                icon: Icon(Entypo.feather, color: ThemeUtil.getCommonIconColor()))
           ]),
         ),
         noteOk
@@ -181,7 +181,7 @@ class _RateListPageState extends State<RateListPage> {
         note.noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(height: 1.5, fontSize: 16),
+        style: ThemeUtil.getNoteTextStyle(),
       ),
     );
     // return ListTile(

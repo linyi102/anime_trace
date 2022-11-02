@@ -123,7 +123,7 @@ class _NoteEditState extends State<NoteEdit> {
         border: InputBorder.none,
         contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
       ),
-      style: const TextStyle(height: 1.5, fontSize: 14),
+      style: ThemeUtil.getNoteTextStyle(),
       maxLines: null,
       onChanged: (value) {
         _updateNoteContent = true;

@@ -351,7 +351,7 @@ class _NoteListPageState extends State<NoteListPage> {
         episodeNotes[index].noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(height: 1.5, fontSize: 14),
+        style: ThemeUtil.getNoteTextStyle(),
       ),
       style: ListTileStyle.drawer,
     );

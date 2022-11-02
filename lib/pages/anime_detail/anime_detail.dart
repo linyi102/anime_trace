@@ -816,6 +816,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                               _notes[noteIdx].noteContent,
                               maxLines: 10,
                               overflow: TextOverflow.ellipsis,
+                              style: ThemeUtil.getNoteTextStyle(),
                             ),
                             style: ListTileStyle.drawer,
                           ),

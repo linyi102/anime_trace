@@ -80,6 +80,11 @@ class ThemeUtil {
     return themeController.themeColor.value.primaryColor;
   }
 
+  // 笔记字体样式：动漫详细页里的笔记、评价，以及笔记列表中的笔记，以及笔记编辑页
+  static TextStyle getNoteTextStyle() {
+    return const TextStyle(height: 1.5, fontSize: 15);
+  }
+
   // ListTile>leading按钮颜色，以及选中的按钮的颜色
   static Color getPrimaryIconColor() {
     return ThemeUtil.getPrimaryColor();
