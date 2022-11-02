@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 
 import '../../components/common/common_function.dart';
@@ -207,7 +208,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 const AnimesDisplaySetting(showAppBar: false),
             isExpand: true);
       },
-      icon: const Icon(Icons.widgets_outlined),
+      icon: const Icon(Entypo.layout),
       tooltip: "外观设置",
     ));
     actions.add(IconButton(
@@ -226,7 +227,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           _loadData();
         });
       },
-      icon: const Icon(Icons.search_rounded),
+      icon: const Icon(Entypo.search),
       tooltip: "搜索动漫",
     ));
     // actions.add(IconButton(

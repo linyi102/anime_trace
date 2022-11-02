@@ -1354,7 +1354,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _dialogSelectSortMethod();
                   },
                   tooltip: "排序方式",
-                  icon: const Icon(Icons.sort)),
+                  icon: const Icon(Icons.filter_list_outlined)),
               IconButton(
                   onPressed: () {
                     if (hideNoteInAnimeDetail) {

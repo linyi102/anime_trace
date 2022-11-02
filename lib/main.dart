@@ -208,6 +208,8 @@ class MyAppState extends State<MyApp> with WindowListener {
           child: MaterialApp(
             // 后台应用显示名称
             title: '漫迹',
+            // 去除右上角的debug标签
+            debugShowCheckedModeBanner: false,
             home: Stack(
               children: const [
                 MainScreen(),
