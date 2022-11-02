@@ -4,16 +4,7 @@
 
 [下载地址 1：蓝奏云](https://wwc.lanzouw.com/b01uyqcrg?password=eocv) 密码：eocv
 
-**注意：如果没有使用备份功能，更新 App 时需要覆盖安装。**
-**在没有备份的情况下请不要在安装新版本前卸载 App，否则会造成数据丢失！**
-
-## 声明
-
-该软件并没有在线观看功能，如有需要，可以打开搜索源网址进行观看。
-
-用户数据存放在本地，用户可使用 WebDav 备份数据到第三方平台，比如坚果云。
-
-笔记添加的图片是通过记录相对地址来实现的，因此备份数据并不会上传图片，只是上传了图片的相对地址。
+**注意：如果没有使用备份功能，更新 App 时请直接安装。否则在没有备份的情况下卸载 App，会造成数据丢失。**
 
 ## 介绍
 
@@ -27,6 +18,14 @@ Android 端：
 Windows 端：
 
 ![](./assets/images/example-win.jpg)
+
+## 简要说明
+
+该软件没有提供在线观看功能，如有需要，可以打开搜索源网址进行观看。
+
+用户数据存放在本地，用户可使用 WebDav 备份数据到第三方平台，比如坚果云。
+
+笔记中添加的图片是通过记录图片文件的相对地址来实现的，因此并不会上传。
 
 ## 笔记相关问题
 
@@ -44,7 +43,7 @@ Android 平台暂时只能进行 WebDav 备份，Windows 平台可以进行本�
 
 WebDav 备份推荐使用坚果云备份，[点击查看使用方式](https://help.jianguoyun.com/?p=2064)。
 
-**卸载 App 会导致数据丢失，因此一定要做好相关备份。**
+**卸载 App 会导致数据也会被删除，因此一定要做好相关备份。**
 
 ## 平台相关问题
 
@@ -58,8 +57,9 @@ Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一�
 
 | packages                                                     | 开源协议     |
 | ------------------------------------------------------------ | ------------ |
-| [bottom_sheet Flutter Package](https://pub.flutter-io.cn/packages/bottom_sheet) | Apache-2.0   |
-| [sidebarx Flutter Package](https://pub.flutter-io.cn/packages/sidebarx) | MIT          |
+| [photo-view \| Flutter Package](https://pub.flutter-io.cn/packages/photo_view) | MIT          |
+| [flutter-rating-stars \| Flutter Package](https://pub.flutter-io.cn/packages/flutter_rating_stars) | Apache-2.0   |
+| [bottom-sheet \| Flutter Package](https://pub.flutter-io.cn/packages/bottom_sheet) | Apache-2.0   |
 | [window_manager Flutter Package](https://pub.flutter-io.cn/packages/window_manager) | MIT          |
 | [flutter_tab_indicator_styler Flutter Package](https://pub.flutter-io.cn/packages/flutter_tab_indicator_styler) | MIT          |
 | [percent_indicator Flutter Package](https://pub.flutter-io.cn/packages/percent_indicator) | BSD-2-Clause |
@@ -78,7 +78,6 @@ Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一�
 | [dio \| Dart Package](https://pub.flutter-io.cn/packages/dio) | MIT          |
 | [html \| Dart Package](https://pub.flutter-io.cn/packages/html) | unknown      |
 | [cached_network_image \| Flutter Package](https://pub.flutter-io.cn/packages/cached_network_image) | MIT          |
-| [easy_image_viewer \| Flutter Package](https://pub.flutter-io.cn/packages/easy_image_viewer) | MIT          |
 | [archive \| Dart Package](https://pub.flutter-io.cn/packages/archive) | MIT          |
 | [path \| Dart Package](https://pub.flutter-io.cn/packages/path) | BSD-3-Clause |
 | [package_info_plus \| Flutter Package](https://pub.flutter-io.cn/packages/package_info_plus) | BSD-3-Clause |
