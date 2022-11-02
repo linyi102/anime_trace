@@ -76,13 +76,13 @@ class ThemeUtil {
   }
 
   // 主题色
-  static Color getThemePrimaryColor() {
+  static Color getPrimaryColor() {
     return themeController.themeColor.value.primaryColor;
   }
 
   // ListTile>leading按钮颜色，以及选中的按钮的颜色
   static Color getPrimaryIconColor() {
-    return ThemeUtil.getThemePrimaryColor();
+    return ThemeUtil.getPrimaryColor();
   }
 
   // 普通按钮的颜色

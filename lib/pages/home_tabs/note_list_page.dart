@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:fluttericon/entypo_icons.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -114,64 +115,63 @@ class _NoteListPageState extends State<NoteListPage> {
           tooltip: "搜索",
           onPressed: () {
             showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("搜索"),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: animeNameController
-                            ..text = noteFilter.animeNameKeyword,
-                          decoration: InputDecoration(
-                              labelText: "动漫关键字",
-                              border: InputBorder.none,
-                              suffixIcon: IconButton(
-                                  onPressed: () {
-                                    animeNameController.text = "";
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  iconSize: 18)),
-                        ),
-                        TextField(
-                          controller: noteContentController
-                            ..text = noteFilter.noteContentKeyword,
-                          decoration: InputDecoration(
-                              labelText: "笔记关键字",
-                              border: InputBorder.none,
-                              suffixIcon: IconButton(
-                                  onPressed: () {
-                                    noteContentController.text = "";
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  iconSize: 18)),
-                        )
-                      ],
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("搜索"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: animeNameController
+                              ..text = noteFilter.animeNameKeyword,
+                            decoration: InputDecoration(
+                                labelText: "动漫关键字",
+                                border: InputBorder.none,
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      animeNameController.text = "";
+                                    },
+                                    icon: const Icon(Icons.close),
+                                    iconSize: 18)),
+                          ),
+                          TextField(
+                            controller: noteContentController
+                              ..text = noteFilter.noteContentKeyword,
+                            decoration: InputDecoration(
+                                labelText: "笔记关键字",
+                                border: InputBorder.none,
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      noteContentController.text = "";
+                                    },
+                                    icon: const Icon(Icons.close),
+                                    iconSize: 18)),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("取消")),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          noteFilter.animeNameKeyword =
-                              animeNameController.text;
-                          noteFilter.noteContentKeyword =
-                              noteContentController.text;
-                          _loadData();
-                        },
-                        child: const Text("搜索")),
-                  ],
-                );
-              },
-            );
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("取消")),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            noteFilter.animeNameKeyword =
+                                animeNameController.text;
+                            noteFilter.noteContentKeyword =
+                                noteContentController.text;
+                            _loadData();
+                          },
+                          child: const Text("搜索")),
+                    ],
+                  );
+                });
           },
-          icon: const Icon(Icons.search)),
+          icon: const Icon(Entypo.search)),
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),

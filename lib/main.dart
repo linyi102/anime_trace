@@ -226,8 +226,25 @@ class MyAppState extends State<MyApp> with WindowListener {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [
-              Locale('zh', 'CN'),
-              Locale('en', 'US'),
+              Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
+              Locale.fromSubtags(
+                  languageCode: 'zh',
+                  scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
+              Locale.fromSubtags(
+                  languageCode: 'zh',
+                  scriptCode: 'Hant'), // generic traditional Chinese 'zh_Hant'
+              Locale.fromSubtags(
+                  languageCode: 'zh',
+                  scriptCode: 'Hans',
+                  countryCode: 'CN'), // 'zh_Hans_CN'
+              Locale.fromSubtags(
+                  languageCode: 'zh',
+                  scriptCode: 'Hant',
+                  countryCode: 'TW'), // 'zh_Hant_TW'
+              Locale.fromSubtags(
+                  languageCode: 'zh',
+                  scriptCode: 'Hant',
+                  countryCode: 'HK'), // 'zh_Hant_HK'
             ],
           ),
         ));
@@ -258,18 +275,26 @@ class MyAppState extends State<MyApp> with WindowListener {
   ThemeData buildThemeData(ThemeController themeController) {
     TextStyle textStyle =
         TextStyle(fontFamilyFallback: themeController.fontFamilyFallback);
-
     return ThemeData(
       // primarySwatch: createMaterialColor(Colors.amber),
-      brightness: themeController.themeColor.value.isDarkMode
-          ? Brightness.dark
-          : Brightness.light,
+      // brightness: themeController.themeColor.value.isDarkMode
+      //     ? Brightness.dark
+      //     : Brightness.light,
+      // 在白天或夜色的基础上增加主题色
+      colorScheme: themeController.themeColor.value.isDarkMode
+          ? ColorScheme.dark(primary: ThemeUtil.getPrimaryColor())
+          : ColorScheme.light(primary: ThemeUtil.getPrimaryColor()),
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
       popupMenuTheme:
           PopupMenuThemeData(color: ThemeUtil.getAppBarBackgroundColor()),
       dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
+      timePickerTheme:
+          TimePickerThemeData(backgroundColor: ThemeUtil.getCardColor()),
+      textSelectionTheme: TextSelectionThemeData(
+          cursorColor: ThemeUtil.getPrimaryIconColor(),
+          selectionColor: ThemeUtil.getPrimaryIconColor()),
       textTheme: TextTheme(
         // ListTile标题
         subtitle1: textStyle,
@@ -297,23 +322,18 @@ class MyAppState extends State<MyApp> with WindowListener {
         elevation: 0,
         foregroundColor: ThemeUtil.getFontColor(),
         backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
-        iconTheme: IconThemeData(
-          color: ThemeUtil.getCommonIconColor(),
-        ),
+        iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
       ),
-      iconTheme: IconThemeData(
-        color: ThemeUtil.getCommonIconColor(),
-      ),
+      iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
       scaffoldBackgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
-      inputDecorationTheme: InputDecorationTheme(
-        suffixIconColor: ThemeUtil.getCommonIconColor(),
-      ),
+      inputDecorationTheme:
+          InputDecorationTheme(suffixIconColor: ThemeUtil.getCommonIconColor()),
       listTileTheme: ListTileThemeData(
           iconColor: themeController.themeColor.value.isDarkMode
               ? Colors.white70
               : Colors.black54,
           style: ListTileStyle.drawer,
-          selectedColor: ThemeUtil.getThemePrimaryColor()
+          selectedColor: ThemeUtil.getPrimaryColor()
           // dense: true,
           // 会影响副标题颜色
           // textColor: ThemeUtil.getFontColor(),
@@ -321,27 +341,27 @@ class MyAppState extends State<MyApp> with WindowListener {
       radioTheme:
           RadioThemeData(fillColor: MaterialStateProperty.resolveWith((states) {
         if (states.contains(MaterialState.selected)) {
-          return ThemeUtil.getThemePrimaryColor();
+          return ThemeUtil.getPrimaryColor();
         }
         return null;
       })),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: ThemeUtil.getThemePrimaryColor()),
+          selectedItemColor: ThemeUtil.getPrimaryColor()),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
               foregroundColor:
-                  MaterialStateProperty.all(ThemeUtil.getThemePrimaryColor()),
+                  MaterialStateProperty.all(ThemeUtil.getPrimaryColor()),
               textStyle: MaterialStateProperty.all(
                   const TextStyle(color: Colors.black)))),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.all(ThemeUtil.getThemePrimaryColor()))),
+                  MaterialStateProperty.all(ThemeUtil.getPrimaryColor()))),
       tabBarTheme: TabBarTheme(
         unselectedLabelColor: themeController.themeColor.value.isDarkMode
             ? Colors.white70
             : Colors.black54,
-        labelColor: ThemeUtil.getThemePrimaryColor(), // 选中的tab字体颜色
+        labelColor: ThemeUtil.getPrimaryColor(), // 选中的tab字体颜色
         // tabbar不要再添加labelStyle，否则此处设置无效
         labelStyle: TextStyle(
             fontWeight: FontWeight.w600,

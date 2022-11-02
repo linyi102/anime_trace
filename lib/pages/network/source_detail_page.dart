@@ -47,7 +47,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("启动搜索"),
               leading: !climbWebstie.discard && climbWebstie.enable
                   ? Icon(Icons.check_box,
-                      color: ThemeUtil.getThemePrimaryColor())
+                      color: ThemeUtil.getPrimaryColor())
                   : Icon(
                       Icons.check_box_outline_blank,
                       color: ThemeUtil.getPrimaryIconColor(),

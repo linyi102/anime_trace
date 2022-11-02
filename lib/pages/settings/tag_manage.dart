@@ -59,7 +59,7 @@ class _TagManageState extends State<TagManage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: ThemeUtil.getThemePrimaryColor(),
+        backgroundColor: ThemeUtil.getPrimaryColor(),
         foregroundColor: Colors.white,
         onPressed: () {
           showDialog(

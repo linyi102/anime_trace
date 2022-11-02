@@ -53,12 +53,8 @@ class _NetWorkPageState extends State<NetWorkPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            "网络",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          title:
+              const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
           actions: actions,
           bottom: PreferredSize(
               // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
@@ -80,7 +76,7 @@ class _NetWorkPageState extends State<NetWorkPage>
                   // 第三方指示器样式
                   indicatorSize: TabBarIndicatorSize.label,
                   indicator: MaterialIndicator(
-                    color: ThemeUtil.getThemePrimaryColor(),
+                    color: ThemeUtil.getPrimaryColor(),
                     paintingStyle: PaintingStyle.fill,
                   ),
                 ),
@@ -92,7 +88,7 @@ class _NetWorkPageState extends State<NetWorkPage>
             DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: ThemeUtil.getThemePrimaryColor(),
+        backgroundColor: ThemeUtil.getPrimaryColor(),
         foregroundColor: Colors.white,
         child: const Icon(Entypo.search),
         onPressed: () {

@@ -51,13 +51,8 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "更多",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+            title: const Text("更多",
+                style: TextStyle(fontWeight: FontWeight.w600))),
         body: _buildBody());
   }
 
@@ -68,8 +63,7 @@ class _SettingPageState extends State<SettingPage> {
       );
     }
     // 监听切换主题后的primaryColor(leadingIconColor)
-    return Obx(() =>
-        ListView(
+    return Obx(() => ListView(
           children: [
             // _showImg(),
             // _showImgButton(),
@@ -178,43 +172,36 @@ class _SettingPageState extends State<SettingPage> {
                 },
               )
           ],
-        )
-    );
+        ));
   }
 
   _showImg() {
     return _imgFile == null
         ? Container()
         : GestureDetector(
-      onDoubleTap: () {
-        _removeImage();
-      },
-      child: SizedBox(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height / 4,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
-        child: Card(
-          elevation: 5,
-          margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(5))),
-          // 圆角
-          clipBehavior: Clip.antiAlias,
-          // 设置抗锯齿，实现圆角背景
-          // elevation: 0,
-          // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Image.file(
-            _imgFile as File,
-            fit: BoxFit.fitWidth,
-          ),
-        ),
-      ),
-    );
+            onDoubleTap: () {
+              _removeImage();
+            },
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height / 4,
+              width: MediaQuery.of(context).size.width,
+              child: Card(
+                elevation: 5,
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5))),
+                // 圆角
+                clipBehavior: Clip.antiAlias,
+                // 设置抗锯齿，实现圆角背景
+                // elevation: 0,
+                // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Image.file(
+                  _imgFile as File,
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            ),
+          );
   }
 
   _showImgButton() {
@@ -222,8 +209,8 @@ class _SettingPageState extends State<SettingPage> {
       iconColor: ThemeUtil.getPrimaryIconColor(),
       // leading: Icon(FontAwesome.picture),
       leading: const Icon(
-        // Icons.image_outlined,
-        // Icons.wallpaper_outlined,
+          // Icons.image_outlined,
+          // Icons.wallpaper_outlined,
           Icons.flag_outlined),
       title: const Text("顶部图片"),
       onTap: () async {
@@ -267,8 +254,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   _buildColorAtlasList(dialogContext) {
-    List<Widget> dayList = [],
-        nightList = [];
+    List<Widget> dayList = [], nightList = [];
     for (var themeColor in ThemeUtil.themeColors) {
       debugPrint("themeColor=$themeColor");
       if (themeColor.isDarkMode) {
@@ -288,8 +274,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   _buildColorAtlasItem(ThemeColor themeColor, dialogContext) {
-    return Obx(() =>
-        ListTile(
+    return Obx(() => ListTile(
           trailing: themeController.themeColor.value == themeColor
               ? const Icon(Icons.check)
               : null,

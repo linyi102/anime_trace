@@ -140,9 +140,9 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
           mainAxisAlignment: MainAxisAlignment.center,
           children:  [
             Text("网络搜索更多 ",
-                style: TextStyle(color: ThemeUtil.getThemePrimaryColor())),
+                style: TextStyle(color: ThemeUtil.getPrimaryColor())),
             Icon(Icons.manage_search_outlined,
-                color: ThemeUtil.getThemePrimaryColor())
+                color: ThemeUtil.getPrimaryColor())
           ],
         ),
         onTap: () {

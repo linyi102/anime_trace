@@ -249,7 +249,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           border: Border.all(
                               width: 4,
                               color: index == currentIndex
-                                  ? ThemeUtil.getThemePrimaryColor()
+                                  ? ThemeUtil.getPrimaryColor()
                                   : Colors.transparent)),
                       // 切割圆角图片
                       child: ClipRRect(

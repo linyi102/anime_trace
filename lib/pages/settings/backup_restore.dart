@@ -56,7 +56,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               ? ListTile(
                   title: Text(
                     "本地备份",
-                    style: TextStyle(color: ThemeUtil.getThemePrimaryColor()),
+                    style: TextStyle(color: ThemeUtil.getPrimaryColor()),
                   ),
                 )
               : Container(),
@@ -93,7 +93,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   subtitle: const Text("每次进入应用后会自动备份"),
                   trailing: SPUtil.getBool("auto_backup_local")
                       ? Icon(Icons.toggle_on,
-                          color: ThemeUtil.getThemePrimaryColor(), size: 32)
+                          color: ThemeUtil.getPrimaryColor(), size: 32)
                       : const Icon(Icons.toggle_off,
                           color: Colors.grey, size: 32),
                   onTap: () {
@@ -131,7 +131,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           const Divider(),
           ListTile(
             title: Text("WebDav 备份",
-                style: TextStyle(color: ThemeUtil.getThemePrimaryColor())),
+                style: TextStyle(color: ThemeUtil.getPrimaryColor())),
             // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
             subtitle: const Text("点击查看教程"),
             onTap: () {
@@ -181,7 +181,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             subtitle: const Text("每次进入应用后会自动备份"),
             trailing: SPUtil.getBool("auto_backup_webdav")
                 ? Icon(Icons.toggle_on,
-                    color: ThemeUtil.getThemePrimaryColor(), size: 32)
+                    color: ThemeUtil.getPrimaryColor(), size: 32)
                 : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
             onTap: () async {
               if (!SPUtil.getBool("login")) {

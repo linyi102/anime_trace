@@ -56,13 +56,8 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "历史",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+          title:
+              const Text("历史", style: TextStyle(fontWeight: FontWeight.w600))),
       body: RefreshIndicator(
           // 下拉刷新
           onRefresh: () async {

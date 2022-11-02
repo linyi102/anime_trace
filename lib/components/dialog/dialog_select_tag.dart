@@ -17,7 +17,7 @@ dialogSelectTag(setState, context, Anime anime) {
             leading: tags[i] == anime.tagName
                 ?  Icon(
                     Icons.radio_button_on_outlined,
-                    color: ThemeUtil.getThemePrimaryColor(),
+                    color: ThemeUtil.getPrimaryColor(),
                   )
                 : const Icon(
                     Icons.radio_button_off_outlined,

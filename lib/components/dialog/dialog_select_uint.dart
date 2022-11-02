@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future<int?> dialogSelectUint(context, String title,
-    {int initialValue = 0,
-    int minValue = 0,
-    int maxValue = 9223372036854775807}) async {
+    {int initialValue = 0, int minValue = 0, int maxValue = 1 << 32}) async {
   var yearTextEditingController = TextEditingController();
   int tmpValue = initialValue;
   return await showDialog(

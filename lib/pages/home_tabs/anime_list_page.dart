@@ -39,7 +39,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
-  Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
+  Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
 
   final List<ScrollController> _scrollControllers = [];
   final AnimeDisplayController _animeDisplayController = Get.find();
@@ -120,12 +120,8 @@ class _AnimeListPageState extends State<AnimeListPage>
               : Scaffold(
                   // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
                   appBar: AppBar(
-                    title: Text(
-                      multiSelected ? "${mapSelected.length}" : "动漫",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    title: Text(multiSelected ? "${mapSelected.length}" : "动漫",
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
                     leading: multiSelected
                         ? IconButton(
                             onPressed: () {
@@ -153,7 +149,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                           // 第三方指示器样式
                           indicator: MaterialIndicator(
                             horizontalPadding: 8.5,
-                            color: ThemeUtil.getThemePrimaryColor(),
+                            color: ThemeUtil.getPrimaryColor(),
                             paintingStyle: PaintingStyle.fill,
                           ),
                         ),
@@ -214,9 +210,6 @@ class _AnimeListPageState extends State<AnimeListPage>
     actions.add(IconButton(
       onPressed: () async {
         Navigator.of(context).push(
-          // MaterialPageRoute(
-          //   builder: (context) => const Search(),
-          // ),
           FadeRoute(
             builder: (context) {
               return const SearchDbAnime();
@@ -227,7 +220,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           _loadData();
         });
       },
-      icon: const Icon(Icons.search),
+      icon: const Icon(Entypo.search),
       tooltip: "搜索动漫",
     ));
     // actions.add(IconButton(
@@ -518,7 +511,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               leading: tags[i] == defaultTagName
                   ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getThemePrimaryColor(),
+                      color: ThemeUtil.getPrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,

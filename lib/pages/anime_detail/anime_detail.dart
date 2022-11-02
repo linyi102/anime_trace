@@ -63,7 +63,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
-  Color multiSelectedColor = ThemeUtil.getThemePrimaryColor().withOpacity(0.25);
+  Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
 
   bool hideNoteInAnimeDetail =
       SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
@@ -310,7 +310,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             indicatorSize: TabBarIndicatorSize.label,
             // 第三方指示器样式
             indicator: MaterialIndicator(
-                color: ThemeUtil.getThemePrimaryColor(),
+                color: ThemeUtil.getPrimaryColor(),
                 paintingStyle: PaintingStyle.fill),
           ),
         ),
@@ -1110,7 +1110,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               leading: tags[i] == _anime.tagName
                   ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getThemePrimaryColor(),
+                      color: ThemeUtil.getPrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,
@@ -1157,7 +1157,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
                   ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getThemePrimaryColor(),
+                      color: ThemeUtil.getPrimaryColor(),
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,
@@ -1258,7 +1258,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
         leading: currentStartEpisodeNumber == startEpisodeNumber
             ? Icon(Icons.radio_button_on,
-                color: ThemeUtil.getThemePrimaryColor())
+                color: ThemeUtil.getPrimaryColor())
             : const Icon(Icons.radio_button_off),
         onTap: () {
           currentStartEpisodeNumber = startEpisodeNumber;

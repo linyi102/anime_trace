@@ -6,6 +6,7 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:fluttericon/entypo_icons.dart';
 
 import '../../models/anime.dart';
 import '../../components/note_img_grid.dart';
@@ -51,12 +52,18 @@ class _RateListPageState extends State<RateListPage> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
-            IconButton(
-                onPressed: () => _createRateNote(context),
-                icon: Icon(
-                  Icons.edit,
-                  color: ThemeUtil.getCommonIconColor(),
+            ElevatedButton(
+                onPressed: () {},
+                child: Row(
+                  children: [
+                    Text("评价"),
+                    SizedBox(width: 5),
+                    Icon(Entypo.feather,size: 15,),
+                  ],
                 ))
+            // IconButton(
+            //     onPressed: () => _createRateNote(context),
+            //     icon: Icon(Icons.edit, color: ThemeUtil.getCommonIconColor()))
           ]),
         ),
         noteOk

@@ -17,6 +17,7 @@ import '../../models/anime.dart';
 import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';
 import '../../utils/sqlite_util.dart';
+import '../../utils/theme_util.dart';
 import '../settings/image_path_setting.dart';
 
 /// 动漫详细页点击封面，进入该页面
@@ -126,8 +127,11 @@ class AnimeCoverDetail extends StatelessWidget {
     // 网络封面
     if (coverUrl.startsWith("http")) {
       return PhotoView(
-          errorBuilder: (context, url, error) => _buildErrorInfo(),
-          imageProvider: CachedNetworkImageProvider(coverUrl));
+        errorBuilder: (context, url, error) => _buildErrorInfo(),
+        imageProvider: CachedNetworkImageProvider(coverUrl),
+        backgroundDecoration:
+            BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
+      );
     }
     //CachedNetworkImage(
     //         imageUrl: coverUrl,

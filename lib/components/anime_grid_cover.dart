@@ -88,7 +88,7 @@ class AnimeGridCover extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3),
-              color: ThemeUtil.getThemePrimaryColor(),
+              color: ThemeUtil.getPrimaryColor(),
             ),
             child: Text(
               "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
