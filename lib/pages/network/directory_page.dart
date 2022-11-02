@@ -400,7 +400,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   // 如果收藏了，则单击进入详细页面
                   if (anime.isCollected()) {
                     Navigator.of(context).push(FadeRoute(builder: (context) {
-                      return AnimeDetailPlus(anime.animeId);
+                      return AnimeDetailPlus(anime);
                     })).then((value) {
                       setState(() {
                         // anime = value;

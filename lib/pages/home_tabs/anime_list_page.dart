@@ -431,12 +431,18 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   void _enterPageAnimeDetail(i, index, Anime anime) {
+    // 要想添加Hero动画，需要使用MaterialPageRoute
     Navigator.of(context)
         .push(
+      // MaterialPageRoute(
+      //   builder: (context) {
+      //     return AnimeDetailPlus(anime);
+      //   },
+      // ),
       FadeRoute(
-        transitionDuration: const Duration(milliseconds: 0),
+        transitionDuration: const Duration(milliseconds: 100),
         builder: (context) {
-          return AnimeDetailPlus(anime.animeId);
+          return AnimeDetailPlus(anime);
         },
       ),
     )

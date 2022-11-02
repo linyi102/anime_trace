@@ -163,7 +163,7 @@ class _HistoryPageState extends State<HistoryPage> {
               FadeRoute(
                 transitionDuration: const Duration(milliseconds: 200),
                 builder: (context) {
-                  return AnimeDetailPlus(record.anime.animeId);
+                  return AnimeDetailPlus(record.anime);
                 },
               ),
             )

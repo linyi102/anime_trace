@@ -393,12 +393,12 @@ class MyAppState extends State<MyApp> with WindowListener {
               : Colors.black.withOpacity(0.2),
         ),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-        },
-      ),
+      // pageTransitionsTheme: const PageTransitionsTheme(
+      //   builders: <TargetPlatform, PageTransitionsBuilder>{
+      //     TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      //     TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      //   },
+      // ),
     );
   }
 }

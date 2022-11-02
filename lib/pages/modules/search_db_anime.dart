@@ -103,7 +103,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             // ),
             FadeRoute(
               builder: (context) {
-                return AnimeDetailPlus(anime.animeId);
+                return AnimeDetailPlus(anime);
               },
             ),
           ).then((value) async {
@@ -138,7 +138,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
         // leading: Icon(Icons.search),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children:  [
+          children: [
             Text("网络搜索更多 ",
                 style: TextStyle(color: ThemeUtil.getPrimaryColor())),
             Icon(Icons.manage_search_outlined,

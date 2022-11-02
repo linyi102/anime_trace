@@ -116,7 +116,7 @@ class UpdateRecordPage extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(FadeRoute(
             builder: (context) {
-              return AnimeDetailPlus(record.anime.animeId);
+              return AnimeDetailPlus(record.anime);
             },
           ));
         },

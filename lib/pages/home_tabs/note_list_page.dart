@@ -272,7 +272,7 @@ class _NoteListPageState extends State<NoteListPage> {
       FadeRoute(
         transitionDuration: const Duration(milliseconds: 200),
         builder: (context) {
-          return AnimeDetailPlus(episodeNotes[episodeNoteindex].anime.animeId);
+          return AnimeDetailPlus(episodeNotes[episodeNoteindex].anime);
         },
       ),
     )

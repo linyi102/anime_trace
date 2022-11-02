@@ -70,6 +70,13 @@ class AnimeGridCover extends StatelessWidget {
                       url: _anime.animeCoverUrl,
                       showErrorDialog: false,
                       isNoteImg: false),
+                  // Hero动画
+                  // child: Hero(
+                  //     tag: _anime.animeCoverUrl,
+                  //     child: buildImgWidget(
+                  //         url: _anime.animeCoverUrl,
+                  //         showErrorDialog: false,
+                  //         isNoteImg: false)),
                 ),
                 _buildNameInCover(showNameInCover)
               ],

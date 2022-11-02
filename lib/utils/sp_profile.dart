@@ -34,7 +34,12 @@ class SpProfile {
     return SPUtil.getBool("expandSideBar", defaultValue: false);
   }
 
-  static setExpandSideBar(bool expandSideBar) {
-    return SPUtil.setBool("expandSideBar", expandSideBar);
+  static setCoverBgSigmaInAnimeDetailPage(double sigma) {
+    SPUtil.setDouble("coverBgSigmaInAnimeDetailPage", sigma);
+  }
+
+  static getCoverBgSigmaInAnimeDetailPage() {
+    return SPUtil.getDouble("coverBgSigmaInAnimeDetailPage",
+        defaultValue: 10.0);
   }
 }

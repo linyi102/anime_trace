@@ -146,13 +146,6 @@ class ThemeUtil {
     ];
   }
 
-  // 动漫详细页图片背景渐变下面的遮挡颜色，用于遮挡细线
-  static Color getColorBelowGradientAnimeCover() {
-    return themeController.themeColor.value.isDarkMode
-        ? const Color.fromRGBO(48, 48, 48, 1)
-        : const Color.fromRGBO(248, 248, 248, 1);
-  }
-
   // 动漫详细页集ListTile颜色
   static Color getEpisodeListTile(bool isChecked) {
     if (isChecked) {

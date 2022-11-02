@@ -185,7 +185,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   // ),
                   FadeRoute(
                     builder: (context) {
-                      return AnimeDetailPlus(anime.animeId);
+                      return AnimeDetailPlus(anime);
                     },
                   ),
                 ).then((value) {

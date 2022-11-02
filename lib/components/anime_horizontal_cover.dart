@@ -82,7 +82,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   Navigator.of(context).push(
                     FadeRoute(
                       builder: (context) {
-                        return AnimeDetailPlus(anime.animeId);
+                        return AnimeDetailPlus(anime);
                       },
                     ),
                   ).then((value) async {

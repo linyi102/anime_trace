@@ -2,10 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/local_img_dir_controller.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
-import 'package:get/get.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../utils/image_util.dart';
