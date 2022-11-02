@@ -164,7 +164,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-      gridDelegate: getAnimeGridDelegate(),
+      gridDelegate: getAnimeGridDelegate(context),
       itemCount: mixedAnimes.length,
       itemBuilder: (BuildContext context, int index) {
         Anime anime = mixedAnimes[index];

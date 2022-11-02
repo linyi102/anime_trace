@@ -305,7 +305,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         controller: _scrollControllers[i],
         // 整体的填充
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        gridDelegate: getAnimeGridDelegate(),
+        gridDelegate: getAnimeGridDelegate(context),
         itemCount: animesInTag[i].length,
         itemBuilder: (BuildContext context, int index) {
           _loadExtraData(i, index);

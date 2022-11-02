@@ -1,19 +1,36 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_test_future/responsive.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/anime_display_controller.dart';
 
-SliverGridDelegate getAnimeGridDelegate() {
+SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
   final AnimeDisplayController _animeDisplayController = Get.find();
+  bool enableResponsive =
+      _animeDisplayController.enableResponsiveGridColumnCnt.value;
+  int gridColumnCnt = _animeDisplayController.gridColumnCnt.value;
+  Size size = MediaQuery.of(context).size;
+  if (enableResponsive) {
+    if (Responsive.isMobile(context)) {
+      gridColumnCnt = 4;
+      if (size.width < 500) gridColumnCnt = 3;
+    } else if (Responsive.isTablet(context)) {
+      gridColumnCnt = 5;
+    } else if (Responsive.isDesktop(context)) {
+      gridColumnCnt = 6;
+      if (size.width > 1100) gridColumnCnt = 7;
+    }
+  }
 
   return SliverGridDelegateWithFixedCrossAxisCount(
     // 横轴数量
-    crossAxisCount: _animeDisplayController.gridColumnCnt.value,
+    crossAxisCount: gridColumnCnt,
     // 横轴距离
     crossAxisSpacing: 3,
     // 竖轴距离
     mainAxisSpacing: 6,
     // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
-    childAspectRatio: _animeDisplayController.showNameBelowCover ? 31 / 56 : 31 / 43,
+    childAspectRatio:
+        _animeDisplayController.showNameBelowCover ? 31 / 56 : 31 / 43,
   );
 }

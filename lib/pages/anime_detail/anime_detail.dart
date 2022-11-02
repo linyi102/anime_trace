@@ -461,7 +461,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             _climbAnimeInfo();
           },
           tooltip: "更新信息",
-          icon: const Icon(Icons.refresh_rounded)),
+          icon: const Icon(Icons.refresh)),
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),

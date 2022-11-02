@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 import '../controllers/anime_display_controller.dart';
 
-// 用于显示完整的动漫封面
+// 网格状态下，用于显示一个完整的动漫封面
 // 包括进度、第几次观看、名字
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;

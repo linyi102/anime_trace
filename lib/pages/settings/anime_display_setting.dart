@@ -42,8 +42,18 @@ class AnimesDisplaySetting extends StatelessWidget {
     // 如果显示网格，则添加更多修改选项
     if (!displayList) {
       list.add(ListTile(
+        title: const Text("动漫列数自适应"),
+        trailing: showToggleButton(
+            animeDisplayController.enableResponsiveGridColumnCnt.value),
+        onTap: () {
+          animeDisplayController.turnEnableResponsiveGridColumnCnt();
+        },
+      ));
+
+      list.add(ListTile(
         title: const Text("修改动漫列数"),
         subtitle: Text("${animeDisplayController.gridColumnCnt}"),
+        enabled: !animeDisplayController.enableResponsiveGridColumnCnt.value,
         onTap: () {
           dialogSelectUint(context, "选择列数",
                   initialValue: animeDisplayController.gridColumnCnt.value,
@@ -58,6 +68,7 @@ class AnimesDisplaySetting extends StatelessWidget {
           });
         },
       ));
+
       list.add(ListTile(
         title: const Text("显示动漫名称"),
         trailing:
@@ -66,6 +77,7 @@ class AnimesDisplaySetting extends StatelessWidget {
           animeDisplayController.turnShowGridAnimeName();
         },
       ));
+
       list.add(ListTile(
         title: const Text("动漫名称显示在内部"),
         trailing:
@@ -75,6 +87,7 @@ class AnimesDisplaySetting extends StatelessWidget {
           animeDisplayController.turnShowNameInCover();
         },
       ));
+
       list.add(ListTile(
         title: const Text("显示动漫进度"),
         trailing: showToggleButton(
