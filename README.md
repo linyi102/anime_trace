@@ -1,4 +1,4 @@
-[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [更新计划](https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC) / [更新日志](https://www.wolai.com/gqSMt2YRuNEzZBwwB5dpVA)
+[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [语雀](https://www.yuque.com/linyi517/fzfxr0)
 
 ## 下载地址
 
