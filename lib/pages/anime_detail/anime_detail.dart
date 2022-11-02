@@ -219,6 +219,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 // 使用await后，只有当获取信息完成后，加载圈才会消失
                 await _climbAnimeInfo();
               },
+              // 尝试左右分屏。不足：封面有时不能填满
+              // child: Row(
+              //   children: [
+              //     Expanded(
+              //         child: CustomScrollView(
+              //       controller: ScrollController(),
+              //       slivers: [_buildSliverAppBar(context, isSeparate: true)],
+              //     )),
+              //     Expanded(
+              //         child: CustomScrollView(
+              //       slivers: [_buildSliverListBody()],
+              //     ))
+              //   ],
+              // ),
               child: Stack(children: [
                 CustomScrollView(
                   slivers: [
@@ -339,13 +353,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
 
-  _buildSliverAppBar(BuildContext context) {
-    // 状态栏高度
-    // double statusBarHeight = MediaQueryData.fromWindow(window).padding.top;
-    // AppBar的toolbar高度(状态栏下面紧接着的一行)
-    // double toolbarHeight = kToolbarHeight;
-    // AppBar总高度
-    // double appBarHeight = 280;
+  _buildSliverAppBar(BuildContext context, {bool isSeparate = false}) {
     double expandedHeight = 260;
     double roundedContainerHeight = 5;
 
@@ -353,7 +361,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // floating: true,
           // snap: true,
           pinned: true,
-          expandedHeight: expandedHeight,
+          expandedHeight:
+              isSeparate ? MediaQuery.of(context).size.height : expandedHeight,
           // stretch: true,
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
@@ -369,24 +378,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       sigmaY: sigma,
                     ),
                     child: _buildBgCover(),
-                    // child: ShaderMask(
-                    //   shaderCallback: (rect) => const LinearGradient(
-                    //           begin: Alignment.topCenter,
-                    //           end: Alignment.bottomCenter,
-                    //           colors: [Colors.black, Colors.transparent])
-                    //       .createShader(
-                    //           Rect.fromLTRB(0, 0, rect.width, rect.height)),
-                    //   blendMode: BlendMode.dstIn,
-                    //   child: _buildBgCover(),
-                    // ),
                   ),
                 ),
                 // 为底层背景添加渐变效果
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                        begin: isSeparate
+                            ? Alignment.centerLeft
+                            : Alignment.topCenter,
+                        end: isSeparate
+                            ? Alignment.centerRight
+                            : Alignment.bottomCenter,
                         colors: ThemeUtil.getGradientColors()),
                   ),
                 ),
@@ -400,22 +403,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     ],
                   ),
                 ),
-                // 遮住背景封面细线
-                Positioned(
-                  top: expandedHeight - roundedContainerHeight,
-                  left: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: roundedContainerHeight,
-                    decoration: BoxDecoration(
-                      color: ThemeUtil.getScaffoldBackgroundColor(),
-                      // borderRadius: const BorderRadius.only(
-                      //   topLeft: Radius.circular(30),
-                      //   topRight: Radius.circular(30),
-                      // ),
+                if (!isSeparate)
+                  // 遮住背景封面细线
+                  Positioned(
+                    top: expandedHeight - roundedContainerHeight,
+                    left: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: roundedContainerHeight,
+                      decoration: BoxDecoration(
+                        color: ThemeUtil.getScaffoldBackgroundColor(),
+                        // borderRadius: const BorderRadius.only(
+                        //   topLeft: Radius.circular(30),
+                        //   topRight: Radius.circular(30),
+                        // ),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
