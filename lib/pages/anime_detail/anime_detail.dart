@@ -403,23 +403,23 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     ],
                   ),
                 ),
-                if (!isSeparate)
-                  // 遮住背景封面细线
-                  Positioned(
-                    top: expandedHeight - roundedContainerHeight,
-                    left: 0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: roundedContainerHeight,
-                      decoration: BoxDecoration(
-                        color: ThemeUtil.getScaffoldBackgroundColor(),
-                        // borderRadius: const BorderRadius.only(
-                        //   topLeft: Radius.circular(30),
-                        //   topRight: Radius.circular(30),
-                        // ),
-                      ),
-                    ),
-                  ),
+                // if (!isSeparate)
+                //   // 遮住背景封面细线
+                //   Positioned(
+                //     top: expandedHeight - roundedContainerHeight,
+                //     left: 0,
+                //     child: Container(
+                //       width: MediaQuery.of(context).size.width,
+                //       height: roundedContainerHeight,
+                //       decoration: BoxDecoration(
+                //         color: ThemeUtil.getScaffoldBackgroundColor(),
+                //         // borderRadius: const BorderRadius.only(
+                //         //   topLeft: Radius.circular(30),
+                //         //   topRight: Radius.circular(30),
+                //         // ),
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),

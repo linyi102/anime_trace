@@ -64,7 +64,8 @@ class _RateListPageState extends State<RateListPage> {
             //     ))
             IconButton(
                 onPressed: () => _createRateNote(context),
-                icon: Icon(Entypo.feather, color: ThemeUtil.getCommonIconColor()))
+                icon:
+                    Icon(Entypo.feather, color: ThemeUtil.getCommonIconColor()))
           ]),
         ),
         noteOk
