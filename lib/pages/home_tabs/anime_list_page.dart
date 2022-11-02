@@ -227,7 +227,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           _loadData();
         });
       },
-      icon: const Icon(Entypo.search),
+      icon: const Icon(Icons.search),
       tooltip: "搜索动漫",
     ));
     // actions.add(IconButton(

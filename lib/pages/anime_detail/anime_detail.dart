@@ -310,9 +310,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             indicatorSize: TabBarIndicatorSize.label,
             // 第三方指示器样式
             indicator: MaterialIndicator(
-              color: ThemeUtil.getThemePrimaryColor(),
-              paintingStyle: PaintingStyle.fill,
-            ),
+                color: ThemeUtil.getThemePrimaryColor(),
+                paintingStyle: PaintingStyle.fill),
           ),
         ),
       ),

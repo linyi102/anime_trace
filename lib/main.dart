@@ -226,7 +226,7 @@ class MyAppState extends State<MyApp> with WindowListener {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [
-              Locale('zh', 'CH'),
+              Locale('zh', 'CN'),
               Locale('en', 'US'),
             ],
           ),

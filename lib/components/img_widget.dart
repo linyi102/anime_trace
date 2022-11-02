@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/local_img_dir_controller.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -15,7 +16,15 @@ buildImgWidget(
     required bool showErrorDialog,
     required bool isNoteImg}) {
   if (url.isEmpty) {
-    return const Center(child: Icon(Entypo.picture));
+    // return const Center(child: Icon(Entypo.picture));
+    return Center(
+      child: Image.asset(
+        "assets/icons/default_picture.png",
+        // 默认宽度33(因为比较小，所以调大些)，失败宽度30
+        width: 33,
+        color: ThemeUtil.getCommonIconColor(),
+      ),
+    );
   }
 
   // 网络封面
@@ -67,6 +76,13 @@ buildImgWidget(
 Widget Function(dynamic buildContext, dynamic object, dynamic stackTrace)
     errorImageBuilder({required String url, required bool dialog}) {
   return (buildContext, object, stackTrace) {
-    return const Center(child: Icon(Icons.broken_image));
+    // return const Center(child: Icon(Icons.broken_image));
+    return Center(
+      child: Image.asset(
+        "assets/icons/failed_picture.png",
+        width: 30,
+        color: ThemeUtil.getCommonIconColor(),
+      ),
+    );
   };
 }
