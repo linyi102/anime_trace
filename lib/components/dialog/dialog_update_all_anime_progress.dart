@@ -24,7 +24,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                     int needUpdateCnt =
                         updateRecordController.needUpdateCnt.value;
                     if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
-                      showToast("动漫更新完毕！");
+                      // showToast("动漫更新完毕！");
                     }
 
                     return Padding(
@@ -38,9 +38,8 @@ dialogUpdateAllAnimeProgress(parentContext) {
                         percent: needUpdateCnt > 0
                             ? (updateOkCnt / needUpdateCnt)
                             : 0,
-                        center: Text(
-                          "$updateOkCnt / $needUpdateCnt",
-                          style: const TextStyle(color: Colors.black54)),
+                        center: Text("$updateOkCnt / $needUpdateCnt",
+                            style: const TextStyle(color: Colors.black54)),
                         progressColor: Colors.greenAccent,
                         // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
                       ),

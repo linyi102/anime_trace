@@ -509,10 +509,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 dialogSelectTag(setState, context, anime);
               },
               icon: anime.isCollected()
-                  ? const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                    )
+                  ? const Icon(Icons.favorite, color: Colors.red)
                   : const Icon(Icons.favorite_border)),
           anime.isCollected()
               ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor)

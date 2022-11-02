@@ -12,12 +12,14 @@ class NoteImgItem extends StatelessWidget {
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
-  const NoteImgItem(
+  NoteImgItem(
       {required this.relativeLocalImages,
       this.initialIndex = 0,
       this.imageRemainCount = 0,
       Key? key})
       : super(key: key);
+
+  bool dirChangedWrapper = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +39,33 @@ class NoteImgItem extends StatelessWidget {
                   return ImageViewer(
                       relativeLocalImages: relativeLocalImages,
                       initialIndex: initialIndex);
-                }));
+                })).then((dirChanged) {
+          if (dirChanged) {
+            dirChangedWrapper = true;
+          }
+        });
       },
       child: Stack(children: [
         AspectRatio(
           aspectRatio: 1, // 正方形
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(5), // 圆角
-            child: buildImgWidget(
-                url: relativeImagePath, showErrorDialog: true, isNoteImg: true),
-          ),
+              // 无效，不会重新渲染，可能是因为是无状态组件
+              key: Key("$initialIndex:$dirChangedWrapper"),
+              borderRadius: BorderRadius.circular(5),
+              // 圆角
+              child: buildImgWidget(
+                  url: relativeImagePath,
+                  showErrorDialog: true,
+                  isNoteImg: true)),
         ),
         imageRemainCount > 0
             ? Container(
                 color: const Color.fromRGBO(0, 0, 0, 0.2),
                 child: Center(
-                  child: Text(
-                    "+$imageRemainCount",
-                    textScaleFactor: 2,
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
+                  child: Text("+$imageRemainCount",
+                      textScaleFactor: 2,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w600)),
                 ),
               )
             : Container()

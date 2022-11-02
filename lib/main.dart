@@ -190,6 +190,17 @@ class MyAppState extends State<MyApp> with WindowListener {
 
     return Obx(() => OKToast(
           position: ToastPosition.top,
+          // animationBuilder: (BuildContext context, Widget child,
+          //     AnimationController controller, double percent) {
+          //   // controller.duration = const Duration(seconds: 2); // 无效
+          //
+          //   Animation<double> animation = CurvedAnimation(
+          //     parent: controller,
+          //     curve: Curves.elasticOut,
+          //   );
+          //
+          //   return ScaleTransition(child: child, scale: animation);
+          // },
           // true表示弹出消息时会先关闭前一个消息
           dismissOtherOnShow: true,
           radius: 20,

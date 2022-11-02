@@ -33,7 +33,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
-  font_awesome_flutter: ^10.2.1
+  typicons_flutter: ^0.5.0
   photo_view: ^0.14.0
   flutter_rating_stars: ^1.0.3+4 # 评分
   bottom_sheet: ^3.1.1 # 底部弹出菜单

@@ -194,7 +194,7 @@ class _ImageViewerState extends State<ImageViewer> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text("无法正常显示图片"),
-                const Text("请检查图片所在目录是否正确"),
+                const Text("请检查目录下是否存在该图片"),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context)
@@ -255,6 +255,9 @@ class _ImageViewerState extends State<ImageViewer> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(6),
                         child: SizedBox(
+                          // 从设置界面返回来，如果改变了目录，则这里应该重新渲染
+                          // key发生变化，所以就会重新渲染该组件
+                          key: Key("$index:$dirChangedWrapper"),
                           height: 100,
                           width: 140,
                           child: buildImgWidget(

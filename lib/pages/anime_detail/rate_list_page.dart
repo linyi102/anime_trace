@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/typicons_icons.dart';
 
 import '../../models/anime.dart';
 import '../../components/note_img_grid.dart';
@@ -84,7 +85,7 @@ class _RateListPageState extends State<RateListPage> {
           });
           SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
         },
-        starBuilder: (index, color) => Icon(Icons.star, color: color),
+        starBuilder: (index, color) => Icon(Typicons.star_filled, color: color),
         starCount: 5,
         starSize: 40,
         valueLabelColor: const Color(0xff9b9b9b),
