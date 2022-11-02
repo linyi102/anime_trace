@@ -118,10 +118,10 @@ class _AboutVersionState extends State<AboutVersion> {
         },
         title: const Text("检查更新")));
     lvc.add(ListTile(
-        title: const Text("更新进度"),
+        title: const Text("更新日志"),
         trailing: const Icon(Icons.open_in_new_outlined),
         onTap: () {
-          LaunchUrlUtil.launch("https://www.wolai.com/6CcZSostD8Se5zuqfTNkAC");
+          LaunchUrlUtil.launch("https://www.yuque.com/linyi517/fzfxr0");
         }));
     lvc.add(ListTile(
         title: const Text("QQ 交流群"),
