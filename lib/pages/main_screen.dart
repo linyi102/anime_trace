@@ -55,14 +55,14 @@ class _MainScreenState extends State<MainScreen> {
               body: SafeArea(
                 child: Row(
                   children: [
-                    // 展开侧边栏时，占1/6，如果不展开侧边栏，则固定宽度
+                    // 侧边栏
                     size.width > 800
-                        ? Expanded(child: _buildSideBar())
+                        ? SizedBox(width: 150, child: _buildSideBar())
                         : SizedBox(
                             width: 60,
                             child: _buildSideBar(expandSideBar: false)),
-                    // 主体 5/6
-                    Expanded(flex: 5, child: _mainTabs[_selectedTabIdx].page)
+                    // 主体
+                    Expanded(child: _mainTabs[_selectedTabIdx].page)
                   ],
                 ),
               ),
@@ -145,7 +145,8 @@ class _MainScreenState extends State<MainScreen> {
       // ),
       bottomNavigationBar: Obx(() => BottomNavigationBar(
             backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-            type: BottomNavigationBarType.fixed, // 当item数量超过3个，则会显示空白，此时需要设置该属性
+            type: BottomNavigationBarType.fixed,
+            // 当item数量超过3个，则会显示空白，此时需要设置该属性
             currentIndex: _selectedTabIdx,
             // elevation: 0,
             // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),

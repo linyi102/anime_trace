@@ -94,10 +94,9 @@ class _SourceListPageState extends State<SourceListPage> {
             _showPingButton ? _buildPingButton() : Container(),
             Responsive(
                 mobile: _buildListView(),
-                tablet:
-                    _buildGridView(crossAxisCount: size.width > 820 ? 3 : 2),
+                tablet: _buildGridView(crossAxisCount: 2),
                 desktop:
-                    _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
+                    _buildGridView(crossAxisCount: size.width > 1200 ? 4 : 3)),
             FavWebsiteListPage()
           ],
         ),
