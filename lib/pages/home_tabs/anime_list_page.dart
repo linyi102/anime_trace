@@ -114,51 +114,59 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   @override
   Widget build(BuildContext context) {
-    return FadeAnimatedSwitcher(
-        loadOk: _loadOk,
-        specifiedLoadingWidget: _waitDataScaffold(),
-        destWidget: Scaffold(
-          appBar: AppBar(
-            title: Text(multiSelected ? "${mapSelected.length}" : "动漫",
-                style: const TextStyle(fontWeight: FontWeight.w600)),
-            leading: multiSelected
-                ? IconButton(
-                    onPressed: () {
-                      _quitMultiSelectState();
-                    },
-                    icon: const Icon(Icons.close))
-                : null,
-            actions: multiSelected ? _getActionsOnMulti() : _getActions(),
-            bottom: PreferredSize(
-              // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: TabBar(
-                  tabs: _buildTagAndAnimeCnt(),
-                  // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                  controller: _tabController,
-                  padding: const EdgeInsets.all(2),
-                  // 居中，而不是靠左下
-                  isScrollable: true,
-                  // 清单可以滑动，避免拥挤
-                  labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  indicatorSize: TabBarIndicatorSize.label,
-                  // 第三方指示器样式
-                  indicator: MaterialIndicator(
-                    horizontalPadding: 8.5,
-                    color: ThemeUtil.getPrimaryColor(),
-                    paintingStyle: PaintingStyle.fill,
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+      // 然后再通过_loadData覆盖掉旧数据
+      child: !_loadOk && animeCntPerTag.isEmpty
+          ? _waitDataScaffold()
+          : Scaffold(
+              // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+              appBar: AppBar(
+                title: Text(
+                  multiSelected ? "${mapSelected.length}" : "动漫",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                leading: multiSelected
+                    ? IconButton(
+                        onPressed: () {
+                          _quitMultiSelectState();
+                        },
+                        icon: const Icon(Icons.close))
+                    : null,
+                actions: multiSelected ? _getActionsOnMulti() : _getActions(),
+                bottom: PreferredSize(
+                  // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                  preferredSize: const Size.fromHeight(kToolbarHeight),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TabBar(
+                      tabs: _buildTagAndAnimeCnt(),
+                      controller: _tabController,
+                      padding: const EdgeInsets.all(2),
+                      // 居中，而不是靠左下
+                      isScrollable: true,
+                      // 清单可以滑动，避免拥挤
+                      labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      indicatorSize: TabBarIndicatorSize.label,
+                      // 第三方指示器样式
+                      indicator: MaterialIndicator(
+                        horizontalPadding: 8.5,
+                        color: ThemeUtil.getPrimaryColor(),
+                        paintingStyle: PaintingStyle.fill,
+                      ),
+                    ),
                   ),
                 ),
               ),
+              body: TabBarView(
+                controller: _tabController,
+                children: _getAnimesPlus(),
+              ),
             ),
-          ),
-          body: TabBarView(
-            controller: _tabController,
-            children: _getAnimesPlus(),
-          ),
-        ));
+    );
   }
 
   List<Widget> _getActions() {

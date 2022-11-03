@@ -14,11 +14,6 @@ class FadeAnimatedSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (specifiedLoadingWidget != null) {
-      return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: loadOk ? destWidget : specifiedLoadingWidget);
-    }
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
       child: loadOk
