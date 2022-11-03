@@ -101,6 +101,7 @@ class AnimeCoverDetail extends StatelessWidget {
               context: context,
               builder: (dialogContext) {
                 return AlertDialog(
+                  title: const Text("信息"),
                   content: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -126,7 +127,7 @@ class AnimeCoverDetail extends StatelessWidget {
     // 网络封面
     if (coverUrl.startsWith("http")) {
       return PhotoView(
-        errorBuilder: (context, url, error) => _buildErrorInfo(),
+        errorBuilder: (context, url, error) => _buildErrorInfo(context),
         imageProvider: CachedNetworkImageProvider(coverUrl),
         backgroundDecoration:
             BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
@@ -143,24 +144,43 @@ class AnimeCoverDetail extends StatelessWidget {
         fit: BoxFit.cover, errorBuilder: (context, object, stackTrace) {
       return Padding(
         padding: const EdgeInsets.only(left: 25, right: 25),
-        child: _buildErrorInfo(),
+        child: _buildErrorInfo(context),
       );
     });
   }
 
-  Widget _buildErrorInfo() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: const [
-          Text("X_X"),
-          Text("无法正常显示图片"),
-          SizedBox(height: 10),
-          Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
-          SizedBox(height: 10),
-          Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
-        ],
-      ),
+  Widget _buildErrorInfo(context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text("X_X"),
+        const Text("无法正常显示图片"),
+        IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (dialogContext) {
+                    return AlertDialog(
+                      title: const Text("失效可能的原因"),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children: const [
+                            ListTile(
+                              title: Text("网络图片"),
+                              subtitle: Text("1. 链接失效\n2. 网络不可用"),
+                            ),
+                            ListTile(
+                              title: Text("本地图片"),
+                              subtitle: Text("1. 该图片不在设置的目录下\n2. 图片重命名了"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+            },
+            icon: const Icon(Icons.help_outline))
+      ],
     );
   }
 

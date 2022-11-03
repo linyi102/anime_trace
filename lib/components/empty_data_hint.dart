@@ -17,7 +17,7 @@ Widget emptyDataHint(String msg, {String toastMsg = ""}) {
                 : IconButton(
                     onPressed: () => showToast(toastMsg),
                     iconSize: 15,
-                    icon: const Icon(Icons.help_outline_rounded))
+                    icon: const Icon(Icons.help_outline))
           ],
         ),
       ),
