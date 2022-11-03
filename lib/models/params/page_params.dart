@@ -1,16 +1,23 @@
 class PageParams {
   int pageIndex;
   int pageSize;
+  late int baseIndex;
 
-  PageParams(this.pageIndex, this.pageSize);
-
-  int getOffsetWhenIndexStartZero() {
-    // 如果下标为0，则偏移0个数据
-    return pageIndex * pageSize;
+  PageParams({required this.pageIndex, required this.pageSize}) {
+    baseIndex = pageIndex;
   }
 
-  int getOffsetWhenIndexStartOne() {
-    return (pageIndex - 1) * pageSize;
+  int getOffset() {
+    if (baseIndex == 0) {
+      // 如果下标为0，则偏移0个数据
+      return pageIndex * pageSize;
+    } else {
+      return (pageIndex - 1) * pageSize;
+    }
+  }
+
+  void resetPageIndex() {
+    pageIndex = baseIndex;
   }
 
   @override

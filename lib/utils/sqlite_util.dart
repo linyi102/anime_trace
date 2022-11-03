@@ -15,6 +15,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'escape_util.dart';
+
 class SqliteUtil {
   // 单例模式
   static SqliteUtil? _instance;
@@ -110,7 +112,7 @@ class SqliteUtil {
           FOREIGN KEY (
               tag_name
           )
-          REFERENCES tag (tag_name) 
+          REFERENCES tag (tag_name)
       );
       ''');
     await db.execute('''
@@ -122,7 +124,7 @@ class SqliteUtil {
           FOREIGN KEY (
               anime_id
           )
-          REFERENCES anime (anime_id) 
+          REFERENCES anime (anime_id)
       );
       ''');
     await db.execute('''
@@ -143,7 +145,8 @@ class SqliteUtil {
   }
 
   // 迁移动漫、全局更新动漫
-  static Future<int> updateAnime(Anime oldAnime, Anime newAnime, {bool migrateCover = false}) async {
+  static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
+      {bool migrateCover = false}) async {
     debugPrint("sql: updateAnime");
     String datetime = DateTime.now().toString();
     debugPrint("oldAnime=$oldAnime, newAnime=$newAnime");
@@ -231,7 +234,7 @@ class SqliteUtil {
 
   static void updateAnimeUrl(int animeId, String animeUrl) async {
     debugPrint("sql: updateAnimeUrl");
-    animeUrl = escapeStr(animeUrl);
+    animeUrl = EscapeUtil.escapeStr(animeUrl);
     await database.rawUpdate('''
     update anime
     set anime_url = '$animeUrl'
@@ -242,7 +245,7 @@ class SqliteUtil {
   static Future<void> updateAnimeCoverUrl(
       int animeId, String animeCoverUrl) async {
     debugPrint("sql: updateAnimeCoverUrl");
-    animeCoverUrl = escapeStr(animeCoverUrl);
+    animeCoverUrl = EscapeUtil.escapeStr(animeCoverUrl);
     await database.rawUpdate('''
     update anime
     set anime_cover_url = '$animeCoverUrl'
@@ -252,7 +255,7 @@ class SqliteUtil {
 
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
     debugPrint("sql: updateAnimeNameByAnimeId");
-    newAnimeName = escapeStr(newAnimeName);
+    newAnimeName = EscapeUtil.escapeStr(newAnimeName);
     await database.rawUpdate('''
     update anime
     set anime_name = '$newAnimeName'
@@ -263,7 +266,7 @@ class SqliteUtil {
   static void updateAnimeNameAnotherByAnimeId(
       int animeId, String newNameAnother) async {
     debugPrint("sql: updateAnimeNameAnotherByAnimeId");
-    newNameAnother = escapeStr(newNameAnother);
+    newNameAnother = EscapeUtil.escapeStr(newNameAnother);
     await database.rawUpdate('''
     update anime
     set name_another = '$newNameAnother'
@@ -273,7 +276,7 @@ class SqliteUtil {
 
   static void updateAnimeDescByAnimeId(int animeId, String newDesc) async {
     debugPrint("sql: updateAnimeDescByAnimeId");
-    newDesc = escapeStr(newDesc);
+    newDesc = EscapeUtil.escapeStr(newDesc);
     await database.rawUpdate('''
     update anime
     set anime_desc = '$newDesc'
@@ -313,40 +316,22 @@ class SqliteUtil {
 
   // 转义单引号
   static Anime escapeAnime(Anime anime) {
-    anime.animeName = escapeStr(anime.animeName);
-    anime.animeDesc = escapeStr(anime.animeDesc);
-    anime.tagName = escapeStr(anime.tagName);
-    anime.nameAnother = escapeStr(anime.nameAnother);
-    anime.nameOri = escapeStr(anime.nameOri);
+    anime.animeName = EscapeUtil.escapeStr(anime.animeName);
+    anime.animeDesc = EscapeUtil.escapeStr(anime.animeDesc);
+    anime.tagName = EscapeUtil.escapeStr(anime.tagName);
+    anime.nameAnother = EscapeUtil.escapeStr(anime.nameAnother);
+    anime.nameOri = EscapeUtil.escapeStr(anime.nameOri);
     return anime;
   }
 
   // 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复
   static Anime restoreEscapeAnime(Anime anime) {
-    anime.animeName = restoreEscapeStr(anime.animeName);
-    anime.animeDesc = restoreEscapeStr(anime.animeDesc);
-    anime.tagName = restoreEscapeStr(anime.tagName);
-    anime.nameAnother = restoreEscapeStr(anime.nameAnother);
-    anime.nameOri = restoreEscapeStr(anime.nameOri);
+    anime.animeName = EscapeUtil.restoreEscapeStr(anime.animeName);
+    anime.animeDesc = EscapeUtil.restoreEscapeStr(anime.animeDesc);
+    anime.tagName = EscapeUtil.restoreEscapeStr(anime.tagName);
+    anime.nameAnother = EscapeUtil.restoreEscapeStr(anime.nameAnother);
+    anime.nameOri = EscapeUtil.restoreEscapeStr(anime.nameOri);
     return anime;
-  }
-
-  static Note escapeEpisodeNote(Note episodeNote) {
-    episodeNote.noteContent = escapeStr(episodeNote.noteContent);
-    return episodeNote;
-  }
-
-  static Note restoreEscapeEpisodeNote(Note episodeNote) {
-    episodeNote.noteContent = restoreEscapeStr(episodeNote.noteContent);
-    return episodeNote;
-  }
-
-  static String escapeStr(String str) {
-    return str.replaceAll("'", "''"); // 将'替换为''，进行转义，否则会在插入时误认为'为边界
-  }
-
-  static String restoreEscapeStr(String str) {
-    return str.replaceAll("''", "'");
   }
 
   static Future<int> insertAnime(Anime anime) async {
@@ -578,7 +563,7 @@ class SqliteUtil {
     for (int i = 0; i < tagNames.length; ++i) {
       await database.rawUpdate('''
       update tag
-      set tag_order = $i 
+      set tag_order = $i
       where tag_name = '${tagNames[i]}';
       ''');
     }
@@ -758,7 +743,7 @@ class SqliteUtil {
 
   static Future<List<Anime>> getAnimesBySearch(String keyword) async {
     debugPrint("sql: getAnimesBySearch");
-    keyword = escapeStr(keyword);
+    keyword = EscapeUtil.escapeStr(keyword);
 
     var list = await database.rawQuery('''
       select * from anime
@@ -1037,8 +1022,8 @@ class SqliteUtil {
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
           int endEpisodeNumber = list[0]['end'] as int;
-          AnimeHistoryRecord record =
-              AnimeHistoryRecord(anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
+          AnimeHistoryRecord record = AnimeHistoryRecord(
+              anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
           // debugPrint(record);
           records.add(record);
         }
@@ -1058,200 +1043,9 @@ class SqliteUtil {
       anime_id       INTEGER NOT NULL,
       episode_number INTEGER NOT NULL,
       note_content   TEXT,
-      FOREIGN KEY (anime_id) REFERENCES anime (anime_id) 
+      FOREIGN KEY (anime_id) REFERENCES anime (anime_id)
     );
     ''');
-  }
-
-  static Future<int> insertEpisodeNote(Note episodeNote) async {
-    debugPrint(
-        "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
-    episodeNote = escapeEpisodeNote(episodeNote);
-    String createTime = DateTime.now().toString();
-
-    await database.rawInsert('''
-    insert into episode_note (anime_id, episode_number, review_number, note_content, create_time)
-    values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, '', '$createTime'); -- 空内容
-    ''');
-
-    var lm2 = await database.rawQuery('''
-      select last_insert_rowid() as last_id
-      from episode_note;
-      ''');
-    return lm2[0]["last_id"] as int; // 返回最新插入的id
-  }
-
-  static updateEpisodeNoteContentByNoteId(
-      int noteId, String noteContent) async {
-    debugPrint("sql: updateEpisodeNoteContent($noteId)");
-    // debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
-    noteContent = escapeStr(noteContent);
-    await database.rawUpdate('''
-    update episode_note
-    set note_content = '$noteContent'
-    where note_id = $noteId;
-    ''');
-  }
-
-  static Future<Note>
-      getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-          Note episodeNote) async {
-    // debugPrint(
-    //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
-    // 查询内容
-    var lm1 = await database.rawQuery('''
-      select note_id, note_content from episode_note
-      where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number} and review_number = ${episodeNote.episode.reviewNumber};
-      ''');
-    if (lm1.isEmpty) {
-      // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
-      episodeNote.episodeNoteId = await insertEpisodeNote(episodeNote);
-    } else {
-      episodeNote.episodeNoteId = lm1[0]['note_id'] as int;
-      // 获取笔记内容
-      episodeNote.noteContent = lm1[0]['note_content'] as String;
-    }
-    // debugPrint("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
-    // 查询图片
-    episodeNote.relativeLocalImages =
-        await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
-    episodeNote = restoreEscapeEpisodeNote(episodeNote);
-    return episodeNote;
-  }
-
-  static Future<List<Note>> getAllNotesByTableHistory() async {
-    debugPrint("sql: getAllNotesByTableHistory");
-    List<Note> episodeNotes = [];
-    // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
-    var lm1 = await database.rawQuery('''
-    select date, history.anime_id, episode_number, anime_name, anime_cover_url, review_number
-    from history inner join anime on history.anime_id = anime.anime_id
-    order by date desc;
-    ''');
-    for (var item in lm1) {
-      Anime anime = Anime(
-          animeId: item['anime_id'] as int,
-          animeName: item['anime_name'] as String,
-          animeEpisodeCnt: 0,
-          animeCoverUrl: item['anime_cover_url'] as String);
-      Episode episode = Episode(
-        item['episode_number'] as int,
-        item['review_number'] as int,
-        dateTime: item['date'] as String,
-      );
-      Note episodeNote = Note(
-          anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
-      episodeNote =
-          await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-              episodeNote);
-      // debugPrint(episodeNote);
-      episodeNote.relativeLocalImages =
-          await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
-      episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
-    }
-    return episodeNotes;
-  }
-
-  //↓优化
-  static Future<List<Note>> getAllNotesByTableNoteAndKeyword(
-      int offset, int number, NoteFilter noteFilter) async {
-    debugPrint("sql: getAllNotesByTableNote");
-    List<Note> episodeNotes = [];
-    // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
-    // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
-    // var lm1 = await _database.rawQuery('''
-    // select episode_note.note_id, episode_note.note_content, episode_note.anime_id, episode_note.episode_number, history.date, anime.anime_name, anime.anime_cover_url, episode_note.review_number
-    // from episode_note, anime, history
-    // where episode_note.anime_id = anime.anime_id and episode_note.anime_id = history.anime_id and episode_note.episode_number = history.episode_number and episode_note.review_number = history.review_number
-    // order by history.date desc
-    // limit $number offset $offset;
-    // ''');
-
-    // 优化：不会筛选出笔记内容和图片都没有的行
-    String likeAnimeNameSql = "";
-    String likeNoteContentSql = "";
-    if (noteFilter.animeNameKeyword.isNotEmpty) {
-      likeAnimeNameSql =
-          "and anime.anime_name like '%${escapeStr(noteFilter.animeNameKeyword)}%'";
-    }
-    if (noteFilter.noteContentKeyword.isNotEmpty) {
-      likeNoteContentSql =
-          "and note_content like '%${escapeStr(noteFilter.noteContentKeyword)}%'";
-    }
-    String sql = '''
-      select anime.*, history.date, episode_note.episode_number, episode_note.review_number, episode_note.note_id, episode_note.note_content
-      from history, episode_note, anime
-      where history.anime_id = episode_note.anime_id and history.episode_number = episode_note.episode_number
-          and history.review_number = episode_note.review_number
-          and anime.anime_id = history.anime_id
-          $likeAnimeNameSql
-          and episode_note.note_id in(
-              select distinct episode_note.note_id
-              from episode_note inner join image on episode_note.note_id = image.note_id $likeNoteContentSql
-              union
-              select episode_note.note_id
-              from episode_note where note_content is not null and length(note_content) > 0 $likeNoteContentSql
-          )
-      order by history.date desc
-      limit $number offset $offset;
-    ''';
-    var lm1 = await database.rawQuery(sql);
-    for (var item in lm1) {
-      Anime anime = Anime(
-          animeId: item['anime_id'] as int, // 不能写成episode_note.anime_id，下面也是
-          animeName: item['anime_name'] as String,
-          animeCoverUrl: item['anime_cover_url'] as String,
-          animeEpisodeCnt: 0);
-      Episode episode = Episode(
-        item['episode_number'] as int,
-        item['review_number'] as int,
-        dateTime: item['date'] as String,
-      );
-      List<RelativeLocalImage> relativeLocalImages =
-          await getRelativeLocalImgsByNoteId(item['note_id'] as int);
-      Note episodeNote = Note(
-          episodeNoteId: item['note_id'] as int,
-          // 忘记设置了，导致都是进入笔记0
-          anime: anime,
-          episode: episode,
-          noteContent: item['note_content'] as String,
-          relativeLocalImages: relativeLocalImages,
-          imgUrls: []);
-      // // 如果没有图片，且笔记内容为空，则不添加。会导致无法显示分页查询
-      // if (episodeNote.relativeLocalImages.isEmpty &&
-      //     episodeNote.noteContent.isEmpty) continue;
-      episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
-    }
-    return episodeNotes;
-  }
-
-  static Future<List<Note>> getRateNotesByAnimeId(int animeId) async {
-    debugPrint("sql: getRateNotesByAnimeId");
-    List<Note> notes = [];
-    var lm1 = await database.rawQuery('''
-      select note_id, note_content, create_time, update_time from episode_note
-      where anime_id = $animeId and episode_number = 0 order by note_id desc;
-    ''');
-
-    // 遍历每个评价笔记
-    for (var item in lm1) {
-      // 查询这个笔记的图片
-      int noteId = item['note_id'] as int;
-      List<RelativeLocalImage> relativeLocalImages =
-          await getRelativeLocalImgsByNoteId(noteId);
-      // 然后再添加到列表中
-      notes.add(Note(
-          episodeNoteId: noteId,
-          anime: Anime(animeName: "", animeEpisodeCnt: 0),
-          episode: Episode(0, 1),
-          noteContent: item['note_content'] as String,
-          createTime: item['create_time'] as String? ?? "",
-          updateTime: item['update_time'] as String? ?? "",
-          relativeLocalImages: relativeLocalImages,
-          imgUrls: []));
-    }
-
-    return notes;
   }
 
   static createTableImage() async {
@@ -1262,7 +1056,7 @@ class SqliteUtil {
       image_local_path  TEXT,
       image_url         TEXT,
       image_origin_name TEXT,
-      FOREIGN KEY (note_id) REFERENCES episode_note (note_id) 
+      FOREIGN KEY (note_id) REFERENCES episode_note (note_id)
     );
     ''');
   }
@@ -1276,17 +1070,6 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<bool> existNoteId(int noteId) async {
-    var list = await database.rawQuery('''
-      select * from episode_note
-      where note_id = $noteId
-      ''');
-    if (list.isEmpty) {
-      return false;
-    }
-    return true;
-  }
-
   static deleteLocalImageByImageId(int imageId) async {
     debugPrint("sql: deleteLocalImageByImageLocalPath($imageId)");
     await database.rawDelete('''
@@ -1295,22 +1078,8 @@ class SqliteUtil {
     ''');
   }
 
-  static Future<List<RelativeLocalImage>> getRelativeLocalImgsByNoteId(
-      int noteId) async {
-    var lm = await database.rawQuery('''
-    select image_id, image_local_path from image
-    where note_id = $noteId;
-    ''');
-    List<RelativeLocalImage> relativeLocalImages = [];
-    for (var item in lm) {
-      relativeLocalImages.add(RelativeLocalImage(
-          item['image_id'] as int, item['image_local_path'] as String));
-    }
-    return relativeLocalImages;
-  }
-
   static Future<Anime> getCustomAnimeByAnimeName(String animeName) async {
-    animeName = escapeStr(animeName); // 先转义
+    animeName = EscapeUtil.escapeStr(animeName); // 先转义
     debugPrint("sql: getCustomAnimeByAnimeName($animeName)");
 
     var list = await database.rawQuery('''
@@ -1360,7 +1129,7 @@ class SqliteUtil {
 
   static Future<List<Anime>> getCustomAnimesIfContainAnimeName(
       String animeName) async {
-    animeName = escapeStr(animeName); // 先转义
+    animeName = EscapeUtil.escapeStr(animeName); // 先转义
     debugPrint("sql: getCustomAnimeByAnimeName($animeName)");
 
     var list = await database.rawQuery('''
@@ -1416,7 +1185,7 @@ class SqliteUtil {
           FOREIGN KEY (
               anime_id
           )
-          REFERENCES anime (anime_id) 
+          REFERENCES anime (anime_id)
       );
       ''');
   }

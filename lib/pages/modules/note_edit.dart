@@ -13,11 +13,12 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../dao/note_dao.dart';
 import '../../utils/theme_util.dart';
 
 class NoteEdit extends StatefulWidget {
-  Note episodeNote; // 可能会修改笔记内容，因此不能用final
-  NoteEdit(this.episodeNote, {Key? key}) : super(key: key);
+  Note note; // 可能会修改笔记内容，因此不能用final
+  NoteEdit(this.note, {Key? key}) : super(key: key);
 
   @override
   State<NoteEdit> createState() => _NoteEditState();
@@ -31,19 +32,19 @@ class _NoteEditState extends State<NoteEdit> {
   @override
   void initState() {
     super.initState();
-    noteContentController.text = widget.episodeNote.noteContent;
-    debugPrint("进入笔记${widget.episodeNote.episodeNoteId}");
+    noteContentController.text = widget.note.noteContent;
+    debugPrint("进入笔记${widget.note.episodeNoteId}");
     _loadData();
   }
 
   _loadData() async {
     Future(() {
-      return SqliteUtil.existNoteId(widget.episodeNote.episodeNoteId);
+      return NoteDao.existNoteId(widget.note.episodeNoteId);
     }).then((existNoteId) {
       if (!existNoteId) {
         // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
-        widget.episodeNote.episodeNoteId = 0;
-        Navigator.of(context).pop(widget.episodeNote);
+        widget.note.episodeNoteId = 0;
+        Navigator.of(context).pop(widget.note);
         showToast("未找到该笔记");
       }
       setState(() {
@@ -53,10 +54,10 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _onWillpop() {
-    Navigator.pop(context, widget.episodeNote);
+    Navigator.pop(context, widget.note);
     if (_updateNoteContent) {
-      SqliteUtil.updateEpisodeNoteContentByNoteId(
-          widget.episodeNote.episodeNoteId, widget.episodeNote.noteContent);
+      NoteDao.updateEpisodeNoteContentByNoteId(
+          widget.note.episodeNoteId, widget.note.noteContent);
     }
   }
 
@@ -88,19 +89,19 @@ class _NoteEditState extends State<NoteEdit> {
     return Scrollbar(
       child: ListView(
         children: [
-          widget.episodeNote.episode.number == 0
+          widget.note.episode.number == 0
               ? Container() // 若为0，表明是评价，不显示该行
               : ListTile(
                   style: ListTileStyle.drawer,
-                  leading: AnimeListCover(widget.episodeNote.anime),
+                  leading: AnimeListCover(widget.note.anime),
                   title: Text(
-                    widget.episodeNote.anime.animeName,
+                    widget.note.anime.animeName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textScaleFactor: ThemeUtil.smallScaleFactor,
                   ),
                   subtitle: Text(
-                    "第 ${widget.episodeNote.episode.number} 集 ${widget.episodeNote.episode.getDate()}",
+                    "第 ${widget.note.episode.number} 集 ${widget.note.episode.getDate()}",
                     textScaleFactor: ThemeUtil.tinyScaleFactor,
                   ),
                 ),
@@ -126,15 +127,14 @@ class _NoteEditState extends State<NoteEdit> {
       maxLines: null,
       onChanged: (value) {
         _updateNoteContent = true;
-        widget.episodeNote.noteContent = value;
+        widget.note.noteContent = value;
       },
     );
   }
 
   _buildGridImages({required int crossAxisCount}) {
     Color addColor = ThemeUtil.getCommonIconColor();
-    int itemCount =
-        widget.episodeNote.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
+    int itemCount = widget.note.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
@@ -150,7 +150,7 @@ class _NoteEditState extends State<NoteEdit> {
       itemCount: itemCount,
       itemBuilder: (BuildContext context, int imageIndex) {
         // 如果是最后一个下标，则设置添加图片图标
-        if (imageIndex == widget.episodeNote.relativeLocalImages.length) {
+        if (imageIndex == widget.note.relativeLocalImages.length) {
           return Container(
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
@@ -196,9 +196,8 @@ class _NoteEditState extends State<NoteEdit> {
                           ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
                       int imageId =
                           await SqliteUtil.insertNoteIdAndImageLocalPath(
-                              widget.episodeNote.episodeNoteId,
-                              relativeImagePath);
-                      widget.episodeNote.relativeLocalImages
+                              widget.note.episodeNoteId, relativeImagePath);
+                      widget.note.relativeLocalImages
                           .add(RelativeLocalImage(imageId, relativeImagePath));
                     }
                   } else {
@@ -214,7 +213,7 @@ class _NoteEditState extends State<NoteEdit> {
         return Stack(
           children: [
             NoteImgItem(
-              relativeLocalImages: widget.episodeNote.relativeLocalImages,
+              relativeLocalImages: widget.note.relativeLocalImages,
               initialIndex: imageIndex,
             ),
             // 删除按钮
@@ -266,13 +265,12 @@ class _NoteEditState extends State<NoteEdit> {
                 child: const Text("确认"),
                 onPressed: () {
                   RelativeLocalImage relativeLocalImage =
-                      widget.episodeNote.relativeLocalImages[index];
+                      widget.note.relativeLocalImages[index];
                   // 删除数据库记录、删除该页中的图片
                   SqliteUtil.deleteLocalImageByImageId(
                       relativeLocalImage.imageId);
-                  widget.episodeNote.relativeLocalImages.removeWhere(
-                      (element) =>
-                          element.imageId == relativeLocalImage.imageId);
+                  widget.note.relativeLocalImages.removeWhere((element) =>
+                      element.imageId == relativeLocalImage.imageId);
                   setState(() {});
                   Navigator.of(context).pop();
                 },

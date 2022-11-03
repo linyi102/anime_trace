@@ -9,6 +9,7 @@ import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 
+import '../../dao/note_dao.dart';
 import '../../models/anime.dart';
 import '../../components/note_img_grid.dart';
 import '../../utils/theme_util.dart';
@@ -36,7 +37,7 @@ class _RateListPageState extends State<RateListPage> {
 
   _loadData() {
     noteOk = false;
-    SqliteUtil.getRateNotesByAnimeId(anime.animeId).then((value) {
+    NoteDao.getRateNotesByAnimeId(anime.animeId).then((value) {
       notes = value;
       setState(() {
         noteOk = true;
@@ -113,7 +114,7 @@ class _RateListPageState extends State<RateListPage> {
     debugPrint("添加评价");
     Note episodeNote = Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
         relativeLocalImages: [], imgUrls: []);
-    SqliteUtil.insertEpisodeNote(episodeNote).then((value) {
+    NoteDao.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
       episodeNote.episodeNoteId = value;
       Navigator.push(

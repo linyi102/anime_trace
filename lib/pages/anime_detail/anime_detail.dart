@@ -31,6 +31,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../../dao/note_dao.dart';
 import 'anime_properties_page.dart';
 
 // ignore: must_be_immutable
@@ -170,7 +171,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           imgUrls: []);
       if (episode.isChecked()) {
         // 如果该集完成了，就去获取该集笔记（内容+图片）
-        episodeNote = await SqliteUtil
+        episodeNote = await NoteDao
             .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                 episodeNote);
         // debugPrint(
@@ -747,7 +748,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 // 一定要先添加笔记，否则episodeIndex会越界
                 _notes.add(episodeNote);
                 // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                _notes[episodeIndex] = await SqliteUtil
+                _notes[episodeIndex] = await NoteDao
                     .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                         episodeNote);
                 // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
@@ -1072,7 +1073,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             imgUrls: []);
         // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
         () async {
-          _notes[episodeIndex] = await SqliteUtil
+          _notes[episodeIndex] = await NoteDao
               .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                   episodeNote);
         }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式

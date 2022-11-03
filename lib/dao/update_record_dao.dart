@@ -28,7 +28,7 @@ class UpdateRecordDao {
         await SqliteUtil.database.query("update_record",
             columns: ["manual_update_time"],
             limit: pageParams.pageSize,
-            offset: pageParams.getOffsetWhenIndexStartZero(),
+            offset: pageParams.getOffset(),
             // 按日期分组，并倒序排序
             groupBy: "manual_update_time",
             orderBy: "manual_update_time desc");

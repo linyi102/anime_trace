@@ -7,7 +7,8 @@ import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:get/get.dart';
 
 class UpdateRecordController extends GetxController {
-  PageParams pageParams = PageParams(0, 10); // 动漫列表页刷新时也要传入该变量
+  PageParams pageParams =
+      PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
   bool enableBatchInsertUpdateRecord = true; // 一条条插入效率太慢，且有bug，所以开启批量插入
 
@@ -23,7 +24,7 @@ class UpdateRecordController extends GetxController {
   // 更新记录页全局更新
   Future<void> updateData() async {
     debugPrint("重新获取数据库内容并覆盖");
-    pageParams.pageIndex = 0; // 应该重置为0
+    pageParams.resetPageIndex();
     updateRecordVos.value = await UpdateRecordDao.findAll(pageParams);
   }
 
