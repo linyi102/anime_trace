@@ -20,7 +20,11 @@ class DirectoryPage extends StatefulWidget {
   State<DirectoryPage> createState() => _DirectoryPageState();
 }
 
-class _DirectoryPageState extends State<DirectoryPage> {
+class _DirectoryPageState extends State<DirectoryPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   bool _loadOk = false;
 
   @override
@@ -81,6 +85,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {

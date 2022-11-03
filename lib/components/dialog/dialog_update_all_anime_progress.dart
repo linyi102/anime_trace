@@ -56,14 +56,14 @@ dialogUpdateAllAnimeProgress(parentContext) {
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              child: const Text("后台更新"), // 不要写关闭，否则用户可能会因为点击这个而暂停更新，一直在等待更新界面
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+          // actions: [
+          //   TextButton(
+          //     child: const Text("后台更新"),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          // ],
         );
       });
 }
