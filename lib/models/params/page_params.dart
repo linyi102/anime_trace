@@ -8,11 +8,21 @@ class PageParams {
   }
 
   int getOffset() {
+    // 如果下标为0，则偏移0个数据
     if (baseIndex == 0) {
-      // 如果下标为0，则偏移0个数据
       return pageIndex * pageSize;
     } else {
       return (pageIndex - 1) * pageSize;
+    }
+  }
+
+  // 已查询的数量
+  int getQueriedSize() {
+    // 如果下标从0开始，那么最开始的查询数量是pageSize
+    if (baseIndex == 0) {
+      return (pageIndex + 1) * pageSize;
+    } else {
+      return pageIndex * pageSize;
     }
   }
 
