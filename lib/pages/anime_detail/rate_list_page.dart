@@ -54,19 +54,11 @@ class _RateListPageState extends State<RateListPage> {
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
-            // ElevatedButton(
-            //     onPressed: () {},
-            //     child: Row(
-            //       children: [
-            //         Text("评价"),
-            //         SizedBox(width: 5),
-            //         Icon(Entypo.feather,size: 15,),
-            //       ],
-            //     ))
             IconButton(
+                tooltip: "评价",
                 onPressed: () => _createRateNote(context),
-                icon:
-                    Icon(Entypo.feather, color: ThemeUtil.getCommonIconColor()))
+                icon: Icon(Icons.edit_note,
+                    color: ThemeUtil.getCommonIconColor()))
           ]),
         ),
         noteOk
@@ -205,6 +197,7 @@ class _RateListPageState extends State<RateListPage> {
         style: ListTileStyle.drawer,
         title: Text(
           timeStr,
+          textScaleFactor: ThemeUtil.tinyScaleFactor,
           style: TextStyle(
               fontWeight: FontWeight.normal,
               color: ThemeUtil.getCommentColor()),

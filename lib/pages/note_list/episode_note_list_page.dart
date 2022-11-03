@@ -94,10 +94,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
       },
       child: FadeAnimatedSwitcher(
           loadOk: loadEpisodeNoteOk, destWidget: _buildEpisodeNotes()),
-      // child: loadEpisodeNoteOk
-      //     ? Scrollbar(
-      //         controller: _noteScrollController, child: _buildEpisodeNotes())
-      //     : loadingWidget(context),
     );
   }
 

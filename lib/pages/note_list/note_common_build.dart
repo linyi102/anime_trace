@@ -27,8 +27,6 @@ class NoteCommonBuild {
     bool isRateNote = note.episode.number == 0;
 
     return ListTile(
-      // style: ListTileStyle.drawer,
-      // dense: true,
       leading: GestureDetector(
         onTap: () {
           _enterAnimeDetail(context: context, anime: note.anime);
@@ -39,20 +37,19 @@ class NoteCommonBuild {
           reviewNumber: note.episode.reviewNumber,
         ),
       ),
-      trailing: IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              FadeRoute(builder: (context) {
-                return NoteEdit(note);
-              }),
-            ).then((value) {
-              note = value; // 更新修改
-              setState(() {});
-            });
-          },
-          // icon: const Icon(Icons.more_vert_rounded)),
-          icon:
-              Icon(Icons.navigate_next, color: ThemeUtil.getCommonIconColor())),
+      // trailing: IconButton(
+      //     onPressed: () {
+      //       Navigator.of(context).push(
+      //         FadeRoute(builder: (context) {
+      //           return NoteEdit(note);
+      //         }),
+      //       ).then((value) {
+      //         note = value; // 更新修改
+      //         setState(() {});
+      //       });
+      //     },
+      //     // navigate_next, edit_note
+      //     icon: Icon(Icons.edit_note, color: ThemeUtil.getCommonIconColor())),
       title: GestureDetector(
         onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
         child: Text(

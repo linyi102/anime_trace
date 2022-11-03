@@ -133,6 +133,8 @@ class _RateNoteListPageState extends State<RateNoteListPage>
                     child: Flex(
                       direction: Axis.vertical,
                       children: [
+                        // 因为listtile缺少subtitle，所以会靠近卡片顶部，因此添加一个sizedbox
+                        const SizedBox(height: 10),
                         // 动漫行
                         NoteCommonBuild.buildAnimeListTile(
                             setState: setState,
@@ -163,6 +165,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
         style: ListTileStyle.drawer,
         title: Text(
           timeStr,
+          textScaleFactor: ThemeUtil.tinyScaleFactor,
           style: TextStyle(
               fontWeight: FontWeight.normal,
               color: ThemeUtil.getCommentColor()),
