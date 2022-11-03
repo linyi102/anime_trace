@@ -36,7 +36,7 @@ class NoteDao {
 
   // 所有评价列表。分页
   static Future<List<Note>> getRateNotes(
-      {required PageParams pageParams}) async {
+      {required PageParams pageParams, required NoteFilter noteFilter}) async {
     debugPrint("sql: getRateNotes");
     List<Note> rateNotes = [];
     List<Map<String, Object?>> list = await database.rawQuery('''
