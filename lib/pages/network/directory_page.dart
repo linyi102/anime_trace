@@ -101,9 +101,8 @@ class _DirectoryPageState extends State<DirectoryPage>
               FadeAnimatedSwitcher(
                 loadOk: _loadOk,
                 destWidget: _showAnimeList(),
-                specifiedLoadingWidget: const Center(
-                  child: RefreshProgressIndicator(),
-                ),
+                specifiedLoadingWidget:
+                    const Center(child: RefreshProgressIndicator()),
               )
             ],
           ),

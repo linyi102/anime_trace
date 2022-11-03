@@ -51,6 +51,8 @@ class _BackUpFileListState extends State<BackUpFileList> {
         body: FadeAnimatedSwitcher(
           loadOk: loadOk,
           destWidget: _buildFileList(),
+          specifiedLoadingWidget:
+              const Center(child: RefreshProgressIndicator()),
         ));
   }
 
