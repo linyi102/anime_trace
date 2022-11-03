@@ -3,7 +3,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
-import 'package:flutter_test_future/utils/dao/update_record_dao.dart';
+import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:get/get.dart';
 
 class UpdateRecordController extends GetxController {

@@ -9,6 +9,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
+import 'anime_list_in_source.dart';
+
 /// 单个搜索源详细页面
 class SourceDetail extends StatefulWidget {
   final ClimbWebsite climbWebstie;
@@ -46,8 +48,7 @@ class _SourceDetailState extends State<SourceDetail> {
               enabled: !climbWebstie.discard,
               title: const Text("启动搜索"),
               leading: !climbWebstie.discard && climbWebstie.enable
-                  ? Icon(Icons.check_box,
-                      color: ThemeUtil.getPrimaryColor())
+                  ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryColor())
                   : Icon(
                       Icons.check_box_outline_blank,
                       color: ThemeUtil.getPrimaryIconColor(),
@@ -83,6 +84,18 @@ class _SourceDetailState extends State<SourceDetail> {
               onTap: () {
                 Navigator.of(context).push(FadeRoute(builder: (context) {
                   return AnimeClimbOneWebsite(climbWebStie: climbWebstie);
+                }));
+              },
+            ),
+            ListTile(
+              title: const Text("迁移动漫"),
+              leading: Icon(
+                Icons.move_down,
+                color: ThemeUtil.getPrimaryIconColor(),
+              ),
+              onTap: () {
+                Navigator.of(context).push(FadeRoute(builder: (context) {
+                  return AnimeListInSource(sourceKeyword: climbWebstie.keyword);
                 }));
               },
             ),

@@ -510,7 +510,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               child: ListTile(
                 title: const Text("迁移动漫"),
                 style: ListTileStyle.drawer,
-                leading: const Icon(Icons.change_circle_outlined),
+                leading: const Icon(Icons.move_down),
                 onTap: () {
                   Navigator.of(popMenuContext).push(
                     FadeRoute(

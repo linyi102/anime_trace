@@ -23,27 +23,26 @@ class Anime {
   String productionCompany;
   String officialSite;
 
-  Anime({
-    this.animeId = 0,
-    required this.animeName,
-    required this.animeEpisodeCnt,
-    this.tagName = "",
-    this.animeCoverUrl = "",
-    this.checkedEpisodeCnt = 0,
-    this.animeDesc = "",
-    this.reviewNumber = 1,
-    this.animeUrl = "",
-    this.premiereTime = "",
-    this.nameAnother = "",
-    this.nameOri = "",
-    this.authorOri = "",
-    this.area = "",
-    this.category = "",
-    this.playStatus = "",
-    this.productionCompany = "",
-    this.officialSite = "",
-    this.rate = 0
-  });
+  Anime(
+      {this.animeId = 0,
+      required this.animeName,
+      this.animeEpisodeCnt = 0,
+      this.tagName = "",
+      this.animeCoverUrl = "",
+      this.checkedEpisodeCnt = 0,
+      this.animeDesc = "",
+      this.reviewNumber = 1,
+      this.animeUrl = "",
+      this.premiereTime = "",
+      this.nameAnother = "",
+      this.nameOri = "",
+      this.authorOri = "",
+      this.area = "",
+      this.category = "",
+      this.playStatus = "",
+      this.productionCompany = "",
+      this.officialSite = "",
+      this.rate = 0});
 
   @override
   String toString() {

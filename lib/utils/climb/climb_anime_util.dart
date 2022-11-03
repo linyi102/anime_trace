@@ -5,7 +5,7 @@ import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
-import 'package:flutter_test_future/utils/dao/update_record_dao.dart';
+import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -85,7 +85,8 @@ class ClimbAnimeUtil {
     for (var anime in animes) {
       // debugPrint("${anime.animeName}：${anime.playStatus}");
       // 跳过完结动漫，还要豆瓣
-      if (anime.playStatus.contains("完结") || anime.animeUrl.contains("douban")) {
+      if (anime.playStatus.contains("完结") ||
+          anime.animeUrl.contains("douban")) {
         skipUpdateCnt++;
         continue;
       }
@@ -145,7 +146,8 @@ class ClimbAnimeUtil {
             // 直接添加到里面，注意需要按更新时间倒序排序，保证与重新查询出来的结果一致
             // 因为Vo里把animeId改为了anime，所以还转要Vo
             // BUG：尽管都添加到了controller里的数组，然鹅因为分页的缘故会自动请求数据库中更新记录表中的数据，导致被覆盖，而且此时数据库还没更新完毕，所以数据会不全
-            if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) { // 只手动添加集数变大的更新记录
+            if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
+              // 只手动添加集数变大的更新记录
               updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
             }
           }

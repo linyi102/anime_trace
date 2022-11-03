@@ -10,8 +10,8 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class AnimeClimbAllWebsite extends StatefulWidget {
-  final int animeId;
-  final String keyword;
+  final int animeId; // 需要迁移的动漫id
+  final String keyword; // 搜索关键字
 
   const AnimeClimbAllWebsite({this.animeId = 0, this.keyword = "", Key? key})
       : super(key: key);
