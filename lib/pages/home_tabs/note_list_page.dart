@@ -170,6 +170,7 @@ class _NoteListPageState extends State<NoteListPage>
                             ..text = noteFilter.noteContentKeyword,
                           decoration: InputDecoration(
                               labelText: "笔记关键字",
+                              helperText: "评价页暂不支持查询",
                               border: InputBorder.none,
                               suffixIcon: IconButton(
                                   onPressed: () {
