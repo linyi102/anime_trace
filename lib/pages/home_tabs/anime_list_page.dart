@@ -19,6 +19,7 @@ import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 
 import '../../components/common/common_function.dart';
+import '../../models/params/anime_sort_cond.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -30,10 +31,14 @@ class AnimeListPage extends StatefulWidget {
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  AnimeSortCond animeSortCond = AnimeSortCond(
+      specSortColumnIdx:
+          SPUtil.getInt("AnimeSortCondSpecSortColumnIdx", defaultValue: 3),
+      desc: SPUtil.getBool("AnimeSortCondDesc", defaultValue: true));
 
   // 数据加载
   bool _loadOk = false;
-  List<int> pageIndex = List.generate(tags.length, (index) => 1); // 初始页都为1
+  List<int> pageIndexList = List.generate(tags.length, (index) => 1); // 初始页都为1
   final int _pageSize = 50;
 
   // 多选
@@ -74,12 +79,18 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   void _loadData() async {
+    // 首次或重新渲染时，重置页号，就能保证之后也能加载更多数据了
+    for (int i = 0; i < pageIndexList.length; ++i) {
+      pageIndexList[i] = 1;
+    }
+
     debugPrint("开始加载数据");
     Future(() async {
       animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
       for (int i = 0; i < tags.length; ++i) {
-        animesInTag[i] =
-            await SqliteUtil.getAllAnimeBytagName(tags[i], 0, _pageSize);
+        animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(
+            tags[i], 0, _pageSize,
+            animeSortCond: animeSortCond);
         // debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
       }
     }).then((value) {
@@ -151,6 +162,70 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   List<Widget> _getActions() {
     List<Widget> actions = [];
+
+    actions.add(IconButton(
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (dialogContext) {
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  List<Widget> sortCondList = [];
+
+                  for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
+                    var sortCondItem = AnimeSortCond.sortConds[i];
+                    bool isChecked = animeSortCond.specSortColumnIdx == i;
+                    sortCondList.add(ListTile(
+                      title: Text(sortCondItem.showName),
+                      leading: isChecked
+                          ? Icon(Icons.radio_button_checked,
+                              color: ThemeUtil.getPrimaryIconColor())
+                          : const Icon(Icons.radio_button_off),
+                      onTap: () {
+                        // 不相等时才设置
+                        if (animeSortCond.specSortColumnIdx != i) {
+                          animeSortCond.specSortColumnIdx = i;
+                          SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", i);
+                          setState(() {}); // 更新对话框里的状态
+                          // 改变排序时，需要滚动到顶部，否则会加载很多页
+                          _scrollControllers[_tabController.index].jumpTo(0);
+                          _loadData();
+                        }
+                      },
+                    ));
+                  }
+                  sortCondList.add(const Divider());
+                  sortCondList.add(ListTile(
+                    title: const Text("降序"),
+                    leading: animeSortCond.desc
+                        ? Icon(Icons.check_box_outlined,
+                            color: ThemeUtil.getPrimaryIconColor())
+                        : const Icon(Icons.check_box_outline_blank),
+                    onTap: () {
+                      animeSortCond.desc = !animeSortCond.desc;
+                      SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
+                      setState(() {}); // 更新对话框里的状态
+                      // 改变排序时，需要滚动到顶部，否则会加载很多页
+                      _scrollControllers[_tabController.index].jumpTo(0);
+                      _loadData();
+                    },
+                  ));
+
+                  return AlertDialog(
+                    title: const Text("动漫排序"),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: sortCondList,
+                      ),
+                    ),
+                  );
+                },
+              );
+            });
+      },
+      icon: const Icon(Icons.filter_list),
+      tooltip: "动漫排序",
+    ));
     actions.add(IconButton(
       onPressed: () {
         showFlexibleBottomSheet(
@@ -186,61 +261,6 @@ class _AnimeListPageState extends State<AnimeListPage>
       icon: const Icon(Entypo.search),
       tooltip: "搜索动漫",
     ));
-    // actions.add(IconButton(
-    //   onPressed: () {
-    //     showDialog(
-    //         context: context,
-    //         builder: (context) {
-    //           return AlertDialog(
-    //             title: Text("排序"),
-    //             content: SingleChildScrollView(
-    //               child: Column(
-    //                 children: [
-    //                   ListTile(
-    //                     title: Text("名称"),
-    //                     leading: Icon(Icons.radio_button_off),
-    //                     trailing: Icon(FontAwesome5.sort_amount_up),
-    //                   ),
-    //                   ListTile(
-    //                     title: Text("移动时间"),
-    //                     leading: Icon(Icons.radio_button_on),
-    //                     trailing: Icon(FontAwesome5.sort_amount_up),
-    //                   ),
-    //                   ListTile(
-    //                     title: Text("首播时间"),
-    //                     leading: Icon(Icons.radio_button_on),
-    //                     trailing: Icon(FontAwesome5.sort_amount_up),
-    //                   ),
-    //                   ListTile(
-    //                     title: Text("最近观看"),
-    //                     leading: Icon(Icons.radio_button_on),
-    //                     trailing: Icon(FontAwesome5.sort_amount_up),
-    //                   ),
-    //                   ListTile(
-    //                     title: Text("已观看集数"),
-    //                     leading: Icon(Icons.radio_button_on),
-    //                     trailing: Icon(FontAwesome5.sort_amount_up),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           );
-    //         });
-    //   },
-    //   icon: const Icon(Icons.sort),
-    //   tooltip: "排序",
-    // ));
-    // actions.add(IconButton(
-    //     onPressed: () {
-    //       // TODO 如何确保全部更新完毕后才重新才加载数据
-    //       ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-    //         if (value) {
-    //           // 为true则会显示更新进度条
-    //           dialogUpdateAllAnimeProgress(context);
-    //         }
-    //       });
-    //     },
-    //     icon: const Icon(Icons.refresh_rounded)));
     return actions;
   }
 
@@ -349,13 +369,14 @@ class _AnimeListPageState extends State<AnimeListPage>
     // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
     // 当到达100(50*2)时，会再次请求50个数据
-    if (index + 10 == _pageSize * (pageIndex[i])) {
+    if (index + 10 == _pageSize * (pageIndexList[i])) {
       // +10提前请求
-      pageIndex[i]++;
+      pageIndexList[i]++;
       debugPrint("再次请求$_pageSize个数据");
       Future(() {
         return SqliteUtil.getAllAnimeBytagName(
-            tags[i], animesInTag[i].length, _pageSize);
+            tags[i], animesInTag[i].length, _pageSize,
+            animeSortCond: animeSortCond);
       }).then((value) {
         debugPrint("请求结束");
         animesInTag[i].addAll(value);

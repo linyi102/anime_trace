@@ -3,18 +3,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/episode.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/models/history_plus.dart';
-import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/models/anime_history_record.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/history_plus.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import '../models/params/anime_sort_cond.dart';
 import 'escape_util.dart';
 
 class SqliteUtil {
@@ -784,14 +782,22 @@ class SqliteUtil {
     return checkedEpisodeCntList[0]["cnt"] as int;
   }
 
-  static getAllAnimeBytagName(String tagName, int offset, int number) async {
+  static getAllAnimeBytagName(String tagName, int offset, int number,
+      {required AnimeSortCond animeSortCond}) async {
     debugPrint("sql: getAllAnimeBytagName");
+
+    String orderSql = '''
+    order by ${AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx].columnName}
+    ''';
+    if (animeSortCond.desc) {
+      orderSql += ' desc ';
+    }
 
     var list = await database.rawQuery('''
     select *
     from anime
     where tag_name = '$tagName'
-    order by last_mode_tag_time desc -- 按最后修改标签时间倒序排序，保证最新修改标签在列表上面
+    $orderSql
     limit $number offset $offset;
     '''); // 按anime_id倒序，保证最新添加的动漫在最上面
 
