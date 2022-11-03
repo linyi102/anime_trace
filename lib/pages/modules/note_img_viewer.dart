@@ -103,7 +103,7 @@ class _ImageViewerState extends State<ImageViewer> {
     setState(() {});
     // 延时，确保滚动轴出来后再移动
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
-      scrollToCurrentImage(); // 退出全屏后移动图片轴```到当前图片
+      scrollToCurrentImage(); // 退出全屏后移动图片轴到当前图片
     });
   }
 
@@ -189,27 +189,34 @@ class _ImageViewerState extends State<ImageViewer> {
           imageProvider: FileImage(File(imageLocalPaths[currentIndex])),
           // 错误时显示提示
           errorBuilder: (buildContext, object, stackTrace) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("无法正常显示图片"),
-                const Text("请检查目录下是否存在该图片"),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .push(FadeRoute(
-                              builder: (context) => const ImagePathSetting()))
-                          .then((dirChanged) {
-                        if (dirChanged) {
-                          debugPrint("修改了图片目录，重新获取本地图片");
-                          _getImageLocalPaths();
-                          setState(() {});
-                          dirChangedWrapper = true; // 用于图片浏览器的上级页面更新状态
-                        }
-                      });
-                    },
-                    child: const Text("点此处设置目录"))
-              ],
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("无法正常显示图片"),
+                  const Text("请检查目录下是否存在该图片"),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(FadeRoute(
+                                builder: (context) => const ImagePathSetting()))
+                            .then((dirChanged) {
+                          if (dirChanged) {
+                            debugPrint("修改了图片目录，重新获取本地图片");
+                            _getImageLocalPaths();
+                            setState(() {});
+                            dirChangedWrapper = true; // 用于图片浏览器的上级页面更新状态
+                          }
+                        });
+                      },
+                      child: const Text("点此处设置目录")),
+                  // 当构建错误组件时，全屏后无法单击退出全屏，所以这里提供文字按钮
+                  if (fullScreen)
+                    TextButton(
+                        onPressed: () => _exitFullScreen(),
+                        child: const Text("退出全屏"))
+                ],
+              ),
             );
           },
         ),

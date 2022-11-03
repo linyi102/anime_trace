@@ -148,17 +148,19 @@ class AnimeCoverDetail extends StatelessWidget {
     });
   }
 
-  Column _buildErrorInfo() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Text("X_X"),
-        Text("无法正常显示图片"),
-        SizedBox(height: 10),
-        Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
-        SizedBox(height: 10),
-        Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
-      ],
+  Widget _buildErrorInfo() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: const [
+          Text("X_X"),
+          Text("无法正常显示图片"),
+          SizedBox(height: 10),
+          Text("网络图片失效的可能原因：\n1. 链接失效\n2. 网络不可用"),
+          SizedBox(height: 10),
+          Text("本地图片失效的可能原因：\n1. 该图片不在设置的目录下\n2. 图片曾经重命名过")
+        ],
+      ),
     );
   }
 
