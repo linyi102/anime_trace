@@ -116,6 +116,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   Widget build(BuildContext context) {
     return FadeAnimatedSwitcher(
         loadOk: _loadOk,
+        specifiedLoadingWidget: _waitDataScaffold(),
         destWidget: Scaffold(
           appBar: AppBar(
             title: Text(multiSelected ? "${mapSelected.length}" : "动漫",
@@ -481,11 +482,9 @@ class _AnimeListPageState extends State<AnimeListPage>
         appBar: AppBar(
           title: const Text(
             "动漫",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600),
           ),
-          actions: _getActions(),
+          // actions: _getActions(),
         ));
   }
 
