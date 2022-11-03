@@ -816,8 +816,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               color: ThemeUtil.getCardColor(),
               child: MaterialButton(
                 padding: _notes[noteIdx].noteContent.isEmpty
-                    ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(0, 5, 0, 0), // 5是笔记内容和上边界之间的距离
+                    ? const EdgeInsets.fromLTRB(0, 15, 0, 15)
+                    : const EdgeInsets.fromLTRB(0, 5, 0, 15),
                 onPressed: () {
                   Navigator.of(context).push(
                     // MaterialPageRoute(

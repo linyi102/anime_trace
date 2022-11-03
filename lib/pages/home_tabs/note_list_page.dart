@@ -60,7 +60,10 @@ class _NoteListPageState extends State<NoteListPage>
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [_buildSearchIconButton(setState), _buildMoreIconButton()],
+        actions: [
+          _buildSearchIconButton(setState),
+          _buildImageSettingIconButton()
+        ],
         bottom: _buildTabBar(),
       ),
       body: TabBarView(
@@ -105,36 +108,21 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  PopupMenuButton<dynamic> _buildMoreIconButton() {
-    return PopupMenuButton(
-      icon: const Icon(Icons.more_vert),
-      offset: const Offset(0, 50),
-      itemBuilder: (BuildContext context) {
-        return [
-          PopupMenuItem(
-            padding: const EdgeInsets.all(0),
-            child: ListTile(
-              title: const Text("图片设置"),
-              leading: const Icon(Icons.image_outlined),
-              style: ListTileStyle.drawer,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, FadeRoute(
-                  builder: (context) {
-                    return const ImagePathSetting();
-                  },
-                )).then((dirChanged) {
-                  if (dirChanged) {
-                    debugPrint("修改了图片目录，更新状态");
-                    setState(() {});
-                  }
-                });
-              },
-            ),
-          ),
-        ];
-      },
-    );
+  _buildImageSettingIconButton() {
+    return IconButton(
+        onPressed: () {
+          Navigator.push(context, FadeRoute(
+            builder: (context) {
+              return const ImagePathSetting();
+            },
+          )).then((dirChanged) {
+            if (dirChanged) {
+              debugPrint("修改了图片目录，更新状态");
+              setState(() {});
+            }
+          });
+        },
+        icon: const Icon(Icons.settings));
   }
 
   IconButton _buildSearchIconButton(setState) {

@@ -112,7 +112,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                   elevation: 0,
                   child: MaterialButton(
                     elevation: 0,
-                    padding: const EdgeInsets.all(0),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
                     onPressed: () {
                       Navigator.of(context).push(
                         // MaterialPageRoute(

@@ -37,19 +37,19 @@ class NoteCommonBuild {
           reviewNumber: note.episode.reviewNumber,
         ),
       ),
-      // trailing: IconButton(
-      //     onPressed: () {
-      //       Navigator.of(context).push(
-      //         FadeRoute(builder: (context) {
-      //           return NoteEdit(note);
-      //         }),
-      //       ).then((value) {
-      //         note = value; // 更新修改
-      //         setState(() {});
-      //       });
-      //     },
-      //     // navigate_next, edit_note
-      //     icon: Icon(Icons.edit_note, color: ThemeUtil.getCommonIconColor())),
+      trailing: IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              FadeRoute(builder: (context) {
+                return NoteEdit(note);
+              }),
+            ).then((value) {
+              note = value; // 更新修改
+              setState(() {});
+            });
+          },
+          // navigate_next
+          icon: Icon(Icons.edit_note, color: ThemeUtil.getCommonIconColor())),
       title: GestureDetector(
         onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
         child: Text(
