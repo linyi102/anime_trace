@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/img_widget.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -137,7 +139,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   void _loadEpisode() async {
-    // await Future.delayed(Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
     _episodes = [];
     _notes = [];
     _loadEpisodeOk = false;
@@ -248,6 +250,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _buildSliverListBody() {
+    // 不能使用MyAnimatedSwitcher，因为父级是slivers: []
     if (_loadEpisodeOk) {
       return SliverPadding(
         padding: const EdgeInsets.all(0),
@@ -262,10 +265,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         ),
       );
     } else {
-      // 还没加载完毕时显示加载圈
+      // 还没加载完毕显示加载组件
       return SliverList(
-          delegate: SliverChildListDelegate(
-              [const Center(child: RefreshProgressIndicator())]));
+          delegate: SliverChildListDelegate([loadingWidget(context)]));
     }
   }
 

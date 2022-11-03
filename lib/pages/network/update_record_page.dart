@@ -32,21 +32,18 @@ class UpdateRecordPage extends StatelessWidget {
             }
           });
         },
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: updateRecordController.updateRecordVos.isEmpty
-              ? _buildEmptyDataPage(context)
-              : Column(
-                  children: [
-                    // _buildUpdateProgress(),
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: _buildUpdateRecordList(updateRecordController),
-                    )),
-                  ],
-                ),
-        ),
+        child: updateRecordController.updateRecordVos.isEmpty
+            ? _buildEmptyDataPage(context)
+            : Column(
+                children: [
+                  // _buildUpdateProgress(),
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: _buildUpdateRecordList(updateRecordController),
+                  )),
+                ],
+              ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
@@ -37,17 +38,15 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
         title: Text("动漫迁移 (${animes.length})",
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
-      body: loadOk
-          ? animes.isNotEmpty
-              ? _buildAnimesListView()
-              : emptyDataHint("什么都没找到")
-          : const Center(
-              child: RefreshProgressIndicator(),
-            ),
+      body: FadeAnimatedSwitcher(
+        destWidget: _buildAnimesListView(),
+        loadOk: loadOk,
+      ),
     );
   }
 
   _buildAnimesListView() {
+    if (animes.isEmpty) return emptyDataHint("什么都没找到");
     return ListView.builder(
         itemCount: animes.length,
         itemBuilder: ((context, index) {

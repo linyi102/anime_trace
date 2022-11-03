@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/models/history_plus.dart';
 import 'package:flutter_test_future/models/anime_history_record.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -60,16 +61,11 @@ class _HistoryPageState extends State<HistoryPage> {
               const Text("历史", style: TextStyle(fontWeight: FontWeight.w600))),
       body: RefreshIndicator(
           // 下拉刷新
-          onRefresh: () async {
-            _loadData(selectedYear);
-          },
+          onRefresh: () async => _loadData(selectedYear),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: !yearLoadOk.containsKey(selectedYear)
-                ? Container(
-                    key: UniqueKey(),
-                    // color: Colors.white,
-                  )
+                ? loadingWidget(context)
                 : _buildHistory(),
           )),
     );

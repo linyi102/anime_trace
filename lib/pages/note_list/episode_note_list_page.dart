@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -35,7 +37,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     _loadEpisodeNoteData();
   }
 
-  void _loadEpisodeNoteData() {
+  void _loadEpisodeNoteData() async {
     loadEpisodeNoteOk = false;
     episodeNotePageParams.resetPageIndex();
     Future(() {
@@ -87,13 +89,15 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   Widget build(BuildContext context) {
     super.build(context);
     return RefreshIndicator(
-      child: loadEpisodeNoteOk
-          ? Scrollbar(
-              controller: _noteScrollController, child: _buildEpisodeNotes())
-          : const Center(child: RefreshProgressIndicator()),
       onRefresh: () async {
         _loadEpisodeNoteData();
       },
+      child: FadeAnimatedSwitcher(
+          loadOk: loadEpisodeNoteOk, destWidget: _buildEpisodeNotes()),
+      // child: loadEpisodeNoteOk
+      //     ? Scrollbar(
+      //         controller: _noteScrollController, child: _buildEpisodeNotes())
+      //     : loadingWidget(context),
     );
   }
 

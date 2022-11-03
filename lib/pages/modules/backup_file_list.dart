@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -13,6 +15,7 @@ class BackUpFileList extends StatefulWidget {
 
 class _BackUpFileListState extends State<BackUpFileList> {
   List<File> files = [];
+  bool loadOk = false;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _BackUpFileListState extends State<BackUpFileList> {
     files.sort((a, b) {
       return b.mTime.toString().compareTo(a.mTime.toString());
     });
+    loadOk = true;
     setState(() {});
   }
 
@@ -44,14 +48,14 @@ class _BackUpFileListState extends State<BackUpFileList> {
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        body: files.isEmpty
-            ? const Center(
-                child: RefreshProgressIndicator(),
-              )
-            : _buildFileList());
+        body: FadeAnimatedSwitcher(
+          loadOk: loadOk,
+          destWidget: _buildFileList(),
+        ));
   }
 
   _buildFileList() {
+    if (files.isEmpty) return emptyDataHint("没有找到备份文件");
     return Scrollbar(
       child: ListView.builder(
         itemCount: files.length,

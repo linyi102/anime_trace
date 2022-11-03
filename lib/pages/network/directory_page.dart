@@ -1,5 +1,6 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
@@ -97,19 +98,13 @@ class _DirectoryPageState extends State<DirectoryPage>
             controller: _scrollController,
             children: [
               _buildFilter(),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: _loadOk
-                    ? _showAnimeList()
-                    : Container(
-                        // padding和_showAnimeList()里的暂无数据保持一致，否则没有数据时，「暂无数据」会突然往上移动
-                        padding: const EdgeInsets.only(top: 25),
-                        child: Center(
-                          key: UniqueKey(),
-                          child: const RefreshProgressIndicator(),
-                        ),
-                      ),
-              ),
+              FadeAnimatedSwitcher(
+                loadOk: _loadOk,
+                destWidget: _showAnimeList(),
+                specifiedLoadingWidget: const Center(
+                  child: RefreshProgressIndicator(),
+                ),
+              )
             ],
           ),
         ),

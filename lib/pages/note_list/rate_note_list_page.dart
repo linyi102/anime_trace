@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -87,10 +88,12 @@ class _RateNoteListPageState extends State<RateNoteListPage>
   Widget build(BuildContext context) {
     super.build(context);
     return RefreshIndicator(
-      child: loadRateNodeOk
-          ? Scrollbar(
-              controller: _rateScrollController, child: _buildRateNotes())
-          : const Center(child: RefreshProgressIndicator()),
+      child: FadeAnimatedSwitcher(
+          loadOk: loadRateNodeOk,
+          destWidget: Scrollbar(
+            controller: _rateScrollController,
+            child: _buildRateNotes(),
+          )),
       onRefresh: () async {
         _loadRateNoteData();
       },

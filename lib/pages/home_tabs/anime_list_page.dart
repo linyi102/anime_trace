@@ -2,6 +2,7 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
@@ -32,7 +33,6 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   // 数据加载
   bool _loadOk = false;
-  bool _transitOk = false;
   List<int> pageIndex = List.generate(tags.length, (index) => 1); // 初始页都为1
   final int _pageSize = 50;
 
@@ -51,11 +51,6 @@ class _AnimeListPageState extends State<AnimeListPage>
       animesInTag.add([]); // 先添加元素List，然后才能用下标访问
       _scrollControllers.add(ScrollController()); // 为每个清单提供单独的滚动控制器
     }
-    Future.delayed(const Duration(milliseconds: 1)).then((value) {
-      setState(() {
-        _transitOk = true;
-      });
-    });
 
     _loadData();
     // 顶部tab控制器
@@ -108,82 +103,50 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
-      // 然后再通过_loadData覆盖掉旧数据
-      // 美化：显示旧数据时也由空白页面过渡
-      child: !_loadOk && animeCntPerTag.isEmpty
-          ? _waitDataScaffold()
-          : !_transitOk
-              ? _waitDataScaffold()
-              : Scaffold(
-                  // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-                  appBar: AppBar(
-                    title: Text(multiSelected ? "${mapSelected.length}" : "动漫",
-                        style: const TextStyle(fontWeight: FontWeight.w600)),
-                    leading: multiSelected
-                        ? IconButton(
-                            onPressed: () {
-                              _quitMultiSelectState();
-                            },
-                            icon: const Icon(Icons.close))
-                        : null,
-                    actions:
-                        multiSelected ? _getActionsOnMulti() : _getActions(),
-                    bottom: PreferredSize(
-                      // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                      preferredSize: const Size.fromHeight(kToolbarHeight),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: TabBar(
-                          tabs: _buildTagAndAnimeCnt(),
-                          // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
-                          controller: _tabController,
-                          padding: const EdgeInsets.all(2),
-                          // 居中，而不是靠左下
-                          isScrollable: true,
-                          // 清单可以滑动，避免拥挤
-                          labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          indicatorSize: TabBarIndicatorSize.label,
-                          // 第三方指示器样式
-                          indicator: MaterialIndicator(
-                            horizontalPadding: 8.5,
-                            color: ThemeUtil.getPrimaryColor(),
-                            paintingStyle: PaintingStyle.fill,
-                          ),
-                        ),
-                      ),
-                    ),
+    return FadeAnimatedSwitcher(
+        loadOk: _loadOk,
+        destWidget: Scaffold(
+          appBar: AppBar(
+            title: Text(multiSelected ? "${mapSelected.length}" : "动漫",
+                style: const TextStyle(fontWeight: FontWeight.w600)),
+            leading: multiSelected
+                ? IconButton(
+                    onPressed: () {
+                      _quitMultiSelectState();
+                    },
+                    icon: const Icon(Icons.close))
+                : null,
+            actions: multiSelected ? _getActionsOnMulti() : _getActions(),
+            bottom: PreferredSize(
+              // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TabBar(
+                  tabs: _buildTagAndAnimeCnt(),
+                  // tabs: loadOk ? _showTagAndAnimeCntPlus() : _waitDataPage(),
+                  controller: _tabController,
+                  padding: const EdgeInsets.all(2),
+                  // 居中，而不是靠左下
+                  isScrollable: true,
+                  // 清单可以滑动，避免拥挤
+                  labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  // 第三方指示器样式
+                  indicator: MaterialIndicator(
+                    horizontalPadding: 8.5,
+                    color: ThemeUtil.getPrimaryColor(),
+                    paintingStyle: PaintingStyle.fill,
                   ),
-                  body: TabBarView(
-                    controller: _tabController,
-                    children: _getAnimesPlus(),
-                  ),
-                  // floatingActionButton: FloatingActionButton(
-                  //   backgroundColor: ThemeUtil.getThemePrimaryColor(),
-                  //   foregroundColor: Colors.white,
-                  //   onPressed: () {
-                  //     setState(() {
-                  //       Navigator.of(context).push(
-                  //         // MaterialPageRoute(
-                  //         //   builder: (context) => const Search(),
-                  //         // ),
-                  //         FadeRoute(
-                  //           builder: (context) {
-                  //             return const SearchDbAnime();
-                  //           },
-                  //         ),
-                  //       ).then((value) {
-                  //         debugPrint("更新在搜索页面里进行的修改");
-                  //         _loadData();
-                  //       });
-                  //     });
-                  //   },
-                  //   child: const Icon(Icons.search_rounded),
-                  // ),
                 ),
-    );
+              ),
+            ),
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: _getAnimesPlus(),
+          ),
+        ));
   }
 
   List<Widget> _getActions() {
