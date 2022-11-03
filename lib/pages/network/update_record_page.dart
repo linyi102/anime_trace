@@ -38,7 +38,7 @@ class UpdateRecordPage extends StatelessWidget {
               ? _buildEmptyDataPage(context)
               : Column(
                   children: [
-                    // _buildUpdateProgressBar(),
+                    // _buildUpdateProgress(),
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(top: 5),
@@ -144,4 +144,15 @@ class UpdateRecordPage extends StatelessWidget {
       key: UniqueKey(),
     );
   }
+
+  // _buildUpdateProgress() {
+  //   final UpdateRecordController updateRecordController = Get.find();
+  //   int updateOkCnt = updateRecordController.updateOkCnt.value;
+  //   int needUpdateCnt = updateRecordController.needUpdateCnt.value;
+  //   bool updateOk = updateRecordController.updateOk;
+
+  //   return Obx(() => ListTile(
+  //         title: Text("待更新的动漫数量：$needUpdateCnt"),
+  //       ));
+  // }
 }

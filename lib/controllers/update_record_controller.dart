@@ -11,6 +11,7 @@ class UpdateRecordController extends GetxController {
       PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
   bool enableBatchInsertUpdateRecord = true; // 一条条插入效率太慢，且有bug，所以开启批量插入
+  bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
 

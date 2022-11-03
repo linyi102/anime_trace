@@ -46,9 +46,10 @@ dialogUpdateAllAnimeProgress(parentContext) {
                   },
                 ),
                 Container(
+                  alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   child: const Text(
-                    "提示：更新时会跳过已完结动漫",
+                    "提示：\n更新时会跳过已完结动漫\n关闭该对话框不影响更新",
                     style: TextStyle(color: Colors.grey),
                     textScaleFactor: 0.8,
                   ),
