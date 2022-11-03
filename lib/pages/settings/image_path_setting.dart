@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 class ImagePathSetting extends StatefulWidget {
   const ImagePathSetting({Key? key}) : super(key: key);

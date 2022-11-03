@@ -8,7 +8,7 @@ import 'package:transparent_image/transparent_image.dart';
 import '../utils/image_util.dart';
 
 /// 本地笔记图片和封面的相对地址、网络封面
-buildImgWidget(
+Widget buildImgWidget(
     {required String url,
     required bool showErrorDialog,
     required bool isNoteImg}) {
@@ -38,48 +38,47 @@ buildImgWidget(
       // memCacheHeight: 500,
       imageUrl: url,
       fit: BoxFit.cover,
-      errorWidget: errorImageBuilder(url: url, dialog: showErrorDialog),
+      errorWidget:
+          errorImageBuilder(url: url, showErrorDialog: showErrorDialog),
     );
   }
 
   // 因为封面和笔记图片文件的目录不一样，所以两个都要设置
   // 增加过渡效果，否则突然显示会很突兀
-  FileImage? fileImage;
   // final LocalImgDirController localImgDirController = Get.find();
-  try {
-    // FileImage中final Uint8List bytes = await file.readAsBytes();
-    // 如果找不到图片，会出现异常，但这里捕获不到
-    fileImage = FileImage(File(isNoteImg
-        ? ImageUtil.getAbsoluteNoteImagePath(url)
-        : ImageUtil.getAbsoluteCoverImagePath(url)));
-  } catch (e) {
-    debugPrint(e.toString());
-  }
-
-  if (fileImage != null) {
+  File file = File(isNoteImg
+      ? ImageUtil.getAbsoluteNoteImagePath(url)
+      : ImageUtil.getAbsoluteCoverImagePath(url));
+  // 如果存在该文件，才使用fileImage(否则FileImage里面会抛出找不到文件的异常，而且这里捕获不到)
+  if (file.existsSync()) {
     return FadeInImage(
       placeholder: MemoryImage(kTransparentImage),
-      image: fileImage,
+      image: FileImage(file),
       fit: BoxFit.cover,
       fadeInDuration: const Duration(milliseconds: 100),
-      imageErrorBuilder: errorImageBuilder(url: url, dialog: showErrorDialog),
+      imageErrorBuilder:
+          errorImageBuilder(url: url, showErrorDialog: showErrorDialog),
     );
   } else {
-    return errorImageBuilder(url: url, dialog: showErrorDialog);
+    return errorImageWidget(url: url, showErrorDialog: showErrorDialog);
   }
 }
 
 /// 错误图片
 Widget Function(dynamic buildContext, dynamic object, dynamic stackTrace)
-    errorImageBuilder({required String url, required bool dialog}) {
+    errorImageBuilder({required String url, required bool showErrorDialog}) {
   return (buildContext, object, stackTrace) {
     // return const Center(child: Icon(Icons.broken_image));
-    return Center(
-      child: Image.asset(
-        "assets/icons/failed_picture.png",
-        width: 30,
-        color: ThemeUtil.getCommonIconColor(),
-      ),
-    );
+    return errorImageWidget(url: url, showErrorDialog: showErrorDialog);
   };
+}
+
+Widget errorImageWidget({required String url, required bool showErrorDialog}) {
+  return Center(
+    child: Image.asset(
+      "assets/icons/failed_picture.png",
+      width: 30,
+      color: ThemeUtil.getCommonIconColor(),
+    ),
+  );
 }

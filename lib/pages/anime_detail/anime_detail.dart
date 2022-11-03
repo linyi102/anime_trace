@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
@@ -17,8 +16,8 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/rate_list_page.dart';
-import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
+import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';

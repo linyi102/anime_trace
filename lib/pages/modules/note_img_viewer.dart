@@ -61,8 +61,7 @@ class _ImageViewerState extends State<ImageViewer> {
       onWillPop: () async {
         // 如果处于全屏，则退出全屏模式，否则退出该页面
         if (fullScreen) {
-          fullScreen = false;
-          setState(() {});
+          _exitFullScreen();
           return false;
         } else {
           Navigator.of(context).pop(dirChangedWrapper);

@@ -10,7 +10,6 @@ import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../../animation/fade_route.dart';
 import '../../models/anime.dart';

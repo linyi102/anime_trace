@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 
