@@ -1,4 +1,8 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}/windows",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "files.associations": {
+        "*.jsp": "html",
+        "xstring": "cpp"
+    }
 }
