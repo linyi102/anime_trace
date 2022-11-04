@@ -63,39 +63,70 @@ class _BackUpFileListState extends State<BackUpFileList> {
         itemCount: files.length,
         itemBuilder: (context, index) {
           String fileName = "";
+          File file = files[index];
           // 获取文件名
-          if (files[index].path != null) {
-            fileName = files[index].path!.split("/").last;
+          if (file.path != null) {
+            fileName = file.path!.split("/").last;
           }
           // 去除秒后面的.000
-          String createdTime = files[index].mTime.toString().split(".")[0];
+          String createdTime = file.mTime.toString().split(".")[0];
 
           // KB
           // ignore: non_constant_identifier_names
-          num KBSize = (files[index].size ?? 0) / 1024;
+          num KBSize = (file.size ?? 0) / 1024;
+          String backupWay = file.path!.contains("automatic") ? "自动备份" : "手动备份";
 
           return ListTile(
-            title: Text("${index + 1}. $fileName"),
-            subtitle:
-                Text("$createdTime ${KBSize.toStringAsFixed(3)}KB"), // 保留3位小数
+            title: Text("[${index + 1}]. $fileName"),
+            subtitle: Text(
+                "$createdTime ${KBSize.toStringAsFixed(3)}KB $backupWay"), // 保留3位小数
+            trailing: IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        return AlertDialog(
+                          title: const Text("确认删除该备份吗？"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(dialogContext).pop();
+                                },
+                                child: const Text("取消")),
+                            ElevatedButton(
+                                onPressed: () {
+                                  if (file.path != null) {
+                                    BackupUtil.deleteRemoteFile(file.path!);
+                                  }
+                                  Navigator.of(dialogContext).pop();
+                                  // 从列表中删除
+                                  files.removeAt(index);
+                                  setState(() {});
+                                },
+                                child: const Text("确认")),
+                          ],
+                        );
+                      });
+                },
+                icon: const Icon(Icons.delete_outline)),
             onTap: () {
               showDialog(
                 context: context,
-                builder: (context) {
+                builder: (dialogContext) {
                   return AlertDialog(
                     title: const Text("还原数据"),
                     content: const Text("这会覆盖已有的数据\n确认还原指定文件吗？"),
                     actions: [
                       TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                           },
                           child: const Text("取消")),
                       ElevatedButton(
                           onPressed: () {
                             showToast("还原数据中...");
-                            BackupUtil.restoreFromWebDav(files[index]);
-                            Navigator.of(context).pop();
+                            BackupUtil.restoreFromWebDav(file);
+                            Navigator.of(dialogContext).pop();
                           },
                           child: const Text("确认")),
                     ],

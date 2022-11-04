@@ -170,6 +170,10 @@ class BackupUtil {
     }
   }
 
+  static deleteRemoteFile(String filePath) {
+    WebDavUtil.client.remove(filePath);
+  }
+
   // static deleteOldAutoBackupFileFromLocal(String autoBackupDirPath) async {
   //   Stream<FileSystemEntity> files = Directory(autoBackupDirPath).list();
   //   await for (FileSystemEntity file in files) {}
