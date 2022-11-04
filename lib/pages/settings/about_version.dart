@@ -138,7 +138,8 @@ class _AboutVersionState extends State<AboutVersion> {
         onTap: () {
           LaunchUrlUtil.launch(
               context: context,
-              uriStr: "https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
+              uriStr: "https://jq.qq.com/?_wv=1027&k=qOpUIx7x",
+              inApp: false);
         }));
     return lvc;
   }
