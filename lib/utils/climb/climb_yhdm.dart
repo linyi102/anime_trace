@@ -67,6 +67,7 @@ class ClimbYhdm implements Climb {
         .getElementsByTagName("span")[4]
         .getElementsByTagName("a")[2]
         .innerHtml;
+    anime.animeDesc = document.getElementsByClassName("info")[0].innerHtml;
     // 获取集数
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
     debugPrint("开始解析集数：${anime.animeName}");

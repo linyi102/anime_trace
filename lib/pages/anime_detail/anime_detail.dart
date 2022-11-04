@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
@@ -256,6 +257,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         padding: const EdgeInsets.all(0),
         sliver: SliverList(
           delegate: SliverChildListDelegate([
+            if (_anime.animeDesc.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                child: MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(textScaleFactor: ThemeUtil.smallScaleFactor),
+                  child: ExpandText(
+                    _anime.animeDesc,
+                    maxLines: 2,
+                  ),
+                ),
+              ),
             if (_loadEpisodeOk) _buildTabRow(),
             GestureDetector(
               // onHorizontalDragEnd: _swipeFunction,
@@ -433,7 +446,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               },
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
-          title: _buildAppBarTitle(),
+          // title: _buildAppBarTitle(),
           actions: _buildActions(),
         ));
   }
@@ -470,12 +483,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   List<Widget> _buildActions() {
     if (!_anime.isCollected()) return [];
     return [
-      IconButton(
-          onPressed: () {
-            _climbAnimeInfo();
-          },
-          tooltip: "更新信息",
-          icon: const Icon(Icons.refresh)),
+      // IconButton(
+      //     onPressed: () {
+      //       _climbAnimeInfo();
+      //     },
+      //     tooltip: "更新信息",
+      //     icon: const Icon(Icons.refresh)),
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),
@@ -591,6 +604,27 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       animeController.anime.value.getAnimeInfoFirstLine()),
                   _showAnimeInfo(
                       animeController.anime.value.getAnimeInfoSecondLine()),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        _dialogSelectTag();
+                      },
+                      child: Chip(
+                          labelPadding:
+                              const EdgeInsets.only(left: 1, right: 6),
+                          // onDeleted: () {},
+                          // deleteIcon: const Icon(Icons.favorite,
+                          //     size: 15, color: Colors.red),
+                          backgroundColor: ThemeUtil.getCardColor(),
+                          avatar: const Icon(Icons.favorite,
+                              size: 15, color: Colors.red),
+                          label: Text(_anime.tagName,
+                              textScaleFactor: ThemeUtil.smallScaleFactor)),
+                    ),
+                  ),
+                  // TextButton(onPressed: () {}, child: Text(_anime.tagName))
                 ],
               ),
             ),
