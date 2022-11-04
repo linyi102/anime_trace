@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../controllers/update_record_controller.dart';
@@ -13,7 +14,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
       context: parentContext,
       builder: (context) {
         return AlertDialog(
-          title: const Text("动漫更新"),
+          // title: const Text("动漫更新"),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -28,29 +29,40 @@ dialogUpdateAllAnimeProgress(parentContext) {
 
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                      child: LinearPercentIndicator(
-                        barRadius: const Radius.circular(15),
-                        // 圆角
-                        animation: false,
-                        lineHeight: 20.0,
-                        animationDuration: 1000,
-                        percent: needUpdateCnt > 0
-                            ? (updateOkCnt / needUpdateCnt)
-                            : 0,
-                        center: Text("$updateOkCnt / $needUpdateCnt",
-                            style: const TextStyle(color: Colors.black54)),
-                        progressColor: Colors.greenAccent,
-                        // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+                      child: Column(
+                        children: [
+                          Center(
+                              child: Text(
+                                  updateOkCnt < needUpdateCnt
+                                      ? "更新动漫中..."
+                                      : "更新完毕！",
+                                  textScaleFactor: ThemeUtil.smallScaleFactor)),
+                          const SizedBox(height: 5),
+                          LinearPercentIndicator(
+                            barRadius: const Radius.circular(15),
+                            // 圆角
+                            animation: false,
+                            lineHeight: 20.0,
+                            animationDuration: 1000,
+                            percent: needUpdateCnt > 0
+                                ? (updateOkCnt / needUpdateCnt)
+                                : 0,
+                            center: Text("$updateOkCnt / $needUpdateCnt",
+                                style: const TextStyle(color: Colors.black54)),
+                            progressColor: Colors.greenAccent,
+                            // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+                          ),
+                        ],
                       ),
                     );
                   },
                 ),
                 Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                   child: const Text(
                     "提示：\n更新时会跳过已完结动漫\n关闭该对话框不影响更新",
-                    textAlign: TextAlign.right,
+                    textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey),
                     textScaleFactor: 0.8,
                   ),
