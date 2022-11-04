@@ -262,6 +262,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 children: [
                   // 嵌套在Row内，可以保证文字不占一行时也能靠左
                   Container(
+                    width: MediaQuery.of(context).size.width, // 指定宽度修复溢出
                     padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
