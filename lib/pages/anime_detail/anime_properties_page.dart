@@ -206,10 +206,8 @@ class AnimePropertiesPage extends StatelessWidget {
     double fontSize = 14.0;
 
     if (url.startsWith("http")) {
-      return MaterialButton(
-        // TextButton无法取消填充，所以使用MaterialButton
-        padding: const EdgeInsets.all(0),
-        onPressed: () async {
+      return GestureDetector(
+        onTap: () async {
           LaunchUrlUtil.launch(context: context, uriStr: url);
         },
         child: Text(url,
