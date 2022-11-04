@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/img_widget.dart';
@@ -61,6 +60,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
   // FocusNode descFocusNode = FocusNode(); // 描述输入框焦点
+
+  // 清单的位置
+  bool showChecklistInTitle = true;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -262,18 +264,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 children: [
                   // 嵌套在Row内，可以保证文字不占一行时也能靠左
                   Container(
-                    width: MediaQuery.of(context).size.width, // 指定宽度修复溢出
+                    // 指定宽度修复溢出，但这又会导致无法靠左
+                    width: MediaQuery.of(context).size.width,
                     padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
                           textScaleFactor: ThemeUtil.smallScaleFactor),
-                      child: ExpandText(
-                        _anime.animeDesc,
-                        maxLines: 2,
-                        textAlign: TextAlign.left,
-                      ),
+                      child: ExpandText(animeController.anime.value.animeDesc,
+                          maxLines: 2),
                     ),
-                  )
+                  ),
                 ],
               ),
             if (_loadEpisodeOk) _buildTabRow(),
@@ -453,7 +453,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               },
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
-          // title: _buildAppBarTitle(),
+          title: showChecklistInTitle ? _buildAppBarTitle() : null,
           actions: _buildActions(),
         ));
   }
@@ -611,32 +611,34 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       animeController.anime.value.getAnimeInfoFirstLine()),
                   _showAnimeInfo(
                       animeController.anime.value.getAnimeInfoSecondLine()),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                    child: GestureDetector(
-                      onTap: () {
-                        _dialogSelectTag();
-                      },
-                      child: Chip(
-                          labelPadding:
-                              const EdgeInsets.only(left: 1, right: 6),
-                          // onDeleted: () {},
-                          // deleteIcon: const Icon(Icons.favorite,
-                          //     size: 15, color: Colors.red),
-                          backgroundColor: ThemeUtil.getCardColor(),
-                          avatar: const Icon(Icons.favorite,
-                              size: 15, color: Colors.red),
-                          label: Text(_anime.tagName,
-                              textScaleFactor: ThemeUtil.smallScaleFactor)),
-                    ),
-                  ),
+                  if (!showChecklistInTitle) _buildChecklistChip(),
                   // TextButton(onPressed: () {}, child: Text(_anime.tagName))
                 ],
               ),
             ),
           ],
         ));
+  }
+
+  Container _buildChecklistChip() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+      child: GestureDetector(
+        onTap: () {
+          _dialogSelectTag();
+        },
+        child: Chip(
+            labelPadding: const EdgeInsets.only(left: 1, right: 6),
+            // onDeleted: () {},
+            // deleteIcon: const Icon(Icons.favorite,
+            //     size: 15, color: Colors.red),
+            backgroundColor: ThemeUtil.getCardColor(),
+            avatar: const Icon(Icons.favorite, size: 15, color: Colors.red),
+            label: Text(_anime.tagName,
+                textScaleFactor: ThemeUtil.smallScaleFactor)),
+      ),
+    );
   }
 
   _showAnimeName(animeName) {
@@ -1620,10 +1622,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   _anime.tagName,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                const Icon(Icons.expand_more_rounded),
+                const SizedBox(width: 10),
+                const Icon(Icons.expand_more_rounded)
               ],
             ),
             onTap: () {
