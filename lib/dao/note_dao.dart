@@ -66,12 +66,29 @@ class NoteDao {
     return rateNotes;
   }
 
+  // -- 默认升序时，null会排在数字前面
+  // select * from image
+  // order by order_idx, image_id limit 10;
+  //
+  // -- 解决方法
+  // -- 解释：如果order_idx为null，则设置为1，其余设置为0(这样就能保证为null的排在后面)，对于相等的0，则按照order_idx排序
+  // select * from image
+  // order by case when order_idx is null then 1 else 0 end, order_idx, image_id limit 10;
   static Future<List<RelativeLocalImage>> getRelativeLocalImgsByNoteId(
       int noteId) async {
     var db = SqliteUtil.database;
+    // 还是不行
+    // 假设图片id都为null，此时把第9个图片移到第2个，保存到数据库后，第1个图片的order_idx仍为null，那么下次这个第1张图片就会跑到后面，而不会是第1张
+    // var lm = await db.rawQuery('''
+    // select image_id, image_local_path from image
+    // where note_id = $noteId
+    // order by case when order_idx is null then 1 else 0 end, order_idx, note_id; -- 先按照指定顺序升序，如果还没有顺序，则按照id升序
+    // ''');
+    // 还是每次把所有图片又重新设置下标吧
     var lm = await db.rawQuery('''
     select image_id, image_local_path from image
-    where note_id = $noteId;
+    where note_id = $noteId
+    order by order_idx, note_id; -- 先按照指定顺序升序，如果还没有顺序，则按照id升序
     ''');
     List<RelativeLocalImage> relativeLocalImages = [];
     for (var item in lm) {
@@ -86,7 +103,7 @@ class NoteDao {
     debugPrint("sql: updateEpisodeNoteContent($noteId)");
     // debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     noteContent = EscapeUtil.escapeStr(noteContent);
-    await database.rawUpdate('''
+    database.rawUpdate('''
     update episode_note
     set note_content = '$noteContent'
     where note_id = $noteId;
@@ -95,9 +112,9 @@ class NoteDao {
 
   static Future<bool> existNoteId(int noteId) async {
     var list = await database.rawQuery('''
-      select * from episode_note
-      where note_id = $noteId
-      ''');
+    select * from episode_note
+    where note_id = $noteId;
+    ''');
     if (list.isEmpty) {
       return false;
     }

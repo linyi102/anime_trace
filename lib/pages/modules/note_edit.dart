@@ -4,21 +4,24 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
-import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 import '../../dao/note_dao.dart';
+import '../../responsive.dart';
 import '../../utils/theme_util.dart';
 
 class NoteEdit extends StatefulWidget {
-  Note note; // 可能会修改笔记内容，因此不能用final
-  NoteEdit(this.note, {Key? key}) : super(key: key);
+  final Note note; // 可能会修改笔记内容，因此不能用final
+  const NoteEdit(this.note, {Key? key}) : super(key: key);
 
   @override
   State<NoteEdit> createState() => _NoteEditState();
@@ -28,6 +31,7 @@ class _NoteEditState extends State<NoteEdit> {
   bool _loadOk = false;
   bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();
+  // Map<int, int> initialOrderIdx = {}; // key-value对应imageId-orderIdx
 
   @override
   void initState() {
@@ -50,11 +54,28 @@ class _NoteEditState extends State<NoteEdit> {
       setState(() {
         _loadOk = true;
       });
+      // // 记录所有图片的初始下标
+      // for (int i = 0; i < widget.note.relativeLocalImages.length; ++i) {
+      //   initialOrderIdx[widget.note.relativeLocalImages[i].imageId] = i;
+      // }
     });
   }
 
-  _onWillpop() {
+  _onWillpop() async {
     Navigator.pop(context, widget.note);
+
+    // 后台更新数据库中的图片顺序
+    for (int newOrderIdx = 0;
+        newOrderIdx < widget.note.relativeLocalImages.length;
+        ++newOrderIdx) {
+      int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
+      // 全部
+      ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
+      // 有缺陷，详细参考getRelativeLocalImgsByNoteId方法
+      // if (initialOrderIdx[imageId] != newOrderIdx) {
+      //   ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
+      // }
+    }
     if (_updateNoteContent) {
       NoteDao.updateEpisodeNoteContentByNoteId(
           widget.note.episodeNoteId, widget.note.noteContent);
@@ -107,9 +128,9 @@ class _NoteEditState extends State<NoteEdit> {
                 ),
           _showNoteContent(),
           Responsive(
-              mobile: _buildGridImages(crossAxisCount: 3),
-              tablet: _buildGridImages(crossAxisCount: 5),
-              desktop: _buildGridImages(crossAxisCount: 7))
+              mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
+              tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
+              desktop: _buildReorderNoteImgGridView(crossAxisCount: 7))
         ],
       ),
     );
@@ -132,117 +153,125 @@ class _NoteEditState extends State<NoteEdit> {
     );
   }
 
-  _buildGridImages({required int crossAxisCount}) {
-    Color addColor = ThemeUtil.getCommonIconColor();
-    int itemCount = widget.note.relativeLocalImages.length + 1; // 加一是因为多了个添加图标
-
-    return GridView.builder(
+  _buildReorderNoteImgGridView({required int crossAxisCount}) {
+    return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
-      shrinkWrap: true,
-      // ListView嵌套GridView
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount, // 横轴数量
-        crossAxisSpacing: 2, // 横轴距离
-        mainAxisSpacing: 2, // 竖轴距离
-        childAspectRatio: 1, // 网格比例。31/43为封面比例
+      crossAxisCount: crossAxisCount,
+      crossAxisSpacing: 4, // 横轴距离
+      mainAxisSpacing: 4, // 竖轴距离
+      childAspectRatio: 1, // 网格比例。31/43为封面比例
+      shrinkWrap: true, // 解决报错问题
+      physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
+      children: List.generate(
+        widget.note.relativeLocalImages.length,
+        (index) => Container(
+          key: UniqueKey(),
+          // key: Key("${widget.note.relativeLocalImages.elementAt(index).imageId}"),
+          child: _buildNoteItem(index),
+        ),
       ),
-      itemCount: itemCount,
-      itemBuilder: (BuildContext context, int imageIndex) {
-        // 如果是最后一个下标，则设置添加图片图标
-        if (imageIndex == widget.note.relativeLocalImages.length) {
-          return Container(
-            padding: const EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              // color: Colors.white,
-              border: Border.all(
-                width: 2,
-                style: BorderStyle.solid,
-                color: addColor,
-              ),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: MaterialButton(
-                onPressed: () async {
-                  if (!ImageUtil.hasNoteImageRootDirPath()) {
-                    showToast("请先设置图片根目录");
-                    Navigator.of(context).push(
-                      // MaterialPageRoute(
-                      //   builder: (BuildContext context) =>
-                      //       const NoteSetting(),
-                      // ),
-                      FadeRoute(
-                        builder: (context) {
-                          return const ImagePathSetting();
-                        },
-                      ),
-                    );
-                    return;
-                  }
-                  if (Platform.isWindows || Platform.isAndroid) {
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['jpg', 'png', 'gif'],
-                      allowMultiple: true,
-                    );
-                    if (result == null) return;
-                    List<PlatformFile> platformFiles = result.files;
-                    for (var platformFile in platformFiles) {
-                      String absoluteImagePath = platformFile.path ?? "";
-                      if (absoluteImagePath.isEmpty) continue;
-
-                      String relativeImagePath =
-                          ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
-                      int imageId =
-                          await SqliteUtil.insertNoteIdAndImageLocalPath(
-                              widget.note.episodeNoteId, relativeImagePath);
-                      widget.note.relativeLocalImages
-                          .add(RelativeLocalImage(imageId, relativeImagePath));
-                    }
-                  } else {
-                    throw ("未适配平台：${Platform.operatingSystem}");
-                  }
-                  setState(() {});
-                },
-                child: Icon(Icons.add, color: addColor, size: 50)),
-          );
-        }
-
-        // 否则显示图片
-        return Stack(
-          children: [
-            NoteImgItem(
-              relativeLocalImages: widget.note.relativeLocalImages,
-              initialIndex: imageIndex,
-            ),
-            // 删除按钮
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Transform.scale(
-                alignment: Alignment.topRight,
-                scale: 0.5,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: const Color.fromRGBO(255, 255, 255, 0.1),
-                  ),
-                  child: IconButton(
-                      onPressed: () {
-                        _dialogRemoveImage(imageIndex);
-                      },
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.white70,
-                      )),
-                ),
-              ),
-            )
-          ],
-        );
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          final element = widget.note.relativeLocalImages.removeAt(oldIndex);
+          widget.note.relativeLocalImages.insert(newIndex, element);
+        });
       },
+      // 表示长按多久可以拖拽
+      dragStartDelay: const Duration(milliseconds: 100),
+      // 拖拽时的组件
+      dragWidgetBuilder: (int index, Widget child) => Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), // 边框的圆角
+            border: Border.all(color: ThemeUtil.getPrimaryColor(), width: 4)),
+        // 切割图片为圆角
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: buildImgWidget(
+              url: widget.note.relativeLocalImages[index].path,
+              showErrorDialog: false,
+              isNoteImg: true),
+        ),
+      ),
+      // 添加图片按钮
+      footer: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: ThemeUtil.getPrimaryColor().withOpacity(0.1),
+          ),
+          child: TextButton(
+              onPressed: () => _pickLocalImages(),
+              child: const Icon(Icons.add)),
+        )
+      ],
     );
+  }
+
+  Stack _buildNoteItem(int imageIndex) {
+    return Stack(
+      children: [
+        NoteImgItem(
+          relativeLocalImages: widget.note.relativeLocalImages,
+          initialIndex: imageIndex,
+        ),
+        // 删除按钮
+        Positioned(
+          right: 0,
+          top: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
+            ),
+            child: GestureDetector(
+                onTap: () => _dialogRemoveImage(imageIndex),
+                child:
+                    const Icon(Icons.close, color: Colors.white70, size: 18)),
+          ),
+        )
+      ],
+    );
+  }
+
+  _pickLocalImages() async {
+    if (!ImageUtil.hasNoteImageRootDirPath()) {
+      showToast("请先设置图片根目录");
+      Navigator.of(context).push(
+        // MaterialPageRoute(
+        //   builder: (BuildContext context) =>
+        //       const NoteSetting(),
+        // ),
+        FadeRoute(
+          builder: (context) {
+            return const ImagePathSetting();
+          },
+        ),
+      );
+      return;
+    }
+    if (Platform.isWindows || Platform.isAndroid) {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+        allowMultiple: true,
+      );
+      if (result == null) return;
+      List<PlatformFile> platformFiles = result.files;
+      for (var platformFile in platformFiles) {
+        String absoluteImagePath = platformFile.path ?? "";
+        if (absoluteImagePath.isEmpty) continue;
+
+        String relativeImagePath =
+            ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
+        int imageId = await SqliteUtil.insertNoteIdAndImageLocalPath(
+            widget.note.episodeNoteId, relativeImagePath);
+        widget.note.relativeLocalImages
+            .add(RelativeLocalImage(imageId, relativeImagePath));
+      }
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
+    setState(() {});
   }
 
   _dialogRemoveImage(int index) {

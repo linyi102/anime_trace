@@ -175,7 +175,8 @@ class BackupUtil {
   //   await for (FileSystemEntity file in files) {}
   // }
 
-  static Future<void> restoreFromLocal(String localBackupFilePath, {bool delete = false}) async {
+  static Future<void> restoreFromLocal(String localBackupFilePath,
+      {bool delete = false}) async {
     final UpdateRecordController updateRecordController = Get.find();
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
@@ -218,7 +219,8 @@ class BackupUtil {
     debugPrint(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
-    restoreFromLocal(localBackupFilePath, delete: true); // 这里使用.then里删除，会导致android还原失败
+    restoreFromLocal(localBackupFilePath,
+        delete: true); // 这里使用.then里删除，会导致android还原失败
   }
 
   static Future<void> unzip(String localZipPath) async {

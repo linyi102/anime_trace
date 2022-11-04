@@ -48,6 +48,8 @@ class SqliteUtil {
     await SqliteUtil.addColumnRateToAnime();
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
+    // 为图片表增加顺序列，支持自定义排序
+    await SqliteUtil.addColumnOrderIdxToImage();
     return true;
   }
 
@@ -1209,5 +1211,19 @@ class SqliteUtil {
     ''');
     debugPrint("删除了$num条笔记(id=$noteId)");
     return true;
+  }
+
+  static addColumnOrderIdxToImage() async {
+    var list = await database.rawQuery('''
+    select * from sqlite_master where name = 'image' and sql like '%order_idx%';
+    ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      debugPrint("sql: addColumnOrderIdxToImage");
+      await database.execute('''
+      alter table image
+      add column order_idx INTEGER;
+      ''');
+    }
   }
 }
