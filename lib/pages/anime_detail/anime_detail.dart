@@ -504,8 +504,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
+                title: const Text("更新动漫"),
+                leading: const Icon(Icons.refresh),
+                style: ListTileStyle.drawer,
+                onTap: () {
+                  _climbAnimeInfo();
+                  Navigator.pop(popMenuContext);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
                 title: const Text("取消收藏"),
-                leading: const Icon(Icons.cancel_outlined),
+                leading: const Icon(Icons.heart_broken),
                 style: ListTileStyle.drawer,
                 onTap: () {
                   _dialogDeleteAnime();
