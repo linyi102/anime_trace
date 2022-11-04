@@ -37,27 +37,33 @@ class _UpdateHintState extends State<UpdateHint> {
     }
   }
 
+  _log(String msg) {
+    debugPrint("[${DateTime.now()}] $runtimeType: $msg");
+  }
+
   _getLatestVersionInfo() async {
     currentVersion = (await PackageInfo.fromPlatform()).version;
     // 获取最新版本信息
     try {
-      debugPrint("正在获取最新版本信息...");
+      _log("正在获取最新版本信息...");
       var response =
           await Dio().get("https://gitee.com/linyi517/anime_trace/tags");
       var document = parse(response.data);
+      _log("解析完毕");
       latestVersionInfo.version = document
               .getElementsByClassName("tag-item-action tag-name")[0]
               .getElementsByTagName("a")[0]
               .attributes["title"] ??
           "";
       if (latestVersionInfo.version.isEmpty) {
-        debugPrint("获取新版本为空，直接返回");
+        _log("获取新版本为空，直接返回");
         return;
       }
       // 去除前面的v
       if (latestVersionInfo.version.startsWith("v")) {
         latestVersionInfo.version = latestVersionInfo.version.substring(1);
       }
+      _log("获取到最新版本号：${latestVersionInfo.version}");
 
       latestVersionInfo.desc = document
           .getElementsByClassName("tag-item-action tag-message")[0]
@@ -66,16 +72,18 @@ class _UpdateHintState extends State<UpdateHint> {
       for (var i = 1; latestVersionInfo.desc.contains("- "); ++i) {
         latestVersionInfo.desc =
             latestVersionInfo.desc.replaceFirst("- ", "\n$i. ");
-        if (i == 10) break;
       }
       // 去除两边的空白符
       latestVersionInfo.desc = latestVersionInfo.desc.trim();
-      debugPrint("获取到最新版本：$latestVersionInfo");
+      _log("获取到最新版本描述：${latestVersionInfo.desc}");
     } catch (e) {
       debugPrint(e.toString());
     }
 
-    // latestVersionInfo.version = "9.99";
+    // 保证避免因忘记注释而导致发布版出现9.99版本
+    // if (!const bool.fromEnvironment("dart.vm.product")) {
+    //   latestVersionInfo.version = "9.99";
+    // }
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
     if (currentVersion.compareTo(latestVersionInfo.version) < 0) {
       foundNewVersion = true;
@@ -162,7 +170,7 @@ class _UpdateHintState extends State<UpdateHint> {
                                       "https://gitee.com/linyi517/anime_trace",
                                   inApp: false);
                             },
-                            child: const Text("手动更新"),
+                            child: const Text("前往下载"),
                           ),
                           // TextButton(
                           //   onPressed: () {
