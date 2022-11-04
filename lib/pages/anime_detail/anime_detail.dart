@@ -258,16 +258,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         sliver: SliverList(
           delegate: SliverChildListDelegate([
             if (_anime.animeDesc.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                child: MediaQuery(
-                  data: MediaQuery.of(context)
-                      .copyWith(textScaleFactor: ThemeUtil.smallScaleFactor),
-                  child: ExpandText(
-                    _anime.animeDesc,
-                    maxLines: 2,
-                  ),
-                ),
+              Row(
+                children: [
+                  // 嵌套在Row内，可以保证文字不占一行时也能靠左
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                          textScaleFactor: ThemeUtil.smallScaleFactor),
+                      child: ExpandText(
+                        _anime.animeDesc,
+                        maxLines: 2,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  )
+                ],
               ),
             if (_loadEpisodeOk) _buildTabRow(),
             GestureDetector(

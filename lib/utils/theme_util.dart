@@ -138,10 +138,9 @@ class ThemeUtil {
     Color color = ThemeUtil.getScaffoldBackgroundColor();
     return [
       // Colors.transparent,
-      color.withOpacity(0),
-      color.withOpacity(0.1),
+      // color.withOpacity(0.1),
       color.withOpacity(0.2),
-      color.withOpacity(0.5),
+      color.withOpacity(0.3),
       color.withOpacity(1),
     ];
   }
