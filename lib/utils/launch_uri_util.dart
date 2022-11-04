@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,7 +14,8 @@ class LaunchUrlUtil {
       bool inApp = true}) async {
     if (uriStr.isEmpty) {
       showToast("无法访问空链接");
-    } else if (inApp) {
+    } else if (inApp && Platform.isAndroid) {
+      // 只有安卓才允许打开webview界面
       Navigator.push(
           context, FadeRoute(builder: (context) => MyWebView(url: uriStr)));
     } else {
