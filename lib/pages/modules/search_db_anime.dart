@@ -22,6 +22,11 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
   void _searchDbAnimesByKeyword(String text) {
+    if (lastInputText == text) {
+      debugPrint("相同内容，不进行搜索");
+      return;
+    }
+    lastInputText = text;
     Future(() {
       debugPrint("search: $text");
       return SqliteUtil.getAnimesBySearch(text);
@@ -29,10 +34,6 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
       _resAnimes = value;
       _searchOk = true;
       debugPrint("_resAnimes.length=${_resAnimes.length}");
-      // for (var item in _resAnimes) {
-      //   debugPrint(item.toString());
-      // }
-      lastInputText = text;
       setState(() {});
     });
   }
@@ -65,9 +66,10 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
               return;
             }
             _searchDbAnimesByKeyword(text);
-            FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+            _cancelFocus();
           },
           onChanged: (value) async {
+            debugPrint("value=$value");
             if (value.isEmpty) return;
             _searchDbAnimesByKeyword(value);
           },
@@ -75,6 +77,11 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
       ),
       body: !_searchOk ? Container() : _showSearchPage(),
     );
+  }
+
+  // 取消键盘聚焦
+  _cancelFocus() {
+    FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
   }
 
   _showSearchPage() {
@@ -97,6 +104,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
           textScaleFactor: 0.9,
         ),
         onTap: () {
+          _cancelFocus();
           Navigator.of(context).push(
             // MaterialPageRoute(
             //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
@@ -146,6 +154,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
           ],
         ),
         onTap: () {
+          _cancelFocus();
           Navigator.of(context).push(FadeRoute(builder: (context) {
             return AnimeClimbAllWebsite(keyword: lastInputText);
           })).then((value) {
