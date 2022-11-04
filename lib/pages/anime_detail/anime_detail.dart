@@ -259,23 +259,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         padding: const EdgeInsets.all(0),
         sliver: SliverList(
           delegate: SliverChildListDelegate([
-            if (_anime.animeDesc.isNotEmpty)
-              Row(
-                children: [
-                  // 嵌套在Row内，可以保证文字不占一行时也能靠左
-                  Container(
-                    // 指定宽度修复溢出，但这又会导致无法靠左
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-                    child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                          textScaleFactor: ThemeUtil.smallScaleFactor),
-                      child: ExpandText(animeController.anime.value.animeDesc,
-                          maxLines: 2),
-                    ),
-                  ),
-                ],
-              ),
+            // if (_anime.animeDesc.isNotEmpty)
+            //   _buildExpandAnimeDesc(),
             if (_loadEpisodeOk) _buildTabRow(),
             GestureDetector(
               // onHorizontalDragEnd: _swipeFunction,
@@ -289,6 +274,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       return SliverList(
           delegate: SliverChildListDelegate([loadingWidget(context)]));
     }
+  }
+
+  _buildExpandAnimeDesc() {
+    return Row(
+      children: [
+        // 嵌套在Row内，可以保证文字不占一行时也能靠左
+        Container(
+          // 指定宽度修复溢出，但这又会导致无法靠左
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+          child: MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaleFactor: ThemeUtil.smallScaleFactor),
+            child:
+                ExpandText(animeController.anime.value.animeDesc, maxLines: 2),
+          ),
+        ),
+      ],
+    );
   }
 
   int selectedTabIdx = 0;
@@ -490,29 +494,28 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   List<Widget> _buildActions() {
     if (!_anime.isCollected()) return [];
     return [
-      // IconButton(
-      //     onPressed: () {
-      //       _climbAnimeInfo();
-      //     },
-      //     tooltip: "更新信息",
-      //     icon: const Icon(Icons.refresh)),
+      IconButton(
+        onPressed: () => _climbAnimeInfo(),
+        tooltip: "更新动漫",
+        icon: const Icon(Icons.refresh),
+      ),
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),
         itemBuilder: (BuildContext popMenuContext) {
           return [
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text("更新动漫"),
-                leading: const Icon(Icons.refresh),
-                style: ListTileStyle.drawer,
-                onTap: () {
-                  _climbAnimeInfo();
-                  Navigator.pop(popMenuContext);
-                },
-              ),
-            ),
+            // PopupMenuItem(
+            //   padding: const EdgeInsets.all(0),
+            //   child: ListTile(
+            //     title: const Text("更新动漫"),
+            //     leading: const Icon(Icons.refresh),
+            //     style: ListTileStyle.drawer,
+            //     onTap: () {
+            //       _climbAnimeInfo();
+            //       Navigator.pop(popMenuContext);
+            //     },
+            //   ),
+            // ),
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
