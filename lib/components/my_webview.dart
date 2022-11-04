@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+/// 弃用
+@Deprecated("推荐使用launchUrl，而不是WebView，因为太占存储空间了")
 class MyWebView extends StatefulWidget {
   final String url;
   final String title;

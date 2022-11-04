@@ -129,7 +129,7 @@ class _AboutVersionState extends State<AboutVersion> {
           LaunchUrlUtil.launch(
               context: context,
               uriStr: "https://www.yuque.com/linyi517/fzfxr0",
-              inApp: true);
+              inApp: false);
         }));
     lvc.add(ListTile(
         title: const Text("QQ 交流群"),
