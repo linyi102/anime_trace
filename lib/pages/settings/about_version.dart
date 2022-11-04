@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/my_webview.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -83,7 +84,8 @@ class _AboutVersionState extends State<AboutVersion> {
             IconButton(
                 onPressed: () {
                   LaunchUrlUtil.launch(
-                      "https://github.com/linyi102/anime_trace");
+                      context: context,
+                      uriStr: "https://github.com/linyi102/anime_trace");
                 },
                 icon: Icon(
                   SimpleIcons.github,
@@ -93,7 +95,10 @@ class _AboutVersionState extends State<AboutVersion> {
                 )),
             IconButton(
               onPressed: () {
-                LaunchUrlUtil.launch("https://gitee.com/linyi517/anime_trace");
+                LaunchUrlUtil.launch(
+                    context: context,
+                    uriStr: "https://gitee.com/linyi517/anime_trace",
+                    inApp: false);
               },
               icon: const Icon(SimpleIcons.gitee),
               color: const Color.fromRGBO(187, 33, 36, 1),
@@ -121,14 +126,19 @@ class _AboutVersionState extends State<AboutVersion> {
         title: const Text("更新日志"),
         trailing: const Icon(Icons.open_in_new_outlined),
         onTap: () {
-          LaunchUrlUtil.launch("https://www.yuque.com/linyi517/fzfxr0");
+          LaunchUrlUtil.launch(
+              context: context,
+              uriStr: "https://www.yuque.com/linyi517/fzfxr0",
+              inApp: true);
         }));
     lvc.add(ListTile(
         title: const Text("QQ 交流群"),
         subtitle: const Text("414226908"),
         trailing: const Icon(Icons.open_in_new_outlined),
         onTap: () {
-          LaunchUrlUtil.launch("https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
+          LaunchUrlUtil.launch(
+              context: context,
+              uriStr: "https://jq.qq.com/?_wv=1027&k=qOpUIx7x");
         }));
     return lvc;
   }

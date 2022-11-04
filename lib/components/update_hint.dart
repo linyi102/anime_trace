@@ -157,7 +157,10 @@ class _UpdateHintState extends State<UpdateHint> {
 
                               // 打开下载页面
                               LaunchUrlUtil.launch(
-                                  "https://gitee.com/linyi517/anime_trace");
+                                  context: context,
+                                  uriStr:
+                                      "https://gitee.com/linyi517/anime_trace",
+                                  inApp: false);
                             },
                             child: const Text("手动更新"),
                           ),

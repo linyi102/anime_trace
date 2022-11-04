@@ -51,7 +51,7 @@ class AnimePropertiesPage extends StatelessWidget {
               },
               icon: const Icon(Icons.edit)),
         ),
-        _buildContent(animeName)
+        _buildContent(context, animeName)
       ],
     );
   }
@@ -75,7 +75,7 @@ class AnimePropertiesPage extends StatelessWidget {
               },
               icon: const Icon(Icons.edit)),
         ),
-        _buildContent(nameAnother)
+        _buildContent(context, nameAnother)
       ],
     );
   }
@@ -107,7 +107,7 @@ class AnimePropertiesPage extends StatelessWidget {
               },
               icon: const Icon(Icons.edit)),
         ),
-        _buildContent(animeUrl)
+        _buildContent(context, animeUrl)
       ],
     );
   }
@@ -130,7 +130,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   });
                 },
                 icon: const Icon(Icons.edit))),
-        _buildContent(anime.animeDesc)
+        _buildContent(context, anime.animeDesc)
       ],
     );
   }
@@ -192,16 +192,16 @@ class AnimePropertiesPage extends StatelessWidget {
         });
   }
 
-  _buildContent(String content) {
+  _buildContent(BuildContext context, String content) {
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: _buildUrlText(content),
+      child: _buildUrlText(context, content),
     );
   }
 
   // 以http开头就提供访问功能
-  _buildUrlText(String url) {
+  _buildUrlText(BuildContext context, String url) {
     FontWeight fontWeight = FontWeight.normal;
     double fontSize = 14.0;
 
@@ -210,7 +210,7 @@ class AnimePropertiesPage extends StatelessWidget {
         // TextButton无法取消填充，所以使用MaterialButton
         padding: const EdgeInsets.all(0),
         onPressed: () async {
-          LaunchUrlUtil.launch(url);
+          LaunchUrlUtil.launch(context: context, uriStr: url);
         },
         child: Text(url,
             style: TextStyle(

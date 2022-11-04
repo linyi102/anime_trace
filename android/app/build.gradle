@@ -27,7 +27,9 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     // compileSdkVersion 30
-    compileSdkVersion 31
+    // compileSdkVersion 31
+    // 2022.11.04 webview_flutter: ^3.0.4
+    compileSdkVersion 32
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -46,7 +48,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.flutter_test_future"
         // minSdkVersion 21
-        minSdkVersion 16
+        // minSdkVersion 16
+        // 2022.11.04 webview_flutter: ^3.0.4
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

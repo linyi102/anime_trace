@@ -500,7 +500,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 leading: const Icon(Icons.open_in_new),
                 onTap: () {
                   if (_anime.animeUrl.isNotEmpty) {
-                    LaunchUrlUtil.launch(_anime.animeUrl);
+                    LaunchUrlUtil.launch(
+                        context: context, uriStr: _anime.animeUrl);
                   } else {
                     showToast("网址为空，请先迁移动漫");
                   }

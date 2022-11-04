@@ -135,7 +135,9 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
             // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
             subtitle: const Text("点击查看教程"),
             onTap: () {
-              LaunchUrlUtil.launch("https://help.jianguoyun.com/?p=2064");
+              LaunchUrlUtil.launch(
+                  context: context,
+                  uriStr: "https://help.jianguoyun.com/?p=2064");
             },
           ),
           ListTile(

@@ -22,10 +22,10 @@ class FavWebsiteListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListTile(
-          title: const Text("网站导航"),
+        const ListTile(
+          title: Text("网站导航"),
           style: ListTileStyle.drawer,
-          trailing: _buildSettingButton(context),
+          // trailing: _buildSettingButton(context),
         ),
         _buildListView(),
         // _buildGridView(),
@@ -45,7 +45,8 @@ class FavWebsiteListPage extends StatelessWidget {
           return ListTile(
             title: Text(favWebsite.name),
             leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
-            onTap: () => _launchUrl(favWebsite.url),
+            onTap: () =>
+                LaunchUrlUtil.launch(context: context, uriStr: favWebsite.url),
           );
         });
   }
@@ -65,7 +66,8 @@ class FavWebsiteListPage extends StatelessWidget {
             elevation: 0,
             child: MaterialButton(
               padding: const EdgeInsets.all(0),
-              onPressed: () => _launchUrl(favWebsite.url),
+              onPressed: () => LaunchUrlUtil.launch(
+                  context: context, uriStr: favWebsite.url),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -79,10 +81,6 @@ class FavWebsiteListPage extends StatelessWidget {
             ),
           );
         });
-  }
-
-  _launchUrl(String url) {
-    LaunchUrlUtil.launch(url, inApp: openWebInApp);
   }
 
   IconButton _buildSettingButton(BuildContext context) {

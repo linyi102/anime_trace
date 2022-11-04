@@ -16,7 +16,6 @@ class TagManage extends StatefulWidget {
 
 // 在全局变量tags拖拽、修改、添加的基础上，改变数据库tag表信息
 class _TagManageState extends State<TagManage> {
-
   // 来自ReorderableListView里的默认proxyDecorator
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
@@ -128,7 +127,8 @@ class _TagManageState extends State<TagManage> {
           // win端会默认提供拖拽按钮在trailing，所以把删除按钮移到leading
           leading: Platform.isWindows
               ? _getDeleteButton(i)
-              : const Icon(Icons.drag_handle),
+              // : const Icon(Icons.drag_handle),
+              : const Icon(Icons.list),
           trailing: Platform.isWindows ? null : _getDeleteButton(i),
           onTap: () {
             showDialog(
