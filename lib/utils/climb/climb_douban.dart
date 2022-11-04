@@ -7,6 +7,8 @@ import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../models/params/page_params.dart';
+
 class ClimbDouban implements Climb {
   @override
   String baseUrl = "https://www.douban.com";
@@ -71,7 +73,8 @@ class ClimbDouban implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(AnimeFilter filter) {
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) {
     // TODO: implement climbDirectory
     throw UnimplementedError();
   }

@@ -127,8 +127,8 @@ class _TagManageState extends State<TagManage> {
           // win端会默认提供拖拽按钮在trailing，所以把删除按钮移到leading
           leading: Platform.isWindows
               ? _getDeleteButton(i)
-              // : const Icon(Icons.drag_handle),
-              : const Icon(Icons.list),
+              : const Icon(Icons.drag_handle),
+          // : const Icon(Icons.list),
           trailing: Platform.isWindows ? null : _getDeleteButton(i),
           onTap: () {
             showDialog(

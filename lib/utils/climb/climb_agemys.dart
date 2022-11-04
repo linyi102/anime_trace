@@ -9,6 +9,8 @@ import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../models/params/page_params.dart';
+
 class ClimbAgemys implements Climb {
   @override
   // String baseUrl = "https://www.agemys.cc";
@@ -109,7 +111,8 @@ class ClimbAgemys implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
     return [];
   }
 }

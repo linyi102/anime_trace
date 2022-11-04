@@ -3,6 +3,8 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 
+import '../../models/params/page_params.dart';
+
 // 艾米动漫
 class ClimbAimi implements Climb {
   @override
@@ -23,7 +25,8 @@ class ClimbAimi implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
     return [];
   }
 }

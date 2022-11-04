@@ -8,6 +8,8 @@ import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../models/params/page_params.dart';
+
 class ClimbOmofun implements Climb {
   @override
   String baseUrl = "https://omofun.tv";
@@ -101,7 +103,8 @@ class ClimbOmofun implements Climb {
           int.parse(elements[1].innerHtml); // 0对应今日更新，1对应该动漫的集数
     }
     // 次元城的备注(播放状态)是第5个，而艾米是第4个，但都是最后一个
-    var moduleInfoItemContents = document.getElementsByClassName("module-info-item-content");
+    var moduleInfoItemContents =
+        document.getElementsByClassName("module-info-item-content");
     anime.playStatus = moduleInfoItemContents.last.innerHtml;
 
     anime.premiereTime = document
@@ -117,7 +120,10 @@ class ClimbOmofun implements Climb {
             .getElementsByTagName("img")[0]
             .attributes["data-original"] ??
         anime.animeCoverUrl;
-    anime.animeDesc = document.getElementsByClassName("show-desc")[0].getElementsByTagName("p")[0].innerHtml;
+    anime.animeDesc = document
+        .getElementsByClassName("show-desc")[0]
+        .getElementsByTagName("p")[0]
+        .innerHtml;
 
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
@@ -127,7 +133,8 @@ class ClimbOmofun implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
     return [];
   }
 }

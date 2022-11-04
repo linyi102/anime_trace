@@ -1,11 +1,13 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -27,6 +29,9 @@ class _DirectoryPageState extends State<DirectoryPage>
   bool get wantKeepAlive => true;
 
   bool _loadOk = false;
+  // 页大小是固定24个，不管设置多少都始终会获取24个动漫
+  // 这里设置是为了方便加载更多数据
+  PageParams pageParams = PageParams(pageIndex: 0, pageSize: 24);
 
   @override
   void initState() {
@@ -61,11 +66,11 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   void _loadData() {
-    setState(() {
-      _loadOk = false;
-    });
+    _loadOk = false;
+    setState(() {});
+
     Future(() async {
-      directory = await ClimbAnimeUtil.climbDirectory(filter);
+      directory = await ClimbAnimeUtil.climbDirectory(filter, pageParams);
     }).then((value) async {
       debugPrint("目录页：数据获取完毕");
       // 根据动漫名和来源查询动漫，如果存在
@@ -84,6 +89,21 @@ class _DirectoryPageState extends State<DirectoryPage>
     });
   }
 
+  _loadMoreData() {
+    debugPrint("目录页：加载更多数据中，当前动漫数量：${directory.length}");
+    pageParams.pageIndex++;
+    int startIdx = directory.length;
+    Future(() async {
+      directory.addAll(await ClimbAnimeUtil.climbDirectory(filter, pageParams));
+    }).then((value) async {
+      debugPrint("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
+      for (int i = startIdx; i < directory.length; ++i) {
+        directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
+      }
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -94,21 +114,98 @@ class _DirectoryPageState extends State<DirectoryPage>
         },
         child: Scrollbar(
           controller: _scrollController,
-          child: ListView(
+          child: CustomScrollView(
             controller: _scrollController,
-            children: [
-              _buildFilter(),
-              FadeAnimatedSwitcher(
-                loadOk: _loadOk,
-                destWidget: _showAnimeList(),
-                specifiedLoadingWidget:
-                    const Center(child: RefreshProgressIndicator()),
-              )
+            slivers: [
+              SliverList(
+                  delegate: SliverChildListDelegate([
+                _buildFilter(),
+              ])),
+              _loadOk
+                  ? _buildAnimeSliverList()
+                  : SliverList(
+                      key: UniqueKey(),
+                      delegate: SliverChildListDelegate(
+                          [const Center(child: RefreshProgressIndicator())]))
             ],
           ),
         ),
       ),
     );
+  }
+
+  SliverList _buildAnimeSliverList() {
+    if (directory.isEmpty) {
+      return SliverList(
+          delegate: SliverChildListDelegate([emptyDataHint("什么都没找到")]));
+    }
+    return SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+      // debugPrint("index=$index, directory.length=${directory.length}");
+      if (index + 5 == directory.length) _loadMoreData();
+
+      Anime anime = directory[index];
+      final imageProvider = Image.network(anime.animeCoverUrl).image;
+      return MaterialButton(
+        padding: const EdgeInsets.all(0),
+        onPressed: () {
+          debugPrint("单击");
+          // 如果收藏了，则单击进入详细页面
+          if (anime.isCollected()) {
+            Navigator.of(context).push(FadeRoute(builder: (context) {
+              return AnimeDetailPlus(anime);
+            })).then((value) {
+              setState(() {
+                // anime = value;
+                directory[index] = value;
+              });
+            });
+          } else {
+            showToast("收藏后即可进入详细页面");
+          }
+        },
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                  child: SizedBox(
+                    width: 90,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: MaterialButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () {
+                          Navigator.of(context).push(FadeRoute(
+                              builder: (context) => PhotoView(
+                                  imageProvider: imageProvider,
+                                  onTapDown: (arg1, arg2, arg3) =>
+                                      Navigator.of(context).pop())));
+                        },
+                        child: AnimeGridCover(anime, onlyShowCover: true),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
+                      _showAnimeName(anime.animeName),
+                      _showNameAnother(anime.nameAnother),
+                      _showAnimeInfo(anime.getAnimeInfoFirstLine()),
+                      _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                    ],
+                  ),
+                ),
+                _showCollectIcon(anime)
+              ],
+            ),
+          ],
+        ),
+      );
+    }, childCount: directory.length));
   }
 
   _buildFilterBody() {
@@ -377,83 +474,6 @@ class _DirectoryPageState extends State<DirectoryPage>
       ));
     }
     return children;
-  }
-
-  _showAnimeList() {
-    return directory.isEmpty
-        ? Container(
-            padding: const EdgeInsets.only(top: 25),
-            child: const Text("暂无数据"),
-          )
-        : ListView.builder(
-            shrinkWrap: true, //解决无限高度问题
-            physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-            itemCount: directory.length,
-            itemBuilder: (BuildContext context, int index) {
-              Anime anime = directory[index];
-              final imageProvider = Image.network(anime.animeCoverUrl).image;
-              return MaterialButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  debugPrint("单击");
-                  // 如果收藏了，则单击进入详细页面
-                  if (anime.isCollected()) {
-                    Navigator.of(context).push(FadeRoute(builder: (context) {
-                      return AnimeDetailPlus(anime);
-                    })).then((value) {
-                      setState(() {
-                        // anime = value;
-                        directory[index] = value;
-                      });
-                    });
-                  } else {
-                    showToast("收藏后即可进入详细页面");
-                  }
-                },
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
-                          child: SizedBox(
-                            width: 90,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: MaterialButton(
-                                padding: const EdgeInsets.all(0),
-                                onPressed: () {
-                                  Navigator.of(context).push(FadeRoute(
-                                      builder: (context) => PhotoView(
-                                          imageProvider: imageProvider,
-                                          onTapDown: (arg1, arg2, arg3) =>
-                                              Navigator.of(context).pop())));
-                                },
-                                child:
-                                    AnimeGridCover(anime, onlyShowCover: true),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
-                              _showAnimeName(anime.animeName),
-                              _showNameAnother(anime.nameAnother),
-                              _showAnimeInfo(anime.getAnimeInfoFirstLine()),
-                              _showAnimeInfo(anime.getAnimeInfoSecondLine()),
-                            ],
-                          ),
-                        ),
-                        _showCollectIcon(anime)
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
   }
 
   _showAnimeName(animeName) {

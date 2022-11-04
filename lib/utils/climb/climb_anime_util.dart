@@ -12,6 +12,8 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../models/params/page_params.dart';
+
 class ClimbAnimeUtil {
   // 根据动漫网址中的关键字来判断来源
   static ClimbWebsite? getClimbWebsiteByAnimeUrl(String animeUrl) {
@@ -29,9 +31,10 @@ class ClimbAnimeUtil {
   }
 
   // 根据过滤查询目录动漫
-  static Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
+  static Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
     Climb climb = ClimbYhdm();
-    List<Anime> directory = await climb.climbDirectory(filter);
+    List<Anime> directory = await climb.climbDirectory(filter, pageParams);
     return directory;
   }
 

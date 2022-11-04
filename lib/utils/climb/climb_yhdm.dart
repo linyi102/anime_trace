@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/result.dart';
@@ -148,9 +149,11 @@ class ClimbYhdm implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(AnimeFilter filter) async {
-    String url = baseUrl +
-        "/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
+    String url =
+        "$baseUrl/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
+    url = "$url&pageindex=${pageParams.pageIndex}";
 
     List<Anime> directory = await _climbOfyhdm(baseUrl, url);
     return directory;

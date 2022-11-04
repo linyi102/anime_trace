@@ -22,7 +22,7 @@ class NoteImgGrid extends StatelessWidget {
     return Responsive(
         mobile: _buildGridView(columnCnt: 3, maxDisplayCount: 9),
         tablet: _buildGridView(columnCnt: 5, maxDisplayCount: 10),
-        desktop: _buildGridView(columnCnt: 7, maxDisplayCount: 14));
+        desktop: _buildGridView(columnCnt: 6, maxDisplayCount: 12));
     // }
   }
 

@@ -163,12 +163,12 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               }
 
               if (!canManualBackup) {
-                showToast("备份间隔为1min");
+                showToast("备份间隔为10s");
                 return;
               }
 
               canManualBackup = false;
-              Future.delayed(const Duration(minutes: 1))
+              Future.delayed(const Duration(seconds: 10))
                   .then((value) => canManualBackup = true);
 
               showToast("正在备份中...");

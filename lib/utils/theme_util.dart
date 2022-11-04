@@ -129,6 +129,7 @@ class ThemeUtil {
   // 动漫详细页图片背景混合
   static Color getModulateColor() {
     return themeController.themeColor.value.isDarkMode
+        // ? const Color.fromRGBO(255, 255, 255, 0.9)
         ? const Color.fromRGBO(150, 150, 150, 0.9)
         : const Color.fromRGBO(255, 255, 255, 0.9);
   }

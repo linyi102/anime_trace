@@ -62,6 +62,7 @@ class _BackUpFileListState extends State<BackUpFileList> {
       child: ListView.builder(
         itemCount: files.length,
         itemBuilder: (context, index) {
+          debugPrint("index=$index");
           String fileName = "";
           File file = files[index];
           // 获取文件名
@@ -77,7 +78,7 @@ class _BackUpFileListState extends State<BackUpFileList> {
           String backupWay = file.path!.contains("automatic") ? "自动备份" : "手动备份";
 
           return ListTile(
-            title: Text("[${index + 1}]. $fileName"),
+            title: Text("${index + 1}. $fileName"),
             subtitle: Text(
                 "$createdTime ${KBSize.toStringAsFixed(3)}KB $backupWay"), // 保留3位小数
             trailing: IconButton(

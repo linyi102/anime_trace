@@ -82,10 +82,10 @@ class _NetWorkPageState extends State<NetWorkPage>
                 ),
               ))),
       body: TabBarView(controller: _tabController, // 指定tab控制器
-          children: const [
-            SourceListPage(),
+          children: [
+            const SourceListPage(),
             UpdateRecordPage(),
-            DirectoryPage(),
+            const DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(
         backgroundColor: ThemeUtil.getPrimaryColor(),

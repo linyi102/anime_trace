@@ -16,7 +16,8 @@ import '../../components/dialog/dialog_update_all_anime_progress.dart';
 import '../../utils/theme_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
-  const UpdateRecordPage({Key? key}) : super(key: key);
+  UpdateRecordPage({Key? key}) : super(key: key);
+  final scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,34 +61,37 @@ class UpdateRecordPage extends StatelessWidget {
       map[key]!.add(updateRecordVo);
     }
 
-    return ListView.builder(
-        controller: ScrollController(),
-        // 解决item太小无法下拉
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: dateList.length,
-        itemBuilder: (context, index) {
-          String date = dateList[index];
-          PageParams pageParams = updateRecordController.pageParams;
-          if (index + 2 == (pageParams.pageIndex + 1) * pageParams.pageSize) {
-            updateRecordController.loadMore();
-          }
+    return Scrollbar(
+      controller: scrollController,
+      child: ListView.builder(
+          controller: scrollController,
+          // 解决item太小无法下拉
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: dateList.length,
+          itemBuilder: (context, index) {
+            String date = dateList[index];
+            PageParams pageParams = updateRecordController.pageParams;
+            if (index + 2 == (pageParams.pageIndex + 1) * pageParams.pageSize) {
+              updateRecordController.loadMore();
+            }
 
-          return Card(
-            elevation: 0,
-            child: Column(
-              children: [
-                ListTile(
-                    title: Text(
-                        TimeShowUtil.getHumanReadableDateTimeStr(date,
-                            showTime: false),
-                        textScaleFactor: ThemeUtil.smallScaleFactor)),
-                Column(children: _buildRecords(context, map[date]!)),
-                // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
-                const SizedBox(height: 5)
-              ],
-            ),
-          );
-        });
+            return Card(
+              elevation: 0,
+              child: Column(
+                children: [
+                  ListTile(
+                      title: Text(
+                          TimeShowUtil.getHumanReadableDateTimeStr(date,
+                              showTime: false),
+                          textScaleFactor: ThemeUtil.smallScaleFactor)),
+                  Column(children: _buildRecords(context, map[date]!)),
+                  // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+                  const SizedBox(height: 5)
+                ],
+              ),
+            );
+          }),
+    );
   }
 
   _buildRecords(context, List<UpdateRecordVo> records) {

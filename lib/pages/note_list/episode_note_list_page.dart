@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -100,64 +99,67 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   _buildEpisodeNotes() {
     return episodeNotes.isEmpty
         ? emptyDataHint("什么都没有", toastMsg: "点击已完成的集即可添加笔记")
-        : ListView.builder(
+        : Scrollbar(
             controller: _noteScrollController,
-            itemCount: episodeNotes.length,
-            itemBuilder: (BuildContext context, int index) {
-              _loadMoreEpisodeNoteData(index);
+            child: ListView.builder(
+              controller: _noteScrollController,
+              itemCount: episodeNotes.length,
+              itemBuilder: (BuildContext context, int index) {
+                _loadMoreEpisodeNoteData(index);
 
-              return Container(
-                padding: const EdgeInsets.only(top: 5),
-                child: Card(
-                  elevation: 0,
-                  child: MaterialButton(
+                return Container(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Card(
                     elevation: 0,
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        // MaterialPageRoute(
-                        //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
-                        // ),
-                        FadeRoute(
-                          builder: (context) {
-                            return NoteEdit(episodeNotes[index]);
-                          },
-                        ),
-                      ).then((value) {
-                        // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
-                        Note newEpisodeNote = value;
-                        debugPrint(
-                            "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
-                        if (newEpisodeNote.episodeNoteId == 0) {
-                          episodeNotes.removeWhere((element) =>
-                              element.anime.animeId ==
-                              newEpisodeNote.anime.animeId);
-                        } else {
-                          episodeNotes[index] = newEpisodeNote; // 更新修改
-                        }
-                        setState(() {});
-                      });
-                    },
-                    child: Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        // 动漫行
-                        NoteCommonBuild.buildAnimeListTile(
-                            setState: setState,
-                            context: context,
-                            note: episodeNotes[index]),
-                        // 笔记内容
-                        NoteCommonBuild.buildNote(note: episodeNotes[index]),
-                        // 笔记图片
-                        NoteImgGrid(
-                            relativeLocalImages:
-                                episodeNotes[index].relativeLocalImages),
-                      ],
+                    child: MaterialButton(
+                      elevation: 0,
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          // MaterialPageRoute(
+                          //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
+                          // ),
+                          FadeRoute(
+                            builder: (context) {
+                              return NoteEdit(episodeNotes[index]);
+                            },
+                          ),
+                        ).then((value) {
+                          // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
+                          Note newEpisodeNote = value;
+                          debugPrint(
+                              "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
+                          if (newEpisodeNote.episodeNoteId == 0) {
+                            episodeNotes.removeWhere((element) =>
+                                element.anime.animeId ==
+                                newEpisodeNote.anime.animeId);
+                          } else {
+                            episodeNotes[index] = newEpisodeNote; // 更新修改
+                          }
+                          setState(() {});
+                        });
+                      },
+                      child: Flex(
+                        direction: Axis.vertical,
+                        children: [
+                          // 动漫行
+                          NoteCommonBuild.buildAnimeListTile(
+                              setState: setState,
+                              context: context,
+                              note: episodeNotes[index]),
+                          // 笔记内容
+                          NoteCommonBuild.buildNote(note: episodeNotes[index]),
+                          // 笔记图片
+                          NoteImgGrid(
+                              relativeLocalImages:
+                                  episodeNotes[index].relativeLocalImages),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
   }
 }
