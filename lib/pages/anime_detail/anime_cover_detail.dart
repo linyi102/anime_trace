@@ -124,29 +124,21 @@ class AnimeCoverDetail extends StatelessWidget {
       return emptyDataHint("没有封面~");
     }
 
+    ImageProvider imageProvider;
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      return PhotoView(
-        errorBuilder: (context, url, error) => _buildErrorInfo(context),
-        imageProvider: CachedNetworkImageProvider(coverUrl),
-        backgroundDecoration:
-            BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
-      );
+      imageProvider = CachedNetworkImageProvider(coverUrl);
+    } else {
+      imageProvider =
+          FileImage(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)));
     }
-    //CachedNetworkImage(
-    //         imageUrl: coverUrl,
-    //         fit: BoxFit.cover,
-    //         errorWidget: (context, url, error) => const Placeholder(),
-    //       )
 
-    // 本地封面
-    return Image.file(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)),
-        fit: BoxFit.cover, errorBuilder: (context, object, stackTrace) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 25, right: 25),
-        child: _buildErrorInfo(context),
-      );
-    });
+    return PhotoView(
+      errorBuilder: (context, url, error) => _buildErrorInfo(context),
+      imageProvider: imageProvider,
+      backgroundDecoration:
+          BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
+    );
   }
 
   Widget _buildErrorInfo(context) {
