@@ -32,6 +32,7 @@ class _NoteEditState extends State<NoteEdit> {
   bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();
   // Map<int, int> initialOrderIdx = {}; // key-value对应imageId-orderIdx
+  bool changeOrderIdx = false;
 
   @override
   void initState() {
@@ -65,17 +66,25 @@ class _NoteEditState extends State<NoteEdit> {
     Navigator.pop(context, widget.note);
 
     // 后台更新数据库中的图片顺序
-    for (int newOrderIdx = 0;
-        newOrderIdx < widget.note.relativeLocalImages.length;
-        ++newOrderIdx) {
-      int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
-      // 全部
-      ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
-      // 有缺陷，详细参考getRelativeLocalImgsByNoteId方法
-      // if (initialOrderIdx[imageId] != newOrderIdx) {
-      //   ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
-      // }
+    // 全部更新。只要移动了，就更新所有图片的记录顺序
+    if (changeOrderIdx) {
+      for (int newOrderIdx = 0;
+          newOrderIdx < widget.note.relativeLocalImages.length;
+          ++newOrderIdx) {
+        int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
+        ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
+      }
     }
+    // 局部更新
+    // for (int newOrderIdx = 0;
+    //     newOrderIdx < widget.note.relativeLocalImages.length;
+    //     ++newOrderIdx) {
+    //   int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
+    //   // 有缺陷，详细参考getRelativeLocalImgsByNoteId方法
+    //   if (initialOrderIdx[imageId] != newOrderIdx) {
+    //     ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
+    //   }
+    // }
     if (_updateNoteContent) {
       NoteDao.updateEpisodeNoteContentByNoteId(
           widget.note.episodeNoteId, widget.note.noteContent);
@@ -107,6 +116,32 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildBody() {
+    // 懒加载
+    // return _buildReorderNoteImgGridView(crossAxisCount: 2);
+
+    // 全部加载
+    // return ListView(
+    //   children: [_buildReorderNoteImgGridView(crossAxisCount: 2)],
+    // );
+
+    // TODO 如何保证懒加载？注意还要是GridVie.wbuilder
+    // 懒加载
+    // return Column(
+    //   children: [
+    //     Expanded(child: _buildReorderNoteImgGridView(crossAxisCount: 2))
+    //   ],
+    // );
+
+    // 还是全部加载
+    // return CustomScrollView(
+    //   slivers: [
+    //     SliverList(
+    //         delegate: SliverChildListDelegate(
+    //             [_buildReorderNoteImgGridView(crossAxisCount: 2)]))
+    //   ],
+    // );
+
+    //
     return Scrollbar(
       child: ListView(
         children: [
@@ -154,12 +189,56 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
+    // return ReorderableGridView.builder(
+    //   padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
+    //   shrinkWrap: true, // 解决报错问题
+    //   physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
+    //   onReorder: (oldIndex, newIndex) {
+    //     setState(() {
+    //       final element = widget.note.relativeLocalImages.removeAt(oldIndex);
+    //       widget.note.relativeLocalImages.insert(newIndex, element);
+    //     });
+    //     changeOrderIdx = true;
+    //   },
+    //   // 表示长按多久可以拖拽
+    //   dragStartDelay: const Duration(milliseconds: 100),
+    //   // 拖拽时的组件
+    //   dragWidgetBuilder: (int index, Widget child) => Container(
+    //     decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(10), // 边框的圆角
+    //         border: Border.all(color: ThemeUtil.getPrimaryColor(), width: 4)),
+    //     // 切割图片为圆角
+    //     child: ClipRRect(
+    //       borderRadius: BorderRadius.circular(6),
+    //       child: buildImgWidget(
+    //           url: widget.note.relativeLocalImages[index].path,
+    //           showErrorDialog: false,
+    //           isNoteImg: true),
+    //     ),
+    //   ),
+    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    //     crossAxisCount: crossAxisCount,
+    //     crossAxisSpacing: 4, // 横轴距离
+    //     mainAxisSpacing: 4, // 竖轴距离
+    //     childAspectRatio: 1, // 网格比例
+    //   ),
+
+    //   itemCount: widget.note.relativeLocalImages.length,
+    //   itemBuilder: (BuildContext context, int index) {
+    //     debugPrint("$runtimeType: index=$index");
+    //     return Container(
+    //       key: UniqueKey(),
+    //       // key: Key("${widget.note.relativeLocalImages.elementAt(index).imageId}"),
+    //       child: _buildNoteItem(index),
+    //     );
+    //   },
+    // );
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
       crossAxisCount: crossAxisCount,
       crossAxisSpacing: 4, // 横轴距离
       mainAxisSpacing: 4, // 竖轴距离
-      childAspectRatio: 1, // 网格比例。31/43为封面比例
+      childAspectRatio: 1, // 网格比例
       shrinkWrap: true, // 解决报错问题
       physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
       children: List.generate(
@@ -171,10 +250,19 @@ class _NoteEditState extends State<NoteEdit> {
         ),
       ),
       onReorder: (oldIndex, newIndex) {
+        // 下标没变直接返回
+        debugPrint("oldIndex=$oldIndex, newIndex=$newIndex");
+        if (oldIndex == newIndex) {
+          debugPrint("拖拽了，但未改变顺序，直接返回");
+          return;
+        }
+
         setState(() {
           final element = widget.note.relativeLocalImages.removeAt(oldIndex);
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
+        changeOrderIdx = true;
+        debugPrint("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 表示长按多久可以拖拽
       dragStartDelay: const Duration(milliseconds: 100),
@@ -193,17 +281,18 @@ class _NoteEditState extends State<NoteEdit> {
         ),
       ),
       // 添加图片按钮
-      footer: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: ThemeUtil.getPrimaryColor().withOpacity(0.1),
-          ),
-          child: TextButton(
-              onPressed: () => _pickLocalImages(),
-              child: const Icon(Icons.add)),
-        )
-      ],
+      footer: [_buildAddButton()],
+    );
+  }
+
+  Container _buildAddButton() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: ThemeUtil.getPrimaryColor().withOpacity(0.1),
+      ),
+      child: TextButton(
+          onPressed: () => _pickLocalImages(), child: const Icon(Icons.add)),
     );
   }
 
