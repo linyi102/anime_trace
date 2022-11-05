@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 
+import '../../components/note_img_grid.dart';
 import '../../dao/note_dao.dart';
 import '../../models/anime.dart';
-import '../../components/note_img_grid.dart';
 import '../../utils/theme_util.dart';
 
 class RateListPage extends StatefulWidget {
@@ -141,7 +140,9 @@ class _RateListPageState extends State<RateListPage> {
                   ),
                 ).then((value) {
                   // 重新获取列表
-                  _loadData();
+                  // _loadData();
+                  // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
+                  // 也不需要重新获取，修改笔记返回后，笔记也会变化
                 });
               },
               child: Flex(
