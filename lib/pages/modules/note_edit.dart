@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
@@ -51,10 +53,10 @@ class _NoteEditState extends State<NoteEdit> {
         widget.note.episodeNoteId = 0;
         Navigator.of(context).pop(widget.note);
         showToast("未找到该笔记");
-      }
-      setState(() {
+      } else {
         _loadOk = true;
-      });
+        setState(() {});
+      }
       // // 记录所有图片的初始下标
       // for (int i = 0; i < widget.note.relativeLocalImages.length; ++i) {
       //   initialOrderIdx[widget.note.relativeLocalImages[i].imageId] = i;
@@ -104,9 +106,7 @@ class _NoteEditState extends State<NoteEdit> {
           // title: const Text("笔记编辑"),
           leading: IconButton(
               // 返回按钮
-              onPressed: () {
-                _onWillpop();
-              },
+              onPressed: () => _onWillpop(),
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
         ),
@@ -116,6 +116,8 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildBody() {
+    // log("_buildBody", time: DateTime.now(), name: runtimeType.toString());
+    Log.info("_buildBody");
     // 懒加载
     // return _buildReorderNoteImgGridView(crossAxisCount: 2);
 
@@ -189,6 +191,7 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
+    // Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
     // return ReorderableGridView.builder(
     //   padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
     //   shrinkWrap: true, // 解决报错问题
@@ -353,9 +356,18 @@ class _NoteEditState extends State<NoteEdit> {
         String relativeImagePath =
             ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
         int imageId = await SqliteUtil.insertNoteIdAndImageLocalPath(
-            widget.note.episodeNoteId, relativeImagePath);
+            widget.note.episodeNoteId,
+            relativeImagePath,
+            widget.note.relativeLocalImages.length);
         widget.note.relativeLocalImages
             .add(RelativeLocalImage(imageId, relativeImagePath));
+        // 排序结果：null,0,1,2,3...
+        // 1.如果添加新图片时没有为新图片设置下标，
+        //   1.如果其他图片都为null，该图片会被排序到最后面，正常。
+        //   2.如果其他图片都有下标，那么该图片就会排序到最前面，错误。需要重新修改所有，也就是标记changeOrderIdx为true
+        // 2.如果添加新图片时为新图片设置下标，
+        //   1.其他图片都为都为null，那么会排序到最后面，正常
+        //   2.如果其他图片都有下标，正常
       }
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");

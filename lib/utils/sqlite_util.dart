@@ -1070,11 +1070,12 @@ class SqliteUtil {
   }
 
   static Future<int> insertNoteIdAndImageLocalPath(
-      int noteId, String imageLocalPath) async {
-    debugPrint("sql: insertNoteIdAndLocalImg($noteId, $imageLocalPath)");
+      int noteId, String imageLocalPath, int orderIdx) async {
+    debugPrint(
+        "sql: insertNoteIdAndLocalImg(noteId=$noteId, imageLocalPath=$imageLocalPath, orderIdx=$orderIdx)");
     return await database.rawInsert('''
-    insert into image (note_id, image_local_path)
-    values ($noteId, '$imageLocalPath');
+    insert into image (note_id, image_local_path, order_idx)
+    values ($noteId, '$imageLocalPath', $orderIdx);
     ''');
   }
 
