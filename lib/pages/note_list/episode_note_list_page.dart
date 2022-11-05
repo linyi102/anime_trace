@@ -7,9 +7,13 @@ import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
+import '../../components/anime_list_cover.dart';
+import '../../models/anime.dart';
 import '../../models/params/page_params.dart';
-import 'note_common_build.dart';
+import '../../utils/theme_util.dart';
+import '../anime_detail/anime_detail.dart';
 
 class EpisodeNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
@@ -105,6 +109,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               controller: _noteScrollController,
               itemCount: episodeNotes.length,
               itemBuilder: (BuildContext context, int index) {
+                // debugPrint("$runtimeType: index=$index");
                 _loadMoreEpisodeNoteData(index);
 
                 return Container(
@@ -129,7 +134,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                           Note newEpisodeNote = value;
                           debugPrint(
                               "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
-                          if (newEpisodeNote.episodeNoteId == 0) {
+                          if (newEpisodeNote.id == 0) {
                             episodeNotes.removeWhere((element) =>
                                 element.anime.animeId ==
                                 newEpisodeNote.anime.animeId);
@@ -143,12 +148,12 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                         direction: Axis.vertical,
                         children: [
                           // 动漫行
-                          NoteCommonBuild.buildAnimeListTile(
+                          _buildAnimeListTile(
                               setState: setState,
                               context: context,
                               note: episodeNotes[index]),
                           // 笔记内容
-                          NoteCommonBuild.buildNote(note: episodeNotes[index]),
+                          _buildNote(note: episodeNotes[index]),
                           // 笔记图片
                           NoteImgGrid(
                               relativeLocalImages:
@@ -161,5 +166,103 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               },
             ),
           );
+  }
+
+  _buildNote({required Note note}) {
+    if (note.noteContent.isEmpty) return Container();
+    return ListTile(
+      title: Text(
+        note.noteContent,
+        maxLines: 10,
+        overflow: TextOverflow.ellipsis,
+        style: ThemeUtil.getNoteTextStyle(),
+      ),
+      style: ListTileStyle.drawer,
+    );
+  }
+
+  _buildAnimeListTile(
+      {required setState, required BuildContext context, required Note note}) {
+    bool isRateNote = note.episode.number == 0;
+
+    return ListTile(
+      leading: GestureDetector(
+        onTap: () {
+          _enterAnimeDetail(context: context, anime: note.anime);
+        },
+        child: AnimeListCover(
+          note.anime,
+          showReviewNumber: true,
+          reviewNumber: note.episode.reviewNumber,
+        ),
+      ),
+      // trailing: IconButton(
+      //     onPressed: () {
+      //       Navigator.of(context).push(
+      //         FadeRoute(builder: (context) {
+      //           return NoteEdit(note);
+      //         }),
+      //       ).then((value) {
+      //         note = value; // 更新修改
+      //         setState(() {});
+      //       });
+      //     },
+      //     // navigate_next
+      //     icon: Icon(Icons.edit_note, color: ThemeUtil.getCommonIconColor())),
+      title: GestureDetector(
+        onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
+        child: Text(
+          note.anime.animeName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textScaleFactor: ThemeUtil.smallScaleFactor,
+          // textAlign: TextAlign.right,
+        ),
+      ),
+      subtitle: isRateNote
+          ? null
+          : GestureDetector(
+              onTap: () =>
+                  _enterAnimeDetail(context: context, anime: note.anime),
+              child: Text(
+                  "第 ${note.episode.number} 集 ${note.episode.getDate()}",
+                  textScaleFactor: ThemeUtil.tinyScaleFactor)),
+    );
+  }
+
+  _enterAnimeDetail({required BuildContext context, required Anime anime}) {
+    Navigator.of(context)
+        .push(
+      FadeRoute(
+        transitionDuration: const Duration(milliseconds: 200),
+        builder: (context) {
+          return AnimeDetailPlus(anime);
+        },
+      ),
+    )
+        .then((value) async {
+      // // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
+      Anime anime = value;
+      // 如果animeId为0，说明进入动漫详细页后删除了动漫，需要从笔记列表中删除相关笔记
+      if (!anime.isCollected()) {
+        episodeNotes
+            .removeWhere((element) => element.anime.animeId == anime.animeId);
+        setState(() {});
+      } else {
+        // 否则重新获取该动漫的所有相关笔记的内容和图片，因为可能在详细页里进行了修改
+        // 为什么不直接获取所有内容？因为note里有anime、episode还要获取，不用再次获取，因为这个肯定在详细页中不能改变
+        for (int i = 0; i < episodeNotes.length; ++i) {
+          // Note episodeNote = episodeNotes[i];
+          // 必须都对episodeNotes[i]进行操作才能看到变化。for in也不行
+          if (episodeNotes[i].anime.animeId == anime.animeId) {
+            Note note = await NoteDao.getNoteContentAndImagesByNoteId(
+                episodeNotes[i].id);
+            episodeNotes[i].noteContent = note.noteContent;
+            episodeNotes[i].relativeLocalImages = note.relativeLocalImages;
+          }
+        }
+        setState(() {});
+      }
+    });
   }
 }

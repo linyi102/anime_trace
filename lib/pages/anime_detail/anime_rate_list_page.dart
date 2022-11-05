@@ -13,16 +13,21 @@ import '../../dao/note_dao.dart';
 import '../../models/anime.dart';
 import '../../utils/theme_util.dart';
 
-class RateListPage extends StatefulWidget {
+// 动漫详细页的评价列表tab
+class AnimeRateListPage extends StatefulWidget {
   final Anime anime;
 
-  const RateListPage(this.anime, {Key? key}) : super(key: key);
+  const AnimeRateListPage(this.anime, {Key? key}) : super(key: key);
 
   @override
-  State<RateListPage> createState() => _RateListPageState();
+  State<AnimeRateListPage> createState() => _AnimeRateListPageState();
 }
 
-class _RateListPageState extends State<RateListPage> {
+class _AnimeRateListPageState extends State<AnimeRateListPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   late Anime anime;
   List<Note> notes = [];
   bool noteOk = false;
@@ -38,6 +43,10 @@ class _RateListPageState extends State<RateListPage> {
     noteOk = false;
     NoteDao.getRateNotesByAnimeId(anime.animeId).then((value) {
       notes = value;
+      // 把所有笔记都指定anime
+      for (var note in notes) {
+        note.anime = widget.anime;
+      }
       setState(() {
         noteOk = true;
       });
@@ -46,6 +55,8 @@ class _RateListPageState extends State<RateListPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Column(
       children: [
         Padding(
@@ -107,7 +118,7 @@ class _RateListPageState extends State<RateListPage> {
         relativeLocalImages: [], imgUrls: []);
     NoteDao.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
-      episodeNote.episodeNoteId = value;
+      episodeNote.id = value;
       Navigator.push(
               context, FadeRoute(builder: (context) => NoteEdit(episodeNote)))
           .then((value) {
@@ -232,8 +243,7 @@ class _RateListPageState extends State<RateListPage> {
                               onPressed: () {
                                 // 关闭对话框
                                 Navigator.pop(dialogContext);
-                                SqliteUtil.deleteNoteById(note.episodeNoteId)
-                                    .then((val) {
+                                SqliteUtil.deleteNoteById(note.id).then((val) {
                                   // 关闭下拉菜单，并重新获取评价列表
                                   Navigator.pop(popUpMenuContext);
                                   _loadData();

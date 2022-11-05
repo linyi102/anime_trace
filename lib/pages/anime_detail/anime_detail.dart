@@ -17,7 +17,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
-import 'package:flutter_test_future/pages/anime_detail/rate_list_page.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
@@ -238,6 +238,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               //     ))
               //   ],
               // ),
+
+              // child: Stack(
+              //   children: [
+              //     // NestedScrollView导致其body的tabbarview的多个list同步滚动
+              //     NestedScrollView(
+              //         headerSliverBuilder: (context, innerBoxIsScrolled) {
+              //           return [
+              //             _buildSliverAppBar(context), // 里面记得配置bottom:tabbar
+              //           ];
+              //         },
+              //         body: TabBarView(controller: _tabController, children: [
+              //           _buildEpisodePage(),
+              //           _buildRatePage(),
+              //           _buildProfile(),
+              //         ])),
+              //     _buildButtonsBarAboutEpisodeMulti()
+              //   ],
+              // ),
+
               child: Stack(children: [
                 CustomScrollView(
                   slivers: [
@@ -262,10 +281,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             // if (_anime.animeDesc.isNotEmpty)
             //   _buildExpandAnimeDesc(),
             if (_loadEpisodeOk) _buildTabRow(),
-            GestureDetector(
-              // onHorizontalDragEnd: _swipeFunction,
-              child: _buildTabBody(),
-            )
+            _buildTabBody()
           ]),
         ),
       );
@@ -370,7 +386,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _buildRatePage() {
-    return RateListPage(_anime);
+    return AnimeRateListPage(_anime);
   }
 
   _buildProfile() {
@@ -459,6 +475,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               icon: const Icon(Icons.arrow_back_rounded)),
           title: showChecklistInTitle ? _buildAppBarTitle() : null,
           actions: _buildActions(),
+          // bottom: _buildTabRow(),
         ));
   }
 

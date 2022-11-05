@@ -37,7 +37,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                                       ? "更新动漫中..."
                                       : "更新完毕！",
                                   textScaleFactor: ThemeUtil.smallScaleFactor)),
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 15),
                           LinearPercentIndicator(
                             barRadius: const Radius.circular(15),
                             // 圆角
@@ -59,7 +59,7 @@ dialogUpdateAllAnimeProgress(parentContext) {
                 ),
                 Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                   child: const Text(
                     "提示：\n更新时会跳过已完结动漫\n关闭该对话框不影响更新",
                     textAlign: TextAlign.center,

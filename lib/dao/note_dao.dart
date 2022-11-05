@@ -24,7 +24,7 @@ class NoteDao {
         : Anime(animeName: "无名", animeEpisodeCnt: 0); // 动漫详细页中的评价列表不需要再查询动漫
 
     return Note(
-        episodeNoteId: noteId,
+        id: noteId,
         anime: anime,
         episode: Episode(0, 1),
         noteContent: row['note_content'] as String,
@@ -60,7 +60,10 @@ class NoteDao {
 
     // 遍历每个评价笔记
     for (Map row in list) {
-      rateNotes.add(await row2bean(row));
+      Note rateNote = await row2bean(row);
+      rateNote.anime.animeId =
+          animeId; // 用于动漫详细页的评价tab进入评价笔记编辑页时根据animeId,episdoeNumber,review获取评价内容
+      rateNotes.add(rateNote);
     }
 
     return rateNotes;
@@ -112,7 +115,7 @@ class NoteDao {
 
   static Future<bool> existNoteId(int noteId) async {
     var list = await database.rawQuery('''
-    select * from episode_note
+    select note_id from episode_note
     where note_id = $noteId;
     ''');
     if (list.isEmpty) {
@@ -144,6 +147,29 @@ class NoteDao {
     return lm2[0]["last_id"] as int; // 返回最新插入的id
   }
 
+  static Future<Note> getNoteContentAndImagesByNoteId(int noteId) async {
+    debugPrint("getNoteByNoteId(noteId=$noteId)");
+    var lm1 = await database.rawQuery('''
+      select anime_id, note_id, episode_number, review_number, note_content from episode_note
+      where note_id = $noteId;
+      ''');
+    Note note = Note(
+        id: 0,
+        anime: Anime(animeName: "无名"),
+        episode: Episode(0, 1),
+        relativeLocalImages: [],
+        imgUrls: []);
+    if (lm1.isNotEmpty) {
+      note.noteContent = lm1[0]['note_content'] as String;
+      note.id = noteId;
+      // note.anime =
+      //     await SqliteUtil.getAnimeByAnimeId(lm1[0]['anime_id'] as int);
+      // note.anime.reviewNumber = lm1[0]['review_number'] as int;
+      note.relativeLocalImages = await getRelativeLocalImgsByNoteId(noteId);
+    }
+    return note;
+  }
+
   static Future<Note> getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
       Note episodeNote) async {
     // debugPrint(
@@ -155,16 +181,16 @@ class NoteDao {
       ''');
     if (lm1.isEmpty) {
       // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
-      episodeNote.episodeNoteId = await insertEpisodeNote(episodeNote);
+      episodeNote.id = await insertEpisodeNote(episodeNote);
     } else {
-      episodeNote.episodeNoteId = lm1[0]['note_id'] as int;
+      episodeNote.id = lm1[0]['note_id'] as int;
       // 获取笔记内容
       episodeNote.noteContent = lm1[0]['note_content'] as String;
     }
     // debugPrint("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
     // 查询图片
     episodeNote.relativeLocalImages =
-        await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
+        await getRelativeLocalImgsByNoteId(episodeNote.id);
     episodeNote = restoreEscapeEpisodeNote(episodeNote);
     return episodeNote;
   }
@@ -196,7 +222,7 @@ class NoteDao {
               episodeNote);
       // debugPrint(episodeNote);
       episodeNote.relativeLocalImages =
-          await getRelativeLocalImgsByNoteId(episodeNote.episodeNoteId);
+          await getRelativeLocalImgsByNoteId(episodeNote.id);
       episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
     }
     return episodeNotes;
@@ -260,7 +286,7 @@ class NoteDao {
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       Note episodeNote = Note(
-          episodeNoteId: item['note_id'] as int,
+          id: item['note_id'] as int,
           // 忘记设置了，导致都是进入笔记0
           anime: anime,
           episode: episode,

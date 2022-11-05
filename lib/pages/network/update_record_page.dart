@@ -69,6 +69,7 @@ class UpdateRecordPage extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: dateList.length,
           itemBuilder: (context, index) {
+            // debugPrint("$index");
             String date = dateList[index];
             PageParams pageParams = updateRecordController.pageParams;
             if (index + 2 == (pageParams.pageIndex + 1) * pageParams.pageSize) {

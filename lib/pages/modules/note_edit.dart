@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
@@ -22,8 +20,8 @@ import '../../responsive.dart';
 import '../../utils/theme_util.dart';
 
 class NoteEdit extends StatefulWidget {
-  final Note note; // 可能会修改笔记内容，因此不能用final
-  const NoteEdit(this.note, {Key? key}) : super(key: key);
+  Note note; // 可能会修改笔记内容
+  NoteEdit(this.note, {Key? key}) : super(key: key);
 
   @override
   State<NoteEdit> createState() => _NoteEditState();
@@ -39,21 +37,35 @@ class _NoteEditState extends State<NoteEdit> {
   @override
   void initState() {
     super.initState();
-    noteContentController.text = widget.note.noteContent;
-    debugPrint("进入笔记${widget.note.episodeNoteId}");
+    debugPrint("进入笔记${widget.note.id}");
     _loadData();
   }
 
   _loadData() async {
+    debugPrint("note.id=${widget.note.id}");
+    // 已经能保证是最新的了，所以不需要重新获取
+    // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
+    //   if (value.id == 0) {
+    //     Navigator.of(context).pop(widget.note);
+    //     showToast("未找到该笔记");
+    //   } else {
+    //     widget.note.relativeLocalImages = value.relativeLocalImages;
+    //     noteContentController.text = widget.note.noteContent;
+    //     _loadOk = true;
+    //     setState(() {});
+    //   }
+    // });
+
     Future(() {
-      return NoteDao.existNoteId(widget.note.episodeNoteId);
+      return NoteDao.existNoteId(widget.note.id);
     }).then((existNoteId) {
       if (!existNoteId) {
         // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
-        widget.note.episodeNoteId = 0;
+        widget.note.id = 0;
         Navigator.of(context).pop(widget.note);
         showToast("未找到该笔记");
       } else {
+        noteContentController.text = widget.note.noteContent;
         _loadOk = true;
         setState(() {});
       }
@@ -89,7 +101,7 @@ class _NoteEditState extends State<NoteEdit> {
     // }
     if (_updateNoteContent) {
       NoteDao.updateEpisodeNoteContentByNoteId(
-          widget.note.episodeNoteId, widget.note.noteContent);
+          widget.note.id, widget.note.noteContent);
     }
   }
 
@@ -117,7 +129,7 @@ class _NoteEditState extends State<NoteEdit> {
 
   _buildBody() {
     // log("_buildBody", time: DateTime.now(), name: runtimeType.toString());
-    Log.info("_buildBody");
+    // Log.info("_buildBody");
     // 懒加载
     // return _buildReorderNoteImgGridView(crossAxisCount: 2);
 
@@ -147,22 +159,22 @@ class _NoteEditState extends State<NoteEdit> {
     return Scrollbar(
       child: ListView(
         children: [
-          widget.note.episode.number == 0
-              ? Container() // 若为0，表明是评价，不显示该行
-              : ListTile(
-                  style: ListTileStyle.drawer,
-                  leading: AnimeListCover(widget.note.anime),
-                  title: Text(
-                    widget.note.anime.animeName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textScaleFactor: ThemeUtil.smallScaleFactor,
-                  ),
-                  subtitle: Text(
+          ListTile(
+            style: ListTileStyle.drawer,
+            leading: AnimeListCover(widget.note.anime),
+            title: Text(
+              widget.note.anime.animeName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
+            ),
+            subtitle: widget.note.episode.number == 0
+                ? null
+                : Text(
                     "第 ${widget.note.episode.number} 集 ${widget.note.episode.getDate()}",
                     textScaleFactor: ThemeUtil.tinyScaleFactor,
                   ),
-                ),
+          ),
           _showNoteContent(),
           Responsive(
               mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
@@ -175,6 +187,8 @@ class _NoteEditState extends State<NoteEdit> {
 
   _showNoteContent() {
     return TextField(
+      // 不能放在这里，否则点击行尾时，光标会跑到行首
+      // controller: noteContentController..text = widget.note.noteContent,
       controller: noteContentController..text,
       decoration: const InputDecoration(
         hintText: "描述",
@@ -356,7 +370,7 @@ class _NoteEditState extends State<NoteEdit> {
         String relativeImagePath =
             ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
         int imageId = await SqliteUtil.insertNoteIdAndImageLocalPath(
-            widget.note.episodeNoteId,
+            widget.note.id,
             relativeImagePath,
             widget.note.relativeLocalImages.length);
         widget.note.relativeLocalImages

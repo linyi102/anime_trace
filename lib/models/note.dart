@@ -3,7 +3,7 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 
 class Note {
-  int episodeNoteId;
+  int id;
   Anime anime;
   Episode episode;
   String noteContent;
@@ -13,7 +13,7 @@ class Note {
   String updateTime;
 
   Note({
-    this.episodeNoteId = 0,
+    this.id = 0,
     required this.anime,
     required this.episode,
     this.noteContent = "",
