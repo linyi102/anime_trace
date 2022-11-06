@@ -516,6 +516,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         tooltip: "更新动漫",
         icon: const Icon(Icons.refresh),
       ),
+      IconButton(
+        onPressed: () {
+          if (_anime.animeUrl.isNotEmpty) {
+            LaunchUrlUtil.launch(context: context, uriStr: _anime.animeUrl);
+          } else {
+            showToast("网址为空，请先迁移动漫");
+          }
+        },
+        icon: const Icon(Icons.open_in_browser_outlined),
+        tooltip: "访问网址",
+      ),
       PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         offset: const Offset(0, 50),
@@ -544,24 +555,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 },
               ),
             ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text("访问网址"),
-                style: ListTileStyle.drawer,
-                leading: const Icon(Icons.open_in_new),
-                onTap: () {
-                  if (_anime.animeUrl.isNotEmpty) {
-                    // 先关闭下拉菜单，然后打开网页，否则无法打开网页
-                    Navigator.pop(popMenuContext);
-                    LaunchUrlUtil.launch(
-                        context: context, uriStr: _anime.animeUrl);
-                  } else {
-                    showToast("网址为空，请先迁移动漫");
-                  }
-                },
-              ),
-            ),
+            // PopupMenuItem(
+            //   padding: const EdgeInsets.all(0),
+            //   child: ListTile(
+            //     title: const Text("访问网址"),
+            //     style: ListTileStyle.drawer,
+            //     leading: const Icon(Icons.open_in_new),
+            //     onTap: () {
+            //       if (_anime.animeUrl.isNotEmpty) {
+            //         // 先关闭下拉菜单，然后打开网页，否则无法打开网页
+            //         Navigator.pop(popMenuContext);
+            //         LaunchUrlUtil.launch(
+            //             context: context, uriStr: _anime.animeUrl);
+            //       } else {
+            //         showToast("网址为空，请先迁移动漫");
+            //       }
+            //     },
+            //   ),
+            // ),
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
