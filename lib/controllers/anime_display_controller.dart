@@ -34,7 +34,8 @@ class AnimeDisplayController extends GetxController {
 
   turnEnableResponsiveGridColumnCnt() {
     enableResponsiveGridColumnCnt.value = !enableResponsiveGridColumnCnt.value;
-    SPUtil.setBool("enableResponsiveGridColumnCnt", showAnimeCntAfterTag.value);
+    SPUtil.setBool(
+        "enableResponsiveGridColumnCnt", enableResponsiveGridColumnCnt.value);
   }
 
   setGridColumnCnt(int cnt) {
