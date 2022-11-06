@@ -284,8 +284,9 @@ class MyAppState extends State<MyApp> with WindowListener {
   }
 
   ThemeData buildThemeData(ThemeController themeController) {
-    TextStyle textStyle =
-        TextStyle(fontFamilyFallback: themeController.fontFamilyFallback);
+    TextStyle textStyle = TextStyle(
+        fontFamilyFallback: themeController.fontFamilyFallback,
+        fontWeight: FontWeight.normal);
     return ThemeData(
       // primarySwatch: createMaterialColor(Colors.amber),
       // brightness: themeController.themeColor.value.isDarkMode
