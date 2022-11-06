@@ -578,16 +578,23 @@ class _AnimeListPageState extends State<AnimeListPage>
   List<Widget> _buildTagAndAnimeCnt() {
     List<Widget> list = [];
     for (int i = 0; i < tags.length; ++i) {
-      list.add(Column(
-        children: [
-          const SizedBox(height: 10),
-          Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
-              ? Text("${tags[i]} (${animeCntPerTag[i]})",
-                  textScaleFactor: ThemeUtil.smallScaleFactor)
-              : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
-          const SizedBox(height: 10)
-        ],
-      ));
+      list.add(Tab(
+          child: Obx(
+        () => _animeDisplayController.showAnimeCntAfterTag.value
+            ? Text("${tags[i]} (${animeCntPerTag[i]})",
+                textScaleFactor: ThemeUtil.smallScaleFactor)
+            : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor),
+      )));
+      // list.add(Column(
+      //   children: [
+      //     const SizedBox(height: 10),
+      //     Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
+      //         ? Text("${tags[i]} (${animeCntPerTag[i]})",
+      //             textScaleFactor: ThemeUtil.smallScaleFactor)
+      //         : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
+      //     const SizedBox(height: 10)
+      //   ],
+      // ));
     }
     return list;
   }
