@@ -3,6 +3,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
@@ -15,7 +16,49 @@ class ClimbDouban implements Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    if (showMessage) showToast("该搜索源不支持更新");
+    Result result = await DioPackage.get(anime.animeUrl);
+    if (result.code != 200) {
+      if (showMessage) showToast(result.msg);
+      return anime;
+    }
+
+    Response response = result.data;
+    var document = parse(response.data);
+    var infoElement = document.getElementById("info");
+    // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
+    RegExp(r'<span class="pl">.*<br')
+        .allMatches(infoElement?.innerHtml ?? "")
+        .forEach((regExpMatch) {
+      String line = regExpMatch[0] ?? "";
+      // 集数可能不止2位数，因此通过以下方式定位。其他同理
+      // start+2是为了跳过"> "
+      int start = line.lastIndexOf("> ") + 2, end = line.lastIndexOf("<br");
+      if (line.contains("集数")) {
+        // <span class="pl">集数:</span> 13<br
+        // Log.info("集数=${line.substring(start, end)}");
+        anime.animeEpisodeCnt = int.parse(line.substring(start, end));
+      } else if (line.contains("又名")) {
+        Log.info("又名=${line.substring(start, end)}");
+        // anime.nameAnother = line.substring(start, end);
+      } else if (line.contains("制片国家/地区")) {
+        // Log.info("地区=${line.substring(start, end)}");
+        anime.area = line.substring(start, end);
+      }
+    });
+
+    if (infoElement != null) {
+      var plElements = infoElement.getElementsByClassName("pl");
+      for (var plElement in plElements) {
+        String innerHtml = plElement.innerHtml;
+        if (innerHtml.contains("首播")) {
+          anime.premiereTime = plElement.nextElementSibling?.innerHtml ?? "";
+        } else if (innerHtml.contains("作者")) {
+          anime.authorOri = plElement.nextElementSibling?.innerHtml ?? "";
+        }
+      }
+    }
+    if (showMessage) showToast("更新信息成功");
+
     return anime;
   }
 
@@ -75,7 +118,6 @@ class ClimbDouban implements Climb {
   @override
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) {
-    // TODO: implement climbDirectory
     throw UnimplementedError();
   }
 }
