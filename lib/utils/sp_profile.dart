@@ -43,4 +43,13 @@ class SpProfile {
     return SPUtil.getDouble("coverBgSigmaInAnimeDetailPage",
         defaultValue: 10.0);
   }
+
+  // 笔记页中显示/隐藏所有图片
+  static setShowAllNoteGridImage(bool show) {
+    SPUtil.setBool("showAllNoteGridImage", show);
+  }
+
+  static getShowAllNoteGridImage() {
+    return SPUtil.getBool("showAllNoteGridImage", defaultValue: false);
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/pages/note_list/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 
@@ -62,7 +63,7 @@ class _NoteListPageState extends State<NoteListPage>
         ),
         actions: [
           _buildSearchIconButton(setState),
-          _buildImageSettingIconButton()
+          _buildImageSettingIconButton(),
         ],
         bottom: _buildTabBar(),
       ),
@@ -109,20 +110,51 @@ class _NoteListPageState extends State<NoteListPage>
   }
 
   _buildImageSettingIconButton() {
-    return IconButton(
-        onPressed: () {
-          Navigator.push(context, FadeRoute(
-            builder: (context) {
-              return const ImagePathSetting();
-            },
-          )).then((dirChanged) {
-            if (dirChanged) {
-              debugPrint("修改了图片目录，更新状态");
-              setState(() {});
-            }
-          });
-        },
-        icon: const Icon(Icons.settings));
+    return PopupMenuButton(
+      tooltip: "更多",
+      icon: const Icon(Icons.more_vert),
+      offset: const Offset(0, 50),
+      itemBuilder: (popupMenuContext) {
+        bool showAllNoteGridImage = SpProfile.getShowAllNoteGridImage();
+        return [
+          PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                style: ListTileStyle.drawer,
+                leading: const Icon(Icons.image_outlined),
+                title: const Text("图片设置"),
+                onTap: () {
+                  Navigator.push(context, FadeRoute(
+                    builder: (context) {
+                      return const ImagePathSetting();
+                    },
+                  )).then((dirChanged) {
+                    Navigator.pop(popupMenuContext);
+                    if (dirChanged) {
+                      debugPrint("修改了图片目录，更新状态");
+                      setState(() {});
+                    }
+                  });
+                },
+              )),
+          PopupMenuItem(
+            padding: const EdgeInsets.all(0),
+            child: ListTile(
+              style: ListTileStyle.drawer,
+              leading: const Icon(Icons.expand),
+              title: showAllNoteGridImage
+                  ? const Text("显示部分图片")
+                  : const Text("显示所有图片"),
+              onTap: () {
+                SpProfile.setShowAllNoteGridImage(!showAllNoteGridImage);
+                setState(() {});
+                Navigator.pop(popupMenuContext);
+              },
+            ),
+          ),
+        ];
+      },
+    );
   }
 
   IconButton _buildSearchIconButton(setState) {
