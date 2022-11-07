@@ -152,19 +152,27 @@ class AnimeGridCover extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           padding: const EdgeInsets.only(bottom: 5),
           child: Container(
-            // TODO 字体溢出，没有换行，可能是因为Stack，Container没有宽度限制
             padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
             child: Text(
-              _anime.animeName,
+              _getEllipsisMiddleAnimeName(_anime.animeName),
+              // _anime.animeName,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: 0.9,
+              textScaleFactor: ThemeUtil.smallScaleFactor,
               style: const TextStyle(color: Colors.white),
             ),
           ),
         )
       ],
     );
+  }
+
+  String _getEllipsisMiddleAnimeName(String name) {
+    if (name.length > 12 && name[name.length - 3] == "第") {
+      return "${name.substring(0, 8)}...${name.substring(name.length - 3)}";
+    } else {
+      return name;
+    }
   }
 
   _buildNameBelowCover(bool show) {
@@ -177,7 +185,7 @@ class AnimeGridCover extends StatelessWidget {
             child: Text(_anime.animeName,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                textScaleFactor: 0.9,
+                textScaleFactor: ThemeUtil.smallScaleFactor,
                 style: TextStyle(color: ThemeUtil.getFontColor())))
         : Container();
   }
