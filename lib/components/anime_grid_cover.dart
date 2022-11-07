@@ -63,6 +63,7 @@ class AnimeGridCover extends StatelessWidget {
             child: Stack(
               children: [
                 // 确保图片填充
+                // TODO 列数为1或2时无法保证填充
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,

@@ -363,8 +363,9 @@ class MyAppState extends State<MyApp> with WindowListener {
           style: ButtonStyle(
               foregroundColor:
                   MaterialStateProperty.all(ThemeUtil.getPrimaryColor()),
-              textStyle: MaterialStateProperty.all(
-                  const TextStyle(color: Colors.black)))),
+              textStyle: MaterialStateProperty.all(TextStyle(
+                  color: Colors.black,
+                  fontFamilyFallback: themeController.fontFamilyFallback)))),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               backgroundColor:

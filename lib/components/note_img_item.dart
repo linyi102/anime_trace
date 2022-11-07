@@ -28,18 +28,15 @@ class NoteImgItem extends StatelessWidget {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
-        Navigator.push(
-            context,
-            FadeRoute(
-                // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
-                transitionDuration: Duration.zero,
-                reverseTransitionDuration: Duration.zero,
-                builder: (context) {
-                  // 点击图片进入图片浏览页面
-                  return ImageViewer(
-                      relativeLocalImages: relativeLocalImages,
-                      initialIndex: initialIndex);
-                })).then((dirChanged) {
+        Navigator.push(context, FadeRoute(
+            // transitionDuration: Duration.zero,
+            // reverseTransitionDuration: Duration.zero,
+            builder: (context) {
+          // 点击图片进入图片浏览页面
+          return ImageViewer(
+              relativeLocalImages: relativeLocalImages,
+              initialIndex: initialIndex);
+        })).then((dirChanged) {
           if (dirChanged) {
             dirChangedWrapper = true;
           }

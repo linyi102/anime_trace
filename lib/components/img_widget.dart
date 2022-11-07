@@ -11,7 +11,8 @@ import '../utils/image_util.dart';
 Widget buildImgWidget(
     {required String url,
     required bool showErrorDialog,
-    required bool isNoteImg}) {
+    required bool isNoteImg,
+    Color? color}) {
   if (url.isEmpty) {
     // return const Center(child: Icon(Entypo.picture));
     return Center(
@@ -19,7 +20,7 @@ Widget buildImgWidget(
         "assets/icons/default_picture.png",
         // 默认宽度33(因为比较小，所以调大些)，失败宽度30
         width: 33,
-        color: ThemeUtil.getCommonIconColor(),
+        color: color ?? ThemeUtil.getCommonIconColor(),
       ),
     );
   }
@@ -38,8 +39,8 @@ Widget buildImgWidget(
       // memCacheHeight: 500,
       imageUrl: url,
       fit: BoxFit.cover,
-      errorWidget:
-          errorImageBuilder(url: url, showErrorDialog: showErrorDialog),
+      errorWidget: errorImageBuilder(
+          url: url, showErrorDialog: showErrorDialog, color: color),
     );
   }
 
@@ -56,29 +57,33 @@ Widget buildImgWidget(
       image: FileImage(file),
       fit: BoxFit.cover,
       fadeInDuration: const Duration(milliseconds: 100),
-      imageErrorBuilder:
-          errorImageBuilder(url: url, showErrorDialog: showErrorDialog),
+      imageErrorBuilder: errorImageBuilder(
+          url: url, showErrorDialog: showErrorDialog, color: color),
     );
   } else {
-    return errorImageWidget(url: url, showErrorDialog: showErrorDialog);
+    return errorImageWidget(
+        url: url, showErrorDialog: showErrorDialog, color: color);
   }
 }
 
 /// 错误图片
 Widget Function(dynamic buildContext, dynamic object, dynamic stackTrace)
-    errorImageBuilder({required String url, required bool showErrorDialog}) {
+    errorImageBuilder(
+        {required String url, required bool showErrorDialog, Color? color}) {
   return (buildContext, object, stackTrace) {
     // return const Center(child: Icon(Icons.broken_image));
-    return errorImageWidget(url: url, showErrorDialog: showErrorDialog);
+    return errorImageWidget(
+        url: url, showErrorDialog: showErrorDialog, color: color);
   };
 }
 
-Widget errorImageWidget({required String url, required bool showErrorDialog}) {
+Widget errorImageWidget(
+    {required String url, required bool showErrorDialog, Color? color}) {
   return Center(
     child: Image.asset(
       "assets/icons/failed_picture.png",
       width: 30,
-      color: ThemeUtil.getCommonIconColor(),
+      color: color ?? ThemeUtil.getCommonIconColor(),
     ),
   );
 }
