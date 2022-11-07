@@ -92,11 +92,12 @@ class _SourceListPageState extends State<SourceListPage> {
         child: ListView(
           children: [
             _showPingButton ? _buildPingButton() : Container(),
-            Responsive(
-                mobile: _buildListView(),
-                tablet: _buildGridView(crossAxisCount: 2),
-                desktop:
-                    _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
+            Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
+            // Responsive(
+            //     mobile: _buildListView(),
+            //     tablet: _buildGridView(crossAxisCount: 2),
+            //     desktop:
+            //         _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
             FavWebsiteListPage()
           ],
         ),
@@ -104,15 +105,17 @@ class _SourceListPageState extends State<SourceListPage> {
     );
   }
 
-  GridView _buildGridView(
-      {int crossAxisCount = 3, double childAspectRatio = 3}) {
+  GridView _buildGridView({int crossAxisCount = 3}) {
     return GridView.builder(
         // 解决报错问题
         shrinkWrap: true,
         //解决不滚动问题
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount, childAspectRatio: childAspectRatio),
+        // 改用WithMaxCrossAxisExtent实现自适应
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisExtent: 80, maxCrossAxisExtent: 350),
+        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //     crossAxisCount: crossAxisCount, childAspectRatio: childAspectRatio),
         itemCount: climbWebsites.length,
         itemBuilder: (context, index) {
           ClimbWebsite climbWebsite = climbWebsites[index];
