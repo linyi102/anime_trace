@@ -168,8 +168,8 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   String _getEllipsisMiddleAnimeName(String name) {
-    if (name.length > 12 && name[name.length - 3] == "第") {
-      return "${name.substring(0, 8)}...${name.substring(name.length - 3)}";
+    if (name.length > 10 && name[name.length - 3] == "第") {
+      return "${name.substring(0, 6)}...${name.substring(name.length - 3)}";
     } else {
       return name;
     }

@@ -49,15 +49,10 @@ class ClimbAnimeUtil {
   // collecting为false时，表示从动漫详细页下拉更新，通过动漫网址获取详细信息
   // collecting为true时，表示第一次收藏，此时需要爬取动漫网址来获取更全的信息(age和樱花跳过)
   static Future<Anime> climbAnimeInfoByUrl(Anime anime,
-      {bool showMessage = true, bool collecting = false}) async {
-    if (!collecting && anime.animeUrl.isEmpty) {
+      {bool showMessage = true}) async {
+    if (anime.animeUrl.isEmpty) {
       debugPrint("无来源，无法更新，返回旧动漫对象");
       return anime;
-    }
-    if (collecting) {
-      if (anime.animeUrl.contains("yhdm") || anime.animeUrl.contains("age")) {
-        return anime;
-      }
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
     if (climb != null) {
@@ -92,6 +87,7 @@ class ClimbAnimeUtil {
     for (var anime in animes) {
       // debugPrint("${anime.animeName}：${anime.playStatus}");
       // 跳过完结动漫，还要豆瓣
+      // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
       if (anime.playStatus.contains("完结") ||
           anime.animeUrl.contains("douban")) {
         skipUpdateCnt++;

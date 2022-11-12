@@ -8,12 +8,18 @@ import 'package:oktoast/oktoast.dart';
 import '../../utils/climb/climb_anime_util.dart';
 
 dialogSelectTag(setState, context, Anime anime) {
+  bool climbingDetail = false;
   showDialog(
     context: context,
-    builder: (BuildContext context) {
-      List<Widget> radioList = [];
+    builder: (BuildContext dialogContext) {
+      List<Widget> items = [];
+      // items.add(ListTile(
+      //   style: ListTileStyle.drawer,
+      //   title: Text(anime.animeName),
+      //   textColor: ThemeUtil.getCommentColor(),
+      // ));
       for (int i = 0; i < tags.length; ++i) {
-        radioList.add(
+        items.add(
           ListTile(
             title: Text(tags[i]),
             leading: tags[i] == anime.tagName
@@ -24,37 +30,36 @@ dialogSelectTag(setState, context, Anime anime) {
                 : const Icon(
                     Icons.radio_button_off_outlined,
                   ),
+            enabled: !climbingDetail,
             onTap: () async {
               // 不能只传入tagName，需要把对象的引用传进来，然后修改就会生效
               // 如果起初没有收藏，则说明是新增，否则修改
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
-                setState(() {});
-
-                // 先关闭对话框，避免快速多次点击收藏
-                Navigator.pop(context);
-                // 爬取详细页
-                anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
-                    collecting: true, showMessage: false);
+                if (anime.animeUrl.contains("yhdm") ||
+                    anime.animeUrl.contains("age")) {
+                  // 如果是樱花和age，则不需要首次更新详细页
+                } else {
+                  // 不允许点击，避免快速多次点击收藏
+                  climbingDetail = true;
+                  (dialogContext as Element).markNeedsBuild();
+                  // 爬取详细页
+                  anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
+                      showMessage: false);
+                }
 
                 // 插入数据库
                 anime.animeId = await SqliteUtil.insertAnime(anime);
+                Navigator.pop(dialogContext);
+                // 更新父级页面
                 setState(() {});
                 showToast("收藏成功！");
-
-                // 第一次收藏，获取更加详细的内容
-                // 在插入该动画后再更新，否则收藏时会有延迟
-                // showMessage为false表示不显示更新信息成功
-                // Anime oldAnime = anime.copy();
-                // anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
-                //     collecting: true, showMessage: false);
-                // SqliteUtil.updateAnime(oldAnime, anime);
               } else {
                 SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
                 anime.tagName = tags[i];
                 showToast("修改成功！");
                 setState(() {});
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
               }
             },
           ),
@@ -63,33 +68,20 @@ dialogSelectTag(setState, context, Anime anime) {
       return AlertDialog(
         title: const Text('选择清单'),
         content: SingleChildScrollView(
-          child: Column(
-            children: radioList,
-          ),
+          child: climbingDetail
+              ? Center(
+                  child: Column(
+                  children: const [
+                    SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator()),
+                    SizedBox(height: 10),
+                    Text("正在获取详细信息...", textScaleFactor: 0.8)
+                  ],
+                ))
+              : Column(children: items),
         ),
-        // actions: <Widget>[
-        //   anime.isCollected()
-        //       ? TextButton(
-        //           child: const Text("取消收藏"),
-        //           onPressed: () {
-        //             if (anime.isCollected()) {
-        //               SqliteUtil.deleteAnimeByAnimeId(anime.animeId);
-        //               anime.animeId = 0;
-        //               anime.tagName = "";
-        //               setState(() {});
-        //               showToast("取消成功！");
-        //             }
-        //             Navigator.of(context).pop();
-        //           },
-        //         )
-        //       : Container(),
-        //   TextButton(
-        //     child: const Text("取消"),
-        //     onPressed: () {
-        //       Navigator.of(context).pop();
-        //     },
-        //   ),
-        // ],
       );
     },
   );
