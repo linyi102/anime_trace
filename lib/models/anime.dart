@@ -94,27 +94,47 @@ class Anime {
     // return tagName.isNotEmpty;
   }
 
-  Anime copy() {
-    Anime anime = Anime(animeName: animeName, animeEpisodeCnt: animeEpisodeCnt);
-    anime.animeId = animeId;
-    anime.animeName = animeName;
-    anime.animeEpisodeCnt = animeEpisodeCnt;
-    anime.tagName = tagName;
-    anime.animeDesc = animeDesc;
-    anime.animeCoverUrl = animeCoverUrl;
-    anime.checkedEpisodeCnt = checkedEpisodeCnt;
-    anime.reviewNumber = reviewNumber;
-    anime.animeUrl = animeUrl;
-    anime.premiereTime = premiereTime;
-    anime.nameAnother = nameAnother;
-    anime.nameOri = nameOri;
-    anime.authorOri = authorOri;
-    anime.area = area;
-    anime.category = category;
-    anime.playStatus = playStatus;
-    anime.productionCompany = productionCompany;
-    anime.officialSite = officialSite;
-    anime.rate = rate;
-    return anime;
+  Anime copyWith({
+    int? animeId,
+    String? animeName,
+    int? animeEpisodeCnt,
+    String? tagName,
+    String? animeDesc,
+    String? animeCoverUrl,
+    int? rate,
+    int? checkedEpisodeCnt,
+    int? reviewNumber,
+    String? animeUrl,
+    String? premiereTime,
+    String? nameAnother,
+    String? nameOri,
+    String? authorOri,
+    String? area,
+    String? category,
+    String? playStatus,
+    String? productionCompany,
+    String? officialSite,
+  }) {
+    return Anime(
+      animeId: animeId ?? this.animeId,
+      animeName: animeName ?? this.animeName,
+      animeEpisodeCnt: animeEpisodeCnt ?? this.animeEpisodeCnt,
+      tagName: tagName ?? this.tagName,
+      animeDesc: animeDesc ?? this.animeDesc,
+      animeCoverUrl: animeCoverUrl ?? this.animeCoverUrl,
+      rate: rate ?? this.rate,
+      checkedEpisodeCnt: checkedEpisodeCnt ?? this.checkedEpisodeCnt,
+      reviewNumber: reviewNumber ?? this.reviewNumber,
+      animeUrl: animeUrl ?? this.animeUrl,
+      premiereTime: premiereTime ?? this.premiereTime,
+      nameAnother: nameAnother ?? this.nameAnother,
+      nameOri: nameOri ?? this.nameOri,
+      authorOri: authorOri ?? this.authorOri,
+      area: area ?? this.area,
+      category: category ?? this.category,
+      playStatus: playStatus ?? this.playStatus,
+      productionCompany: productionCompany ?? this.productionCompany,
+      officialSite: officialSite ?? this.officialSite,
+    );
   }
 }

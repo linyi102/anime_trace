@@ -1603,12 +1603,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     _climbing = true;
     // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
-    Anime oldAnime = _anime.copy();
-    // Anime oldAnime = Anime(
-    //     animeId: _anime.animeId,
-    //     animeName: _anime.animeName,
-    //     animeEpisodeCnt: _anime.animeEpisodeCnt,
-    //     tagName: _anime.tagName);
+    Anime oldAnime = _anime.copyWith();
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
     debugPrint("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
     Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);

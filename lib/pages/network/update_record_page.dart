@@ -11,8 +11,8 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
-import '../../components/dialog/dialog_update_all_anime_progress.dart';
 import '../../utils/theme_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
@@ -53,7 +53,7 @@ class UpdateRecordPage extends StatelessWidget {
     List<String> dateList = [];
     Map<String, List<UpdateRecordVo>> map = {};
     for (var updateRecordVo in updateRecordController.updateRecordVos) {
-      String key = updateRecordVo.manualUpdateTime;
+      String key = updateRecordVo.manualUpdateDate();
       if (!map.containsKey(key)) {
         map[key] = [];
         dateList.add(key);
@@ -100,12 +100,6 @@ class UpdateRecordPage extends StatelessWidget {
     for (var record in records) {
       recordsWidget.add(ListTile(
         leading: AnimeListCover(record.anime),
-        // trailing: Transform.scale(
-        //   scale: 0.8,
-        //   child: Chip(
-        //       label: Text("${record.oldEpisodeCnt}>${record.newEpisodeCnt}",
-        //           textScaleFactor: ThemeUtil.smallScaleFactor)),
-        // ),
         subtitle: Text("更新至${record.newEpisodeCnt}集",
             textScaleFactor: ThemeUtil.tinyScaleFactor),
         title: Text(
@@ -157,4 +151,73 @@ class UpdateRecordPage extends StatelessWidget {
   //         title: Text("待更新的动漫数量：$needUpdateCnt"),
   //       ));
   // }
+
+  /// 全局更新动漫
+  dialogUpdateAllAnimeProgress(parentContext) {
+    final UpdateRecordController updateRecordController = Get.find();
+
+    showDialog(
+        context: parentContext,
+        builder: (context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Obx(
+                    () {
+                      int updateOkCnt =
+                          updateRecordController.updateOkCnt.value;
+                      int needUpdateCnt =
+                          updateRecordController.needUpdateCnt.value;
+                      // if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
+                      //   showToast("动漫更新完毕！");
+                      // }
+
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: Column(
+                          children: [
+                            Center(
+                                child: Text(
+                                    updateOkCnt < needUpdateCnt
+                                        ? "更新动漫中..."
+                                        : "更新完毕！",
+                                    textScaleFactor:
+                                        ThemeUtil.smallScaleFactor)),
+                            const SizedBox(height: 15),
+                            LinearPercentIndicator(
+                              barRadius: const Radius.circular(15),
+                              animation: false,
+                              lineHeight: 20.0,
+                              animationDuration: 1000,
+                              percent: needUpdateCnt > 0
+                                  ? (updateOkCnt / needUpdateCnt)
+                                  : 0,
+                              center: Text("$updateOkCnt / $needUpdateCnt",
+                                  style:
+                                      const TextStyle(color: Colors.black54)),
+                              progressColor: Colors.greenAccent,
+                              // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    child: const Text(
+                      "提示：\n更新时会跳过已完结动漫\n关闭该对话框不影响更新",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                      textScaleFactor: 0.8,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
 }

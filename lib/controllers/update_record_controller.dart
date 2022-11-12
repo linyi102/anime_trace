@@ -10,7 +10,6 @@ class UpdateRecordController extends GetxController {
   PageParams pageParams =
       PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
-  bool enableBatchInsertUpdateRecord = true; // 一条条插入效率太慢，且有bug，所以开启批量插入
   bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
@@ -84,8 +83,12 @@ class UpdateRecordController extends GetxController {
       return;
     }
     debugPrint("添加$updateRecordVo，长度=${updateRecordVos.length}");
-    updateRecordVos.add(updateRecordVo);
-    updateRecordVos
-        .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
+
+    // 直接插入到开头
+    updateRecordVos.insert(0, updateRecordVo);
+    // 不能先添加再排序，否则添加后会检测到然后显示，后来又因为排序重新显示一次
+    // updateRecordVos.add(updateRecordVo);
+    // updateRecordVos
+    //     .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
   }
 }

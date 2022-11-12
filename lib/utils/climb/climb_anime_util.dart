@@ -87,8 +87,6 @@ class ClimbAnimeUtil {
 
     List<Anime> animes = await SqliteUtil.getAllAnimes();
     List<AnimeUpdateRecord> updateRecords = [];
-    bool enableBatchInsertUpdateRecord =
-        updateRecordController.enableBatchInsertUpdateRecord;
 
     // 异步更新所有动漫信息
     for (var anime in animes) {
@@ -102,35 +100,21 @@ class ClimbAnimeUtil {
       needUpdateCnt++;
       debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
-      Anime oldAnime = anime.copy();
-      // Anime oldAnime = Anime(
-      //     animeId: anime.animeId,
-      //     animeName: anime.animeName,
-      //     animeEpisodeCnt: anime.animeEpisodeCnt,
-      //     tagName: anime.tagName,
-      //     playStatus: anime.playStatus,
-      //   premiereTime: anime.premiereTime,
-      //   animeUrl: anime.animeUrl
-      // );
+      Anime oldAnime = anime.copyWith();
       AnimeUpdateRecord updateRecord = AnimeUpdateRecord(animeId: 0);
       // 爬取
       ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
           .then((value) {
+        // 集数变化则记录到表中
         if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
-          // 集数变化则记录到表中
           updateRecord = AnimeUpdateRecord(
               animeId: anime.animeId,
               oldEpisodeCnt: oldAnime.animeEpisodeCnt,
               newEpisodeCnt: anime.animeEpisodeCnt,
               manualUpdateTime:
-                  DateTime.now().toString().substring(0, 10) // 只存入年-月-日
-              );
-          if (enableBatchInsertUpdateRecord) {
-            updateRecords.add(updateRecord);
-          } else {
-            // 立即添加到数据库中
-            UpdateRecordDao.batchInsert([updateRecord]);
-          }
+                  DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
+          updateRecords.add(updateRecord);
+          updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
         }
         // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
 
@@ -139,43 +123,26 @@ class ClimbAnimeUtil {
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
-          if (enableBatchInsertUpdateRecord) {
-            if (updateOkCnt == needUpdateCnt) {
-              // 动漫全部更新完毕后，批量插入更新记录
-              UpdateRecordDao.batchInsert(updateRecords).then((value) {
-                debugPrint("更新完毕");
-                // showToast("更新完毕");
-                // 在控制器中查询数据库，来更新数据
-                updateRecordController.updateData();
-              });
-            }
-          } else {
-            // 在控制器中单条插入查询数据库，来更新数据(有点糟糕，每次更新动漫都得重新查询更新记录表)
-            // updateRecordController.updateData();
-            // 直接添加到里面，注意需要按更新时间倒序排序，保证与重新查询出来的结果一致
-            // 因为Vo里把animeId改为了anime，所以还转要Vo
-            // BUG：尽管都添加到了controller里的数组，然鹅因为分页的缘故会自动请求数据库中更新记录表中的数据，导致被覆盖，而且此时数据库还没更新完毕，所以数据会不全
-            if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
-              // 只手动添加集数变大的更新记录
-              updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
-            }
-          }
-        });
-      }).catchError((obj, e) {
-        if (enableBatchInsertUpdateRecord) {
-          updateRecordController.incrementUpdateOkCnt();
-          int updateOkCnt = updateRecordController.updateOkCnt.value;
-          debugPrint("updateOkCnt=$updateOkCnt");
-
           if (updateOkCnt == needUpdateCnt) {
             // 动漫全部更新完毕后，批量插入更新记录
             UpdateRecordDao.batchInsert(updateRecords).then((value) {
               debugPrint("更新完毕");
-              // showToast("更新完毕");
-              // 在控制器中查询数据库，来更新数据
-              updateRecordController.updateData();
             });
           }
+        });
+      }).catchError((obj, e) {
+        updateRecordController.incrementUpdateOkCnt();
+        int updateOkCnt = updateRecordController.updateOkCnt.value;
+        debugPrint("updateOkCnt=$updateOkCnt");
+
+        if (updateOkCnt == needUpdateCnt) {
+          // 动漫全部更新完毕后，批量插入更新记录
+          UpdateRecordDao.batchInsert(updateRecords).then((value) {
+            debugPrint("更新完毕");
+            // showToast("更新完毕");
+            // 在控制器中查询数据库，来更新数据
+            updateRecordController.updateData();
+          });
         }
         // 爬取异常处理，因此不会有更新记录，所以不需要添加到数据库，不用处理else
 

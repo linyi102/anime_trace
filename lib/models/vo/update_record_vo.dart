@@ -5,7 +5,9 @@ class UpdateRecordVo {
   Anime anime;
   int oldEpisodeCnt;
   int newEpisodeCnt;
-  String manualUpdateTime;
+  String manualUpdateTime; // 详细时间
+  String manualUpdateDate() =>
+      manualUpdateTime.substring(0, 10); // 日期，作为map的key
 
   UpdateRecordVo(
       {required this.id,
