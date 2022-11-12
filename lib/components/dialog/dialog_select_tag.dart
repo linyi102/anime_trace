@@ -13,11 +13,17 @@ dialogSelectTag(setState, context, Anime anime) {
     context: context,
     builder: (BuildContext dialogContext) {
       List<Widget> items = [];
-      // items.add(ListTile(
-      //   style: ListTileStyle.drawer,
-      //   title: Text(anime.animeName),
-      //   textColor: ThemeUtil.getCommentColor(),
-      // ));
+      if (!anime.isCollected()) {
+        items.add(_buildCommonItem(
+            content: "动漫名字",
+            textColor: ThemeUtil.getCommentColor(),
+            isTitle: true));
+        items.add(_buildCommonItem(content: anime.animeName));
+        items.add(_buildCommonItem(
+            content: "选择清单",
+            textColor: ThemeUtil.getCommentColor(),
+            isTitle: true));
+      }
       for (int i = 0; i < tags.length; ++i) {
         items.add(
           ListTile(
@@ -66,7 +72,7 @@ dialogSelectTag(setState, context, Anime anime) {
         );
       }
       return AlertDialog(
-        title: const Text('选择清单'),
+        // title: const Text('选择清单'),
         content: SingleChildScrollView(
           child: climbingDetail
               ? Center(
@@ -84,5 +90,18 @@ dialogSelectTag(setState, context, Anime anime) {
         ),
       );
     },
+  );
+}
+
+_buildCommonItem(
+    {required String content, Color? textColor, bool isTitle = false}) {
+  return SizedBox(
+    width: 200,
+    child: ListTile(
+      dense: isTitle ? true : false,
+      contentPadding: const EdgeInsets.all(0),
+      title: Text(content),
+      textColor: textColor,
+    ),
   );
 }
