@@ -150,29 +150,46 @@ class AnimeGridCover extends StatelessWidget {
         // 使用Align替换Positioned，可以保证在Stack下自适应父元素宽度
         Container(
           alignment: Alignment.bottomLeft,
-          padding: const EdgeInsets.only(bottom: 5),
           child: Container(
             padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
-            child: Text(
-              _getEllipsisMiddleAnimeName(_anime.animeName),
-              // _anime.animeName,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
-              style: const TextStyle(color: Colors.white),
-            ),
+            child: _buildNameText(Colors.white),
           ),
         )
       ],
     );
   }
 
-  String _getEllipsisMiddleAnimeName(String name) {
-    if (name.length > 10 && name[name.length - 3] == "第") {
-      return "${name.substring(0, 6)}...${name.substring(name.length - 3)}";
+  String _getEllipsisMiddleAnimeName(String name, BoxConstraints constraints) {
+    // return name;
+    // debugPrint(constraints.toString());
+    if ((name.length > 3 && name[name.length - 3] == "第") ||
+        name.endsWith("OVA")) {
+      String testName = name;
+      int endIdx = name.length - 3;
+
+      while (!_notOverflow(testName, constraints)) {
+        testName =
+            "${name.substring(0, endIdx)}...${name.substring(name.length - 3)}";
+        endIdx--;
+      }
+      return testName;
     } else {
       return name;
     }
+  }
+
+  // 检测方法参考自https://github.com/leisim/auto_size_text/blob/master/lib/src/auto_size_text.dart
+  bool _notOverflow(String name, BoxConstraints constraints) {
+    final textPainter = TextPainter(
+        text: TextSpan(text: name),
+        maxLines: 2,
+        textDirection: TextDirection.ltr);
+    textPainter.layout(maxWidth: constraints.maxWidth);
+    if (textPainter.didExceedMaxLines) {
+      debugPrint("溢出：$name");
+      return false;
+    }
+    return true;
   }
 
   _buildNameBelowCover(bool show) {
@@ -182,11 +199,19 @@ class AnimeGridCover extends StatelessWidget {
             padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
             // 保证文字左对齐
             alignment: Alignment.centerLeft,
-            child: Text(_anime.animeName,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: ThemeUtil.smallScaleFactor,
-                style: TextStyle(color: ThemeUtil.getFontColor())))
+            child: _buildNameText(ThemeUtil.getFontColor()))
         : Container();
+  }
+
+  _buildNameText(Color color) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Text(_getEllipsisMiddleAnimeName(_anime.animeName, constraints),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textScaleFactor: ThemeUtil.smallScaleFactor,
+            style: TextStyle(color: ThemeUtil.getFontColor()));
+      },
+    );
   }
 }
