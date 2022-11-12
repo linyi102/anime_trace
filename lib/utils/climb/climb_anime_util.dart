@@ -42,7 +42,11 @@ class ClimbAnimeUtil {
   static Future<List<Anime>> climbAnimesByKeywordAndWebSite(
       String keyword, ClimbWebsite climbWebStie) async {
     List<Anime> climbAnimes = [];
-    climbAnimes = await climbWebStie.climb.climbAnimesByKeyword(keyword);
+    try {
+      climbAnimes = await climbWebStie.climb.climbAnimesByKeyword(keyword);
+    } catch (e) {
+      e.printError();
+    }
     return climbAnimes;
   }
 
@@ -56,7 +60,12 @@ class ClimbAnimeUtil {
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
     if (climb != null) {
-      anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+      try {
+        // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
+        anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+      } catch (e) {
+        e.printError();
+      }
     }
     return anime;
   }
