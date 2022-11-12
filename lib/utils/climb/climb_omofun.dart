@@ -102,7 +102,7 @@ class ClimbOmofun implements Climb {
       anime.animeEpisodeCnt =
           int.parse(elements[1].innerHtml); // 0对应今日更新，1对应该动漫的集数
     }
-    // 次元城的备注(播放状态)是第5个，而艾米是第4个，但都是最后一个
+    // 播放状态在最后一个
     var moduleInfoItemContents =
         document.getElementsByClassName("module-info-item-content");
     anime.playStatus = moduleInfoItemContents.last.innerHtml;
