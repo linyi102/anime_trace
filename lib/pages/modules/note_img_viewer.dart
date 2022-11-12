@@ -5,6 +5,7 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -29,7 +30,10 @@ class _ImageViewerState extends State<ImageViewer> {
   List<String> imageLocalPaths = [];
   int imagesCount = 0;
   int currentIndex = 0;
-  bool fullScreen = false; // 全屏显示图片，此时因此顶部栏和滚动轴
+
+  static const fullScreenKey = "fullScreenInNoteImageViewer";
+  bool fullScreen =
+      SPUtil.getBool(fullScreenKey, defaultValue: false); // 全屏显示图片，此时因此顶部栏和滚动轴
 
   // 在图片浏览器中进入图片设置页面，可能会更改目录，为true时，用于图片浏览页的上级页面重新加载图片。
   // 暂时没有办法，因为上一级是NoteImgItem，是无状态组件，不能更新
@@ -76,7 +80,8 @@ class _ImageViewerState extends State<ImageViewer> {
             children: [
               _buildPhotoViewGallery(),
               // 都叠放在图片上面，否则无法显示
-              if (!fullScreen) _buildStackAppBar(context),
+              // if (!fullScreen)
+              _buildStackAppBar(context),
               if (!fullScreen)
                 Positioned(
                   bottom: 10,
@@ -192,11 +197,13 @@ class _ImageViewerState extends State<ImageViewer> {
     setState(() {
       fullScreen = true;
     });
+    SPUtil.setBool(fullScreenKey, fullScreen);
   }
 
   _exitFullScreen() {
     setState(() {
       fullScreen = false;
+      SPUtil.setBool(fullScreenKey, fullScreen);
     });
     // 延时，确保滚动轴出来后再移动
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
