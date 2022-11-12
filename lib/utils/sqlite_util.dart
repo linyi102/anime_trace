@@ -760,8 +760,9 @@ class SqliteUtil {
       Anime anime = Anime(
         animeId: animeId,
         // 进入详细页面后需要该id
-        animeName: element['anime_name'] as String,
-        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        animeName: element['anime_name'] as String? ?? "",
+        nameAnother: element['name_another'] as String? ?? "",
+        animeEpisodeCnt: element['anime_episode_cnt'] as int? ?? 0,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
         reviewNumber: reviewNumber,

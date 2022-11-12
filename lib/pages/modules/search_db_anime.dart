@@ -18,15 +18,17 @@ class SearchDbAnime extends StatefulWidget {
 class _SearchDbAnimeState extends State<SearchDbAnime> {
   bool _searchOk = false;
   late List<Anime> _resAnimes;
-  String lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
+  String _lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
+  final _scrollController = ScrollController();
+
   void _searchDbAnimesByKeyword(String text) {
-    if (lastInputText == text) {
+    if (_lastInputText == text) {
       debugPrint("相同内容，不进行搜索");
       return;
     }
-    lastInputText = text;
+    _lastInputText = text;
     Future(() {
       debugPrint("search: $text");
       return SqliteUtil.getAnimesBySearch(text);
@@ -43,10 +45,11 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     // var inputController = TextEditingController();
     var inputController = TextEditingController.fromValue(TextEditingValue(
         // 设置内容
-        text: lastInputText,
+        text: _lastInputText,
         // 保持光标在最后
         selection: TextSelection.fromPosition(TextPosition(
-            affinity: TextAffinity.downstream, offset: lastInputText.length))));
+            affinity: TextAffinity.downstream,
+            offset: _lastInputText.length))));
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -99,6 +102,13 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
           textScaleFactor: 0.9,
           overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
         ),
+        subtitle: anime.nameAnother.isNotEmpty
+            ? Text(
+                anime.nameAnother,
+                textScaleFactor: 0.8,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
         trailing: Text(
           "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
           textScaleFactor: 0.9,
@@ -156,14 +166,15 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
         onTap: () {
           _cancelFocus();
           Navigator.of(context).push(FadeRoute(builder: (context) {
-            return AnimeClimbAllWebsite(keyword: lastInputText);
+            return AnimeClimbAllWebsite(keyword: _lastInputText);
           })).then((value) {
-            _searchDbAnimesByKeyword(lastInputText);
+            _searchDbAnimesByKeyword(_lastInputText);
           });
         }));
 
     return Scrollbar(
-      child: ListView(children: listWidget),
+      controller: _scrollController,
+      child: ListView(controller: _scrollController, children: listWidget),
     );
   }
 }
