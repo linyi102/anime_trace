@@ -134,7 +134,7 @@ class UpdateRecordPage extends StatelessWidget {
               kBottomNavigationBarHeight -
               kMinInteractiveDimension,
           // color: Colors.red,
-          child: emptyDataHint("暂无更新记录", toastMsg: "下拉更新已收藏动漫的信息"),
+          child: emptyDataHint("尝试下拉更新动漫"),
         )
       ],
       key: UniqueKey(),
@@ -190,9 +190,8 @@ class UpdateRecordPage extends StatelessWidget {
                               animation: false,
                               lineHeight: 20.0,
                               animationDuration: 1000,
-                              percent: needUpdateCnt > 0
-                                  ? (updateOkCnt / needUpdateCnt)
-                                  : 0,
+                              percent:
+                                  _getUpdatePercent(updateOkCnt, needUpdateCnt),
                               center: Text("$updateOkCnt / $needUpdateCnt",
                                   style:
                                       const TextStyle(color: Colors.black54)),
@@ -219,5 +218,17 @@ class UpdateRecordPage extends StatelessWidget {
             ),
           );
         });
+  }
+
+  double _getUpdatePercent(int updateOkCnt, int needUpdateCnt) {
+    if (needUpdateCnt == 0) {
+      return 0;
+    } else if (updateOkCnt > needUpdateCnt) {
+      debugPrint(
+          "error: updateOkCnt=$updateOkCnt, needUpdateCnt=$needUpdateCnt");
+      return 1;
+    } else {
+      return updateOkCnt / needUpdateCnt;
+    }
   }
 }

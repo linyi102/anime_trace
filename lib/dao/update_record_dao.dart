@@ -5,6 +5,18 @@ import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class UpdateRecordDao {
+  static var database = SqliteUtil.database;
+
+  static insert(AnimeUpdateRecord updateRecord) {
+    debugPrint("sql:insertUpdateRecord(updateRecord=$updateRecord)");
+    database.insert("update_record", {
+      "anime_id": updateRecord.animeId,
+      "old_episode_cnt": updateRecord.oldEpisodeCnt,
+      "new_episode_cnt": updateRecord.newEpisodeCnt,
+      "manual_update_time": updateRecord.manualUpdateTime
+    });
+  }
+
   static Future<List<Object?>> batchInsert(
       List<AnimeUpdateRecord> updateRecords) async {
     var batchInsert = SqliteUtil.database.batch();

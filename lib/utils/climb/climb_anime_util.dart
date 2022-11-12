@@ -90,7 +90,6 @@ class ClimbAnimeUtil {
     updateRecordController.resetUpdateOkCnt(); // 重新设置
 
     List<Anime> animes = await SqliteUtil.getAllAnimes();
-    List<AnimeUpdateRecord> updateRecords = [];
 
     // 异步更新所有动漫信息
     for (var anime in animes) {
@@ -118,65 +117,21 @@ class ClimbAnimeUtil {
               newEpisodeCnt: anime.animeEpisodeCnt,
               manualUpdateTime:
                   DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
-          updateRecords.add(updateRecord);
           updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
         }
         // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
 
         // 爬取完毕后，更新数据库中的动漫
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
+          // 更新完动漫，再添加更新记录
+          // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
-          if (updateOkCnt == needUpdateCnt) {
-            // 动漫全部更新完毕后，批量插入更新记录
-            UpdateRecordDao.batchInsert(updateRecords).then((value) {
-              debugPrint("更新完毕");
-            });
-          }
+          UpdateRecordDao.insert(updateRecord);
         });
-      }).catchError((obj, e) {
-        updateRecordController.incrementUpdateOkCnt();
-        int updateOkCnt = updateRecordController.updateOkCnt.value;
-        debugPrint("updateOkCnt=$updateOkCnt");
-
-        if (updateOkCnt == needUpdateCnt) {
-          // 动漫全部更新完毕后，批量插入更新记录
-          UpdateRecordDao.batchInsert(updateRecords).then((value) {
-            debugPrint("更新完毕");
-            // showToast("更新完毕");
-            // 在控制器中查询数据库，来更新数据
-            updateRecordController.updateData();
-          });
-        }
-        // 爬取异常处理，因此不会有更新记录，所以不需要添加到数据库，不用处理else
-
-        // 如果刚捕获到就打印，则不会执行上面的更新，所以放在这里
-        // 捕获的错误大多是爬取动漫详细信息时数组越界的错误
-        e.printError();
       });
     }
-    // // 如果10秒后还是没能全部更新(可能是抛出了异常导致updateOkCnt不会自增)
-    // // 则强制赋值为需要更新的数量，保证已有的更新记录插入到数据库中
-    // Future.delayed(const Duration(seconds: 20)).then((value) {
-    //   // 如果到了10s还在更新，此时超时，强制更新数量，那么之后还在更新时会在该基础上继续自增，导致updateOkCnt>needUpdateCnt
-    //   // 尝试1：自增时如果超过了就-1(！这会导致后面自增后始终和need相等，就会重复添加)
-    //   // 尝试2：不强制更新数量，直接批量插入就好了(尽管会卡在更新界面上)(！会导致重复添加数据)
-    //   // 尝试3：延长时间
-    //   // 尝试4：.catchError仍继续和比较
-    //   // 不相等才强制更新，不然会插入两次
-    //   if (updateRecordController.updateOkCnt.value !=
-    //       updateRecordController.needUpdateCnt.value) {
-    //     updateRecordController.forceUpdateOk(); // 保证强制更新完毕后退出更新界面
-    //     // 因为ClimbAnimeUtil.climbAnimeInfoByUrl抛出异常，所以不会执行then，所以需要手动批量插入
-    //     // 为什么不用.catchError？因为即使在里面自增了，也可能最后一个动漫爬取信息时也进入了这里，这样就只+1了，而不会判断是否更新完毕
-    //     UpdateRecordDao.batchInsert(updateRecords).then((value) {
-    //       debugPrint("更新完毕");
-    //       // 在控制器中查询数据库，来更新数据
-    //       updateRecordController.updateData();
-    //     });
-    //   }
-    // });
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");

@@ -38,7 +38,7 @@ dependencies:
   typicons_flutter: ^0.5.0
   photo_view: ^0.14.0
   flutter_rating_stars: ^1.0.3+4 # 评分
-  bottom_sheet: ^3.1.1 # 底部弹出菜单
+  bottom_sheet: ^3.1.2 # 底部弹出菜单
   window_manager: ^0.2.5 # windwos窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条
