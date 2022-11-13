@@ -96,15 +96,16 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              const Text("历史", style: TextStyle(fontWeight: FontWeight.w600))),
+        title: const Text("历史", style: TextStyle(fontWeight: FontWeight.w600)),
+        actions: [_buildViewSwitch()],
+      ),
       body: RefreshIndicator(
         onRefresh: () async => _initData(),
         child: FadeAnimatedSwitcher(
           loadOk: loadOk,
           destWidget: Column(
             children: [
-              _buildViewSwitch(),
+              // _buildViewSwitch(),
               views[selectedViewIndex].historyRecords.isEmpty
                   ? Expanded(child: emptyDataHint("什么都没有"))
                   : Expanded(
