@@ -22,7 +22,10 @@ class AnimeListCover extends StatelessWidget {
               aspectRatio: 1 / 1, // 正方形
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: buildImgWidget(url: _anime.animeCoverUrl, showErrorDialog: false, isNoteImg: false),
+                child: buildImgWidget(
+                    url: _anime.animeCoverUrl,
+                    showErrorDialog: false,
+                    isNoteImg: false),
               ),
             ),
             showReviewNumber && reviewNumber > 1
@@ -31,13 +34,13 @@ class AnimeListCover extends StatelessWidget {
                     top: 0,
                     child: Container(
                       // height: 20,
-                      padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
                         color: Colors.orange,
                       ),
                       child: Text(
-                        " $reviewNumber ",
+                        "$reviewNumber",
                         textScaleFactor: 0.8,
                         style: const TextStyle(color: Colors.white),
                       ),

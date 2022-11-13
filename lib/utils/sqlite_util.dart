@@ -6,6 +6,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_history_record.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/history_plus.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -963,87 +964,6 @@ class SqliteUtil {
   //   // }
   //   return history;
   // }
-
-  static Future<List<HistoryPlus>> getAllHistoryByYear(int year) async {
-    debugPrint("sql: getAllHistoryByYear");
-
-    // 整体思路：先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
-    // 新增回顾号列后，最小值和最大值应该属于同一回顾号
-    List<HistoryPlus> history = [];
-
-    // 如果存在临时表，则删除
-    await database.execute('''
-      drop table if exists history_year;
-      ''');
-    // 优化：先只选出该年的记录，作为临时表。记得删除该表(放在上面比较好)
-    await database.execute('''
-      create temp table history_year as
-      select * from history
-      where date like '$year%';
-      ''');
-
-    for (int month = 12; month >= 1; --month) {
-      String date;
-      if (month >= 10) {
-        date = "$year-$month";
-      } else {
-        date = "$year-0$month";
-      }
-      var list = await database.rawQuery('''
-        select distinct anime.anime_id, anime.anime_name, anime.anime_cover_url
-        from history_year, anime
-        where date like '$date%' and history_year.anime_id = anime.anime_id
-        order by date desc; -- 倒序
-        ''');
-      List<Anime> animes = [];
-      for (var item in list) {
-        animes.add(Anime(
-            animeId: item['anime_id'] as int,
-            animeName: item['anime_name'] as String,
-            animeEpisodeCnt: 0,
-            animeCoverUrl: item['anime_cover_url'] as String? ?? ""));
-      }
-      if (animes.isEmpty) continue; // 没有观看记录时直接跳过
-
-      List<AnimeHistoryRecord> records = [];
-      // 对于每个动漫，找到当月观看的最小值和最大值
-      // 如果该月存在多个回顾号，注意要挑选的最小值和最大值的回顾号一样
-      // 因此需要先找出该月存在的该动漫的所有回顾号(注意去重)，对与每个回顾号
-      // 都要找出min和max，并添加到records中
-      for (var anime in animes) {
-        // debugPrint(anime);
-        var reviewNumberList = await database.rawQuery('''
-        select distinct review_number
-        from history_year
-        where date like '$date%' and anime_id = ${anime.animeId};
-        ''');
-        for (var reviewNumberElem in reviewNumberList) {
-          int reviewNumber = reviewNumberElem['review_number'] as int;
-          list = await database.rawQuery('''
-          select min(episode_number) as start
-          from history_year
-          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
-          ''');
-          int startEpisodeNumber = list[0]['start'] as int;
-          list = await database.rawQuery('''
-          select max(episode_number) as end
-          from history_year
-          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
-          ''');
-          int endEpisodeNumber = list[0]['end'] as int;
-          AnimeHistoryRecord record = AnimeHistoryRecord(
-              anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
-          // debugPrint(record);
-          records.add(record);
-        }
-      }
-      history.add(HistoryPlus(date, records));
-    }
-    // for (var item in history) {
-    //   debugPrint(item);
-    // }
-    return history;
-  }
 
   static createTableEpisodeNote() async {
     await database.execute('''

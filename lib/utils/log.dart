@@ -6,7 +6,7 @@ class Log {
     DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '------> 🟩 [INFO] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟩');
+          '🟩 [INFO] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟩');
     }
   }
 
@@ -14,7 +14,7 @@ class Log {
     DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '------> 🟦 [DEBUG] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟦');
+          '🟦 [DEBUG] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟦');
     }
   }
 
@@ -22,7 +22,7 @@ class Log {
     DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '------> 🟨 [WARN] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟨');
+          '🟨 [WARN] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟨');
     }
   }
 
@@ -30,7 +30,7 @@ class Log {
     DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '------> 🟥 [ERROR] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟥');
+          '🟥 [ERROR] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟥');
     }
   }
 }

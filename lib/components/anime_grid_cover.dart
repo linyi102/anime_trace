@@ -210,7 +210,7 @@ class AnimeGridCover extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textScaleFactor: ThemeUtil.smallScaleFactor,
-            style: TextStyle(color: ThemeUtil.getFontColor()));
+            style: TextStyle(color: color));
       },
     );
   }
