@@ -34,6 +34,8 @@ class _NoteEditState extends State<NoteEdit> {
   // Map<int, int> initialOrderIdx = {}; // key-value对应imageId-orderIdx
   bool changeOrderIdx = false;
 
+  final scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -157,7 +159,9 @@ class _NoteEditState extends State<NoteEdit> {
 
     //
     return Scrollbar(
+      controller: scrollController,
       child: ListView(
+        controller: scrollController,
         children: [
           ListTile(
             style: ListTileStyle.drawer,
@@ -179,7 +183,16 @@ class _NoteEditState extends State<NoteEdit> {
           Responsive(
               mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
               tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
-              desktop: _buildReorderNoteImgGridView(crossAxisCount: 7))
+              desktop: _buildReorderNoteImgGridView(crossAxisCount: 7)),
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.error_outline, size: 15),
+            minLeadingWidth: 0,
+            title: Text(
+              "长按可拖拽图片改变顺序",
+              style: TextStyle(color: ThemeUtil.getCommentColor()),
+            ),
+          )
         ],
       ),
     );
@@ -193,7 +206,7 @@ class _NoteEditState extends State<NoteEdit> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
+        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 0),
       ),
       style: ThemeUtil.getNoteTextStyle(),
       maxLines: null,
@@ -251,7 +264,7 @@ class _NoteEditState extends State<NoteEdit> {
     //   },
     // );
     return ReorderableGridView.count(
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
       crossAxisCount: crossAxisCount,
       crossAxisSpacing: 4, // 横轴距离
       mainAxisSpacing: 4, // 竖轴距离
@@ -282,7 +295,7 @@ class _NoteEditState extends State<NoteEdit> {
         debugPrint("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 表示长按多久可以拖拽
-      dragStartDelay: const Duration(milliseconds: 100),
+      // dragStartDelay: const Duration(milliseconds: 500),
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Container(
         decoration: BoxDecoration(
