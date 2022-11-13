@@ -337,15 +337,15 @@ class _NoteEditState extends State<NoteEdit> {
         Positioned(
           right: 0,
           top: 0,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: const Color.fromRGBO(255, 255, 255, 0.1),
+          child: GestureDetector(
+            onTap: () => _dialogRemoveImage(imageIndex),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color.fromRGBO(255, 255, 255, 0.1),
+              ),
+              child: const Icon(Icons.close, color: Colors.white70, size: 20),
             ),
-            child: GestureDetector(
-                onTap: () => _dialogRemoveImage(imageIndex),
-                child:
-                    const Icon(Icons.close, color: Colors.white70, size: 18)),
           ),
         )
       ],
