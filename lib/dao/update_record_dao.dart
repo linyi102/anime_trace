@@ -56,11 +56,10 @@ class UpdateRecordDao {
       dates.add(date);
       debugPrint("📅 $date");
       List<Map<String, Object?>> updateRecordsMap =
-          await SqliteUtil.database.query(
-        "update_record",
-        where: "manual_update_time = ?",
-        whereArgs: [date],
-      );
+          await SqliteUtil.database.rawQuery('''
+          select * from update_record
+          where manual_update_time like '$date%';
+          ''');
       // 遍历该天的所有更新记录
       for (var updateRecordMap in updateRecordsMap) {
         int animeId = updateRecordMap["anime_id"] as int;
