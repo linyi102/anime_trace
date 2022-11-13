@@ -95,7 +95,7 @@ class _NoteListPageState extends State<NoteListPage>
             // 居中，而不是靠左下
             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             // 标签可以滑动，避免拥挤
-            isScrollable: true,
+            // isScrollable: true,
             labelPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             // 指示器长短和标签一样
             indicatorSize: TabBarIndicatorSize.label,
