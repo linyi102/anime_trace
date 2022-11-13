@@ -54,6 +54,7 @@ class UpdateRecordPage extends StatelessWidget {
     Map<String, List<UpdateRecordVo>> map = {};
     for (var updateRecordVo in updateRecordController.updateRecordVos) {
       String key = updateRecordVo.manualUpdateDate();
+
       if (!map.containsKey(key)) {
         map[key] = [];
         dateList.add(key);
@@ -69,10 +70,10 @@ class UpdateRecordPage extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: dateList.length,
           itemBuilder: (context, index) {
-            // debugPrint("$index");
             String date = dateList[index];
             PageParams pageParams = updateRecordController.pageParams;
-            if (index + 2 == (pageParams.pageIndex + 1) * pageParams.pageSize) {
+            debugPrint("$index, ${pageParams.getQueriedSize()}");
+            if (index + 2 == pageParams.getQueriedSize()) {
               updateRecordController.loadMore();
             }
 

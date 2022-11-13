@@ -22,7 +22,7 @@ class _NoteListPageState extends State<NoteListPage>
     with SingleTickerProviderStateMixin {
   // tab
   late TabController _tabController;
-  final List<String> _navs = ["笔记", "评价"];
+  final List<String> _navs = ["每集", "评价"];
   NoteFilter noteFilter = NoteFilter();
 
   @override

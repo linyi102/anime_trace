@@ -118,17 +118,17 @@ class ClimbAnimeUtil {
               manualUpdateTime:
                   DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
           updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
+          // 只有集数变化才插入更新表
+          UpdateRecordDao.insert(updateRecord);
         }
         // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
 
         // 爬取完毕后，更新数据库中的动漫
         SqliteUtil.updateAnime(oldAnime, anime).then((value) {
-          // 更新完动漫，再添加更新记录
           // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           debugPrint("updateOkCnt=$updateOkCnt");
-          UpdateRecordDao.insert(updateRecord);
         });
       });
     }

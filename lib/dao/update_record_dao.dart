@@ -36,18 +36,23 @@ class UpdateRecordDao {
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
     debugPrint("UpdateRecordDao: findAll(pageParams=$pageParams)");
     List<UpdateRecordVo> updateRecordVos = [];
-    List<Map<String, Object?>> datesMap =
-        await SqliteUtil.database.query("update_record",
-            columns: ["manual_update_time"],
-            limit: pageParams.pageSize,
-            offset: pageParams.getOffset(),
-            // 按日期分组，并倒序排序
-            groupBy: "manual_update_time",
-            orderBy: "manual_update_time desc");
+    List<Map<String, Object?>> list = await SqliteUtil.database.rawQuery('''
+    select substr(manual_update_time, 1, 10) day from update_record
+    group by day
+    order by day desc
+    limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+    ''');
+    // await SqliteUtil.database.query("update_record",
+    //     columns: ["manual_update_time"],
+    //     limit: pageParams.pageSize,
+    //     offset: pageParams.getOffset(),
+    //     // 按日期分组，并倒序排序
+    //     groupBy: "manual_update_time",
+    //     orderBy: "manual_update_time desc");
     List<String> dates = [];
-    debugPrint("最近${pageParams.pageSize}(${datesMap.length})个日期：");
-    for (var dateMap in datesMap) {
-      String date = dateMap["manual_update_time"] as String;
+    debugPrint("最近${pageParams.pageSize}(${list.length})个日期：");
+    for (var map in list) {
+      String date = map["day"] as String;
       dates.add(date);
       debugPrint("📅 $date");
       List<Map<String, Object?>> updateRecordsMap =
