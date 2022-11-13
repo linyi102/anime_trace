@@ -45,7 +45,7 @@ class _HistoryPageState extends State<HistoryPage> {
         dateLength: 7),
     HistoryView(
         label: "日",
-        pageParams: PageParams(pageIndex: 0, pageSize: 30),
+        pageParams: PageParams(pageIndex: 0, pageSize: 15),
         dateLength: 10)
   ];
   int selectedViewIndex =
