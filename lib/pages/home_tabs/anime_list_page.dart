@@ -346,8 +346,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         return ListTile(
           selectedTileColor: multiSelectedColor,
           selected: mapSelected.containsKey(index),
-          selectedColor: Colors.black,
-          // visualDensity: const VisualDensity(vertical: -1),
           title: Text(
             anime.animeName,
             textScaleFactor: 0.9,

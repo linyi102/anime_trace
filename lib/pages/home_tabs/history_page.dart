@@ -18,6 +18,7 @@ class HistoryView {
   int dateLength; // 用于匹配数据库中日期xxxx-xx-xx的子串
   List<HistoryPlus> historyRecords = [];
   ScrollController scrollController = ScrollController();
+
   // Future<List<DateHistoryRecord>> Function(PageParams) loadData;
 
   HistoryView(
@@ -173,14 +174,20 @@ class _HistoryPageState extends State<HistoryPage> {
             child: Column(
               children: [
                 ListTile(
-                  // leading: Icon(
-                  //   // Icons.timeline,
-                  //   Icons.access_time,
-                  //   color: ThemeUtil.getPrimaryColor(),
-                  // ),
+                  leading: Icon(
+                    Icons.timeline,
+                    color: ThemeUtil.getCommonIconColor(),
+                    // Icons.access_time,
+                    // color: ThemeUtil.getPrimaryColor(),
+                  ),
                   minLeadingWidth: 0,
                   title: Text(_formatDate(date),
                       textScaleFactor: ThemeUtil.smallScaleFactor),
+                  trailing: Text(
+                    "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
+                    textScaleFactor: 0.8,
+                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                  ),
                 ),
                 Column(
                     children: _buildViewRecords(context,
