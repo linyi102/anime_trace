@@ -84,7 +84,7 @@ class UpdateRecordPage extends StatelessWidget {
                   ListTile(
                       title: Text(
                           TimeShowUtil.getHumanReadableDateTimeStr(date,
-                              showTime: false),
+                              showTime: false, showDayOfWeek: true),
                           textScaleFactor: ThemeUtil.smallScaleFactor)),
                   Column(children: _buildRecords(context, map[date]!)),
                   // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观

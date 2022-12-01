@@ -14,7 +14,7 @@ class TimeShowUtil {
   }
 
   // 显示年月日时分
-  static String getHumanReadableDateTimeStr(String time, {bool showTime = true}) {
+  static String getHumanReadableDateTimeStr(String time, {bool showTime = true, bool showDayOfWeek = false}) {
     if (time.isEmpty) return "";
 
     DateTime dateTime = DateTime.parse(time);
@@ -40,9 +40,39 @@ class TimeShowUtil {
     }
     // 如果允许，则加上时分
     if (showTime) {
-      return "$showTimeStr ${dateTimeStr.substring(11, 16)}";
-    } else {
-      return showTimeStr;
+      showTimeStr += " ${dateTimeStr.substring(11, 16)}";
     }
+
+    if (showDayOfWeek) {
+      String weekdayStr;
+      switch (dateTime.weekday) {
+        case 1:
+          weekdayStr = "一";
+          break;
+        case 2:
+          weekdayStr = "二";
+          break;
+        case 3:
+          weekdayStr = "三";
+          break;
+        case 4:
+          weekdayStr = "四";
+          break;
+        case 5:
+          weekdayStr = "五";
+          break;
+        case 6:
+          weekdayStr = "六";
+          break;
+        case 7:
+          weekdayStr = "日";
+          break;
+        default:
+          weekdayStr = "";
+      }
+      showTimeStr += " 周$weekdayStr";
+    }
+
+    return showTimeStr;
   }
 }
