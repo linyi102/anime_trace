@@ -184,15 +184,16 @@ class _NoteEditState extends State<NoteEdit> {
               mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
               tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
               desktop: _buildReorderNoteImgGridView(crossAxisCount: 7)),
-          ListTile(
-            dense: true,
-            leading: const Icon(Icons.error_outline, size: 15),
-            minLeadingWidth: 0,
-            title: Text(
-              "长按可拖拽图片改变顺序",
-              style: TextStyle(color: ThemeUtil.getCommentColor()),
-            ),
-          )
+          const ListTile(),
+          // ListTile(
+          //   dense: true,
+          //   leading: const Icon(Icons.error_outline, size: 15),
+          //   minLeadingWidth: 0,
+          //   title: Text(
+          //     "长按可拖拽图片改变顺序",
+          //     style: TextStyle(color: ThemeUtil.getCommentColor()),
+          //   ),
+          // )
         ],
       ),
     );

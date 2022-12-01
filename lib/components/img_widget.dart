@@ -38,6 +38,7 @@ Widget buildImgWidget(
     return CachedNetworkImage(
       // memCacheHeight: 500,
       imageUrl: url,
+      fadeInDuration: const Duration(milliseconds: 500),
       fit: BoxFit.cover,
       errorWidget: errorImageBuilder(
           url: url, showErrorDialog: showErrorDialog, color: color),
@@ -56,7 +57,7 @@ Widget buildImgWidget(
       placeholder: MemoryImage(kTransparentImage),
       image: FileImage(file),
       fit: BoxFit.cover,
-      fadeInDuration: const Duration(milliseconds: 100),
+      fadeInDuration: const Duration(milliseconds: 500), // CachedNetworkImage也是500
       imageErrorBuilder: errorImageBuilder(
           url: url, showErrorDialog: showErrorDialog, color: color),
     );

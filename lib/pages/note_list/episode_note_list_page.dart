@@ -152,6 +152,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                               setState: setState,
                               context: context,
                               note: episodeNotes[index]),
+                          // const Divider()
                           // 笔记内容
                           _buildNote(note: episodeNotes[index]),
                           // 笔记图片
@@ -185,11 +186,10 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
       {required setState, required BuildContext context, required Note note}) {
     bool isRateNote = note.episode.number == 0;
 
+    // 单独给listtile的title添加GestureDetector点击事件时，因为title是一整行，所以点击文字后面的区域仍然会进入动漫详细页
     return ListTile(
       leading: GestureDetector(
-        onTap: () {
-          _enterAnimeDetail(context: context, anime: note.anime);
-        },
+        onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
         child: AnimeListCover(
           note.anime,
           showReviewNumber: true,
@@ -216,7 +216,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textScaleFactor: ThemeUtil.smallScaleFactor,
-          // textAlign: TextAlign.right,
         ),
       ),
       subtitle: isRateNote

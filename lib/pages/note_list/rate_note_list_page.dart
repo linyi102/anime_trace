@@ -246,15 +246,10 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     bool isRateNote = note.episode.number == 0;
 
     return ListTile(
-      leading: GestureDetector(
-        onTap: () {
-          _enterAnimeDetail(context: context, anime: note.anime);
-        },
-        child: AnimeListCover(
-          note.anime,
-          showReviewNumber: true,
-          reviewNumber: note.episode.reviewNumber,
-        ),
+      leading: AnimeListCover(
+        note.anime,
+        showReviewNumber: true,
+        reviewNumber: note.episode.reviewNumber,
       ),
       // trailing: IconButton(
       //     onPressed: () {
