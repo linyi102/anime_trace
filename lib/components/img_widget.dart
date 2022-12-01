@@ -7,6 +7,25 @@ import 'package:transparent_image/transparent_image.dart';
 
 import '../utils/image_util.dart';
 
+// class GeneralImage extends StatelessWidget {
+//   final String url;
+//   final bool showErrorDialog;
+//   final bool isNoteImg;
+//
+//   const GeneralImage(
+//       {required this.url,
+//       required this.showErrorDialog,
+//       required this.isNoteImg,
+//       Key? key})
+//       : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return buildImgWidget(
+//         url: url, showErrorDialog: showErrorDialog, isNoteImg: isNoteImg);
+//   }
+// }
+
 /// 本地笔记图片和封面的相对地址、网络封面
 Widget buildImgWidget(
     {required String url,
@@ -57,7 +76,8 @@ Widget buildImgWidget(
       placeholder: MemoryImage(kTransparentImage),
       image: FileImage(file),
       fit: BoxFit.cover,
-      fadeInDuration: const Duration(milliseconds: 500), // CachedNetworkImage也是500
+      fadeInDuration: const Duration(milliseconds: 500),
+      // CachedNetworkImage也是500
       imageErrorBuilder: errorImageBuilder(
           url: url, showErrorDialog: showErrorDialog, color: color),
     );

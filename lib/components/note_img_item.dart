@@ -46,14 +46,15 @@ class NoteImgItem extends StatelessWidget {
         AspectRatio(
           aspectRatio: 1, // 正方形
           child: ClipRRect(
-              // 无效，不会重新渲染，可能是因为是无状态组件
-              key: Key("$initialIndex:$dirChangedWrapper"),
-              borderRadius: BorderRadius.circular(5),
-              // 圆角
-              child: buildImgWidget(
-                  url: relativeImagePath,
-                  showErrorDialog: true,
-                  isNoteImg: true)),
+            // 无效，不会重新渲染，可能是因为是无状态组件
+            key: Key("$initialIndex:$dirChangedWrapper"),
+            // 圆角
+            borderRadius: BorderRadius.circular(5),
+            // child: GeneralImage(
+            //     url: relativeImagePath, showErrorDialog: true, isNoteImg: true),
+            child: buildImgWidget(
+                url: relativeImagePath, showErrorDialog: true, isNoteImg: true),
+          ),
         ),
         imageRemainCount > 0
             ? Container(

@@ -24,6 +24,9 @@ class ClimbDouban implements Climb {
 
     Response response = result.data;
     var document = parse(response.data);
+    var mainpicElement = document.getElementById("mainpic");
+    anime.animeCoverUrl = mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
+
     var infoElement = document.getElementById("info");
     // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
     RegExp(r'<span class="pl">.*<br')
