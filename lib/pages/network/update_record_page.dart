@@ -85,7 +85,12 @@ class UpdateRecordPage extends StatelessWidget {
                       title: Text(
                           TimeShowUtil.getHumanReadableDateTimeStr(date,
                               showTime: false, showDayOfWeek: true),
-                          textScaleFactor: ThemeUtil.smallScaleFactor)),
+                          textScaleFactor: ThemeUtil.smallScaleFactor),
+                      trailing: Text(
+                        "${map[date]!.length}个动漫",
+                        textScaleFactor: 0.8,
+                        style: TextStyle(color: ThemeUtil.getCommentColor()),
+                      ),),
                   Column(children: _buildRecords(context, map[date]!)),
                   // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                   const SizedBox(height: 5)

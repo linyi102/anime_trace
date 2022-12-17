@@ -68,24 +68,29 @@ class HistoryDao {
         ''');
       for (var reviewNumberElem in reviewNumberList) {
         int reviewNumber = reviewNumberElem['review_number'] as int;
-        list = await SqliteUtil.database.rawQuery('''
-          select min(episode_number) as start
-          from history
-          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
-          ''');
-        int startEpisodeNumber = list[0]['start'] as int;
-        list = await SqliteUtil.database.rawQuery('''
-          select max(episode_number) as end
-          from history
-          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
-          ''');
-        int endEpisodeNumber = list[0]['end'] as int;
-        AnimeHistoryRecord record = AnimeHistoryRecord(
-            anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
-        // debugPrint(record);
+        AnimeHistoryRecord record = await getRecordByAnimeIdAndReviewNumberAndDate(anime, reviewNumber, date);
         records.add(record);
       }
     }
     return records;
+  }
+
+  /// 传入anime而不是animeId是因为要构造record
+  static Future<AnimeHistoryRecord> getRecordByAnimeIdAndReviewNumberAndDate(Anime anime, int reviewNumber, String date) async {
+    var list = await SqliteUtil.database.rawQuery('''
+          select min(episode_number) as start
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
+          ''');
+    int startEpisodeNumber = list[0]['start'] as int;
+    list = await SqliteUtil.database.rawQuery('''
+          select max(episode_number) as end
+          from history
+          where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
+          ''');
+    int endEpisodeNumber = list[0]['end'] as int;
+    AnimeHistoryRecord record = AnimeHistoryRecord(
+        anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
+    return record;
   }
 }

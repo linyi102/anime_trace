@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/dao/history_dao.dart';
+import 'package:flutter_test_future/models/anime_history_record.dart';
 import 'package:flutter_test_future/models/history_plus.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -93,6 +94,13 @@ class _HistoryPageState extends State<HistoryPage> {
     setState(() {});
   }
 
+  // 进入动漫详细页，退出后需要更新进入动漫的已完成集信息
+  // TODO
+  _updateData(AnimeHistoryRecord record, String date) async {
+    record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
+        record.anime, record.reviewNumber, date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,12 +182,12 @@ class _HistoryPageState extends State<HistoryPage> {
             child: Column(
               children: [
                 ListTile(
-                  leading: Icon(
-                    Icons.timeline,
-                    color: ThemeUtil.getCommonIconColor(),
-                    // Icons.access_time,
-                    // color: ThemeUtil.getPrimaryColor(),
-                  ),
+                  // leading: Icon(
+                  //   Icons.timeline,
+                  //   color: ThemeUtil.getCommonIconColor(),
+                  //   // Icons.access_time,
+                  //   // color: ThemeUtil.getPrimaryColor(),
+                  // ),
                   minLeadingWidth: 0,
                   title: Text(_formatDate(date),
                       textScaleFactor: ThemeUtil.smallScaleFactor),
@@ -191,7 +199,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
                 Column(
                     children: _buildViewRecords(context,
-                        views[selectedViewIndex].historyRecords[index])),
+                        views[selectedViewIndex].historyRecords[index], date)),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5)
               ],
@@ -206,7 +214,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return date.replaceAll("-", "/");
   }
 
-  _buildViewRecords(context, HistoryPlus historyRecord) {
+  _buildViewRecords(context, HistoryPlus historyRecord, String date) {
     List<Widget> recordsWidget = [];
 
     for (var record in historyRecord.records) {
@@ -233,7 +241,10 @@ class _HistoryPageState extends State<HistoryPage> {
             builder: (context) {
               return AnimeDetailPlus(record.anime);
             },
-          )).then((value) => _initData(forceLoad: true));
+          )).then((value) {
+            // _updateData(record, date);
+            _initData(forceLoad: true);
+          });
         },
       ));
     }
