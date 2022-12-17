@@ -1463,9 +1463,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       // 原先隐藏，则设置为false，表示显示
                       SPUtil.setBool("hideNoteInAnimeDetail", false);
                       hideNoteInAnimeDetail = false;
+                      showToast("已展开笔记");
                     } else {
                       SPUtil.setBool("hideNoteInAnimeDetail", true);
                       hideNoteInAnimeDetail = true;
+                      showToast("已隐藏笔记");
                     }
                     setState(() {});
                   },
