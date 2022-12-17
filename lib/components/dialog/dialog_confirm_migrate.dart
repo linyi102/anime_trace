@@ -20,11 +20,10 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
       return StatefulBuilder(
         builder: (context, dialogState) {
           return AlertDialog(
-            title: const Text("提示"),
             content: SingleChildScrollView(
               child: Column(
                 children: [
-                  const ListTile(title: Text("确定迁移吗？")),
+                  ListTile(title: const Text("确认迁移吗？"),subtitle: Text(newAnime.animeName),),
                   ListTile(
                     style: ListTileStyle.drawer,
                     dense: true,
