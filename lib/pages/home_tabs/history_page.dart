@@ -189,7 +189,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   //   // color: ThemeUtil.getPrimaryColor(),
                   // ),
                   minLeadingWidth: 0,
-                  title: Text(_formatDate(date),
+                  title: Text(date,
                       textScaleFactor: ThemeUtil.smallScaleFactor),
                   trailing: Text(
                     "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
@@ -208,10 +208,6 @@ class _HistoryPageState extends State<HistoryPage> {
         },
       ),
     );
-  }
-
-  _formatDate(String date) {
-    return date.replaceAll("-", "/");
   }
 
   _buildViewRecords(context, HistoryPlus historyRecord, String date) {

@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
+import '../settings/general_setting.dart';
 import '../settings/test.dart';
 
 class SettingPage extends StatefulWidget {
@@ -67,6 +68,20 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             // _showImg(),
             // _showImgButton(),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.settings),
+              title: const Text("常规设置"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return const GeneralSettingPage();
+                    },
+                  ),
+                );
+              },
+            ),
             ListTile(
               iconColor: ThemeUtil.getPrimaryIconColor(),
               leading: const Icon(Icons.settings_backup_restore_outlined),
