@@ -300,7 +300,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
       popupMenuTheme:
-          PopupMenuThemeData(color: ThemeUtil.getAppBarBackgroundColor()),
+          PopupMenuThemeData(color: ThemeUtil.getCardColor()),
       dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
       timePickerTheme:
           TimePickerThemeData(backgroundColor: ThemeUtil.getCardColor()),

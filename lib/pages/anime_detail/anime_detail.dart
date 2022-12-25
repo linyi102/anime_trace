@@ -39,6 +39,7 @@ import 'anime_properties_page.dart';
 // ignore: must_be_immutable
 class AnimeDetailPlus extends StatefulWidget {
   Anime anime;
+
   AnimeDetailPlus(
     this.anime, {
     Key? key,
@@ -846,6 +847,107 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 //     await SqliteUtil.insertEpisodeNote(episodeNote);
                 // episodeNotes[i] = episodeNote; // 更新
                 setState(() {});
+
+                // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
+                if (_episodes[episodeIndex].number == _anime.animeEpisodeCnt &&
+                    _anime.playStatus.contains("完结")) {
+                  // 之前点击了不再提示
+                  bool showModifyChecklistDialog = SPUtil.getBool(
+                      "showModifyChecklistDialog",
+                      defaultValue: true);
+                  if (!showModifyChecklistDialog) return;
+
+                  // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
+                  String selectedFinishedTag =
+                      SPUtil.getString("selectedFinishedTag");
+                  bool existSelectedFinishedTag = tags.indexWhere(
+                          (element) => selectedFinishedTag == element) !=
+                      -1;
+                  if (!existSelectedFinishedTag) {
+                    selectedFinishedTag = tags[0];
+                  }
+
+                  // 之前点击了总是。那么就修改清单而不需要弹出对话框了
+                  if (existSelectedFinishedTag &&
+                      SPUtil.getBool("autoMoveToFinishedTag",
+                          defaultValue: false)) {
+                    _anime.tagName = selectedFinishedTag;
+                    SqliteUtil.updateTagByAnimeId(
+                        _anime.animeId, _anime.tagName);
+                    debugPrint("修改清单为${_anime.tagName}");
+                    setState(() {});
+                    return;
+                  }
+
+                  // 弹出对话框
+                  showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        return StatefulBuilder(builder: (context, dialogState) {
+                          return AlertDialog(
+                            content: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("已看完最后一集，\n是否需要移动清单？"),
+                                  DropdownButton<String>(
+                                      dropdownColor: ThemeUtil.getCardColor(),
+                                      value: selectedFinishedTag,
+                                      items: tags
+                                          .map((e) => DropdownMenuItem(
+                                                child: Text(e),
+                                                value: e,
+                                              ))
+                                          .toList(),
+                                      onChanged: (value) {
+                                        selectedFinishedTag =
+                                            value ?? selectedFinishedTag;
+                                        dialogState(() {});
+                                      })
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    SPUtil.setBool(
+                                        "showModifyChecklistDialog", false);
+                                    Navigator.pop(dialogContext);
+                                  },
+                                  child: const Text("不再提醒")),
+                              TextButton(
+                                  onPressed: () {
+                                    SPUtil.setBool(
+                                        "autoMoveToFinishedTag", true);
+
+                                    _anime.tagName = selectedFinishedTag;
+                                    SPUtil.setString("selectedFinishedTag",
+                                        selectedFinishedTag);
+                                    SqliteUtil.updateTagByAnimeId(
+                                        _anime.animeId, _anime.tagName);
+                                    debugPrint("修改清单为${_anime.tagName}");
+                                    setState(() {});
+                                    Navigator.pop(dialogContext);
+                                  },
+                                  child: const Text("总是")),
+                              TextButton(
+                                onPressed: () {
+                                  _anime.tagName = selectedFinishedTag;
+                                  SPUtil.setString("selectedFinishedTag",
+                                      selectedFinishedTag);
+                                  SqliteUtil.updateTagByAnimeId(
+                                      _anime.animeId, _anime.tagName);
+                                  debugPrint("修改清单为${_anime.tagName}");
+                                  setState(() {});
+                                  Navigator.pop(dialogContext);
+                                },
+                                child: const Text("仅本次"),
+                              )
+                            ],
+                          );
+                        });
+                      });
+                }
               }
             },
             icon: AnimatedSwitcher(

@@ -75,4 +75,9 @@ class SPUtil {
     debugPrint("清空sharedPreferences");
     return await _sharedPreferences.clear();
   }
+
+  static Future<bool> remove(String key) async {
+    debugPrint("删除key：$key");
+    return await _sharedPreferences.remove(key);
+  }
 }
