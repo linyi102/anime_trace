@@ -62,7 +62,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
         Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
             IconButton(
                 tooltip: "评价",
@@ -73,8 +73,8 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
         ),
         noteOk
             ? notes.isNotEmpty
-                ? Column(children: _buildRateNoteList())
-                : Container()
+            ? Column(children: _buildRateNoteList())
+            : Container()
             : Container()
       ],
     );

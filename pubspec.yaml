@@ -39,7 +39,8 @@ dependencies:
   webview_flutter: ^3.0.4
   typicons_flutter: ^0.5.0
   photo_view: ^0.14.0
-  flutter_rating_stars: ^1.0.3+4 # 评分
+  flutter_rating_bar: ^4.0.1
+  flutter_rating_stars: ^1.0.3+4 # 评分。缺点是最小间距也很大
   bottom_sheet: ^3.1.2 # 底部弹出菜单
   window_manager: ^0.2.5 # windwos窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式

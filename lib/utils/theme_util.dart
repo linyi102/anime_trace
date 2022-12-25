@@ -98,6 +98,13 @@ class ThemeUtil {
         : Colors.black87;
   }
 
+  // 获取评分卡片背景色
+  static Color getRateCardBgColor() {
+    return themeController.themeColor.value.isDarkMode
+        ? const Color.fromRGBO(255, 255, 255, 0.1)
+        : const Color.fromRGBO(0, 0, 0, 0.1);
+  }
+
   static Color getConnectableColor() {
     return const Color.fromRGBO(8, 241, 117, 1);
   }

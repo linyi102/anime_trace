@@ -41,4 +41,10 @@ class AnimeController extends GetxController {
       anime?.animeDesc = newDesc;
     });
   }
+
+  updateAnimePlayStatus(String playStatus) {
+    anime.update((anime) {
+      anime?.playStatus = playStatus;
+    });
+  }
 }

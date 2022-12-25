@@ -5,6 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -25,10 +27,12 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:fluttericon/typicons_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -646,22 +650,107 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             ),
             // 动漫信息
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _showAnimeName(animeController.anime.value.animeName),
-                  _showNameAnother(animeController.anime.value.nameAnother),
-                  _showAnimeInfo(
-                      animeController.anime.value.getAnimeInfoFirstLine()),
-                  _showAnimeInfo(
-                      animeController.anime.value.getAnimeInfoSecondLine()),
-                  if (!showChecklistInTitle) _buildChecklistChip(),
-                  // TextButton(onPressed: () {}, child: Text(_anime.tagName))
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _showAnimeName(animeController.anime.value.animeName),
+                    // _showNameAnother(animeController.anime.value.nameAnother),
+                    Column(
+                      children: [
+                        _showAnimeInfo(animeController.anime.value
+                            .getAnimeInfoFirstLine()),
+                        // 不用\n是因为第一行如果为空，也会换行
+                        _showAnimeInfo(animeController.anime.value
+                            .getAnimeInfoSecondLine())
+                      ],
+                    ),
+                    // Row(
+                    //   children: [_buildRatingStars()],
+                    // ),
+                    if (!showChecklistInTitle) _buildChecklistChip(),
+                    // TextButton(onPressed: () {}, child: Text(_anime.tagName))
+                  ],
+                ),
               ),
             ),
+            // _buildRateCard()
           ],
         ));
+  }
+
+  _buildRateCard() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: Container(
+        width: 150,
+        height: 100,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: ThemeUtil.getRateCardBgColor()),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Stack(
+            children: [
+              const Align(
+                alignment: AlignmentDirectional.topStart,
+                child: Text("评分",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+              Align(
+                  alignment: AlignmentDirectional.center,
+                  child: _buildRatingStars()),
+              Align(
+                alignment: AlignmentDirectional.bottomEnd,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(FadeRoute(
+                        builder: (context) => AnimeRateListPage(_anime)));
+                  },
+                  child: const Text(
+                    "查看评价",
+                    style: TextStyle(fontSize: 10, color: Colors.white),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildRatingStars() {
+    // return RatingBar(
+    //     initialRating: _anime.rate.toDouble(),
+    //     itemSize: 20,
+    //     ratingWidget: RatingWidget(
+    //     full: Icon(Icons.star, color: Colors.amber[600]),
+    //     half: const Icon(Typicons.star_filled),
+    //     empty: Icon(Icons.star_border, color: Colors.amber[600])), onRatingUpdate: (v) {
+    //         Log.info("评价分数：$v");
+    //         setState(() {
+    //           _anime.rate = v.toInt();
+    //         });
+    //         SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
+    // });
+    return RatingBar.builder(
+        // 拖拽星级时会发出绿色光，所以屏蔽掉
+        glow: false,
+        initialRating: _anime.rate.toDouble(),
+        itemSize: 20,
+        unratedColor: Colors.grey,
+        itemBuilder: (context, _) =>
+            Icon(Typicons.star_filled, color: Colors.amber[600]),
+        onRatingUpdate: (v) {
+          Log.info("评价分数：$v");
+          setState(() {
+            _anime.rate = v.toInt();
+          });
+          SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
+        });
   }
 
   Container _buildChecklistChip() {
@@ -688,7 +777,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _showAnimeName(animeName) {
     return Container(
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
       child: SelectableText(
         animeName,
         // maxLines: 1,
@@ -703,10 +792,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         ? Container()
         : Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(15, 5, 35, 0),
+            padding: const EdgeInsets.fromLTRB(0, 5, 35, 0),
             child: SelectableText(
               nameAnother,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+              style: TextStyle(color: ThemeUtil.getCommentColor()),
               maxLines: 1,
               textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
@@ -718,11 +807,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         ? Container()
         : Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-            child: SelectableText(
+            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
+            child: Text(
               animeInfo,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
-              maxLines: 1,
+              style: TextStyle(color: ThemeUtil.getCommentColor()),
               textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );
@@ -982,7 +1070,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
       // 在最后一集下面添加空白
       if (episodeIndex == _episodes.length - 1) {
-        columnChildren.add(const ListTile());
         columnChildren.add(const ListTile());
       }
     }

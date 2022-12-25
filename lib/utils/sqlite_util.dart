@@ -285,6 +285,15 @@ class SqliteUtil {
     ''');
   }
 
+  static void updateAnimePlayStatusByAnimeId(int animeId, String newPlayStatus) async {
+    debugPrint("sql: updateAnimePlayStatusByAnimeId");
+    await database.rawUpdate('''
+    update anime
+    set play_status = '$newPlayStatus'
+    where anime_id = $animeId;
+    ''');
+  }
+
   static void updateTagByAnimeId(int animeId, String newTagName) async {
     debugPrint("sql: updateTagNameByAnimeId");
     // 同时修改最后一次修改标签的时间

@@ -3,6 +3,7 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
+import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -91,13 +92,45 @@ class _SourceListPageState extends State<SourceListPage> {
         },
         child: ListView(
           children: [
-            _showPingButton ? _buildPingButton() : Container(),
+            // SizedBox(
+            //   height: 80,
+            //   child: ListView(
+            //     scrollDirection: Axis.horizontal,
+            //     children: climbWebsites
+            //         .map((climbWebsite) => Container(
+            //               padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+            //               width: 100,
+            //               child: Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.center,
+            //                 children: [
+            //                   buildWebSiteIcon(
+            //                       url: climbWebsite.iconUrl, size: 35),
+            //                   Text(
+            //                     climbWebsite.name,
+            //                     overflow: TextOverflow.ellipsis,
+            //                     style: const TextStyle(fontSize: 12),
+            //                   ),
+            //                   // _buildPingStatusRow(climbWebsite),
+            //                   climbWebsite.discard
+            //                       ? _getPingStatusIcon(PingStatus())
+            //                       : _getPingStatusIcon(climbWebsite.pingStatus),
+            //                 ],
+            //               ),
+            //             ))
+            //         .toList(),
+            //   ),
+            // ),
+            // Expanded(child: UpdateRecordPage())
+
+            // _showPingButton ? _buildPingButton() : Container(),
             Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
+
             // Responsive(
             //     mobile: _buildListView(),
             //     tablet: _buildGridView(crossAxisCount: 2),
             //     desktop:
             //         _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
+
             FavWebsiteListPage()
           ],
         ),
