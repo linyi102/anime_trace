@@ -44,20 +44,10 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
       ),
       body: ListView(
         children: [
-          ListTile(title: Text("时间显示设置", style: TextStyle(color: ThemeUtil.getPrimaryColor()),),
-          subtitle: Text(
-              "示例：①${TimeShowUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)}"
-                  " ②${TimeShowUtil.getHumanReadableDateTimeStr(curYearTimeExample)}"
-                  " ③${TimeShowUtil.getHumanReadableDateTimeStr(todayTimeExample)}"),),
-          // ListTile(
-          //   title: const Text("示例"),
-          //   subtitle: Text(
-          //       "①${TimeShowUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)}"
-          //       " ②${TimeShowUtil.getHumanReadableDateTimeStr(curYearTimeExample)}"
-          //       " ③${TimeShowUtil.getHumanReadableDateTimeStr(todayTimeExample)}"),
-          // ),
+          ListTile(title: Text("时间显示设置", style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
           ListTile(
-            title: const Text("完成时间精确到时分"),
+            title: const Text("精确到时分"),
+            subtitle: Text(TimeShowUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
             trailing: _buildToggle(TimeShowUtil.showPreciseTime),
             onTap: () {
               TimeShowUtil.turnShowPreciseTime();
@@ -65,7 +55,8 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
             },
           ),
           ListTile(
-            title: const Text("时间在昨天或今天时显示昨天或今天"),
+            title: const Text("显示昨天/今天"),
+            subtitle: Text(TimeShowUtil.getHumanReadableDateTimeStr(todayTimeExample)),
             trailing: _buildToggle(TimeShowUtil.showYesterdayAndToday),
             onTap: () {
               TimeShowUtil.turnShowYesterdayAndToday();
@@ -73,8 +64,9 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
             },
           ),
           ListTile(
-            title: const Text("时间在今年时显示年份"),
-            trailing: _buildToggle(TimeShowUtil.showCurYear),
+            title: const Text("今年时间隐藏年份"),
+            subtitle: Text(TimeShowUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
+            trailing: _buildToggle(!TimeShowUtil.showCurYear),
             onTap: () {
               TimeShowUtil.turnShowCurYear();
               setState(() {});
