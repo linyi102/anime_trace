@@ -656,7 +656,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _showAnimeName(animeController.anime.value.animeName),
-                    // _showNameAnother(animeController.anime.value.nameAnother),
+                    _showNameAnother(animeController.anime.value.nameAnother),
                     Column(
                       children: [
                         _showAnimeInfo(animeController.anime.value

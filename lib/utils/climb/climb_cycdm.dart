@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -47,6 +48,13 @@ class ClimbCycdm implements Climb {
     anime.animeDesc = document
         .getElementsByClassName("check text selected cor3")[0]
         .innerHtml;
+
+    var lis = document.getElementsByClassName("drawer-scroll-list")[0].getElementsByTagName("li");
+    String dateLiInnerHtml = lis[8].innerHtml; // <em class="cor4">上映：</em>2021-01-09
+    Log.info("dateLiInnerHtml=$dateLiInnerHtml");
+    RegExp exp = RegExp("[0-9]{4}-[0-9]{2}-[0-9]{2}");
+    anime.premiereTime = exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
+    anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
 
     debugPrint("解析完毕√");
     debugPrint(anime.toString());
