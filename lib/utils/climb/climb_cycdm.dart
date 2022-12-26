@@ -30,8 +30,11 @@ class ClimbCycdm implements Climb {
     var document = parse(response.data);
     debugPrint("获取文档成功√，正在解析...");
 
-    anime.animeEpisodeCnt =
-        int.parse(document.getElementsByClassName("badge")[0].innerHtml);
+    // 剧场版只有1集，但不会写上，所以没有badge
+    var badge = document.getElementsByClassName("badge");
+    if (badge.isNotEmpty) {
+      anime.animeEpisodeCnt = int.parse(badge[0].innerHtml);
+    }
 
     anime.animeCoverUrl = document
             .getElementsByClassName("detail-pic lazy mask-0")[0]
@@ -49,11 +52,15 @@ class ClimbCycdm implements Climb {
         .getElementsByClassName("check text selected cor3")[0]
         .innerHtml;
 
-    var lis = document.getElementsByClassName("drawer-scroll-list")[0].getElementsByTagName("li");
-    String dateLiInnerHtml = lis[8].innerHtml; // <em class="cor4">上映：</em>2021-01-09
+    var lis = document
+        .getElementsByClassName("drawer-scroll-list")[0]
+        .getElementsByTagName("li");
+    String dateLiInnerHtml =
+        lis[8].innerHtml; // <em class="cor4">上映：</em>2021-01-09
     Log.info("dateLiInnerHtml=$dateLiInnerHtml");
     RegExp exp = RegExp("[0-9]{4}-[0-9]{2}-[0-9]{2}");
-    anime.premiereTime = exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
+    anime.premiereTime =
+        exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
     anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
 
     debugPrint("解析完毕√");
