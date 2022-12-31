@@ -141,8 +141,8 @@ class _DirectoryPageState extends State<DirectoryPage>
     }
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-      // debugPrint("index=$index, directory.length=${directory.length}");
-      if (index + 5 == directory.length) _loadMoreData();
+      debugPrint("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
+      if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
 
       Anime anime = directory[index];
       final imageProvider = Image.network(anime.animeCoverUrl).image;
