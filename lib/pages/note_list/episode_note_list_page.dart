@@ -224,7 +224,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               onTap: () =>
                   _enterAnimeDetail(context: context, anime: note.anime),
               child: Text(
-                  "第 ${note.episode.number} 集 ${note.episode.getDate()}",
+                  "第${note.episode.number}集 ${note.episode.getDate()}",
                   textScaleFactor: ThemeUtil.tinyScaleFactor)),
     );
   }

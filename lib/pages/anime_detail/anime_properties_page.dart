@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path/path.dart';
 
+import '../../components/dialog/dialog_select_play_status.dart';
 import '../../models/anime.dart';
 import '../../utils/theme_util.dart';
 
@@ -53,46 +54,11 @@ class AnimePropertiesPage extends StatelessWidget {
                       animeController.anime.value.animeId, newNameAnother);
                 });
               }),
-
               _buildPropRow(context,
                   title: "状态",
                   text: animeController.anime.value.getPlayStatus(), onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (dialogContext) {
-                      String playStatus =
-                          animeController.anime.value.getPlayStatus();
-                      return AlertDialog(
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: ["未开播", "连载中", "已完结"]
-                                .map((e) => ListTile(
-                                      leading: e == playStatus
-                                          ? Icon(
-                                              Icons.radio_button_on,
-                                              color: ThemeUtil
-                                                  .getPrimaryIconColor(),
-                                            )
-                                          : const Icon(Icons.radio_button_off),
-                                      title: Text(e),
-                                      onTap: () {
-                                        animeController
-                                            .updateAnimePlayStatus(e);
-                                        SqliteUtil
-                                            .updateAnimePlayStatusByAnimeId(
-                                                animeController
-                                                    .anime.value.animeId,
-                                                e);
-                                        Navigator.pop(dialogContext);
-                                      },
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                      );
-                    });
+                showDialogSelectPlayStatus(context, animeController);
               }),
-
               _buildPropRow(context,
                   title: "描述",
                   text: animeController.anime.value.animeDesc, onTap: () {
@@ -105,11 +71,6 @@ class AnimePropertiesPage extends StatelessWidget {
                       animeController.anime.value.animeId, newDesc);
                 });
               }),
-              // _buildAnimeName(context),
-              // _buildAnotherName(context),
-              // _buildAnimeUrl(context),
-              // _buildAnimeDesc(context),
-              // const SizedBox(height: 80)
               const ListTile()
             ],
           ),
@@ -136,112 +97,6 @@ class AnimePropertiesPage extends StatelessWidget {
             ))
           ]),
           textScaleFactor: 0.9),
-    );
-  }
-
-  Column _buildAnimeName(BuildContext context) {
-    String animeName = animeController.anime.value.animeName;
-    return Column(
-      children: [
-        ListTile(
-          title: const Text("名称"),
-          trailing: IconButton(
-              onPressed: () {
-                _showDialogAboutEdit(context,
-                    title: "编辑名称", property: animeName, confirm: (newName) {
-                  if (newName.isEmpty) {
-                    showToast("动漫名不允许为空");
-                    return;
-                  }
-                  debugPrint("更新名称：$newName");
-                  animeController.updateAnimeName(newName);
-                  SqliteUtil.updateAnimeNameByAnimeId(
-                      animeController.anime.value.animeId, newName);
-                });
-              },
-              icon: const Icon(Icons.edit)),
-        ),
-        _buildContent(context, animeName)
-      ],
-    );
-  }
-
-  Column _buildAnotherName(BuildContext context) {
-    String nameAnother = animeController.anime.value.nameAnother;
-    return Column(
-      children: [
-        ListTile(
-          title: const Text("别名"),
-          trailing: IconButton(
-              onPressed: () {
-                _showDialogAboutEdit(context,
-                    title: "编辑别名",
-                    property: nameAnother, confirm: (newNameAnother) {
-                  debugPrint("更新别名：$newNameAnother");
-                  animeController.updateAnimeNameAnother(newNameAnother);
-                  SqliteUtil.updateAnimeNameAnotherByAnimeId(
-                      animeController.anime.value.animeId, newNameAnother);
-                });
-              },
-              icon: const Icon(Icons.edit)),
-        ),
-        _buildContent(context, nameAnother)
-      ],
-    );
-  }
-
-  Column _buildAnimeUrl(BuildContext context) {
-    String animeUrl = animeController.anime.value.animeUrl;
-    return Column(
-      children: [
-        ListTile(
-          title: const Text("网址"),
-          trailing: IconButton(
-              onPressed: () {
-                _showDialogAboutEdit(context, title: "编辑网址", property: animeUrl,
-                    confirm: (newUrl) {
-                  animeController.updateAnimeUrl(textController.text);
-                  SqliteUtil.updateAnimeUrl(animeController.anime.value.animeId,
-                      animeController.anime.value.animeUrl);
-                },
-                    dialogContent: TextField(
-                        controller: textController..text = animeUrl,
-                        minLines: 1,
-                        maxLines: 10,
-                        maxLength: 999,
-                        decoration: const InputDecoration(
-                          helperText: "修改后可能导致无法更新动漫",
-                          helperStyle: TextStyle(color: Colors.orangeAccent),
-                          counterStyle: TextStyle(color: Colors.grey),
-                        )));
-              },
-              icon: const Icon(Icons.edit)),
-        ),
-        _buildContent(context, animeUrl)
-      ],
-    );
-  }
-
-  Column _buildAnimeDesc(BuildContext context) {
-    Anime anime = animeController.anime.value;
-    return Column(
-      children: [
-        ListTile(
-            title: const Text("简介"),
-            trailing: IconButton(
-                onPressed: () {
-                  _showDialogAboutEdit(context,
-                      title: "编辑简介",
-                      property: anime.animeDesc, confirm: (newDesc) {
-                    debugPrint("更新简介：$newDesc");
-                    animeController.updateAnimeDesc(newDesc);
-                    SqliteUtil.updateAnimeDescByAnimeId(
-                        animeController.anime.value.animeId, newDesc);
-                  });
-                },
-                icon: const Icon(Icons.edit))),
-        _buildContent(context, anime.animeDesc)
-      ],
     );
   }
 

@@ -157,15 +157,10 @@ class UpdateRecordPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: Container()),
-                Text(
-                  "更新进度：$updateOkCnt/$needUpdateCnt",
-                  textScaleFactor: 0.9,
-                ),
-                Text(
-                  "查看未完结动漫",
-                  textScaleFactor: 0.8,
-                  style: TextStyle(color: ThemeUtil.getCommentColor()),
-                ),
+                Text("更新进度：$updateOkCnt/$needUpdateCnt", textScaleFactor: 0.9),
+                Text("查看未完结动漫",
+                    textScaleFactor: 0.8,
+                    style: TextStyle(color: ThemeUtil.getCommentColor())),
                 Expanded(child: Container()),
               ],
             ),
@@ -180,7 +175,7 @@ class UpdateRecordPage extends StatelessWidget {
             },
             style: ButtonStyle(
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)))),
+                    borderRadius: BorderRadius.circular(30)))),
             child: const Text(
               "立即更新",
               textScaleFactor: 0.9,

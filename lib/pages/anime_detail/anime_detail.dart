@@ -37,6 +37,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../../components/dialog/dialog_select_play_status.dart';
 import '../../dao/note_dao.dart';
 import 'anime_properties_page.dart';
 
@@ -658,11 +659,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _showNameAnother(animeController.anime.value.nameAnother),
                     Column(
                       children: [
-                        _showAnimeInfo(animeController.anime.value
+                        _buildAnimeFirstInfo(animeController.anime.value
                             .getAnimeInfoFirstLine()),
-                        // 不用\n是因为第一行如果为空，也会换行
-                        _showAnimeInfo(animeController.anime.value
-                            .getAnimeInfoSecondLine())
+                        _buildAnimeSecondInfo()
                       ],
                     ),
                     // Row(
@@ -677,6 +676,32 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             // _buildRateCard()
           ],
         ));
+  }
+
+  _buildAnimeSecondInfo() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
+      child: Text.rich(
+          style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+          textScaleFactor: ThemeUtil.smallScaleFactor,
+          TextSpan(children: [
+            TextSpan(
+                text: animeController.anime.value.getAnimeSource() + " • "),
+            WidgetSpan(
+                child: GestureDetector(
+              onTap: () {
+                showDialogSelectPlayStatus(context, animeController);
+              },
+              child: Text(
+                animeController.anime.value.getPlayStatus(),
+                style:
+                    TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+              ),
+            )),
+            TextSpan(text: " • ${animeController.anime.value.animeEpisodeCnt}集")
+          ])),
+    );
   }
 
   _buildRateCard() {
@@ -801,7 +826,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           );
   }
 
-  _showAnimeInfo(String animeInfo) {
+  _buildAnimeFirstInfo(String animeInfo) {
     return animeInfo.isEmpty
         ? Container()
         : Container(
@@ -860,7 +885,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // visualDensity: const VisualDensity(vertical: -2),
           // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           title: Text(
-            "第 ${_episodes[episodeIndex].number} 集",
+            "第${_episodes[episodeIndex].number}集",
             style: TextStyle(
               color: ThemeUtil.getEpisodeListTile(
                   _episodes[episodeIndex].isChecked()),
