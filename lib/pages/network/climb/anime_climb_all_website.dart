@@ -85,7 +85,11 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         websiteClimbSearchOk[climbWebsite.name] = true;
         // 根据动漫网址查询是否已经添加了该动漫
         // 需要等更新为数据库动漫完毕后才显示，否则提前显示时，可以迁移到已添加的动漫
-        _generateMixedAnimes(climbWebsite).then((value) => setState(() {}));
+        _generateMixedAnimes(climbWebsite).then((value) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
       });
     }
   }

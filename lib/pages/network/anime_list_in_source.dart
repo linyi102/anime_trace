@@ -5,7 +5,9 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/anime.dart';
 
@@ -63,7 +65,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("动漫迁移 ($cnt)",
+        title: Text("收藏列表 ($cnt)",
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: FadeAnimatedSwitcher(
@@ -83,26 +85,24 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
           }
           Anime anime = animes[index];
           return ListTile(
-            leading: AnimeListCover(anime),
-            title: Text(anime.animeName),
-            onTap: () {
-              Navigator.of(context).push(FadeRoute(builder: (context) {
-                return AnimeClimbAllWebsite(
-                  keyword: anime.animeName,
-                  animeId: anime.animeId,
-                );
-              })).then((value) async {
-                // 注意：无法根据动漫地址是否发生变化判断出有没有被迁移，因为并没有传入anime，里面的属性都不会变
-                // 可以通过重新根据id获取动漫网址来判断是否变化
-                String newUrl = await AnimeDao.getAnimeUrlById(anime.animeId);
-                debugPrint("旧地址：${anime.animeUrl}，新地址：$newUrl");
-                if (anime.animeUrl != newUrl) {
-                  debugPrint("已迁移，从列表中删除");
-                  animes.removeAt(index);
-                }
+              leading: AnimeListCover(anime),
+              title: Text(anime.animeName),
+              onTap: () {
+                Navigator.of(context).push(FadeRoute(builder: (context) {
+                  return AnimeDetailPlus(anime);
+                })).then((value) {
+                  Anime retAnime = value as Anime;
+                  String newUrl = retAnime.animeUrl;
+                  Log.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
+                  if (anime.animeUrl != newUrl) {
+                    debugPrint("已迁移，从列表中删除");
+                    animes.removeAt(index);
+                  } else {
+                    // 更新动漫(封面可能发生变化)
+                    animes[index] = retAnime;
+                  }
+                });
               });
-            },
-          );
         }));
   }
 }

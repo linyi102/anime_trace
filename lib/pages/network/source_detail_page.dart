@@ -89,9 +89,9 @@ class _SourceDetailState extends State<SourceDetail> {
               },
             ),
             ListTile(
-              title: const Text("迁移动漫"),
+              title: const Text("收藏列表"),
               leading: Icon(
-                Icons.move_down,
+                Icons.favorite_border,
                 color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {

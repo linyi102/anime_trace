@@ -94,7 +94,7 @@ Image getNetWorkImage(String url,
   final ImageStream imageStream = image.image.resolve(ImageConfiguration.empty);
   imageStream.addListener(ImageStreamListener((image, synchronousCall) {},
       onError: (Object ob, StackTrace? st) {
-    Log.error("访问网络图片失败：$url");
+    // Log.error("访问网络图片失败：$url");
   }));
   return image;
 }
