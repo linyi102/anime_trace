@@ -5,14 +5,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../../animation/fade_route.dart';
 import '../../models/anime.dart';
@@ -137,8 +135,18 @@ class AnimeCoverDetail extends StatelessWidget {
       imageProvider =
           FileImage(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)));
     }
+    // 封面更新后从无(_buildErrorInfo)到有(imageProvider)会报错，而使用return Image(image: imageProvider);则不会
+    // 而再次手动修改到错误图片，再刷新封面时就不会了，退出时因为第一次没有图片缓存，所以在获取图片的过程中报错了
+    // 为PhotoView设置loadingBuilder: (_, __) => CircularProgressIndicator(),更新图片时不会显示进度圈，只有在进入该页面才会显示
+    /**
+     * The following _CastError was thrown building ImageWrapper(dirty, state: _ImageWrapperState#1cbfe):
+        Null check operator used on a null value
 
+        The relevant error-causing widget was:
+        PhotoView PhotoView:file:///D:/MC/code_big/flutter/anime_trace/lib/pages/anime_detail/anime_cover_detail.dart:142:12
+     */
     return PhotoView(
+      // loadingBuilder: (_, __) => const CircularProgressIndicator(),
       errorBuilder: (context, url, error) => _buildErrorInfo(context),
       imageProvider: imageProvider,
       backgroundDecoration:
