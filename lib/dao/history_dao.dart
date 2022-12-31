@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../models/anime.dart';
 import '../models/anime_history_record.dart';
@@ -89,6 +90,7 @@ class HistoryDao {
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
     int endEpisodeNumber = list[0]['end'] as int;
+    // Log.info("$date: [$startEpisodeNumber-$endEpisodeNumber]");
     AnimeHistoryRecord record = AnimeHistoryRecord(
         anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
     return record;

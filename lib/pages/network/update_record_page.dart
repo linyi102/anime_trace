@@ -82,15 +82,16 @@ class UpdateRecordPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                      title: Text(
-                          TimeShowUtil.getHumanReadableDateTimeStr(date,
-                              showTime: false, showDayOfWeek: true),
-                          textScaleFactor: ThemeUtil.smallScaleFactor),
-                      trailing: Text(
-                        "${map[date]!.length}个动漫",
-                        textScaleFactor: 0.8,
-                        style: TextStyle(color: ThemeUtil.getCommentColor()),
-                      ),),
+                    title: Text(
+                        TimeShowUtil.getHumanReadableDateTimeStr(date,
+                            showTime: false, showDayOfWeek: true),
+                        textScaleFactor: ThemeUtil.smallScaleFactor),
+                    trailing: Text(
+                      "${map[date]!.length}个动漫",
+                      textScaleFactor: 0.8,
+                      style: TextStyle(color: ThemeUtil.getCommentColor()),
+                    ),
+                  ),
                   Column(children: _buildRecords(context, map[date]!)),
                   // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                   const SizedBox(height: 5)
@@ -147,16 +148,46 @@ class UpdateRecordPage extends StatelessWidget {
     );
   }
 
-  // _buildUpdateProgress() {
-  //   final UpdateRecordController updateRecordController = Get.find();
-  //   int updateOkCnt = updateRecordController.updateOkCnt.value;
-  //   int needUpdateCnt = updateRecordController.needUpdateCnt.value;
-  //   bool updateOk = updateRecordController.updateOk;
+  _buildUpdateProgress() {
+    final UpdateRecordController updateRecordController = Get.find();
+    int updateOkCnt = updateRecordController.updateOkCnt.value;
+    int needUpdateCnt = updateRecordController.needUpdateCnt.value;
+    bool updateOk = updateRecordController.updateOk;
 
-  //   return Obx(() => ListTile(
-  //         title: Text("待更新的动漫数量：$needUpdateCnt"),
-  //       ));
-  // }
+    return Container(
+      height: 100,
+      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: ThemeUtil.getCardColor()),
+      child: Stack(
+        children: [
+          Align(
+            alignment: AlignmentDirectional.bottomEnd,
+            child: Text(
+              "查看未完结",
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.topStart,
+            child: Text(
+              "0/40",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          Align(
+            alignment: AlignmentDirectional.topEnd,
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.refresh, size: 20),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   /// 全局更新动漫
   dialogUpdateAllAnimeProgress(parentContext) {

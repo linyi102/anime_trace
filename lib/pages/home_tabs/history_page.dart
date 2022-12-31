@@ -62,11 +62,14 @@ class _HistoryPageState extends State<HistoryPage> {
 
   _initData({bool forceLoad = false}) async {
     if (forceLoad) {
+      Log.info("强制刷新，清空记录");
       // 如果强制初始化数据，则需要恢复为初始状态
       for (var view in views) {
         view.pageParams.pageIndex = view.pageParams.baseIndex;
         view.historyRecords.clear();
       }
+      loadOk = false;
+      setState(() {});
     }
 
     // 如果之前切换过该视图，使得不为空，就直接返回
@@ -95,10 +98,10 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   // 进入动漫详细页，退出后需要更新进入动漫的已完成集信息
-  // TODO
   _updateData(AnimeHistoryRecord record, String date) async {
     record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
         record.anime, record.reviewNumber, date);
+    setState(() {});
   }
 
   @override
@@ -109,7 +112,7 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [_buildViewSwitch()],
       ),
       body: RefreshIndicator(
-        onRefresh: () async => _initData(),
+        onRefresh: () async => _initData(forceLoad: true),
         child: FadeAnimatedSwitcher(
           loadOk: loadOk,
           destWidget: Column(
@@ -181,25 +184,24 @@ class _HistoryPageState extends State<HistoryPage> {
             elevation: 0,
             child: Column(
               children: [
+                // 卡片标题
                 ListTile(
-                  // leading: Icon(
-                  //   Icons.timeline,
-                  //   color: ThemeUtil.getCommonIconColor(),
-                  //   // Icons.access_time,
-                  //   // color: ThemeUtil.getPrimaryColor(),
-                  // ),
                   minLeadingWidth: 0,
-                  title: Text(date,
-                      textScaleFactor: ThemeUtil.smallScaleFactor),
+                  title:
+                      Text(date, textScaleFactor: ThemeUtil.smallScaleFactor),
                   trailing: Text(
                     "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
                     textScaleFactor: 0.8,
                     style: TextStyle(color: ThemeUtil.getCommentColor()),
                   ),
                 ),
+                // 卡片主体
                 Column(
-                    children: _buildViewRecords(context,
-                        views[selectedViewIndex].historyRecords[index], date)),
+                    children: views[selectedViewIndex]
+                        .historyRecords[index]
+                        .records
+                        .map((record) => RecordItem(record: record, date: date))
+                        .toList()),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5)
               ],
@@ -209,41 +211,60 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
     );
   }
+}
 
-  _buildViewRecords(context, HistoryPlus historyRecord, String date) {
-    List<Widget> recordsWidget = [];
+class RecordItem extends StatefulWidget {
+  final AnimeHistoryRecord record;
+  final String date;
 
-    for (var record in historyRecord.records) {
-      recordsWidget.add(ListTile(
-        leading: AnimeListCover(
-          record.anime,
-          reviewNumber: record.reviewNumber,
-          showReviewNumber: true,
-        ),
-        subtitle: Text(
-            (record.startEpisodeNumber == record.endEpisodeNumber
-                ? record.startEpisodeNumber.toString()
-                : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
-            textScaleFactor: ThemeUtil.tinyScaleFactor),
-        title: Text(
-          record.anime.animeName,
-          // textScaleFactor: ThemeUtil.smallScaleFactor,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
-        onTap: () {
-          Navigator.of(context).push(FadeRoute(
-            builder: (context) {
-              return AnimeDetailPlus(record.anime);
-            },
-          )).then((value) {
-            // _updateData(record, date);
-            _initData(forceLoad: true);
-          });
-        },
-      ));
-    }
-    return recordsWidget;
+  const RecordItem({required this.record, required this.date, Key? key})
+      : super(key: key);
+
+  @override
+  State<RecordItem> createState() => _RecordItemState();
+}
+
+class _RecordItemState extends State<RecordItem> {
+  late AnimeHistoryRecord record;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    record = widget.record;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: AnimeListCover(
+        record.anime,
+        reviewNumber: record.reviewNumber,
+        showReviewNumber: true,
+      ),
+      subtitle: Text(
+          (record.startEpisodeNumber == record.endEpisodeNumber
+              ? record.startEpisodeNumber.toString()
+              : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+          textScaleFactor: ThemeUtil.tinyScaleFactor),
+      title: Text(
+        record.anime.animeName,
+        // textScaleFactor: ThemeUtil.smallScaleFactor,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
+      onTap: () {
+        Navigator.of(context).push(FadeRoute(
+          builder: (context) {
+            return AnimeDetailPlus(record.anime);
+          },
+        )).then((value) async {
+          record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
+              record.anime, record.reviewNumber, widget.date);
+          setState(() {});
+        });
+      },
+    );
   }
 }

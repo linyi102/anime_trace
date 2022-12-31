@@ -491,14 +491,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     }
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      return CachedNetworkImage(
-        imageUrl: coverUrl,
-        errorWidget: (context, url, error) => Image.memory(kTransparentImage),
-        fit: BoxFit.cover,
-        // 设置透明度，防止背景太黑或太白看不到顶部栏
-        color: ThemeUtil.getModulateColor(),
-        colorBlendMode: BlendMode.modulate,
-      );
+      return getNetWorkImage(coverUrl,
+          errorBuilder: (context, url, error) =>
+              Image.memory(kTransparentImage),
+          // 设置透明度，防止背景太黑或太白看不到顶部栏
+          color: ThemeUtil.getModulateColor(),
+          colorBlendMode: BlendMode.modulate);
     }
     //  本地封面
     return Image.file(
@@ -793,9 +791,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         : Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.fromLTRB(0, 5, 35, 0),
-            child: SelectableText(
+            child: Text(
               nameAnother,
-              style: TextStyle(color: ThemeUtil.getCommentColor()),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               maxLines: 1,
               textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
@@ -810,7 +808,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
             child: Text(
               animeInfo,
-              style: TextStyle(color: ThemeUtil.getCommentColor()),
+              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
               textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
           );

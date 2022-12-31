@@ -5,11 +5,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../../animation/fade_route.dart';
 import '../../models/anime.dart';
@@ -127,7 +130,9 @@ class AnimeCoverDetail extends StatelessWidget {
     ImageProvider imageProvider;
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      imageProvider = CachedNetworkImageProvider(coverUrl);
+      imageProvider = CachedNetworkImageProvider(coverUrl, errorListener: () {
+        Log.error("缓存网络图片错误：$coverUrl");
+      });
     } else {
       imageProvider =
           FileImage(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)));

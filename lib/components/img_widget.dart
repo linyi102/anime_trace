@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -32,6 +34,7 @@ Widget buildImgWidget(
     required bool showErrorDialog,
     required bool isNoteImg,
     Color? color}) {
+  color = color ?? ThemeUtil.getCommonIconColor();
   if (url.isEmpty) {
     // return const Center(child: Icon(Entypo.picture));
     return Center(
@@ -39,29 +42,17 @@ Widget buildImgWidget(
         "assets/icons/default_picture.png",
         // 默认宽度33(因为比较小，所以调大些)，失败宽度30
         width: 33,
-        color: color ?? ThemeUtil.getCommonIconColor(),
+        color: color,
       ),
     );
   }
 
   // 网络封面
   if (url.startsWith("http")) {
-    // 断网后```访问不了图片，所以使用CachedNetworkImage缓存起来
-    // return FadeInImage(
-    //     placeholder: MemoryImage(kTransparentImage),
-    //     fit: BoxFit.cover,
-    //     image: NetworkImage(
-    //       url,
-    //     ));
-    // 错误图片会返回404，报异常
-    return CachedNetworkImage(
-      // memCacheHeight: 500,
-      imageUrl: url,
-      fadeInDuration: const Duration(milliseconds: 500),
-      fit: BoxFit.cover,
-      errorWidget: errorImageBuilder(
-          url: url, showErrorDialog: showErrorDialog, color: color),
-    );
+    // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
+    return getNetWorkImage(url,
+        errorBuilder: errorImageBuilder(
+            url: url, showErrorDialog: showErrorDialog, color: color));
   }
 
   // 因为封面和笔记图片文件的目录不一样，所以两个都要设置
@@ -85,6 +76,27 @@ Widget buildImgWidget(
     return errorImageWidget(
         url: url, showErrorDialog: showErrorDialog, color: color);
   }
+}
+
+/// 访问网络图片，遇到404避免报异常
+/// 虽然动漫收藏页不报错了，但一进入详细页就会报错，很奇怪
+Image getNetWorkImage(String url,
+    {Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
+    Color? color,
+    BlendMode? colorBlendMode}) {
+  Image image = Image(
+    image: CachedNetworkImageProvider(url),
+    errorBuilder: errorBuilder,
+    fit: BoxFit.cover,
+    color: color,
+    colorBlendMode: colorBlendMode,
+  );
+  final ImageStream imageStream = image.image.resolve(ImageConfiguration.empty);
+  imageStream.addListener(ImageStreamListener((image, synchronousCall) {},
+      onError: (Object ob, StackTrace? st) {
+    Log.error("访问网络图片失败：$url");
+  }));
+  return image;
 }
 
 /// 错误图片
