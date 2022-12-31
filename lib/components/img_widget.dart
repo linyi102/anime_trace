@@ -51,7 +51,7 @@ Widget buildImgWidget(
   if (url.startsWith("http")) {
     // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
     return getNetWorkImage(url,
-        errorBuilder: errorImageBuilder(
+        errorWidget: errorImageBuilder(
             url: url, showErrorDialog: showErrorDialog, color: color));
   }
 
@@ -80,23 +80,43 @@ Widget buildImgWidget(
 
 /// 访问网络图片，遇到404避免报异常
 /// 虽然动漫收藏页不报错了，但一进入详细页就会报错，很奇怪
-Image getNetWorkImage(String url,
-    {Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
+getNetWorkImage(String url,
+    {
+    // Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
+    Widget Function(BuildContext, String, dynamic)? errorWidget,
     Color? color,
     BlendMode? colorBlendMode}) {
-  Image image = Image(
-    image: CachedNetworkImageProvider(url),
-    errorBuilder: errorBuilder,
+  return CachedNetworkImage(
+    imageUrl: url,
+    errorWidget: errorWidget,
     fit: BoxFit.cover,
     color: color,
     colorBlendMode: colorBlendMode,
   );
-  final ImageStream imageStream = image.image.resolve(ImageConfiguration.empty);
-  imageStream.addListener(ImageStreamListener((image, synchronousCall) {},
-      onError: (Object ob, StackTrace? st) {
-    // Log.error("访问网络图片失败：$url");
-  }));
-  return image;
+
+  // FadeInImage image = FadeInImage(
+  //   image: CachedNetworkImageProvider(url),
+  //   placeholder: MemoryImage(kTransparentImage),
+  //   imageErrorBuilder: errorBuilder,
+  //   fit: BoxFit.cover,
+  //   // 没有color和colorBlendMode
+  // );
+
+  // 没有过渡效果
+  // Image image = Image(
+  //   image: CachedNetworkImageProvider(url),
+  //   errorBuilder: errorBuilder,
+  //   fit: BoxFit.cover,
+  //   color: color,
+  //   colorBlendMode: colorBlendMode,
+  // );
+
+  // final ImageStream imageStream = image.image.resolve(ImageConfiguration.empty);
+  // imageStream.addListener(ImageStreamListener((image, synchronousCall) {},
+  //     onError: (Object ob, StackTrace? st) {
+  //       // Log.error("访问网络图片失败：$url");
+  //     }));
+  // return image;
 }
 
 /// 错误图片

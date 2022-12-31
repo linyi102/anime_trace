@@ -56,20 +56,12 @@ class AnimePropertiesPage extends StatelessWidget {
 
               _buildPropRow(context,
                   title: "状态",
-                  text: animeController.anime.value.playStatus, onTap: () {
+                  text: animeController.anime.value.getPlayStatus(), onTap: () {
                 showDialog(
                     context: context,
                     builder: (dialogContext) {
                       String playStatus =
-                          animeController.anime.value.playStatus;
-                      if (playStatus.contains("未")) {
-                        playStatus = "未开播";
-                      } else if (playStatus.contains("连载")) {
-                        playStatus = "连载中";
-                      } else if (playStatus.contains("完结")) {
-                        playStatus = "已完结";
-                      }
-
+                          animeController.anime.value.getPlayStatus();
                       return AlertDialog(
                         content: SingleChildScrollView(
                           child: Column(

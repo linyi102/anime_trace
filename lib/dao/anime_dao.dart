@@ -7,6 +7,24 @@ import '../models/anime.dart';
 class AnimeDao {
   static var db = SqliteUtil.database;
 
+  /// 获取所有未完结动漫
+  static Future<List<Anime>> getAllNeedUpdateAnimes() async {
+    List<Anime> animes = await SqliteUtil.getAllAnimes();
+    List<Anime> needUpdateAnimes = [];
+
+    for (var anime in animes) {
+      // 跳过完结动漫、豆瓣、自定义动漫(也就是没有动漫地址)
+      // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
+      if (anime.playStatus.contains("完结") ||
+          anime.animeUrl.contains("douban") ||
+          anime.animeUrl.isEmpty) {
+        continue;
+      }
+      needUpdateAnimes.add(anime);
+    }
+    return needUpdateAnimes;
+  }
+
   // 查询某个搜索源下的动漫数量
   static Future<int> getAnimesCntBySourceKeyword(String sourceKeyword) async {
     List<Map<String, Object?>> list = await db.rawQuery('''

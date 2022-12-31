@@ -8,6 +8,7 @@ import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/network/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
@@ -28,23 +29,22 @@ class UpdateRecordPage extends StatelessWidget {
         onRefresh: () async {
           // 如果返回false，则不会弹出更新进度消息
           ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            if (value) {
-              dialogUpdateAllAnimeProgress(context);
-            }
+            // if (value) {
+            //   dialogUpdateAllAnimeProgress(context);
+            // }
           });
         },
-        child: updateRecordController.updateRecordVos.isEmpty
-            ? _buildEmptyDataPage(context)
-            : Column(
-                children: [
-                  // _buildUpdateProgress(),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: _buildUpdateRecordList(updateRecordController),
-                  )),
-                ],
-              ),
+        // ListView嵌套ListView，那么内部LV会需要加上shrinkWrap: true，但这样会导致懒加载实现
+        // 所以改用Column
+        child: Column(
+          children: [
+            _buildUpdateProgress(context),
+            Expanded(
+                child: updateRecordController.updateRecordVos.isEmpty
+                    ? _buildEmptyDataPage()
+                    : _buildUpdateRecordList(updateRecordController)),
+          ],
+        ),
       ),
     );
   }
@@ -66,8 +66,6 @@ class UpdateRecordPage extends StatelessWidget {
       controller: scrollController,
       child: ListView.builder(
           controller: scrollController,
-          // 解决item太小无法下拉
-          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: dateList.length,
           itemBuilder: (context, index) {
             String date = dateList[index];
@@ -128,60 +126,65 @@ class UpdateRecordPage extends StatelessWidget {
     return recordsWidget;
   }
 
-  _buildEmptyDataPage(BuildContext context) {
+  _buildEmptyDataPage() {
     return ListView(
-      // 解决无法下拉刷新
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        SizedBox(
-          // 不能用无限高度(因为是ListView可以滚动)，只能通过下面方式获取高度
-          height: MediaQuery.of(context).size.height -
-              MediaQueryData.fromWindow(window).padding.top -
-              kToolbarHeight -
-              kBottomNavigationBarHeight -
-              kMinInteractiveDimension,
-          // color: Colors.red,
-          child: emptyDataHint("尝试下拉更新动漫"),
-        )
-      ],
-      key: UniqueKey(),
+      children: [emptyDataHint("尝试下拉更新动漫")],
     );
   }
 
-  _buildUpdateProgress() {
+  _buildUpdateProgress(context) {
     final UpdateRecordController updateRecordController = Get.find();
     int updateOkCnt = updateRecordController.updateOkCnt.value;
     int needUpdateCnt = updateRecordController.needUpdateCnt.value;
-    bool updateOk = updateRecordController.updateOk;
 
     return Container(
-      height: 100,
-      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-      margin: EdgeInsets.all(5),
+      height: 60,
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+      margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           color: ThemeUtil.getCardColor()),
-      child: Stack(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Align(
-            alignment: AlignmentDirectional.bottomEnd,
-            child: Text(
-              "查看未完结",
-              style: TextStyle(fontSize: 12),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(FadeRoute(builder: (context) {
+                return const NeedUpdateAnimeList();
+              }));
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Container()),
+                Text(
+                  "更新进度：$updateOkCnt/$needUpdateCnt",
+                  textScaleFactor: 0.9,
+                ),
+                Text(
+                  "查看未完结动漫",
+                  textScaleFactor: 0.8,
+                  style: TextStyle(color: ThemeUtil.getCommentColor()),
+                ),
+                Expanded(child: Container()),
+              ],
             ),
           ),
-          Align(
-            alignment: AlignmentDirectional.topStart,
-            child: Text(
-              "0/40",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-          Align(
-            alignment: AlignmentDirectional.topEnd,
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.refresh, size: 20),
+          ElevatedButton(
+            onPressed: () {
+              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+                // if (value) {
+                //   dialogUpdateAllAnimeProgress(context);
+                // }
+              });
+            },
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)))),
+            child: const Text(
+              "立即更新",
+              textScaleFactor: 0.9,
+              style: TextStyle(color: Colors.white),
             ),
           )
         ],

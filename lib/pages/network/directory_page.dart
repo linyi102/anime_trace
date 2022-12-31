@@ -141,7 +141,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     }
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-      debugPrint("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
+      // debugPrint("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
       if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
 
       Anime anime = directory[index];

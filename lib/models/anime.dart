@@ -77,12 +77,22 @@ class Anime {
     return ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义";
   }
 
+  String getPlayStatus() {
+    if (playStatus.contains("完结")) {
+      return "已完结";
+    } else if (playStatus.contains("未")) {
+      return "未开播";
+    } else if (playStatus.contains("第") || playStatus.contains("连载")) {
+      return "连载中";
+    } else {
+      return "未知";
+    }
+  }
+
   String getAnimeInfoSecondLine() {
     var list = [];
     list.add(getAnimeSource());
-    if (playStatus.isNotEmpty) {
-      list.add(playStatus);
-    }
+    list.add(getPlayStatus());
     if (animeEpisodeCnt != -1) {
       list.add("$animeEpisodeCnt 集");
     }

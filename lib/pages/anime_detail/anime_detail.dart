@@ -492,8 +492,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // 网络封面
     if (coverUrl.startsWith("http")) {
       return getNetWorkImage(coverUrl,
-          errorBuilder: (context, url, error) =>
-              Image.memory(kTransparentImage),
+          // errorBuilder: (context, url, error) =>
+          //     Image.memory(kTransparentImage),
+          errorWidget: (_, __, ___) => Image.memory(kTransparentImage),
           // 设置透明度，防止背景太黑或太白看不到顶部栏
           color: ThemeUtil.getModulateColor(),
           colorBlendMode: BlendMode.modulate);

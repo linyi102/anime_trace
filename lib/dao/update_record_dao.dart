@@ -4,6 +4,8 @@ import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
+import '../models/anime.dart';
+
 class UpdateRecordDao {
   static var database = SqliteUtil.database;
 
@@ -65,7 +67,8 @@ class UpdateRecordDao {
         int animeId = updateRecordMap["anime_id"] as int;
         UpdateRecordVo updateRecordVo = UpdateRecordVo(
             id: updateRecordMap["id"] as int,
-            anime: await SqliteUtil.getAnimeByAnimeId(animeId), // 根据动漫id找到动漫
+            anime: await SqliteUtil.getAnimeByAnimeId(animeId),
+            // 根据动漫id找到动漫
             oldEpisodeCnt: updateRecordMap["old_episode_cnt"] as int,
             newEpisodeCnt: updateRecordMap["new_episode_cnt"] as int,
             manualUpdateTime: date);

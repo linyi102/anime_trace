@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/anime_update_record.dart';
@@ -10,9 +11,11 @@ class UpdateRecordController extends GetxController {
   PageParams pageParams =
       PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
+
   bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
+  List<Anime> needUpdateAnimes = [];
 
   @override
   void onInit() {
@@ -26,6 +29,10 @@ class UpdateRecordController extends GetxController {
     debugPrint("重新获取数据库内容并覆盖");
     pageParams.resetPageIndex();
     updateRecordVos.value = await UpdateRecordDao.findAll(pageParams);
+
+    // 获取需要更新的动漫数量
+    needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
+    needUpdateCnt.value = needUpdateAnimes.length;
   }
 
   // 加载更多，追加而非直接赋值

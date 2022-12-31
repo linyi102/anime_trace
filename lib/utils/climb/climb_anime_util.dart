@@ -1,3 +1,4 @@
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
@@ -83,24 +84,14 @@ class ClimbAnimeUtil {
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);
 
-    // showToast("更新动漫中...");
-    // int needUpdateCnt = 0, skipUpdateCnt = 0, updateOkCnt = 0;
     int skipUpdateCnt = 0, needUpdateCnt = 0;
     final UpdateRecordController updateRecordController = Get.find();
     updateRecordController.resetUpdateOkCnt(); // 重新设置
 
-    List<Anime> animes = await SqliteUtil.getAllAnimes();
+    List<Anime> needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
 
     // 异步更新所有动漫信息
-    for (var anime in animes) {
-      // debugPrint("${anime.animeName}：${anime.playStatus}");
-      // 跳过完结动漫，还要豆瓣
-      // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
-      if (anime.playStatus.contains("完结") ||
-          anime.animeUrl.contains("douban")) {
-        skipUpdateCnt++;
-        continue;
-      }
+    for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
       debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
