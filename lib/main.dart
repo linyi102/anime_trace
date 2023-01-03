@@ -225,15 +225,15 @@ class MyAppState extends State<MyApp> with WindowListener {
                   UpdateHint(checkLatestVersion: true)
                 ],
               ),
+              // 后台应用显示名称
+              title: '漫迹',
+              // 去除右上角的debug标签
+              debugShowCheckedModeBanner: false,
+              // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
+              scrollBehavior: MyCustomScrollBehavior(),
             ),
           )),
-      // 后台应用显示名称
-      title: '漫迹',
-      // 去除右上角的debug标签
-      debugShowCheckedModeBanner: false,
-      // 自定义滚动行为
-      scrollBehavior: MyCustomScrollBehavior(),
-      // 中文
+      // 中文(必须放在GetMaterialApp)
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
