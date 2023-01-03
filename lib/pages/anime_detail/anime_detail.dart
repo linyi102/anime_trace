@@ -1269,28 +1269,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   Future<String> _showDatePicker({DateTime? defaultDateTime}) async {
     DateTime? datePicker = await showDatePicker(
-        context: context,
-        initialDate: defaultDateTime ?? DateTime.now(),
-        // 没有给默认时间时，设置为今天
-        firstDate: DateTime(1986),
-        lastDate: DateTime(DateTime.now().year + 2),
-        locale: const Locale("zh"));
+      context: context,
+      initialDate: defaultDateTime ?? DateTime.now(),
+      // 没有给默认时间时，设置为今天
+      firstDate: DateTime(1986),
+      lastDate: DateTime(DateTime.now().year + 2),
+    );
     // 如果没有选择日期，则直接返回
     if (datePicker == null) return "";
     TimeOfDay? timePicker = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      // 中文
-      builder: (BuildContext context, Widget? child) {
-        return Localizations(
-          locale: const Locale('zh'),
-          child: child,
-          delegates: const <LocalizationsDelegate>[
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-        );
-      },
     );
     // 同理
     if (timePicker == null) return "";

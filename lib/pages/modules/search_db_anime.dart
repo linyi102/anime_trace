@@ -24,6 +24,8 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   final _scrollController = ScrollController();
 
   void _searchDbAnimesByKeyword(String text) {
+    debugPrint("Localizations.localeOf(context)=${Localizations.localeOf(context)}");
+
     if (_lastInputText == text) {
       debugPrint("相同内容，不进行搜索");
       return;
@@ -53,7 +55,8 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-          autofocus: true, // 自动弹出键盘
+          // 自动弹出键盘
+          autofocus: true,
           controller: inputController,
           decoration: InputDecoration(
               hintText: "搜索已收藏的动漫",

@@ -22,7 +22,7 @@ import 'controllers/anime_display_controller.dart';
 import 'controllers/update_record_controller.dart';
 
 void main() {
-  beforeRunApp().then((value) => runApp(const GetMaterialApp(home: MyApp())));
+  beforeRunApp().then((value) => runApp(MyApp()));
 }
 
 Future<void> beforeRunApp() async {
@@ -188,77 +188,62 @@ class MyAppState extends State<MyApp> with WindowListener {
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.put(ThemeController());
 
-    return Obx(() => OKToast(
-          position: ToastPosition.top,
-          // animationBuilder: (BuildContext context, Widget child,
-          //     AnimationController controller, double percent) {
-          //   // controller.duration = const Duration(seconds: 2); // 无效
-          //
-          //   Animation<double> animation = CurvedAnimation(
-          //     parent: controller,
-          //     curve: Curves.elasticOut,
-          //   );
-          //
-          //   return ScaleTransition(child: child, scale: animation);
-          // },
-          // true表示弹出消息时会先关闭前一个消息
-          dismissOtherOnShow: true,
-          radius: 20,
-          textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          backgroundColor: themeController.themeColor.value.isDarkMode
-              ? Colors.white
-              : Colors.black,
-          textStyle: TextStyle(
-              color: themeController.themeColor.value.isDarkMode
-                  ? Colors.black
-                  : Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.none,
-              fontFamilyFallback: themeController.fontFamilyFallback),
-          child: MaterialApp(
-            // 后台应用显示名称
-            title: '漫迹',
-            // 去除右上角的debug标签
-            debugShowCheckedModeBanner: false,
-            home: Stack(
-              children: const [
-                MainScreen(),
-                UpdateHint(checkLatestVersion: true)
-              ],
+    return GetMaterialApp(
+      home: Obx(() => OKToast(
+            position: ToastPosition.top,
+            // animationBuilder: (BuildContext context, Widget child,
+            //     AnimationController controller, double percent) {
+            //   // controller.duration = const Duration(seconds: 2); // 无效
+            //
+            //   Animation<double> animation = CurvedAnimation(
+            //     parent: controller,
+            //     curve: Curves.elasticOut,
+            //   );
+            //
+            //   return ScaleTransition(child: child, scale: animation);
+            // },
+            // true表示弹出消息时会先关闭前一个消息
+            dismissOtherOnShow: true,
+            radius: 20,
+            textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+            backgroundColor: themeController.themeColor.value.isDarkMode
+                ? Colors.white
+                : Colors.black,
+            textStyle: TextStyle(
+                color: themeController.themeColor.value.isDarkMode
+                    ? Colors.black
+                    : Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
+                fontFamilyFallback: themeController.fontFamilyFallback),
+            child: MaterialApp(
+              theme: buildThemeData(themeController),
+              home: Stack(
+                children: const [
+                  MainScreen(),
+                  UpdateHint(checkLatestVersion: true)
+                ],
+              ),
             ),
-            // 自定义滚动行为
-            scrollBehavior: MyCustomScrollBehavior(),
-            theme: buildThemeData(themeController),
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              //对应的Cupertino风格（iOS风格组件）
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [
-              Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
-              Locale.fromSubtags(
-                  languageCode: 'zh',
-                  scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
-              Locale.fromSubtags(
-                  languageCode: 'zh',
-                  scriptCode: 'Hant'), // generic traditional Chinese 'zh_Hant'
-              Locale.fromSubtags(
-                  languageCode: 'zh',
-                  scriptCode: 'Hans',
-                  countryCode: 'CN'), // 'zh_Hans_CN'
-              Locale.fromSubtags(
-                  languageCode: 'zh',
-                  scriptCode: 'Hant',
-                  countryCode: 'TW'), // 'zh_Hant_TW'
-              Locale.fromSubtags(
-                  languageCode: 'zh',
-                  scriptCode: 'Hant',
-                  countryCode: 'HK'), // 'zh_Hant_HK'
-            ],
-          ),
-        ));
+          )),
+      // 后台应用显示名称
+      title: '漫迹',
+      // 去除右上角的debug标签
+      debugShowCheckedModeBanner: false,
+      // 自定义滚动行为
+      scrollBehavior: MyCustomScrollBehavior(),
+      // 中文
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('zh', 'CN'),
+        Locale('en', 'US'),
+      ],
+    );
   }
 
   /// 自定义primarySwatch，用于指定回弹颜色
@@ -299,8 +284,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
-      popupMenuTheme:
-          PopupMenuThemeData(color: ThemeUtil.getCardColor()),
+      popupMenuTheme: PopupMenuThemeData(color: ThemeUtil.getCardColor()),
       dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
       timePickerTheme:
           TimePickerThemeData(backgroundColor: ThemeUtil.getCardColor()),
