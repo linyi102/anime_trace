@@ -22,7 +22,20 @@ import 'controllers/anime_display_controller.dart';
 import 'controllers/update_record_controller.dart';
 
 void main() {
-  beforeRunApp().then((value) => runApp(MyApp()));
+  beforeRunApp().then((value) => runApp(const GetMaterialApp(
+        // GetMaterialApp必须放在这里，而不能在MyApp的build返回GetMaterialApp，否则导致Windows端无法关闭
+        home: MyApp(),
+        // 中文(必须放在GetMaterialApp)
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('zh', 'CN'),
+          Locale('en', 'US'),
+        ],
+      )));
 }
 
 Future<void> beforeRunApp() async {
@@ -188,61 +201,51 @@ class MyAppState extends State<MyApp> with WindowListener {
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.put(ThemeController());
 
-    return GetMaterialApp(
-      home: Obx(() => OKToast(
-            position: ToastPosition.top,
-            // animationBuilder: (BuildContext context, Widget child,
-            //     AnimationController controller, double percent) {
-            //   // controller.duration = const Duration(seconds: 2); // 无效
-            //
-            //   Animation<double> animation = CurvedAnimation(
-            //     parent: controller,
-            //     curve: Curves.elasticOut,
-            //   );
-            //
-            //   return ScaleTransition(child: child, scale: animation);
-            // },
-            // true表示弹出消息时会先关闭前一个消息
-            dismissOtherOnShow: true,
-            radius: 20,
-            textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-            backgroundColor: themeController.themeColor.value.isDarkMode
-                ? Colors.white
-                : Colors.black,
-            textStyle: TextStyle(
-                color: themeController.themeColor.value.isDarkMode
-                    ? Colors.black
-                    : Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.none,
-                fontFamilyFallback: themeController.fontFamilyFallback),
-            child: MaterialApp(
-              theme: buildThemeData(themeController),
-              home: Stack(
-                children: const [
-                  MainScreen(),
-                  UpdateHint(checkLatestVersion: true)
-                ],
-              ),
-              // 后台应用显示名称
-              title: '漫迹',
-              // 去除右上角的debug标签
-              debugShowCheckedModeBanner: false,
-              // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-              scrollBehavior: MyCustomScrollBehavior(),
-            ),
-          )),
-      // 中文(必须放在GetMaterialApp)
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('zh', 'CN'),
-        Locale('en', 'US'),
-      ],
+    return Obx(
+      () => OKToast(
+        position: ToastPosition.top,
+        // animationBuilder: (BuildContext context, Widget child,
+        //     AnimationController controller, double percent) {
+        //   // controller.duration = const Duration(seconds: 2); // 无效
+        //
+        //   Animation<double> animation = CurvedAnimation(
+        //     parent: controller,
+        //     curve: Curves.elasticOut,
+        //   );
+        //
+        //   return ScaleTransition(child: child, scale: animation);
+        // },
+        // true表示弹出消息时会先关闭前一个消息
+        dismissOtherOnShow: true,
+        radius: 20,
+        textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+        backgroundColor: themeController.themeColor.value.isDarkMode
+            ? Colors.white
+            : Colors.black,
+        textStyle: TextStyle(
+            color: themeController.themeColor.value.isDarkMode
+                ? Colors.black
+                : Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.none,
+            fontFamilyFallback: themeController.fontFamilyFallback),
+        child: MaterialApp(
+          theme: buildThemeData(themeController),
+          home: Stack(
+            children: const [
+              MainScreen(),
+              UpdateHint(checkLatestVersion: true)
+            ],
+          ),
+          // 后台应用显示名称
+          title: '漫迹',
+          // 去除右上角的debug标签
+          debugShowCheckedModeBanner: false,
+          // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
+          scrollBehavior: MyCustomScrollBehavior(),
+        ),
+      ),
     );
   }
 
