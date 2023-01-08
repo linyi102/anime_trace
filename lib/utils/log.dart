@@ -1,36 +1,32 @@
 import 'package:flutter/foundation.dart';
 
-/// 来源：[Dart Log工具类-kicinio的博客-CSDN博客-dart log](https://blog.csdn.net/kicinio/article/details/125950014)
 class Log {
-  static void info<T>(T content) {
-    DateTime date = DateTime.now();
+  static void info<T>(T content, {Type? runTimeType}) {
     if (kDebugMode) {
+      String typeStr = runTimeType == null ? "" : ":${runTimeType.toString()}";
       debugPrint(
-          '🟩 [INFO] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟩');
+          '🟩[INFO$typeStr][${DateTime.now().toString().substring(5)}]$content🟩');
     }
   }
 
   static void debug<T>(T content) {
-    DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '🟦 [DEBUG] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟦');
+          '🟦[DEBUG][${DateTime.now().toString().substring(5)}]$content🟦');
     }
   }
 
   static void warn<T>(T content) {
-    DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '🟨 [WARN] [${date.hour}:${date.minute}:${date.second}:${date.millisecond}] $content 🟨');
+          '🟨[WARN][${DateTime.now().toString().substring(5)}]$content🟨');
     }
   }
 
   static void error<T>(T content) {
-    DateTime date = DateTime.now();
     if (kDebugMode) {
       debugPrint(
-          '🟥 [ERROR] ${date.hour}:${date.minute}:${date.second}:${date.millisecond} || $content 🟥');
+          '🟥[ERROR][${DateTime.now().toString().substring(5)}]$content🟥');
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:get/get.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 typedef Callback = Future<bool> Function();
 
@@ -76,7 +77,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   // 迁移提示
                   showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
-                  debugPrint("进入动漫详细页面${anime.animeId}");
+                  Log.info("进入动漫详细页面${anime.animeId}");
                   Navigator.of(context).push(
                     FadeRoute(
                       builder: (context) {
@@ -89,12 +90,12 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     //     await SqliteUtil.getAnimeByAnimeId(anime.animeId);
                     // setState(() {});
                     widget.callback().then((value) {
-                      debugPrint("callback.then");
+                      Log.info("callback.then");
                       setState(() {});
                     });
                   });
                 } else {
-                  debugPrint("添加动漫");
+                  Log.info("添加动漫");
                   dialogSelectTag(setState, context, anime);
                 }
               },

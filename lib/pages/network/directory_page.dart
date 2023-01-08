@@ -1,7 +1,6 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -29,6 +29,7 @@ class _DirectoryPageState extends State<DirectoryPage>
   bool get wantKeepAlive => true;
 
   bool _loadOk = false;
+
   // 页大小是固定24个，不管设置多少都始终会获取24个动漫
   // 这里设置是为了方便加载更多数据
   PageParams pageParams = PageParams(pageIndex: 0, pageSize: 24);
@@ -72,7 +73,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     Future(() async {
       directory = await ClimbAnimeUtil.climbDirectory(filter, pageParams);
     }).then((value) async {
-      debugPrint("目录页：数据获取完毕");
+      Log.info("目录页：数据获取完毕");
       // 根据动漫名和来源查询动漫，如果存在
       // 则获取到id(用于进入详细页)和tagName(用于修改tag)
       // 下面两种方式修改了anime，都不能修改数组中的值
@@ -90,13 +91,13 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   _loadMoreData() {
-    debugPrint("目录页：加载更多数据中，当前动漫数量：${directory.length}");
+    Log.info("目录页：加载更多数据中，当前动漫数量：${directory.length}");
     pageParams.pageIndex++;
     int startIdx = directory.length;
     Future(() async {
       directory.addAll(await ClimbAnimeUtil.climbDirectory(filter, pageParams));
     }).then((value) async {
-      debugPrint("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
+      Log.info("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
       for (int i = startIdx; i < directory.length; ++i) {
         directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
       }
@@ -141,7 +142,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     }
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-      // debugPrint("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
+      // Log.info("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
       if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
 
       Anime anime = directory[index];
@@ -149,7 +150,7 @@ class _DirectoryPageState extends State<DirectoryPage>
       return MaterialButton(
         padding: const EdgeInsets.all(0),
         onPressed: () {
-          debugPrint("单击");
+          Log.info("单击");
           // 如果收藏了，则单击进入详细页面
           if (anime.isCollected()) {
             Navigator.of(context).push(FadeRoute(builder: (context) {
@@ -232,10 +233,10 @@ class _DirectoryPageState extends State<DirectoryPage>
                             initialValue: defaultYear)
                         .then((value) {
                       if (value == null || value == 0 || value == defaultYear) {
-                        debugPrint("未选择，直接返回");
+                        Log.info("未选择，直接返回");
                         return;
                       }
-                      debugPrint("选择了$value");
+                      Log.info("选择了$value");
                       filter.year = value.toString();
                       _loadData();
                     });
@@ -381,7 +382,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               onChanged: (value) {
                 filter.year = value.toString();
 
-                // debugPrint(filter.year);
+                // Log.info(filter.year);
                 _loadData();
               }),
           Text(i == 0 ? "全部" : (i == years.length - 1 ? "2000以前" : years[i]))
@@ -403,7 +404,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.season,
               onChanged: (value) {
                 filter.season = value.toString();
-                // debugPrint(filter.season);
+                // Log.info(filter.season);
                 _loadData();
               }),
           Text(i == 0 ? "全部" : "${seasons[i]} 月")

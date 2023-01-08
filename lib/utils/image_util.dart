@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:path/path.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class ImageUtil {
   static ImageUtil? _instance;
@@ -75,10 +75,10 @@ class ImageUtil {
   // TODO 如果根目录设置的是 "/动漫截图"，而封面是放在 "/动漫截图/封面" 下，而数据库中保存的是图片名称，此时根目录+动漫名字，缺少了一级目录 "/封面"
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
-    debugPrint("绝对路径absoluteImagePath=$absoluteImagePath");
+    Log.info("绝对路径absoluteImagePath=$absoluteImagePath");
     String relativeImagePath = _removeRootDirPath(absoluteImagePath, ImageUtil.coverImageRootDirPath);
-    debugPrint("图片根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
-    debugPrint("去除图片根路径后，relativeImagePath: $relativeImagePath");
+    Log.info("图片根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
+    Log.info("去除图片根路径后，relativeImagePath: $relativeImagePath");
     relativeImagePath = _removeCachePrefix(relativeImagePath);
     return relativeImagePath;
   }
@@ -89,9 +89,9 @@ class ImageUtil {
     // String relativeImagePath =
     //     absoluteImagePath.substring(ImageUtil.noteImageRootDirPath.length);
     String relativeImagePath = _removeRootDirPath(absoluteImagePath, ImageUtil.noteImageRootDirPath);
-    // debugPrint("relativeImagePath: $relativeImagePath");
+    // Log.info("relativeImagePath: $relativeImagePath");
     relativeImagePath = _removeCachePrefix(relativeImagePath);
-    // debugPrint("relativeImagePath: $relativeImagePath");
+    // Log.info("relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
 
@@ -119,15 +119,15 @@ class ImageUtil {
       int validIndex = path.indexOf(patternStr) + patternStr.length;
       path = path.substring(validIndex); // 获取validIndex开始的字符串
     }
-    debugPrint("去除缓存路径后，relativeImagePath: $path");
+    Log.info("去除缓存路径后，relativeImagePath: $path");
     return path;
   }
 
   static String _fixPathSeparator(String path) {
-    // debugPrint("修复前，路径为$path");
+    // Log.info("修复前，路径为$path");
     path = path.replaceAll("/", separator);
     path = path.replaceAll("\\", separator);
-    // debugPrint("修复后，路径为$path");
+    // Log.info("修复后，路径为$path");
     return path;
   }
 }

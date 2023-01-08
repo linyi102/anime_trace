@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/params/page_params.dart';
 
@@ -22,7 +22,7 @@ class ClimbAgemys implements Climb {
     String url = baseUrl + "/search?query=$keyword";
     List<Anime> climbAnimes = [];
 
-    debugPrint("正在获取文档...");
+    Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
@@ -31,7 +31,7 @@ class ClimbAgemys implements Climb {
     }
     Response response = result.data;
     var document = parse(response.data);
-    debugPrint("获取文档成功√，正在解析...");
+    Log.info("获取文档成功√，正在解析...");
 
     var elements = document.getElementsByClassName("cell_poster");
 
@@ -55,8 +55,8 @@ class ClimbAgemys implements Climb {
         animeCoverUrl: coverUrl ?? "",
         animeUrl: animeUrl == null ? "" : (baseUrl + animeUrl),
       );
-      debugPrint("爬取封面：$coverUrl");
-      debugPrint("爬取动漫网址：${climbAnime.animeUrl}");
+      Log.info("爬取封面：$coverUrl");
+      Log.info("爬取动漫网址：${climbAnime.animeUrl}");
 
       // 注意是document，而上面的element只是用于获取图片，以及得知查询的动漫数量
       climbAnime.category =
@@ -80,16 +80,16 @@ class ClimbAgemys implements Climb {
 
       climbAnimes.add(climbAnime);
     }
-    debugPrint("解析完毕√");
+    Log.info("解析完毕√");
     return climbAnimes;
   }
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    // debugPrint("正在获取文档...");
+    // Log.info("正在获取文档...");
     // var response = await Dio().get(anime.animeUrl);
     // var document = parse(response.data);
-    // debugPrint("获取文档成功√，正在解析...");
+    // Log.info("获取文档成功√，正在解析...");
     // 因为该动漫网址集数不容易解析，但又因为查询页面中很多信息都已经写上了，还包括了容易解析的集信息
     // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
     List<Anime> climbAnimes =
@@ -103,8 +103,8 @@ class ClimbAgemys implements Climb {
         break;
       }
     }
-    debugPrint("解析完毕√");
-    debugPrint(anime.toString());
+    Log.info("解析完毕√");
+    Log.info(anime.toString());
     if (showMessage) showToast("更新信息成功");
 
     return anime;

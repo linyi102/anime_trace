@@ -10,6 +10,7 @@ import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../modules/website_icon.dart';
 
@@ -78,7 +79,7 @@ class _SourceListPageState extends State<SourceListPage> {
             setState(() {});
           }
 
-          debugPrint("${website.name}:pingStatus=${website.pingStatus}");
+          Log.info("${website.name}:pingStatus=${website.pingStatus}");
         });
       }
     }

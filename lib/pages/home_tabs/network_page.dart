@@ -35,7 +35,7 @@ class _NetWorkPageState extends State<NetWorkPage>
     );
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
-      // debugPrint("切换tab，tab.index=${_tabController.index}"); // doubt win端发现会连续输出两次
+      // Log.info("切换tab，tab.index=${_tabController.index}"); // doubt win端发现会连续输出两次
       if (_tabController.index == _tabController.animation!.value) {
         SPUtil.setInt("lastNavIndexInNetWorkNav", _tabController.index);
       }

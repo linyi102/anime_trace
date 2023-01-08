@@ -51,7 +51,7 @@ class NoteImgGrid extends StatelessWidget {
           ? relativeLocalImages.length
           : _getGridItemCount(maxDisplayCount),
       itemBuilder: (context, index) {
-        // debugPrint("$runtimeType: index=$index");
+        // Log.info("$runtimeType: index=$index");
         return NoteImgItem(
             relativeLocalImages: relativeLocalImages,
             initialIndex: index,

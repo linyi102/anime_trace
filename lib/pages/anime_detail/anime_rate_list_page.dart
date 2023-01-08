@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:fluttericon/typicons_icons.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/note_img_grid.dart';
 import '../../dao/note_dao.dart';
@@ -62,7 +63,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
         Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child:
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             _buildRatingStars(),
             IconButton(
                 tooltip: "评价",
@@ -73,8 +74,8 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
         ),
         noteOk
             ? notes.isNotEmpty
-            ? Column(children: _buildRateNoteList())
-            : Container()
+                ? Column(children: _buildRateNoteList())
+                : Container()
             : Container()
       ],
     );
@@ -113,7 +114,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
   }
 
   void _createRateNote(BuildContext context) {
-    debugPrint("添加评价");
+    Log.info("添加评价");
     Note episodeNote = Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
         relativeLocalImages: [], imgUrls: []);
     NoteDao.insertEpisodeNote(episodeNote).then((value) {
@@ -130,7 +131,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
 
   _buildRateNoteList() {
     List<Widget> list = [];
-    debugPrint("渲染1次笔记列表"); // TODO：多次渲染
+    Log.info("渲染1次笔记列表"); // TODO：多次渲染
 
     for (Note note in notes) {
       list.add(Container(

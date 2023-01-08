@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/params/page_params.dart';
 
@@ -23,7 +23,7 @@ class ClimbOmofun implements Climb {
     }
     List<Anime> climbAnimes = [];
 
-    debugPrint("正在获取文档...");
+    Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
       showToast(result.msg);
@@ -31,7 +31,7 @@ class ClimbOmofun implements Climb {
     }
     Response response = result.data;
     var document = parse(response.data);
-    debugPrint("获取文档成功√，正在解析...");
+    Log.info("获取文档成功√，正在解析...");
 
     var elements = document.getElementsByClassName("lazy lazyload");
 
@@ -44,7 +44,7 @@ class ClimbOmofun implements Climb {
             animeName: animeName ?? "", // 没有名字时返回空串
             animeEpisodeCnt: 0,
             animeCoverUrl: coverUrl));
-        debugPrint("爬取封面：$coverUrl");
+        Log.info("爬取封面：$coverUrl");
       }
     }
 
@@ -56,7 +56,7 @@ class ClimbOmofun implements Climb {
       climbAnimes[i].animeUrl = animeUrl == null
           ? ""
           : ((foreignBaseUrl.isEmpty ? baseUrl : foreignBaseUrl) + animeUrl);
-      debugPrint("爬取动漫网址：${climbAnimes[i].animeUrl}");
+      Log.info("爬取动漫网址：${climbAnimes[i].animeUrl}");
 
       // 获取年份和地区
       // 2018<span class="slash">/</span>日本<span class="slash">/</span>
@@ -80,13 +80,13 @@ class ClimbOmofun implements Climb {
       climbAnimes[i].category = elementsInfo[i].innerHtml;
     }
 
-    debugPrint("解析完毕√");
+    Log.info("解析完毕√");
     return climbAnimes;
   }
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    debugPrint("爬取动漫详细网址：${anime.animeUrl}");
+    Log.info("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
@@ -95,7 +95,7 @@ class ClimbOmofun implements Climb {
     Response response = result.data;
 
     var document = parse(response.data);
-    debugPrint("获取文档成功√，正在解析...");
+    Log.info("获取文档成功√，正在解析...");
 
     List elements;
     if ((elements = document.getElementsByTagName("small")).length >= 2) {
@@ -125,8 +125,8 @@ class ClimbOmofun implements Climb {
         .getElementsByTagName("p")[0]
         .innerHtml;
 
-    debugPrint("解析完毕√");
-    debugPrint(anime.toString());
+    Log.info("解析完毕√");
+    Log.info(anime.toString());
     if (showMessage) showToast("更新信息成功");
 
     return anime;

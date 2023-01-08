@@ -8,6 +8,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class AnimeClimbAllWebsite extends StatefulWidget {
   final int animeId; // 需要迁移的动漫id
@@ -66,10 +67,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
     _generateCustomAnimes();
 
-    debugPrint("开始爬取动漫封面");
+    Log.info("开始爬取动漫封面");
     // 遍历所有搜素源
     for (var climbWebsite in climbWebsites) {
-      debugPrint(climbWebsite.toString());
+      Log.info(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源
       if (!climbWebsite.enable) continue; // 不是break啊...
 
@@ -136,7 +137,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     if (lastInputKeyword.isEmpty) return true;
     _generateCustomAnimes(); // 也可能会迁移自定义动漫
 
-    debugPrint("mixing...");
+    Log.info("mixing...");
     mixedAnimes = websiteClimbAnimes;
 
     for (var climbWebsite in climbWebsites) {

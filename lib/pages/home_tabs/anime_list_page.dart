@@ -2,7 +2,6 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
@@ -17,6 +16,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/common/common_function.dart';
 import '../../models/params/anime_sort_cond.dart';
@@ -84,17 +84,17 @@ class _AnimeListPageState extends State<AnimeListPage>
       pageIndexList[i] = 1;
     }
 
-    debugPrint("开始加载数据");
+    Log.info("开始加载数据");
     Future(() async {
       animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
       for (int i = 0; i < tags.length; ++i) {
         animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(
             tags[i], 0, _pageSize,
             animeSortCond: animeSortCond);
-        // debugPrint("animesInTag[$i].length=${animesInTag[i].length}");
+        // Log.info("animesInTag[$i].length=${animesInTag[i].length}");
       }
     }).then((value) {
-      debugPrint("数据加载完毕");
+      Log.info("数据加载完毕");
       _loadOk = true; // 放这里啊，之前干嘛放外面...
       if (mounted) {
         setState(() {});
@@ -263,7 +263,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             },
           ),
         ).then((value) {
-          debugPrint("更新在搜索页面里进行的修改");
+          Log.info("更新在搜索页面里进行的修改");
           _loadData();
         });
       },
@@ -340,7 +340,7 @@ class _AnimeListPageState extends State<AnimeListPage>
       itemBuilder: (BuildContext context, int index) {
         _loadExtraData(i, index);
 
-        // debugPrint("$index");
+        // Log.info("$index");
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[i][index];
         return ListTile(
@@ -371,7 +371,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   void _loadExtraData(i, index) {
-    // debugPrint("index=$index");
+    // Log.info("index=$index");
     // 直接使用index会导致重复请求
     // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
@@ -379,15 +379,15 @@ class _AnimeListPageState extends State<AnimeListPage>
     if (index + 10 == _pageSize * (pageIndexList[i])) {
       // +10提前请求
       pageIndexList[i]++;
-      debugPrint("再次请求$_pageSize个数据");
+      Log.info("再次请求$_pageSize个数据");
       Future(() {
         return SqliteUtil.getAllAnimeBytagName(
             tags[i], animesInTag[i].length, _pageSize,
             animeSortCond: animeSortCond);
       }).then((value) {
-        debugPrint("请求结束");
+        Log.info("请求结束");
         animesInTag[i].addAll(value);
-        debugPrint("添加并更新状态，animesInTag[$i].length=${animesInTag[i].length}");
+        Log.info("添加并更新状态，animesInTag[$i].length=${animesInTag[i].length}");
         setState(() {});
       });
     }
@@ -524,7 +524,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 });
                 mergeSort(list); // 排序
                 // for (var item in list) {
-                //   debugPrint(item.toString());
+                //   Log.info(item.toString());
                 // }
 
                 int j = 0;
@@ -534,9 +534,9 @@ class _AnimeListPageState extends State<AnimeListPage>
                   animesInTag[oldTagindex][pos].tagName = newTagName;
                   SqliteUtil.updateTagByAnimeId(
                       animesInTag[oldTagindex][pos].animeId, newTagName);
-                  debugPrint(
+                  Log.info(
                       "修改${animesInTag[oldTagindex][pos].animeName}的清单为$newTagName");
-                  debugPrint("$pos: ${animesInTag[oldTagindex][pos]}");
+                  Log.info("$pos: ${animesInTag[oldTagindex][pos]}");
 
                   animesInTag[newTagindex]
                       .insert(0, animesInTag[oldTagindex][pos]); // 添加到最上面

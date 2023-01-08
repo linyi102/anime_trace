@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/note_filter.dart';
 import '../../utils/sp_util.dart';
@@ -131,7 +132,7 @@ class _NoteListPageState extends State<NoteListPage>
                   )).then((dirChanged) {
                     Navigator.pop(popupMenuContext);
                     if (dirChanged) {
-                      debugPrint("修改了图片目录，更新状态");
+                      Log.info("修改了图片目录，更新状态");
                       setState(() {});
                     }
                   });

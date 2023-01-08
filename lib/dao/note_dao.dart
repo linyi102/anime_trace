@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../models/anime.dart';
 import '../models/episode.dart';
@@ -37,7 +37,7 @@ class NoteDao {
   // 所有评价列表。分页
   static Future<List<Note>> getRateNotes(
       {required PageParams pageParams, required NoteFilter noteFilter}) async {
-    debugPrint("sql: getRateNotes");
+    Log.info("sql: getRateNotes");
     List<Note> rateNotes = [];
     List<Map<String, Object?>> list = await database.rawQuery('''
     select anime_id, note_id, note_content, create_time, update_time from episode_note
@@ -51,7 +51,7 @@ class NoteDao {
   }
 
   static Future<List<Note>> getRateNotesByAnimeId(int animeId) async {
-    debugPrint("sql: getRateNotesByAnimeId");
+    Log.info("sql: getRateNotesByAnimeId");
     List<Note> rateNotes = [];
     List<Map<String, Object?>> list = await database.rawQuery('''
       select note_id, note_content, create_time, update_time from episode_note
@@ -103,8 +103,8 @@ class NoteDao {
 
   static updateEpisodeNoteContentByNoteId(
       int noteId, String noteContent) async {
-    debugPrint("sql: updateEpisodeNoteContent($noteId)");
-    // debugPrint("sql: updateEpisodeNoteContent($noteId, $noteContent)");
+    Log.info("sql: updateEpisodeNoteContent($noteId)");
+    // Log.info("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     noteContent = EscapeUtil.escapeStr(noteContent);
     database.rawUpdate('''
     update episode_note
@@ -130,7 +130,7 @@ class NoteDao {
   }
 
   static Future<int> insertEpisodeNote(Note episodeNote) async {
-    debugPrint(
+    Log.info(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
     episodeNote = escapeEpisodeNote(episodeNote);
     String createTime = DateTime.now().toString();
@@ -148,7 +148,7 @@ class NoteDao {
   }
 
   static Future<Note> getNoteContentAndImagesByNoteId(int noteId) async {
-    debugPrint("getNoteByNoteId(noteId=$noteId)");
+    Log.info("getNoteByNoteId(noteId=$noteId)");
     var lm1 = await database.rawQuery('''
       select anime_id, note_id, episode_number, review_number, note_content from episode_note
       where note_id = $noteId;
@@ -172,7 +172,7 @@ class NoteDao {
 
   static Future<Note> getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
       Note episodeNote) async {
-    // debugPrint(
+    // Log.info(
     //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
     // 查询内容
     var lm1 = await database.rawQuery('''
@@ -187,7 +187,7 @@ class NoteDao {
       // 获取笔记内容
       episodeNote.noteContent = lm1[0]['note_content'] as String;
     }
-    // debugPrint("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
+    // Log.info("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
     // 查询图片
     episodeNote.relativeLocalImages =
         await getRelativeLocalImgsByNoteId(episodeNote.id);
@@ -196,7 +196,7 @@ class NoteDao {
   }
 
   static Future<List<Note>> getAllNotesByTableHistory() async {
-    debugPrint("sql: getAllNotesByTableHistory");
+    Log.info("sql: getAllNotesByTableHistory");
     List<Note> episodeNotes = [];
     // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
     var lm1 = await database.rawQuery('''
@@ -220,7 +220,7 @@ class NoteDao {
       episodeNote =
           await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
               episodeNote);
-      // debugPrint(episodeNote);
+      // Log.info(episodeNote);
       episodeNote.relativeLocalImages =
           await getRelativeLocalImgsByNoteId(episodeNote.id);
       episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
@@ -231,7 +231,7 @@ class NoteDao {
   //↓优化
   static Future<List<Note>> getAllNotesByTableNoteAndKeyword(
       int offset, int number, NoteFilter noteFilter) async {
-    debugPrint("sql: getAllNotesByTableNote");
+    Log.info("sql: getAllNotesByTableNote");
     List<Note> episodeNotes = [];
     // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
     // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求

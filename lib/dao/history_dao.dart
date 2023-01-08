@@ -12,7 +12,7 @@ class HistoryDao {
   // 新增回顾号列后，最小值和最大值应该属于同一回顾号
   static Future<List<HistoryPlus>> getHistoryPageable(
       {required PageParams pageParams, required int dateLength}) async {
-    debugPrint("sql: getHistoryPageable");
+    Log.info("sql: getHistoryPageable");
     // await Future.delayed(Duration(seconds: 2));
     // 获取有数据的最近几天/月
     List<Map<String, Object?>> dayList = await SqliteUtil.database.rawQuery('''
@@ -61,7 +61,7 @@ class HistoryDao {
     // 因此需要先找出该月存在的该动漫的所有回顾号(注意去重)，对与每个回顾号
     // 都要找出min和max，并添加到records中
     for (var anime in animes) {
-      // debugPrint(anime);
+      // Log.info(anime);
       var reviewNumberList = await SqliteUtil.database.rawQuery('''
         select distinct review_number
         from history

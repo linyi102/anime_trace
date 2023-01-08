@@ -3,6 +3,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class AnimesDisplaySetting extends StatelessWidget {
   final bool showAppBar;
@@ -61,7 +62,7 @@ class AnimesDisplaySetting extends StatelessWidget {
                   maxValue: 10)
               .then((value) {
             if (value == null) {
-              debugPrint("未选择，直接返回");
+              Log.info("未选择，直接返回");
               return;
             }
             animeDisplayController.setGridColumnCnt(value);

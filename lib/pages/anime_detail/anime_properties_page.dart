@@ -5,10 +5,9 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:path/path.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/dialog/dialog_select_play_status.dart';
-import '../../models/anime.dart';
 import '../../utils/theme_util.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
@@ -35,7 +34,7 @@ class AnimePropertiesPage extends StatelessWidget {
                     showToast("动漫名不允许为空");
                     return;
                   }
-                  debugPrint("更新名称：$newName");
+                  Log.info("更新名称：$newName");
                   animeController.updateAnimeName(newName);
                   SqliteUtil.updateAnimeNameByAnimeId(
                       animeController.anime.value.animeId, newName);
@@ -48,7 +47,7 @@ class AnimePropertiesPage extends StatelessWidget {
                 _showDialogAboutEdit(context,
                     title: "编辑别名",
                     property: nameAnother, confirm: (newNameAnother) {
-                  debugPrint("更新别名：$newNameAnother");
+                  Log.info("更新别名：$newNameAnother");
                   animeController.updateAnimeNameAnother(newNameAnother);
                   SqliteUtil.updateAnimeNameAnotherByAnimeId(
                       animeController.anime.value.animeId, newNameAnother);
@@ -65,7 +64,7 @@ class AnimePropertiesPage extends StatelessWidget {
                 String animeDesc = animeController.anime.value.animeDesc;
                 _showDialogAboutEdit(context,
                     title: "编辑简介", property: animeDesc, confirm: (newDesc) {
-                  debugPrint("更新简介：$newDesc");
+                  Log.info("更新简介：$newDesc");
                   animeController.updateAnimeDesc(newDesc);
                   SqliteUtil.updateAnimeDescByAnimeId(
                       animeController.anime.value.animeId, newDesc);

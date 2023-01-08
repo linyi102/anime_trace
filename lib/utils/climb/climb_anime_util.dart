@@ -8,10 +8,10 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/params/page_params.dart';
 
@@ -56,7 +56,7 @@ class ClimbAnimeUtil {
   static Future<Anime> climbAnimeInfoByUrl(Anime anime,
       {bool showMessage = true}) async {
     if (anime.animeUrl.isEmpty) {
-      debugPrint("无来源，无法更新，返回旧动漫对象");
+      Log.info("无来源，无法更新，返回旧动漫对象");
       return anime;
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
@@ -93,7 +93,7 @@ class ClimbAnimeUtil {
     // 异步更新所有动漫信息
     for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
-      debugPrint("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
+      Log.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
       Anime oldAnime = anime.copyWith();
       AnimeUpdateRecord updateRecord = AnimeUpdateRecord(animeId: 0);
@@ -119,13 +119,13 @@ class ClimbAnimeUtil {
           // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;
-          debugPrint("updateOkCnt=$updateOkCnt");
+          Log.info("updateOkCnt=$updateOkCnt");
         });
       });
     }
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
-    debugPrint("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
+    Log.info("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     return true; // 返回true，之后会显示进度条对话框
   }
 }

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../controllers/update_record_controller.dart';
 
@@ -63,18 +63,18 @@ class BackupUtil {
       switch (element.statSync().type) {
         case FileSystemEntityType.directory:
           encoder.addDirectory(Directory(element.path)); // 添加目录
-          // debugPrint("添加目录：${element.path}");
+          // Log.info("添加目录：${element.path}");
           break;
         case FileSystemEntityType.file:
           if (element.path.endsWith(".zip")) break; // 避免备份压缩包
           // 只备份my.db
           if (element.path.endsWith(SqliteUtil.sqlFileName)) {
             encoder.addFile(File(element.path));
-            debugPrint("添加文件：${element.path}");
+            Log.info("添加文件：${element.path}");
           }
           break;
         default:
-          // debugPrint("非目录和文件，不压缩：${element.path}");
+          // Log.info("非目录和文件，不压缩：${element.path}");
           break;
       }
     });
@@ -106,7 +106,7 @@ class BackupUtil {
     }
     if (remoteBackupDirPath.isNotEmpty) {
       if (!SPUtil.getBool("online")) {
-        debugPrint("WebDav 备份失败，请检查网络状态");
+        Log.info("WebDav 备份失败，请检查网络状态");
         showToast("WebDav 备份失败，请检查网络状态");
         File(tempZipFilePath).delete(); // 备份失败后需要删掉临时备份文件
         return "";
@@ -164,7 +164,7 @@ class BackupUtil {
           // "/animetrace/automatic/animetrace-backup") && // 以animetrace-backup开头
           // "/animetrace/automatic/$backupZipNamePrefix") && // 以$backupZipNamePrefix开头
           path.endsWith(".zip")) {
-        debugPrint("删除文件：$path");
+        Log.info("删除文件：$path");
         WebDavUtil.client.remove(path);
       }
     }
@@ -216,11 +216,11 @@ class BackupUtil {
       showToast("还原失败");
       return;
     }
-    debugPrint("latestFilePath: ${file.path}");
+    Log.info("latestFilePath: ${file.path}");
     String localBackupFilePath = "$localRootDirPath/${file.name}";
     await WebDavUtil.client.read2File(file.path as String, localBackupFilePath);
 
-    debugPrint(
+    Log.info(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
     restoreFromLocal(localBackupFilePath,
@@ -237,25 +237,25 @@ class BackupUtil {
     // Decode the Zip file
     final archive = ZipDecoder().decodeBytes(bytes);
 
-    debugPrint("开始解压");
+    Log.info("开始解压");
     // Extract the contents of the Zip archive to disk.
     for (final file in archive) {
       final filename = file.name;
-      debugPrint("filename: $filename");
+      Log.info("filename: $filename");
       if (file.isFile) {
         // 先判断该图片是否存在，如果不存在再解压出来。否则会闪退
         String filePath = "$localRootDirPath/$filename";
         if (filename.startsWith("images") && File(filePath).existsSync()) {
-          debugPrint("已存在图片：$filePath");
+          Log.info("已存在图片：$filePath");
           continue;
         }
-        debugPrint("解压文件：$localRootDirPath/$filename");
+        Log.info("解压文件：$localRootDirPath/$filename");
         final data = file.content as List<int>;
         File("$localRootDirPath/$filename")
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       } else {
-        debugPrint("非文件：$localRootDirPath/$filename");
+        Log.info("非文件：$localRootDirPath/$filename");
         Directory("$localRootDirPath/$filename").createSync(recursive: true);
       }
     }

@@ -3,9 +3,10 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
-  debugPrint("迁移动漫$animeId");
+  Log.info("迁移动漫$animeId");
   bool migrateCover = true;
 
   // 如果已添加，则不能迁移到该动漫
@@ -23,13 +24,17 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
             content: SingleChildScrollView(
               child: Column(
                 children: [
-                  ListTile(title: const Text("确认迁移吗？"),subtitle: Text(newAnime.animeName),),
+                  ListTile(
+                    title: const Text("确认迁移吗？"),
+                    subtitle: Text(newAnime.animeName),
+                  ),
                   ListTile(
                     style: ListTileStyle.drawer,
                     dense: true,
                     title: const Text("包括封面"),
                     leading: migrateCover
-                        ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryIconColor())
+                        ? Icon(Icons.check_box,
+                            color: ThemeUtil.getPrimaryIconColor())
                         : const Icon(Icons.check_box_outline_blank),
                     onTap: () {
                       migrateCover = !migrateCover;

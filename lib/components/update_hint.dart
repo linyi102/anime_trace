@@ -6,6 +6,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 // 更新对话框组件，用于Stack最高层
 class UpdateHint extends StatefulWidget {
@@ -30,7 +31,7 @@ class _UpdateHintState extends State<UpdateHint> {
   @override
   void initState() {
     super.initState();
-    debugPrint(widget.checkLatestVersion.toString());
+    Log.info(widget.checkLatestVersion.toString());
     if (widget.checkLatestVersion) {
       // _checkNewVersion();
       _getLatestVersionInfo();
@@ -38,7 +39,7 @@ class _UpdateHintState extends State<UpdateHint> {
   }
 
   _log(String msg) {
-    debugPrint("[${DateTime.now()}] $runtimeType: $msg");
+    Log.info("[${DateTime.now()}] $runtimeType: $msg");
   }
 
   _getLatestVersionInfo() async {
@@ -77,7 +78,7 @@ class _UpdateHintState extends State<UpdateHint> {
       latestVersionInfo.desc = latestVersionInfo.desc.trim();
       _log("获取到最新版本描述：${latestVersionInfo.desc}");
     } catch (e) {
-      debugPrint(e.toString());
+      Log.info(e.toString());
     }
 
     // 保证避免因忘记注释而导致发布版出现9.99版本
@@ -90,7 +91,7 @@ class _UpdateHintState extends State<UpdateHint> {
       // 如果忽略了该最新版本，则不进行更新提示
       if (SPUtil.getBool("ignore${latestVersionInfo.version}") == true) {
         showUpdateDialog = false;
-        debugPrint("已忽略更新版本：${latestVersionInfo.version}");
+        Log.info("已忽略更新版本：${latestVersionInfo.version}");
       } else {
         showUpdateDialog = true;
       }
@@ -98,7 +99,7 @@ class _UpdateHintState extends State<UpdateHint> {
       if (widget.forceShowUpdateDialog) {
         showUpdateDialog = true;
       }
-      debugPrint("当前版本：$currentVersion，最新版本：${latestVersionInfo.version}");
+      Log.info("当前版本：$currentVersion，最新版本：${latestVersionInfo.version}");
       // 显示对话框
       setState(() {});
     } else {

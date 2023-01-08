@@ -8,6 +8,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/anime_list_cover.dart';
 import '../../models/anime.dart';
@@ -18,6 +19,7 @@ import '../anime_detail/anime_detail.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
+
   const RateNoteListPage({Key? key, required this.noteFilter})
       : super(key: key);
 
@@ -52,7 +54,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
       rateNotes = value;
       loadRateNodeOk = true;
       setState(() {});
-      debugPrint("共找到${rateNotes.length}条评价笔记");
+      Log.info("共找到${rateNotes.length}条评价笔记");
     });
   }
 
@@ -60,14 +62,14 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     if (index + 5 ==
         rateNotePageParams.pageSize * rateNotePageParams.pageIndex) {
       rateNotePageParams.pageIndex++;
-      debugPrint("再次请求${rateNotePageParams.pageSize}个数据");
+      Log.info("再次请求${rateNotePageParams.pageSize}个数据");
       Future(() {
         return NoteDao.getRateNotes(
             pageParams: rateNotePageParams, noteFilter: widget.noteFilter);
       }).then((value) {
-        debugPrint("请求结束");
+        Log.info("请求结束");
         rateNotes.addAll(value);
-        debugPrint("rateNotes.length=${rateNotes.length}");
+        Log.info("rateNotes.length=${rateNotes.length}");
         setState(() {});
       });
     }
@@ -109,7 +111,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
             controller: _rateScrollController,
             itemCount: rateNotes.length,
             itemBuilder: (BuildContext context, int index) {
-              // debugPrint("$runtimeType: index=$index");
+              // Log.info("$runtimeType: index=$index");
               _loadMoreRateNoteData(index);
 
               return Container(

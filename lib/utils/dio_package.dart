@@ -1,10 +1,10 @@
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/result.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class DioPackage {
   static final BaseOptions _baseOptions = BaseOptions(
@@ -70,7 +70,7 @@ class DioPackage {
         if (event.toString().contains("PingSummary")) {
           // 3次有1次回复，则返回true
           int reveived = event.summary?.received ?? 0;
-          debugPrint("$event, reveived=$reveived");
+          Log.info("$event, reveived=$reveived");
           if (reveived >= 1) {
             pingStatus.connectable = true;
             pingStatus.time = event.summary?.time?.inMilliseconds ?? -1;
@@ -89,19 +89,19 @@ class DioPackage {
         if (statusCode == 200) {
           connectable = true; // 只有不抛出异常且状态码为200时才说明可以连接
         } else {
-          debugPrint("状态码：$statusCode");
+          Log.info("状态码：$statusCode");
         }
       } catch (e) {
         String msg = ErrorFormatUtil.formatError(e);
-        debugPrint(msg);
+        Log.info(msg);
       }
 
       if (connectable) {
         pingStatus.connectable = true;
-        debugPrint("ping ok: $path");
+        Log.info("ping ok: $path");
       } else {
         pingStatus.connectable = false;
-        debugPrint("ping false: $path");
+        Log.info("ping false: $path");
       }
     }
 

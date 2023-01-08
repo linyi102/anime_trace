@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class SearchDbAnime extends StatefulWidget {
   const SearchDbAnime({Key? key}) : super(key: key);
@@ -24,20 +25,21 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   final _scrollController = ScrollController();
 
   void _searchDbAnimesByKeyword(String text) {
-    debugPrint("Localizations.localeOf(context)=${Localizations.localeOf(context)}");
+    Log.info(
+        "Localizations.localeOf(context)=${Localizations.localeOf(context)}");
 
     if (_lastInputText == text) {
-      debugPrint("相同内容，不进行搜索");
+      Log.info("相同内容，不进行搜索");
       return;
     }
     _lastInputText = text;
     Future(() {
-      debugPrint("search: $text");
+      Log.info("search: $text");
       return SqliteUtil.getAnimesBySearch(text);
     }).then((value) {
       _resAnimes = value;
       _searchOk = true;
-      debugPrint("_resAnimes.length=${_resAnimes.length}");
+      Log.info("_resAnimes.length=${_resAnimes.length}");
       setState(() {});
     });
   }
@@ -75,7 +77,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             _cancelFocus();
           },
           onChanged: (value) async {
-            debugPrint("value=$value");
+            Log.info("value=$value");
             if (value.isEmpty) return;
             _searchDbAnimesByKeyword(value);
           },
@@ -147,7 +149,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
                   _resAnimes[findIndex].animeId);
               setState(() {});
             } else {
-              debugPrint("未找到动漫：$value");
+              Log.info("未找到动漫：$value");
             }
           });
         },

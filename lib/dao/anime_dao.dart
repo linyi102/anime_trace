@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../models/anime.dart';
 
@@ -46,7 +46,7 @@ class AnimeDao {
     from anime
     where anime_url like '%$sourceKeyword%' order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
     ''');
-    debugPrint(
+    Log.info(
         "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceKeyword下的动漫");
     for (Map row in list) {
       Anime anime = Anime(

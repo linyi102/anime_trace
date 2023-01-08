@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbYhdm implements Climb {
   @override
@@ -32,7 +32,7 @@ class ClimbYhdm implements Climb {
     String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
     // str内容：
     // <label>别名:</label>古見さんは、コミ ュ症です。2期
-    // debugPrint("str=$str");
+    // Log.info("str=$str");
     anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
     // 获取封面
     String? coverUrl = document
@@ -71,11 +71,11 @@ class ClimbYhdm implements Climb {
     anime.animeDesc = document.getElementsByClassName("info")[0].innerHtml;
     // 获取集数
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
-    debugPrint("开始解析集数：${anime.animeName}");
+    Log.info("开始解析集数：${anime.animeName}");
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
     if (showMessage) showToast("更新信息成功");
 
-    debugPrint(anime.toString());
+    Log.info(anime.toString());
     return anime;
   }
 
@@ -97,7 +97,7 @@ class ClimbYhdm implements Climb {
           episodeCnt = int.parse(episodeCntStr.substring(
               episodeCntStartIndex, episodeCntEndIndex));
         } catch (e) {
-          debugPrint("解析出错：$episodeCntStr");
+          Log.info("解析出错：$episodeCntStr");
         }
       }
     } else if (episodeCntStr.contains("01-")) {
@@ -141,8 +141,8 @@ class ClimbYhdm implements Climb {
         animeCoverUrl: coverUrl ?? "",
         animeUrl: animeUrl,
       );
-      debugPrint("爬取名字：${anime.animeName}");
-      debugPrint("爬取封面：${anime.animeCoverUrl}");
+      Log.info("爬取名字：${anime.animeName}");
+      Log.info("爬取封面：${anime.animeCoverUrl}");
       animes.add(anime);
     }
     return animes;

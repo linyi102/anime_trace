@@ -8,6 +8,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../settings/image_path_setting.dart';
 
@@ -175,7 +176,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           builder: (context) => const ImagePathSetting()))
                       .then((dirChanged) {
                     if (dirChanged) {
-                      debugPrint("修改了图片目录，重新获取本地图片");
+                      Log.info("修改了图片目录，重新获取本地图片");
                       _getImageLocalPaths();
                       setState(() {});
                       dirChangedWrapper = true; // 用于图片浏览器的上级页面更新状态

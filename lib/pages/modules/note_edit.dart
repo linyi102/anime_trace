@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../dao/note_dao.dart';
 import '../../responsive.dart';
@@ -31,6 +32,7 @@ class _NoteEditState extends State<NoteEdit> {
   bool _loadOk = false;
   bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();
+
   // Map<int, int> initialOrderIdx = {}; // key-value对应imageId-orderIdx
   bool changeOrderIdx = false;
 
@@ -39,12 +41,12 @@ class _NoteEditState extends State<NoteEdit> {
   @override
   void initState() {
     super.initState();
-    debugPrint("进入笔记${widget.note.id}");
+    Log.info("进入笔记${widget.note.id}");
     _loadData();
   }
 
   _loadData() async {
-    debugPrint("note.id=${widget.note.id}");
+    Log.info("note.id=${widget.note.id}");
     // 已经能保证是最新的了，所以不需要重新获取
     // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
     //   if (value.id == 0) {
@@ -256,7 +258,7 @@ class _NoteEditState extends State<NoteEdit> {
 
     //   itemCount: widget.note.relativeLocalImages.length,
     //   itemBuilder: (BuildContext context, int index) {
-    //     debugPrint("$runtimeType: index=$index");
+    //     Log.info("$runtimeType: index=$index");
     //     return Container(
     //       key: UniqueKey(),
     //       // key: Key("${widget.note.relativeLocalImages.elementAt(index).imageId}"),
@@ -267,11 +269,16 @@ class _NoteEditState extends State<NoteEdit> {
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
       crossAxisCount: crossAxisCount,
-      crossAxisSpacing: 4, // 横轴距离
-      mainAxisSpacing: 4, // 竖轴距离
-      childAspectRatio: 1, // 网格比例
-      shrinkWrap: true, // 解决报错问题
-      physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
+      crossAxisSpacing: 4,
+      // 横轴距离
+      mainAxisSpacing: 4,
+      // 竖轴距离
+      childAspectRatio: 1,
+      // 网格比例
+      shrinkWrap: true,
+      // 解决报错问题
+      physics: const NeverScrollableScrollPhysics(),
+      //解决不滚动问题
       children: List.generate(
         widget.note.relativeLocalImages.length,
         (index) => Container(
@@ -282,9 +289,9 @@ class _NoteEditState extends State<NoteEdit> {
       ),
       onReorder: (oldIndex, newIndex) {
         // 下标没变直接返回
-        debugPrint("oldIndex=$oldIndex, newIndex=$newIndex");
+        Log.info("oldIndex=$oldIndex, newIndex=$newIndex");
         if (oldIndex == newIndex) {
-          debugPrint("拖拽了，但未改变顺序，直接返回");
+          Log.info("拖拽了，但未改变顺序，直接返回");
           return;
         }
 
@@ -293,7 +300,7 @@ class _NoteEditState extends State<NoteEdit> {
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
         changeOrderIdx = true;
-        debugPrint("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
+        Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 表示长按多久可以拖拽
       // dragStartDelay: const Duration(milliseconds: 500),

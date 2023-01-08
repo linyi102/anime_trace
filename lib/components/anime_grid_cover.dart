@@ -3,6 +3,7 @@ import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../controllers/anime_display_controller.dart';
 
@@ -161,7 +162,7 @@ class AnimeGridCover extends StatelessWidget {
 
   String _getEllipsisMiddleAnimeName(String name, BoxConstraints constraints) {
     // return name;
-    // debugPrint(constraints.toString());
+    // Log.info(constraints.toString());
     if ((name.length > 3 && name[name.length - 3] == "第") ||
         name.endsWith("OVA")) {
       String testName = name;
@@ -186,7 +187,7 @@ class AnimeGridCover extends StatelessWidget {
         textDirection: TextDirection.ltr);
     textPainter.layout(maxWidth: constraints.maxWidth);
     if (textPainter.didExceedMaxLines) {
-      debugPrint("溢出：$name");
+      Log.info("溢出：$name");
       return false;
     }
     return true;

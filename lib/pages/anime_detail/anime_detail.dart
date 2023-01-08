@@ -96,10 +96,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         TabController(length: _tabNames.length, vsync: this, initialIndex: 0);
     // 添加监听器，更换tab时显示不同的页面
     _tabController.addListener(() {
-      debugPrint("_tabController.index=${_tabController.index}");
+      Log.info("_tabController.index=${_tabController.index}");
       // 只有当tab变化时，才进行状态更新
       if (selectedTabIdx != _tabController.index) {
-        debugPrint("切换页面");
+        Log.info("切换页面");
         setState(() {
           selectedTabIdx = _tabController.index;
         });
@@ -170,7 +170,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         _anime,
         currentStartEpisodeNumber,
         currentStartEpisodeNumber + episodeRangeSize - 1);
-    debugPrint("削减后，集长度为${_episodes.length}");
+    Log.info("削减后，集长度为${_episodes.length}");
     _sortEpisodes(SPUtil.getString("episodeSortMethod",
         defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
 
@@ -185,7 +185,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         episodeNote = await NoteDao
             .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
                 episodeNote);
-        // debugPrint(
+        // Log.info(
         //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
       }
       _notes.add(episodeNote);
@@ -214,12 +214,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        debugPrint("按返回键，返回anime");
+        Log.info("按返回键，返回anime");
         _refreshAnime();
         // 返回的_anime用到了id(列表页面和搜索页面)和name(爬取页面)
         // 完成集数因为切换到小的回顾号会导致不是最大回顾号完成的集数，所以那些页面会通过传回的id来获取最新动漫信息
         Navigator.pop(context, _anime);
-        debugPrint("返回true");
+        Log.info("返回true");
         return true;
       },
       child: Scaffold(
@@ -473,7 +473,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           ),
           leading: IconButton(
               onPressed: () {
-                debugPrint("按返回按钮，返回anime");
+                Log.info("按返回按钮，返回anime");
                 _refreshAnime();
                 Navigator.pop(context, _anime);
               },
@@ -850,7 +850,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 // 不能使用，因为里面的删除动漫后找不到方法直接返回主页
                 // dialogSelectTag(setState, context, anime);
                 // _dialogSelectTag();
-                debugPrint(_anime.animeCoverUrl);
+                Log.info(_anime.animeCoverUrl);
               },
               icon: _anime.isCollected()
                   ? const Icon(
@@ -876,7 +876,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     for (int episodeIndex = 0;
         episodeIndex < _episodes.length;
         ++episodeIndex) {
-      // debugPrint("$episodeIndex");
+      // Log.info("$episodeIndex");
       // 添加每集
       columnChildren.add(
         ListTile(
@@ -986,7 +986,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _anime.tagName = selectedFinishedTag;
                     SqliteUtil.updateTagByAnimeId(
                         _anime.animeId, _anime.tagName);
-                    debugPrint("修改清单为${_anime.tagName}");
+                    Log.info("修改清单为${_anime.tagName}");
                     setState(() {});
                     return;
                   }
@@ -1037,7 +1037,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                         selectedFinishedTag);
                                     SqliteUtil.updateTagByAnimeId(
                                         _anime.animeId, _anime.tagName);
-                                    debugPrint("修改清单为${_anime.tagName}");
+                                    Log.info("修改清单为${_anime.tagName}");
                                     setState(() {});
                                     Navigator.pop(dialogContext);
                                   },
@@ -1049,7 +1049,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                       selectedFinishedTag);
                                   SqliteUtil.updateTagByAnimeId(
                                       _anime.animeId, _anime.tagName);
-                                  debugPrint("修改清单为${_anime.tagName}");
+                                  Log.info("修改清单为${_anime.tagName}");
                                   setState(() {});
                                   Navigator.pop(dialogContext);
                                 },
@@ -1436,7 +1436,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               onTap: () {
                 _anime.tagName = tags[i];
                 SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-                debugPrint("修改清单为${_anime.tagName}");
+                Log.info("修改清单为${_anime.tagName}");
                 setState(() {});
                 Navigator.pop(context);
               },
@@ -1481,7 +1481,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       Icons.radio_button_off_outlined,
                     ),
               onTap: () {
-                debugPrint("修改排序方式为${sortMethods[i]}");
+                Log.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
                 setState(() {});
                 Navigator.pop(context);
@@ -1689,12 +1689,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                             maxValue: 2000)
                         .then((value) {
                       if (value == null) {
-                        debugPrint("未选择，直接返回");
+                        Log.info("未选择，直接返回");
                         return;
                       }
                       // if (value == _episodes.length) {
                       if (value == _anime.animeEpisodeCnt) {
-                        debugPrint("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
+                        Log.info("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
                         return;
                       }
                       int episodeCnt = value;
@@ -1809,13 +1809,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
     Anime oldAnime = _anime.copyWith();
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
-    debugPrint("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
+    Log.info("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
     Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);
     // 如果更新后动漫集数比原来的集数小，则不更新集数
     // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
     // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
     // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
-    debugPrint("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
+    Log.info("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
     if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
     }

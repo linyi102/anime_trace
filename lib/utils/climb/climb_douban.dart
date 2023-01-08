@@ -95,7 +95,7 @@ class ClimbDouban implements Climb {
         .getElementsByClassName("result-list")[0]
         .getElementsByClassName("result");
     for (var element in elements) {
-      // debugPrint("element=${element.innerHtml}");
+      // Log.info("element=${element.innerHtml}");
       String coverUrl =
           element.getElementsByTagName("img")[0].attributes["src"] ?? "";
       String name = element

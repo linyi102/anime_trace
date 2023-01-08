@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-
-import '../models/anime.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class UpdateRecordDao {
   static var database = SqliteUtil.database;
 
   static insert(AnimeUpdateRecord updateRecord) {
-    debugPrint("sql:insertUpdateRecord(updateRecord=$updateRecord)");
+    Log.info("sql:insertUpdateRecord(updateRecord=$updateRecord)");
     database.insert("update_record", {
       "anime_id": updateRecord.animeId,
       "old_episode_cnt": updateRecord.oldEpisodeCnt,
@@ -23,7 +21,7 @@ class UpdateRecordDao {
       List<AnimeUpdateRecord> updateRecords) async {
     var batchInsert = SqliteUtil.database.batch();
     for (var updateRecord in updateRecords) {
-      debugPrint("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
+      Log.info("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
       batchInsert.insert("update_record", {
         "anime_id": updateRecord.animeId,
         "old_episode_cnt": updateRecord.oldEpisodeCnt,
@@ -36,7 +34,7 @@ class UpdateRecordDao {
 
   // 先获取最近更新的pageSize个日期，然后循环查询当前日期下的所有记录
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
-    debugPrint("UpdateRecordDao: findAll(pageParams=$pageParams)");
+    Log.info("UpdateRecordDao: findAll(pageParams=$pageParams)");
     List<UpdateRecordVo> updateRecordVos = [];
     List<Map<String, Object?>> list = await SqliteUtil.database.rawQuery('''
     select substr(manual_update_time, 1, 10) day from update_record
@@ -52,11 +50,11 @@ class UpdateRecordDao {
     //     groupBy: "manual_update_time",
     //     orderBy: "manual_update_time desc");
     List<String> dates = [];
-    debugPrint("最近${pageParams.pageSize}(${list.length})个日期：");
+    Log.info("最近${pageParams.pageSize}(${list.length})个日期：");
     for (var map in list) {
       String date = map["day"] as String;
       dates.add(date);
-      debugPrint("📅 $date");
+      Log.info("📅 $date");
       List<Map<String, Object?>> updateRecordsMap =
           await SqliteUtil.database.rawQuery('''
           select * from update_record
@@ -72,7 +70,7 @@ class UpdateRecordDao {
             oldEpisodeCnt: updateRecordMap["old_episode_cnt"] as int,
             newEpisodeCnt: updateRecordMap["new_episode_cnt"] as int,
             manualUpdateTime: date);
-        debugPrint(updateRecordVo.toString());
+        Log.info(updateRecordVo.toString());
         updateRecordVos.add(updateRecordVo);
       }
     }

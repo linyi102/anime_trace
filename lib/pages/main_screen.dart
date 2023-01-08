@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import 'home_tabs/anime_list_page.dart';
 import 'home_tabs/history_page.dart';
@@ -77,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     Future.delayed(const Duration(seconds: 2)).then((value) {
       _clickBackCnt = 0;
-      debugPrint("点击返回次数重置为0");
+      Log.info("点击返回次数重置为0");
     });
     showToast("再次点击退出应用");
     return false;
@@ -134,7 +135,6 @@ class _MainScreenState extends State<MainScreen> {
               ? Text(mainTab.name)
               : Icon(mainTab.iconData, size: 20),
           leading: expandSideBar ? Icon(mainTab.iconData, size: 20) : null,
-
         ),
       ));
     }

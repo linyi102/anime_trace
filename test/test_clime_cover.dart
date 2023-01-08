@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 main(List<String> args) async {
   String keyword = "此花亭奇谭"; // 少了个空格，没搜索到...
@@ -14,13 +14,13 @@ main(List<String> args) async {
     // print(document.outerHtml);
 
   } catch (e) {
-    debugPrint("$e");
+    Log.info("$e");
   }
 }
 
 void yhdm(document) {
   var elements = document.getElementsByClassName("lpic");
-  debugPrint(elements[0]
+  Log.info(elements[0]
       .children[0]
       .children[0]
       .children[0]

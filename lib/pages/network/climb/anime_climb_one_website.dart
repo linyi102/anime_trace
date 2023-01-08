@@ -10,6 +10,7 @@ import 'package:flutter_test_future/pages/modules/website_icon.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../../components/common/common_function.dart';
 import '../../../components/empty_data_hint.dart';
@@ -57,7 +58,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   }
 
   _climbAnime({String keyword = ""}) {
-    debugPrint("开始爬取动漫封面");
+    Log.info("开始爬取动漫封面");
     searchOk = false;
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
@@ -67,7 +68,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           keyword, widget.climbWebStie);
     }).then((value) async {
       websiteClimbAnimes = value;
-      debugPrint("爬取结束");
+      Log.info("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
 
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
@@ -92,10 +93,10 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
 
     // 若数据库已存在该动漫，则覆盖掉
     for (var i = 0; i < websiteClimbAnimes.length; i++) {
-      debugPrint("搜索数据库前id=${websiteClimbAnimes[i].animeId}");
+      Log.info("搜索数据库前id=${websiteClimbAnimes[i].animeId}");
       mixedAnimes[i] =
           await SqliteUtil.getAnimeByAnimeUrl(websiteClimbAnimes[i]);
-      debugPrint("搜索数据库后id=${mixedAnimes[i].animeId}");
+      Log.info("搜索数据库后id=${mixedAnimes[i].animeId}");
     }
   }
 
@@ -176,7 +177,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
               if (ismigrate) {
                 showDialogOfConfirmMigrate(context, widget.animeId, anime);
               } else if (anime.isCollected()) {
-                debugPrint("进入动漫详细页面${anime.animeId}");
+                Log.info("进入动漫详细页面${anime.animeId}");
                 // 不为0，说明已添加，点击进入动漫详细页面
                 Navigator.of(context).push(
                   // MaterialPageRoute(
@@ -195,7 +196,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   });
                 });
               } else {
-                debugPrint("添加动漫");
+                Log.info("添加动漫");
                 dialogSelectTag(setState, context, anime);
               }
             });

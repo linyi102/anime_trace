@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import 'sp_util.dart';
 
@@ -12,7 +13,7 @@ class SpProfile {
   }
 
   static Future<bool> setWindowSize(Size size) async {
-    debugPrint("修改窗口大小：$size");
+    Log.info("修改窗口大小：$size");
     await SPUtil.setDouble("WindowWidth", size.width);
     await SPUtil.setDouble("WindowHeight", size.height);
     return true;

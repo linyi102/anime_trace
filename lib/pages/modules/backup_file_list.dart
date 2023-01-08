@@ -5,6 +5,7 @@ import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:webdav_client/webdav_client.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class BackUpFileList extends StatefulWidget {
   const BackUpFileList({Key? key}) : super(key: key);
@@ -25,14 +26,14 @@ class _BackUpFileListState extends State<BackUpFileList> {
   }
 
   void _initData() async {
-    debugPrint("获取备份文件ing...");
+    Log.info("获取备份文件ing...");
     files.addAll(await WebDavUtil.client.readDir("/animetrace"));
     files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
     // 去除目录
     for (var i = 0; i < files.length; i++) {
       if (files[i].isDir ?? false) files.removeAt(i);
     }
-    debugPrint("获取完毕，共${files.length}个文件");
+    Log.info("获取完毕，共${files.length}个文件");
     files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
     _loadOk = true;
     setState(() {});
@@ -70,7 +71,7 @@ class _BackUpFileListState extends State<BackUpFileList> {
   }
 
   ListTile _buildFileItem(BuildContext context, int index) {
-    debugPrint("index=$index");
+    Log.info("index=$index");
     String fileName = "";
     File file = files[index];
     // 获取文件名

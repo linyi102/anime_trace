@@ -12,6 +12,7 @@ import 'package:flutter_test_future/pages/settings/tag_manage.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../settings/general_setting.dart';
 import '../settings/test.dart';
@@ -271,7 +272,7 @@ class _SettingPageState extends State<SettingPage> {
   _buildColorAtlasList(dialogContext) {
     List<Widget> dayList = [], nightList = [];
     for (var themeColor in ThemeUtil.themeColors) {
-      debugPrint("themeColor=$themeColor");
+      Log.info("themeColor=$themeColor");
       if (themeColor.isDarkMode) {
         nightList.add(_buildColorAtlasItem(themeColor, dialogContext));
       } else {

@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:webdav_client/webdav_client.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class WebDavUtil {
   static WebDavUtil? _webDavUtil;
+
   WebDavUtil._();
+
   static WebDavUtil getInstance() {
     return _webDavUtil ??= WebDavUtil._();
   }
@@ -22,7 +24,7 @@ class WebDavUtil {
       debug: false,
     );
     if (!(await pingWebDav())) {
-      debugPrint("WebDav初始化失败！");
+      Log.info("WebDav初始化失败！");
       return false;
     }
     // Set the public request headers
@@ -36,7 +38,7 @@ class WebDavUtil {
 
     // Set transfer data time in milliseconds.
     client.setReceiveTimeout(8000);
-    debugPrint("WebDav初始化成功！");
+    Log.info("WebDav初始化成功！");
     return true;
   }
 
@@ -53,7 +55,7 @@ class WebDavUtil {
     }
     SPUtil.setBool("online", true);
     SPUtil.setBool("login", true); // 表示用户想要登录，第一次登录后永远为true
-    debugPrint("ping ok");
+    Log.info("ping ok");
     return true;
   }
 

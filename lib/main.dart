@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -144,7 +145,7 @@ class MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowMaximize() async {
-    debugPrint("全屏");
+    Log.info("全屏");
   }
 
   _autoBackup() async {
@@ -159,7 +160,7 @@ class MyAppState extends State<MyApp> with WindowListener {
     // 如果都设置了自动备份，则只需要压缩一次
     if (SPUtil.getBool("auto_backup_local") &&
         SPUtil.getBool("auto_backup_webdav")) {
-      debugPrint("准备本地和WebDav自动备份");
+      Log.info("准备本地和WebDav自动备份");
       BackupUtil.backup(
         localBackupDirPath:
             SPUtil.getString("backup_local_dir", defaultValue: "unset"),
@@ -168,7 +169,7 @@ class MyAppState extends State<MyApp> with WindowListener {
         automatic: true,
       );
     } else if (SPUtil.getBool("auto_backup_local")) {
-      debugPrint("准备本地自动备份");
+      Log.info("准备本地自动备份");
       BackupUtil.backup(
         localBackupDirPath:
             SPUtil.getString("backup_local_dir", defaultValue: "unset"),
@@ -176,7 +177,7 @@ class MyAppState extends State<MyApp> with WindowListener {
         automatic: true,
       );
     } else if (SPUtil.getBool("auto_backup_webdav")) {
-      debugPrint("准备WebDav自动备份");
+      Log.info("准备WebDav自动备份");
       BackupUtil.backup(
         remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
         showToastFlag: false,
@@ -185,7 +186,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       // String lastTimeBackup = SPUtil.getString("last_time_backup");
       // // 不为空串表示之前备份过
       // if (lastTimeBackup != "") {
-      //   debugPrint("上次备份的时间：$lastTimeBackup");
+      //   Log.info("上次备份的时间：$lastTimeBackup");
       //   DateTime dateTime = DateTime.parse(lastTimeBackup);
       //   DateTime now = DateTime.now();
       //   // 距离上次备份超过1天，则进行备份

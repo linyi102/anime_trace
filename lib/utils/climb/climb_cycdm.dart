@@ -19,7 +19,7 @@ class ClimbCycdm implements Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    debugPrint("爬取动漫详细网址：${anime.animeUrl}");
+    Log.info("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
       if (showMessage) showToast(result.msg);
@@ -28,7 +28,7 @@ class ClimbCycdm implements Climb {
     Response response = result.data;
 
     var document = parse(response.data);
-    debugPrint("获取文档成功√，正在解析...");
+    Log.info("获取文档成功√，正在解析...");
 
     // 剧场版只有1集，但不会写上，所以没有badge
     var badge = document.getElementsByClassName("badge");
@@ -63,8 +63,8 @@ class ClimbCycdm implements Climb {
         exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
     anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
 
-    debugPrint("解析完毕√");
-    debugPrint(anime.toString());
+    Log.info("解析完毕√");
+    Log.info(anime.toString());
     if (showMessage) showToast("更新信息成功");
 
     return anime;
@@ -75,7 +75,7 @@ class ClimbCycdm implements Climb {
     String url = baseUrl + "/search.html?wd=$keyword";
     List<Anime> climbAnimes = [];
 
-    debugPrint("正在获取文档...");
+    Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
       showToast(result.msg);
@@ -83,7 +83,7 @@ class ClimbCycdm implements Climb {
     }
     Response response = result.data;
     var document = parse(response.data);
-    debugPrint("获取文档成功√，正在解析...");
+    Log.info("获取文档成功√，正在解析...");
 
     var coverElements = document.getElementsByClassName("lazy");
 
@@ -93,7 +93,7 @@ class ClimbCycdm implements Climb {
         if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
         climbAnimes.add(
             Anime(animeName: "", animeEpisodeCnt: 0, animeCoverUrl: coverUrl));
-        debugPrint("爬取封面：$coverUrl");
+        Log.info("爬取封面：$coverUrl");
       }
     }
 
@@ -108,10 +108,10 @@ class ClimbCycdm implements Climb {
       // 获取网址
       String? animeUrl = urlElements[i].attributes["href"];
       climbAnimes[i].animeUrl = animeUrl == null ? "" : baseUrl + animeUrl;
-      debugPrint("爬取动漫网址：${climbAnimes[i].animeUrl}");
+      Log.info("爬取动漫网址：${climbAnimes[i].animeUrl}");
     }
 
-    debugPrint("解析完毕√");
+    Log.info("解析完毕√");
     return climbAnimes;
   }
 

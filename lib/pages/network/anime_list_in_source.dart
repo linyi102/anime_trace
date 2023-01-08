@@ -32,7 +32,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
     // 获取动漫总数
     AnimeDao.getAnimesCntBySourceKeyword(widget.sourceKeyword).then((value) {
       cnt = value;
-      debugPrint("该搜索源下的动漫总数：$cnt");
+      Log.info("该搜索源下的动漫总数：$cnt");
       setState(() {});
     });
     // 获取动漫列表
@@ -51,12 +51,12 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
 
   _loadMoreData() {
     pageParams.pageIndex++;
-    debugPrint("加载更多数据中，当前数量：${animes.length})");
+    Log.info("加载更多数据中，当前数量：${animes.length})");
     AnimeDao.getAnimesBySourceKeyword(
             sourceKeyword: widget.sourceKeyword, pageParams: pageParams)
         .then((value) {
       animes.addAll(value);
-      debugPrint("加载更多数据完毕，当前数量：${animes.length})");
+      Log.info("加载更多数据完毕，当前数量：${animes.length})");
       setState(() {});
     });
   }
@@ -95,7 +95,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
                   String newUrl = retAnime.animeUrl;
                   Log.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
                   if (anime.animeUrl != newUrl) {
-                    debugPrint("已迁移，从列表中删除");
+                    Log.info("已迁移，从列表中删除");
                     animes.removeAt(index);
                     cnt = animes.length;
                   } else {

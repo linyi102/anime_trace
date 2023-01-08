@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 class SPUtil {
   // 单例模式
@@ -72,12 +72,12 @@ class SPUtil {
   }
 
   static Future<bool> clear() async {
-    debugPrint("清空sharedPreferences");
+    Log.info("清空sharedPreferences");
     return await _sharedPreferences.clear();
   }
 
   static Future<bool> remove(String key) async {
-    debugPrint("删除key：$key");
+    Log.info("删除key：$key");
     return await _sharedPreferences.remove(key);
   }
 }

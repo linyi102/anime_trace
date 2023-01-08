@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -13,6 +11,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import '../../utils/theme_util.dart';
 
@@ -70,7 +69,7 @@ class UpdateRecordPage extends StatelessWidget {
           itemBuilder: (context, index) {
             String date = dateList[index];
             PageParams pageParams = updateRecordController.pageParams;
-            debugPrint("$index, ${pageParams.getQueriedSize()}");
+            Log.info("$index, ${pageParams.getQueriedSize()}");
             if (index + 2 == pageParams.getQueriedSize()) {
               updateRecordController.loadMore();
             }
@@ -259,8 +258,7 @@ class UpdateRecordPage extends StatelessWidget {
     if (needUpdateCnt == 0) {
       return 0;
     } else if (updateOkCnt > needUpdateCnt) {
-      debugPrint(
-          "error: updateOkCnt=$updateOkCnt, needUpdateCnt=$needUpdateCnt");
+      Log.info("error: updateOkCnt=$updateOkCnt, needUpdateCnt=$needUpdateCnt");
       return 1;
     } else {
       return updateOkCnt / needUpdateCnt;

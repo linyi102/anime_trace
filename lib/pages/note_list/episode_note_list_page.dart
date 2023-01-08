@@ -44,15 +44,15 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     loadEpisodeNoteOk = false;
     episodeNotePageParams.resetPageIndex();
     Future(() {
-      debugPrint("note_list_page: 开始加载数据");
+      Log.info("note_list_page: 开始加载数据");
       // return SqliteUtil.getAllNotesByTableHistory();
       return NoteDao.getAllNotesByTableNoteAndKeyword(
           0, episodeNotePageParams.pageSize, widget.noteFilter);
     }).then((value) {
       episodeNotes = value;
       loadEpisodeNoteOk = true;
-      debugPrint("note_list_page: 数据加载完成");
-      debugPrint("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
+      Log.info("note_list_page: 数据加载完成");
+      Log.info("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
       setState(() {});
     });
   }
@@ -61,14 +61,14 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     if (index + 5 ==
         episodeNotePageParams.pageSize * episodeNotePageParams.pageIndex) {
       episodeNotePageParams.pageIndex++;
-      debugPrint("再次请求${episodeNotePageParams.pageSize}个数据");
+      Log.info("再次请求${episodeNotePageParams.pageSize}个数据");
       Future(() {
         return NoteDao.getAllNotesByTableNoteAndKeyword(episodeNotes.length,
             episodeNotePageParams.pageSize, widget.noteFilter); // 偏移量为当前页面显示的数量
       }).then((value) {
-        debugPrint("请求结束");
+        Log.info("请求结束");
         episodeNotes.addAll(value);
-        debugPrint("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
+        Log.info("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
         setState(() {});
       });
     }
@@ -84,7 +84,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   @override
   void didUpdateWidget(covariant EpisodeNoteListPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    debugPrint(widget.noteFilter.toString());
+    Log.info(widget.noteFilter.toString());
     _loadEpisodeNoteData();
   }
 
@@ -109,7 +109,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               controller: _noteScrollController,
               itemCount: episodeNotes.length,
               itemBuilder: (BuildContext context, int index) {
-                // debugPrint("$runtimeType: index=$index");
+                // Log.info("$runtimeType: index=$index");
                 _loadMoreEpisodeNoteData(index);
 
                 return Container(
@@ -132,7 +132,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                         ).then((value) {
                           // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
                           Note newEpisodeNote = value;
-                          debugPrint(
+                          Log.info(
                               "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
                           if (newEpisodeNote.id == 0) {
                             episodeNotes.removeWhere((element) =>

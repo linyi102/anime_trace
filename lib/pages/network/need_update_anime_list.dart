@@ -68,7 +68,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
                   String newPlayStatus = retAnime.playStatus;
                   Log.info("旧状态：${anime.playStatus}，新状态：$newPlayStatus");
                   if (newPlayStatus.contains("完结")) {
-                    debugPrint("已完结，从列表中删除");
+                    Log.info("已完结，从列表中删除");
                     animes.removeAt(index);
                     cnt = animes.length;
                     setState(() {});
