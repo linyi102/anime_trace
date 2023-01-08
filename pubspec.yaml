@@ -87,11 +87,8 @@ dependencies:
   archive: ^3.1.8
   # flutter_screenutil: ^5.0.2
   # flutter_autosize_screen: ^1.0.1 # get不了
-  # desktop_window: ^0.4.0 # 添加导致run不了：无法运行“rc.exe”
   path: ^1.8.0
-  # package_info: ^2.0.2 # 查询版本号，报错MissingPluginException
   package_info_plus: ^1.4.2
-  # url_launcher: ^6.0.17 # 使用默认浏览器打开链接。LINK : fatal error LNK1158: 无法运行“rc.exe”
   url_launcher: ^6.1.0
   transparent_image: ^2.0.0
 

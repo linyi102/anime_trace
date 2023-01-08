@@ -115,19 +115,27 @@ class _MainScreenState extends State<MainScreen> {
     ));
     for (int i = 0; i < _mainTabs.length; ++i) {
       var mainTab = _mainTabs[i];
-      widgets.add(ListTile(
-        // 图标和标题距离
-        // horizontalTitleGap: 0,
-        selected: _selectedTabIdx == i,
-        enableFeedback: false,
-        title: expandSideBar
-            ? Text(mainTab.name)
-            : Icon(mainTab.iconData, size: 20),
-        leading: expandSideBar ? Icon(mainTab.iconData, size: 20) : null,
+      widgets.add(InkWell(
+        // 长按时的扩散效果设置为透明(取消扩散)
+        splashColor: Colors.transparent,
+        // 点击时的高亮效果设置为透明
+        highlightColor: Colors.transparent,
+        // 为InkWell指定onTap，而不是子组件ListTile
         onTap: () {
           _selectedTabIdx = i;
           setState(() {});
         },
+        child: ListTile(
+          // 图标和标题距离
+          // horizontalTitleGap: 0,
+          selected: _selectedTabIdx == i,
+          enableFeedback: false,
+          title: expandSideBar
+              ? Text(mainTab.name)
+              : Icon(mainTab.iconData, size: 20),
+          leading: expandSideBar ? Icon(mainTab.iconData, size: 20) : null,
+
+        ),
       ));
     }
 
