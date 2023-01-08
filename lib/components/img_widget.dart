@@ -2,31 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:get/get.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../utils/image_util.dart';
-
-// class GeneralImage extends StatelessWidget {
-//   final String url;
-//   final bool showErrorDialog;
-//   final bool isNoteImg;
-//
-//   const GeneralImage(
-//       {required this.url,
-//       required this.showErrorDialog,
-//       required this.isNoteImg,
-//       Key? key})
-//       : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return buildImgWidget(
-//         url: url, showErrorDialog: showErrorDialog, isNoteImg: isNoteImg);
-//   }
-// }
 
 /// 本地笔记图片和封面的相对地址、网络封面
 Widget buildImgWidget(
@@ -80,7 +61,7 @@ Widget buildImgWidget(
 
 /// 访问网络图片，遇到404避免报异常
 /// 虽然动漫收藏页不报错了，但一进入详细页就会报错，很奇怪
-getNetWorkImage(String url,
+Widget getNetWorkImage(String url,
     {
     // Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
     Widget Function(BuildContext, String, dynamic)? errorWidget,
@@ -89,11 +70,15 @@ getNetWorkImage(String url,
   return CachedNetworkImage(
     imageUrl: url,
     errorWidget: errorWidget,
+    // 未加载完图片时显示进度圈
+    // placeholder: (_, __) => const Center(child: SizedBox(
+    //     height: 20,
+    //     width: 20,
+    //     child: CircularProgressIndicator())),
     fit: BoxFit.cover,
     color: color,
     colorBlendMode: colorBlendMode,
   );
-
   // FadeInImage image = FadeInImage(
   //   image: CachedNetworkImageProvider(url),
   //   placeholder: MemoryImage(kTransparentImage),

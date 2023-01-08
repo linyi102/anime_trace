@@ -41,8 +41,8 @@ class AnimeCoverDetail extends StatelessWidget {
       ),
       body: Center(
         // obx监听封面修改
-        child: Obx(
-            () => _buildAnimeCover(animeController.anime.value.animeCoverUrl)),
+        child: Obx(() => _buildAnimeCover(
+            animeController.anime.value.animeCoverUrl, context)),
       ),
     );
   }
@@ -120,7 +120,7 @@ class AnimeCoverDetail extends StatelessWidget {
         icon: const Icon(Icons.error_outline));
   }
 
-  _buildAnimeCover(String coverUrl) {
+  _buildAnimeCover(String coverUrl, BuildContext context) {
     if (coverUrl.isEmpty) {
       return emptyDataHint("没有封面~");
     }

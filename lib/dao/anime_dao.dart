@@ -5,11 +5,47 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../models/anime.dart';
 
 class AnimeDao {
-  static var db = SqliteUtil.database;
+  static final db = SqliteUtil.database;
+
+  static Future<List<Anime>> getAllAnimes() async {
+    Log.info("sql: getAllAnimes");
+
+    var list = await db.rawQuery('''
+    select * from anime;
+    ''');
+
+    List<Anime> res = [];
+    for (var element in list) {
+      res.add(Anime(
+        // 其他信息是为了更新时作为oldAnime赋值给newAnime，以避免更新后有些属性为空串
+        animeId: element['anime_id'] as int,
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        // 更新前的集数
+        animeDesc: element['anime_desc'] as String? ?? "",
+        // 如果为null，则返回空串
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        tagName: element['tag_name'] as String,
+        reviewNumber: 1,
+        premiereTime: element['premiere_time'] as String? ?? "",
+        nameOri: element['name_ori'] as String? ?? "",
+        nameAnother: element['name_another'] as String? ?? "",
+        authorOri: element['author_ori'] as String? ?? "",
+        area: element['area'] as String? ?? "",
+        playStatus: element['play_status'] as String? ?? "",
+        // 获取所有动漫后过滤掉更新未完结的动漫信息
+        productionCompany: element['production_company'] as String? ?? "",
+        officialSite: element['official_site'] as String? ?? "",
+        category: element['category'] as String? ?? "",
+        animeUrl: element['anime_url'] as String? ?? "", // 爬取网页更新详细信息
+      ));
+    }
+    return res;
+  }
 
   /// 获取所有未完结动漫
   static Future<List<Anime>> getAllNeedUpdateAnimes() async {
-    List<Anime> animes = await SqliteUtil.getAllAnimes();
+    List<Anime> animes = await getAllAnimes();
     List<Anime> needUpdateAnimes = [];
 
     for (var anime in animes) {

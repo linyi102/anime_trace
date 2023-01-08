@@ -9,15 +9,16 @@ import 'package:flutter_test_future/utils/log.dart';
 class DioPackage {
   static final BaseOptions _baseOptions = BaseOptions(
       method: "get",
-      connectTimeout: 8000,
-      sendTimeout: 8000,
-      receiveTimeout: 8000);
+      connectTimeout: 5000,
+      sendTimeout: 5000,
+      receiveTimeout: 5000
+  );
 
   static Dio _getDio() {
     /**
-      I/flutter ( 1540): e.message=HandshakeException: Handshake error in client (OS Error:
-      I/flutter ( 1540):      CERTIFICATE_VERIFY_FAILED: certificate has expired(handshake.cc:359))
-       */
+        I/flutter ( 1540): e.message=HandshakeException: Handshake error in client (OS Error:
+        I/flutter ( 1540):      CERTIFICATE_VERIFY_FAILED: certificate has expired(handshake.cc:359))
+     */
     // 来源：https://www.cnblogs.com/MingGyGy-Castle/p/13761327.html
     // OmoFun搜索动漫时会报错，因此添加证书验证，不再直接使用Response response = await Dio(_baseOptions).request(path);
     Dio dio = Dio(_baseOptions);
@@ -45,7 +46,25 @@ class DioPackage {
 
   static const bool _enablePing = false;
 
-  // 查看网络状态
+  // 查询链接状态
+  static Future<bool> urlResponseOk(String url) async {
+    Dio dio = _getDio();
+    try {
+      int? statusCode = (await dio.head(url))
+          .statusCode; // 使用head而非request、get会更有效率，因为它不会下载内容
+      if (statusCode == 200) {
+        return true;
+      } else {
+        Log.info("$url返回码：$statusCode");
+        return false;
+      }
+    } catch (e) {
+      // 400会报异常，这里捕捉到后返回false
+      return false;
+    }
+  }
+
+  // 查看网站状态
   static Future<PingStatus> ping(String path) async {
     PingStatus pingStatus = PingStatus();
     pingStatus.needPing = false; // 先设置为false，这样在ping的过程中来回切换页面后，不会再次ping
@@ -54,9 +73,9 @@ class DioPackage {
       // 使用ping第三方包
       // 缺点：打包后win端始终超时
       /**加上https://会提示错误
-      flutter: PingError(response:null, error:UnknownHost)
-      flutter: PingSummary(transmitted:0, received:0), time: 0 ms, Errors: [Unknown: Ping process exited with code: 1]
-      */
+          flutter: PingError(response:null, error:UnknownHost)
+          flutter: PingSummary(transmitted:0, received:0), time: 0 ms, Errors: [Unknown: Ping process exited with code: 1]
+       */
       List<String> prefixs = ["https://", "http://"];
       for (String prefix in prefixs) {
         if (path.startsWith(prefix)) {
@@ -82,14 +101,11 @@ class DioPackage {
       bool connectable = false;
       try {
         var start = DateTime.now();
-        Dio dio = _getDio();
-        int? statusCode = (await dio.request(path)).statusCode;
+        bool responseOk = await urlResponseOk(path);
         var end = DateTime.now();
         pingStatus.time = end.difference(start).inMilliseconds;
-        if (statusCode == 200) {
+        if (responseOk) {
           connectable = true; // 只有不抛出异常且状态码为200时才说明可以连接
-        } else {
-          Log.info("状态码：$statusCode");
         }
       } catch (e) {
         String msg = ErrorFormatUtil.formatError(e);

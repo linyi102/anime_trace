@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:oktoast/oktoast.dart';
+
+import 'lapse_cover_animes_page.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);
@@ -52,6 +55,13 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
           // ListTile(
           //     title: Text("默认开关",
           //         style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
+          ListTile(
+            title: const Text("查看失效网络封面"),
+            onTap: () {
+              Navigator.of(context).push(
+                  FadeRoute(builder: (context) => const LapseCoverAnimesPage()));
+            },
+          ),
           ListTile(
             title: const Text("重置完成最后一集时提示移动清单的对话框"),
             onTap: () {

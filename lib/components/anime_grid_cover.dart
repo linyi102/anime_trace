@@ -13,9 +13,15 @@ class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
   final bool onlyShowCover; // 动漫详细页只显示封面
   final double coverWidth; // 传入固定宽度，用于水平列表
+  final bool showProgress;
+  final bool showReviewNumber;
 
   const AnimeGridCover(this._anime,
-      {Key? key, this.onlyShowCover = false, this.coverWidth = 0})
+      {Key? key,
+      this.onlyShowCover = false,
+      this.showProgress = true,
+      this.showReviewNumber = true,
+      this.coverWidth = 0})
       : super(key: key);
 
   @override
@@ -33,11 +39,13 @@ class AnimeGridCover extends StatelessWidget {
                         context,
                         _animeDisplayController.showGridAnimeName.value &&
                             _animeDisplayController.showNameInCover.value),
-                    _buildEpisodeState(_anime.isCollected() &&
-                        _animeDisplayController.showGridAnimeProgress.value),
-                    _buildReviewNumber(_anime.isCollected() &&
-                        _animeDisplayController.showReviewNumber.value &&
-                        _anime.reviewNumber > 1)
+                    if (showProgress)
+                      _buildEpisodeState(_anime.isCollected() &&
+                          _animeDisplayController.showGridAnimeProgress.value),
+                    if (showReviewNumber)
+                      _buildReviewNumber(_anime.isCollected() &&
+                          _animeDisplayController.showReviewNumber.value &&
+                          _anime.reviewNumber > 1)
                   ],
                 ),
                 // 名字
