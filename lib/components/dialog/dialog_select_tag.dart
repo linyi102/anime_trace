@@ -42,9 +42,8 @@ dialogSelectTag(setState, context, Anime anime) {
               // 如果起初没有收藏，则说明是新增，否则修改
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
-                if (anime.animeUrl.contains("yhdm") ||
-                    anime.animeUrl.contains("age")) {
-                  // 如果是樱花和age，则不需要首次更新详细页
+                if (anime.animeUrl.contains("age")) {
+                  // 如果是age，则不需要首次更新详细页
                 } else {
                   // 不允许点击，避免快速多次点击收藏
                   climbingDetail = true;
@@ -83,7 +82,7 @@ dialogSelectTag(setState, context, Anime anime) {
                         width: 20,
                         child: CircularProgressIndicator()),
                     SizedBox(height: 10),
-                    Text("正在获取详细信息...", textScaleFactor: 0.8)
+                    Text("获取详细信息中...", textScaleFactor: 0.8)
                   ],
                 ))
               : Column(children: items),

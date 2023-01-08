@@ -3,7 +3,6 @@ import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
-import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -28,18 +27,30 @@ class _SourceListPageState extends State<SourceListPage> {
   @override
   void initState() {
     super.initState();
-    // 如果之前没有ping，才自动ping
+
+    // 只要有一个needPing为false，则说明都ping过了或者正在ping，此时不需要再ping所有
+    bool needPingAll = true;
     for (var website in climbWebsites) {
-      if (website.pingStatus.notPing) {
-        _pingAllWebsites();
-        break; // ping所有，然后直接退出循环
+      if (website.pingStatus.needPing == false) {
+        needPingAll = false;
       }
+    }
+    if (needPingAll) {
+      _pingAllWebsites();
     }
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _refresh() {
+    for (var website in climbWebsites) {
+      website.pingStatus.needPing = true;
+    }
+
+    _pingAllWebsites();
   }
 
   void _pingAllWebsites() {
@@ -53,29 +64,23 @@ class _SourceListPageState extends State<SourceListPage> {
         .then((value) => canClickPingButton = true);
 
     for (var website in climbWebsites) {
-      if (website.discard) continue;
-      website.pingStatus.connectable = false;
-      website.pingStatus.pinging = true; // 表示正在ping
+      if (!website.discard && website.pingStatus.needPing) {
+        website.pingStatus.connectable = false; // 表示不能连接(ping时显示灰色)
+        website.pingStatus.pinging = true; // 表示正在ping
+      }
     }
     setState(() {});
-    // 不推荐await：第一个结束后，才会执行下一个
-    // for (ClimbWebstie website in climbWebsites) {
-    //   debugPrint("${website.name} ping...");
-    //   website.pingOk = await DioPackage.ping(website.baseUrl);
-    //   debugPrint("${website.name}:pingOk=${website.pingOk}");
-    // }
-    // 推荐then：同时执行
     for (var website in climbWebsites) {
-      // debugPrint("${website.name} ping...");
-      if (website.discard) continue;
-      DioPackage.ping(website.climb.baseUrl).then((value) {
-        website.pingStatus = value;
-        if (mounted) {
-          setState(() {});
-        }
+      if (!website.discard && website.pingStatus.needPing) {
+        DioPackage.ping(website.climb.baseUrl).then((value) {
+          website.pingStatus = value;
+          if (mounted) {
+            setState(() {});
+          }
 
-        debugPrint("${website.name}:pingStatus=${website.pingStatus}");
-      });
+          debugPrint("${website.name}:pingStatus=${website.pingStatus}");
+        });
+      }
     }
   }
 
@@ -88,7 +93,7 @@ class _SourceListPageState extends State<SourceListPage> {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          _pingAllWebsites();
+          _refresh();
         },
         child: ListView(
           children: [
@@ -224,8 +229,7 @@ class _SourceListPageState extends State<SourceListPage> {
     if (e.pingStatus.pinging) {
       return "测试中...";
     }
-    // ping...在前，未知在后。因为DioPackage的ping方法只有在ping结束后才会设置pingNone为false
-    if (e.pingStatus.notPing) {
+    if (e.pingStatus.needPing) {
       return "未知";
     }
     if (e.pingStatus.connectable) {
@@ -237,8 +241,8 @@ class _SourceListPageState extends State<SourceListPage> {
   _getPingStatusIcon(PingStatus pingStatus) {
     return Icon(Icons.circle,
         size: 12,
-        color: (pingStatus.notPing || pingStatus.pinging)
-            ? Colors.grey // 还没ping过，或者正在ping
+        color: (pingStatus.needPing || pingStatus.pinging)
+            ? Colors.grey // 需要ping，或者正在ping
             : (pingStatus.connectable
                 ? ThemeUtil.getConnectableColor()
                 : Colors.red));
@@ -291,7 +295,7 @@ class _SourceListPageState extends State<SourceListPage> {
                 borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
             clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
             child: MaterialButton(
-              onPressed: _pingAllWebsites,
+              onPressed: _refresh,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                 child: const Text(

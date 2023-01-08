@@ -48,6 +48,8 @@ class DioPackage {
   // 查看网络状态
   static Future<PingStatus> ping(String path) async {
     PingStatus pingStatus = PingStatus();
+    pingStatus.needPing = false; // 先设置为false，这样在ping的过程中来回切换页面后，不会再次ping
+
     if (_enablePing) {
       // 使用ping第三方包
       // 缺点：打包后win端始终超时
@@ -105,7 +107,6 @@ class DioPackage {
 
     // 更新状态并返回
     pingStatus.pinging = false; // ping结束
-    pingStatus.notPing = false; // 不再是一次还没ping过
     return pingStatus;
   }
 }

@@ -43,7 +43,7 @@ List<ClimbWebsite> climbWebsites = [
       spkey: "enableWebSiteOmofun",
       enable: false,
       discard: true,
-      pingStatus: PingStatus(notPing: false),
+      pingStatus: PingStatus(),
       climb: ClimbOmofun(),
       comment: "图片较大，流量慎用",
       desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
