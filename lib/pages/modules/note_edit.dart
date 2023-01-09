@@ -19,6 +19,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../dao/note_dao.dart';
 import '../../responsive.dart';
 import '../../utils/theme_util.dart';
+import 'anime_rating_bar.dart';
 
 class NoteEdit extends StatefulWidget {
   Note note; // 可能会修改笔记内容
@@ -175,9 +176,19 @@ class _NoteEditState extends State<NoteEdit> {
               textScaleFactor: ThemeUtil.smallScaleFactor,
             ),
             subtitle: widget.note.episode.number == 0
-                ? null
+                ? AnimeRatingBar(
+                    rate: widget.note.anime.rate,
+                    iconSize: 12,
+                    spacing: 2,
+                    enableRate: false,
+                    onRatingUpdate: (v) {
+                      Log.info("评价分数：$v");
+                      widget.note.anime.rate = v.toInt();
+                      SqliteUtil.updateAnimeRate(
+                          widget.note.anime.animeId, widget.note.anime.rate);
+                    })
                 : Text(
-                    "第 ${widget.note.episode.number} 集 ${widget.note.episode.getDate()}",
+                    "第${widget.note.episode.number}集 ${widget.note.episode.getDate()}",
                     textScaleFactor: ThemeUtil.tinyScaleFactor,
                   ),
           ),

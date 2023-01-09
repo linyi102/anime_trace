@@ -34,21 +34,20 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
-  toggle_switch: ^2.0.1
-  reorderable_grid_view: ^2.2.5
-  webview_flutter: ^3.0.4
-  typicons_flutter: ^0.5.0
-  photo_view: ^0.14.0
-  flutter_rating_bar: ^4.0.1
+  fluttericon: ^2.0.0
+  simple_icons: ^7.1.0 #github、gitee图标
+  toggle_switch: ^2.0.1 #年月日按钮
+  reorderable_grid_view: ^2.2.5 #可拖动排序的网格
+  webview_flutter: ^3.0.4 #App内网页
+  photo_view: ^0.14.0 #缩放、左右切换图片
+  flutter_rating_bar: ^4.0.1 #评分栏
   bottom_sheet: ^3.1.2 # 底部弹出菜单
-  window_manager: ^0.2.5 # windwos窗口管理
+  window_manager: ^0.2.5 # Windows窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条
   dart_ping: ^6.1.2
-  fluttericon: ^2.0.0
-  simple_icons: ^7.1.0
-  expand_widget: ^2.1.0
-  get: ^4.6.5
+  expand_widget: ^2.1.0 #可展开的widget
+  get: ^4.6.5 #状态管理
   # animations: ^2.0.3
   shared_preferences: ^2.0.9
   sqflite: ^2.0.1 # 不支持windows，可使用sqflite_common_ffi
@@ -149,9 +148,9 @@ flutter:
   #         weight: 700
   #
 
-#  fonts:
-#    - family: myfont
-#      fonts:
-#        - asset: assets/fonts/Alibaba-PuHuiTi-Regular.ttf
+  #  fonts:
+  #    - family: myfont
+  #      fonts:
+  #        - asset: assets/fonts/Alibaba-PuHuiTi-Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

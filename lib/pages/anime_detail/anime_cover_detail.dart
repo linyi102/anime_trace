@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
@@ -198,7 +197,7 @@ class AnimeCoverDetail extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Entypo.picture),
+                    leading: const Icon(Icons.image),
                     title: const Text("从本地图库中选择"),
                     onTap: () {
                       _selectCoverFromLocal(
@@ -222,7 +221,7 @@ class AnimeCoverDetail extends StatelessWidget {
                   // const SizedBox(height: 20),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Entypo.network),
+                    leading: const Icon(Icons.link),
                     title: const Text("提供封面链接"),
                     onTap: () {
                       _showDialogAboutEditCoverUrl(

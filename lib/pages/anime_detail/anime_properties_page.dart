@@ -23,62 +23,65 @@ class AnimePropertiesPage extends StatelessWidget {
       appBar: AppBar(
           title: const Text("动漫信息",
               style: TextStyle(fontWeight: FontWeight.w600))),
-      body: Obx(() => Padding(
-            padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPropRow(context,
-                    title: "名称",
-                    text: animeController.anime.value.animeName, onTap: () {
-                  String animeName = animeController.anime.value.animeName;
-                  _showDialogAboutEdit(context,
-                      title: "编辑名称", property: animeName, confirm: (newName) {
-                    if (newName.isEmpty) {
-                      showToast("动漫名不允许为空");
-                      return;
-                    }
-                    Log.info("更新名称：$newName");
-                    animeController.updateAnimeName(newName);
-                    SqliteUtil.updateAnimeNameByAnimeId(
-                        animeController.anime.value.animeId, newName);
-                  });
-                }),
-                _buildPropRow(context,
-                    title: "别名",
-                    text: animeController.anime.value.nameAnother, onTap: () {
-                  String nameAnother = animeController.anime.value.nameAnother;
-                  _showDialogAboutEdit(context,
-                      title: "编辑别名",
-                      property: nameAnother, confirm: (newNameAnother) {
-                    Log.info("更新别名：$newNameAnother");
-                    animeController.updateAnimeNameAnother(newNameAnother);
-                    SqliteUtil.updateAnimeNameAnotherByAnimeId(
-                        animeController.anime.value.animeId, newNameAnother);
-                  });
-                }),
-                _buildPropRow(context,
-                    title: "状态",
-                    text: animeController.anime.value.getPlayStatus().text,
-                    onTap: () {
-                  showDialogSelectPlayStatus(context, animeController);
-                }),
-                _buildPropRow(context,
-                    title: "描述",
-                    text: animeController.anime.value.animeDesc, onTap: () {
-                  String animeDesc = animeController.anime.value.animeDesc;
-                  _showDialogAboutEdit(context,
-                      title: "编辑简介", property: animeDesc, confirm: (newDesc) {
-                    Log.info("更新简介：$newDesc");
-                    animeController.updateAnimeDesc(newDesc);
-                    SqliteUtil.updateAnimeDescByAnimeId(
-                        animeController.anime.value.animeId, newDesc);
-                  });
-                }),
-                const ListTile()
-              ],
-            ),
-          )),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+          child: Obx(() => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPropRow(context,
+                      title: "名称",
+                      text: animeController.anime.value.animeName, onTap: () {
+                    String animeName = animeController.anime.value.animeName;
+                    _showDialogAboutEdit(context,
+                        title: "编辑名称", property: animeName, confirm: (newName) {
+                      if (newName.isEmpty) {
+                        showToast("动漫名不允许为空");
+                        return;
+                      }
+                      Log.info("更新名称：$newName");
+                      animeController.updateAnimeName(newName);
+                      SqliteUtil.updateAnimeNameByAnimeId(
+                          animeController.anime.value.animeId, newName);
+                    });
+                  }),
+                  _buildPropRow(context,
+                      title: "别名",
+                      text: animeController.anime.value.nameAnother, onTap: () {
+                    String nameAnother =
+                        animeController.anime.value.nameAnother;
+                    _showDialogAboutEdit(context,
+                        title: "编辑别名",
+                        property: nameAnother, confirm: (newNameAnother) {
+                      Log.info("更新别名：$newNameAnother");
+                      animeController.updateAnimeNameAnother(newNameAnother);
+                      SqliteUtil.updateAnimeNameAnotherByAnimeId(
+                          animeController.anime.value.animeId, newNameAnother);
+                    });
+                  }),
+                  _buildPropRow(context,
+                      title: "状态",
+                      text: animeController.anime.value.getPlayStatus().text,
+                      onTap: () {
+                    showDialogSelectPlayStatus(context, animeController);
+                  }),
+                  _buildPropRow(context,
+                      title: "描述",
+                      text: animeController.anime.value.animeDesc, onTap: () {
+                    String animeDesc = animeController.anime.value.animeDesc;
+                    _showDialogAboutEdit(context,
+                        title: "编辑简介", property: animeDesc, confirm: (newDesc) {
+                      Log.info("更新简介：$newDesc");
+                      animeController.updateAnimeDesc(newDesc);
+                      SqliteUtil.updateAnimeDescByAnimeId(
+                          animeController.anime.value.animeId, newDesc);
+                    });
+                  }),
+                  const ListTile()
+                ],
+              )),
+        ),
+      ),
     );
   }
 

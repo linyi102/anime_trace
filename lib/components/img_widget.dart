@@ -15,7 +15,6 @@ Widget buildImgWidget(
     Color? color}) {
   color = color ?? ThemeUtil.getCommonIconColor();
   if (url.isEmpty) {
-    // return const Center(child: Icon(Entypo.picture));
     return Center(
       child: Image.asset(
         "assets/icons/default_picture.png",

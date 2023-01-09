@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:fluttericon/typicons_icons.dart';
 
 import '../../components/anime_list_cover.dart';
 import '../../models/anime.dart';
@@ -18,6 +16,7 @@ import '../../models/params/page_params.dart';
 import '../../utils/sqlite_util.dart';
 import '../../utils/time_show_util.dart';
 import '../anime_detail/anime_detail.dart';
+import '../modules/anime_rating_bar.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
@@ -255,33 +254,28 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     return GestureDetector(
       onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
       child: ListTile(
-        leading: AnimeListCover(
-          note.anime,
-          showReviewNumber: true,
-          reviewNumber: note.episode.reviewNumber,
-        ),
-        title: Text(
-          note.anime.animeName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textScaleFactor: ThemeUtil.smallScaleFactor,
-          // textAlign: TextAlign.right,
-        ),
-        subtitle: RatingBar.builder(
-            // 拖拽星级时会发出绿色光，所以屏蔽掉
-            glow: false,
-            initialRating: note.anime.rate.toDouble(),
-            itemSize: 15,
-            unratedColor: Colors.grey.withOpacity(0.5),
-            itemBuilder: (context, _) =>
-                Icon(Typicons.star_filled, color: Colors.amber[600]),
-            tapOnlyMode: true,
-            onRatingUpdate: (v) {
-              Log.info("评价分数：$v");
-              note.anime.rate = v.toInt();
-              SqliteUtil.updateAnimeRate(note.anime.animeId, note.anime.rate);
-            }),
-      ),
+          leading: AnimeListCover(
+            note.anime,
+            showReviewNumber: true,
+            reviewNumber: note.episode.reviewNumber,
+          ),
+          title: Text(
+            note.anime.animeName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textScaleFactor: ThemeUtil.smallScaleFactor,
+            // textAlign: TextAlign.right,
+          ),
+          subtitle: AnimeRatingBar(
+              rate: note.anime.rate,
+              iconSize: 12,
+              spacing: 2,
+              enableRate: false,
+              onRatingUpdate: (v) {
+                Log.info("评价分数：$v");
+                note.anime.rate = v.toInt();
+                SqliteUtil.updateAnimeRate(note.anime.animeId, note.anime.rate);
+              })),
     );
   }
 

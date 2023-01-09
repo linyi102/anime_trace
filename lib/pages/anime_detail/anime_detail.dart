@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/img_widget.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_rate_list_page.dart';
+import 'package:flutter_test_future/pages/modules/anime_rating_bar.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
@@ -28,7 +28,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
-import 'package:fluttericon/typicons_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -41,7 +40,8 @@ import 'anime_properties_page.dart';
 class AnimeDetailPlus extends StatefulWidget {
   Anime anime;
 
-  AnimeDetailPlus(this.anime, {
+  AnimeDetailPlus(
+    this.anime, {
     Key? key,
   }) : super(key: key);
 
@@ -72,7 +72,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
 
   bool hideNoteInAnimeDetail =
-  SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
+      SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
@@ -163,7 +163,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         // 如果该集完成了，就去获取该集笔记（内容+图片）
         episodeNote = await NoteDao
             .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-            episodeNote);
+                episodeNote);
         // Log.info(
         //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
       }
@@ -195,7 +195,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   @override
   Widget build(BuildContext context) {
     Log.info("$runtimeType: build");
-    const double smallIconSize = 17;
+    const double smallIconSize = 14;
     const double textScaleFactor = 1;
 
     return WillPopScope(
@@ -224,7 +224,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     // 动漫信息
                     SliverPadding(
                       padding:
-                      const EdgeInsets.only(left: 20, right: 20, top: 10),
+                          const EdgeInsets.only(left: 20, right: 20, top: 10),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
                           // 动漫名字
@@ -248,23 +248,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                         child: Text(
                                             _anime.getAnimeInfoFirstLine()),
                                       ),
-                                      WidgetSpan(
-                                          child: Row(
-                                            children: [
-                                              // SizeBox会导致图标和文字对不齐，所以用Text
-                                              const Text(" "),
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.of(context).push(
-                                                        FadeRoute(
-                                                            builder: (
-                                                                context) =>
-                                                                AnimePropertiesPage()));
-                                                  },
-                                                  child: const Icon(Icons.more,
-                                                      size: smallIconSize))
-                                            ],
-                                          )),
+                                      // WidgetSpan(
+                                      //     child: Row(
+                                      //   children: [
+                                      //     // SizeBox会导致图标和文字对不齐，所以用Text
+                                      //     const Text(" "),
+                                      //     GestureDetector(
+                                      //         onTap: () {
+                                      //           Navigator.of(context).push(
+                                      //               FadeRoute(
+                                      //                   builder: (context) =>
+                                      //                       AnimePropertiesPage()));
+                                      //         },
+                                      //         child: const Icon(Icons.more,
+                                      //             size: smallIconSize))
+                                      //   ],
+                                      // )),
                                     ]),
                                     textScaleFactor: textScaleFactor,
                                   ),
@@ -272,62 +271,58 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                     TextSpan(children: [
                                       WidgetSpan(
                                           child: GestureDetector(
-                                            onTap: () {
-                                              if (_anime.animeUrl.isNotEmpty) {
-                                                LaunchUrlUtil.launch(
-                                                    context: context,
-                                                    uriStr: _anime.animeUrl);
-                                              } else {
-                                                showToast("网址为空，请先迁移动漫");
-                                              }
-                                            },
-                                            child: Row(
-                                              children: [
-                                                Text(_anime.getAnimeSource()),
-                                                const Icon(Icons.open_in_new,
-                                                    size: smallIconSize),
-                                              ],
-                                            ),
-                                          )),
+                                        onTap: () {
+                                          if (_anime.animeUrl.isNotEmpty) {
+                                            LaunchUrlUtil.launch(
+                                                context: context,
+                                                uriStr: _anime.animeUrl);
+                                          } else {
+                                            showToast("空网址无法打开");
+                                          }
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Text(_anime.getAnimeSource()),
+                                            const Icon(Icons.open_in_new,
+                                                size: smallIconSize),
+                                          ],
+                                        ),
+                                      )),
                                       // const WidgetSpan(child: Text(" • ")),
                                       const WidgetSpan(child: Text(" ")),
                                       WidgetSpan(
                                           child: GestureDetector(
-                                            onTap: () {
-                                              showDialogSelectPlayStatus(
-                                                  context, animeController);
-                                            },
-                                            // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
-                                            child: Obx(() =>
-                                                Row(
-                                                  children: [
-                                                    Text(animeController.anime
-                                                        .value
+                                        onTap: () {
+                                          showDialogSelectPlayStatus(
+                                              context, animeController);
+                                        },
+                                        // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
+                                        child: Obx(() => Row(
+                                              children: [
+                                                Text(animeController.anime.value
+                                                    .getPlayStatus()
+                                                    .text),
+                                                Icon(
+                                                    animeController.anime.value
                                                         .getPlayStatus()
-                                                        .text),
-                                                    Icon(
-                                                        animeController.anime
-                                                            .value
-                                                            .getPlayStatus()
-                                                            .iconData,
-                                                        size: smallIconSize),
-                                                  ],
-                                                )),
-                                          )),
+                                                        .iconData,
+                                                    size: smallIconSize),
+                                              ],
+                                            )),
+                                      )),
                                       // const WidgetSpan(child: Text(" • ")),
                                       const WidgetSpan(child: Text(" ")),
                                       WidgetSpan(
                                           child: GestureDetector(
-                                            onTap: showDialogmodifyEpisodeCnt,
-                                            child: Row(
-                                              children: [
-                                                Text("${_anime
-                                                    .animeEpisodeCnt}集"),
-                                                const Icon(Icons.edit,
-                                                    size: smallIconSize),
-                                              ],
-                                            ),
-                                          )),
+                                        onTap: showDialogmodifyEpisodeCnt,
+                                        child: Row(
+                                          children: [
+                                            Text("${_anime.animeEpisodeCnt}集"),
+                                            const Icon(Icons.edit,
+                                                size: smallIconSize),
+                                          ],
+                                        ),
+                                      )),
                                     ]),
                                     textScaleFactor: textScaleFactor,
                                   ),
@@ -336,6 +331,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                               // 评价和清单
                               Row(
                                 children: [
+                                  _showInfoIcon(),
+                                  const SizedBox(width: 10),
                                   _showRateIcon(),
                                   const SizedBox(width: 10),
                                   _showCollectIcon()
@@ -378,13 +375,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   _buildSliverAppBar(BuildContext context) {
     double expandedHeight =
-        MediaQuery
-            .of(context)
-            .size
-            .height * coverBgHeightRatio;
+        MediaQuery.of(context).size.height * coverBgHeightRatio;
 
-    return Obx(() =>
-        SliverAppBar(
+    return Obx(() => SliverAppBar(
           // floating: true,
           // snap: true,
           pinned: true,
@@ -396,14 +389,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               children: [
                 // 底层背景
                 SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
                   // 模糊
                   child: ImageFiltered(
                     imageFilter: ImageFilter.blur(
@@ -486,15 +473,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return [
       PopupMenuButton(
         icon: const Icon(Icons.more_vert, color: Colors.white),
-        itemBuilder: (BuildContext popMenuContext) {
+        itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
+                leading: const Icon(Icons.delete),
                 title: const Text("取消收藏"),
-                leading: const Icon(Icons.delete_forever),
-                style: ListTileStyle.drawer,
                 onTap: () {
+                  // 关闭下拉菜单
+                  Navigator.pop(context);
+
                   _dialogDeleteAnime();
                 },
               ),
@@ -502,11 +491,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text("迁移动漫"),
-                style: ListTileStyle.drawer,
                 leading: const Icon(Icons.move_down),
+                title: const Text("迁移动漫"),
                 onTap: () {
-                  Navigator.of(popMenuContext).push(
+                  // 关闭下拉菜单
+                  Navigator.pop(context);
+
+                  Navigator.of(context).push(
                     FadeRoute(
                       builder: (context) {
                         return AnimeClimbAllWebsite(
@@ -517,7 +508,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     ),
                   ).then((value) {
                     _loadData();
-                    Navigator.pop(popMenuContext);
                   });
                 },
               ),
@@ -525,9 +515,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                title: const Text("外观设置"),
-                style: ListTileStyle.drawer,
                 leading: const Icon(Entypo.layout),
+                title: const Text("外观设置"),
                 onTap: () {
                   // 关闭下拉菜单
                   Navigator.pop(context);
@@ -539,12 +528,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     maxHeight: 1,
                     context: context,
                     isExpand: true,
-                    builder: (BuildContext context,
-                        ScrollController scrollController,
-                        double bottomSheetOffset,) =>
+                    builder: (
+                      BuildContext context,
+                      ScrollController scrollController,
+                      double bottomSheetOffset,
+                    ) =>
                         StatefulBuilder(
-                            builder: (context, setBottomSheetState) =>
-                                Scaffold(
+                            builder: (context, setBottomSheetState) => Scaffold(
                                   body: ListView(
                                     children: [
                                       ToggleListTile(
@@ -554,7 +544,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                           sigma = sigma > 0 ? 0.0 : 10.0;
                                           SpProfile
                                               .setCoverBgSigmaInAnimeDetailPage(
-                                              sigma);
+                                                  sigma);
                                           // 重新渲染开关
                                           setBottomSheetState(() {});
                                           // 重新渲染背景
@@ -581,8 +571,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                               max: 1,
                                               // 显示数字(只有指定divisions后才会显示)
                                               label:
-                                              "${coverBgHeightRatio.toPrecision(
-                                                  2)}",
+                                                  "${coverBgHeightRatio.toPrecision(2)}",
                                               divisions: 30,
                                               // 分成30个刻度
                                               value: coverBgHeightRatio,
@@ -615,20 +604,27 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _buildRatingStars() {
-    return RatingBar.builder(
-        wrapAlignment: WrapAlignment.center,
-        // 拖拽星级时会发出绿色光，所以屏蔽掉
-        glow: false,
-        initialRating: _anime.rate.toDouble(),
-        itemSize: 20,
-        unratedColor: Colors.grey.withOpacity(0.5),
-        itemBuilder: (context, _) =>
-            Icon(Typicons.star_filled, color: Colors.amber[600]),
+    return AnimeRatingBar(
+        rate: _anime.rate,
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
           _anime.rate = v.toInt();
           SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
         });
+  }
+
+  _showInfoIcon() {
+    return GestureDetector(
+        onTap: () {
+          Navigator.of(context)
+              .push(FadeRoute(builder: (context) => AnimePropertiesPage()));
+        },
+        child: Column(
+          children: const [
+            Icon(Icons.info, size: 18),
+            Text("信息", style: TextStyle(fontSize: 12))
+          ],
+        ));
   }
 
   _showRateIcon() {
@@ -644,7 +640,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         child: Column(
           children: [
             Icon(Icons.star, color: Colors.amber[600], size: 18),
-            // Text("${_anime.rate}/5", style: const TextStyle(fontSize: 12))
             Text("$rateNoteCount条评价", style: const TextStyle(fontSize: 12))
           ],
         ));
@@ -659,7 +654,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           children: [
             _anime.isCollected()
                 ? const Icon(Icons.favorite, color: Colors.red, size: 18)
-                : const Icon(Icons.favorite_border),
+                : const Icon(Icons.favorite_border, size: 18),
             _anime.isCollected()
                 ? Text(_anime.tagName, style: const TextStyle(fontSize: 12))
                 : Container()
@@ -677,8 +672,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     List<Widget> columnChildren = [];
     columnChildren.add(_buildButtonsAboutEpisode());
     for (int episodeIndex = 0;
-    episodeIndex < _episodes.length;
-    ++episodeIndex) {
+        episodeIndex < _episodes.length;
+        ++episodeIndex) {
       // Log.info("$episodeIndex");
       // 添加每集
       columnChildren.add(
@@ -698,16 +693,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // 没有完成时不显示subtitle
           subtitle: _episodes[episodeIndex].isChecked()
               ? Text(
-            _episodes[episodeIndex].getDate(),
-            style: TextStyle(
-              color: ThemeUtil.getEpisodeListTile(
-                  _episodes[episodeIndex].isChecked()),
-            ),
-            textScaleFactor: ThemeUtil.smallScaleFactor,
-          )
+                  _episodes[episodeIndex].getDate(),
+                  style: TextStyle(
+                    color: ThemeUtil.getEpisodeListTile(
+                        _episodes[episodeIndex].isChecked()),
+                  ),
+                  textScaleFactor: ThemeUtil.smallScaleFactor,
+                )
               : null,
           trailing: IconButton(
-            icon: Icon(Icons.more_horiz),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               showDialog(
                   context: context,
@@ -759,7 +754,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
                 _notes[episodeIndex] = await NoteDao
                     .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                    episodeNote);
+                        episodeNote);
                 // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
                 // episodeNote.episodeNoteId =
                 //     await SqliteUtil.insertEpisodeNote(episodeNote);
@@ -777,7 +772,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
                   // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
                   String selectedFinishedTag =
-                  SPUtil.getString("selectedFinishedTag");
+                      SPUtil.getString("selectedFinishedTag");
                   bool existSelectedFinishedTag = tags.indexWhere(
                           (element) => selectedFinishedTag == element) !=
                       -1;
@@ -812,11 +807,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                       dropdownColor: ThemeUtil.getCardColor(),
                                       value: selectedFinishedTag,
                                       items: tags
-                                          .map((e) =>
-                                          DropdownMenuItem(
-                                            child: Text(e),
-                                            value: e,
-                                          ))
+                                          .map((e) => DropdownMenuItem(
+                                                child: Text(e),
+                                                value: e,
+                                              ))
                                           .toList(),
                                       onChanged: (value) {
                                         selectedFinishedTag =
@@ -873,16 +867,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               duration: const Duration(milliseconds: 200),
               child: _episodes[episodeIndex].isChecked()
                   ? Icon(
-                Icons.check_box_outlined,
-                key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
-                color: ThemeUtil.getEpisodeListTile(
-                    _episodes[episodeIndex].isChecked()),
-              )
+                      Icons.check_box_outlined,
+                      key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
+                      color: ThemeUtil.getEpisodeListTile(
+                          _episodes[episodeIndex].isChecked()),
+                    )
                   : Icon(
-                Icons.check_box_outline_blank_rounded,
-                color: ThemeUtil.getEpisodeListTile(
-                    _episodes[episodeIndex].isChecked()),
-              ),
+                      Icons.check_box_outline_blank_rounded,
+                      color: ThemeUtil.getEpisodeListTile(
+                          _episodes[episodeIndex].isChecked()),
+                    ),
             ),
           ),
           onTap: () {
@@ -912,109 +906,108 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _buildNote(int episodeIndex, BuildContext context) {
     // 由于排序后集列表排了序，但笔记列表没有排序，会造成笔记混乱，因此显示笔记时，根据该集的编号来找到笔记
     int noteIdx = _notes.indexWhere(
-            (element) =>
-        element.episode.number == _episodes[episodeIndex].number);
+        (element) => element.episode.number == _episodes[episodeIndex].number);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: _notes[noteIdx].relativeLocalImages.isEmpty &&
-          _notes[noteIdx].noteContent.isEmpty
+              _notes[noteIdx].noteContent.isEmpty
           ? Container()
           : Card(
-        elevation: 0,
-        color: ThemeUtil.getCardColor(),
-        child: MaterialButton(
-          padding: _notes[noteIdx].noteContent.isEmpty
-              ? const EdgeInsets.fromLTRB(0, 15, 0, 15)
-              : const EdgeInsets.fromLTRB(0, 5, 0, 15),
-          onPressed: () {
-            Navigator.of(context).push(
-              // MaterialPageRoute(
-              //     builder: (context) =>
-              //         EpisodeNoteSF(episodeNotes[episodeIndex])),
-              FadeRoute(
-                builder: (context) {
-                  return NoteEdit(_notes[noteIdx]);
+              elevation: 0,
+              color: ThemeUtil.getCardColor(),
+              child: MaterialButton(
+                padding: _notes[noteIdx].noteContent.isEmpty
+                    ? const EdgeInsets.fromLTRB(0, 15, 0, 15)
+                    : const EdgeInsets.fromLTRB(0, 5, 0, 15),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    // MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         EpisodeNoteSF(episodeNotes[episodeIndex])),
+                    FadeRoute(
+                      builder: (context) {
+                        return NoteEdit(_notes[noteIdx]);
+                      },
+                    ),
+                  ).then((value) {
+                    _notes[noteIdx] = value; // 更新修改
+                    setState(() {});
+                  });
                 },
-              ),
-            ).then((value) {
-              _notes[noteIdx] = value; // 更新修改
-              setState(() {});
-            });
-          },
-          child: Column(
-            children: [
-              // 笔记内容
-              _notes[noteIdx].noteContent.isEmpty
-                  ? Container()
-                  : ListTile(
-                title: Text(
-                  _notes[noteIdx].noteContent,
-                  maxLines: 10,
-                  overflow: TextOverflow.ellipsis,
-                  style: ThemeUtil.getNoteTextStyle(),
+                child: Column(
+                  children: [
+                    // 笔记内容
+                    _notes[noteIdx].noteContent.isEmpty
+                        ? Container()
+                        : ListTile(
+                            title: Text(
+                              _notes[noteIdx].noteContent,
+                              maxLines: 10,
+                              overflow: TextOverflow.ellipsis,
+                              style: ThemeUtil.getNoteTextStyle(),
+                            ),
+                            style: ListTileStyle.drawer,
+                          ),
+                    // 没有图片时不显示，否则有固定高度
+                    _notes[noteIdx].relativeLocalImages.isEmpty
+                        ? Container()
+                        :
+                        // 图片横向排列
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            height: 120, // 设置高度
+                            // color: Colors.redAccent,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount:
+                                    _notes[noteIdx].relativeLocalImages.length,
+                                itemBuilder: (context, imgIdx) {
+                                  return MaterialButton(
+                                    padding: Platform.isAndroid
+                                        ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
+                                        : const EdgeInsets.fromLTRB(
+                                            15, 5, 15, 5),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          FadeRoute(
+                                              // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
+                                              transitionDuration: Duration.zero,
+                                              reverseTransitionDuration:
+                                                  Duration.zero,
+                                              builder: (context) {
+                                                // 点击图片进入图片浏览页面
+                                                return ImageViewer(
+                                                  relativeLocalImages:
+                                                      _notes[noteIdx]
+                                                          .relativeLocalImages,
+                                                  initialIndex: imgIdx,
+                                                );
+                                              }));
+                                    },
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(5),
+                                        child: SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: buildImgWidget(
+                                              url: _notes[noteIdx]
+                                                  .relativeLocalImages[imgIdx]
+                                                  .path,
+                                              showErrorDialog: true,
+                                              isNoteImg: true),
+                                        )),
+                                  );
+                                }),
+                          )
+                    // ImageGridView(
+                    //     relativeLocalImages:
+                    //         _episodeNotes[episodeNoteIndex].relativeLocalImages)
+                  ],
                 ),
-                style: ListTileStyle.drawer,
               ),
-              // 没有图片时不显示，否则有固定高度
-              _notes[noteIdx].relativeLocalImages.isEmpty
-                  ? Container()
-                  :
-              // 图片横向排列
-              Container(
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                height: 120, // 设置高度
-                // color: Colors.redAccent,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount:
-                    _notes[noteIdx].relativeLocalImages.length,
-                    itemBuilder: (context, imgIdx) {
-                      return MaterialButton(
-                        padding: Platform.isAndroid
-                            ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
-                            : const EdgeInsets.fromLTRB(
-                            15, 5, 15, 5),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              FadeRoute(
-                                // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
-                                  transitionDuration: Duration.zero,
-                                  reverseTransitionDuration:
-                                  Duration.zero,
-                                  builder: (context) {
-                                    // 点击图片进入图片浏览页面
-                                    return ImageViewer(
-                                      relativeLocalImages:
-                                      _notes[noteIdx]
-                                          .relativeLocalImages,
-                                      initialIndex: imgIdx,
-                                    );
-                                  }));
-                        },
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: SizedBox(
-                              height: 100,
-                              width: 100,
-                              child: buildImgWidget(
-                                  url: _notes[noteIdx]
-                                      .relativeLocalImages[imgIdx]
-                                      .path,
-                                  showErrorDialog: true,
-                                  isNoteImg: true),
-                            )),
-                      );
-                    }),
-              )
-              // ImageGridView(
-              //     relativeLocalImages:
-              //         _episodeNotes[episodeNoteIndex].relativeLocalImages)
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -1064,9 +1057,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       if (lastMultiSelectedIndex >= 0) {
         // 注意大小关系[lastMultiSelectedIndex, index]和[index, lastMultiSelectedIndex]
         int begin =
-        lastMultiSelectedIndex < index ? lastMultiSelectedIndex : index;
+            lastMultiSelectedIndex < index ? lastMultiSelectedIndex : index;
         int end =
-        lastMultiSelectedIndex > index ? lastMultiSelectedIndex : index;
+            lastMultiSelectedIndex > index ? lastMultiSelectedIndex : index;
         for (var i = begin; i <= end; i++) {
           mapSelected[i] = true;
         }
@@ -1081,9 +1074,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       initialDate: defaultDateTime ?? DateTime.now(),
       // 没有给默认时间时，设置为今天
       firstDate: DateTime(1986),
-      lastDate: DateTime(DateTime
-          .now()
-          .year + 2),
+      lastDate: DateTime(DateTime.now().year + 2),
     );
     // 如果没有选择日期，则直接返回
     if (datePicker == null) return "";
@@ -1094,7 +1085,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     // 同理
     if (timePicker == null) return "";
     return DateTime(datePicker.year, datePicker.month, datePicker.day,
-        timePicker.hour, timePicker.minute)
+            timePicker.hour, timePicker.minute)
         .toString();
   }
 
@@ -1102,53 +1093,53 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return !multiSelected
         ? Container()
         : Container(
-      alignment: Alignment.bottomCenter,
-      child: Card(
-        elevation: 8,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(50))),
-        // 圆角
-        clipBehavior: Clip.antiAlias,
-        // 设置抗锯齿，实现圆角背景
-        margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
-        child: Row(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: IconButton(
-                onPressed: () {
-                  if (mapSelected.length == _episodes.length) {
-                    // 全选了，点击则会取消全选
-                    mapSelected.clear();
-                  } else {
-                    // 其他情况下，全选
-                    for (int j = 0; j < _episodes.length; ++j) {
-                      mapSelected[j] = true;
-                    }
-                  }
-                  setState(() {});
-                },
-                icon: const Icon(Icons.select_all_rounded),
+            alignment: Alignment.bottomCenter,
+            child: Card(
+              elevation: 8,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(50))),
+              // 圆角
+              clipBehavior: Clip.antiAlias,
+              // 设置抗锯齿，实现圆角背景
+              margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
+              child: Row(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        if (mapSelected.length == _episodes.length) {
+                          // 全选了，点击则会取消全选
+                          mapSelected.clear();
+                        } else {
+                          // 其他情况下，全选
+                          for (int j = 0; j < _episodes.length; ++j) {
+                            mapSelected[j] = true;
+                          }
+                        }
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.select_all_rounded),
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      onPressed: multiPickDateTime,
+                      icon: const Icon(Icons.calendar_today_outlined),
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () {
+                        _quitMultiSelectState();
+                      },
+                      icon: const Icon(Icons.exit_to_app),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Expanded(
-              child: IconButton(
-                onPressed: multiPickDateTime,
-                icon: const Icon(Icons.calendar_today_outlined),
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: () {
-                  _quitMultiSelectState();
-                },
-                icon: const Icon(Icons.exit_to_app),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   // 多选后，选择日期，并更新数据库
@@ -1174,10 +1165,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             relativeLocalImages: [],
             imgUrls: []);
         // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-            () async {
+        () async {
           _notes[episodeIndex] = await NoteDao
               .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-              episodeNote);
+                  episodeNote);
         }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
       }
       _episodes[episodeIndex].dateTime = dateTime;
@@ -1211,7 +1202,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               onPressed: () {
                 SqliteUtil
                     .deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
-                    _anime.animeId, episodeNumber, _anime.reviewNumber);
+                        _anime.animeId, episodeNumber, _anime.reviewNumber);
                 // 根据episodeNumber找到对应的下标
                 int findIndex = _getEpisodeIndexByEpisodeNumber(episodeNumber);
                 _episodes[findIndex].cancelDateTime();
@@ -1237,12 +1228,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               title: Text(tags[i]),
               leading: tags[i] == _anime.tagName
                   ? Icon(
-                Icons.radio_button_on_outlined,
-                color: ThemeUtil.getPrimaryColor(),
-              )
+                      Icons.radio_button_on_outlined,
+                      color: ThemeUtil.getPrimaryColor(),
+                    )
                   : const Icon(
-                Icons.radio_button_off_outlined,
-              ),
+                      Icons.radio_button_off_outlined,
+                    ),
               onTap: () {
                 _anime.tagName = tags[i];
                 SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
@@ -1284,12 +1275,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               title: Text(sortMethodsName[i]),
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
                   ? Icon(
-                Icons.radio_button_on_outlined,
-                color: ThemeUtil.getPrimaryColor(),
-              )
+                      Icons.radio_button_on_outlined,
+                      color: ThemeUtil.getPrimaryColor(),
+                    )
                   : const Icon(
-                Icons.radio_button_off_outlined,
-              ),
+                      Icons.radio_button_off_outlined,
+                    ),
               onTap: () {
                 Log.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
@@ -1355,8 +1346,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
     List<ListTile> listTiles = [];
     for (var startEpisodeNumber = 1;
-    startEpisodeNumber <= _anime.animeEpisodeCnt;
-    startEpisodeNumber += episodeRangeSize) {
+        startEpisodeNumber <= _anime.animeEpisodeCnt;
+        startEpisodeNumber += episodeRangeSize) {
       listTiles.add(ListTile(
         title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
         leading: currentStartEpisodeNumber == startEpisodeNumber
@@ -1405,13 +1396,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               ],
             ),
           ),
-          const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
               dialogSelectUint(context, "选择第几次观看",
-                  initialValue: _anime.reviewNumber,
-                  minValue: 1,
-                  maxValue: 100)
+                      initialValue: _anime.reviewNumber,
+                      minValue: 1,
+                      maxValue: 9)
                   .then((value) {
                 if (value != null) {
                   if (_anime.reviewNumber != value) {
@@ -1432,27 +1422,52 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               ],
             ),
           ),
-          // Text("第1次观看"),
-          // : Container(),
+          const SizedBox(width: 10),
           Expanded(child: Container()),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // GestureDetector(
-              //     onTap: () {
-              //       if (hideNoteInAnimeDetail) {
-              //         // 原先隐藏，则设置为false，表示显示
-              //         SPUtil.setBool("hideNoteInAnimeDetail", false);
-              //         hideNoteInAnimeDetail = false;
-              //         // showToast("已展开笔记");
-              //       } else {
-              //         SPUtil.setBool("hideNoteInAnimeDetail", true);
-              //         hideNoteInAnimeDetail = true;
-              //         // showToast("已隐藏笔记");
+              // IconButton(
+              //   hoverColor: Colors.transparent,
+              //   splashColor: Colors.transparent,
+              //   highlightColor: Colors.transparent,
+              //   onPressed: () {
+              //     dialogSelectUint(context, "选择第几次观看",
+              //             initialValue: _anime.reviewNumber,
+              //             minValue: 1,
+              //             maxValue: 9)
+              //         .then((value) {
+              //       if (value != null) {
+              //         if (_anime.reviewNumber != value) {
+              //           _anime.reviewNumber = value;
+              //           // SqliteUtil.updateAnimeReviewNumberByAnimeId(
+              //           //     _anime.animeId, _anime.reviewNumber);
+              //           SqliteUtil.updateAnime(_anime, _anime);
+              //           // 不相等才设置并重新加载数据
+              //           _loadEpisode();
+              //         }
               //       }
-              //       setState(() {});
-              //     },
-              //     child: Text(hideNoteInAnimeDetail ? "展开笔记" : "隐藏笔记")),
+              //     });
+              //   },
+              //   // icon: _showReviewNumberIcon()
+              //   // 绘制圆角方块，中间添加数字
+              //   icon: Container(
+              //     width: 20,
+              //     height: 20,
+              //     child: Center(
+              //         child: Text("${_anime.reviewNumber}",
+              //             style: const TextStyle(
+              //                 fontSize: 12, fontWeight: FontWeight.w500))),
+              //     decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(3),
+              //         border: Border.all(
+              //             color: ThemeUtil
+              //                     .themeController.themeColor.value.isDarkMode
+              //                 ? Colors.grey
+              //                 : Colors.black,
+              //             width: 2)),
+              //   ),
+              // ),
               const SizedBox(width: 5),
               IconButton(
                   hoverColor: Colors.transparent,
@@ -1463,7 +1478,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   },
                   tooltip: "排序方式",
                   icon: const Icon(Icons.filter_list_outlined)),
-
               IconButton(
                   hoverColor: Colors.transparent,
                   splashColor: Colors.transparent,
@@ -1573,7 +1587,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
-      if (_anime.isCollected()) showToast("当前动漫没有来源，请先进行迁移");
+      if (_anime.isCollected()) showToast("不能更新自定义动漫");
       return false;
     }
     if (_climbing) {
@@ -1611,20 +1625,20 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return true;
   }
 
-  showReviewNumberIcon() {
+  _showReviewNumberIcon() {
     switch (_anime.reviewNumber) {
       case 1:
-        return const Icon(Icons.looks_one_outlined);
+        return const Icon(Icons.looks_one);
       case 2:
-        return const Icon(Icons.looks_two_outlined);
+        return const Icon(Icons.looks_two);
       case 3:
-        return const Icon(Icons.looks_3_outlined);
+        return const Icon(Icons.looks_3);
       case 4:
-        return const Icon(Icons.looks_4_outlined);
+        return const Icon(Icons.looks_4);
       case 5:
-        return const Icon(Icons.looks_5_outlined);
+        return const Icon(Icons.looks_5);
       case 6:
-        return const Icon(Icons.looks_6_outlined);
+        return const Icon(Icons.looks_6);
       default:
         return const Icon(Icons.error_outline);
     }
@@ -1633,21 +1647,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   void _popAnimeDetailPage() {
     // 置为0，用于在收藏页得知已取消收藏
     _anime.animeId = 0;
-    // 第一个是退出下拉菜单，第二个是退出动漫详细页面
-    // 也可
-    Navigator.of(context)
-      ..pop()..pop(_anime);
+    // 退出动漫详细页面
+    Navigator.of(context).pop(_anime);
   }
 
   void showDialogmodifyEpisodeCnt() {
     dialogSelectUint(context, "修改集数",
-        initialValue: _anime.animeEpisodeCnt,
-        // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-        // initialValue: initialValue,
-        // 添加选择集范围后，就不能传入已有的集长度了。
-        // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-        minValue: 0,
-        maxValue: 2000)
+            initialValue: _anime.animeEpisodeCnt,
+            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+            // initialValue: initialValue,
+            // 添加选择集范围后，就不能传入已有的集长度了。
+            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
+            minValue: 0,
+            maxValue: 2000)
         .then((value) {
       if (value == null) {
         Log.info("未选择，直接返回");

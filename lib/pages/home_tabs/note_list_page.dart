@@ -6,7 +6,6 @@ import 'package:flutter_test_future/pages/note_list/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/note_filter.dart';
@@ -120,8 +119,7 @@ class _NoteListPageState extends State<NoteListPage>
           PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                style: ListTileStyle.drawer,
-                leading: const Icon(Icons.image_outlined),
+                hoverColor: Colors.transparent,
                 title: const Text("图片设置"),
                 onTap: () {
                   Navigator.push(context, FadeRoute(
@@ -140,8 +138,6 @@ class _NoteListPageState extends State<NoteListPage>
           PopupMenuItem(
             padding: const EdgeInsets.all(0),
             child: ListTile(
-              style: ListTileStyle.drawer,
-              leading: const Icon(Icons.expand),
               title: showAllNoteGridImage
                   ? const Text("显示部分图片")
                   : const Text("显示所有图片"),
@@ -221,6 +217,6 @@ class _NoteListPageState extends State<NoteListPage>
                 );
               });
         },
-        icon: const Icon(Entypo.search));
+        icon: const Icon(Icons.search));
   }
 }

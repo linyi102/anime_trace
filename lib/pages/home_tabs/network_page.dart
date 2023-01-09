@@ -7,7 +7,6 @@ import 'package:flutter_test_future/pages/network/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
 
 /// 与网络相关的页面
 class NetWorkPage extends StatefulWidget {
@@ -90,7 +89,7 @@ class _NetWorkPageState extends State<NetWorkPage>
       floatingActionButton: FloatingActionButton(
         backgroundColor: ThemeUtil.getPrimaryColor(),
         foregroundColor: Colors.white,
-        child: const Icon(Entypo.search),
+        child: const Icon(Icons.search),
         onPressed: () {
           Navigator.of(context).push(FadeRoute(
             builder: (context) {
