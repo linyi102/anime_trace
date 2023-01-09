@@ -186,46 +186,26 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
       {required setState, required BuildContext context, required Note note}) {
     bool isRateNote = note.episode.number == 0;
 
-    // 单独给listtile的title添加GestureDetector点击事件时，因为title是一整行，所以点击文字后面的区域仍然会进入动漫详细页
-    return ListTile(
-      leading: GestureDetector(
-        onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
-        child: AnimeListCover(
+    return GestureDetector(
+      onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
+      child: ListTile(
+        leading: AnimeListCover(
           note.anime,
           showReviewNumber: true,
           reviewNumber: note.episode.reviewNumber,
         ),
-      ),
-      // trailing: IconButton(
-      //     onPressed: () {
-      //       Navigator.of(context).push(
-      //         FadeRoute(builder: (context) {
-      //           return NoteEdit(note);
-      //         }),
-      //       ).then((value) {
-      //         note = value; // 更新修改
-      //         setState(() {});
-      //       });
-      //     },
-      //     // navigate_next
-      //     icon: Icon(Icons.edit_note, color: ThemeUtil.getCommonIconColor())),
-      title: GestureDetector(
-        onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
-        child: Text(
+        title: Text(
           note.anime.animeName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textScaleFactor: ThemeUtil.smallScaleFactor,
         ),
+        subtitle: isRateNote
+            ? null
+            : Text(
+                "第${note.episode.number}集 ${note.episode.getDate()}",
+                textScaleFactor: ThemeUtil.tinyScaleFactor),
       ),
-      subtitle: isRateNote
-          ? null
-          : GestureDetector(
-              onTap: () =>
-                  _enterAnimeDetail(context: context, anime: note.anime),
-              child: Text(
-                  "第${note.episode.number}集 ${note.episode.getDate()}",
-                  textScaleFactor: ThemeUtil.tinyScaleFactor)),
     );
   }
 
@@ -258,6 +238,8 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                 episodeNotes[i].id);
             episodeNotes[i].noteContent = note.noteContent;
             episodeNotes[i].relativeLocalImages = note.relativeLocalImages;
+            // 更新这个动漫(图片、评价、名字可能会发生变化)
+            episodeNotes[i].anime = anime;
           }
         }
         setState(() {});
