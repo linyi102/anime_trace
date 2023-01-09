@@ -221,7 +221,7 @@ class SqliteUtil {
   }
 
   static void updateAnimeRate(int animeId, int rate) async {
-    Log.info("sql: updateAnimeRate");
+    Log.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
     await database.rawUpdate('''
     update anime
     set rate = $rate

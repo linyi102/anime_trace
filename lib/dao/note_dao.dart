@@ -50,6 +50,17 @@ class NoteDao {
     return rateNotes;
   }
 
+  // 获取某个动漫的笔记数量
+  static Future<int> getRateNoteCountByAnimeId(int animeId) async {
+    Log.info("sql: getRateNoteCountByAnimeId");
+    List<Map<String, Object?>> list = await database.rawQuery('''
+      select count(*) cnt from episode_note
+      where anime_id = $animeId and episode_number = 0;
+    ''');
+    return list[0]["cnt"] as int;
+  }
+
+  // 获取某个动漫的所有笔记
   static Future<List<Note>> getRateNotesByAnimeId(int animeId) async {
     Log.info("sql: getRateNotesByAnimeId");
     List<Note> rateNotes = [];

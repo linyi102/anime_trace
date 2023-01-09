@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -58,59 +58,82 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            _buildRatingStars(),
-            IconButton(
-                tooltip: "评价",
-                onPressed: () => _createRateNote(context),
-                icon: Icon(Icons.edit_note,
-                    color: ThemeUtil.getCommonIconColor()))
-          ]),
-        ),
-        noteOk
-            ? notes.isNotEmpty
-                ? Column(children: _buildRateNoteList())
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text("动漫评价",
+              style: TextStyle(fontWeight: FontWeight.w600))),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 10),
+            //   child: _buildRatingStars(),
+            // ),
+            _buildRateCard(),
+            noteOk
+                ? notes.isNotEmpty
+                    ? Column(children: _buildRateNoteList())
+                    : Container()
                 : Container()
-            : Container()
-      ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _createRateNote(context),
+        backgroundColor: ThemeUtil.getPrimaryIconColor(),
+        child: const Icon(Icons.edit, color: Colors.white),
+      ),
     );
   }
 
-  RatingStars _buildRatingStars() {
-    return RatingStars(
-        value: anime.rate.toDouble(),
-        onValueChanged: (v) {
+  _buildRateCard() {
+    return Container(
+      height: 80,
+      width: 210,
+      margin: const EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: ThemeUtil.getCardColor()),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Stack(
+          children: [
+            Align(
+              alignment: AlignmentDirectional.topStart,
+              child: Text("评分：${anime.rate}/5"),
+            ),
+            Align(
+                alignment: AlignmentDirectional.center,
+                child: _buildRatingStars()),
+            Align(
+              alignment: AlignmentDirectional.bottomEnd,
+              child: Text(
+                "${notes.length}条评价",
+                textScaleFactor: 0.8,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildRatingStars() {
+    return RatingBar.builder(
+        // 拖拽星级时会发出绿色光，所以屏蔽掉
+        glow: false,
+        initialRating: anime.rate.toDouble(),
+        itemSize: 20,
+        unratedColor: Colors.grey.withOpacity(0.5),
+        itemBuilder: (context, _) =>
+            Icon(Typicons.star_filled, color: Colors.amber[600]),
+        onRatingUpdate: (v) {
+          Log.info("评价分数：$v");
           setState(() {
             anime.rate = v.toInt();
           });
           SqliteUtil.updateAnimeRate(anime.animeId, anime.rate);
-        },
-        starBuilder: (index, color) => Icon(Typicons.star_filled, color: color),
-        starCount: 5,
-        starSize: 40,
-        valueLabelColor: const Color(0xff9b9b9b),
-        valueLabelTextStyle: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w400,
-          fontStyle: FontStyle.normal,
-          // fontSize: 12.0
-        ),
-        valueLabelRadius: 10,
-        maxValue: 5,
-        starSpacing: 2,
-        maxValueVisibility: false,
-        valueLabelVisibility: false,
-        animationDuration: const Duration(milliseconds: 0),
-        valueLabelPadding:
-            const EdgeInsets.symmetric(vertical: 1, horizontal: 8),
-        valueLabelMargin: const EdgeInsets.only(right: 8),
-        starOffColor: const Color.fromRGBO(206, 214, 224, 1),
-        starColor: const Color.fromRGBO(255, 167, 2, 1));
+        });
   }
 
   void _createRateNote(BuildContext context) {
@@ -131,11 +154,11 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
 
   _buildRateNoteList() {
     List<Widget> list = [];
-    Log.info("渲染1次笔记列表"); // TODO：多次渲染
+    Log.info("渲染1次评价笔记列表"); // TODO：多次渲染
 
     for (Note note in notes) {
       list.add(Container(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        padding: const EdgeInsets.all(5),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Card(
@@ -215,52 +238,56 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
               fontWeight: FontWeight.normal,
               color: ThemeUtil.getCommentColor()),
         ),
-        trailing: PopupMenuButton(
-          icon: const Icon(Icons.more_horiz),
-          offset: const Offset(0, 50),
-          itemBuilder: (BuildContext popUpMenuContext) {
-            return [
-              PopupMenuItem(
-                padding: const EdgeInsets.all(0), // 变小
-                child: ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text("删除笔记"),
-                  style: ListTileStyle.drawer, // 变小
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext dialogContext) {
-                        return AlertDialog(
-                          title: const Text("确定删除笔记吗？"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(dialogContext);
-                                Navigator.pop(popUpMenuContext);
+        trailing: IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.delete),
+                          title: const Text("删除笔记"),
+                          style: ListTileStyle.drawer, // 变小
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: const Text("确定删除笔记吗？"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        // 关闭删除确认对话框和更多菜单对话框
+                                        Navigator.of(context)
+                                          ..pop()
+                                          ..pop();
+                                      },
+                                      child: const Text("取消"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // 关闭删除确认对话框和更多菜单对话框
+                                        Navigator.of(context)
+                                          ..pop()
+                                          ..pop();
+                                        SqliteUtil.deleteNoteById(note.id)
+                                            .then((val) {
+                                          _loadData();
+                                        });
+                                      },
+                                      child: const Text("确定"),
+                                    )
+                                  ],
+                                );
                               },
-                              child: const Text("取消"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // 关闭对话框
-                                Navigator.pop(dialogContext);
-                                SqliteUtil.deleteNoteById(note.id).then((val) {
-                                  // 关闭下拉菜单，并重新获取评价列表
-                                  Navigator.pop(popUpMenuContext);
-                                  _loadData();
-                                });
-                              },
-                              child: const Text("确定"),
-                            )
-                          ],
-                        );
-                      },
+                            );
+                          },
+                        )
+                      ],
                     );
-                  },
-                ),
-              ),
-            ];
-          },
-        ));
+                  });
+            },
+            icon: const Icon(Icons.more_horiz)));
   }
 }

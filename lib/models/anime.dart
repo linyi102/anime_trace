@@ -1,3 +1,4 @@
+import 'package:flutter_test_future/models/playStatus.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 
 class Anime {
@@ -62,12 +63,18 @@ class Anime {
     var list = [];
     if (area.isNotEmpty) {
       list.add(area);
+    } else {
+      list.add("地区");
     }
     if (category.isNotEmpty) {
       list.add(category);
+    } else {
+      list.add("类别");
     }
     if (premiereTime.isNotEmpty) {
       list.add(premiereTime);
+    } else {
+      list.add("首播时间");
     }
 
     return list.join(" / ");
@@ -77,24 +84,24 @@ class Anime {
     return ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义";
   }
 
-  String getPlayStatus() {
+  PlayStatus getPlayStatus() {
     if (playStatus.contains("完结")) {
-      return "已完结";
+      return PlayStatus.finished;
     } else if (playStatus.contains("未")) {
-      return "未开播";
+      return PlayStatus.notStarted;
     } else if (playStatus.contains("第") || playStatus.contains("连载")) {
-      return "连载中";
+      return PlayStatus.playing;
     } else {
-      return "未知";
+      return PlayStatus.unknown;
     }
   }
 
   String getAnimeInfoSecondLine() {
     var list = [];
     list.add(getAnimeSource());
-    list.add(getPlayStatus());
+    list.add(getPlayStatus().text);
     if (animeEpisodeCnt != -1) {
-      list.add("$animeEpisodeCnt 集");
+      list.add("$animeEpisodeCnt集");
     }
     return list.join(" • ");
   }

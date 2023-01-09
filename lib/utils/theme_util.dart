@@ -30,8 +30,8 @@ class ThemeColor {
 
 class ThemeUtil {
   static final ThemeController themeController = Get.find();
-  static const smallScaleFactor = 0.9;
-  static const tinyScaleFactor = 0.8;
+  static const double smallScaleFactor = 0.95;
+  static const double tinyScaleFactor = 0.85;
 
   static List<ThemeColor> themeColors = [
     ThemeColor(
@@ -140,18 +140,6 @@ class ThemeUtil {
         // ? const Color.fromRGBO(255, 255, 255, 0.9)
         ? const Color.fromRGBO(150, 150, 150, 0.9)
         : const Color.fromRGBO(255, 255, 255, 0.9);
-  }
-
-  // 动漫详细页图片背景渐变
-  static List<Color> getGradientColors() {
-    Color color = ThemeUtil.getScaffoldBackgroundColor();
-    return [
-      // Colors.transparent,
-      // color.withOpacity(0.1),
-      color.withOpacity(0.2),
-      color.withOpacity(0.3),
-      color.withOpacity(1),
-    ];
   }
 
   // 动漫详细页集ListTile颜色

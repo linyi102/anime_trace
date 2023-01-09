@@ -36,13 +36,33 @@ class SpProfile {
     return SPUtil.getBool("expandSideBar", defaultValue: false);
   }
 
+  // 设置模糊伽马值
   static setCoverBgSigmaInAnimeDetailPage(double sigma) {
     SPUtil.setDouble("coverBgSigmaInAnimeDetailPage", sigma);
   }
 
+  // 默认的模糊伽马值为10
   static getCoverBgSigmaInAnimeDetailPage() {
     return SPUtil.getDouble("coverBgSigmaInAnimeDetailPage",
-        defaultValue: 10.0);
+        defaultValue: 0.0);
+  }
+
+  // 设置是否渐变
+  static turnEnableCoverBgGradient() {
+    SPUtil.setBool("enableCoverBgGradient", !getEnableCoverBgGradient());
+  }
+
+  static bool getEnableCoverBgGradient() {
+    return SPUtil.getBool("enableCoverBgGradient", defaultValue: true);
+  }
+
+  // 记录封面背景高度占屏幕高度的比例
+  static void setCoverBgHeightRatio(double value) {
+    SPUtil.setDouble("coverBgHeightRatio", value);
+  }
+
+  static double getCoverBgHeightRatio() {
+    return SPUtil.getDouble("coverBgHeightRatio",defaultValue: 0.5);
   }
 
   // 笔记页中显示/隐藏所有图片

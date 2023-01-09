@@ -200,13 +200,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.1"
-  flutter_rating_stars:
-    dependency: "direct main"
-    description:
-      name: flutter_rating_stars
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.3+4"
   flutter_tab_indicator_styler:
     dependency: "direct main"
     description:

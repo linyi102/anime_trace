@@ -46,7 +46,7 @@ class SPUtil {
   }
 
   /// 根据key获取double类型
-  static double? getDouble(String key, {double defaultValue = 0.0}) {
+  static double getDouble(String key, {double defaultValue = 0.0}) {
     return _sharedPreferences.getDouble(key) ?? defaultValue;
   }
 

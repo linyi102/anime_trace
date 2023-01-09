@@ -19,61 +19,67 @@ class AnimePropertiesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 不能使用ListView，因为外部是SliverChildListDelegate
-    return Obx(() => Padding(
-          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPropRow(context,
-                  title: "名称",
-                  text: animeController.anime.value.animeName, onTap: () {
-                String animeName = animeController.anime.value.animeName;
-                _showDialogAboutEdit(context,
-                    title: "编辑名称", property: animeName, confirm: (newName) {
-                  if (newName.isEmpty) {
-                    showToast("动漫名不允许为空");
-                    return;
-                  }
-                  Log.info("更新名称：$newName");
-                  animeController.updateAnimeName(newName);
-                  SqliteUtil.updateAnimeNameByAnimeId(
-                      animeController.anime.value.animeId, newName);
-                });
-              }),
-              _buildPropRow(context,
-                  title: "别名",
-                  text: animeController.anime.value.nameAnother, onTap: () {
-                String nameAnother = animeController.anime.value.nameAnother;
-                _showDialogAboutEdit(context,
-                    title: "编辑别名",
-                    property: nameAnother, confirm: (newNameAnother) {
-                  Log.info("更新别名：$newNameAnother");
-                  animeController.updateAnimeNameAnother(newNameAnother);
-                  SqliteUtil.updateAnimeNameAnotherByAnimeId(
-                      animeController.anime.value.animeId, newNameAnother);
-                });
-              }),
-              _buildPropRow(context,
-                  title: "状态",
-                  text: animeController.anime.value.getPlayStatus(), onTap: () {
-                showDialogSelectPlayStatus(context, animeController);
-              }),
-              _buildPropRow(context,
-                  title: "描述",
-                  text: animeController.anime.value.animeDesc, onTap: () {
-                String animeDesc = animeController.anime.value.animeDesc;
-                _showDialogAboutEdit(context,
-                    title: "编辑简介", property: animeDesc, confirm: (newDesc) {
-                  Log.info("更新简介：$newDesc");
-                  animeController.updateAnimeDesc(newDesc);
-                  SqliteUtil.updateAnimeDescByAnimeId(
-                      animeController.anime.value.animeId, newDesc);
-                });
-              }),
-              const ListTile()
-            ],
-          ),
-        ));
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text("动漫信息",
+              style: TextStyle(fontWeight: FontWeight.w600))),
+      body: Obx(() => Padding(
+            padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPropRow(context,
+                    title: "名称",
+                    text: animeController.anime.value.animeName, onTap: () {
+                  String animeName = animeController.anime.value.animeName;
+                  _showDialogAboutEdit(context,
+                      title: "编辑名称", property: animeName, confirm: (newName) {
+                    if (newName.isEmpty) {
+                      showToast("动漫名不允许为空");
+                      return;
+                    }
+                    Log.info("更新名称：$newName");
+                    animeController.updateAnimeName(newName);
+                    SqliteUtil.updateAnimeNameByAnimeId(
+                        animeController.anime.value.animeId, newName);
+                  });
+                }),
+                _buildPropRow(context,
+                    title: "别名",
+                    text: animeController.anime.value.nameAnother, onTap: () {
+                  String nameAnother = animeController.anime.value.nameAnother;
+                  _showDialogAboutEdit(context,
+                      title: "编辑别名",
+                      property: nameAnother, confirm: (newNameAnother) {
+                    Log.info("更新别名：$newNameAnother");
+                    animeController.updateAnimeNameAnother(newNameAnother);
+                    SqliteUtil.updateAnimeNameAnotherByAnimeId(
+                        animeController.anime.value.animeId, newNameAnother);
+                  });
+                }),
+                _buildPropRow(context,
+                    title: "状态",
+                    text: animeController.anime.value.getPlayStatus().text,
+                    onTap: () {
+                  showDialogSelectPlayStatus(context, animeController);
+                }),
+                _buildPropRow(context,
+                    title: "描述",
+                    text: animeController.anime.value.animeDesc, onTap: () {
+                  String animeDesc = animeController.anime.value.animeDesc;
+                  _showDialogAboutEdit(context,
+                      title: "编辑简介", property: animeDesc, confirm: (newDesc) {
+                    Log.info("更新简介：$newDesc");
+                    animeController.updateAnimeDesc(newDesc);
+                    SqliteUtil.updateAnimeDescByAnimeId(
+                        animeController.anime.value.animeId, newDesc);
+                  });
+                }),
+                const ListTile()
+              ],
+            ),
+          )),
+    );
   }
 
   /// 点击后会弹出编辑文本框的动漫属性行
@@ -84,18 +90,19 @@ class AnimePropertiesPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
       child: Text.rich(
-          TextSpan(children: [
-            TextSpan(text: "$title："),
-            WidgetSpan(
-                child: GestureDetector(
-              onTap: onTap,
-              child: Text(
-                text.isNotEmpty ? text : "什么都没有~",
-                style: TextStyle(color: ThemeUtil.getCommentColor()),
-              ),
-            ))
-          ]),
-          textScaleFactor: 0.9),
+        TextSpan(children: [
+          WidgetSpan(child: Text("$title：")),
+          WidgetSpan(
+              child: GestureDetector(
+            onTap: onTap,
+            child: Text(
+              text.isNotEmpty ? text : "什么都没有~",
+              style: TextStyle(color: ThemeUtil.getCommentColor()),
+            ),
+          ))
+        ]),
+        textScaleFactor: 1,
+      ),
     );
   }
 

@@ -8,9 +8,10 @@ showDialogSelectPlayStatus(
     BuildContext context, AnimeController animeController) {
   showDialog(
       context: context,
-      builder: (dialogContext) {
-        String playStatus = animeController.anime.value.getPlayStatus();
+      builder: (context) {
+        String playStatus = animeController.anime.value.getPlayStatus().text;
         return AlertDialog(
+          title: const  Text("播放状态"),
           content: SingleChildScrollView(
             child: Column(
               children: ["未开播", "连载中", "已完结"]
@@ -26,7 +27,7 @@ showDialogSelectPlayStatus(
                           animeController.updateAnimePlayStatus(e);
                           SqliteUtil.updateAnimePlayStatusByAnimeId(
                               animeController.anime.value.animeId, e);
-                          Navigator.pop(dialogContext);
+                          Navigator.pop(context);
                         },
                       ))
                   .toList(),

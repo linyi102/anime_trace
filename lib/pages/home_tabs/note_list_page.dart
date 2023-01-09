@@ -114,7 +114,6 @@ class _NoteListPageState extends State<NoteListPage>
     return PopupMenuButton(
       tooltip: "更多",
       icon: const Icon(Icons.more_vert),
-      offset: const Offset(0, 50),
       itemBuilder: (popupMenuContext) {
         bool showAllNoteGridImage = SpProfile.getShowAllNoteGridImage();
         return [
