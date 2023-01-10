@@ -283,8 +283,15 @@ class MyAppState extends State<MyApp> with WindowListener {
       //     : Brightness.light,
       // 在白天或夜色的基础上增加主题色
       colorScheme: themeController.themeColor.value.isDarkMode
-          ? ColorScheme.dark(primary: ThemeUtil.getPrimaryColor())
-          : ColorScheme.light(primary: ThemeUtil.getPrimaryColor()),
+          ? ColorScheme.dark(
+              primary: ThemeUtil.getPrimaryColor(),
+              // 回弹效果颜色
+              secondary: ThemeUtil.getPrimaryColor(),
+            )
+          : ColorScheme.light(
+              primary: ThemeUtil.getPrimaryColor(), // 回弹效果颜色
+              secondary: ThemeUtil.getPrimaryColor(),
+            ),
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
       cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
