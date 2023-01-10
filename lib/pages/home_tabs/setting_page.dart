@@ -112,20 +112,20 @@ class _SettingPageState extends State<SettingPage> {
                 );
               },
             ),
-            ListTile(
-              iconColor: ThemeUtil.getPrimaryIconColor(),
-              leading: const Icon(Icons.book_outlined),
-              title: const Text("动漫界面"),
-              onTap: () {
-                Navigator.of(context).push(
-                  FadeRoute(
-                    builder: (context) {
-                      return const AnimesDisplaySetting();
-                    },
-                  ),
-                );
-              },
-            ),
+            // ListTile(
+            //   iconColor: ThemeUtil.getPrimaryIconColor(),
+            //   leading: const Icon(Icons.book_outlined),
+            //   title: const Text("动漫界面"),
+            //   onTap: () {
+            //     Navigator.of(context).push(
+            //       FadeRoute(
+            //         builder: (context) {
+            //           return const AnimesDisplaySetting();
+            //         },
+            //       ),
+            //     );
+            //   },
+            // ),
             ListTile(
               iconColor: ThemeUtil.getPrimaryIconColor(),
               leading: const Icon(Icons.image_outlined),

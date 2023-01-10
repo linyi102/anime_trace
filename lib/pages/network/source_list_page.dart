@@ -12,7 +12,10 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
+import '../../models/fav_website.dart';
+import '../../utils/launch_uri_util.dart';
 import '../modules/website_icon.dart';
+import '../settings/lapse_cover_animes_page.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({Key? key}) : super(key: key);
@@ -24,6 +27,11 @@ class SourceListPage extends StatefulWidget {
 class _SourceListPageState extends State<SourceListPage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
+
+  final favWebsite = FavWebsite(
+      url: "https://bgmlist.com/",
+      icoUrl: "https://bgmlist.com/public/favicons/apple-touch-icon.png",
+      name: "番组放送");
 
   @override
   void initState() {
@@ -39,11 +47,6 @@ class _SourceListPageState extends State<SourceListPage> {
     if (needPingAll) {
       _pingAllWebsites();
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _refresh() {
@@ -85,8 +88,6 @@ class _SourceListPageState extends State<SourceListPage> {
     }
   }
 
-  final bool _showPingButton = false;
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -98,53 +99,87 @@ class _SourceListPageState extends State<SourceListPage> {
         },
         child: ListView(
           children: [
-            // Container(
-            //   margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            //   height: 100,
-            //   decoration: BoxDecoration(
-            //       color: ThemeUtil.getCardColor(),
-            //       borderRadius: BorderRadius.circular(5)),
-            //   child: ListView(
-            //     scrollDirection: Axis.horizontal,
-            //     children: climbWebsites
-            //         .map((climbWebsite) => Container(
-            //               padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-            //               width: 60,
-            //               child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.center,
-            //                 children: [
-            //                   buildWebSiteIcon(
-            //                       url: climbWebsite.iconUrl, size: 35),
-            //                   Text(
-            //                     climbWebsite.name,
-            //                     overflow: TextOverflow.ellipsis,
-            //                     style: const TextStyle(fontSize: 12),
-            //                   ),
-            //                   // _buildPingStatusRow(climbWebsite),
-            //                   climbWebsite.discard
-            //                       ? _getPingStatusIcon(PingStatus())
-            //                       : _getPingStatusIcon(climbWebsite.pingStatus),
-            //                 ],
-            //               ),
-            //             ))
-            //         .toList(),
-            //   ),
-            // ),
-            // Expanded(child: UpdateRecordPage())
-
-            // _showPingButton ? _buildPingButton() : Container(),
+            // _buildClimbWebsiteGridCard(),
             Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
-
-            // Responsive(
-            //     mobile: _buildListView(),
-            //     tablet: _buildGridView(crossAxisCount: 2),
-            //     desktop:
-            //         _buildGridView(crossAxisCount: size.width > 1100 ? 4 : 3)),
-
-            FavWebsiteListPage()
+            ListView(
+              // 解决报错问题
+              shrinkWrap: true,
+              //解决不滚动问题
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                const ListTile(title: Text("工具")),
+                ListTile(
+                  title: Text(favWebsite.name),
+                  leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 24),
+                  trailing: const Icon(Icons.open_in_new, size: 18),
+                  onTap: () => LaunchUrlUtil.launch(
+                      context: context, uriStr: favWebsite.url),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.auto_fix_high),
+                  title: const Text("修复失效网络封面"),
+                  trailing: const Icon(Icons.chevron_right, size: 18),
+                  onTap: () {
+                    Navigator.of(context).push(FadeRoute(
+                        builder: (context) => const LapseCoverAnimesPage()));
+                  },
+                ),
+                const ListTile(),
+              ],
+            )
+            // FavWebsiteListPage()
           ],
         ),
       ),
+    );
+  }
+
+  Container _buildClimbWebsiteGridCard() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+      // 设置卡片颜色
+      // decoration: BoxDecoration(
+      //     color: ThemeUtil.getCardColor(),
+      //     borderRadius: BorderRadius.circular(5)),
+      child: GridView.builder(
+          // 解决报错问题
+          shrinkWrap: true,
+          //解决不滚动问题
+          physics: const NeverScrollableScrollPhysics(),
+          // 网格内边距
+          padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisExtent: 100, // 格子高度
+            maxCrossAxisExtent: 100, // 格子宽度
+          ),
+          itemCount: climbWebsites.length,
+          itemBuilder: (context, index) {
+            ClimbWebsite climbWebsite = climbWebsites[index];
+            return MaterialButton(
+              onPressed: () => enterSourceDetail(climbWebsite),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    // 圆形边界和网站图标的距离
+                    padding: const EdgeInsets.all(5),
+                    child:
+                        buildWebSiteIcon(url: climbWebsite.iconUrl, size: 30),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 1, color: climbWebsite.pingStatus.color),
+                        borderRadius: BorderRadius.circular(50)),
+                  ),
+                  Text(
+                    climbWebsite.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  _buildSwitchButton(climbWebsite)
+                ],
+              ),
+            );
+          }),
     );
   }
 
@@ -152,13 +187,11 @@ class _SourceListPageState extends State<SourceListPage> {
     return GridView.builder(
         // 解决报错问题
         shrinkWrap: true,
-        //解决不滚动问题
+        // 解决不滚动问题
         physics: const NeverScrollableScrollPhysics(),
-        // 改用WithMaxCrossAxisExtent实现自适应
+        // 使用WithMaxCrossAxisExtent实现自适应
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             mainAxisExtent: 80, maxCrossAxisExtent: 350),
-        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //     crossAxisCount: crossAxisCount, childAspectRatio: childAspectRatio),
         itemCount: climbWebsites.length,
         itemBuilder: (context, index) {
           ClimbWebsite climbWebsite = climbWebsites[index];
@@ -240,13 +273,7 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   _getPingStatusIcon(PingStatus pingStatus) {
-    return Icon(Icons.circle,
-        size: 12,
-        color: (pingStatus.needPing || pingStatus.pinging)
-            ? Colors.grey // 需要ping，或者正在ping
-            : (pingStatus.connectable
-                ? ThemeUtil.getConnectableColor()
-                : Colors.red));
+    return Icon(Icons.circle, size: 12, color: pingStatus.color);
   }
 
   void enterSourceDetail(ClimbWebsite climbWebsite) {
@@ -282,35 +309,5 @@ class _SourceListPageState extends State<SourceListPage> {
     setState(() {}); // 使用的是StatefulBuilder的setState
     // 保存
     SPUtil.setBool(e.spkey, e.enable);
-  }
-
-  _buildPingButton() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Card(
-            elevation: 6,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(50))), // 圆角
-            clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-            child: MaterialButton(
-              onPressed: _refresh,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                child: const Text(
-                  // "测试连接",
-                  // "测试连通",
-                  // "P I N G",
-                  "ping",
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

@@ -52,16 +52,9 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
       ),
       body: ListView(
         children: [
-          // ListTile(
-          //     title: Text("默认开关",
-          //         style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
           ListTile(
-            title: const Text("查看失效网络封面"),
-            onTap: () {
-              Navigator.of(context).push(
-                  FadeRoute(builder: (context) => const LapseCoverAnimesPage()));
-            },
-          ),
+              title: Text("偏好",
+                  style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
           ListTile(
             title: const Text("重置完成最后一集时提示移动清单的对话框"),
             onTap: () {

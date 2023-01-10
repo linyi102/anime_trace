@@ -67,7 +67,7 @@ class _SourceDetailState extends State<SourceDetail> {
             ListTile(
               title: const Text("访问网站"),
               leading: Icon(
-                Icons.open_in_browser_rounded,
+                Icons.open_in_new,
                 color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
