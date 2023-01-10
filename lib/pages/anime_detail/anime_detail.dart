@@ -58,13 +58,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   List<Note> _notes = [];
   late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
+  // 输入框
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   FocusNode animeNameFocusNode = FocusNode(); // 动漫名字输入框焦点
-
-  int rateNoteCount = 0;
-
-  // 清单的位置
-  bool showChecklistInTitle = true;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -78,7 +74,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   int currentStartEpisodeNumber = 1;
   final int episodeRangeSize = 50;
 
+  int rateNoteCount = 0;
   final AnimeController animeController = Get.put(AnimeController());
+  double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
+  double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
 
   @override
   void initState() {
@@ -195,8 +194,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   @override
   Widget build(BuildContext context) {
     Log.info("$runtimeType: build");
-    const double smallIconSize = 14;
-    const double textScaleFactor = 1;
 
     return WillPopScope(
       onWillPop: () async {
@@ -219,130 +216,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               child: Stack(children: [
                 CustomScrollView(
                   slivers: [
-                    // appbar封面背景
+                    // 封面背景
                     _buildSliverAppBar(context),
                     // 动漫信息
-                    SliverPadding(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, top: 10),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          // 动漫名字
-                          SelectableText(_anime.animeName,
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.w600)),
-                          // 评价
-                          _buildRatingStars(),
-                          const SizedBox(height: 15),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // 动漫信息
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text.rich(
-                                    TextSpan(children: [
-                                      WidgetSpan(
-                                        child: Text(
-                                            _anime.getAnimeInfoFirstLine()),
-                                      ),
-                                      // WidgetSpan(
-                                      //     child: Row(
-                                      //   children: [
-                                      //     // SizeBox会导致图标和文字对不齐，所以用Text
-                                      //     const Text(" "),
-                                      //     GestureDetector(
-                                      //         onTap: () {
-                                      //           Navigator.of(context).push(
-                                      //               FadeRoute(
-                                      //                   builder: (context) =>
-                                      //                       AnimePropertiesPage()));
-                                      //         },
-                                      //         child: const Icon(Icons.more,
-                                      //             size: smallIconSize))
-                                      //   ],
-                                      // )),
-                                    ]),
-                                    textScaleFactor: textScaleFactor,
-                                  ),
-                                  Text.rich(
-                                    TextSpan(children: [
-                                      WidgetSpan(
-                                          child: GestureDetector(
-                                        onTap: () {
-                                          if (_anime.animeUrl.isNotEmpty) {
-                                            LaunchUrlUtil.launch(
-                                                context: context,
-                                                uriStr: _anime.animeUrl);
-                                          } else {
-                                            showToast("空网址无法打开");
-                                          }
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Text(_anime.getAnimeSource()),
-                                            const Icon(Icons.open_in_new,
-                                                size: smallIconSize),
-                                          ],
-                                        ),
-                                      )),
-                                      // const WidgetSpan(child: Text(" • ")),
-                                      const WidgetSpan(child: Text(" ")),
-                                      WidgetSpan(
-                                          child: GestureDetector(
-                                        onTap: () {
-                                          showDialogSelectPlayStatus(
-                                              context, animeController);
-                                        },
-                                        // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
-                                        child: Obx(() => Row(
-                                              children: [
-                                                Text(animeController.anime.value
-                                                    .getPlayStatus()
-                                                    .text),
-                                                Icon(
-                                                    animeController.anime.value
-                                                        .getPlayStatus()
-                                                        .iconData,
-                                                    size: smallIconSize),
-                                              ],
-                                            )),
-                                      )),
-                                      // const WidgetSpan(child: Text(" • ")),
-                                      const WidgetSpan(child: Text(" ")),
-                                      WidgetSpan(
-                                          child: GestureDetector(
-                                        onTap: showDialogmodifyEpisodeCnt,
-                                        child: Row(
-                                          children: [
-                                            Text("${_anime.animeEpisodeCnt}集"),
-                                            const Icon(Icons.edit,
-                                                size: smallIconSize),
-                                          ],
-                                        ),
-                                      )),
-                                    ]),
-                                    textScaleFactor: textScaleFactor,
-                                  ),
-                                ],
-                              ),
-                              // 评价和清单
-                              Row(
-                                children: [
-                                  _showInfoIcon(),
-                                  const SizedBox(width: 10),
-                                  _showRateIcon(),
-                                  const SizedBox(width: 10),
-                                  _showCollectIcon()
-                                ],
-                              )
-                            ],
-                          ),
-                        ]),
-                      ),
-                    ),
+                    _buildAnimeInfo(context),
                     // 集信息
                     _buildSliverListBody()
                   ],
@@ -354,6 +231,108 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     );
   }
 
+  // 构建动漫信息(名字、评分、其他信息)
+  _buildAnimeInfo(BuildContext context) {
+    const double smallIconSize = 14;
+    const double textScaleFactor = 1;
+
+    return SliverPadding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+      sliver: SliverList(
+        delegate: SliverChildListDelegate([
+          // 动漫名字
+          SelectableText(_anime.animeName,
+              style:
+                  const TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+          // 评价
+          _buildRatingStars(),
+          const SizedBox(height: 15),
+          // 动漫信息(左侧)和相关按钮(右侧)
+          Row(
+            children: [
+              // 动漫信息
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 第一行信息
+                  Text.rich(
+                    TextSpan(children: [
+                      WidgetSpan(
+                        child: Text(_anime.getAnimeInfoFirstLine()),
+                      ),
+                    ]),
+                    textScaleFactor: textScaleFactor,
+                  ),
+                  // 第二行信息
+                  Text.rich(
+                    TextSpan(children: [
+                      WidgetSpan(
+                          child: GestureDetector(
+                        onTap: () {
+                          if (_anime.animeUrl.isNotEmpty) {
+                            LaunchUrlUtil.launch(
+                                context: context, uriStr: _anime.animeUrl);
+                          } else {
+                            showToast("空网址无法打开");
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Text(_anime.getAnimeSource()),
+                            const Icon(Icons.open_in_new, size: smallIconSize),
+                          ],
+                        ),
+                      )),
+                      // const WidgetSpan(child: Text(" • ")),
+                      const WidgetSpan(child: Text(" ")),
+                      WidgetSpan(
+                          child: GestureDetector(
+                        onTap: () {
+                          showDialogSelectPlayStatus(context, animeController);
+                        },
+                        // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
+                        child: Obx(() => Row(
+                              children: [
+                                Text(animeController.anime.value
+                                    .getPlayStatus()
+                                    .text),
+                                Icon(
+                                    animeController.anime.value
+                                        .getPlayStatus()
+                                        .iconData,
+                                    size: smallIconSize),
+                              ],
+                            )),
+                      )),
+                      // const WidgetSpan(child: Text(" • ")),
+                      const WidgetSpan(child: Text(" ")),
+                      WidgetSpan(
+                          child: GestureDetector(
+                        onTap: showDialogmodifyEpisodeCnt,
+                        child: Row(
+                          children: [
+                            Text("${_anime.animeEpisodeCnt}集"),
+                            const Icon(Icons.edit, size: smallIconSize),
+                          ],
+                        ),
+                      )),
+                    ]),
+                    textScaleFactor: textScaleFactor,
+                  ),
+                ],
+              ),
+              const Spacer(),
+              _showInfoIcon(),
+              _showRateIcon(),
+              _showCollectIcon()
+            ],
+          ),
+        ]),
+      ),
+    );
+  }
+
+  // 构建主体(集信息页)
   _buildSliverListBody() {
     // 不能使用MyAnimatedSwitcher，因为父级是slivers: []
     if (_loadEpisodeOk) {
@@ -370,9 +349,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     }
   }
 
-  double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
-  double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
-
   _buildSliverAppBar(BuildContext context) {
     double expandedHeight =
         MediaQuery.of(context).size.height * coverBgHeightRatio;
@@ -384,6 +360,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           expandedHeight: expandedHeight,
           // stretch: true,
           flexibleSpace: FlexibleSpaceBar(
+            // 标题，不指定无法左对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
+            // titlePadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            // expandedTitleScale: 1.2,
+            // title: SelectableText(_anime.animeName,
+            //     style: const TextStyle(fontWeight: FontWeight.w600)),
+
             collapseMode: CollapseMode.parallax,
             background: Stack(
               children: [
@@ -520,80 +502,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 onTap: () {
                   // 关闭下拉菜单
                   Navigator.pop(context);
-
-                  showFlexibleBottomSheet(
-                    duration: const Duration(milliseconds: 200),
-                    minHeight: 0,
-                    initHeight: 0.3,
-                    maxHeight: 1,
-                    context: context,
-                    isExpand: true,
-                    builder: (
-                      BuildContext context,
-                      ScrollController scrollController,
-                      double bottomSheetOffset,
-                    ) =>
-                        StatefulBuilder(
-                            builder: (context, setBottomSheetState) => Scaffold(
-                                  body: ListView(
-                                    children: [
-                                      ToggleListTile(
-                                        title: const Text("背景模糊"),
-                                        toggleOn: sigma > 0, // >0说明开启了模糊
-                                        onTap: () {
-                                          sigma = sigma > 0 ? 0.0 : 10.0;
-                                          SpProfile
-                                              .setCoverBgSigmaInAnimeDetailPage(
-                                                  sigma);
-                                          // 重新渲染开关
-                                          setBottomSheetState(() {});
-                                          // 重新渲染背景
-                                          setState(() {});
-                                        },
-                                      ),
-                                      ToggleListTile(
-                                        title: const Text("背景渐变"),
-                                        toggleOn: SpProfile
-                                            .getEnableCoverBgGradient(),
-                                        onTap: () {
-                                          SpProfile.turnEnableCoverBgGradient();
-                                          setBottomSheetState(() {});
-                                          setState(() {});
-                                        },
-                                      ),
-                                      // 调节封面背景高度
-                                      ListTile(
-                                          title: const Text("封面背景高度"),
-                                          trailing: SizedBox(
-                                            width: 200,
-                                            child: Slider(
-                                              min: 0.1,
-                                              max: 1,
-                                              // 显示数字(只有指定divisions后才会显示)
-                                              label:
-                                                  "${coverBgHeightRatio.toPrecision(2)}",
-                                              divisions: 30,
-                                              // 分成30个刻度
-                                              value: coverBgHeightRatio,
-                                              onChanged: (value) {
-                                                Log.info("拖动中，value=$value");
-                                                coverBgHeightRatio = value;
-
-                                                setBottomSheetState(() {});
-                                                setState(() {});
-                                              },
-                                              onChangeEnd: (value) {
-                                                // 拖动结束后
-                                                Log.info("拖动结束，value=$value");
-                                                SpProfile.setCoverBgHeightRatio(
-                                                    value);
-                                              },
-                                            ),
-                                          ))
-                                    ],
-                                  ),
-                                )),
-                  );
+                  _showLayoutBottomSheet();
                 },
               ),
             )
@@ -603,6 +512,93 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     ];
   }
 
+  // 弹出底部弹出菜单，用于外观设置
+  _showLayoutBottomSheet() {
+    showFlexibleBottomSheet(
+      duration: const Duration(milliseconds: 200),
+      minHeight: 0,
+      initHeight: 0.3,
+      maxHeight: 1,
+      context: context,
+      isExpand: true,
+      builder: (
+        BuildContext context,
+        ScrollController scrollController,
+        double bottomSheetOffset,
+      ) =>
+          StatefulBuilder(
+              builder: (context, setBottomSheetState) => Scaffold(
+                    body: ListView(
+                      children: [
+                        ToggleListTile(
+                          title: const Text("背景模糊"),
+                          toggleOn: sigma > 0, // >0说明开启了模糊
+                          onTap: () {
+                            sigma = sigma > 0 ? 0.0 : 10.0;
+                            SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
+                            // 重新渲染开关
+                            setBottomSheetState(() {});
+                            // 重新渲染背景
+                            setState(() {});
+                          },
+                        ),
+                        ToggleListTile(
+                          title: const Text("背景渐变"),
+                          toggleOn: SpProfile.getEnableCoverBgGradient(),
+                          onTap: () {
+                            SpProfile.turnEnableCoverBgGradient();
+                            setBottomSheetState(() {});
+                            setState(() {});
+                          },
+                        ),
+                        // 调节封面背景高度
+                        ListTile(
+                            title: const Text("背景高度"),
+                            trailing: SizedBox(
+                              width: 200,
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    width: 190,
+                                    child: Slider(
+                                      min: 0.1,
+                                      max: 1,
+                                      // 显示数字(只有指定divisions后才会显示)
+                                      // label:
+                                      // "${coverBgHeightRatio.toPrecision(2)}",
+                                      divisions: 30,
+                                      // 分成30个刻度
+                                      value: coverBgHeightRatio,
+                                      onChanged: (value) {
+                                        Log.info("拖动中，value=$value");
+                                        coverBgHeightRatio = value;
+
+                                        setBottomSheetState(() {});
+                                        setState(() {});
+                                      },
+                                      onChangeEnd: (value) {
+                                        // 拖动结束后
+                                        Log.info("拖动结束，value=$value");
+                                        SpProfile.setCoverBgHeightRatio(value);
+                                      },
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    child: Text(
+                                        "${coverBgHeightRatio.toPrecision(2)}",
+                                        textScaleFactor: 0.8),
+                                  )
+                                ],
+                              ),
+                            ))
+                      ],
+                    ),
+                  )),
+    );
+  }
+
+  // 构建评分栏
   _buildRatingStars() {
     return AnimeRatingBar(
         rate: _anime.rate,
@@ -613,55 +609,45 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         });
   }
 
+  // 显示信息按钮，点击后进入动漫属性信息页
   _showInfoIcon() {
-    return GestureDetector(
-        onTap: () {
-          Navigator.of(context)
-              .push(FadeRoute(builder: (context) => AnimePropertiesPage()));
-        },
-        child: Column(
-          children: const [
-            Icon(Icons.info, size: 18),
-            Text("信息", style: TextStyle(fontSize: 12))
-          ],
-        ));
+    return IconTextButton(
+      iconData: Icons.info,
+      title: "信息",
+      onTap: () {
+        Navigator.of(context)
+            .push(FadeRoute(builder: (context) => AnimePropertiesPage()));
+      },
+    );
   }
 
+  // 显示评价按钮，点击后进入评价列表页
   _showRateIcon() {
-    return GestureDetector(
-        onTap: () {
-          Navigator.of(context)
-              .push(FadeRoute(builder: (context) => AnimeRateListPage(_anime)))
-              .then((value) {
-            // 重新查询评价数量
-            _loadRateNoteCnt();
-          });
-        },
-        child: Column(
-          children: [
-            Icon(Icons.star, color: Colors.amber[600], size: 18),
-            Text("$rateNoteCount条评价", style: const TextStyle(fontSize: 12))
-          ],
-        ));
+    return IconTextButton(
+      iconData: Entypo.comment,
+      title: "$rateNoteCount条评价",
+      onTap: () {
+        Navigator.of(context)
+            .push(FadeRoute(builder: (context) => AnimeRateListPage(_anime)))
+            .then((value) {
+          // 重新查询评价数量
+          _loadRateNoteCnt();
+        });
+      },
+    );
   }
 
+  // 显示收藏按钮，点击后可以修改清单
   _showCollectIcon() {
-    return GestureDetector(
-        onTap: () {
-          _dialogSelectTag();
-        },
-        child: Column(
-          children: [
-            _anime.isCollected()
-                ? const Icon(Icons.favorite, color: Colors.red, size: 18)
-                : const Icon(Icons.favorite_border, size: 18),
-            _anime.isCollected()
-                ? Text(_anime.tagName, style: const TextStyle(fontSize: 12))
-                : Container()
-          ],
-        ));
+    return IconTextButton(
+      iconData: _anime.isCollected() ? Entypo.heart : Entypo.heart_empty,
+      iconColor: _anime.isCollected() ? Colors.red : null,
+      title: _anime.isCollected() ? _anime.tagName : "",
+      onTap: () => _dialogSelectTag(),
+    );
   }
 
+  // 构建集信息页
   _buildEpisodePage() {
     if (!_loadEpisodeOk) {
       return SizedBox(
@@ -1678,5 +1664,42 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         _loadEpisode();
       });
     });
+  }
+}
+
+class IconTextButton extends StatelessWidget {
+  const IconTextButton(
+      {required this.iconData,
+      this.iconColor,
+      this.iconSize = 18,
+      required this.title,
+      this.titleSize = 12,
+      this.onTap,
+      Key? key})
+      : super(key: key);
+
+  final void Function()? onTap;
+  final IconData iconData;
+  final double iconSize;
+  final Color? iconColor;
+  final String title;
+  final double titleSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          // 必须添加颜色(透明色也可)，这样手势就能监测到Container，否则只能检测到Icon和Text
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              Icon(iconData, color: iconColor, size: iconSize),
+              Text(title, style: TextStyle(fontSize: titleSize))
+            ],
+          ),
+        ));
+    ;
   }
 }

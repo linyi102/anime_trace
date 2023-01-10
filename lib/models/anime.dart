@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/models/playStatus.dart';
+import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 
 class Anime {

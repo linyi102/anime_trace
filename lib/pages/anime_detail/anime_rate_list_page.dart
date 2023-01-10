@@ -61,20 +61,24 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
       appBar: AppBar(
           title: const Text("动漫评价",
               style: TextStyle(fontWeight: FontWeight.w600))),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 10),
-            //   child: _buildRatingStars(),
-            // ),
-            _buildRateCard(),
-            noteOk
-                ? notes.isNotEmpty
-                    ? Column(children: _buildRateNoteList())
-                    : Container()
-                : Container()
-          ],
+      body: Padding(
+        padding: const EdgeInsetsDirectional.all(5),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10),
+              //   child: _buildRatingStars(),
+              // ),
+              _buildRateCard(),
+              noteOk
+                  ? notes.isNotEmpty
+                      ? Column(children: _buildRateNoteList())
+                      : Container()
+                  : Container()
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -86,6 +90,18 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
   }
 
   _buildRateCard() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("评分：${anime.rate}/5"),
+          _buildRatingStars(),
+          const SizedBox(height: 30),
+          Text("${notes.length}条评价")
+        ],
+      ),
+    );
     return Container(
       height: 80,
       width: 210,
@@ -150,40 +166,37 @@ class _AnimeRateListPageState extends State<AnimeRateListPage>
     Log.info("渲染1次评价笔记列表"); // TODO：多次渲染
 
     for (Note note in notes) {
-      list.add(Container(
-        padding: const EdgeInsets.all(5),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Card(
+      list.add(ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Card(
+          elevation: 0,
+          child: MaterialButton(
             elevation: 0,
-            child: MaterialButton(
-              elevation: 0,
-              padding: const EdgeInsets.all(0),
-              onPressed: () {
-                Navigator.of(context).push(
-                  FadeRoute(
-                    builder: (context) {
-                      return NoteEdit(note);
-                    },
-                  ),
-                ).then((value) {
-                  // 重新获取列表
-                  // _loadData();
-                  // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
-                  // 也不需要重新获取，修改笔记返回后，笔记也会变化
-                });
-              },
-              child: Flex(
-                direction: Axis.vertical,
-                children: [
-                  // 笔记内容
-                  _buildNoteContent(note),
-                  // 笔记图片
-                  NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-                  // 创建时间
-                  _buildCreateTimeAndMoreAction(note)
-                ],
-              ),
+            padding: const EdgeInsets.all(0),
+            onPressed: () {
+              Navigator.of(context).push(
+                FadeRoute(
+                  builder: (context) {
+                    return NoteEdit(note);
+                  },
+                ),
+              ).then((value) {
+                // 重新获取列表
+                // _loadData();
+                // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
+                // 也不需要重新获取，修改笔记返回后，笔记也会变化
+              });
+            },
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                // 笔记内容
+                _buildNoteContent(note),
+                // 笔记图片
+                NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
+                // 创建时间
+                _buildCreateTimeAndMoreAction(note)
+              ],
             ),
           ),
         ),
