@@ -101,13 +101,15 @@ class AnimeCoverDetail extends StatelessWidget {
               context: context,
               builder: (dialogContext) {
                 return AlertDialog(
-                  title: const Text("信息"),
+                  title: const Text("封面信息"),
                   content: SingleChildScrollView(
                     child: Column(
                       children: [
                         Obx(() => ListTile(
+                              contentPadding: EdgeInsetsDirectional.zero,
+                              dense: true,
                               title: const Text("封面链接"),
-                              subtitle: Text(
+                              subtitle: SelectableText(
                                   animeController.anime.value.animeCoverUrl),
                             ))
                       ],

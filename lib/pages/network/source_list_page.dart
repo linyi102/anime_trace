@@ -97,38 +97,40 @@ class _SourceListPageState extends State<SourceListPage> {
         onRefresh: () async {
           _refresh();
         },
-        child: ListView(
-          children: [
-            // _buildClimbWebsiteGridCard(),
-            Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
-            ListView(
-              // 解决报错问题
-              shrinkWrap: true,
-              //解决不滚动问题
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                const ListTile(title: Text("工具")),
-                ListTile(
-                  title: Text(favWebsite.name),
-                  leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 24),
-                  trailing: const Icon(Icons.open_in_new, size: 18),
-                  onTap: () => LaunchUrlUtil.launch(
-                      context: context, uriStr: favWebsite.url),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.auto_fix_high),
-                  title: const Text("修复失效网络封面"),
-                  trailing: const Icon(Icons.chevron_right, size: 18),
-                  onTap: () {
-                    Navigator.of(context).push(FadeRoute(
-                        builder: (context) => const LapseCoverAnimesPage()));
-                  },
-                ),
-                const ListTile(),
-              ],
-            )
-            // FavWebsiteListPage()
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // _buildClimbWebsiteGridCard(),
+              Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
+              ListView(
+                // 解决报错问题
+                shrinkWrap: true,
+                //解决不滚动问题
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  const ListTile(title: Text("工具")),
+                  ListTile(
+                    title: Text(favWebsite.name),
+                    leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: () => LaunchUrlUtil.launch(
+                        context: context, uriStr: favWebsite.url),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.auto_fix_high),
+                    title: const Text("修复失效网络封面"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      Navigator.of(context).push(FadeRoute(
+                          builder: (context) => const LapseCoverAnimesPage()));
+                    },
+                  ),
+                  const ListTile()
+                ],
+              )
+              // FavWebsiteListPage()
+            ],
+          ),
         ),
       ),
     );
@@ -285,19 +287,19 @@ class _SourceListPageState extends State<SourceListPage> {
     });
   }
 
-  IconButton _buildSwitchButton(ClimbWebsite climbWebsite) {
+  _buildSwitchButton(ClimbWebsite climbWebsite) {
     if (climbWebsite.discard) {
-      return IconButton(
-          onPressed: () {
+      return GestureDetector(
+          onTap: () {
             showToast("很抱歉，该搜索源已经无法使用");
           },
-          icon: const Icon(Icons.not_interested));
+          child: const Icon(Icons.not_interested));
     }
-    return IconButton(
-      onPressed: () {
+    return GestureDetector(
+      onTap: () {
         _invertSource(climbWebsite);
       },
-      icon: climbWebsite.enable
+      child: climbWebsite.enable
           ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryColor())
           : const Icon(Icons.check_box_outline_blank),
     );

@@ -139,13 +139,13 @@ class _ImageViewerState extends State<ImageViewer> {
           Container(color: Colors.black),
       builder: (context, index) {
         return PhotoViewGalleryPageOptions(
-            onTapUp: (buildContext, details, photoViewControllerValue) {
-              if (fullScreen) {
-                _exitFullScreen();
-              } else {
-                _enterFullScreen();
-              }
-            },
+            // onTapUp: (buildContext, details, photoViewControllerValue) {
+            //   if (fullScreen) {
+            //     _exitFullScreen();
+            //   } else {
+            //     _enterFullScreen();
+            //   }
+            // },
             imageProvider: FileImage(File(imageLocalPaths[index])),
             errorBuilder: (buildContext, object, stackTrace) {
               return _buildErrorImage(context);
@@ -215,6 +215,17 @@ class _ImageViewerState extends State<ImageViewer> {
   List<Widget> _buildActions(BuildContext context) {
     return [
       IconButton(
+          tooltip: "全屏",
+          onPressed: () {
+            if (fullScreen) {
+              _exitFullScreen();
+            } else {
+              _enterFullScreen();
+            }
+          },
+          icon: const Icon(Icons.fullscreen)),
+      IconButton(
+          tooltip: "图片信息",
           onPressed: () {
             _showDialogAboutImageAttributes(context);
           },
@@ -227,17 +238,22 @@ class _ImageViewerState extends State<ImageViewer> {
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text("图片属性"),
+            title: const Text("图片信息"),
             content: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ListTile(
+                      contentPadding: EdgeInsetsDirectional.zero,
+                      dense: true,
                       title: const Text("完全路径"),
                       subtitle: SelectableText(
                         imageLocalPaths[currentIndex],
                         textScaleFactor: 0.9,
                       )),
                   ListTile(
+                      contentPadding: EdgeInsetsDirectional.zero,
+                      dense: true,
                       title: const Text("相对路径"),
                       subtitle: SelectableText(
                         widget.relativeLocalImages[currentIndex].path,
