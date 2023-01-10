@@ -1,4 +1,4 @@
-[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [语雀](https://www.yuque.com/linyi517/fzfxr0)
+[GitHub](https://github.com/linyi102/anime_trace) / [Gitee](https://gitee.com/linyi517/anime_trace) / [帮助文档](https://www.yuque.com/linyi517/fzfxr0)
 
 ## 下载地址
 
@@ -8,8 +8,7 @@
 
 ## 介绍
 
-因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。<br />
-所以尝试做了个软件，效果演示如下：
+因为自己总喜欢把看过的动漫记录下来，可是手动记录实在是有些繁琐，而且效果也不好。所以尝试做了个软件，效果演示如下：
 
 Android 端：
 
@@ -18,14 +17,6 @@ Android 端：
 Windows 端：
 
 ![](./assets/images/example-win.jpg)
-
-## 简要说明
-
-该软件没有提供在线观看功能，如有需要，可以打开搜索源网址进行观看。
-
-用户数据存放在本地，用户可使用 WebDav 备份数据到第三方平台，比如坚果云。
-
-笔记中添加的图片是通过记录图片文件的相对地址来实现的，因此并不会上传。
 
 ## 笔记相关问题
 
@@ -49,39 +40,38 @@ WebDav 备份推荐使用坚果云备份，[点击查看使用方式](https://he
 
 Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一个平台。
 
-## 最后
-
-如果在使用过程中遇到了什么问题，可以加 qq群 414226908 或者私信我。
-
 ## 第三方包
 
 | packages                                                     | 开源协议     |
 | ------------------------------------------------------------ | ------------ |
-| [photo-view \| Flutter Package](https://pub.flutter-io.cn/packages/photo_view) | MIT          |
-| [flutter-rating-stars \| Flutter Package](https://pub.flutter-io.cn/packages/flutter_rating_stars) | Apache-2.0   |
-| [bottom-sheet \| Flutter Package](https://pub.flutter-io.cn/packages/bottom_sheet) | Apache-2.0   |
-| [window_manager Flutter Package](https://pub.flutter-io.cn/packages/window_manager) | MIT          |
-| [flutter_tab_indicator_styler Flutter Package](https://pub.flutter-io.cn/packages/flutter_tab_indicator_styler) | MIT          |
-| [percent_indicator Flutter Package](https://pub.flutter-io.cn/packages/percent_indicator) | BSD-2-Clause |
-| [dart_ping \| Dart Package](https://pub.flutter-io.cn/packages/dart_ping) | BSD-3-Clause |
-| [fluttericon \| Flutter Package](https://pub.flutter-io.cn/packages/fluttericon) | unknown      |
-| [simple_icons \| Flutter Package](https://pub.flutter-io.cn/packages/simple_icons) | unknown      |
-| [expand_widget \| Flutter Package](https://pub.flutter-io.cn/packages/expand_widget) | GPL-3.0      |
-| [get \| Flutter Package](https://pub.flutter-io.cn/packages/get) | MIT          |
-| [shared_preferences \| Flutter Package](https://pub.flutter-io.cn/packages/shared_preferences) | BSD-3-Clause |
-| [sqflite \| Flutter Package](https://pub.flutter-io.cn/packages/sqflite) | BSD-2-Clause |
-| [sqflite_common_ffi \| Dart Package](https://pub.flutter-io.cn/packages/sqflite_common_ffi) | BSD-2-Clause |
-| [path_provider \| Flutter Package](https://pub.flutter-io.cn/packages/path_provider) | BSD-3-Clause |
-| [file_picker \| Flutter Package](https://pub.flutter-io.cn/packages/file_picker) | MIT          |
-| [webdav_client \| Dart Package](https://pub.flutter-io.cn/packages/webdav_client) | BSD-3-Clause |
-| [oktoast \| Flutter Package](https://pub.flutter-io.cn/packages/oktoast) | Apache-2.0   |
-| [dio \| Dart Package](https://pub.flutter-io.cn/packages/dio) | MIT          |
-| [html \| Dart Package](https://pub.flutter-io.cn/packages/html) | unknown      |
-| [cached_network_image \| Flutter Package](https://pub.flutter-io.cn/packages/cached_network_image) | MIT          |
-| [archive \| Dart Package](https://pub.flutter-io.cn/packages/archive) | MIT          |
-| [path \| Dart Package](https://pub.flutter-io.cn/packages/path) | BSD-3-Clause |
-| [package_info_plus \| Flutter Package](https://pub.flutter-io.cn/packages/package_info_plus) | BSD-3-Clause |
-| [url_launcher \| Flutter Package](https://pub.flutter-io.cn/packages/url_launcher) | BSD-3-Clause |
-| [transparent_image \| Dart Package](https://pub.flutter-io.cn/packages/transparent_image) | MIT          |
-| [cupertino_icons \| Dart Package](https://pub.flutter-io.cn/packages/cupertino_icons) | MIT          |
+| [fluttericon](https://pub.flutter-io.cn/packages/fluttericon) | unknown      |
+| [simple_icons](https://pub.flutter-io.cn/packages/simple_icons) | unknown      |
+| [toggle_switch](https://pub.flutter-io.cn/packages/toggle_switch) | MIT          |
+| [reorderable_grid_view](https://pub.flutter-io.cn/packages/reorderable_grid_view) | MIT          |
+| [webview_flutter](https://pub.flutter-io.cn/packages/webview_flutter) | BSD-3-Clause |
+| [photo-view](https://pub.flutter-io.cn/packages/photo_view)  | MIT          |
+| [flutter_rating_bar](https://pub.flutter-io.cn/packages/flutter_rating_bar) | MIT          |
+| [bottom-sheet](https://pub.flutter-io.cn/packages/bottom_sheet) | Apache-2.0   |
+| [window_manager](https://pub.flutter-io.cn/packages/window_manager) | MIT          |
+| [flutter_tab_indicator_styler](https://pub.flutter-io.cn/packages/flutter_tab_indicator_styler) | MIT          |
+| [percent_indicator](https://pub.flutter-io.cn/packages/percent_indicator) | BSD-2-Clause |
+| [dart_ping](https://pub.flutter-io.cn/packages/dart_ping)    | BSD-3-Clause |
+| [expand_widget](https://pub.flutter-io.cn/packages/expand_widget) | GPL-3.0      |
+| [get](https://pub.flutter-io.cn/packages/get)                | MIT          |
+| [shared_preferences](https://pub.flutter-io.cn/packages/shared_preferences) | BSD-3-Clause |
+| [sqflite](https://pub.flutter-io.cn/packages/sqflite)        | BSD-2-Clause |
+| [sqflite_common_ffi](https://pub.flutter-io.cn/packages/sqflite_common_ffi) | BSD-2-Clause |
+| [path_provider](https://pub.flutter-io.cn/packages/path_provider) | BSD-3-Clause |
+| [file_picker](https://pub.flutter-io.cn/packages/file_picker) | MIT          |
+| [webdav_client](https://pub.flutter-io.cn/packages/webdav_client) | BSD-3-Clause |
+| [oktoast](https://pub.flutter-io.cn/packages/oktoast)        | Apache-2.0   |
+| [dio](https://pub.flutter-io.cn/packages/dio)                | MIT          |
+| [html](https://pub.flutter-io.cn/packages/html)              | unknown      |
+| [cached_network_image](https://pub.flutter-io.cn/packages/cached_network_image) | MIT          |
+| [archive](https://pub.flutter-io.cn/packages/archive)        | MIT          |
+| [path](https://pub.flutter-io.cn/packages/path)              | BSD-3-Clause |
+| [package_info_plus](https://pub.flutter-io.cn/packages/package_info_plus) | BSD-3-Clause |
+| [url_launcher](https://pub.flutter-io.cn/packages/url_launcher) | BSD-3-Clause |
+| [transparent_image](https://pub.flutter-io.cn/packages/transparent_image) | MIT          |
+| [cupertino_icons](https://pub.flutter-io.cn/packages/cupertino_icons) | MIT          |
 
