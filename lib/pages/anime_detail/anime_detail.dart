@@ -383,26 +383,31 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   ),
                 ),
                 // 为底层背景添加渐变效果
-                if (SpProfile.getEnableCoverBgGradient())
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            // 最上面添加一点黑色，这样就能看清按钮了
-                            Colors.black.withOpacity(0.3),
-                            // 添加两个透明色，如果只添加1个会有些暗
-                            ThemeUtil.getScaffoldBackgroundColor()
-                                .withOpacity(0),
-                            ThemeUtil.getScaffoldBackgroundColor()
-                                .withOpacity(0),
-                            // 过渡到主体颜色
-                            ThemeUtil.getScaffoldBackgroundColor()
-                                .withOpacity(1),
-                          ]),
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: SpProfile.getEnableCoverBgGradient()
+                            ? [
+                                // 最上面添加一点黑色，这样就能看清按钮了
+                                Colors.black.withOpacity(0.2),
+                                // 添加两个透明色，如果只添加1个会有些暗
+                                Colors.transparent,
+                                Colors.transparent,
+                                // 过渡到主体颜色
+                                ThemeUtil.getScaffoldBackgroundColor()
+                                    .withOpacity(1),
+                              ]
+                            : [
+                                Colors.black.withOpacity(0.2),
+                                Colors.transparent,
+                                Colors.transparent,
+                                // 最后1个换成透明色，就取消渐变了，上面两个透明色仍要保留，否则黑色会直接过渡到下面透明色，中间会有一点黑色
+                                Colors.transparent
+                              ]),
                   ),
+                ),
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(

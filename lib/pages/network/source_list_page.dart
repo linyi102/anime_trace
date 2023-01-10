@@ -101,7 +101,9 @@ class _SourceListPageState extends State<SourceListPage> {
           child: Column(
             children: [
               // _buildClimbWebsiteGridCard(),
-              Responsive.isMobile(context) ? _buildListView() : _buildGridView(),
+              Responsive.isMobile(context)
+                  ? _buildListView()
+                  : _buildGridView(),
               ListView(
                 // 解决报错问题
                 shrinkWrap: true,
@@ -112,14 +114,14 @@ class _SourceListPageState extends State<SourceListPage> {
                   ListTile(
                     title: Text(favWebsite.name),
                     leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
-                    trailing: const Icon(Icons.open_in_new),
+                    // trailing: const Icon(Icons.open_in_new),
                     onTap: () => LaunchUrlUtil.launch(
                         context: context, uriStr: favWebsite.url),
                   ),
                   ListTile(
                     leading: const Icon(Icons.auto_fix_high),
                     title: const Text("修复失效网络封面"),
-                    trailing: const Icon(Icons.chevron_right),
+                    // trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(FadeRoute(
                           builder: (context) => const LapseCoverAnimesPage()));
@@ -289,17 +291,17 @@ class _SourceListPageState extends State<SourceListPage> {
 
   _buildSwitchButton(ClimbWebsite climbWebsite) {
     if (climbWebsite.discard) {
-      return GestureDetector(
-          onTap: () {
+      return IconButton(
+          onPressed: () {
             showToast("很抱歉，该搜索源已经无法使用");
           },
-          child: const Icon(Icons.not_interested));
+          icon: const Icon(Icons.not_interested));
     }
-    return GestureDetector(
-      onTap: () {
+    return IconButton(
+      onPressed: () {
         _invertSource(climbWebsite);
       },
-      child: climbWebsite.enable
+      icon: climbWebsite.enable
           ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryColor())
           : const Icon(Icons.check_box_outline_blank),
     );

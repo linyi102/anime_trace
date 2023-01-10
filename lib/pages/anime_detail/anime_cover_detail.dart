@@ -108,7 +108,7 @@ class AnimeCoverDetail extends StatelessWidget {
                         Obx(() => ListTile(
                               contentPadding: EdgeInsetsDirectional.zero,
                               dense: true,
-                              title: const Text("封面链接"),
+                              title: const Text("链接"),
                               subtitle: SelectableText(
                                   animeController.anime.value.animeCoverUrl),
                             ))

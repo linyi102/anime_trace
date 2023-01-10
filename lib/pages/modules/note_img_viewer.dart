@@ -67,21 +67,14 @@ class _ImageViewerState extends State<ImageViewer> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          // 如果处于全屏，则退出全屏模式，否则退出该页面
-          if (fullScreen) {
-            _exitFullScreen();
-            return false;
-          } else {
-            Navigator.of(context).pop(dirChangedWrapper);
-            return true;
-          }
+          Navigator.of(context).pop(dirChangedWrapper);
+          return true;
         },
         child: Scaffold(
           body: Stack(
             children: [
               _buildPhotoViewGallery(),
               // 都叠放在图片上面，否则无法显示
-              // if (!fullScreen)
               _buildStackAppBar(context),
               if (!fullScreen)
                 Positioned(
@@ -139,16 +132,16 @@ class _ImageViewerState extends State<ImageViewer> {
           Container(color: Colors.black),
       builder: (context, index) {
         return PhotoViewGalleryPageOptions(
-            // onTapUp: (buildContext, details, photoViewControllerValue) {
-            //   if (fullScreen) {
-            //     _exitFullScreen();
-            //   } else {
-            //     _enterFullScreen();
-            //   }
-            // },
             imageProvider: FileImage(File(imageLocalPaths[index])),
             errorBuilder: (buildContext, object, stackTrace) {
               return _buildErrorImage(context);
+            },
+            onTapUp: (_, __, ___) {
+              if (fullScreen) {
+                _exitFullScreen();
+              } else {
+                _enterFullScreen();
+              }
             });
       },
     );
@@ -215,21 +208,11 @@ class _ImageViewerState extends State<ImageViewer> {
   List<Widget> _buildActions(BuildContext context) {
     return [
       IconButton(
-          tooltip: "全屏",
-          onPressed: () {
-            if (fullScreen) {
-              _exitFullScreen();
-            } else {
-              _enterFullScreen();
-            }
-          },
-          icon: const Icon(Icons.fullscreen)),
-      IconButton(
           tooltip: "图片信息",
           onPressed: () {
             _showDialogAboutImageAttributes(context);
           },
-          icon: const Icon(Icons.error_outline, color: Colors.white))
+          icon: const Icon(Icons.info_outlined, color: Colors.white))
     ];
   }
 

@@ -136,23 +136,24 @@ class UpdateRecordPage extends StatelessWidget {
     int updateOkCnt = updateRecordController.updateOkCnt.value;
     int needUpdateCnt = updateRecordController.needUpdateCnt.value;
 
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-      margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          color: ThemeUtil.getCardColor()),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(FadeRoute(builder: (context) {
-                return const NeedUpdateAnimeList();
-              }));
-            },
-            child: Column(
+    return GestureDetector(
+      onTap: () {
+        Log.info("进入页面");
+        Navigator.of(context).push(FadeRoute(builder: (context) {
+          return const NeedUpdateAnimeList();
+        }));
+      },
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+        margin: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: ThemeUtil.getCardColor()),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: Container()),
@@ -164,25 +165,25 @@ class UpdateRecordPage extends StatelessWidget {
                 Expanded(child: Container()),
               ],
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                // if (value) {
-                //   dialogUpdateAllAnimeProgress(context);
-                // }
-              });
-            },
-            style: ButtonStyle(
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)))),
-            child: const Text(
-              "立即更新",
-              textScaleFactor: ThemeUtil.smallScaleFactor,
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
+            ElevatedButton(
+              onPressed: () {
+                ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
+                  // if (value) {
+                  //   dialogUpdateAllAnimeProgress(context);
+                  // }
+                });
+              },
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)))),
+              child: const Text(
+                "立即更新",
+                textScaleFactor: ThemeUtil.smallScaleFactor,
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
