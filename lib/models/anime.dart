@@ -1,5 +1,6 @@
 import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 
 class Anime {
   int animeId;
@@ -104,6 +105,15 @@ class Anime {
       list.add("$animeEpisodeCnt集");
     }
     return list.join(" • ");
+  }
+
+  // 因为封面可能是网络图片，也可能是本地图片，如果是本地图片，那么需要将相对路径转为绝对路径
+  String getCommonCoverUrl() {
+    if (animeCoverUrl.startsWith("http")) {
+      return animeCoverUrl;
+    } else {
+      return ImageUtil.getAbsoluteCoverImagePath(animeCoverUrl);
+    }
   }
 
   bool isCollected() {

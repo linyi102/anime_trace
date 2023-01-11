@@ -380,7 +380,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       sigmaY: sigma,
                     ),
                     child: CommonImage(
-                        animeController.anime.value.animeCoverUrl,
+                        animeController.anime.value.getCommonCoverUrl(),
                         showIconWhenUrlIsEmptyOrError: false),
                   ),
                 ),

@@ -23,7 +23,7 @@ class AnimeListCover extends StatelessWidget {
               aspectRatio: 1 / 1, // 正方形
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: CommonImage(_anime.animeCoverUrl)),
+                  child: CommonImage(_anime.getCommonCoverUrl())),
             ),
             showReviewNumber && reviewNumber > 1
                 ? Positioned(

@@ -56,6 +56,8 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildCover(BuildContext context, bool showNameInCover) {
+    // 如果封面是本地的，则还需要转为绝对地址
+
     return Container(
         width: coverWidth == 0 ? null : coverWidth,
         padding: const EdgeInsets.all(3.0),
@@ -74,7 +76,7 @@ class AnimeGridCover extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  child: CommonImage(_anime.animeCoverUrl),
+                  child: CommonImage(_anime.getCommonCoverUrl()),
                 ),
                 _buildNameInCover(showNameInCover)
               ],
