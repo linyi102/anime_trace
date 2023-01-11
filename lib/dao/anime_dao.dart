@@ -43,6 +43,15 @@ class AnimeDao {
     return res;
   }
 
+  /// 清除简介
+  static Future<bool> clearAllAnimeDesc() async {
+    await db.rawUpdate('''
+    update anime set anime_desc = null;
+    vacuum; --消除空闲页，否则数据库文件大小没有变化
+    ''');
+    return true;
+  }
+
   /// 获取所有未完结动漫
   static Future<List<Anime>> getAllNeedUpdateAnimes() async {
     List<Anime> animes = await getAllAnimes();

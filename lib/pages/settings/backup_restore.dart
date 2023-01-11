@@ -12,6 +12,11 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../dao/anime_dao.dart';
+import '../../utils/file_util.dart';
+import '../../utils/log.dart';
+import '../../utils/sqlite_util.dart';
+
 class BackupAndRestore extends StatefulWidget {
   const BackupAndRestore({Key? key}) : super(key: key);
 
@@ -41,6 +46,8 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
 
   @override
   Widget build(BuildContext context) {
+    File dbFile = File(SqliteUtil.dbPath);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -52,6 +59,49 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: const Text("清空动漫简介"),
+            subtitle: Text(
+                "当前数据大小：${FileUtil.getReadableFileSize(dbFile.lengthSync())}"),
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("确定清除吗？"),
+                      content: const Text("这会清除已收藏动漫的简介信息"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("取消")),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+
+                              int oldSize = dbFile.lengthSync();
+                              AnimeDao.clearAllAnimeDesc().then((value) {
+                                setState(() {});
+                                int newSize = dbFile.lengthSync();
+                                Log.info("$oldSize->$newSize");
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: const Text("清空完毕"),
+                                          content: Text(
+                                              "清空前大小：${FileUtil.getReadableFileSize(oldSize)}\n"
+                                              "清空后大小：${FileUtil.getReadableFileSize(newSize)}\n"
+                                              "节省了${FileUtil.getReadableFileSize(oldSize - newSize)}"),
+                                        ));
+                              });
+                            },
+                            child: const Text("确定")),
+                      ],
+                    );
+                  });
+            },
+          ),
           Platform.isWindows
               ? ListTile(
                   title: Text(
@@ -130,7 +180,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
           ),
           const Divider(),
           ListTile(
-            title: Text("WebDav 备份",
+            title: Text("WebDav备份",
                 style: TextStyle(color: ThemeUtil.getPrimaryColor())),
             // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
             subtitle: const Text("点击查看教程"),
@@ -227,7 +277,10 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
                   builder: (context) {
                     return const BackUpFileList();
                   },
-                ));
+                )).then((value) {
+                  // 可能还原了数据，此时需要重新显示文件数据大小
+                  setState(() {});
+                });
               } else {
                 showToast("配置账号后才可以进行还原");
               }
