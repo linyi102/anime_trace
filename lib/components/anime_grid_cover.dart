@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../controllers/anime_display_controller.dart';
+import 'common_image.dart';
 
 // 网格状态下，用于显示一个完整的动漫封面
 // 包括进度、第几次观看、名字
@@ -65,8 +65,6 @@ class AnimeGridCover extends StatelessWidget {
         child: AspectRatio(
           // 固定宽高比
           aspectRatio: 198 / 275,
-          // aspectRatio: 31 / 45,
-          // aspectRatio: 41 / 63,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Stack(
@@ -76,17 +74,7 @@ class AnimeGridCover extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  child: buildImgWidget(
-                      url: _anime.animeCoverUrl,
-                      showErrorDialog: false,
-                      isNoteImg: false),
-                  // Hero动画
-                  // child: Hero(
-                  //     tag: _anime.animeCoverUrl,
-                  //     child: buildImgWidget(
-                  //         url: _anime.animeCoverUrl,
-                  //         showErrorDialog: false,
-                  //         isNoteImg: false)),
+                  child: CommonImage(_anime.animeCoverUrl),
                 ),
                 _buildNameInCover(showNameInCover)
               ],

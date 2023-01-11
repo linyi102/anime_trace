@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/models/anime.dart';
+
+import 'common_image.dart';
 
 // 列表样式时的动漫封面
 class AnimeListCover extends StatelessWidget {
@@ -21,12 +22,8 @@ class AnimeListCover extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1 / 1, // 正方形
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: buildImgWidget(
-                    url: _anime.animeCoverUrl,
-                    showErrorDialog: false,
-                    isNoteImg: false),
-              ),
+                  borderRadius: BorderRadius.circular(5),
+                  child: CommonImage(_anime.animeCoverUrl)),
             ),
             showReviewNumber && reviewNumber > 1
                 ? Positioned(

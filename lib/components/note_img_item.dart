@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
-
-import 'img_widget.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 
 // 网格的单个笔记图片构建
 // 使用：笔记列表页
@@ -50,10 +50,7 @@ class NoteImgItem extends StatelessWidget {
             key: Key("$initialIndex:$dirChangedWrapper"),
             // 圆角
             borderRadius: BorderRadius.circular(5),
-            // child: GeneralImage(
-            //     url: relativeImagePath, showErrorDialog: true, isNoteImg: true),
-            child: buildImgWidget(
-                url: relativeImagePath, showErrorDialog: true, isNoteImg: true),
+            child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
           ),
         ),
         imageRemainCount > 0

@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -323,10 +323,8 @@ class _NoteEditState extends State<NoteEdit> {
         // 切割图片为圆角
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: buildImgWidget(
-              url: widget.note.relativeLocalImages[index].path,
-              showErrorDialog: false,
-              isNoteImg: true),
+          child: CommonImage(ImageUtil.getAbsoluteCoverImagePath(
+              widget.note.relativeLocalImages[index].path)),
         ),
       ),
       // 添加图片按钮

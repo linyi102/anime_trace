@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -293,12 +293,8 @@ class _ImageViewerState extends State<ImageViewer> {
                       key: Key("$index:$dirChangedWrapper"),
                       height: 100,
                       width: 140,
-                      child: buildImgWidget(
-                          // 传入相对路径
-                          url: widget.relativeLocalImages[index].path,
-                          showErrorDialog: false,
-                          isNoteImg: true,
-                          color: Colors.white),
+                      child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
+                          widget.relativeLocalImages[index].path)),
                     ),
                   ),
                 ),

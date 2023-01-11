@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/components/img_widget.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
@@ -379,7 +379,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       sigmaX: sigma,
                       sigmaY: sigma,
                     ),
-                    child: _buildBgCover(),
+                    child: CommonImage(
+                        animeController.anime.value.animeCoverUrl,
+                        showIconWhenUrlIsEmptyOrError: false),
                   ),
                 ),
                 // 为底层背景添加渐变效果
@@ -397,8 +399,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                     .withOpacity(0),
                                 ThemeUtil.getScaffoldBackgroundColor()
                                     .withOpacity(0),
-                                // ThemeUtil.getScaffoldBackgroundColor()
-                                //     .withOpacity(0),
                                 // 过渡到主体颜色
                                 ThemeUtil.getScaffoldBackgroundColor(),
                               ]
@@ -433,31 +433,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           actions: _buildActions(),
           // bottom: _buildTabRow(),
         ));
-  }
-
-  _buildBgCover() {
-    String coverUrl = animeController.anime.value.animeCoverUrl;
-    if (coverUrl.isEmpty) {
-      return Image.memory(kTransparentImage);
-    }
-
-    // 网络封面
-    if (coverUrl.startsWith("http")) {
-      return getNetWorkImage(
-        coverUrl,
-        // errorBuilder: (context, url, error) =>
-        //     Image.memory(kTransparentImage),
-        errorWidget: (_, __, ___) => Image.memory(kTransparentImage),
-      );
-    }
-    //  本地封面
-    return Image.file(
-      File(ImageUtil.getAbsoluteCoverImagePath(_anime.animeCoverUrl)),
-      fit: BoxFit.cover,
-      errorBuilder: (buildContext, object, stackTrace) {
-        return Container();
-      },
-    );
   }
 
   List<Widget> _buildActions() {
@@ -987,12 +962,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                         child: SizedBox(
                                           height: 100,
                                           width: 100,
-                                          child: buildImgWidget(
-                                              url: _notes[noteIdx]
+                                          child: CommonImage(ImageUtil
+                                              .getAbsoluteNoteImagePath(_notes[
+                                                      noteIdx]
                                                   .relativeLocalImages[imgIdx]
-                                                  .path,
-                                              showErrorDialog: true,
-                                              isNoteImg: true),
+                                                  .path)),
                                         )),
                                   );
                                 }),
