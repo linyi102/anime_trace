@@ -44,7 +44,7 @@ class ClimbAnimeUtil {
       String keyword, ClimbWebsite climbWebStie) async {
     List<Anime> climbAnimes = [];
     try {
-      climbAnimes = await climbWebStie.climb.climbAnimesByKeyword(keyword);
+      climbAnimes = await climbWebStie.climb.searchAnimeByKeyword(keyword);
     } catch (e) {
       e.printError();
     }

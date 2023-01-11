@@ -7,6 +7,7 @@ import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
+import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -49,7 +50,8 @@ List<ClimbWebsite> climbWebsites = [
       desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
   ClimbWebsite(
       name: "次元城动漫",
-      iconUrl: "https://www.cycdm01.top/upload/mxprocms/20220825-1/94f5bbad3547f250ed2ed3684d11e19d.png",
+      iconUrl:
+          "https://www.cycdm01.top/upload/mxprocms/20220825-1/94f5bbad3547f250ed2ed3684d11e19d.png",
       keyword: "cyc",
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
@@ -58,7 +60,8 @@ List<ClimbWebsite> climbWebsites = [
       desc: "高质量在线追番平台！"),
   ClimbWebsite(
       name: "艾米动漫",
-      iconUrl: "https://img.gejiba.com/images/f1f102fc413011625bd2a610cac6c83b.png",
+      iconUrl:
+          "https://img.gejiba.com/images/f1f102fc413011625bd2a610cac6c83b.png",
       keyword: "aimi",
       discard: true,
       spkey: "enableWebSiteAimi",
@@ -67,12 +70,22 @@ List<ClimbWebsite> climbWebsites = [
       climb: ClimbAimi(),
       desc: "艾米动漫致力于收集动漫资源，为广大网友提供各种好番而生。"),
   ClimbWebsite(
-      name: "豆瓣",
-      iconUrl: "https://www.douban.com/favicon.ico",
-      enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: false),
-      spkey: "enableWebSiteDouban",
+    name: "豆瓣",
+    iconUrl: "https://www.douban.com/favicon.ico",
+    enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: false),
+    spkey: "enableWebSiteDouban",
+    pingStatus: PingStatus(),
+    keyword: "douban",
+    climb: ClimbDouban(),
+  ),
+  ClimbWebsite(
+      name: "趣动漫",
+      iconUrl: "https://m1.im5i.com/2023/01/11/UGeZNh.png",
+      enable: SPUtil.getBool("enableWebSiteQdm", defaultValue: false),
+      spkey: "enableWebSiteQdm",
       pingStatus: PingStatus(),
-      keyword: "douban",
-      climb: ClimbDouban(),
-  )
+      keyword: "qdm",
+      climb: ClimbQdm(),
+      desc:
+          "趣动漫致力为所有动漫迷们提供最好看的动漫、最新最快的高清动画下载及全集资源，观看完全免费、无须注册、高速播放、更新及时的专业在线动漫站。")
 ];

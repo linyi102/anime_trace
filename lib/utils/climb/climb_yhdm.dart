@@ -14,7 +14,7 @@ class ClimbYhdm implements Climb {
   String baseUrl = "https://www.yhdmp.cc";
 
   @override
-  Future<List<Anime>> climbAnimesByKeyword(String keyword) async {
+  Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl + "/s_all?ex=1&kw=$keyword";
     return await _climbOfyhdm(baseUrl, url);
   }

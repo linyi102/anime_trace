@@ -71,7 +71,7 @@ class ClimbCycdm implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbAnimesByKeyword(String keyword) async {
+  Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl + "/search.html?wd=$keyword";
     List<Anime> climbAnimes = [];
 

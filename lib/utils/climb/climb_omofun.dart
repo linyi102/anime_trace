@@ -15,7 +15,7 @@ class ClimbOmofun implements Climb {
   String baseUrl = "https://omofun.tv";
 
   @override
-  Future<List<Anime>> climbAnimesByKeyword(String keyword,
+  Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {String url = "", String foreignBaseUrl = ""}) async {
     if (url.isEmpty) {
       // 如果没有传入url，则说明访问的是omofun。如果url非空，则说明是同类型网站，直接使用传入的url

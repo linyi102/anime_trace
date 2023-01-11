@@ -66,7 +66,7 @@ class ClimbDouban implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbAnimesByKeyword(String keyword,
+  Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {bool showMessage = true}) async {
     List<Anime> animes = [];
 
