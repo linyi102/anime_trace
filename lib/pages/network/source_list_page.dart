@@ -1,3 +1,4 @@
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -90,8 +91,6 @@ class _SourceListPageState extends State<SourceListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -102,32 +101,52 @@ class _SourceListPageState extends State<SourceListPage> {
             children: [
               // _buildClimbWebsiteGridCard(),
               Responsive.isMobile(context)
-                  ? _buildListView()
+                  ? _buildClimbWebsiteList()
                   : _buildGridView(),
-              ListView(
-                // 解决报错问题
-                shrinkWrap: true,
-                //解决不滚动问题
-                physics: const NeverScrollableScrollPhysics(),
+              // _buildClimbWebsiteList(),
+              // 展开已弃用
+              ExpandChild(
+                child: _buildDiscardList(),
+                collapsedHint: "展开",
+                expandedHint: "收起",
+                expandArrowStyle: ExpandArrowStyle.both,
+              ),
+              Column(
                 children: [
-                  const ListTile(title: Text("工具")),
+                  const ListTile(
+                      title: Text(
+                    "工具",
+                    textScaleFactor: 1.2,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  )),
                   ListTile(
-                    title: Text(favWebsite.name),
-                    leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
-                    // trailing: const Icon(Icons.open_in_new),
+                    title: Text.rich(TextSpan(children: [
+                      TextSpan(text: favWebsite.name),
+                      // WidgetSpan(child: Text(favWebsite.name + "")),
+                      const WidgetSpan(
+                          child: Icon(Icons.open_in_new, size: 18)),
+                      // WidgetSpan(
+                      //     child: buildWebSiteIcon(
+                      //         url: favWebsite.icoUrl, size: 20)),
+                    ])),
+                    // leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
                     onTap: () => LaunchUrlUtil.launch(
                         context: context, uriStr: favWebsite.url),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.auto_fix_high),
                     title: const Text("修复失效网络封面"),
-                    // trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.of(context).push(FadeRoute(
                           builder: (context) => const LapseCoverAnimesPage()));
                     },
                   ),
-                  const ListTile()
+                  // ListTile(
+                  //   title: const Text("查看自定义动漫"),
+                  //   onTap: () {
+                  //     Navigator.of(context).push(FadeRoute(
+                  //         builder: (context) => const LapseCoverAnimesPage()));
+                  //   },
+                  // ),
                 ],
               )
               // FavWebsiteListPage()
@@ -188,6 +207,14 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   GridView _buildGridView({int crossAxisCount = 3}) {
+    // 获取还没有失效的搜索源列表
+    List<ClimbWebsite> fineClimbWebsites = [];
+    for (var e in climbWebsites) {
+      if (!e.discard) {
+        fineClimbWebsites.add(e);
+      }
+    }
+
     return GridView.builder(
         // 解决报错问题
         shrinkWrap: true,
@@ -196,9 +223,9 @@ class _SourceListPageState extends State<SourceListPage> {
         // 使用WithMaxCrossAxisExtent实现自适应
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
             mainAxisExtent: 80, maxCrossAxisExtent: 350),
-        itemCount: climbWebsites.length,
+        itemCount: fineClimbWebsites.length,
         itemBuilder: (context, index) {
-          ClimbWebsite climbWebsite = climbWebsites[index];
+          ClimbWebsite climbWebsite = fineClimbWebsites[index];
           return Card(
             elevation: 0,
             child: MaterialButton(
@@ -222,27 +249,41 @@ class _SourceListPageState extends State<SourceListPage> {
         });
   }
 
-  ListView _buildListView() {
-    return ListView(
-        shrinkWrap: true, //解决无限高度问题
-        physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+  Widget _buildClimbWebsiteListItem(ClimbWebsite climbWebsite) {
+    return ListTile(
+        title: Row(
+          children: [
+            showPingDetail
+                ? Container()
+                : _getPingStatusIcon(climbWebsite.pingStatus),
+            showPingDetail ? Container() : const SizedBox(width: 10),
+            Text(climbWebsite.name),
+          ],
+        ),
+        subtitle: showPingDetail ? _buildPingStatusRow(climbWebsite) : null,
+        leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
+        trailing: _buildSwitchButton(climbWebsite),
+        onTap: () => enterSourceDetail(climbWebsite));
+  }
+
+  _buildClimbWebsiteList() {
+    return Column(
         children: climbWebsites.map((climbWebsite) {
-          return ListTile(
-              title: Row(
-                children: [
-                  showPingDetail
-                      ? Container()
-                      : _getPingStatusIcon(climbWebsite.pingStatus),
-                  showPingDetail ? Container() : const SizedBox(width: 10),
-                  Text(climbWebsite.name),
-                ],
-              ),
-              subtitle:
-                  showPingDetail ? _buildPingStatusRow(climbWebsite) : null,
-              leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
-              trailing: _buildSwitchButton(climbWebsite),
-              onTap: () => enterSourceDetail(climbWebsite));
-        }).toList());
+      if (climbWebsite.discard) {
+        return Container();
+      }
+      return _buildClimbWebsiteListItem(climbWebsite);
+    }).toList());
+  }
+
+  _buildDiscardList() {
+    return Column(
+        children: climbWebsites.map((climbWebsite) {
+      if (!climbWebsite.discard) {
+        return Container();
+      }
+      return _buildClimbWebsiteListItem(climbWebsite);
+    }).toList());
   }
 
   _buildPingStatusRow(ClimbWebsite climbWebsite) {
@@ -291,11 +332,12 @@ class _SourceListPageState extends State<SourceListPage> {
 
   _buildSwitchButton(ClimbWebsite climbWebsite) {
     if (climbWebsite.discard) {
-      return IconButton(
-          onPressed: () {
-            showToast("很抱歉，该搜索源已经无法使用");
-          },
-          icon: const Icon(Icons.not_interested));
+      return null;
+      // return IconButton(
+      //     onPressed: () {
+      //       showToast("很抱歉，该搜索源已经无法使用");
+      //     },
+      //     icon: const Icon(Icons.not_interested));
     }
     return IconButton(
       onPressed: () {

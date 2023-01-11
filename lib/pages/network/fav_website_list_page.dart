@@ -55,7 +55,7 @@ class FavWebsiteListPage extends StatelessWidget {
     return GridView.builder(
         // 解决报错问题
         shrinkWrap: true,
-        //解决不滚动问题
+        // 解决不滚动问题
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: Platform.isWindows ? 8 : 4),

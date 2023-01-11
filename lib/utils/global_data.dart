@@ -60,6 +60,7 @@ List<ClimbWebsite> climbWebsites = [
       name: "艾米动漫",
       iconUrl: "https://img.gejiba.com/images/f1f102fc413011625bd2a610cac6c83b.png",
       keyword: "aimi",
+      discard: true,
       spkey: "enableWebSiteAimi",
       enable: SPUtil.getBool("enableWebSiteAimi", defaultValue: false),
       pingStatus: PingStatus(),
