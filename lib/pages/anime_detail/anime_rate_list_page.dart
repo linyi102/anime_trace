@@ -54,14 +54,11 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
       appBar: AppBar(
           title: const Text("动漫评价",
               style: TextStyle(fontWeight: FontWeight.w600))),
-      body: Padding(
-        padding: const EdgeInsetsDirectional.all(5),
-        child: noteOk
-            ? notes.isNotEmpty
-                ? _buildRateNoteList()
-                : Container()
-            : Container(),
-      ),
+      body: noteOk
+          ? notes.isNotEmpty
+              ? _buildRateNoteList()
+              : Container()
+          : Container(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(context),
         backgroundColor: ThemeUtil.getPrimaryIconColor(),
@@ -89,6 +86,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
   _buildRateNoteList() {
     return ListView.builder(
+        padding: const EdgeInsetsDirectional.all(5),
         itemCount: notes.length,
         itemBuilder: (context, index) {
           Log.info("$runtimeType: index=$index");
@@ -136,7 +134,8 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
     if (note.noteContent.isEmpty) return Container();
     return Container(
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+      // 左填充15，这样就和图片对齐了
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
       child: Text(
         note.noteContent,
         maxLines: 10,

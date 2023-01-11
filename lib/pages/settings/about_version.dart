@@ -132,6 +132,16 @@ class _AboutVersionState extends State<AboutVersion> {
               inApp: false);
         }));
     lvc.add(ListTile(
+        title: const Text("下载地址"),
+        subtitle: const Text("密码：eocv"),
+        trailing: const Icon(Icons.open_in_new_outlined),
+        onTap: () {
+          LaunchUrlUtil.launch(
+              context: context,
+              uriStr: "https://wwc.lanzouw.com/b01uyqcrg?password=eocv",
+              inApp: false);
+        }));
+    lvc.add(ListTile(
         title: const Text("QQ 交流群"),
         subtitle: const Text("414226908"),
         trailing: const Icon(Icons.open_in_new_outlined),

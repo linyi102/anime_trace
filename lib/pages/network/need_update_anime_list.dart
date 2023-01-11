@@ -5,9 +5,12 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
+import '../../components/anime_grid_cover.dart';
 import '../../models/anime.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
@@ -30,7 +33,33 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
   _loadData() {
     AnimeDao.getAllNeedUpdateAnimes().then((value) {
+      // 排序规则
+      // 1.连载中靠前，未开播靠后
+      // 2.首播时间
       animes = value;
+      animes.sort((a, b) {
+        if (a.getPlayStatus() != b.getPlayStatus()) {
+          if (a.getPlayStatus() == PlayStatus.playing) {
+            return -1;
+          } else {
+            return 1;
+          }
+        } else {
+          // 播放状态相同，比较首播时间
+          return a.premiereTime.compareTo(b.premiereTime);
+        }
+      });
+      // List<Anime> playingAnimes = [], notStartedAnimes = [];
+      // for (var anime in value) {
+      //   if (anime.getPlayStatus() == PlayStatus.playing) {
+      //     playingAnimes.add(anime);
+      //   } else {
+      //     notStartedAnimes.add(anime);
+      //   }
+      // }
+      // animes.addAll(playingAnimes);
+      // animes.addAll(notStartedAnimes);
+
       cnt = animes.length;
       loadOk = true;
       setState(() {});
@@ -58,8 +87,23 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
         itemBuilder: ((context, index) {
           Anime anime = animes[index];
           return ListTile(
-              leading: AnimeListCover(anime),
-              title: Text(anime.animeName),
+              isThreeLine: true,
+              leading: AnimeGridCover(anime, onlyShowCover: true),
+              title: Text(anime.animeName,
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    anime.getAnimeInfoFirstLine(),
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                  ),
+                  Text(
+                    anime.getAnimeInfoSecondLine(),
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                  )
+                ],
+              ),
               onTap: () {
                 Navigator.of(context).push(FadeRoute(builder: (context) {
                   return AnimeDetailPlus(anime);
