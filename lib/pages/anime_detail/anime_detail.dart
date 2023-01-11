@@ -392,17 +392,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                             ? [
                                 // 最上面添加一点黑色，这样就能看清按钮了
                                 Colors.black.withOpacity(0.2),
-                                // 添加两个透明色，如果只添加1个会有些暗
-                                Colors.transparent,
-                                Colors.transparent,
-                                // 过渡到主体颜色
+                                // 添加两个透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
                                 ThemeUtil.getScaffoldBackgroundColor()
-                                    .withOpacity(1),
+                                    .withOpacity(0),
+                                ThemeUtil.getScaffoldBackgroundColor()
+                                    .withOpacity(0),
+                                // ThemeUtil.getScaffoldBackgroundColor()
+                                //     .withOpacity(0),
+                                // 过渡到主体颜色
+                                ThemeUtil.getScaffoldBackgroundColor(),
                               ]
                             : [
                                 Colors.black.withOpacity(0.2),
-                                Colors.transparent,
-                                Colors.transparent,
+                                ThemeUtil.getScaffoldBackgroundColor()
+                                    .withOpacity(0),
+                                ThemeUtil.getScaffoldBackgroundColor()
+                                    .withOpacity(0),
                                 // 最后1个换成透明色，就取消渐变了，上面两个透明色仍要保留，否则黑色会直接过渡到下面透明色，中间会有一点黑色
                                 Colors.transparent
                               ]),
