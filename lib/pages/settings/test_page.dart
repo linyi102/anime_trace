@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
@@ -24,6 +25,29 @@ class _TestPageState extends State<TestPage> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: Text("加载对话框"),
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    const String text = "获取详细信息中...";
+                    return const LoadingDialog(text);
+                    // return SimpleDialog(
+                    //   children: [
+                    //     Center(
+                    //         child: Column(
+                    //       children: const [
+                    //         SizedBox(child: CircularProgressIndicator()),
+                    //         SizedBox(height: 10),
+                    //         Text(text)
+                    //       ],
+                    //     ))
+                    //   ],
+                    // );
+                  });
+            },
+          ),
           ListTile(
             title: const Text("设置字体"),
             subtitle: Obx(() => Text(themeController.fontFamilyFallback[0])),

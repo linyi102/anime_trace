@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -11,22 +12,18 @@ dialogSelectTag(setState, context, Anime anime) {
   bool climbingDetail = false;
   showDialog(
     context: context,
-    builder: (BuildContext dialogContext) {
+    builder: (BuildContext context) {
       List<Widget> items = [];
       if (!anime.isCollected()) {
-        items.add(_buildCommonItem(
-            content: "动漫名字",
-            textColor: ThemeUtil.getCommentColor(),
-            isTitle: true));
+        items.add(_buildCommonItem(content: "动漫名字", isTitle: true));
         items.add(_buildCommonItem(content: anime.animeName));
-        items.add(_buildCommonItem(
-            content: "选择清单",
-            textColor: ThemeUtil.getCommentColor(),
-            isTitle: true));
+        items.add(_buildCommonItem(content: "选择清单", isTitle: true));
       }
       for (int i = 0; i < tags.length; ++i) {
         items.add(
           ListTile(
+            contentPadding: EdgeInsetsDirectional.zero,
+            dense: true,
             title: Text(tags[i]),
             leading: tags[i] == anime.tagName
                 ? Icon(
@@ -47,7 +44,7 @@ dialogSelectTag(setState, context, Anime anime) {
                 } else {
                   // 不允许点击，避免快速多次点击收藏
                   climbingDetail = true;
-                  (dialogContext as Element).markNeedsBuild();
+                  (context as Element).markNeedsBuild();
                   // 爬取详细页
                   anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
                       showMessage: false);
@@ -55,7 +52,7 @@ dialogSelectTag(setState, context, Anime anime) {
 
                 // 插入数据库
                 anime.animeId = await SqliteUtil.insertAnime(anime);
-                Navigator.pop(dialogContext);
+                Navigator.pop(context);
                 // 更新父级页面
                 setState(() {});
                 showToast("收藏成功！");
@@ -64,43 +61,30 @@ dialogSelectTag(setState, context, Anime anime) {
                 anime.tagName = tags[i];
                 showToast("修改成功！");
                 setState(() {});
-                Navigator.pop(dialogContext);
+                Navigator.pop(context);
               }
             },
           ),
         );
       }
+      if (climbingDetail) {
+        return const LoadingDialog("获取详细信息中...");
+      }
       return AlertDialog(
-        // title: const Text('选择清单'),
+        title: const Text('选择清单'),
         content: SingleChildScrollView(
-          child: climbingDetail
-              ? Center(
-                  child: Column(
-                  children: const [
-                    SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator()),
-                    SizedBox(height: 10),
-                    Text("获取详细信息中...", textScaleFactor: 0.8)
-                  ],
-                ))
-              : Column(children: items),
+          child: Column(children: items),
         ),
       );
     },
   );
 }
 
-_buildCommonItem(
-    {required String content, Color? textColor, bool isTitle = false}) {
-  return SizedBox(
-    width: 200,
-    child: ListTile(
-      dense: isTitle ? true : false,
-      contentPadding: const EdgeInsets.all(0),
-      title: Text(content),
-      textColor: textColor,
-    ),
+_buildCommonItem({required String content, bool isTitle = false}) {
+  return ListTile(
+    contentPadding: EdgeInsetsDirectional.zero,
+    dense: true,
+    title: Text(content),
+    textColor: isTitle ? ThemeUtil.getCommentColor() : null,
   );
 }
