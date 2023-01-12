@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/anime_display_controller.dart';
+import '../controllers/anime_display_controller.dart';
 
 SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
   final AnimeDisplayController _animeDisplayController = Get.find();

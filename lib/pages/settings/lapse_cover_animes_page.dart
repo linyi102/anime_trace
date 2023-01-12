@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 import '../../components/anime_grid_cover.dart';
-import '../../components/common/common_function.dart';
+import '../../components/get_anime_grid_delegate.dart';
 import '../../components/empty_data_hint.dart';
 import '../../controllers/anime_controller.dart';
 import '../../utils/sqlite_util.dart';

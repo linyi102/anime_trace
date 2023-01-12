@@ -18,7 +18,7 @@ import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/common/common_function.dart';
+import '../../components/get_anime_grid_delegate.dart';
 import '../../models/params/anime_sort_cond.dart';
 
 class AnimeListPage extends StatefulWidget {
@@ -312,21 +312,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                 onLongPress(index);
               },
               padding: const EdgeInsets.all(0),
-              child: Stack(children: [
-                AnimeGridCover(anime),
-                // 多选时的效果
-                Container(
-                  decoration: BoxDecoration(
-                    // border: mapSelected.containsKey(index)
-                    //     ? Border.all(width: 4, color: ThemeUtil.getThemePrimaryColor())
-                    //     : null,
-                    borderRadius: BorderRadius.circular(5),
-                    color: mapSelected.containsKey(index)
-                        ? multiSelectedColor
-                        : null,
-                  ),
-                ),
-              ]),
+              child: AnimeGridCover(anime,
+                  isSelected: mapSelected.containsKey(index)),
             ),
           );
         });

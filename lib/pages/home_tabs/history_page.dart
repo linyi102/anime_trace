@@ -148,15 +148,16 @@ class _HistoryPageState extends State<HistoryPage> {
           SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
           _initData();
         },
-        dividerColor: ThemeUtil.getCommentColor().withOpacity(0.2),
+        // dividerColor: ThemeUtil.getCommentColor().withOpacity(0.2),
+        dividerColor: Colors.transparent,
         minWidth: 50,
         // 方案1
-        activeBgColor: [ThemeUtil.getPrimaryColor()],
-        inactiveBgColor: ThemeUtil.getCardColor(),
-        // 方案2
-        // activeBgColor: const [Colors.transparent],
+        // activeBgColor: [ThemeUtil.getPrimaryColor()],
         // inactiveBgColor: ThemeUtil.getCardColor(),
-        // activeFgColor: ThemeUtil.getPrimaryColor(),
+        // 方案2
+        activeBgColor: const [Colors.transparent],
+        inactiveBgColor: ThemeUtil.getCardColor(),
+        activeFgColor: ThemeUtil.getPrimaryColor(),
       ),
     );
   }

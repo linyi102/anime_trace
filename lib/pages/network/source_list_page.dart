@@ -96,62 +96,60 @@ class _SourceListPageState extends State<SourceListPage> {
         onRefresh: () async {
           _refresh();
         },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // _buildClimbWebsiteGridCard(),
-              Responsive.isMobile(context)
-                  ? _buildClimbWebsiteList()
-                  : _buildGridView(),
-              // _buildClimbWebsiteList(),
-              // 展开已弃用
-              ExpandChild(
-                child: _buildDiscardList(),
-                collapsedHint: "展开",
-                expandedHint: "收起",
-                expandArrowStyle: ExpandArrowStyle.both,
-              ),
-              Column(
-                children: [
-                  const ListTile(
-                      title: Text(
-                    "工具",
-                    textScaleFactor: 1.2,
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  )),
-                  ListTile(
-                    title: Text.rich(TextSpan(children: [
-                      TextSpan(text: favWebsite.name),
-                      // WidgetSpan(child: Text(favWebsite.name + "")),
-                      const WidgetSpan(
-                          child: Icon(Icons.open_in_new, size: 18)),
-                      // WidgetSpan(
-                      //     child: buildWebSiteIcon(
-                      //         url: favWebsite.icoUrl, size: 20)),
-                    ])),
-                    // leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
-                    onTap: () => LaunchUrlUtil.launch(
-                        context: context, uriStr: favWebsite.url),
-                  ),
-                  ListTile(
-                    title: const Text("修复失效网络封面"),
-                    onTap: () {
-                      Navigator.of(context).push(FadeRoute(
-                          builder: (context) => const LapseCoverAnimesPage()));
-                    },
-                  ),
-                  // ListTile(
-                  //   title: const Text("查看自定义动漫"),
-                  //   onTap: () {
-                  //     Navigator.of(context).push(FadeRoute(
-                  //         builder: (context) => const LapseCoverAnimesPage()));
-                  //   },
-                  // ),
-                ],
-              )
-              // FavWebsiteListPage()
-            ],
-          ),
+        child: ListView( // 使用ListView，而非SingleChildScrollView>Column，否则无法下拉刷新
+        children: [
+            // _buildClimbWebsiteGridCard(),
+            Responsive.isMobile(context)
+                ? _buildClimbWebsiteList()
+                : _buildGridView(),
+            // _buildClimbWebsiteList(),
+            // 展开已弃用
+            ExpandChild(
+              child: _buildDiscardList(),
+              collapsedHint: "展开",
+              expandedHint: "收起",
+              expandArrowStyle: ExpandArrowStyle.both,
+            ),
+            Column(
+              children: [
+                const ListTile(
+                    title: Text(
+                  "工具",
+                  textScaleFactor: 1.2,
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                )),
+                ListTile(
+                  title: Text.rich(TextSpan(children: [
+                    TextSpan(text: favWebsite.name),
+                    // WidgetSpan(child: Text(favWebsite.name + "")),
+                    const WidgetSpan(
+                        child: Icon(Icons.open_in_new, size: 18)),
+                    // WidgetSpan(
+                    //     child: buildWebSiteIcon(
+                    //         url: favWebsite.icoUrl, size: 20)),
+                  ])),
+                  // leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
+                  onTap: () => LaunchUrlUtil.launch(
+                      context: context, uriStr: favWebsite.url),
+                ),
+                ListTile(
+                  title: const Text("修复失效网络封面"),
+                  onTap: () {
+                    Navigator.of(context).push(FadeRoute(
+                        builder: (context) => const LapseCoverAnimesPage()));
+                  },
+                ),
+                // ListTile(
+                //   title: const Text("查看自定义动漫"),
+                //   onTap: () {
+                //     Navigator.of(context).push(FadeRoute(
+                //         builder: (context) => const LapseCoverAnimesPage()));
+                //   },
+                // ),
+              ],
+            )
+            // FavWebsiteListPage()
+          ],
         ),
       ),
     );

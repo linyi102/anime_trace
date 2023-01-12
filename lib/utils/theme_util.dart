@@ -62,14 +62,16 @@ class ThemeUtil {
         bodyColor: const Color.fromRGBO(0, 0, 0, 1),
         cardColor: const Color.fromRGBO(15, 15, 15, 1)),
     ThemeColor(
-        isDarkMode: true,
-        key: "nightPurple",
-        name: "夜紫",
-        primaryColor: const Color.fromRGBO(90, 106, 213, 1.0),
-        representativeColor: const Color.fromRGBO(12, 19, 35, 1),
-        appBarColor: const Color.fromRGBO(8, 9, 27, 1),
-        bodyColor: const Color.fromRGBO(12, 19, 35, 1),
-        cardColor: const Color.fromRGBO(24, 25, 43, 0.6))
+      isDarkMode: true,
+      key: "nightPurple",
+      name: "夜紫",
+      primaryColor: const Color.fromRGBO(90, 106, 213, 1.0),
+      representativeColor: const Color.fromRGBO(12, 19, 35, 1),
+      appBarColor: const Color.fromRGBO(8, 9, 27, 1),
+      bodyColor: const Color.fromRGBO(12, 19, 35, 1),
+      // cardColor: const Color.fromRGBO(24, 25, 43, 1),
+      cardColor: const Color.fromRGBO(18, 25, 41, 1),
+    )
   ];
 
   // 根据key从list中查找主题
@@ -139,7 +141,7 @@ class ThemeUtil {
   // 目录页中，动漫详细信息(别名、首播时间等)的字体颜色
   static Color getCommentColor() {
     return themeController.themeColor.value.isDarkMode
-        ? Colors.white54
+        ? Colors.white70
         : Colors.black54;
   }
 

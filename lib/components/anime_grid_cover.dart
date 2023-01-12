@@ -15,12 +15,14 @@ class AnimeGridCover extends StatelessWidget {
   final double coverWidth; // 传入固定宽度，用于水平列表
   final bool showProgress;
   final bool showReviewNumber;
+  final bool isSelected;
 
   const AnimeGridCover(this._anime,
       {Key? key,
       this.onlyShowCover = false,
       this.showProgress = true,
       this.showReviewNumber = true,
+      this.isSelected = false,
       this.coverWidth = 0})
       : super(key: key);
 
@@ -56,14 +58,9 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildCover(BuildContext context, bool showNameInCover) {
-    // 如果封面是本地的，则还需要转为绝对地址
-
     return Container(
         width: coverWidth == 0 ? null : coverWidth,
         padding: const EdgeInsets.all(3.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-        ),
         child: AspectRatio(
           // 固定宽高比
           aspectRatio: 198 / 275,
@@ -72,12 +69,24 @@ class AnimeGridCover extends StatelessWidget {
             child: Stack(
               children: [
                 // 确保图片填充
-                // TODO 列数为1或2时无法保证填充
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   child: CommonImage(_anime.getCommonCoverUrl()),
                 ),
+                // 被选中时，添加边框
+                if (isSelected)
+                  Container(
+                    // child: Center(
+                    //     child: Icon(Icons.check_circle_outline,
+                    //         color: ThemeUtil.getPrimaryIconColor())),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          width: 4, color: ThemeUtil.getPrimaryIconColor()),
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.transparent.withOpacity(0.5),
+                    ),
+                  ),
                 _buildNameInCover(showNameInCover)
               ],
             ),

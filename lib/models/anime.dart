@@ -65,20 +65,36 @@ class Anime {
     if (area.isNotEmpty) {
       list.add(area);
     } else {
-      list.add("地区");
+      // list.add("地区");
     }
     if (category.isNotEmpty) {
       list.add(category);
     } else {
-      list.add("类别");
+      // list.add("类别");
     }
     if (premiereTime.isNotEmpty) {
       list.add(premiereTime);
     } else {
-      list.add("首播时间");
+      // list.add("首播时间");
     }
 
     return list.join(" / ");
+  }
+
+  String getAnimeInfoSecondLine() {
+    var list = [];
+
+    list.add(getAnimeSource());
+
+    PlayStatus playStatus = getPlayStatus();
+    if (playStatus != PlayStatus.unknown) {
+      list.add(getPlayStatus().text);
+    }
+
+    if (animeEpisodeCnt != -1) {
+      list.add("$animeEpisodeCnt集");
+    }
+    return list.join(" • ");
   }
 
   String getAnimeSource() {
@@ -97,18 +113,13 @@ class Anime {
     }
   }
 
-  String getAnimeInfoSecondLine() {
-    var list = [];
-    list.add(getAnimeSource());
-    list.add(getPlayStatus().text);
-    if (animeEpisodeCnt != -1) {
-      list.add("$animeEpisodeCnt集");
-    }
-    return list.join(" • ");
-  }
-
   // 因为封面可能是网络图片，也可能是本地图片，如果是本地图片，那么需要将相对路径转为绝对路径
   String getCommonCoverUrl() {
+    // 如果是空的，则返回空字符串
+    if (animeCoverUrl.isEmpty) {
+      return "";
+    }
+    // 然后再区分网络和本地图片
     if (animeCoverUrl.startsWith("http")) {
       return animeCoverUrl;
     } else {

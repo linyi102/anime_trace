@@ -160,7 +160,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
             ListTile(
               iconColor: ThemeUtil.getPrimaryIconColor(),
-              leading: const Icon(Icons.error_outline),
+              leading: const Icon(Icons.info_outlined),
               title: const Text("关于版本"),
               onTap: () {
                 Navigator.of(context).push(

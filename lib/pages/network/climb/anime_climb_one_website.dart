@@ -12,7 +12,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../../components/common/common_function.dart';
+import '../../../components/get_anime_grid_delegate.dart';
 import '../../../components/empty_data_hint.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {

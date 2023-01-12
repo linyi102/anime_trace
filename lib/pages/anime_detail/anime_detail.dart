@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -330,6 +331,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               _showCollectIcon()
             ],
           ),
+          // 简介
+          if (_anime.animeDesc.isNotEmpty &&
+              SpProfile.getShowDescInAnimeDetailPage())
+            Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: ExpandText(_anime.animeDesc,
+                  maxLines: 2,
+                  style: const TextStyle(fontSize: 12),
+                  arrowSize: 20),
+            )
         ]),
       ),
     );
@@ -360,16 +371,17 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // floating: true,
           // snap: true,
           pinned: true,
+          // 收缩后仍显示AppBar
           expandedHeight: expandedHeight,
-          // stretch: true,
           flexibleSpace: FlexibleSpaceBar(
             // 标题，不指定无法左对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
             // titlePadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             // expandedTitleScale: 1.2,
             // title: SelectableText(_anime.animeName,
             //     style: const TextStyle(fontWeight: FontWeight.w600)),
-
-            collapseMode: CollapseMode.parallax,
+            collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
+                ? CollapseMode.parallax // 下滑时添加视差
+                : CollapseMode.pin, // 下滑时固定
             background: Stack(
               children: [
                 // 底层背景
@@ -397,11 +409,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                             ? [
                                 // 最上面添加一点黑色，这样就能看清按钮了
                                 Colors.black.withOpacity(0.2),
-                                // 添加两个透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
+                                // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
                                 ThemeUtil.getScaffoldBackgroundColor()
                                     .withOpacity(0),
-                                ThemeUtil.getScaffoldBackgroundColor()
-                                    .withOpacity(0),
+                                // ThemeUtil.getScaffoldBackgroundColor()
+                                //     .withOpacity(0),
                                 // 过渡到主体颜色
                                 ThemeUtil.getScaffoldBackgroundColor(),
                               ]
@@ -535,6 +547,25 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                           toggleOn: SpProfile.getEnableCoverBgGradient(),
                           onTap: () {
                             SpProfile.turnEnableCoverBgGradient();
+                            setBottomSheetState(() {});
+                            setState(() {});
+                          },
+                        ),
+                        ToggleListTile(
+                          title: const Text("显示简介"),
+                          toggleOn: SpProfile.getShowDescInAnimeDetailPage(),
+                          onTap: () {
+                            SpProfile.turnShowDescInAnimeDetailPage();
+                            setBottomSheetState(() {});
+                            setState(() {});
+                          },
+                        ),
+                        ToggleListTile(
+                          title: const Text("滚动视差"),
+                          toggleOn:
+                              SpProfile.getEnableParallaxInAnimeDetailPage(),
+                          onTap: () {
+                            SpProfile.turnEnableParallaxInAnimeDetailPage();
                             setBottomSheetState(() {});
                             setState(() {});
                           },
@@ -841,13 +872,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               duration: const Duration(milliseconds: 200),
               child: _episodes[episodeIndex].isChecked()
                   ? Icon(
-                      Icons.check_box_outlined,
+                      // Icons.check_box_outlined,
+                      // EvaIcons.checkmarkSquare2Outline,
+                      EvaIcons.checkmarkSquare,
                       key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
                       color: ThemeUtil.getEpisodeListTile(
                           _episodes[episodeIndex].isChecked()),
                     )
                   : Icon(
-                      Icons.check_box_outline_blank_rounded,
+                      // Icons.check_box_outline_blank,
+                      EvaIcons.square,
                       color: ThemeUtil.getEpisodeListTile(
                           _episodes[episodeIndex].isChecked()),
                     ),
@@ -1400,7 +1434,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                           width: 2)),
                 ),
               ),
-              const SizedBox(width: 5),
               IconButton(
                   hoverColor: Colors.transparent,
                   splashColor: Colors.transparent,
@@ -1409,7 +1442,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _dialogSelectSortMethod();
                   },
                   tooltip: "排序方式",
-                  icon: const Icon(Icons.filter_list_outlined)),
+                  icon: const Icon(Icons.filter_list)),
               IconButton(
                   hoverColor: Colors.transparent,
                   splashColor: Colors.transparent,
@@ -1429,8 +1462,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   },
                   tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                   icon: hideNoteInAnimeDetail
-                      ? const Icon(Icons.unfold_more)
-                      : const Icon(Icons.unfold_less)),
+                      ? const Icon(EvaIcons.expandOutline)
+                      : const Icon(EvaIcons.collapseOutline)),
+              // ? const Icon(Icons.unfold_more)
+              // : const Icon(Icons.unfold_less)),
             ],
           ),
         ],

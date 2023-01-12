@@ -43,8 +43,7 @@ class SpProfile {
 
   // 默认的模糊伽马值为10
   static getCoverBgSigmaInAnimeDetailPage() {
-    return SPUtil.getDouble("coverBgSigmaInAnimeDetailPage",
-        defaultValue: 0.0);
+    return SPUtil.getDouble("coverBgSigmaInAnimeDetailPage", defaultValue: 0.0);
   }
 
   // 设置是否渐变
@@ -62,7 +61,27 @@ class SpProfile {
   }
 
   static double getCoverBgHeightRatio() {
-    return SPUtil.getDouble("coverBgHeightRatio",defaultValue: 0.5);
+    return SPUtil.getDouble("coverBgHeightRatio", defaultValue: 0.3);
+  }
+
+  // 动漫详细页显示/因此简介
+  static turnShowDescInAnimeDetailPage() {
+    SPUtil.setBool(
+        "showDescInAnimeDetailPage", !getShowDescInAnimeDetailPage());
+  }
+
+  static bool getShowDescInAnimeDetailPage() {
+    return SPUtil.getBool("showDescInAnimeDetailPage", defaultValue: true);
+  }
+
+  // 动漫详细页下滑时背景封面添加视差效果
+  static turnEnableParallaxInAnimeDetailPage() {
+    SPUtil.setBool(
+        "enableParallaxInAnimeDetailPage", !getEnableParallaxInAnimeDetailPage());
+  }
+
+  static bool getEnableParallaxInAnimeDetailPage() {
+    return SPUtil.getBool("enableParallaxInAnimeDetailPage", defaultValue: false);
   }
 
   // 笔记页中显示/隐藏所有图片
