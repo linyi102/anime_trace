@@ -41,17 +41,26 @@ class ThemeUtil {
         representativeColor: const Color.fromRGBO(248, 248, 248, 1),
         primaryColor: Colors.blue,
         appBarColor: Colors.white,
-        bodyColor: const Color.fromRGBO(248, 248, 248, 1),
+        bodyColor: const Color.fromRGBO(250, 250, 250, 1),
         cardColor: Colors.white),
     ThemeColor(
         isDarkMode: true,
-        key: "black",
-        name: "黑色",
+        key: "lightBlack",
+        name: "浅黑",
+        primaryColor: Colors.blue,
+        representativeColor: const Color.fromRGBO(30, 30, 30, 1),
+        appBarColor: const Color.fromRGBO(30, 30, 30, 1),
+        bodyColor: const Color.fromRGBO(30, 30, 30, 1),
+        cardColor: const Color.fromRGBO(35, 35, 35, 1)),
+    ThemeColor(
+        isDarkMode: true,
+        key: "pureBlack",
+        name: "纯黑",
         primaryColor: Colors.blue,
         representativeColor: Colors.black,
-        appBarColor: const Color.fromRGBO(48, 48, 48, 1),
-        bodyColor: const Color.fromRGBO(43, 43, 43, 1),
-        cardColor: const Color.fromRGBO(48, 48, 48, 1)),
+        appBarColor: const Color.fromRGBO(0, 0, 0, 1),
+        bodyColor: const Color.fromRGBO(0, 0, 0, 1),
+        cardColor: const Color.fromRGBO(15, 15, 15, 1)),
     ThemeColor(
         isDarkMode: true,
         key: "nightPurple",
@@ -60,7 +69,7 @@ class ThemeUtil {
         representativeColor: const Color.fromRGBO(12, 19, 35, 1),
         appBarColor: const Color.fromRGBO(8, 9, 27, 1),
         bodyColor: const Color.fromRGBO(12, 19, 35, 1),
-        cardColor: const Color.fromRGBO(24, 25, 43, 1))
+        cardColor: const Color.fromRGBO(24, 25, 43, 0.6))
   ];
 
   // 根据key从list中查找主题
