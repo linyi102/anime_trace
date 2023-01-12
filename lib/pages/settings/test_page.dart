@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
+import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ class _TestPageState extends State<TestPage> {
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.find();
     File dbFile = File(SqliteUtil.dbPath);
+    final LabelsController labelsController = Get.find();
 
     return Scaffold(
       appBar: AppBar(

@@ -8,7 +8,8 @@ import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
-import 'package:flutter_test_future/pages/settings/tag_manage.dart';
+import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
+import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -106,7 +107,21 @@ class _SettingPageState extends State<SettingPage> {
                 Navigator.of(context).push(
                   FadeRoute(
                     builder: (context) {
-                      return const TagManage();
+                      return const ChecklistManagePage();
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              iconColor: ThemeUtil.getPrimaryIconColor(),
+              leading: const Icon(Icons.label_outline),
+              title: const Text("标签管理"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeRoute(
+                    builder: (context) {
+                      return LabelManagePage();
                     },
                   ),
                 );

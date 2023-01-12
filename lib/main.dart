@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ Future<void> beforeRunApp() async {
 void putGetController() {
   Get.put(UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
   Get.put(AnimeDisplayController());
+  Get.put(LabelsController());
 }
 
 void handleWindowsManager() async {

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter_test_future/dao/anime_label_dao.dart';
+import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter_test_future/models/anime.dart';
@@ -47,6 +49,10 @@ class SqliteUtil {
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序
     await SqliteUtil.addColumnOrderIdxToImage();
+
+    // 创建标签表和动漫标签表
+    LabelDao.createTable();
+    AnimeLabelDao.createTable();
     return true;
   }
 

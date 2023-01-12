@@ -10,7 +10,9 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_test_future/pages/modules/anime_rating_bar.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
+import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -36,6 +39,7 @@ import 'package:transparent_image/transparent_image.dart';
 
 import '../../components/dialog/dialog_select_play_status.dart';
 import '../../dao/note_dao.dart';
+import '../../models/label.dart';
 import '../modules/toggleListTile.dart';
 import 'anime_properties_page.dart';
 
@@ -53,12 +57,15 @@ class AnimeDetailPlus extends StatefulWidget {
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     with SingleTickerProviderStateMixin {
-  late Anime _anime;
-  List<Episode> _episodes = [];
   bool _loadAnimeOk = false;
   bool _loadEpisodeOk = false;
-  List<Note> _notes = [];
-  late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
+  late Anime _anime;
+  List<Episode> _episodes = []; // 集
+  List<Note> _notes = []; // 集对应的笔记
+  int rateNoteCount = 0; // 评价数量
+  final AnimeController animeController =
+      Get.put(AnimeController()); // 动漫详细页的动漫
+  final LabelsController labelsController = Get.find(); // 动漫详细页的标签
 
   // 输入框
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
@@ -68,6 +75,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
   Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
+  late int lastMultiSelectedIndex; // 记住最后一次多选的集下标
 
   bool hideNoteInAnimeDetail =
       SPUtil.getBool("hideNoteInAnimeDetail", defaultValue: false);
@@ -76,8 +84,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   int currentStartEpisodeNumber = 1;
   final int episodeRangeSize = 50;
 
-  int rateNoteCount = 0;
-  final AnimeController animeController = Get.put(AnimeController());
+  // 界面
   double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
   double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
 
@@ -109,6 +116,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     animeController.setAnime(_anime);
     _loadEpisode();
     _loadRateNoteCnt();
+    _loadLabels();
   }
 
   Future<bool> _loadAnime() async {
@@ -181,6 +189,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       });
       Log.info("评价数量：$rateNoteCount");
     });
+  }
+
+  _loadLabels() async {
+    labelsController.labelsInAnimeDetail.value =
+        await AnimeLabelDao.getLabelsByAnimeId(_anime.animeId);
+    setState(() {});
   }
 
   // 用于传回到动漫列表页
@@ -256,15 +270,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 第一行信息
-                  Text.rich(
-                    TextSpan(children: [
-                      WidgetSpan(
-                        child: Text(_anime.getAnimeInfoFirstLine()),
-                      ),
-                    ]),
-                    textScaleFactor: textScaleFactor,
-                  ),
+                  if (_anime.getAnimeInfoFirstLine().isNotEmpty)
+                    // 第一行信息
+                    Text.rich(
+                      TextSpan(children: [
+                        WidgetSpan(
+                          child: Text(_anime.getAnimeInfoFirstLine()),
+                        ),
+                      ]),
+                      textScaleFactor: textScaleFactor,
+                    ),
                   // 第二行信息
                   Text.rich(
                     TextSpan(children: [
@@ -340,10 +355,90 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   maxLines: 2,
                   style: const TextStyle(fontSize: 12),
                   arrowSize: 20),
-            )
+            ),
+          // 标签列表
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Obx(() => Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: _getLabelChips(),
+                )),
+          )
         ]),
       ),
     );
+  }
+
+  // 构建标签chips，最后添加增加标签和管理删除chip
+  _getLabelChips() {
+    List<Widget> chips = labelsController.labelsInAnimeDetail
+        .map((e) => GestureDetector(
+              onTap: () {
+                Log.info("点按标签：$e");
+                // 不要搜索相同标签的动漫，不然会一直嵌套(进入动漫再次点击标签)
+              },
+              onLongPress: () {
+                Log.info("长按标签：$e");
+                // 不需要了，因为管理页面也可以进行以下操作
+                // showDialog(
+                //     context: context,
+                //     builder: (context) => SimpleDialog(
+                //           children: [
+                //             SimpleDialogOption(
+                //               child: const Text("重命名"),
+                //               onPressed: () {
+                //                 Log.info("重命名标签：$e");
+                //               },
+                //             ),
+                //             SimpleDialogOption(
+                //               child: const Text("从该动漫中移除"),
+                //               onPressed: () {
+                //                 Log.info("从该动漫中移除标签：$e");
+                //               },
+                //             )
+                //           ],
+                //         ));
+              },
+              child: Chip(
+                label: Text(e.name),
+                backgroundColor: ThemeUtil.getCardColor(),
+              ),
+            ))
+        .toList();
+
+    chips.add(GestureDetector(
+      onTap: () {
+        Log.info("添加标签");
+        // 弹出底部菜单，提供搜索和查询列表
+        // Navigator.of(context).push(FadeRoute(builder: (context) => LabelManagePage(
+        //   selectLabel: true,
+        //   animeId: _anime.animeId,
+        // )));
+        showFlexibleBottomSheet(
+            duration: const Duration(milliseconds: 200),
+            minHeight: 0,
+            initHeight: 0.5,
+            maxHeight: 1,
+            context: context,
+            builder: (
+              BuildContext context,
+              ScrollController scrollController,
+              double bottomSheetOffset,
+            ) =>
+                LabelManagePage(
+                  selectLabel: true,
+                  animeId: _anime.animeId,
+                ),
+            isExpand: true);
+      },
+      child: Chip(
+        label: const Text("  +  "),
+        backgroundColor: ThemeUtil.getCardColor(),
+      ),
+    ));
+
+    return chips;
   }
 
   // 构建主体(集信息页)

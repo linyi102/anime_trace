@@ -7,15 +7,15 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
-class TagManage extends StatefulWidget {
-  const TagManage({Key? key}) : super(key: key);
+class ChecklistManagePage extends StatefulWidget {
+  const ChecklistManagePage({Key? key}) : super(key: key);
 
   @override
-  _TagManageState createState() => _TagManageState();
+  _ChecklistManagePageState createState() => _ChecklistManagePageState();
 }
 
 // 在全局变量tags拖拽、修改、添加的基础上，改变数据库tag表信息
-class _TagManageState extends State<TagManage> {
+class _ChecklistManagePageState extends State<ChecklistManagePage> {
   // 来自ReorderableListView里的默认proxyDecorator
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(
