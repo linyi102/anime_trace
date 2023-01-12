@@ -108,7 +108,7 @@ class AnimePropertiesPage extends StatelessWidget {
           trailing: onPressed == null
               ? null
               : IconButton(
-                  onPressed: onPressed, icon: const Icon(Icons.edit, size: 16)),
+                  onPressed: onPressed, icon: const Icon(Icons.edit, size: 20)),
           subtitle: _buildSelectedOrUrlText(context, content),
         )
       ],

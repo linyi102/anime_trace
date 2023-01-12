@@ -1,6 +1,6 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttericon/typicons_icons.dart';
 
 class AnimeRatingBar extends StatelessWidget {
   const AnimeRatingBar(
@@ -28,7 +28,7 @@ class AnimeRatingBar extends StatelessWidget {
             itemPadding: EdgeInsets.only(right: spacing ?? 5),
             unratedColor: Colors.grey.withOpacity(0.5),
             itemBuilder: (context, _) =>
-                Icon(Typicons.star_filled, color: Colors.amber[600]),
+                Icon(EvaIcons.star, color: Colors.amber[600]),
             onRatingUpdate: onRatingUpdate)
         // 评分栏指示器，不能点击star来评分
         : RatingBarIndicator(
@@ -37,7 +37,7 @@ class AnimeRatingBar extends StatelessWidget {
             itemPadding: EdgeInsets.only(right: spacing ?? 5),
             unratedColor: Colors.grey.withOpacity(0.5),
             itemBuilder: (BuildContext context, int index) =>
-                Icon(Typicons.star_filled, color: Colors.amber[600]),
+                Icon(EvaIcons.star, color: Colors.amber[600]),
           );
   }
 }

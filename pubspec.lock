@@ -120,6 +120,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
+  eva_icons_flutter:
+    dependency: "direct main"
+    description:
+      name: eva_icons_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.0"
   expand_widget:
     dependency: "direct main"
     description:

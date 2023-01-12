@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -279,7 +280,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                         child: Row(
                           children: [
                             Text(_anime.getAnimeSource()),
-                            const Icon(Icons.open_in_new, size: smallIconSize),
+                            const Icon(EvaIcons.externalLink,
+                                size: smallIconSize),
                           ],
                         ),
                       )),
@@ -312,7 +314,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                         child: Row(
                           children: [
                             Text("${_anime.animeEpisodeCnt}集"),
-                            const Icon(Icons.edit, size: smallIconSize),
+                            const Icon(EvaIcons.editOutline,
+                                size: smallIconSize),
                           ],
                         ),
                       )),
@@ -445,7 +448,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                leading: const Icon(Icons.delete),
+                leading: const Icon(Icons.delete_forever),
                 title: const Text("取消收藏"),
                 onTap: () {
                   // 关闭下拉菜单
@@ -597,7 +600,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 显示信息按钮，点击后进入动漫属性信息页
   _showInfoIcon() {
     return IconTextButton(
-      iconData: Icons.info,
+      iconData: EvaIcons.infoOutline,
       title: "信息",
       onTap: () {
         Navigator.of(context)
@@ -609,7 +612,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 显示评价按钮，点击后进入评价列表页
   _showRateIcon() {
     return IconTextButton(
-      iconData: Entypo.comment,
+      iconData: EvaIcons.messageCircleOutline,
       title: "$rateNoteCount条评价",
       onTap: () {
         Navigator.of(context)
@@ -625,7 +628,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 显示收藏按钮，点击后可以修改清单
   _showCollectIcon() {
     return IconTextButton(
-      iconData: _anime.isCollected() ? Entypo.heart : Entypo.heart_empty,
+      iconData: _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
       iconColor: _anime.isCollected() ? Colors.red : null,
       title: _anime.isCollected() ? _anime.tagName : "",
       onTap: () => _dialogSelectTag(),
@@ -682,7 +685,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       children: [
                         ListTile(
                           title: const Text("设置日期"),
-                          leading: const Icon(Icons.calendar_today_outlined),
+                          leading: const Icon(Icons.edit_calendar_rounded),
                           style: ListTileStyle.drawer,
                           onTap: () {
                             mapSelected[episodeIndex] = true;
@@ -1095,7 +1098,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   Expanded(
                     child: IconButton(
                       onPressed: multiPickDateTime,
-                      icon: const Icon(Icons.calendar_today_outlined),
+                      icon: const Icon(Icons.edit_calendar_rounded),
                     ),
                   ),
                   Expanded(
@@ -1366,78 +1369,37 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              dialogSelectUint(context, "选择第几次观看",
-                      initialValue: _anime.reviewNumber,
-                      minValue: 1,
-                      maxValue: 9)
-                  .then((value) {
-                if (value != null) {
-                  if (_anime.reviewNumber != value) {
-                    _anime.reviewNumber = value;
-                    // SqliteUtil.updateAnimeReviewNumberByAnimeId(
-                    //     _anime.animeId, _anime.reviewNumber);
-                    SqliteUtil.updateAnime(_anime, _anime);
-                    // 不相等才设置并重新加载数据
-                    _loadEpisode();
-                  }
-                }
-              });
-            },
-            child: Row(
-              children: [
-                const Icon(Icons.arrow_right_rounded),
-                Text("第${_anime.reviewNumber}次观看"),
-              ],
-            ),
-          ),
+          // _buildReviewNumberTextButton(),
           const SizedBox(width: 10),
           Expanded(child: Container()),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // IconButton(
-              //   hoverColor: Colors.transparent,
-              //   splashColor: Colors.transparent,
-              //   highlightColor: Colors.transparent,
-              //   onPressed: () {
-              //     dialogSelectUint(context, "选择第几次观看",
-              //             initialValue: _anime.reviewNumber,
-              //             minValue: 1,
-              //             maxValue: 9)
-              //         .then((value) {
-              //       if (value != null) {
-              //         if (_anime.reviewNumber != value) {
-              //           _anime.reviewNumber = value;
-              //           // SqliteUtil.updateAnimeReviewNumberByAnimeId(
-              //           //     _anime.animeId, _anime.reviewNumber);
-              //           SqliteUtil.updateAnime(_anime, _anime);
-              //           // 不相等才设置并重新加载数据
-              //           _loadEpisode();
-              //         }
-              //       }
-              //     });
-              //   },
-              //   // icon: _showReviewNumberIcon()
-              //   // 绘制圆角方块，中间添加数字
-              //   icon: Container(
-              //     width: 20,
-              //     height: 20,
-              //     child: Center(
-              //         child: Text("${_anime.reviewNumber}",
-              //             style: const TextStyle(
-              //                 fontSize: 12, fontWeight: FontWeight.w500))),
-              //     decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(3),
-              //         border: Border.all(
-              //             color: ThemeUtil
-              //                     .themeController.themeColor.value.isDarkMode
-              //                 ? Colors.grey
-              //                 : Colors.black,
-              //             width: 2)),
-              //   ),
-              // ),
+              IconButton(
+                hoverColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onPressed: _dialogSelectReviewNumber,
+                // 使用自带图标
+                // icon: _showReviewNumberIcon()
+                // 绘制圆角方块，中间添加数字
+                icon: Container(
+                  width: 18,
+                  height: 18,
+                  child: Center(
+                      child: Text("${_anime.reviewNumber}",
+                          style: const TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.w500))),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      border: Border.all(
+                          color: ThemeUtil
+                                  .themeController.themeColor.value.isDarkMode
+                              ? Colors.grey
+                              : Colors.black,
+                          width: 2)),
+                ),
+              ),
               const SizedBox(width: 5),
               IconButton(
                   hoverColor: Colors.transparent,
@@ -1471,6 +1433,35 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       : const Icon(Icons.unfold_less)),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  void _dialogSelectReviewNumber() {
+    dialogSelectUint(context, "选择第几次观看",
+            initialValue: _anime.reviewNumber, minValue: 1, maxValue: 9)
+        .then((value) {
+      if (value != null) {
+        if (_anime.reviewNumber != value) {
+          _anime.reviewNumber = value;
+          // SqliteUtil.updateAnimeReviewNumberByAnimeId(
+          //     _anime.animeId, _anime.reviewNumber);
+          SqliteUtil.updateAnime(_anime, _anime);
+          // 不相等才设置并重新加载数据
+          _loadEpisode();
+        }
+      }
+    });
+  }
+
+  _buildReviewNumberTextButton() {
+    return GestureDetector(
+      onTap: _dialogSelectReviewNumber,
+      child: Row(
+        children: [
+          const Icon(Icons.arrow_right_rounded),
+          Text("第${_anime.reviewNumber}次观看"),
         ],
       ),
     );
@@ -1598,19 +1589,19 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _showReviewNumberIcon() {
     switch (_anime.reviewNumber) {
       case 1:
-        return const Icon(Icons.looks_one);
+        return const Icon(Icons.looks_one_outlined);
       case 2:
-        return const Icon(Icons.looks_two);
+        return const Icon(Icons.looks_two_outlined);
       case 3:
-        return const Icon(Icons.looks_3);
+        return const Icon(Icons.looks_3_outlined);
       case 4:
-        return const Icon(Icons.looks_4);
+        return const Icon(Icons.looks_4_outlined);
       case 5:
-        return const Icon(Icons.looks_5);
+        return const Icon(Icons.looks_5_outlined);
       case 6:
-        return const Icon(Icons.looks_6);
+        return const Icon(Icons.looks_6_outlined);
       default:
-        return const Icon(Icons.error_outline);
+        return const Icon(Icons.error_outline_outlined);
     }
   }
 
