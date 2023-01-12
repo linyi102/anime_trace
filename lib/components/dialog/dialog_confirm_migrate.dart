@@ -21,14 +21,17 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
       return StatefulBuilder(
         builder: (context, dialogState) {
           return AlertDialog(
+            title: const Text("确定迁移吗？"),
             content: SingleChildScrollView(
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text("确认迁移吗？"),
+                    contentPadding: const EdgeInsets.all(0),
+                    title: const Text("迁移到："),
                     subtitle: Text(newAnime.animeName),
                   ),
                   ListTile(
+                    contentPadding: const EdgeInsets.all(0),
                     style: ListTileStyle.drawer,
                     dense: true,
                     title: const Text("包括封面"),
@@ -64,7 +67,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       Navigator.pop(parentContext);
                     });
                   },
-                  child: const Text("确认"))
+                  child: const Text("确定"))
             ],
           );
         },
