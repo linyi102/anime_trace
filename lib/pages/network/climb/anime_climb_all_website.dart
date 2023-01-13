@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -244,7 +244,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                       onTap: () {
                         // 进入详细搜索页
                         Navigator.of(context)
-                            .push(FadeRoute(builder: (context) {
+                            .push(MaterialPageRoute(builder: (context) {
                           return AnimeClimbOneWebsite(
                             animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
                             keyword: lastInputKeyword,

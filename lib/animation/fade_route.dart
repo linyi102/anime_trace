@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// [弃用]会导致进入和退出页面时重复多次build
+@deprecated
 class FadeRoute extends PageRoute {
   FadeRoute({
     required this.builder,

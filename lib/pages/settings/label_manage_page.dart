@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
@@ -10,21 +9,20 @@ import 'package:get/get.dart';
 import '../../utils/theme_util.dart';
 
 class LabelManagePage extends StatelessWidget {
-  // 必须是const，外部创建时也要加上const，否则会多次build
-  const LabelManagePage({this.animeId = 0, Key? key}) : super(key: key);
-
-  // 在动漫详细页点击添加标签按钮，会传入动漫id，此时点击标签会进行添加
-  final int animeId;
-
-  bool get enableSelectLabelForAnime => animeId > 0;
+  const LabelManagePage({this.enableSelectLabelForAnime = false, Key? key})
+      : super(key: key);
+  final bool enableSelectLabelForAnime;
 
   static const int labelMaxLength = 30;
 
   @override
   Widget build(BuildContext context) {
-    Log.info("$runtimeType: build");
-    LabelsController labelsController = Get.find();
+    Log.build(runtimeType);
 
+    // 把不能使用final的数据放在方法里，好处是可以使用const
+    // 缺点是要想提取子组件时，需要传递很多参数
+    LabelsController labelsController = Get.find();
+    var inputKeywordController = TextEditingController();
     _renewAllLabels(labelsController);
 
     return Scaffold(
@@ -32,119 +30,80 @@ class LabelManagePage extends StatelessWidget {
         title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理",
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
-      // 如果没有标签，那么就单独显示输入框(因为可能是搜索关键字后，没有相关的标签)
-      // 如果有标签，则放到第0个上面，这样就能保证仍然可以懒加载
-      // BUG：因为会重新构建搜索栏，所以聚焦会失效(表现是输着输着不能输了，因为查询结果为空，会重新构建搜索栏)
-      // 所以暂时放弃懒加载，后期改用sliverlist
       body: ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
         children: [
-          _buildSearchBar(labelsController),
+          _buildSearchBar(inputKeywordController, labelsController),
           const SizedBox(height: 20),
-          Obx(() => Wrap(
-              spacing: 4,
-              runSpacing: 4,
-              children: labelsController.labels.reversed.map((label) {
-                bool selected = labelsController.labelsInAnimeDetail
-                        .indexWhere((element) => element.id == label.id) >
-                    -1;
-
-                return GestureDetector(
-                  child: Chip(
-                    label: Text(label.name),
-                    backgroundColor: enableSelectLabelForAnime && selected
-                        ? Colors.grey
-                        : ThemeUtil.getCardColor(),
-                  ),
-                  onTap: () async {
-                    if (enableSelectLabelForAnime) {
-                      if (selected) {
-                        // 为这个动漫移除该标签
-                        if (await AnimeLabelDao.deleteAnimeLabel(
-                            animeId, label.id)) {
-                          Log.info(
-                              "移除动漫标签记录成功(animeId=$animeId, labelId=${label.id})");
-                          // 从controller中移除
-                          labelsController.labelsInAnimeDetail
-                              .removeWhere((element) => element.id == label.id);
-                        } else {
-                          Log.info("移除动漫标签记录失败");
-                        }
-                      } else {
-                        // 为这个动漫添加该标签
-                        int newId = await AnimeLabelDao.insertAnimeLabel(
-                            animeId, label.id);
-                        if (newId > 0) {
-                          Log.info("添加新动漫标签纪录成功：$newId");
-                          // 添加到controller
-                          labelsController.labelsInAnimeDetail.add(label);
-                        } else {
-                          Log.info("添加新动漫标签纪录失败");
-                        }
-                      }
-                    }
-                  },
-                  onLongPress: () {
-                    // 弹出对话框，提供重命名和删除操作
-                    showDialog(
-                        context: context,
-                        builder: (context) => SimpleDialog(
-                              children: [
-                                SimpleDialogOption(
-                                  child: const Text("重命名"),
-                                  onPressed: () {
-                                    Log.info("重命名标签：$label");
-                                    Navigator.of(context).pop();
-
-                                    int index = labelsController.labels
-                                        .indexWhere(
-                                            (element) => element == label);
-                                    _showDialogModifyLabel(
-                                        context, index, labelsController);
-                                  },
-                                ),
-                                SimpleDialogOption(
-                                  child: const Text("删除"),
-                                  onPressed: () {
-                                    Log.info("删除标签：$label");
-                                    Navigator.of(context).pop();
-
-                                    int index = labelsController.labels
-                                        .indexWhere(
-                                            (element) => element == label);
-
-                                    _showDeleteDialog(context, label,
-                                        labelsController, index);
-                                  },
-                                )
-                              ],
-                            ));
-                  },
-                );
-              }).toList())),
+          Obx(() => _buildLabelWrap(labelsController, context)),
           // 底部空白，避免加号悬浮按钮遮挡删除按钮
           const ListTile(),
           const ListTile(),
         ],
       ),
-      floatingActionButton:
-          _buildFloatingActionButton(context, labelsController),
+      floatingActionButton: _buildFloatingActionButton(
+          context, labelsController, inputKeywordController),
     );
   }
 
-  _buildSearchBar(LabelsController labelsController) {
-    Log.info("_buildSearchBar");
-    var inputKeywordController = TextEditingController();
+  _buildLabelWrap(LabelsController labelsController, BuildContext context) {
+    return Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: labelsController.labels.reversed.map((label) {
+          bool selected = labelsController.labelsInAnimeDetail
+                  .indexWhere((element) => element.id == label.id) >
+              -1;
 
+          return GestureDetector(
+            child: Chip(
+              label: Text(label.name),
+              backgroundColor: enableSelectLabelForAnime && selected
+                  ? Colors.grey
+                  : ThemeUtil.getCardColor(),
+            ),
+            onTap: () async {
+              if (enableSelectLabelForAnime) {
+                if (selected) {
+                  // 为这个动漫移除该标签
+                  if (await AnimeLabelDao.deleteAnimeLabel(
+                      labelsController.animeId, label.id)) {
+                    Log.info(
+                        "移除动漫标签记录成功(animeId=${labelsController.animeId}, labelId=${label.id})");
+                    // 从controller中移除
+                    labelsController.labelsInAnimeDetail
+                        .removeWhere((element) => element.id == label.id);
+                  } else {
+                    Log.info("移除动漫标签记录失败");
+                  }
+                } else {
+                  // 为这个动漫添加该标签
+                  int newId = await AnimeLabelDao.insertAnimeLabel(
+                      labelsController.animeId, label.id);
+                  if (newId > 0) {
+                    Log.info("添加新动漫标签纪录成功：$newId");
+                    // 添加到controller
+                    labelsController.labelsInAnimeDetail.add(label);
+                  } else {
+                    Log.info("添加新动漫标签纪录失败");
+                  }
+                }
+              } else {
+                // 弹出对话框，提供重命名和删除操作
+                _showOpMenuDialog(context, label, labelsController);
+              }
+            },
+          );
+        }).toList());
+  }
+
+  _buildSearchBar(TextEditingController inputKeywordController,
+      LabelsController labelsController) {
     return TextField(
-      controller: inputKeywordController..text = labelsController.kw,
+      controller: inputKeywordController,
       decoration: const InputDecoration(
         hintText: "搜索标签",
         prefixIcon: Icon(Icons.search),
-        // isDense: true,
-        // border: OutlineInputBorder(
-        //     borderSide: const BorderSide(width: 2),
-        //     borderRadius: BorderRadius.circular(50)),
       ),
       onChanged: (kw) async {
         Log.info("搜索标签关键字：$kw");
@@ -156,37 +115,68 @@ class LabelManagePage extends StatelessWidget {
     );
   }
 
-  _showDeleteDialog(BuildContext context, Label label,
-      LabelsController labelsController, int index) {
+  Future<dynamic> _showOpMenuDialog(
+      BuildContext context, Label label, LabelsController labelsController) {
     return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-              title: const Text("确定删除吗？"),
-              content: Text("要删除的标签：${label.name}"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("取消")),
-                ElevatedButton(
-                    onPressed: () {
-                      LabelDao.delete(label.id);
-                      labelsController.labels.removeAt(index);
-                      // 如果在动漫详细页打开的标签管理页中删除了标签，那么也需要移除下面的标签
-                      if (enableSelectLabelForAnime) {
-                        labelsController.labelsInAnimeDetail
-                            .removeWhere((element) => element.id == label.id);
-                      }
-                      Navigator.pop(context);
-                    },
-                    child: const Text("确定")),
+        builder: (context) => SimpleDialog(
+              children: [
+                SimpleDialogOption(
+                  child: const Text("重命名"),
+                  onPressed: () {
+                    Log.info("重命名标签：$label");
+                    Navigator.of(context).pop();
+
+                    int index = labelsController.labels
+                        .indexWhere((element) => element == label);
+                    _showDialogModifyLabel(context, index, labelsController);
+                  },
+                ),
+                SimpleDialogOption(
+                  child: const Text("删除"),
+                  onPressed: () {
+                    Log.info("删除标签：$label");
+                    Navigator.of(context).pop();
+
+                    int index = labelsController.labels
+                        .indexWhere((element) => element == label);
+
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: const Text("确定删除吗？"),
+                              content: Text("要删除的标签：${label.name}"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("取消")),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      LabelDao.delete(label.id);
+                                      labelsController.labels.removeAt(index);
+                                      // 如果在动漫详细页打开的标签管理页中删除了标签，那么也需要移除下面的标签
+                                      if (enableSelectLabelForAnime) {
+                                        labelsController.labelsInAnimeDetail
+                                            .removeWhere((element) =>
+                                                element.id == label.id);
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("确定")),
+                              ],
+                            ));
+                  },
+                )
               ],
             ));
   }
 
-  _buildFloatingActionButton(
-      BuildContext context, LabelsController labelsController) {
+  _buildFloatingActionButton(BuildContext context,
+      LabelsController labelsController, var inputKeywordController) {
+    Log.info("_buildFloatingActionButton");
+
     return FloatingActionButton(
       backgroundColor: ThemeUtil.getPrimaryColor(),
       foregroundColor: Colors.white,
@@ -238,7 +228,16 @@ class LabelManagePage extends StatelessWidget {
                             Log.info("添加标签成功，新插入的id=$newId");
                             // 指定新id，并添加到controller中
                             newLabel.id = newId;
-                            labelsController.labels.add(newLabel);
+                            if (inputKeywordController.text.isEmpty) {
+                              // 没在搜索，直接添加
+                              labelsController.labels.add(newLabel);
+                            } else {
+                              // 如果在搜索后添加，则看是否存在关键字，如果有，则添加到labels里(此时controller里的labels存放的是搜索结果)
+                              if (labelName
+                                  .contains(inputKeywordController.text)) {
+                                labelsController.labels.add(newLabel);
+                              }
+                            }
                             Navigator.of(context).pop();
                           } else {
                             Log.info("添加失败");

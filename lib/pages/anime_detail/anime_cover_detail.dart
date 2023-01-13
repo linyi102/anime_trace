@@ -213,7 +213,7 @@ class AnimeCoverDetail extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(howToEditCoverUrlDialogContext);
                         Navigator.of(context).push(
-                          FadeRoute(
+                          MaterialPageRoute(
                             builder: (context) {
                               return const ImagePathSetting();
                             },
@@ -302,7 +302,7 @@ class AnimeCoverDetail extends StatelessWidget {
       showToast("请先设置封面根目录");
       Navigator.pop(howToEditCoverUrlDialogContext);
       Navigator.of(context).push(
-        FadeRoute(
+        MaterialPageRoute(
           builder: (context) {
             return const ImagePathSetting();
           },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
@@ -28,7 +28,7 @@ class NoteImgItem extends StatelessWidget {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: () {
-        Navigator.push(context, FadeRoute(
+        Navigator.push(context, MaterialPageRoute(
             // transitionDuration: Duration.zero,
             // reverseTransitionDuration: Duration.zero,
             builder: (context) {

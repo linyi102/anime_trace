@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
@@ -256,7 +256,7 @@ class _RecordItemState extends State<RecordItem> {
       ),
       // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
       onTap: () {
-        Navigator.of(context).push(FadeRoute(
+        Navigator.of(context).push(MaterialPageRoute(
           builder: (context) {
             return AnimeDetailPlus(record.anime);
           },

@@ -1,6 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 class Log {
+  static void build<T>(Type runtimeType) {
+    if (kDebugMode) {
+      info("$runtimeType: build");
+    }
+  }
+
   static void info<T>(T content, {Type? runTimeType}) {
     if (kDebugMode) {
       String typeStr = runTimeType == null ? "" : ":${runTimeType.toString()}";

@@ -14,7 +14,7 @@ class LaunchUrlUtil {
     //   // 只有安卓才允许打开webview界面
     //   // 太占空间了，尤其是语雀，占了300多兆，还在用户数据，不在缓存
     //   Navigator.push(
-    //       context, FadeRoute(builder: (context) => MyWebView(url: uriStr)));
+    //       context, MaterialPageRoute(builder: (context) => MyWebView(url: uriStr)));
     // }
     else {
       // 数据也会放在用户数据，而非缓存，所以尽量都以浏览器方式打开

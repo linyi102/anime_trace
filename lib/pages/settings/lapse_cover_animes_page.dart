@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
@@ -72,7 +72,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.info("$runtimeType: build");
+    Log.build(runtimeType);
 
     return Scaffold(
       appBar: AppBar(
@@ -139,7 +139,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                               Get.put(AnimeController());
                           animeController.setAnime(anime);
                           Navigator.of(context)
-                              .push(FadeRoute(
+                              .push(MaterialPageRoute(
                                   builder: (context) => AnimeCoverDetail()))
                               .then((value) {
                             // 将这里的anime传入了animeController，在封面详细页修改封面后返回，需要重新刷新状态

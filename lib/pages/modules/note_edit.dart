@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
@@ -377,7 +377,7 @@ class _NoteEditState extends State<NoteEdit> {
         //   builder: (BuildContext context) =>
         //       const NoteSetting(),
         // ),
-        FadeRoute(
+        MaterialPageRoute(
           builder: (context) {
             return const ImagePathSetting();
           },

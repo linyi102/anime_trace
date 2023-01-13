@@ -5,7 +5,7 @@ import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
@@ -257,7 +257,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     actions.add(IconButton(
       onPressed: () async {
         Navigator.of(context).push(
-          FadeRoute(
+          MaterialPageRoute(
             builder: (context) {
               return const SearchDbAnime();
             },
@@ -410,21 +410,13 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   void _enterPageAnimeDetail(i, index, Anime anime) {
     // 要想添加Hero动画，需要使用MaterialPageRoute
-    Navigator.of(context)
-        .push(
-      // MaterialPageRoute(
-      //   builder: (context) {
-      //     return AnimeDetailPlus(anime);
-      //   },
-      // ),
-      FadeRoute(
-        transitionDuration: const Duration(milliseconds: 100),
+    Navigator.of(context).push(
+      MaterialPageRoute(
         builder: (context) {
           return AnimeDetailPlus(anime);
         },
       ),
-    )
-        .then((value) async {
+    ).then((value) async {
       // 根据传回的动漫id获取最新的更新进度以及清单
       Anime newAnime = value;
       if (!newAnime.isCollected()) {

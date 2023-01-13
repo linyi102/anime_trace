@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
@@ -88,7 +88,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
               leading: AnimeListCover(anime),
               title: Text(anime.animeName),
               onTap: () {
-                Navigator.of(context).push(FadeRoute(builder: (context) {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                   return AnimeDetailPlus(anime);
                 })).then((value) {
                   Anime retAnime = value as Anime;

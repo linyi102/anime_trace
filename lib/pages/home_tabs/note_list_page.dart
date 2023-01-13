@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/pages/note_list/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
@@ -122,7 +122,7 @@ class _NoteListPageState extends State<NoteListPage>
                 hoverColor: Colors.transparent,
                 title: const Text("图片设置"),
                 onTap: () {
-                  Navigator.push(context, FadeRoute(
+                  Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
                       return const ImagePathSetting();
                     },

@@ -1,6 +1,6 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
@@ -135,14 +135,14 @@ class _SourceListPageState extends State<SourceListPage> {
                 ListTile(
                   title: const Text("修复失效网络封面"),
                   onTap: () {
-                    Navigator.of(context).push(FadeRoute(
+                    Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const LapseCoverAnimesPage()));
                   },
                 ),
                 // ListTile(
                 //   title: const Text("查看自定义动漫"),
                 //   onTap: () {
-                //     Navigator.of(context).push(FadeRoute(
+                //     Navigator.of(context).push(MaterialPageRoute(
                 //         builder: (context) => const LapseCoverAnimesPage()));
                 //   },
                 // ),
@@ -320,7 +320,7 @@ class _SourceListPageState extends State<SourceListPage> {
   }
 
   void enterSourceDetail(ClimbWebsite climbWebsite) {
-    Navigator.of(context).push(FadeRoute(builder: (context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return SourceDetail(climbWebsite);
     })).then((value) {
       setState(() {});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
@@ -79,7 +79,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                 } else if (anime.isCollected()) {
                   Log.info("进入动漫详细页面${anime.animeId}");
                   Navigator.of(context).push(
-                    FadeRoute(
+                    MaterialPageRoute(
                       builder: (context) {
                         return AnimeDetailPlus(anime);
                       },

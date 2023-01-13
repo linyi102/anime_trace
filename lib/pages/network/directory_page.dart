@@ -5,7 +5,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -153,7 +153,7 @@ class _DirectoryPageState extends State<DirectoryPage>
           Log.info("单击");
           // 如果收藏了，则单击进入详细页面
           if (anime.isCollected()) {
-            Navigator.of(context).push(FadeRoute(builder: (context) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return AnimeDetailPlus(anime);
             })).then((value) {
               setState(() {
@@ -178,7 +178,7 @@ class _DirectoryPageState extends State<DirectoryPage>
                       child: MaterialButton(
                         padding: const EdgeInsets.all(0),
                         onPressed: () {
-                          Navigator.of(context).push(FadeRoute(
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => PhotoView(
                                   imageProvider: imageProvider,
                                   onTapDown: (arg1, arg2, arg3) =>

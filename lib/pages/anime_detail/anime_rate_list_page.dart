@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
@@ -48,7 +48,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.info("$runtimeType: build");
+    Log.build(runtimeType);
 
     return Scaffold(
       appBar: AppBar(
@@ -75,8 +75,8 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
     NoteDao.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
       episodeNote.id = value;
-      Navigator.push(
-              context, FadeRoute(builder: (context) => NoteEdit(episodeNote)))
+      Navigator.push(context,
+              MaterialPageRoute(builder: (context) => NoteEdit(episodeNote)))
           .then((value) {
         // 重新获取列表
         _loadData();
@@ -101,7 +101,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
                 padding: const EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.of(context).push(
-                    FadeRoute(
+                    MaterialPageRoute(
                       builder: (context) {
                         return NoteEdit(note);
                       },

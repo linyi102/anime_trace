@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/network/directory_page.dart';
 import 'package:flutter_test_future/pages/network/source_list_page.dart';
@@ -91,7 +91,7 @@ class _NetWorkPageState extends State<NetWorkPage>
         foregroundColor: Colors.white,
         child: const Icon(Icons.search),
         onPressed: () {
-          Navigator.of(context).push(FadeRoute(
+          Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
               return const AnimeClimbAllWebsite();
             },

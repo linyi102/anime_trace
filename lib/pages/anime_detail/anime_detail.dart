@@ -5,7 +5,6 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
@@ -194,7 +193,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _loadLabels() async {
     labelsController.labelsInAnimeDetail.value =
         await AnimeLabelDao.getLabelsByAnimeId(_anime.animeId);
-    setState(() {});
+    labelsController.animeId = _anime.animeId;
   }
 
   // 用于传回到动漫列表页
@@ -209,7 +208,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   @override
   Widget build(BuildContext context) {
-    Log.info("$runtimeType: build");
+    Log.build(runtimeType);
 
     return WillPopScope(
       onWillPop: () async {
@@ -411,8 +410,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       onTap: () {
         Log.info("添加标签");
         // 弹出底部菜单，提供搜索和查询列表
-        Navigator.of(context).push(FadeRoute(
-            builder: (context) => LabelManagePage(animeId: _anime.animeId)));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                const LabelManagePage(enableSelectLabelForAnime: true)));
         // 弹出软键盘时报错，尽管可以正常运行
         // showFlexibleBottomSheet(
         //     duration: const Duration(milliseconds: 200),
@@ -425,7 +425,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         //       ScrollController scrollController,
         //       double bottomSheetOffset,
         //     ) =>
-        //         LabelManagePage(animeId: _anime.animeId),
+        //         LabelManagePage(),
         //     isExpand: true);
       },
       child: Chip(
@@ -521,8 +521,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                        FadeRoute(builder: (context) => AnimeCoverDetail()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => AnimeCoverDetail()));
                   },
                 )
               ],
@@ -571,7 +571,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   Navigator.pop(context);
 
                   Navigator.of(context).push(
-                    FadeRoute(
+                    MaterialPageRoute(
                       builder: (context) {
                         return AnimeClimbAllWebsite(
                           animeId: _anime.animeId,
@@ -725,8 +725,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       iconData: EvaIcons.infoOutline,
       title: "信息",
       onTap: () {
-        Navigator.of(context)
-            .push(FadeRoute(builder: (context) => AnimePropertiesPage()));
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => AnimePropertiesPage()));
       },
     );
   }
@@ -738,7 +738,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       title: "$rateNoteCount条评价",
       onTap: () {
         Navigator.of(context)
-            .push(FadeRoute(builder: (context) => AnimeRateListPage(_anime)))
+            .push(MaterialPageRoute(
+                builder: (context) => AnimeRateListPage(_anime)))
             .then((value) {
           // 重新查询评价数量
           _loadRateNoteCnt();
@@ -1021,10 +1022,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     : const EdgeInsets.fromLTRB(0, 5, 0, 15),
                 onPressed: () {
                   Navigator.of(context).push(
-                    // MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         EpisodeNoteSF(episodeNotes[episodeIndex])),
-                    FadeRoute(
+                    MaterialPageRoute(
                       builder: (context) {
                         return NoteEdit(_notes[noteIdx]);
                       },
@@ -1068,22 +1066,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                         : const EdgeInsets.fromLTRB(
                                             15, 5, 15, 5),
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          FadeRoute(
-                                              // 因为里面的浏览器切换图片时自带了过渡效果，所以取消这个过渡
-                                              transitionDuration: Duration.zero,
-                                              reverseTransitionDuration:
-                                                  Duration.zero,
-                                              builder: (context) {
-                                                // 点击图片进入图片浏览页面
-                                                return ImageViewer(
-                                                  relativeLocalImages:
-                                                      _notes[noteIdx]
-                                                          .relativeLocalImages,
-                                                  initialIndex: imgIdx,
-                                                );
-                                              }));
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        // 点击图片进入图片浏览页面
+                                        return ImageViewer(
+                                          relativeLocalImages: _notes[noteIdx]
+                                              .relativeLocalImages,
+                                          initialIndex: imgIdx,
+                                        );
+                                      }));
                                     },
                                     child: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
@@ -1130,7 +1121,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         Navigator.of(context).push(
           // MaterialPageRoute(
           //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
-          FadeRoute(
+          MaterialPageRoute(
             builder: (context) {
               return NoteEdit(_notes[episodeIndex]);
             },

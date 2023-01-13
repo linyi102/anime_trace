@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -165,7 +165,7 @@ class _ImageViewerState extends State<ImageViewer> {
             TextButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .push(FadeRoute(
+                      .push(MaterialPageRoute(
                           builder: (context) => const ImagePathSetting()))
                       .then((dirChanged) {
                     if (dirChanged) {

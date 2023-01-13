@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
@@ -124,7 +124,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
                     padding: const EdgeInsets.all(0),
                     onPressed: () {
                       Navigator.of(context).push(
-                        FadeRoute(
+                        MaterialPageRoute(
                           builder: (context) {
                             return NoteEdit(rateNotes[index]);
                           },
@@ -280,16 +280,13 @@ class _RateNoteListPageState extends State<RateNoteListPage>
   }
 
   _enterAnimeDetail({required BuildContext context, required Anime anime}) {
-    Navigator.of(context)
-        .push(
-      FadeRoute(
-        transitionDuration: const Duration(milliseconds: 200),
+    Navigator.of(context).push(
+      MaterialPageRoute(
         builder: (context) {
           return AnimeDetailPlus(anime);
         },
       ),
-    )
-        .then((value) async {
+    ).then((value) async {
       // // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
       Anime anime = value;
       // 如果animeId为0，说明进入动漫详细页后删除了动漫，需要从笔记列表中删除相关笔记

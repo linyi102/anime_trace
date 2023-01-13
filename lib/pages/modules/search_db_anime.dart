@@ -3,7 +3,7 @@ import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -36,6 +36,8 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
 
   @override
   Widget build(BuildContext context) {
+    Log.build(runtimeType);
+
     // var inputController = TextEditingController();
     var inputController = TextEditingController.fromValue(TextEditingValue(
         // 设置内容
@@ -200,7 +202,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             // MaterialPageRoute(
             //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
             // ),
-            FadeRoute(
+            MaterialPageRoute(
               builder: (context) {
                 return AnimeDetailPlus(anime);
               },
@@ -247,7 +249,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
           ),
           onTap: () {
             _cancelFocus();
-            Navigator.of(context).push(FadeRoute(builder: (context) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return AnimeClimbAllWebsite(keyword: _lastInputText);
             })).then((value) {
               _searchDbAnimesByKeyword(_lastInputText);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
@@ -184,7 +184,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   //   builder: (context) =>
                   //       AnimeDetailPlus(anime.animeId),
                   // ),
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return AnimeDetailPlus(anime);
                     },

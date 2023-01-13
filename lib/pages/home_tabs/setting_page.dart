@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
 import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
+import 'package:flutter_test_future/routes/GetRoute.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -52,6 +54,8 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    Log.build(runtimeType);
+
     return Scaffold(
         appBar: AppBar(
             title: const Text("更多",
@@ -76,7 +80,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("常规设置"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const GeneralSettingPage();
                     },
@@ -90,7 +94,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("备份还原"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const BackupAndRestore();
                     },
@@ -105,7 +109,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("清单管理"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const ChecklistManagePage();
                     },
@@ -119,7 +123,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("标签管理"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const LabelManagePage();
                     },
@@ -133,7 +137,7 @@ class _SettingPageState extends State<SettingPage> {
             //   title: const Text("动漫界面"),
             //   onTap: () {
             //     Navigator.of(context).push(
-            //       FadeRoute(
+            //       MaterialPageRoute(
             //         builder: (context) {
             //           return const AnimesDisplaySetting();
             //         },
@@ -147,7 +151,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("图片设置"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const ImagePathSetting();
                     },
@@ -179,7 +183,7 @@ class _SettingPageState extends State<SettingPage> {
               title: const Text("关于版本"),
               onTap: () {
                 Navigator.of(context).push(
-                  FadeRoute(
+                  MaterialPageRoute(
                     builder: (context) {
                       return const AboutVersion();
                     },
@@ -193,13 +197,21 @@ class _SettingPageState extends State<SettingPage> {
                 leading: const Icon(Icons.bug_report_outlined),
                 title: const Text("测试页面"),
                 onTap: () {
+                  // GetRoute.to(TestPage());
                   Navigator.of(context).push(
-                    FadeRoute(
+                    MaterialPageRoute(
                       builder: (context) {
                         return TestPage();
                       },
                     ),
                   );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return TestPage();
+                  //     },
+                  //   ),
+                  // );
                 },
               )
           ],

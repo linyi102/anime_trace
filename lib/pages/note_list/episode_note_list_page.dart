@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
@@ -17,6 +17,7 @@ import '../anime_detail/anime_detail.dart';
 
 class EpisodeNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
+
   const EpisodeNoteListPage({Key? key, required this.noteFilter})
       : super(key: key);
 
@@ -124,7 +125,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                           // MaterialPageRoute(
                           //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
                           // ),
-                          FadeRoute(
+                          MaterialPageRoute(
                             builder: (context) {
                               return NoteEdit(episodeNotes[index]);
                             },
@@ -202,24 +203,20 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
         ),
         subtitle: isRateNote
             ? null
-            : Text(
-                "第${note.episode.number}集 ${note.episode.getDate()}",
+            : Text("第${note.episode.number}集 ${note.episode.getDate()}",
                 textScaleFactor: ThemeUtil.tinyScaleFactor),
       ),
     );
   }
 
   _enterAnimeDetail({required BuildContext context, required Anime anime}) {
-    Navigator.of(context)
-        .push(
-      FadeRoute(
-        transitionDuration: const Duration(milliseconds: 200),
+    Navigator.of(context).push(
+      MaterialPageRoute(
         builder: (context) {
           return AnimeDetailPlus(anime);
         },
       ),
-    )
-        .then((value) async {
+    ).then((value) async {
       // // _loadData(); // 会导致重新请求数据从而覆盖episodeNotes，而返回时应该要恢复到原来的位置
       Anime anime = value;
       // 如果animeId为0，说明进入动漫详细页后删除了动漫，需要从笔记列表中删除相关笔记

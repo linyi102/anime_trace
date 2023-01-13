@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_route.dart';
+
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
@@ -114,7 +114,7 @@ class UpdateRecordPage extends StatelessWidget {
         ),
         // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
         onTap: () {
-          Navigator.of(context).push(FadeRoute(
+          Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
               return AnimeDetailPlus(record.anime);
             },
@@ -139,7 +139,7 @@ class UpdateRecordPage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Log.info("进入页面");
-        Navigator.of(context).push(FadeRoute(builder: (context) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return const NeedUpdateAnimeList();
         }));
       },
