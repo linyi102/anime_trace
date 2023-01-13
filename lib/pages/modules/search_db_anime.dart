@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 
 import '../../models/label.dart';
+import 'toggleListTile.dart';
 
 /// 搜索已添加的动漫
 class SearchDbAnime extends StatefulWidget {
@@ -102,7 +104,23 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("按标签搜索"),
+                      ToggleListTile(
+                        title: const Text("按标签搜索"),
+                        subtitle: const Text("开启多标签搜索"),
+                        toggleOn: SpProfile.getEnableMultiLabelQuery(),
+                        onTap: () {
+                          SpProfile.turnEnableMultiLabelQuery();
+                          if (SpProfile.getEnableMultiLabelQuery()) {
+                            // 开启多标签后，不需要清空已选中的标签和搜索结果
+                          } else {
+                            // 关闭多标签后，需要清空已选中的标签，以及搜索结果
+                            selectedLabels.clear();
+                            _animes.clear();
+                          }
+
+                          setState(() {});
+                        },
+                      ),
                       const SizedBox(height: 10),
                       _showLabelPage()
                     ],
@@ -151,11 +169,19 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             _cancelFocus();
 
             // 查询数据库
-            if (checked) {
-              selectedLabels.remove(e);
+            if (SpProfile.getEnableMultiLabelQuery()) {
+              // 多标签查询
+              if (checked) {
+                selectedLabels.remove(e);
+              } else {
+                selectedLabels.add(e);
+              }
             } else {
+              // 单标签查询，需要先清空选中的标签
+              selectedLabels.clear();
               selectedLabels.add(e);
             }
+
             _animes = await AnimeLabelDao.getAnimesByLabelIds(
                 selectedLabels.map((e) => e.id).toList());
             searchOk = true;

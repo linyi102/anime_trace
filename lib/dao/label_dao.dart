@@ -51,7 +51,7 @@ class LabelDao {
 
   // 根据id获取标签
   static Future<Label> getLabelById(int id) async {
-    Log.info("sql:getAllLabels");
+    Log.info("sql:getLabelById(id=$id)");
     List<Map<String, Object?>> maps =
         await db.query(table, where: "$columnId = ?", whereArgs: [id]);
     if (maps.isNotEmpty) {

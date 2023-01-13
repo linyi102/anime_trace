@@ -76,12 +76,13 @@ class SpProfile {
 
   // 动漫详细页下滑时背景封面添加视差效果
   static turnEnableParallaxInAnimeDetailPage() {
-    SPUtil.setBool(
-        "enableParallaxInAnimeDetailPage", !getEnableParallaxInAnimeDetailPage());
+    SPUtil.setBool("enableParallaxInAnimeDetailPage",
+        !getEnableParallaxInAnimeDetailPage());
   }
 
   static bool getEnableParallaxInAnimeDetailPage() {
-    return SPUtil.getBool("enableParallaxInAnimeDetailPage", defaultValue: false);
+    return SPUtil.getBool("enableParallaxInAnimeDetailPage",
+        defaultValue: false);
   }
 
   // 笔记页中显示/隐藏所有图片
@@ -91,5 +92,14 @@ class SpProfile {
 
   static getShowAllNoteGridImage() {
     return SPUtil.getBool("showAllNoteGridImage", defaultValue: false);
+  }
+
+  // 开启/关闭多选标签查询
+  static turnEnableMultiLabelQuery() {
+    SPUtil.setBool("enableMultiLabelQuery", !getEnableMultiLabelQuery());
+  }
+
+  static bool getEnableMultiLabelQuery() {
+    return SPUtil.getBool("enableMultiLabelQuery", defaultValue: true);
   }
 }

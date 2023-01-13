@@ -20,6 +20,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_rate_list_page.dart
 import 'package:flutter_test_future/pages/modules/anime_rating_bar.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
+import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -191,6 +192,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   _loadLabels() async {
+    Log.info("查询当前动漫(id=${_anime.animeId})的所有标签");
     labelsController.labelsInAnimeDetail.value =
         await AnimeLabelDao.getLabelsByAnimeId(_anime.animeId);
     labelsController.animeId = _anime.animeId;
@@ -372,35 +374,24 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 构建标签chips，最后添加增加标签和管理删除chip
   _getLabelChips() {
     List<Widget> chips = labelsController.labelsInAnimeDetail
-        .map((e) => GestureDetector(
+        .map((label) => GestureDetector(
               onTap: () {
-                Log.info("点按标签：$e");
-                // 不要搜索相同标签的动漫，不然会一直嵌套(进入动漫再次点击标签)
+                Log.info("点按标签：$label");
+                // Ta的做法是对于已收藏的漫画，点击标签后会返回到主页查询，而对搜索页进入的还没有收藏的漫画，点击后没有反应
+                // // 关闭当前详细页并打开本地动漫搜索页
+                // // 如果不关闭当前详细页，则当前的animeController里的动漫会被后来打开的动漫所覆盖
+                // Navigator.pop(context, _anime);
+                // // 还是无法自动选择标签，因为如果要自动选择，还需要传入非const的label
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => const SearchDbAnime()));
               },
               onLongPress: () {
-                Log.info("长按标签：$e");
-                // 不需要了，因为管理页面也可以进行以下操作
-                // showDialog(
-                //     context: context,
-                //     builder: (context) => SimpleDialog(
-                //           children: [
-                //             SimpleDialogOption(
-                //               child: const Text("重命名"),
-                //               onPressed: () {
-                //                 Log.info("重命名标签：$e");
-                //               },
-                //             ),
-                //             SimpleDialogOption(
-                //               child: const Text("从该动漫中移除"),
-                //               onPressed: () {
-                //                 Log.info("从该动漫中移除标签：$e");
-                //               },
-                //             )
-                //           ],
-                //         ));
+                Log.info("长按标签：$label");
               },
               child: Chip(
-                label: Text(e.name),
+                label: Text(label.name),
                 backgroundColor: ThemeUtil.getCardColor(),
               ),
             ))
@@ -461,7 +452,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return Obx(() => SliverAppBar(
           // floating: true,
           // snap: true,
-          pinned: true,
+          // pinned: true,
           // 收缩后仍显示AppBar
           expandedHeight: expandedHeight,
           flexibleSpace: FlexibleSpaceBar(
