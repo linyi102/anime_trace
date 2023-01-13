@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,8 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
+    Log.info("$runtimeType: build");
+
     final ThemeController themeController = Get.find();
     File dbFile = File(SqliteUtil.dbPath);
     final LabelsController labelsController = Get.find();

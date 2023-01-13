@@ -62,6 +62,27 @@ class AnimeLabelDao {
     return animes;
   }
 
+  // 查询含有指定多个标签的所有动漫
+  static Future<List<Anime>> getAnimesByLabelIds(List<int> labelIds) async {
+    Log.info("sql:getAnimesByLabelId(labelIds=$labelIds)");
+    // 先获取该标签下的所有动漫id
+    List<Map<String, Object?>> maps = await db.rawQuery('''
+    SELECT anime_id
+    FROM anime_label
+    WHERE label_id in (${labelIds.join(",")})
+    GROUP BY anime_id
+    HAVING COUNT(*) = ${labelIds.length};
+    ''');
+    // 在根据动漫id查询完整动漫信息
+    List<Anime> animes = [];
+    for (var map in maps) {
+      int animeId = map[columnAnimeId] as int;
+      animes.add(await SqliteUtil.getAnimeByAnimeId(animeId));
+    }
+
+    return animes;
+  }
+
   // 某个动漫添加标签，返回新插入记录的id(id用不上)
   static Future<int> insertAnimeLabel(int animeId, int labelId) async {
     Log.info("sql:insertAnimeLabel(animeId=$animeId, labelId=$labelId)");

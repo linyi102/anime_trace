@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/animation/fade_route.dart';
@@ -8,7 +10,11 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:get/get.dart';
 
+import '../../models/label.dart';
+
+/// 搜索已添加的动漫
 class SearchDbAnime extends StatefulWidget {
   const SearchDbAnime({Key? key}) : super(key: key);
 
@@ -17,12 +23,99 @@ class SearchDbAnime extends StatefulWidget {
 }
 
 class _SearchDbAnimeState extends State<SearchDbAnime> {
-  bool _searchOk = false;
-  late List<Anime> _resAnimes;
+  bool searchOk = false;
+  List<Anime> _animes = [];
   String _lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
   final _scrollController = ScrollController();
+
+  bool showLabelPage = true;
+  LabelsController labelsController = Get.find();
+  List<Label> selectedLabels = [];
+
+  @override
+  Widget build(BuildContext context) {
+    // var inputController = TextEditingController();
+    var inputController = TextEditingController.fromValue(TextEditingValue(
+        // 设置内容
+        text: _lastInputText,
+        // 保持光标在最后
+        selection: TextSelection.fromPosition(TextPosition(
+            affinity: TextAffinity.downstream,
+            offset: _lastInputText.length))));
+    return Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            // 自动弹出键盘
+            autofocus: true,
+            controller: inputController,
+            decoration: InputDecoration(
+                hintText: "按关键字搜索",
+                border: InputBorder.none,
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      inputController.clear();
+                      _lastInputText = "";
+                      // 清空搜索的动漫，并显示标签页
+                      _animes.clear();
+                      showLabelPage = true;
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.close))),
+            onEditingComplete: () async {
+              String text = inputController.text;
+              if (text.isEmpty) {
+                return;
+              }
+              _searchDbAnimesByKeyword(text);
+              _cancelFocus();
+            },
+            onChanged: (value) async {
+              Log.info("value=$value");
+              if (value.isEmpty) {
+                // 删除了搜索关键字，那么就清空搜索的动漫，展示所有标签
+                _animes.clear();
+                showLabelPage = true;
+                _lastInputText = "";
+                setState(() {});
+                return;
+              }
+
+              // 按关键字搜索动漫时，不显示label页面，并且清空选中的label
+              showLabelPage = false;
+              selectedLabels.clear();
+              _searchDbAnimesByKeyword(value);
+            },
+          ),
+        ),
+        body: Scrollbar(
+          controller: _scrollController,
+          child: ListView(
+            controller: _scrollController,
+            children: [
+              if (showLabelPage)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("按标签搜索"),
+                      const SizedBox(height: 10),
+                      _showLabelPage()
+                    ],
+                  ),
+                ),
+              if (searchOk) _showSearchPage()
+            ],
+          ),
+        ));
+  }
+
+  // 取消键盘聚焦
+  _cancelFocus() {
+    FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+  }
 
   void _searchDbAnimesByKeyword(String text) {
     Log.info(
@@ -37,64 +130,47 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
       Log.info("search: $text");
       return SqliteUtil.getAnimesBySearch(text);
     }).then((value) {
-      _resAnimes = value;
-      _searchOk = true;
-      Log.info("_resAnimes.length=${_resAnimes.length}");
+      _animes = value;
+      searchOk = true;
+      Log.info("_resAnimes.length=${_animes.length}");
       setState(() {});
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // var inputController = TextEditingController();
-    var inputController = TextEditingController.fromValue(TextEditingValue(
-        // 设置内容
-        text: _lastInputText,
-        // 保持光标在最后
-        selection: TextSelection.fromPosition(TextPosition(
-            affinity: TextAffinity.downstream,
-            offset: _lastInputText.length))));
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          // 自动弹出键盘
-          autofocus: true,
-          controller: inputController,
-          decoration: InputDecoration(
-              hintText: "搜索已收藏的动漫",
-              border: InputBorder.none,
-              suffixIcon: IconButton(
-                  onPressed: () {
-                    inputController.clear();
-                  },
-                  icon: const Icon(Icons.close))),
-          onEditingComplete: () async {
-            String text = inputController.text;
-            if (text.isEmpty) {
-              return;
-            }
-            _searchDbAnimesByKeyword(text);
+  _showLabelPage() {
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: labelsController.labels.map((e) {
+        bool checked = selectedLabels.contains(e);
+        return GestureDetector(
+          onTap: () async {
+            // 点击标签后，取消搜索输入框的聚焦
             _cancelFocus();
-          },
-          onChanged: (value) async {
-            Log.info("value=$value");
-            if (value.isEmpty) return;
-            _searchDbAnimesByKeyword(value);
-          },
-        ),
-      ),
-      body: !_searchOk ? Container() : _showSearchPage(),
-    );
-  }
 
-  // 取消键盘聚焦
-  _cancelFocus() {
-    FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
+            // 查询数据库
+            if (checked) {
+              selectedLabels.remove(e);
+            } else {
+              selectedLabels.add(e);
+            }
+            _animes = await AnimeLabelDao.getAnimesByLabelIds(
+                selectedLabels.map((e) => e.id).toList());
+            searchOk = true;
+            setState(() {});
+          },
+          child: Chip(
+            label: Text(e.name),
+            backgroundColor: checked ? Colors.grey : ThemeUtil.getCardColor(),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   _showSearchPage() {
     List<Widget> listWidget = [];
-    for (var anime in _resAnimes) {
+    for (var anime in _animes) {
       // listWidget.add(AnimeItem(anime));
       listWidget.add(ListTile(
         leading: AnimeListCover(
@@ -133,20 +209,20 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             Anime newAnime = value;
             if (!newAnime.isCollected()) {
               // 取消收藏
-              int findIndex = _resAnimes
+              int findIndex = _animes
                   .indexWhere((element) => element.animeId == anime.animeId);
-              _resAnimes.removeAt(findIndex);
+              _animes.removeAt(findIndex);
               setState(() {});
               return;
             }
             // anime = value; // 无效，因为不是数据成员
-            int findIndex = _resAnimes
+            int findIndex = _animes
                 .indexWhere((element) => element.animeId == newAnime.animeId);
             if (findIndex != -1) {
               // _resAnimes[findIndex] = value;
               // 直接从数据库中得到最新信息
-              _resAnimes[findIndex] = await SqliteUtil.getAnimeByAnimeId(
-                  _resAnimes[findIndex].animeId);
+              _animes[findIndex] = await SqliteUtil.getAnimeByAnimeId(
+                  _animes[findIndex].animeId);
               setState(() {});
             } else {
               Log.info("未找到动漫：$value");
@@ -156,30 +232,32 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
       ));
     }
 
-    // 添加搜索网络动漫提示
-    listWidget.add(ListTile(
-        // leading: Icon(Icons.search),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("网络搜索更多 ",
-                style: TextStyle(color: ThemeUtil.getPrimaryColor())),
-            Icon(Icons.manage_search_outlined,
-                color: ThemeUtil.getPrimaryColor())
-          ],
-        ),
-        onTap: () {
-          _cancelFocus();
-          Navigator.of(context).push(FadeRoute(builder: (context) {
-            return AnimeClimbAllWebsite(keyword: _lastInputText);
-          })).then((value) {
-            _searchDbAnimesByKeyword(_lastInputText);
-          });
-        }));
+    // 如果是按关键字搜索的话，则显示网络搜索更多提示
+    if (_lastInputText.isNotEmpty) {
+      listWidget.add(ListTile(
+          // leading: Icon(Icons.search),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("网络搜索更多 ",
+                  style: TextStyle(color: ThemeUtil.getPrimaryColor())),
+              Icon(Icons.manage_search_outlined,
+                  color: ThemeUtil.getPrimaryColor())
+            ],
+          ),
+          onTap: () {
+            _cancelFocus();
+            Navigator.of(context).push(FadeRoute(builder: (context) {
+              return AnimeClimbAllWebsite(keyword: _lastInputText);
+            })).then((value) {
+              _searchDbAnimesByKeyword(_lastInputText);
+            });
+          }));
+    }
 
-    return Scrollbar(
-      controller: _scrollController,
-      child: ListView(controller: _scrollController, children: listWidget),
-    );
+    return ListView(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        children: listWidget);
   }
 }

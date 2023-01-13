@@ -411,26 +411,22 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       onTap: () {
         Log.info("添加标签");
         // 弹出底部菜单，提供搜索和查询列表
-        // Navigator.of(context).push(FadeRoute(builder: (context) => LabelManagePage(
-        //   selectLabel: true,
-        //   animeId: _anime.animeId,
-        // )));
-        showFlexibleBottomSheet(
-            duration: const Duration(milliseconds: 200),
-            minHeight: 0,
-            initHeight: 0.5,
-            maxHeight: 1,
-            context: context,
-            builder: (
-              BuildContext context,
-              ScrollController scrollController,
-              double bottomSheetOffset,
-            ) =>
-                LabelManagePage(
-                  selectLabel: true,
-                  animeId: _anime.animeId,
-                ),
-            isExpand: true);
+        Navigator.of(context).push(FadeRoute(
+            builder: (context) => LabelManagePage(animeId: _anime.animeId)));
+        // 弹出软键盘时报错，尽管可以正常运行
+        // showFlexibleBottomSheet(
+        //     duration: const Duration(milliseconds: 200),
+        //     minHeight: 0,
+        //     initHeight: 0.5,
+        //     maxHeight: 1,
+        //     context: context,
+        //     builder: (
+        //       BuildContext context,
+        //       ScrollController scrollController,
+        //       double bottomSheetOffset,
+        //     ) =>
+        //         LabelManagePage(animeId: _anime.animeId),
+        //     isExpand: true);
       },
       child: Chip(
         label: const Text("  +  "),

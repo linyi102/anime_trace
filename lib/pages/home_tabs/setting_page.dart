@@ -121,7 +121,7 @@ class _SettingPageState extends State<SettingPage> {
                 Navigator.of(context).push(
                   FadeRoute(
                     builder: (context) {
-                      return LabelManagePage();
+                      return const LabelManagePage();
                     },
                   ),
                 );
@@ -196,7 +196,7 @@ class _SettingPageState extends State<SettingPage> {
                   Navigator.of(context).push(
                     FadeRoute(
                       builder: (context) {
-                        return const TestPage();
+                        return TestPage();
                       },
                     ),
                   );
