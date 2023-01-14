@@ -13,6 +13,7 @@ import 'package:oktoast/oktoast.dart';
 import '../../components/anime_grid_cover.dart';
 import '../../components/get_anime_grid_delegate.dart';
 import '../../components/empty_data_hint.dart';
+import '../../components/loading_dialog.dart';
 import '../../controllers/anime_controller.dart';
 import '../../utils/sqlite_util.dart';
 
@@ -44,7 +45,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
     if (mounted) {
       setState(() {});
     }
-    Log.info("网络封面全部检测完毕");
+    Log.info("网络封面检测完毕");
   }
 
   @override
@@ -53,21 +54,25 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "失效网络封面",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title:
+            const Text("失效网络封面", style: TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           // 只有当全部检测完毕后，才能刷新
           if (loadOk)
             IconButton(
               onPressed: () {
-                showToast("尝试恢复所有失效封面");
                 setState(() {
                   recovering = true;
                 });
+
+                BuildContext? loadingContext;
+                showDialog(
+                    context: context, // 页面context
+                    builder: (context) {
+                      // 对话框context
+                      loadingContext = context; // 将对话框context赋值给变量，用于任务完成后完毕
+                      return const LoadingDialog("重新获取封面中...");
+                    });
                 List<Future> futures = [];
                 for (var anime in lapseCoverAnimes) {
                   futures.add(
@@ -79,16 +84,29 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                         anime.animeId, anime.animeCoverUrl);
                   }));
                 }
-                Future.wait(futures).then((value) {
+                Future.wait(futures).then((value) async {
+                  await Future.delayed(
+                      const Duration(milliseconds: 200)); // 避免任务很快结束，没有关闭加载框
+                  if (loadingContext != null) Navigator.pop(loadingContext!);
                   showToast("封面恢复完毕");
                   setState(() {
                     recovering = false;
                   });
                 });
               },
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.auto_fix_high),
               tooltip: "恢复失效封面",
-            )
+            ),
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => const AlertDialog(
+                          title: Text("提示"),
+                          content: Text("因为会缓存封面，所以查询结果中有些动漫仍可以看到封面"),
+                        ));
+              },
+              icon: const Icon(Icons.info_outlined)),
         ],
       ),
       body: !loadOk
@@ -134,6 +152,8 @@ Future<List<Anime>> getAllLapseCoverAnimes(List<Anime> animes) async {
   List<Future> futures = [];
   for (var anime in animes) {
     if (anime.animeCoverUrl.startsWith("http")) {
+      // 添加到future中，并使用then
+      // 如果在for里使用await，只能等返回结果后，才会执行下一次循环
       futures
           .add(DioPackage.urlResponseOk(anime.animeCoverUrl).then((responseOk) {
         if (!responseOk) {
@@ -143,6 +163,7 @@ Future<List<Anime>> getAllLapseCoverAnimes(List<Anime> animes) async {
       }));
     }
   }
+  // 等待所有future结果
   await Future.wait(futures);
   return lapseCoverAnimes;
 }
