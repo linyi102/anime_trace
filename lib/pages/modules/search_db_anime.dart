@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 
 import '../../models/label.dart';
+import 'anime_list_view.dart';
 import 'toggleListTile.dart';
 
 /// 搜索已添加的动漫
@@ -39,8 +40,6 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
-
-    // var inputController = TextEditingController();
     var inputController = TextEditingController.fromValue(TextEditingValue(
         // 设置内容
         text: _lastInputText,
@@ -48,111 +47,158 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
         selection: TextSelection.fromPosition(TextPosition(
             affinity: TextAffinity.downstream,
             offset: _lastInputText.length))));
+
     return Scaffold(
-        appBar: AppBar(
-          title: TextField(
-            // 自动弹出键盘
-            autofocus: true,
-            controller: inputController,
-            decoration: InputDecoration(
-                hintText: "按关键字搜索",
-                border: InputBorder.none,
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      inputController.clear();
-                      _lastInputText = "";
-                      // 清空搜索的动漫，并显示标签页
-                      _animes.clear();
-                      showLabelPage = true;
-                      setState(() {});
+      appBar: AppBar(title: _buildSearchBar(inputController)),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          if (showLabelPage)
+            SliverToBoxAdapter(
+              child: _buildLabelsCard(),
+            ),
+          if (searchOk)
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  Log.info("$runtimeType: index=$index");
+                  return AnimeListTile(
+                    anime: _animes[index],
+                    index: index,
+                    animeTileSubTitle: AnimeTileSubTitle.nameAnother,
+                    showReviewNumber: true,
+                    showTrailingProgress: true,
+                    onClick: (index) {
+                      _enterAnimeDetail(index);
                     },
-                    icon: const Icon(Icons.close))),
-            onEditingComplete: () async {
-              String text = inputController.text;
-              if (text.isEmpty) {
-                return;
-              }
-              _searchDbAnimesByKeyword(text);
-              _cancelFocus();
-            },
-            onChanged: (value) async {
-              Log.info("value=$value");
-              if (value.isEmpty) {
-                // 删除了搜索关键字，那么就清空搜索的动漫，展示所有标签
+                  );
+                },
+                childCount: _animes.length,
+              ),
+            ),
+          // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
+          if (searchOk && inputController.text.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _buildNetworkSearchHint(context),
+            )
+        ],
+      ),
+    );
+  }
+
+  TextField _buildSearchBar(TextEditingController inputController) {
+    return TextField(
+      // 自动弹出键盘
+      autofocus: true,
+      controller: inputController,
+      decoration: InputDecoration(
+          hintText: "按关键字搜索",
+          border: InputBorder.none,
+          suffixIcon: IconButton(
+              onPressed: () {
+                inputController.clear();
+                _lastInputText = "";
+                // 清空搜索的动漫，并显示标签页
                 _animes.clear();
                 showLabelPage = true;
-                _lastInputText = "";
                 setState(() {});
-                return;
-              }
+              },
+              icon: const Icon(Icons.close))),
+      onEditingComplete: () async {
+        String text = inputController.text;
+        if (text.isEmpty) {
+          return;
+        }
+        _searchDbAnimesByKeyword(text);
+        _cancelFocus();
+      },
+      onChanged: (value) async {
+        Log.info("value=$value");
+        if (value.isEmpty) {
+          // 删除了搜索关键字，那么就清空搜索的动漫，展示所有标签
+          _animes.clear();
+          showLabelPage = true;
+          _lastInputText = "";
+          setState(() {});
+          return;
+        }
 
-              // 按关键字搜索动漫时，不显示label页面，并且清空选中的label
-              showLabelPage = false;
-              selectedLabels.clear();
-              _searchDbAnimesByKeyword(value);
-            },
-          ),
+        // 按关键字搜索动漫时，不显示label页面，并且清空选中的label
+        showLabelPage = false;
+        selectedLabels.clear();
+        _searchDbAnimesByKeyword(value);
+      },
+    );
+  }
+
+  _buildNetworkSearchHint(BuildContext context) {
+    return ListTile(
+        // leading: Icon(Icons.search),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("网络搜索更多 ",
+                style: TextStyle(color: ThemeUtil.getPrimaryColor())),
+            Icon(Icons.manage_search_outlined,
+                color: ThemeUtil.getPrimaryColor())
+          ],
         ),
-        body: Scrollbar(
-          controller: _scrollController,
-          child: ListView(
-            controller: _scrollController,
-            children: [
-              if (showLabelPage)
-                Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Text("按标签搜索"),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () {
-                                SpProfile.turnEnableMultiLabelQuery();
-                                if (SpProfile.getEnableMultiLabelQuery()) {
-                                  // 开启多标签后，不需要清空已选中的标签和搜索结果
-                                } else {
-                                  // 关闭多标签后，需要清空已选中的标签，以及搜索结果
-                                  selectedLabels.clear();
-                                  _animes.clear();
-                                }
+        onTap: () {
+          _cancelFocus();
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return AnimeClimbAllWebsite(keyword: _lastInputText);
+          })).then((value) {
+            _searchDbAnimesByKeyword(_lastInputText);
+          });
+        });
+  }
 
-                                setState(() {});
-                              },
-                              child: Text(
-                                SpProfile.getEnableMultiLabelQuery()
-                                    ? "关闭多标签"
-                                    : "开启多标签",
-                                textScaleFactor: ThemeUtil.tinyScaleFactor,
-                                style: TextStyle(
-                                    color: ThemeUtil.getCommentColor()),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                selectedLabels.clear();
-                                _animes.clear();
-                                setState(() {});
-                              },
-                              child: Text(
-                                "清空选中",
-                                textScaleFactor: ThemeUtil.tinyScaleFactor,
-                                style: TextStyle(
-                                    color: ThemeUtil.getCommentColor()),
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        _showLabelPage()
-                      ],
-                    )),
-              if (searchOk) _showSearchPage()
-            ],
-          ),
+  _buildLabelsCard() {
+    return Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text("按标签搜索"),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    SpProfile.turnEnableMultiLabelQuery();
+                    if (SpProfile.getEnableMultiLabelQuery()) {
+                      // 开启多标签后，不需要清空已选中的标签和搜索结果
+                    } else {
+                      // 关闭多标签后，需要清空已选中的标签，以及搜索结果
+                      selectedLabels.clear();
+                      _animes.clear();
+                    }
+
+                    setState(() {});
+                  },
+                  child: Text(
+                    SpProfile.getEnableMultiLabelQuery() ? "关闭多标签" : "开启多标签",
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    selectedLabels.clear();
+                    _animes.clear();
+                    setState(() {});
+                  },
+                  child: Text(
+                    "清空选中",
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 5),
+            _showLabelPage()
+          ],
         ));
   }
 
@@ -220,96 +266,38 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     );
   }
 
-  _showSearchPage() {
-    List<Widget> listWidget = [];
-    for (var anime in _animes) {
-      // listWidget.add(AnimeItem(anime));
-      listWidget.add(ListTile(
-        leading: AnimeListCover(
-          anime,
-          showReviewNumber: !SPUtil.getBool("hideReviewNumber"),
-          reviewNumber: anime.reviewNumber,
-        ),
-        title: Text(
-          anime.animeName,
-          textScaleFactor: 0.9,
-          overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-        ),
-        subtitle: anime.nameAnother.isNotEmpty
-            ? Text(
-                anime.nameAnother,
-                textScaleFactor: 0.8,
-                overflow: TextOverflow.ellipsis,
-              )
-            : null,
-        trailing: Text(
-          "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-          textScaleFactor: 0.9,
-        ),
-        onTap: () {
-          _cancelFocus();
-          Navigator.of(context).push(
-            // MaterialPageRoute(
-            //   builder: (context) => AnimeDetailPlus(widget.anime.animeId),
-            // ),
-            MaterialPageRoute(
-              builder: (context) {
-                return AnimeDetailPlus(anime);
-              },
-            ),
-          ).then((value) async {
-            Anime newAnime = value;
-            if (!newAnime.isCollected()) {
-              // 取消收藏
-              int findIndex = _animes
-                  .indexWhere((element) => element.animeId == anime.animeId);
-              _animes.removeAt(findIndex);
-              setState(() {});
-              return;
-            }
-            // anime = value; // 无效，因为不是数据成员
-            int findIndex = _animes
-                .indexWhere((element) => element.animeId == newAnime.animeId);
-            if (findIndex != -1) {
-              // _resAnimes[findIndex] = value;
-              // 直接从数据库中得到最新信息
-              _animes[findIndex] = await SqliteUtil.getAnimeByAnimeId(
-                  _animes[findIndex].animeId);
-              setState(() {});
-            } else {
-              Log.info("未找到动漫：$value");
-            }
-          });
+  _enterAnimeDetail(int index) {
+    Anime anime = _animes[index];
+
+    _cancelFocus();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return AnimeDetailPlus(anime);
         },
-      ));
-    }
-
-    // 如果是按关键字搜索的话，则显示网络搜索更多提示
-    if (_lastInputText.isNotEmpty) {
-      listWidget.add(ListTile(
-          // leading: Icon(Icons.search),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("网络搜索更多 ",
-                  style: TextStyle(color: ThemeUtil.getPrimaryColor())),
-              Icon(Icons.manage_search_outlined,
-                  color: ThemeUtil.getPrimaryColor())
-            ],
-          ),
-          onTap: () {
-            _cancelFocus();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return AnimeClimbAllWebsite(keyword: _lastInputText);
-            })).then((value) {
-              _searchDbAnimesByKeyword(_lastInputText);
-            });
-          }));
-    }
-
-    return ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        children: listWidget);
+      ),
+    ).then((value) async {
+      Anime newAnime = value;
+      if (!newAnime.isCollected()) {
+        // 取消收藏
+        int findIndex =
+            _animes.indexWhere((element) => element.animeId == anime.animeId);
+        _animes.removeAt(findIndex);
+        setState(() {});
+        return;
+      }
+      // anime = value; // 无效，因为不是数据成员
+      int findIndex =
+          _animes.indexWhere((element) => element.animeId == newAnime.animeId);
+      if (findIndex != -1) {
+        // _resAnimes[findIndex] = value;
+        // 直接从数据库中得到最新信息
+        _animes[findIndex] =
+            await SqliteUtil.getAnimeByAnimeId(_animes[findIndex].animeId);
+        setState(() {});
+      } else {
+        Log.info("未找到动漫：$value");
+      }
+    });
   }
 }

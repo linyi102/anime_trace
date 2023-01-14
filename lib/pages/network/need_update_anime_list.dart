@@ -12,6 +12,7 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 
 import '../../components/anime_grid_cover.dart';
 import '../../models/anime.dart';
+import '../modules/anime_list_view.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);
@@ -74,54 +75,33 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: FadeAnimatedSwitcher(
-        destWidget: _buildAnimesListView(),
+        destWidget: AnimeListView(
+          animes: animes,
+          animeTileSubTitle: AnimeTileSubTitle.twoLinesOfInfo,
+          isThreeLine: true,
+          onClick: (index) {
+            Anime anime = animes[index];
+
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return AnimeDetailPlus(anime);
+            })).then((value) {
+              Anime retAnime = value as Anime;
+              String newPlayStatus = retAnime.playStatus;
+              Log.info("旧状态：${anime.playStatus}，新状态：$newPlayStatus");
+              if (newPlayStatus.contains("完结")) {
+                Log.info("已完结，从列表中删除");
+                animes.removeAt(index);
+                cnt = animes.length;
+                setState(() {});
+              } else {
+                // 更新动漫(封面可能发生变化)
+                animes[index] = retAnime;
+              }
+            });
+          },
+        ),
         loadOk: loadOk,
       ),
     );
-  }
-
-  _buildAnimesListView() {
-    if (animes.isEmpty) return emptyDataHint("什么都没找到");
-    return ListView.builder(
-        itemCount: animes.length,
-        itemBuilder: ((context, index) {
-          Anime anime = animes[index];
-          return ListTile(
-              isThreeLine: true,
-              leading: AnimeGridCover(anime, onlyShowCover: true),
-              title: Text(anime.animeName,
-                  maxLines: 2, overflow: TextOverflow.ellipsis),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    anime.getAnimeInfoFirstLine(),
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
-                  ),
-                  Text(
-                    anime.getAnimeInfoSecondLine(),
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
-                  )
-                ],
-              ),
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return AnimeDetailPlus(anime);
-                })).then((value) {
-                  Anime retAnime = value as Anime;
-                  String newPlayStatus = retAnime.playStatus;
-                  Log.info("旧状态：${anime.playStatus}，新状态：$newPlayStatus");
-                  if (newPlayStatus.contains("完结")) {
-                    Log.info("已完结，从列表中删除");
-                    animes.removeAt(index);
-                    cnt = animes.length;
-                    setState(() {});
-                  } else {
-                    // 更新动漫(封面可能发生变化)
-                    animes[index] = retAnime;
-                  }
-                });
-              });
-        }));
   }
 }
