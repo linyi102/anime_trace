@@ -1423,27 +1423,29 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         endEpisodeNumber.toString().padLeft(2, '0');
   }
 
-  List<ListTile> _buildEpisodeRangeListTiles(dialogContext) {
-    List<ListTile> listTiles = [];
+  _buildEpisodeRangeChips(context) {
+    List<Widget> chips = [];
     for (var startEpisodeNumber = 1;
         startEpisodeNumber <= _anime.animeEpisodeCnt;
         startEpisodeNumber += episodeRangeSize) {
-      listTiles.add(ListTile(
-        title: Text(_getEpisodeRangeStr((startEpisodeNumber))),
-        leading: currentStartEpisodeNumber == startEpisodeNumber
-            ? Icon(Icons.radio_button_on, color: ThemeUtil.getPrimaryColor())
-            : const Icon(Icons.radio_button_off),
+      chips.add(GestureDetector(
         onTap: () {
           currentStartEpisodeNumber = startEpisodeNumber;
           SPUtil.setInt("${widget.anime.animeId}-currentStartEpisodeNumber",
               currentStartEpisodeNumber);
-          Navigator.of(dialogContext).pop();
+          Navigator.of(context).pop();
           // 获取集数据
           _loadEpisode();
         },
+        child: Chip(
+          label: Text(_getEpisodeRangeStr((startEpisodeNumber))),
+          backgroundColor: currentStartEpisodeNumber == startEpisodeNumber
+              ? Colors.grey
+              : null,
+        ),
       ));
     }
-    return listTiles;
+    return chips;
   }
 
   // 动漫信息下面的操作栏
@@ -1460,10 +1462,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text("选择范围"),
-                    content: SingleChildScrollView(
-                      child: Column(
-                          children: _buildEpisodeRangeListTiles(context)),
+                    content: Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: _buildEpisodeRangeChips(context),
                     ),
                   );
                 },
