@@ -38,7 +38,7 @@ class ClimbQdm implements Climb {
       String animeUrl = nameElement.attributes["href"] ?? "";
       if (animeUrl.isNotEmpty) {
         // 添加前缀
-        animeUrl = "$baseUrl/$animeUrl";
+        animeUrl = "$baseUrl$animeUrl";
       }
 
       climbAnimes.add(Anime(
