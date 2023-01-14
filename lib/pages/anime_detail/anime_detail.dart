@@ -112,7 +112,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   void _loadData() async {
+    animeController
+        .setAnime(widget.anime); // 信息不完全，先提前展示封面和名字，否则展示的是上次进入的动漫封面和名字
+    // await Future.delayed(const Duration(seconds: 2));
     await _loadAnime();
+    // 等待加载好动漫后，就可以确定当前动漫存在，于是根据id加载集信息、评价数量、标签等
     animeController.setAnime(_anime);
     _loadEpisode();
     _loadRateNoteCnt();
@@ -136,7 +140,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   void _loadEpisode() async {
-    // await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 1));
     _episodes = [];
     _notes = [];
     _loadEpisodeOk = false;
@@ -179,6 +183,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       _notes.add(episodeNote);
     }
     _loadEpisodeOk = true;
+    // 等200ms后再更新界面，如果在路由动画播放过程中突然显示集信息，会造成卡顿
+    await Future.delayed(const Duration(milliseconds: 200));
     setState(() {});
   }
 

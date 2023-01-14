@@ -420,15 +420,17 @@ class MyAppState extends State<MyApp> with WindowListener {
               : Colors.black.withOpacity(0.2),
         ),
       ),
-      // pageTransitionsTheme: const PageTransitionsTheme(
-      //   builders: <TargetPlatform, PageTransitionsBuilder>{
-      //     TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-      //     TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-      //   },
-      // ),
+      // 路由动画
+      pageTransitionsTheme:  const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }
+
 
 // Enable scrolling with mouse dragging
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
