@@ -16,7 +16,8 @@ import 'anime_list_view.dart';
 
 /// 搜索已添加的动漫
 class SearchDbAnime extends StatefulWidget {
-  const SearchDbAnime({Key? key}) : super(key: key);
+  const SearchDbAnime({this.incomingLabelId, Key? key}) : super(key: key);
+  final int? incomingLabelId;
 
   @override
   _SearchDbAnimeState createState() => _SearchDbAnimeState();
@@ -35,6 +36,22 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   List<Label> selectedLabels = [];
 
   @override
+  void initState() {
+    super.initState();
+    Log.info("$runtimeType: initState");
+
+    // 动漫详细页点击某个标签后，会进入该搜索页，此时不需要显示顶部搜索框，还需要把传入的标签添加进来
+    if (widget.incomingLabelId != null) {
+      Log.info("动漫详细页点击了${widget.incomingLabelId}，进入搜索页");
+      // 从controller中根据id找到label对象，再添加到选中的labels中
+      // 之所以不直接传入label对象，是因为这个对象和controller中的labels里的同id对象不是同一个对象
+      selectedLabels.add(labelsController.labels
+          .singleWhere((element) => element.id == widget.incomingLabelId));
+      _searchAnimesByLabels();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
     var inputController = TextEditingController.fromValue(TextEditingValue(
@@ -46,7 +63,11 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             offset: _lastInputText.length))));
 
     return Scaffold(
-      appBar: AppBar(title: _buildSearchBar(inputController)),
+      appBar: AppBar(
+        title: widget.incomingLabelId == null
+            ? _buildSearchBar(inputController)
+            : null, // 如果传入了标签id，则说明是从动漫详细页进来的，此时不显示搜索栏
+      ),
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -194,7 +215,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
               ],
             ),
             const SizedBox(height: 5),
-            _showLabelPage()
+            _buildLabelWrap()
           ],
         ));
   }
@@ -224,12 +245,25 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     });
   }
 
-  _showLabelPage() {
+  _searchAnimesByLabels() async {
+    if (selectedLabels.isNotEmpty) {
+      _animes = await AnimeLabelDao.getAnimesByLabelIds(
+          selectedLabels.map((e) => e.id).toList());
+    } else {
+      // 没有标签时不查询数据库，直接清空
+      _animes.clear();
+    }
+    searchOk = true;
+    setState(() {});
+  }
+
+  _buildLabelWrap() {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
       children: labelsController.labels.reversed.map((e) {
         bool checked = selectedLabels.contains(e);
+
         return GestureDetector(
           onTap: () async {
             // 点击标签后，取消搜索输入框的聚焦
@@ -239,6 +273,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             if (SpProfile.getEnableMultiLabelQuery()) {
               // 多标签查询
               if (checked) {
+                Log.info("移除$e");
                 selectedLabels.remove(e);
               } else {
                 selectedLabels.add(e);
@@ -249,10 +284,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
               selectedLabels.add(e);
             }
 
-            _animes = await AnimeLabelDao.getAnimesByLabelIds(
-                selectedLabels.map((e) => e.id).toList());
-            searchOk = true;
-            setState(() {});
+            _searchAnimesByLabels();
           },
           child: Chip(
             label: Text(e.name),

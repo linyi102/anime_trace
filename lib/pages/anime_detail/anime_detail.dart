@@ -38,6 +38,7 @@ import 'package:oktoast/oktoast.dart';
 import '../../components/dialog/dialog_select_play_status.dart';
 import '../../dao/note_dao.dart';
 import '../../components/toggle_list_tile.dart';
+import '../modules/search_db_anime.dart';
 import 'anime_properties_page.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
@@ -374,17 +375,15 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _getLabelChips() {
     List<Widget> chips = labelsController.labelsInAnimeDetail
         .map((label) => GestureDetector(
-              onTap: () {
+              onTap: () async {
                 Log.info("点按标签：$label");
-                // Ta的做法是对于已收藏的漫画，点击标签后会返回到主页查询，而对搜索页进入的还没有收藏的漫画，点击后没有反应
-                // // 关闭当前详细页并打开本地动漫搜索页
-                // // 如果不关闭当前详细页，则当前的animeController里的动漫会被后来打开的动漫所覆盖
-                // Navigator.pop(context, _anime);
-                // // 还是无法自动选择标签，因为如果要自动选择，还需要传入非const的label
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => const SearchDbAnime()));
+                // 关闭当前详细页并打开本地动漫搜索页(因为如果不关闭当前详细页，则当前的animeController里的动漫会被后来打开的动漫所覆盖)
+                Navigator.pop(context, _anime);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SearchDbAnime(incomingLabelId: label.id)));
               },
               onLongPress: () {
                 Log.info("长按标签：$label");
