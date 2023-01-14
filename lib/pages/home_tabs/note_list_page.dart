@@ -164,7 +164,7 @@ class _NoteListPageState extends State<NoteListPage>
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("搜索"),
+                  title: const Text("搜索笔记"),
                   content: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -173,7 +173,6 @@ class _NoteListPageState extends State<NoteListPage>
                             ..text = noteFilter.animeNameKeyword,
                           decoration: InputDecoration(
                               labelText: "动漫关键字",
-                              border: InputBorder.none,
                               suffixIcon: IconButton(
                                   onPressed: () {
                                     animeNameController.text = "";
@@ -187,7 +186,6 @@ class _NoteListPageState extends State<NoteListPage>
                           decoration: InputDecoration(
                               labelText: "笔记关键字",
                               helperText: "评价页暂不支持查询",
-                              border: InputBorder.none,
                               suffixIcon: IconButton(
                                   onPressed: () {
                                     noteContentController.text = "";

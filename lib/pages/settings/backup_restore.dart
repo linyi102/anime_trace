@@ -316,10 +316,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
           controller: controllers[i]
             ..text = SPUtil.getString(keys[i], defaultValue: defaultContent[i]),
-          decoration: InputDecoration(
-            labelText: labelTexts[i],
-            border: InputBorder.none,
-          ),
+          decoration: InputDecoration(labelText: labelTexts[i]),
           // autofillHints: autofillHintsList[i],
         ),
       );

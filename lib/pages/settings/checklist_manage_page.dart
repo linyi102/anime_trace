@@ -70,10 +70,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                   content: TextField(
                     controller: inputTagNameController,
                     autofocus: true,
-                    decoration: const InputDecoration(
-                      labelText: "清单名称",
-                      border: InputBorder.none,
-                    ),
+                    decoration: const InputDecoration(labelText: "清单名称"),
                     maxLength: 10,
                   ),
                   actions: [
@@ -141,10 +138,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                     controller: inputTagNameController..text = tags[i],
                     autofocus: true,
                     maxLength: 10,
-                    decoration: const InputDecoration(
-                      labelText: "清单名称",
-                      border: InputBorder.none,
-                    ),
+                    decoration: const InputDecoration(labelText: "清单名称"),
                   ),
                   actions: [
                     TextButton(

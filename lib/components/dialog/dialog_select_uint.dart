@@ -16,14 +16,12 @@ Future<int?> dialogSelectUint(context, String title,
                 children: [
                   Expanded(
                     child: TextField(
-                      // autofocus: true,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly, // 数字，只能是整数
                       ],
                       controller: yearTextEditingController
                         ..text = tmpValue.toString(),
                       decoration: InputDecoration(
-                          border: InputBorder.none,
                           helperText: "范围：[$minValue, $maxValue]"),
                     ),
                   ),
