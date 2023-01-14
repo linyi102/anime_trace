@@ -12,7 +12,9 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 
+import '../../components/loading_dialog.dart';
 import '../../dao/anime_dao.dart';
+import '../../models/params/result.dart';
 import '../../utils/file_util.dart';
 import '../../utils/log.dart';
 import '../../utils/sqlite_util.dart';
@@ -174,7 +176,20 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               // 获取备份文件
               String? selectedFilePath = await selectFile();
               if (selectedFilePath != null) {
-                BackupUtil.restoreFromLocal(selectedFilePath);
+                BuildContext? loadingContext;
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      loadingContext = context;
+                      return const LoadingDialog("还原数据中...");
+                    });
+                Result result =
+                    await BackupUtil.restoreFromLocal(selectedFilePath);
+                // 如果选择的是jpg等文件，则很快就会返回，此时还没有弹出对话框
+                // 所以loadingContext为null，无法关闭后面出现的加载对话框，因此这里适当延时
+                await Future.delayed(const Duration(milliseconds: 200));
+                if (loadingContext != null) Navigator.pop(loadingContext!);
+                showToast(result.msg);
               }
             },
           ),

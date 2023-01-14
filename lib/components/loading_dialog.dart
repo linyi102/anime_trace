@@ -21,15 +21,13 @@ class LoadingDialog extends Dialog {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
-                    height: 25,
-                    width: 25,
-                    child: CircularProgressIndicator()),
+                    height: 25, width: 25, child: CircularProgressIndicator()),
                 const SizedBox(height: 20),
                 Text(text, style: TextStyle(color: ThemeUtil.getFontColor()))
               ],
             ),
             decoration: ShapeDecoration(
-                color:ThemeUtil.getCardColor(),
+                color: ThemeUtil.getCardColor(),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
           ),

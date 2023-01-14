@@ -34,26 +34,17 @@ class _TestPageState extends State<TestPage> {
             },
           ),
           ListTile(
-            title: Text("加载对话框"),
-            onTap: () {
+            title: const Text("加载对话框"),
+            onTap: () async {
+              BuildContext? loadingContext;
               showDialog(
                   context: context,
                   builder: (context) {
-                    const String text = "获取详细信息中...";
-                    return const LoadingDialog(text);
-                    // return SimpleDialog(
-                    //   children: [
-                    //     Center(
-                    //         child: Column(
-                    //       children: const [
-                    //         SizedBox(child: CircularProgressIndicator()),
-                    //         SizedBox(height: 10),
-                    //         Text(text)
-                    //       ],
-                    //     ))
-                    //   ],
-                    // );
+                    loadingContext = context;
+                    return const LoadingDialog("获取详细信息中...");
                   });
+              await Future.delayed(const Duration(seconds: 2));
+              if (loadingContext != null) Navigator.pop(loadingContext!);
             },
           ),
 

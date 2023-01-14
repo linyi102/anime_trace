@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_dialog.dart';
+import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -129,21 +131,30 @@ class _BackUpFileListState extends State<BackUpFileList> {
   Future<dynamic> _showRestoreDialog(BuildContext context, File file) {
     return showDialog(
       context: context,
-      builder: (dialogContext) {
+      builder: (context) {
         return AlertDialog(
           title: const Text("还原数据"),
           content: const Text("这会覆盖已有的数据\n确认还原指定文件吗？"),
           actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(dialogContext).pop();
+                  Navigator.pop(context);
                 },
                 child: const Text("取消")),
             ElevatedButton(
-                onPressed: () {
-                  showToast("还原数据中...");
-                  BackupUtil.restoreFromWebDav(file);
-                  Navigator.of(dialogContext).pop();
+                onPressed: () async {
+                  Navigator.pop(context);
+
+                  BuildContext? loadingContext;
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        loadingContext = context;
+                        return const LoadingDialog("还原数据中...");
+                      });
+                  Result result = await BackupUtil.restoreFromWebDav(file);
+                  if (loadingContext != null) Navigator.pop(loadingContext!);
+                  showToast(result.msg);
                 },
                 child: const Text("确认")),
           ],

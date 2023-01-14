@@ -8,7 +8,7 @@ import 'package:oktoast/oktoast.dart';
 
 import '../dio_package.dart';
 import '../log.dart';
-import '../result.dart';
+import '../../models/params/result.dart';
 
 class ClimbQdm implements Climb {
   @override

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -179,42 +181,44 @@ class BackupUtil {
   //   await for (FileSystemEntity file in files) {}
   // }
 
-  static Future<void> restoreFromLocal(String localBackupFilePath,
+  static Future<Result> restoreFromLocal(String localBackupFilePath,
       {bool delete = false}) async {
     final UpdateRecordController updateRecordController = Get.find();
+    final LabelsController labelsController = Get.find();
+    bool restoreOk = false;
+
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
       // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
       // 然而并不能删除：(OS Error: 另一个程序正在使用此文件，进程无法访问：await File(SqliteUtil.dbPath).delete();
       // 可以直接在里面写入即可，writeAsBytes会清空原先内容
       var content = await File(localBackupFilePath).readAsBytes();
-      File(SqliteUtil.dbPath).writeAsBytes(content).then((value) async {
-        // tags = await SqliteUtil.getAllTags(); // 重新更新标签
-        await SqliteUtil.ensureDBTable();
-        // 重新获取动漫更新记录
-        updateRecordController.updateData();
-        showToast("还原成功");
-      });
+      await File(SqliteUtil.dbPath).writeAsBytes(content);
+      await SqliteUtil.ensureDBTable();
+      restoreOk = true;
     } else if (localBackupFilePath.endsWith(".zip")) {
-      unzip(localBackupFilePath).then((value) async {
-        // tags = await SqliteUtil.getAllTags(); // 重新更新标签
-        await SqliteUtil.ensureDBTable();
-        // 重新获取动漫更新记录
-        updateRecordController.updateData();
-        showToast("还原成功");
-        if (delete) File(localBackupFilePath).delete(); // Windows端还原本地备份时不删除
-      });
+      await unzip(localBackupFilePath);
+      await SqliteUtil.ensureDBTable();
+      if (delete) File(localBackupFilePath).delete(); // Windows端还原本地备份时不删除
+      restoreOk = true;
+    }
+
+    if (restoreOk) {
+      // 重新获取动漫更新记录
+      updateRecordController.updateData();
+      // 重新获取标签信息
+      labelsController.getAllLabels();
+      return Result.success("", msg: "还原成功");
     } else {
-      showToast("还原文件必须以.zip或.db结尾");
+      return Result.failure(404, "备份文件不正确，无法还原");
     }
   }
 
-  static Future<void> restoreFromWebDav(file) async {
+  static Future<Result> restoreFromWebDav(file) async {
     String localRootDirPath = await getLocalRootDirPath();
 
     if (file.path == null) {
-      showToast("还原失败");
-      return;
+      return Result.failure(404, "空文件路径，无法还原");
     }
     Log.info("latestFilePath: ${file.path}");
     String localBackupFilePath = "$localRootDirPath/${file.name}";
@@ -223,8 +227,7 @@ class BackupUtil {
     Log.info(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
-    restoreFromLocal(localBackupFilePath,
-        delete: true); // 这里使用.then里删除，会导致android还原失败
+    return restoreFromLocal(localBackupFilePath, delete: true);
   }
 
   static Future<void> unzip(String localZipPath) async {

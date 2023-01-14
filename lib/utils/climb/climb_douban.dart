@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/result.dart';
+import 'package:flutter_test_future/models/params/result.dart';
 import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 

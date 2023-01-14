@@ -9,7 +9,7 @@ import 'package:oktoast/oktoast.dart';
 
 import '../../models/params/page_params.dart';
 import '../dio_package.dart';
-import '../result.dart';
+import '../../models/params/result.dart';
 
 // 次元城动漫
 class ClimbCycdm implements Climb {
