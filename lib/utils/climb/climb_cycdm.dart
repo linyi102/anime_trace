@@ -30,11 +30,10 @@ class ClimbCycdm implements Climb {
     var document = parse(response.data);
     Log.info("获取文档成功√，正在解析...");
 
-    // 剧场版只有1集，但不会写上，所以没有badge
-    var badge = document.getElementsByClassName("badge");
-    if (badge.isNotEmpty) {
-      anime.animeEpisodeCnt = int.parse(badge[0].innerHtml);
-    }
+    anime.animeEpisodeCnt = document
+        .getElementsByClassName("anthology-list-box")[0]
+        .getElementsByTagName("li")
+        .length;
 
     anime.animeCoverUrl = document
             .getElementsByClassName("detail-pic lazy mask-0")[0]
@@ -98,13 +97,10 @@ class ClimbCycdm implements Climb {
     }
 
     var nameElements = document.getElementsByClassName("thumb-txt cor4 hide");
-    var statusElements =
-        document.getElementsByClassName("public-list-prb hide ft2");
     var urlElements = document.getElementsByClassName("public-list-exp");
 
     for (int i = 0; i < nameElements.length; ++i) {
       climbAnimes[i].animeName = nameElements[i].innerHtml;
-      climbAnimes[i].playStatus = statusElements[i].innerHtml;
       // 获取网址
       String? animeUrl = urlElements[i].attributes["href"];
       climbAnimes[i].animeUrl = animeUrl == null ? "" : baseUrl + animeUrl;

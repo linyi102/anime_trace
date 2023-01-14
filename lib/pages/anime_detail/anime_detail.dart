@@ -456,7 +456,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // 收缩后仍显示AppBar
           expandedHeight: expandedHeight,
           flexibleSpace: FlexibleSpaceBar(
-            // 标题，不指定无法左对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
+            // 标题，不指定无法对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
             // titlePadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             // expandedTitleScale: 1.2,
             // title: SelectableText(_anime.animeName,

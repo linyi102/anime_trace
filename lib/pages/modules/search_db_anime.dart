@@ -185,7 +185,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
-      children: labelsController.labels.map((e) {
+      children: labelsController.labels.reversed.map((e) {
         bool checked = selectedLabels.contains(e);
         return GestureDetector(
           onTap: () async {

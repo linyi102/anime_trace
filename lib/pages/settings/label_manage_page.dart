@@ -93,6 +93,10 @@ class LabelManagePage extends StatelessWidget {
                 _showOpMenuDialog(context, label, labelsController);
               }
             },
+            onLongPress: () {
+              // 长按时也要弹出操作菜单，这样为动漫选择标签时也能重命名和删除了
+              _showOpMenuDialog(context, label, labelsController);
+            },
           );
         }).toList());
   }
