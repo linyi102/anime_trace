@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/dao/anime_dao.dart';
@@ -37,36 +38,13 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
   initData() async {
     List<Anime> animes = await AnimeDao.getAllAnimes();
     // 检测网络图片是否有效
-    List<Future> futures = [];
-    int limit = 1000, curNum = 0;
-    for (var anime in animes) {
-      // 每次同时检测20个，不然显示加载圈会卡(结果整体变慢了，不如放开限制，卡一下就正常了)
-      if (anime.animeCoverUrl.startsWith("http")) {
-        curNum++;
-        if (curNum < limit) {
-          futures.add(
-              DioPackage.urlResponseOk(anime.animeCoverUrl).then((responseOk) {
-            if (!responseOk) {
-              Log.info("添加失效封面动漫：${anime.animeName}");
-              lapseCoverAnimes.add(anime);
-            }
-          }));
-        } else {
-          await Future.wait(futures);
-          curNum = 0;
-          // loadOk = true;
-          setState(() {});
-          futures.clear();
-        }
-      }
+    // 开启新线程来计算，否则会造成加载圈卡顿
+    lapseCoverAnimes = await compute(getAllLapseCoverAnimes, animes);
+    loadOk = true;
+    if (mounted) {
+      setState(() {});
     }
-    Future.wait(futures).then((value) {
-      loadOk = true;
-      if (mounted) {
-        setState(() {});
-      }
-      Log.info("网络封面全部检测完毕");
-    });
+    Log.info("网络封面全部检测完毕");
   }
 
   @override
@@ -149,4 +127,22 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                 ),
     );
   }
+}
+
+Future<List<Anime>> getAllLapseCoverAnimes(List<Anime> animes) async {
+  List<Anime> lapseCoverAnimes = [];
+  List<Future> futures = [];
+  for (var anime in animes) {
+    if (anime.animeCoverUrl.startsWith("http")) {
+      futures
+          .add(DioPackage.urlResponseOk(anime.animeCoverUrl).then((responseOk) {
+        if (!responseOk) {
+          Log.info("添加失效封面动漫：${anime.animeName}");
+          lapseCoverAnimes.add(anime);
+        }
+      }));
+    }
+  }
+  await Future.wait(futures);
+  return lapseCoverAnimes;
 }
