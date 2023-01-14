@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/pages/settings/test_page.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ import 'package:window_manager/window_manager.dart';
 import 'components/update_hint.dart';
 import 'controllers/anime_display_controller.dart';
 import 'controllers/update_record_controller.dart';
-import 'pages/home_tabs/setting_page.dart';
 
 class TestApp extends StatelessWidget {
   const TestApp({Key? key}) : super(key: key);
@@ -34,7 +32,7 @@ class TestApp extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: ListTile(
-        title: Text("进入测试页"),
+        title: const Text("进入测试页"),
         onTap: () {
           // 只会build一次
           // Get.to(TestPage(), transition: Transition.fadeIn);

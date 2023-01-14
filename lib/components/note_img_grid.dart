@@ -3,7 +3,6 @@ import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 
 // 用于显示笔记图片网格
 // 使用：笔记列表页

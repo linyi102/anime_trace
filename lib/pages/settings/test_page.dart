@@ -1,12 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:get/get.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -27,7 +21,7 @@ class _TestPageState extends State<TestPage> {
       body: ListView(
         children: [
           ListTile(
-            title: Text("返回上一级"),
+            title: const Text("返回上一级"),
             onTap: () {
               // Get.back();
               Navigator.pop(context);

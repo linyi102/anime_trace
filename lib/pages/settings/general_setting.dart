@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:oktoast/oktoast.dart';
-
-import 'lapse_cover_animes_page.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);

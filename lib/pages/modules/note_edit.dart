@@ -19,7 +19,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../dao/note_dao.dart';
 import '../../responsive.dart';
 import '../../utils/theme_util.dart';
-import 'anime_rating_bar.dart';
+import '../../components/anime_rating_bar.dart';
 
 class NoteEdit extends StatefulWidget {
   Note note; // 可能会修改笔记内容

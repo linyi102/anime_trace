@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/pages/modules/website_icon.dart';
+import 'package:flutter_test_future/components/website_icon.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';

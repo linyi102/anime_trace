@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../../animation/fade_route.dart';
 import '../../models/anime.dart';
 import '../../utils/climb/climb_anime_util.dart';
 import '../../utils/image_util.dart';

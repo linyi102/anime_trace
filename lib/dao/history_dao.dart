@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../models/anime.dart';

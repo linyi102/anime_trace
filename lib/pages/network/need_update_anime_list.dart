@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
-import '../../components/anime_grid_cover.dart';
 import '../../models/anime.dart';
 import '../modules/anime_list_view.dart';
 

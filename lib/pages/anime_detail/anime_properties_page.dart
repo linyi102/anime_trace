@@ -9,7 +9,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/dialog/dialog_select_play_status.dart';
-import '../../utils/theme_util.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimePropertiesPage({Key? key}) : super(key: key);

@@ -2,7 +2,6 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/pages/network/fav_website_list_page.dart';
 import 'package:flutter_test_future/pages/network/source_detail_page.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
@@ -15,7 +14,7 @@ import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/fav_website.dart';
 import '../../utils/launch_uri_util.dart';
-import '../modules/website_icon.dart';
+import '../../components/website_icon.dart';
 import '../settings/lapse_cover_animes_page.dart';
 
 class SourceListPage extends StatefulWidget {
@@ -204,7 +203,7 @@ class _SourceListPageState extends State<SourceListPage> {
     );
   }
 
-  GridView _buildGridView({int crossAxisCount = 3}) {
+  GridView _buildGridView() {
     // 获取还没有失效的搜索源列表
     List<ClimbWebsite> fineClimbWebsites = [];
     for (var e in climbWebsites) {

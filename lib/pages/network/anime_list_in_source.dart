@@ -6,7 +6,6 @@ import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/anime.dart';

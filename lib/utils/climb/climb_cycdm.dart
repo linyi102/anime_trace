@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/theme_util.dart';
+import '../utils/theme_util.dart';
 
 class ToggleListTile extends StatelessWidget {
   const ToggleListTile(

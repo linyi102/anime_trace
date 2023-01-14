@@ -17,10 +17,9 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_rate_list_page.dart';
-import 'package:flutter_test_future/pages/modules/anime_rating_bar.dart';
+import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
-import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -35,12 +34,10 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../../components/dialog/dialog_select_play_status.dart';
 import '../../dao/note_dao.dart';
-import '../../models/label.dart';
-import '../modules/toggleListTile.dart';
+import '../../components/toggle_list_tile.dart';
 import 'anime_properties_page.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
@@ -57,7 +54,6 @@ class AnimeDetailPlus extends StatefulWidget {
 
 class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     with SingleTickerProviderStateMixin {
-  bool _loadAnimeOk = false;
   bool _loadEpisodeOk = false;
   late Anime _anime;
   List<Episode> _episodes = []; // 集
@@ -107,7 +103,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       _anime = widget.anime;
       // 爬取详细信息
       _climbAnimeInfo();
-      _loadAnimeOk = true;
     }
   }
 
@@ -124,7 +119,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   }
 
   Future<bool> _loadAnime() async {
-    _loadAnimeOk = false;
     setState(() {});
 
     _anime = await SqliteUtil.getAnimeByAnimeId(
@@ -134,7 +128,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       Navigator.of(context).pop();
       showToast("无法进入未收藏动漫");
     }
-    _loadAnimeOk = true;
     setState(() {});
     return true;
   }
@@ -1791,6 +1784,5 @@ class IconTextButton extends StatelessWidget {
             ],
           ),
         ));
-    ;
   }
 }

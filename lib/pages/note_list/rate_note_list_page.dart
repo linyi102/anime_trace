@@ -16,7 +16,7 @@ import '../../models/params/page_params.dart';
 import '../../utils/sqlite_util.dart';
 import '../../utils/time_show_util.dart';
 import '../anime_detail/anime_detail.dart';
-import '../modules/anime_rating_bar.dart';
+import '../../components/anime_rating_bar.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;

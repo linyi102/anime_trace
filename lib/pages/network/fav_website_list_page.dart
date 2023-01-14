@@ -6,7 +6,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
-import '../modules/website_icon.dart';
+import '../../components/website_icon.dart';
 
 class FavWebsiteListPage extends StatelessWidget {
   FavWebsiteListPage({Key? key}) : super(key: key);

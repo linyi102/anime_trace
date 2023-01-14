@@ -4,14 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
 import 'package:flutter_test_future/pages/settings/about_version.dart';
-import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
-import 'package:flutter_test_future/routes/GetRoute.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -197,21 +194,13 @@ class _SettingPageState extends State<SettingPage> {
                 leading: const Icon(Icons.bug_report_outlined),
                 title: const Text("测试页面"),
                 onTap: () {
-                  // GetRoute.to(TestPage());
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
-                        return TestPage();
+                        return const TestPage();
                       },
                     ),
                   );
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) {
-                  //       return TestPage();
-                  //     },
-                  //   ),
-                  // );
                 },
               )
           ],
