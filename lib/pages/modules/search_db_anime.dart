@@ -100,32 +100,56 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
             children: [
               if (showLabelPage)
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ToggleListTile(
-                        title: const Text("按标签搜索"),
-                        subtitle: const Text("开启多标签搜索"),
-                        toggleOn: SpProfile.getEnableMultiLabelQuery(),
-                        onTap: () {
-                          SpProfile.turnEnableMultiLabelQuery();
-                          if (SpProfile.getEnableMultiLabelQuery()) {
-                            // 开启多标签后，不需要清空已选中的标签和搜索结果
-                          } else {
-                            // 关闭多标签后，需要清空已选中的标签，以及搜索结果
-                            selectedLabels.clear();
-                            _animes.clear();
-                          }
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Text("按标签搜索"),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                                SpProfile.turnEnableMultiLabelQuery();
+                                if (SpProfile.getEnableMultiLabelQuery()) {
+                                  // 开启多标签后，不需要清空已选中的标签和搜索结果
+                                } else {
+                                  // 关闭多标签后，需要清空已选中的标签，以及搜索结果
+                                  selectedLabels.clear();
+                                  _animes.clear();
+                                }
 
-                          setState(() {});
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      _showLabelPage()
-                    ],
-                  ),
-                ),
+                                setState(() {});
+                              },
+                              child: Text(
+                                SpProfile.getEnableMultiLabelQuery()
+                                    ? "关闭多标签"
+                                    : "开启多标签",
+                                textScaleFactor: ThemeUtil.tinyScaleFactor,
+                                style: TextStyle(
+                                    color: ThemeUtil.getCommentColor()),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                selectedLabels.clear();
+                                _animes.clear();
+                                setState(() {});
+                              },
+                              child: Text(
+                                "清空选中",
+                                textScaleFactor: ThemeUtil.tinyScaleFactor,
+                                style: TextStyle(
+                                    color: ThemeUtil.getCommentColor()),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        _showLabelPage()
+                      ],
+                    )),
               if (searchOk) _showSearchPage()
             ],
           ),
