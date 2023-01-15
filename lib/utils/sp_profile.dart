@@ -1,17 +1,37 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'sp_util.dart';
 
 /// 记录和修改shared_preferences的值
 class SpProfile {
+  // 选择的路由动画
+  static void savePageSwitchAnimationId(int id) {
+    // 不能将其转为map后保存，因为后期可能会修改名称，所以保存不会变化的id
+    SPUtil.setInt("selectedPageSwitchAnimationId", id);
+  }
+
+  static PageSwitchAnimation getPageSwitchAnimation() {
+    int id = SPUtil.getInt("selectedPageSwitchAnimationId",
+        defaultValue: PageSwitchAnimation.cupertino.id);
+    for (var e in PageSwitchAnimation.values) {
+      if (e.id == id) {
+        return e;
+      }
+    }
+    return PageSwitchAnimation.cupertino;
+  }
+
+  // 设置动漫网格列数
   static int getGridColumnCnt() {
     return SPUtil.getInt("gridColumnCnt",
         defaultValue: Platform.isWindows ? 6 : 3);
   }
 
+  // 窗口大小
   static Future<bool> setWindowSize(Size size) async {
     Log.info("修改窗口大小：$size");
     await SPUtil.setDouble("WindowWidth", size.width);

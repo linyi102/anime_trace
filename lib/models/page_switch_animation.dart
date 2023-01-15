@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 enum PageSwitchAnimation {
-  zoom("放大", ZoomPageTransitionsBuilder()),
-  cupertino("从右往左平移", CupertinoPageTransitionsBuilder()),
-  fade("渐变", FadeTransitionsBuilder()),
-  fadeUpwards("向上渐变", FadeUpwardsPageTransitionsBuilder()),
-  openUpwards("向上展开", OpenUpwardsPageTransitionsBuilder());
+  zoom(1, "放大", ZoomPageTransitionsBuilder()),
+  cupertino(2, "从右往左平移", CupertinoPageTransitionsBuilder()),
+  fade(3, "渐变", FadeTransitionsBuilder()),
+  fadeUpwards(4, "向上渐变", FadeUpwardsPageTransitionsBuilder()),
+  openUpwards(5, "向上展开", OpenUpwardsPageTransitionsBuilder());
 
+  final int id;
   final String title;
   final PageTransitionsBuilder pageTransitionsBuilder;
 
-  const PageSwitchAnimation(this.title, this.pageTransitionsBuilder);
+  const PageSwitchAnimation(this.id, this.title, this.pageTransitionsBuilder);
 }
 
 class FadeTransitionsBuilder extends PageTransitionsBuilder {

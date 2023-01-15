@@ -164,7 +164,7 @@ class _NoteListPageState extends State<NoteListPage>
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text("搜索笔记"),
+                  title: const Text("搜索"),
                   content: SingleChildScrollView(
                     child: Column(
                       children: [

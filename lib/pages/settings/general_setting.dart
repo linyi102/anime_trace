@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -79,6 +80,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                                 ),
                                 onPressed: () {
                                   themeController.pageSwitchAnimation.value = e;
+                                  SpProfile.savePageSwitchAnimationId(e.id);
                                   Navigator.pop(context);
                                 },
                               ))
