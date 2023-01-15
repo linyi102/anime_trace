@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/models/page_switch_animation.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
 class GeneralSettingPage extends StatefulWidget {
@@ -52,6 +56,37 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
           ListTile(
               title: Text("偏好",
                   style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
+          ListTile(
+            title: const Text("选择页面切换动画"),
+            onTap: () {
+              ThemeController themeController = Get.find();
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      children: PageSwitchAnimation.values
+                          .map((e) => SimpleDialogOption(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(e.title),
+                                    if (e ==
+                                        themeController
+                                            .pageSwitchAnimation.value)
+                                      const Icon(Icons.check)
+                                  ],
+                                ),
+                                onPressed: () {
+                                  themeController.pageSwitchAnimation.value = e;
+                                  Navigator.pop(context);
+                                },
+                              ))
+                          .toList(),
+                    );
+                  });
+            },
+          ),
           ListTile(
             title: const Text("重置完成最后一集时提示移动清单的对话框"),
             onTap: () {

@@ -351,15 +351,18 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
             ],
           ),
           // 简介
-          if (_anime.animeDesc.isNotEmpty &&
-              SpProfile.getShowDescInAnimeDetailPage())
-            Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: ExpandText(_anime.animeDesc,
-                  maxLines: 2,
-                  style: const TextStyle(fontSize: 12),
-                  arrowSize: 20),
-            ),
+          Obx(
+            () => animeController.anime.value.animeDesc.isNotEmpty &&
+                    SpProfile.getShowDescInAnimeDetailPage()
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: ExpandText(animeController.anime.value.animeDesc,
+                        maxLines: 2,
+                        style: const TextStyle(fontSize: 12),
+                        arrowSize: 20),
+                  )
+                : Container(),
+          ),
           // 标签列表
           Padding(
             padding: const EdgeInsets.only(top: 10),
