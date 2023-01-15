@@ -381,12 +381,13 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
               onTap: () async {
                 Log.info("点按标签：$label");
                 // 关闭当前详细页并打开本地动漫搜索页(因为如果不关闭当前详细页，则当前的animeController里的动漫会被后来打开的动漫所覆盖)
-                Navigator.pop(context, _anime);
-                Navigator.push(
+                // 使用pushReplacement而非先pop再push，这样不就会显示关闭详细页的路由动画了
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            SearchDbAnime(incomingLabelId: label.id)));
+                            SearchDbAnime(incomingLabelId: label.id)),
+                    result: _anime);
               },
               onLongPress: () {
                 Log.info("长按标签：$label");
