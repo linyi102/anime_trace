@@ -114,9 +114,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     await _loadAnime();
     // 等待加载好动漫后，就可以确定当前动漫存在，于是根据id加载集信息、评价数量、标签等
     animeController.setAnime(_anime);
-    _loadEpisode();
     _loadRateNoteCnt();
     _loadLabels();
+    // await Future.delayed(const Duration(seconds: 1));
+    _loadEpisode();
   }
 
   Future<bool> _loadAnime() async {
@@ -237,8 +238,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                     _buildSliverAppBar(context),
                     // 动漫信息
                     _buildAnimeInfo(context),
+                    if (_loadEpisodeOk)
+                      SliverToBoxAdapter(child: _buildButtonsAboutEpisode()),
                     // 集信息
-                    _buildSliverListBody()
+                    if (_loadEpisodeOk) _buildSliverListBody()
                   ],
                 ),
                 _buildButtonsBarAboutEpisodeMulti()
@@ -433,8 +436,28 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       return SliverPadding(
         padding: const EdgeInsets.all(0),
         sliver: SliverList(
-          delegate: SliverChildListDelegate([_buildEpisodePage()]),
-        ),
+            delegate: SliverChildBuilderDelegate((context, episodeIndex) {
+          Log.info("$runtimeType: episodeIndex=$episodeIndex");
+
+          List<Widget> episodeInfo = [];
+          episodeInfo.add(
+            _buildEpisodeTile(episodeIndex),
+          );
+
+          // 在每一集下面添加笔记
+          if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
+            episodeInfo.add(_buildNote(episodeIndex, context));
+          }
+
+          // 在最后一集下面添加空白
+          if (episodeIndex == _episodes.length - 1) {
+            episodeInfo.add(const ListTile());
+          }
+
+          return Column(
+            children: episodeInfo,
+          );
+        }, childCount: _episodes.length)),
       );
     } else {
       // 还没加载完毕显示加载组件
@@ -747,248 +770,216 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     );
   }
 
-  // 构建集信息页
-  _buildEpisodePage() {
-    if (!_loadEpisodeOk) {
-      return SizedBox(
-        key: UniqueKey(),
-      );
-    }
+  _buildEpisodeTile(int episodeIndex) {
+    return ListTile(
+      selectedTileColor: multiSelectedColor,
+      selected: mapSelected.containsKey(episodeIndex),
+      // visualDensity: const VisualDensity(vertical: -2),
+      // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+      title: Text(
+        "第${_episodes[episodeIndex].number}集",
+        style: TextStyle(
+          color:
+              ThemeUtil.getEpisodeListTile(_episodes[episodeIndex].isChecked()),
+        ),
+        // textScaleFactor: ThemeUtil.smallScaleFactor,
+      ),
+      // 没有完成时不显示subtitle
+      subtitle: _episodes[episodeIndex].isChecked()
+          ? Text(
+              _episodes[episodeIndex].getDate(),
+              style: TextStyle(
+                color: ThemeUtil.getEpisodeListTile(
+                    _episodes[episodeIndex].isChecked()),
+              ),
+              textScaleFactor: ThemeUtil.smallScaleFactor,
+            )
+          : null,
+      trailing: IconButton(
+        icon: const Icon(Icons.more_horiz),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (dialogContext) {
+                return SimpleDialog(
+                  children: [
+                    ListTile(
+                      title: const Text("设置日期"),
+                      leading: const Icon(Icons.edit_calendar_rounded),
+                      style: ListTileStyle.drawer,
+                      onTap: () {
+                        mapSelected[episodeIndex] = true;
+                        // 退出对话框
+                        Navigator.of(dialogContext).pop();
+                        multiPickDateTime();
+                      },
+                    )
+                  ],
+                );
+              });
+        },
+      ),
+      leading: IconButton(
+        // iconSize: 20,
+        visualDensity: VisualDensity.compact, // 缩小leading
+        // hoverColor: Colors.transparent, // 悬停时的颜色
+        // highlightColor: Colors.transparent, // 长按时的颜色
+        // splashColor: Colors.transparent, // 点击时的颜色
+        onPressed: () async {
+          if (_episodes[episodeIndex].isChecked()) {
+            _dialogRemoveDate(
+              _episodes[episodeIndex].number,
+              _episodes[episodeIndex].dateTime,
+            ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+          } else {
+            String date = DateTime.now().toString();
+            SqliteUtil.insertHistoryItem(_anime.animeId,
+                _episodes[episodeIndex].number, date, _anime.reviewNumber);
+            _episodes[episodeIndex].dateTime = date;
+            // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
+            Note episodeNote = Note(
+                anime: _anime,
+                episode: _episodes[episodeIndex],
+                relativeLocalImages: [],
+                imgUrls: []);
 
-    List<Widget> columnChildren = [];
-    columnChildren.add(_buildButtonsAboutEpisode());
-    for (int episodeIndex = 0;
-        episodeIndex < _episodes.length;
-        ++episodeIndex) {
-      // Log.info("$episodeIndex");
-      // 添加每集
-      columnChildren.add(
-        ListTile(
-          selectedTileColor: multiSelectedColor,
-          selected: mapSelected.containsKey(episodeIndex),
-          // visualDensity: const VisualDensity(vertical: -2),
-          // contentPadding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          title: Text(
-            "第${_episodes[episodeIndex].number}集",
-            style: TextStyle(
-              color: ThemeUtil.getEpisodeListTile(
-                  _episodes[episodeIndex].isChecked()),
-            ),
-            // textScaleFactor: ThemeUtil.smallScaleFactor,
-          ),
-          // 没有完成时不显示subtitle
-          subtitle: _episodes[episodeIndex].isChecked()
-              ? Text(
-                  _episodes[episodeIndex].getDate(),
-                  style: TextStyle(
-                    color: ThemeUtil.getEpisodeListTile(
-                        _episodes[episodeIndex].isChecked()),
-                  ),
-                  textScaleFactor: ThemeUtil.smallScaleFactor,
-                )
-              : null,
-          trailing: IconButton(
-            icon: const Icon(Icons.more_horiz),
-            onPressed: () {
+            // 一定要先添加笔记，否则episodeIndex会越界
+            _notes.add(episodeNote);
+            // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
+            _notes[episodeIndex] = await NoteDao
+                .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+                    episodeNote);
+            // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
+            // episodeNote.episodeNoteId =
+            //     await SqliteUtil.insertEpisodeNote(episodeNote);
+            // episodeNotes[i] = episodeNote; // 更新
+            setState(() {});
+
+            // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
+            if (_episodes[episodeIndex].number == _anime.animeEpisodeCnt &&
+                _anime.playStatus.contains("完结")) {
+              // 之前点击了不再提示
+              bool showModifyChecklistDialog = SPUtil.getBool(
+                  "showModifyChecklistDialog",
+                  defaultValue: true);
+              if (!showModifyChecklistDialog) return;
+
+              // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
+              String selectedFinishedTag =
+                  SPUtil.getString("selectedFinishedTag");
+              bool existSelectedFinishedTag = tags.indexWhere(
+                      (element) => selectedFinishedTag == element) !=
+                  -1;
+              if (!existSelectedFinishedTag) {
+                selectedFinishedTag = tags[0];
+              }
+
+              // 之前点击了总是。那么就修改清单而不需要弹出对话框了
+              if (existSelectedFinishedTag &&
+                  SPUtil.getBool("autoMoveToFinishedTag",
+                      defaultValue: false)) {
+                _anime.tagName = selectedFinishedTag;
+                SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
+                Log.info("修改清单为${_anime.tagName}");
+                setState(() {});
+                return;
+              }
+
+              // 弹出对话框
               showDialog(
                   context: context,
                   builder: (dialogContext) {
-                    return SimpleDialog(
-                      children: [
-                        ListTile(
-                          title: const Text("设置日期"),
-                          leading: const Icon(Icons.edit_calendar_rounded),
-                          style: ListTileStyle.drawer,
-                          onTap: () {
-                            mapSelected[episodeIndex] = true;
-                            // 退出对话框
-                            Navigator.of(dialogContext).pop();
-                            multiPickDateTime();
-                          },
-                        )
-                      ],
-                    );
-                  });
-            },
-          ),
-          leading: IconButton(
-            // iconSize: 20,
-            visualDensity: VisualDensity.compact, // 缩小leading
-            // hoverColor: Colors.transparent, // 悬停时的颜色
-            // highlightColor: Colors.transparent, // 长按时的颜色
-            // splashColor: Colors.transparent, // 点击时的颜色
-            onPressed: () async {
-              if (_episodes[episodeIndex].isChecked()) {
-                _dialogRemoveDate(
-                  _episodes[episodeIndex].number,
-                  _episodes[episodeIndex].dateTime,
-                ); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
-              } else {
-                String date = DateTime.now().toString();
-                SqliteUtil.insertHistoryItem(_anime.animeId,
-                    _episodes[episodeIndex].number, date, _anime.reviewNumber);
-                _episodes[episodeIndex].dateTime = date;
-                // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-                Note episodeNote = Note(
-                    anime: _anime,
-                    episode: _episodes[episodeIndex],
-                    relativeLocalImages: [],
-                    imgUrls: []);
-
-                // 一定要先添加笔记，否则episodeIndex会越界
-                _notes.add(episodeNote);
-                // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-                _notes[episodeIndex] = await NoteDao
-                    .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                        episodeNote);
-                // 不存在，则添加新笔记。因为获取笔记的函数中也实现了没有则添加新笔记，因此就不需要这个了
-                // episodeNote.episodeNoteId =
-                //     await SqliteUtil.insertEpisodeNote(episodeNote);
-                // episodeNotes[i] = episodeNote; // 更新
-                setState(() {});
-
-                // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
-                if (_episodes[episodeIndex].number == _anime.animeEpisodeCnt &&
-                    _anime.playStatus.contains("完结")) {
-                  // 之前点击了不再提示
-                  bool showModifyChecklistDialog = SPUtil.getBool(
-                      "showModifyChecklistDialog",
-                      defaultValue: true);
-                  if (!showModifyChecklistDialog) return;
-
-                  // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
-                  String selectedFinishedTag =
-                      SPUtil.getString("selectedFinishedTag");
-                  bool existSelectedFinishedTag = tags.indexWhere(
-                          (element) => selectedFinishedTag == element) !=
-                      -1;
-                  if (!existSelectedFinishedTag) {
-                    selectedFinishedTag = tags[0];
-                  }
-
-                  // 之前点击了总是。那么就修改清单而不需要弹出对话框了
-                  if (existSelectedFinishedTag &&
-                      SPUtil.getBool("autoMoveToFinishedTag",
-                          defaultValue: false)) {
-                    _anime.tagName = selectedFinishedTag;
-                    SqliteUtil.updateTagByAnimeId(
-                        _anime.animeId, _anime.tagName);
-                    Log.info("修改清单为${_anime.tagName}");
-                    setState(() {});
-                    return;
-                  }
-
-                  // 弹出对话框
-                  showDialog(
-                      context: context,
-                      builder: (dialogContext) {
-                        return StatefulBuilder(builder: (context, dialogState) {
-                          return AlertDialog(
-                            content: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("已看完最后一集，\n是否需要移动清单？"),
-                                  DropdownButton<String>(
-                                      dropdownColor: ThemeUtil.getCardColor(),
-                                      value: selectedFinishedTag,
-                                      items: tags
-                                          .map((e) => DropdownMenuItem(
-                                                child: Text(e),
-                                                value: e,
-                                              ))
-                                          .toList(),
-                                      onChanged: (value) {
-                                        selectedFinishedTag =
-                                            value ?? selectedFinishedTag;
-                                        dialogState(() {});
-                                      })
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    SPUtil.setBool(
-                                        "showModifyChecklistDialog", false);
-                                    Navigator.pop(dialogContext);
-                                  },
-                                  child: const Text("不再提醒")),
-                              TextButton(
-                                  onPressed: () {
-                                    SPUtil.setBool(
-                                        "autoMoveToFinishedTag", true);
-
-                                    _anime.tagName = selectedFinishedTag;
-                                    SPUtil.setString("selectedFinishedTag",
-                                        selectedFinishedTag);
-                                    SqliteUtil.updateTagByAnimeId(
-                                        _anime.animeId, _anime.tagName);
-                                    Log.info("修改清单为${_anime.tagName}");
-                                    setState(() {});
-                                    Navigator.pop(dialogContext);
-                                  },
-                                  child: const Text("总是")),
-                              TextButton(
-                                onPressed: () {
-                                  _anime.tagName = selectedFinishedTag;
-                                  SPUtil.setString("selectedFinishedTag",
-                                      selectedFinishedTag);
-                                  SqliteUtil.updateTagByAnimeId(
-                                      _anime.animeId, _anime.tagName);
-                                  Log.info("修改清单为${_anime.tagName}");
-                                  setState(() {});
-                                  Navigator.pop(dialogContext);
-                                },
-                                child: const Text("仅本次"),
-                              )
+                    return StatefulBuilder(builder: (context, dialogState) {
+                      return AlertDialog(
+                        content: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("已看完最后一集，\n是否需要移动清单？"),
+                              DropdownButton<String>(
+                                  dropdownColor: ThemeUtil.getCardColor(),
+                                  value: selectedFinishedTag,
+                                  items: tags
+                                      .map((e) => DropdownMenuItem(
+                                            child: Text(e),
+                                            value: e,
+                                          ))
+                                      .toList(),
+                                  onChanged: (value) {
+                                    selectedFinishedTag =
+                                        value ?? selectedFinishedTag;
+                                    dialogState(() {});
+                                  })
                             ],
-                          );
-                        });
-                      });
-                }
-              }
-            },
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: _episodes[episodeIndex].isChecked()
-                  ? Icon(
-                      // Icons.check_box_outlined,
-                      // EvaIcons.checkmarkSquare2Outline,
-                      EvaIcons.checkmarkSquare,
-                      key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
-                      color: ThemeUtil.getEpisodeListTile(
-                          _episodes[episodeIndex].isChecked()),
-                    )
-                  : Icon(
-                      // Icons.check_box_outline_blank,
-                      EvaIcons.square,
-                      color: ThemeUtil.getEpisodeListTile(
-                          _episodes[episodeIndex].isChecked()),
-                    ),
-            ),
-          ),
-          onTap: () {
-            onpressEpisode(episodeIndex);
-          },
-          onLongPress: () async {
-            onLongPressEpisode(episodeIndex);
-          },
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                SPUtil.setBool(
+                                    "showModifyChecklistDialog", false);
+                                Navigator.pop(dialogContext);
+                              },
+                              child: const Text("不再提醒")),
+                          TextButton(
+                              onPressed: () {
+                                SPUtil.setBool("autoMoveToFinishedTag", true);
+
+                                _anime.tagName = selectedFinishedTag;
+                                SPUtil.setString(
+                                    "selectedFinishedTag", selectedFinishedTag);
+                                SqliteUtil.updateTagByAnimeId(
+                                    _anime.animeId, _anime.tagName);
+                                Log.info("修改清单为${_anime.tagName}");
+                                setState(() {});
+                                Navigator.pop(dialogContext);
+                              },
+                              child: const Text("总是")),
+                          TextButton(
+                            onPressed: () {
+                              _anime.tagName = selectedFinishedTag;
+                              SPUtil.setString(
+                                  "selectedFinishedTag", selectedFinishedTag);
+                              SqliteUtil.updateTagByAnimeId(
+                                  _anime.animeId, _anime.tagName);
+                              Log.info("修改清单为${_anime.tagName}");
+                              setState(() {});
+                              Navigator.pop(dialogContext);
+                            },
+                            child: const Text("仅本次"),
+                          )
+                        ],
+                      );
+                    });
+                  });
+            }
+          }
+        },
+        icon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: _episodes[episodeIndex].isChecked()
+              ? Icon(
+                  // Icons.check_box_outlined,
+                  // EvaIcons.checkmarkSquare2Outline,
+                  EvaIcons.checkmarkSquare,
+                  key: Key("$episodeIndex"), // 不能用unique，否则同状态的按钮都会有动画
+                  color: ThemeUtil.getEpisodeListTile(
+                      _episodes[episodeIndex].isChecked()),
+                )
+              : Icon(
+                  // Icons.check_box_outline_blank,
+                  EvaIcons.square,
+                  color: ThemeUtil.getEpisodeListTile(
+                      _episodes[episodeIndex].isChecked()),
+                ),
         ),
-      );
-
-      // 在每一集下面添加笔记
-      if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
-        columnChildren.add(_buildNote(episodeIndex, context));
-      }
-
-      // 在最后一集下面添加空白
-      if (episodeIndex == _episodes.length - 1) {
-        columnChildren.add(const ListTile());
-      }
-    }
-    return Column(
-      children: columnChildren,
+      ),
+      onTap: () {
+        onpressEpisode(episodeIndex);
+      },
+      onLongPress: () async {
+        onLongPressEpisode(episodeIndex);
+      },
     );
   }
 
