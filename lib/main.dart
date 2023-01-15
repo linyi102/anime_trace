@@ -419,16 +419,17 @@ class MyAppState extends State<MyApp> with WindowListener {
         ),
       ),
       // 路由动画
-      pageTransitionsTheme:  const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android: ZoomPageTransitionsBuilder(),
-          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+          TargetPlatform.android:
+              themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
+          TargetPlatform.windows:
+              themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
         },
       ),
     );
   }
 }
-
 
 // Enable scrolling with mouse dragging
 class MyCustomScrollBehavior extends MaterialScrollBehavior {

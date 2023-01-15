@@ -64,11 +64,11 @@ class AnimePropertiesPage extends StatelessWidget {
                   content: anime.getPlayStatus().text, onPressed: () {
                 showDialogSelectPlayStatus(context, animeController);
               }),
-              _buildPropRow(context, title: "原作者", content: anime.authorOri),
-              _buildPropRow(context, title: "原作名", content: anime.nameOri),
-              _buildPropRow(context, title: "官网", content: anime.officialSite),
-              _buildPropRow(context,
-                  title: "制作公司", content: anime.productionCompany),
+              // _buildPropRow(context, title: "原作者", content: anime.authorOri),
+              // _buildPropRow(context, title: "原作名", content: anime.nameOri),
+              // _buildPropRow(context, title: "官网", content: anime.officialSite),
+              // _buildPropRow(context,
+              //     title: "制作公司", content: anime.productionCompany),
               _buildPropRow(context, title: "动漫链接", content: anime.animeUrl),
               _buildPropRow(context,
                   title: "封面链接", content: anime.animeCoverUrl),
@@ -76,16 +76,16 @@ class AnimePropertiesPage extends StatelessWidget {
                 context,
                 title: "简介",
                 content: anime.animeDesc,
-                // onTap: () {
-                //   String animeDesc = anime.animeDesc;
-                //   _showDialogAboutEdit(context,
-                //       title: "编辑简介", property: animeDesc, confirm: (newDesc) {
-                //     Log.info("更新简介：$newDesc");
-                //     animeController.updateAnimeDesc(newDesc);
-                //     SqliteUtil.updateAnimeDescByAnimeId(
-                //         anime.animeId, newDesc);
-                //   });
-                // },
+                onPressed: () {
+                  String animeDesc = anime.animeDesc;
+                  _showDialogAboutEdit(context,
+                      title: "编辑简介", property: animeDesc, confirm: (newDesc) {
+                    Log.info("更新简介：$newDesc");
+                    animeController.updateAnimeDesc(newDesc);
+                    SqliteUtil.updateAnimeDescByAnimeId(
+                        anime.animeId, newDesc);
+                  });
+                },
               ),
               const ListTile()
             ],

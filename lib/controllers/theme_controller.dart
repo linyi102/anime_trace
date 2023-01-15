@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +8,7 @@ import '../utils/theme_util.dart';
 class ThemeController extends GetxController {
   // 夜间模式由ThemeColor里的isDarkMode决定
   Rx<ThemeColor> themeColor = acquireSelectedTheme();
+  Rx<PageSwitchAnimation> pageSwitchAnimation = PageSwitchAnimation.zoom.obs;
 
   // 字体
   RxList<String> fontFamilyFallback = [
@@ -27,6 +30,7 @@ class ThemeController extends GetxController {
     SPUtil.setString("themeColor", key);
   }
 
+  // 字体
   changeFontFamily(String fontFamily) {
     fontFamilyFallback[0] = fontFamily;
     SPUtil.setString("customFontFamily", fontFamily);
