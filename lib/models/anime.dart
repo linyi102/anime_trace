@@ -104,6 +104,8 @@ class Anime {
   PlayStatus getPlayStatus() {
     if (playStatus.contains("完结")) {
       return PlayStatus.finished;
+    } else if (playStatus.contains("未知")) {
+      return PlayStatus.unknown;
     } else if (playStatus.contains("未")) {
       return PlayStatus.notStarted;
     } else if (playStatus.contains("第") || playStatus.contains("连载")) {

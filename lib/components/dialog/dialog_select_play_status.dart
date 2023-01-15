@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 
+import '../../models/play_status.dart';
 import '../../utils/sqlite_util.dart';
 import '../../utils/theme_util.dart';
 
@@ -9,24 +10,25 @@ showDialogSelectPlayStatus(
   showDialog(
       context: context,
       builder: (context) {
-        String playStatus = animeController.anime.value.getPlayStatus().text;
         return AlertDialog(
-          title: const  Text("播放状态"),
+          title: const Text("播放状态"),
           content: SingleChildScrollView(
             child: Column(
-              children: ["未开播", "连载中", "已完结"]
-                  .map((e) => ListTile(
-                        leading: e == playStatus
-                            ? Icon(
-                                Icons.radio_button_on,
-                                color: ThemeUtil.getPrimaryIconColor(),
-                              )
+              children: PlayStatus.values
+                  .map((playStatus) => ListTile(
+                        leading: playStatus ==
+                                animeController.anime.value.getPlayStatus()
+                            ? Icon(Icons.radio_button_on,
+                                color: ThemeUtil.getPrimaryIconColor())
                             : const Icon(Icons.radio_button_off),
-                        title: Text(e),
+                        title: Text(playStatus.text),
+                        trailing: Icon(playStatus.iconData),
                         onTap: () {
-                          animeController.updateAnimePlayStatus(e);
+                          animeController
+                              .updateAnimePlayStatus(playStatus.text);
                           SqliteUtil.updateAnimePlayStatusByAnimeId(
-                              animeController.anime.value.animeId, e);
+                              animeController.anime.value.animeId,
+                              playStatus.text);
                           Navigator.pop(context);
                         },
                       ))
