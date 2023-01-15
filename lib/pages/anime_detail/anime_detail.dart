@@ -1436,7 +1436,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           _loadEpisode();
         },
         child: Chip(
-          label: Text(_getEpisodeRangeStr((startEpisodeNumber))),
+          label: Text(_getEpisodeRangeStr((startEpisodeNumber)),
+              textScaleFactor: ThemeUtil.tinyScaleFactor),
           backgroundColor: currentStartEpisodeNumber == startEpisodeNumber
               ? Colors.grey
               : null,
@@ -1454,16 +1455,21 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () {
+          MaterialButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    content: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: _buildEpisodeRangeChips(context),
+                    title: const Text("选择范围"),
+                    content: SingleChildScrollView(
+                      child: Wrap(
+                        spacing: 2,
+                        runSpacing: 2,
+                        children: _buildEpisodeRangeChips(context),
+                      ),
                     ),
                   );
                 },
