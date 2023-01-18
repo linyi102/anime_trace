@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
+
+import '../loading_dialog.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
   Log.info("迁移动漫$animeId");
@@ -56,16 +59,29 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
               ),
               ElevatedButton(
                   onPressed: () async {
-                    SqliteUtil.updateAnime(
-                            await SqliteUtil.getAnimeByAnimeId(animeId),
-                            newAnime,
-                            migrateCover: migrateCover)
-                        .then((value) {
-                      // 关闭对话框
-                      Navigator.pop(context);
-                      // 更新完毕(then)后，退回到详细页，然后重新加载数据才会看到更新
-                      Navigator.pop(parentContext);
-                    });
+                    // 获取详细信息
+                    BuildContext? loadingContext;
+                    showDialog(
+                        context: context, // 页面context
+                        builder: (context) {
+                          // 对话框context
+                          loadingContext =
+                              context; // 将对话框context赋值给变量，用于任务完成后完毕
+                          return const LoadingDialog("获取详细信息中...");
+                        });
+
+                    newAnime =
+                        await ClimbAnimeUtil.climbAnimeInfoByUrl(newAnime);
+                    await SqliteUtil.updateAnime(
+                        await SqliteUtil.getAnimeByAnimeId(animeId), newAnime,
+                        migrateCover: migrateCover);
+
+                    // 关闭加载框
+                    if (loadingContext != null) Navigator.pop(loadingContext!);
+                    // 关闭对话框
+                    Navigator.pop(context);
+                    // 退回到详细页
+                    Navigator.pop(parentContext);
                   },
                   child: const Text("确定"))
             ],

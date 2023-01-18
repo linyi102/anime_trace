@@ -33,8 +33,6 @@ class _NoteEditState extends State<NoteEdit> {
   bool _loadOk = false;
   bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();
-
-  // Map<int, int> initialOrderIdx = {}; // key-value对应imageId-orderIdx
   bool changeOrderIdx = false;
 
   final scrollController = ScrollController();
@@ -133,34 +131,6 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildBody() {
-    // log("_buildBody", time: DateTime.now(), name: runtimeType.toString());
-    // Log.info("_buildBody");
-    // 懒加载
-    // return _buildReorderNoteImgGridView(crossAxisCount: 2);
-
-    // 全部加载
-    // return ListView(
-    //   children: [_buildReorderNoteImgGridView(crossAxisCount: 2)],
-    // );
-
-    // TODO 如何保证懒加载？注意还要是GridVie.wbuilder
-    // 懒加载
-    // return Column(
-    //   children: [
-    //     Expanded(child: _buildReorderNoteImgGridView(crossAxisCount: 2))
-    //   ],
-    // );
-
-    // 还是全部加载
-    // return CustomScrollView(
-    //   slivers: [
-    //     SliverList(
-    //         delegate: SliverChildListDelegate(
-    //             [_buildReorderNoteImgGridView(crossAxisCount: 2)]))
-    //   ],
-    // );
-
-    //
     return Scrollbar(
       controller: scrollController,
       child: ListView(
@@ -198,15 +168,6 @@ class _NoteEditState extends State<NoteEdit> {
               tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
               desktop: _buildReorderNoteImgGridView(crossAxisCount: 7)),
           const ListTile(),
-          // ListTile(
-          //   dense: true,
-          //   leading: const Icon(Icons.error_outline, size: 15),
-          //   minLeadingWidth: 0,
-          //   title: Text(
-          //     "长按可拖拽图片改变顺序",
-          //     style: TextStyle(color: ThemeUtil.getCommentColor()),
-          //   ),
-          // )
         ],
       ),
     );
@@ -232,64 +193,21 @@ class _NoteEditState extends State<NoteEdit> {
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
-    // Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
-    // return ReorderableGridView.builder(
-    //   padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
-    //   shrinkWrap: true, // 解决报错问题
-    //   physics: const NeverScrollableScrollPhysics(), //解决不滚动问题
-    //   onReorder: (oldIndex, newIndex) {
-    //     setState(() {
-    //       final element = widget.note.relativeLocalImages.removeAt(oldIndex);
-    //       widget.note.relativeLocalImages.insert(newIndex, element);
-    //     });
-    //     changeOrderIdx = true;
-    //   },
-    //   // 表示长按多久可以拖拽
-    //   dragStartDelay: const Duration(milliseconds: 100),
-    //   // 拖拽时的组件
-    //   dragWidgetBuilder: (int index, Widget child) => Container(
-    //     decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(10), // 边框的圆角
-    //         border: Border.all(color: ThemeUtil.getPrimaryColor(), width: 4)),
-    //     // 切割图片为圆角
-    //     child: ClipRRect(
-    //       borderRadius: BorderRadius.circular(6),
-    //       child: buildImgWidget(
-    //           url: widget.note.relativeLocalImages[index].path,
-    //           showErrorDialog: false,
-    //           isNoteImg: true),
-    //     ),
-    //   ),
-    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //     crossAxisCount: crossAxisCount,
-    //     crossAxisSpacing: 4, // 横轴距离
-    //     mainAxisSpacing: 4, // 竖轴距离
-    //     childAspectRatio: 1, // 网格比例
-    //   ),
+    Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
 
-    //   itemCount: widget.note.relativeLocalImages.length,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     Log.info("$runtimeType: index=$index");
-    //     return Container(
-    //       key: UniqueKey(),
-    //       // key: Key("${widget.note.relativeLocalImages.elementAt(index).imageId}"),
-    //       child: _buildNoteItem(index),
-    //     );
-    //   },
-    // );
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
       crossAxisCount: crossAxisCount,
-      crossAxisSpacing: 4,
       // 横轴距离
-      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
       // 竖轴距离
-      childAspectRatio: 1,
+      mainAxisSpacing: 4,
       // 网格比例
-      shrinkWrap: true,
+      childAspectRatio: 1,
       // 解决报错问题
+      shrinkWrap: true,
+      // 解决不滚动问题
       physics: const NeverScrollableScrollPhysics(),
-      //解决不滚动问题
       children: List.generate(
         widget.note.relativeLocalImages.length,
         (index) => Container(
@@ -323,7 +241,7 @@ class _NoteEditState extends State<NoteEdit> {
         // 切割图片为圆角
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: CommonImage(ImageUtil.getAbsoluteCoverImagePath(
+          child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
               widget.note.relativeLocalImages[index].path)),
         ),
       ),

@@ -75,8 +75,9 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                     });
                 List<Future> futures = [];
                 for (var anime in lapseCoverAnimes) {
-                  futures.add(
-                      ClimbAnimeUtil.climbAnimeInfoByUrl(anime).then((value) {
+                  futures.add(ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
+                          showMessage: false)
+                      .then((value) {
                     setState(() {
                       anime = value;
                     });

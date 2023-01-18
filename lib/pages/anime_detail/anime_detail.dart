@@ -1044,6 +1044,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                 itemCount:
                                     _notes[noteIdx].relativeLocalImages.length,
                                 itemBuilder: (context, imgIdx) {
+                                  // Log.info("横向图片imgIdx=$imgIdx");
                                   return MaterialButton(
                                     padding: Platform.isAndroid
                                         ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
@@ -1446,7 +1447,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+      padding: const EdgeInsets.fromLTRB(8, 10, 12, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
