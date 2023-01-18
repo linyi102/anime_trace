@@ -118,6 +118,9 @@ class ClimbQdm implements Climb {
     } else {
       anime.playStatus = "";
     }
+
+    if (showMessage) showToast("更新完毕");
+
     return anime;
   }
 

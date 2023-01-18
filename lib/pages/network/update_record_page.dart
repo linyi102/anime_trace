@@ -26,12 +26,7 @@ class UpdateRecordPage extends StatelessWidget {
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
-          // 如果返回false，则不会弹出更新进度消息
-          ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-            // if (value) {
-            //   dialogUpdateAllAnimeProgress(context);
-            // }
-          });
+          ClimbAnimeUtil.updateAllAnimesInfo();
         },
         // ListView嵌套ListView，那么内部LV会需要加上shrinkWrap: true，但这样会导致懒加载实现
         // 所以改用Column
@@ -167,11 +162,7 @@ class UpdateRecordPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                ClimbAnimeUtil.updateAllAnimesInfo().then((value) {
-                  // if (value) {
-                  //   dialogUpdateAllAnimeProgress(context);
-                  // }
-                });
+                ClimbAnimeUtil.updateAllAnimesInfo();
               },
               style: ButtonStyle(
                   shape: MaterialStateProperty.all(RoundedRectangleBorder(
@@ -186,74 +177,6 @@ class UpdateRecordPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// 全局更新动漫
-  dialogUpdateAllAnimeProgress(parentContext) {
-    final UpdateRecordController updateRecordController = Get.find();
-
-    showDialog(
-        context: parentContext,
-        builder: (context) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Obx(
-                    () {
-                      int updateOkCnt =
-                          updateRecordController.updateOkCnt.value;
-                      int needUpdateCnt =
-                          updateRecordController.needUpdateCnt.value;
-                      // if (needUpdateCnt > 0 && updateOkCnt == needUpdateCnt) {
-                      //   showToast("动漫更新完毕！");
-                      // }
-
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                        child: Column(
-                          children: [
-                            Center(
-                                child: Text(
-                                    updateOkCnt < needUpdateCnt
-                                        ? "更新动漫中..."
-                                        : "更新完毕！",
-                                    textScaleFactor:
-                                        ThemeUtil.smallScaleFactor)),
-                            const SizedBox(height: 15),
-                            LinearPercentIndicator(
-                              barRadius: const Radius.circular(15),
-                              animation: false,
-                              lineHeight: 20.0,
-                              animationDuration: 1000,
-                              percent:
-                                  _getUpdatePercent(updateOkCnt, needUpdateCnt),
-                              center: Text("$updateOkCnt / $needUpdateCnt",
-                                  style:
-                                      const TextStyle(color: Colors.black54)),
-                              progressColor: Colors.greenAccent,
-                              // linearGradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                    child: const Text(
-                      "提示：\n更新时会跳过已完结动漫\n关闭该对话框不影响更新",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
-                      textScaleFactor: 0.8,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        });
   }
 
   double _getUpdatePercent(int updateOkCnt, int needUpdateCnt) {

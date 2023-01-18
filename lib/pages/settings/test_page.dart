@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:oktoast/oktoast.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -21,10 +22,30 @@ class _TestPageState extends State<TestPage> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text("返回上一级"),
+            title: const Text("对话框中弹出消息"),
             onTap: () {
-              // Get.back();
-              Navigator.pop(context);
+              showDialog(
+                  context: context,
+                  builder: (context) => SimpleDialog(
+                        children: [
+                          ListTile(
+                            title: const Text("弹出消息"),
+                            onTap: () {
+                              // 背景页面上显示了
+                              showToast("${DateTime.now()}");
+                              // 没有显示
+                              // showToast("${DateTime.now()}", context: context);
+                            },
+                          ),
+                        ],
+                      ));
+            },
+          ),
+          ListTile(
+            title: const Text("弹出消息"),
+            onTap: () {
+              // showToast("${DateTime.now()}");
+              showToast("正在更新书架");
             },
           ),
           ListTile(

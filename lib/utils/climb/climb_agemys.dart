@@ -105,7 +105,7 @@ class ClimbAgemys implements Climb {
     }
     Log.info("解析完毕√");
     Log.info(anime.toString());
-    if (showMessage) showToast("更新信息成功");
+    if (showMessage) showToast("更新完毕");
 
     return anime;
   }

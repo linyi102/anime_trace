@@ -60,7 +60,7 @@ class ClimbDouban implements Climb {
         }
       }
     }
-    if (showMessage) showToast("更新信息成功");
+    if (showMessage) showToast("更新完毕");
 
     return anime;
   }

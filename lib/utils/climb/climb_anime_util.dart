@@ -74,10 +74,10 @@ class ClimbAnimeUtil {
   static bool canUpdateAllAnimesInfo = true;
 
   // 获取数据库中所有动漫，然后更新未完结的动漫信息
-  static Future<bool> updateAllAnimesInfo() async {
+  static void updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
       showToast("更新间隔为10s");
-      return false;
+      return;
     }
 
     canUpdateAllAnimesInfo = false;
@@ -90,6 +90,7 @@ class ClimbAnimeUtil {
 
     List<Anime> needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
 
+    List<Future> futures = [];
     // 异步更新所有动漫信息
     for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
@@ -98,7 +99,7 @@ class ClimbAnimeUtil {
       Anime oldAnime = anime.copyWith();
       AnimeUpdateRecord updateRecord = AnimeUpdateRecord(animeId: 0);
       // 爬取
-      ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
+      futures.add(ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
           .then((value) {
         // 集数变化则记录到表中
         if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
@@ -121,11 +122,12 @@ class ClimbAnimeUtil {
           int updateOkCnt = updateRecordController.updateOkCnt.value;
           Log.info("updateOkCnt=$updateOkCnt");
         });
-      });
+      }));
     }
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
-    Log.info("共更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
-    return true; // 返回true，之后会显示进度条对话框
+    Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
+    await Future.wait(futures);
+    showToast("全局更新完毕");
   }
 }

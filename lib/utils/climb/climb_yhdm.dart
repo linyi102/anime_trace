@@ -73,7 +73,7 @@ class ClimbYhdm implements Climb {
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
     Log.info("开始解析集数：${anime.animeName}");
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
-    if (showMessage) showToast("更新信息成功");
+    if (showMessage) showToast("更新完毕");
 
     Log.info(anime.toString());
     return anime;

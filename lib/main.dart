@@ -232,22 +232,22 @@ class MyAppState extends State<MyApp> with WindowListener {
 
     return Obx(
       () => OKToast(
-        position: ToastPosition.top,
-        // animationBuilder: (BuildContext context, Widget child,
-        //     AnimationController controller, double percent) {
-        //   // controller.duration = const Duration(seconds: 2); // 无效
-        //
-        //   Animation<double> animation = CurvedAnimation(
-        //     parent: controller,
-        //     curve: Curves.elasticOut,
-        //   );
-        //
-        //   return ScaleTransition(child: child, scale: animation);
-        // },
+        position: ToastPosition.bottom,
+        animationDuration: const Duration(milliseconds: 200),
+        animationBuilder: (BuildContext context, Widget child,
+            AnimationController controller, double percent) {
+          Animation<double> animation = CurvedAnimation(
+            parent: controller,
+            curve: Curves.ease,
+          );
+
+          return ScaleTransition(
+              alignment: Alignment.bottomCenter, child: child, scale: animation);
+        },
         // true表示弹出消息时会先关闭前一个消息
         dismissOtherOnShow: true,
-        radius: 20,
-        textPadding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+        radius: 10,
+        textPadding: const EdgeInsets.all(8),
         backgroundColor: themeController.themeColor.value.isDarkMode
             ? Colors.white
             : Colors.black,
@@ -255,8 +255,8 @@ class MyAppState extends State<MyApp> with WindowListener {
             color: themeController.themeColor.value.isDarkMode
                 ? Colors.black
                 : Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            fontWeight: FontWeight.normal,
             decoration: TextDecoration.none,
             fontFamilyFallback: themeController.fontFamilyFallback),
         child: MaterialApp(
