@@ -50,6 +50,8 @@ class _AnimeListPageState extends State<AnimeListPage>
   final List<ScrollController> _scrollControllers = [];
   final AnimeDisplayController _animeDisplayController = Get.find();
 
+  bool useTopTab = true;
+
   @override
   void initState() {
     super.initState();
@@ -138,34 +140,90 @@ class _AnimeListPageState extends State<AnimeListPage>
                         icon: const Icon(Icons.close))
                     : null,
                 actions: multiSelected ? _getActionsOnMulti() : _getActions(),
-                bottom: PreferredSize(
-                  // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                  preferredSize: const Size.fromHeight(kToolbarHeight),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TabBar(
-                      tabs: _buildTagAndAnimeCnt(),
+                bottom: useTopTab
+                    ? PreferredSize(
+                        // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
+                        preferredSize: const Size.fromHeight(kToolbarHeight),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TabBar(
+                            tabs: _buildTagAndAnimeCnt(),
+                            controller: _tabController,
+                            padding: const EdgeInsets.all(2),
+                            // 居中，而不是靠左下
+                            isScrollable: true,
+                            // 清单可以滑动，避免拥挤
+                            labelPadding:
+                                const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            indicatorSize: TabBarIndicatorSize.label,
+                            // 第三方指示器样式
+                            indicator: MaterialIndicator(
+                              horizontalPadding: 8.5,
+                              color: ThemeUtil.getPrimaryColor(),
+                              paintingStyle: PaintingStyle.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+              body: useTopTab
+                  ? TabBarView(
                       controller: _tabController,
-                      padding: const EdgeInsets.all(2),
-                      // 居中，而不是靠左下
-                      isScrollable: true,
-                      // 清单可以滑动，避免拥挤
-                      labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      indicatorSize: TabBarIndicatorSize.label,
-                      // 第三方指示器样式
-                      indicator: MaterialIndicator(
-                        horizontalPadding: 8.5,
-                        color: ThemeUtil.getPrimaryColor(),
-                        paintingStyle: PaintingStyle.fill,
-                      ),
+                      children: _getAnimesPlus(),
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: tags.map((checklist) {
+                                int checklistIdx = tags.indexWhere(
+                                    (element) => element == checklist);
+                                return ListTile(
+                                  selected:
+                                      _tabController.index == checklistIdx,
+                                  title: Obx(
+                                    () => _animeDisplayController
+                                            .showAnimeCntAfterTag.value
+                                        ? Text(
+                                            "${tags[checklistIdx]} (${animeCntPerTag[checklistIdx]})",
+                                            textScaleFactor:
+                                                ThemeUtil.smallScaleFactor)
+                                        : Text(tags[checklistIdx],
+                                            textScaleFactor:
+                                                ThemeUtil.smallScaleFactor),
+                                  ),
+                                  onTap: () {
+                                    int checklistIdx = tags.indexWhere(
+                                        (element) => element == checklist);
+                                    _tabController.index = checklistIdx;
+                                    setState(() {});
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          // TODO：切换左侧tab后，滚动条位置并没有恢复到之前位置，而是共用了同一个滚动条
+                          child: Scrollbar(
+                            controller:
+                                _scrollControllers[_tabController.index],
+                            child: Stack(children: [
+                              Obx(() => _animeDisplayController
+                                      .displayList.value
+                                  ? _getAnimeListView(_tabController.index)
+                                  : _getAnimeGridView(_tabController.index)),
+                              // 一定要叠放在ListView上面，否则点击按钮没有反应
+                              _buildBottomButton(_tabController.index),
+                            ]),
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                ),
-              ),
-              body: TabBarView(
-                controller: _tabController,
-                children: _getAnimesPlus(),
-              ),
             ),
     );
   }
