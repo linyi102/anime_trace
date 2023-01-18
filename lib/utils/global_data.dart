@@ -1,4 +1,3 @@
-// List tags = ["拾", "途", "终", "搁", "弃"];
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';

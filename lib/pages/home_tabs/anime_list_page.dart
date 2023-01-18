@@ -20,6 +20,7 @@ import 'package:flutter_test_future/utils/log.dart';
 
 import '../../components/get_anime_grid_delegate.dart';
 import '../../models/params/anime_sort_cond.dart';
+import '../modules/anime_grid_view.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -275,16 +276,16 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   List<Widget> _getAnimesPlus() {
     List<Widget> list = [];
-    for (int i = 0; i < tags.length; ++i) {
+    for (int checklistIdx = 0; checklistIdx < tags.length; ++checklistIdx) {
       list.add(
         Scrollbar(
-          controller: _scrollControllers[i],
+          controller: _scrollControllers[checklistIdx],
           child: Stack(children: [
             Obx(() => _animeDisplayController.displayList.value
-                ? _getAnimeListView(i)
-                : _getAnimeGridView(i)),
+                ? _getAnimeListView(checklistIdx)
+                : _getAnimeGridView(checklistIdx)),
             // 一定要叠放在ListView上面，否则点击按钮没有反应
-            _buildBottomButton(i),
+            _buildBottomButton(checklistIdx),
           ]),
         ),
       );
@@ -292,50 +293,41 @@ class _AnimeListPageState extends State<AnimeListPage>
     return list;
   }
 
-  GridView _getAnimeGridView(int i) {
-    return GridView.builder(
-        controller: _scrollControllers[i],
-        // 整体的填充
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        gridDelegate: getAnimeGridDelegate(context),
-        itemCount: animesInTag[i].length,
-        itemBuilder: (BuildContext context, int index) {
-          _loadExtraData(i, index);
-          Anime anime = animesInTag[i][index];
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: MaterialButton(
-              onPressed: () {
-                onpress(i, index, anime);
-              },
-              onLongPress: () {
-                onLongPress(index);
-              },
-              padding: const EdgeInsets.all(0),
-              child: AnimeGridCover(anime,
-                  isSelected: mapSelected.containsKey(index)),
-            ),
-          );
+  _getAnimeGridView(int checklistIdx) {
+    return AnimeGridView(
+        animes: animesInTag[checklistIdx],
+        tagIdx: checklistIdx,
+        loadMore: (int tagIdx, int animeIdx) {
+          _loadExtraData(tagIdx, animeIdx);
+        },
+        scrollController: _scrollControllers[checklistIdx],
+        onClick: (int animeIdx) {
+          onPress(animeIdx, animesInTag[checklistIdx][animeIdx]);
+        },
+        onLongClick: (int animeIdx) {
+          onLongPress(animeIdx);
+        },
+        isSelected: (int animeIdx) {
+          return mapSelected.containsKey(animeIdx);
         });
   }
 
-  ListView _getAnimeListView(int i) {
+  ListView _getAnimeListView(int tagIdx) {
     return ListView.builder(
-      controller: _scrollControllers[i],
-      itemCount: animesInTag[i].length,
+      controller: _scrollControllers[tagIdx],
+      itemCount: animesInTag[tagIdx].length,
       // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
-      itemBuilder: (BuildContext context, int index) {
-        _loadExtraData(i, index);
+      itemBuilder: (BuildContext context, int animeIdx) {
+        _loadExtraData(tagIdx, animeIdx);
 
         // Log.info("$index");
         // return AnimeItem(animesInTag[i][index]);
-        Anime anime = animesInTag[i][index];
+        Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
           selectedTileColor: multiSelectedColor,
-          selected: mapSelected.containsKey(index),
+          selected: mapSelected.containsKey(animeIdx),
           title: Text(
             anime.animeName,
-            textScaleFactor: 0.9,
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
           leading: Obx(() => AnimeListCover(
@@ -345,12 +337,12 @@ class _AnimeListPageState extends State<AnimeListPage>
                 reviewNumber: anime.reviewNumber,
               )),
           trailing: Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-              textScaleFactor: 0.9),
+              textScaleFactor: 0.95),
           onTap: () {
-            onpress(i, index, anime);
+            onPress(animeIdx, anime);
           },
           onLongPress: () {
-            onLongPress(index);
+            onLongPress(animeIdx);
           },
         );
       },
@@ -380,35 +372,38 @@ class _AnimeListPageState extends State<AnimeListPage>
     }
   }
 
-  void onpress(i, index, anime) {
+  void onPress(int animeIdx, Anime anime) {
     // 多选
     if (multiSelected) {
-      if (mapSelected.containsKey(index)) {
-        mapSelected.remove(index); // 选过，再选就会取消
+      if (mapSelected.containsKey(animeIdx)) {
+        Log.info("[多选模式]移除animeIdx=$animeIdx");
+        mapSelected.remove(animeIdx); // 选过，再选就会取消
         // 如果取消后一个都没选，就自动退出多选状态
         if (mapSelected.isEmpty) {
           multiSelected = false;
         }
       } else {
-        mapSelected[index] = true;
+        Log.info("[多选模式]添加animeIdx=$animeIdx");
+        mapSelected[animeIdx] = true;
       }
       setState(() {});
       return;
     } else {
-      _enterPageAnimeDetail(i, index, anime);
+      _enterPageAnimeDetail(anime);
     }
   }
 
-  void onLongPress(index) {
+  void onLongPress(int animeIdx) {
     // 非多选状态下才需要进入多选状态
     if (multiSelected == false) {
       multiSelected = true;
-      mapSelected[index] = true;
+      mapSelected[animeIdx] = true;
+      Log.info("[多选模式]添加animeIdx=$animeIdx");
       setState(() {}); // 添加操作按钮
     }
   }
 
-  void _enterPageAnimeDetail(i, index, Anime anime) {
+  void _enterPageAnimeDetail(Anime anime) {
     // 要想添加Hero动画，需要使用MaterialPageRoute
     Navigator.of(context).push(
       MaterialPageRoute(
