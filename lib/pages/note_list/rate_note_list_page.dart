@@ -39,6 +39,13 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     _loadRateNoteData();
   }
 
+  @override
+  void dispose() {
+    //为了避免内存泄露，需要调用.dispose
+    _rateScrollController.dispose();
+    super.dispose();
+  }
+
   void _loadRateNoteData() {
     loadRateNodeOk = false;
     rateNotePageParams.resetPageIndex();
@@ -68,13 +75,6 @@ class _RateNoteListPageState extends State<RateNoteListPage>
         setState(() {});
       });
     }
-  }
-
-  @override
-  void dispose() {
-    //为了避免内存泄露，需要调用.dispose
-    _rateScrollController.dispose();
-    super.dispose();
   }
 
   @override

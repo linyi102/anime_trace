@@ -52,6 +52,12 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
     var inputController = TextEditingController.fromValue(TextEditingValue(

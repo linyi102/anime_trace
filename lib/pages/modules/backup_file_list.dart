@@ -27,6 +27,12 @@ class _BackUpFileListState extends State<BackUpFileList> {
     _initData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
   void _initData() async {
     Log.info("获取备份文件ing...");
     files.addAll(await WebDavUtil.client.readDir("/animetrace"));

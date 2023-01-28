@@ -38,6 +38,12 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     _loadEpisodeNoteData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _noteScrollController.dispose();
+  }
+
   void _loadEpisodeNoteData() async {
     loadEpisodeNoteOk = false;
     episodeNotePageParams.resetPageIndex();
@@ -69,13 +75,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
         setState(() {});
       });
     }
-  }
-
-  @override
-  void dispose() {
-    //为了避免内存泄露，需要调用.dispose
-    _noteScrollController.dispose();
-    super.dispose();
   }
 
   @override

@@ -23,6 +23,7 @@ import '../../components/anime_rating_bar.dart';
 
 class NoteEdit extends StatefulWidget {
   final Note note;
+
   const NoteEdit(this.note, {Key? key}) : super(key: key);
 
   @override
@@ -42,6 +43,12 @@ class _NoteEditState extends State<NoteEdit> {
     super.initState();
     Log.info("进入笔记${widget.note.id}");
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
   }
 
   _loadData() async {

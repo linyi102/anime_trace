@@ -41,6 +41,7 @@ class _ImageViewerState extends State<ImageViewer> {
   bool dirChangedWrapper = false;
 
   late PageController pageController;
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -48,6 +49,13 @@ class _ImageViewerState extends State<ImageViewer> {
     currentIndex = widget.initialIndex;
     pageController = PageController(initialPage: widget.initialIndex);
     _getImageLocalPaths();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+    scrollController.dispose();
   }
 
   _getImageLocalPaths() {
@@ -248,8 +256,6 @@ class _ImageViewerState extends State<ImageViewer> {
           );
         });
   }
-
-  ScrollController scrollController = ScrollController();
 
   _buildScrollAxis() {
     return ListView.builder(
