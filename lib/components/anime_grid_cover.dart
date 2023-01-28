@@ -31,7 +31,6 @@ class AnimeGridCover extends StatelessWidget {
     final AnimeDisplayController _animeDisplayController = Get.find();
 
     if (onlyShowCover) return _buildCover(context, false);
-
     return Obx(() => Column(
           children: [
             // 封面
@@ -65,7 +64,8 @@ class AnimeGridCover extends StatelessWidget {
         padding: const EdgeInsets.all(3.0),
         child: AspectRatio(
           // 固定宽高比
-          aspectRatio: 198 / 275,
+          // aspectRatio: 198 / 275,
+          aspectRatio: 3 / 4,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Stack(

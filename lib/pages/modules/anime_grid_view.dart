@@ -47,21 +47,17 @@ class _AnimeGridViewState extends State<AnimeGridView>
           widget.loadMore(widget.tagIdx, animeIdx);
 
           Anime anime = widget.animes[animeIdx];
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: MaterialButton(
-              onPressed: widget.onClick != null
-                  ? () => widget.onClick!(animeIdx)
-                  : null,
-              onLongPress: widget.onLongClick != null
-                  ? () => widget.onLongClick!(animeIdx)
-                  : null,
-              padding: const EdgeInsets.all(0),
-              child: AnimeGridCover(anime,
-                  isSelected: widget.isSelected == null
-                      ? false
-                      : widget.isSelected!(animeIdx)),
-            ),
+          return MaterialButton(
+            onPressed:
+                widget.onClick != null ? () => widget.onClick!(animeIdx) : null,
+            onLongPress: widget.onLongClick != null
+                ? () => widget.onLongClick!(animeIdx)
+                : null,
+            padding: const EdgeInsets.all(0),
+            child: AnimeGridCover(anime,
+                isSelected: widget.isSelected == null
+                    ? false
+                    : widget.isSelected!(animeIdx)),
           );
         }));
   }

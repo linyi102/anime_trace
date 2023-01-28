@@ -458,6 +458,8 @@ class _AnimeListPageState extends State<AnimeListPage>
       mapSelected[animeIdx] = true;
       Log.info("[多选模式]添加animeIdx=$animeIdx");
       setState(() {}); // 添加操作按钮
+    } else {
+      // TODO 多选模式下，应提供范围选择
     }
   }
 
@@ -668,7 +670,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                       onPressed: () {
                         _dialogModifyTag(tags[i]);
                       },
-                      icon: const Icon(Icons.new_label_outlined),
+                      icon: const Icon(Icons.checklist),
                     ),
                   ),
                   Expanded(

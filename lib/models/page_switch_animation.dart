@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/log.dart';
 
 enum PageSwitchAnimation {
   zoom(1, "放大", ZoomPageTransitionsBuilder()),
@@ -27,6 +28,16 @@ class FadeTransitionsBuilder extends PageTransitionsBuilder {
     return FadeTransition(
       opacity: animation,
       child: child,
+    );
+
+    // 缺点：返回时没有效果
+    return TweenAnimationBuilder(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 400),
+      builder: (BuildContext context, double value, Widget? child1) {
+        Log.info("value=$value");
+        return Opacity(opacity: value, child: child);
+      },
     );
   }
 }

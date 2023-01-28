@@ -22,8 +22,8 @@ import '../../utils/theme_util.dart';
 import '../../components/anime_rating_bar.dart';
 
 class NoteEdit extends StatefulWidget {
-  Note note; // 可能会修改笔记内容
-  NoteEdit(this.note, {Key? key}) : super(key: key);
+  final Note note;
+  const NoteEdit(this.note, {Key? key}) : super(key: key);
 
   @override
   State<NoteEdit> createState() => _NoteEditState();

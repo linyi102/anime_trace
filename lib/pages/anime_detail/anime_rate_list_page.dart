@@ -6,6 +6,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:oktoast/oktoast.dart';
 
 import '../../components/note_img_grid.dart';
 import '../../dao/note_dao.dart';
@@ -92,42 +93,69 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
           Log.info("$runtimeType: index=$index");
           Note note = notes[index];
 
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Card(
-              elevation: 0,
-              child: MaterialButton(
-                elevation: 0,
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return NoteEdit(note);
-                      },
-                    ),
-                  ).then((value) {
-                    // 重新获取列表
-                    // _loadData();
-                    // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
-                    // 也不需要重新获取，修改笔记返回后，笔记也会变化
-                  });
-                },
-                child: Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    // 笔记内容
-                    _buildNoteContent(note),
-                    // 笔记图片
-                    NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-                    // 创建时间
-                    _buildCreateTimeAndMoreAction(note)
-                  ],
-                ),
-              ),
-            ),
+          return RateNoteCard(
+            note,
+            removeNote: () {
+              // 从notes中移除，并重绘整个页面
+              setState(() {
+                notes.removeAt(index);
+              });
+            },
           );
         });
+  }
+}
+
+// 提取到该Widget，目的是为了从编辑页返回后，setState重绘这一个卡片，而不是整个页面
+class RateNoteCard extends StatefulWidget {
+  final Note note;
+  final void Function() removeNote;
+
+  const RateNoteCard(this.note, {required this.removeNote, Key? key})
+      : super(key: key);
+
+  @override
+  State<RateNoteCard> createState() => _RateNoteCardState();
+}
+
+class _RateNoteCardState extends State<RateNoteCard> {
+  @override
+  Widget build(BuildContext context) {
+    Log.build(runtimeType);
+    Note note = widget.note;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Card(
+        elevation: 0,
+        child: MaterialButton(
+          elevation: 0,
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => NoteEdit(note)))
+                .then((value) {
+              // 重新获取列表
+              // _loadData();
+              // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
+              // 也不需要重新获取，因为笔记编辑页修改的就是传入的note数据，但注意返回后需要重新绘制
+              setState(() {});
+            });
+          },
+          child: Flex(
+            direction: Axis.vertical,
+            children: [
+              // 笔记内容
+              _buildNoteContent(note),
+              // 笔记图片
+              NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
+              // 创建时间
+              _buildCreateTimeAndMoreAction(note)
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   _buildNoteContent(Note note) {
@@ -186,15 +214,17 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
                                       child: const Text("取消"),
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         // 关闭删除确认对话框和更多菜单对话框
                                         Navigator.of(context)
                                           ..pop()
                                           ..pop();
-                                        SqliteUtil.deleteNoteById(note.id)
-                                            .then((val) {
-                                          _loadData();
-                                        });
+                                        if (await SqliteUtil.deleteNoteById(
+                                            note.id)) {
+                                          widget.removeNote();
+                                        } else {
+                                          showToast("删除失败！");
+                                        }
                                       },
                                       child: const Text("确定"),
                                     )
