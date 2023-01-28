@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/pages/modules/note_edit.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/anime_list_cover.dart';
 import '../../models/anime.dart';
 import '../../models/params/page_params.dart';
-import '../../utils/sqlite_util.dart';
-import '../../utils/time_show_util.dart';
 import '../anime_detail/anime_detail.dart';
-import '../../components/anime_rating_bar.dart';
+import '../modules/note_card.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
@@ -115,171 +109,25 @@ class _RateNoteListPageState extends State<RateNoteListPage>
               // Log.info("$runtimeType: index=$index");
               _loadMoreRateNoteData(index);
 
-              return Container(
-                padding: const EdgeInsets.only(top: 5),
-                child: Card(
-                  elevation: 0,
-                  child: MaterialButton(
-                    elevation: 0,
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return NoteEdit(rateNotes[index]);
-                          },
-                        ),
-                      ).then((value) {
-                        // 更新笔记
-                        rateNotes[index] = value;
-                        setState(() {});
-                      });
-                    },
-                    child: Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        // 因为listtile缺少subtitle，所以会靠近卡片顶部，因此添加一个sizedbox
-                        const SizedBox(height: 10),
-                        // 动漫行
-                        _buildAnimeListTile(
-                            setState: setState,
-                            context: context,
-                            note: rateNotes[index]),
-                        // 笔记内容
-                        _buildNote(note: rateNotes[index]),
-                        // 笔记图片
-                        NoteImgGrid(
-                            relativeLocalImages:
-                                rateNotes[index].relativeLocalImages),
-                        // 显示日期和操作
-                        _buildCreateTimeAndMoreAction(rateNotes[index])
-                      ],
-                    ),
-                  ),
-                ),
+              Note note = rateNotes[index];
+
+              return NoteCard(
+                note,
+                removeNote: () {
+                  // 从notes中移除，并重绘整个页面
+                  setState(() {
+                    rateNotes.removeAt(index);
+                  });
+                },
+                isRateNote: true,
+                showAnimeTile: true,
+                enterAnimeDetail: () => _enterAnimeDetail(note.anime),
               );
             },
           );
   }
 
-  _buildCreateTimeAndMoreAction(Note note) {
-    String timeStr = TimeShowUtil.getHumanReadableDateTimeStr(note.createTime);
-    timeStr = timeStr.isEmpty ? "" : "创建于$timeStr";
-
-    return ListTile(
-        style: ListTileStyle.drawer,
-        title: Text(
-          timeStr,
-          textScaleFactor: ThemeUtil.tinyScaleFactor,
-          style: TextStyle(
-              fontWeight: FontWeight.normal,
-              color: ThemeUtil.getCommentColor()),
-        ),
-        trailing: _buildMoreButton(note));
-  }
-
-  _buildMoreButton(Note note) {
-    return IconButton(
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return SimpleDialog(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.delete),
-                      title: const Text("删除笔记"),
-                      style: ListTileStyle.drawer, // 变小
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("确定删除笔记吗？"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    // 关闭删除确认对话框和更多菜单对话框
-                                    Navigator.of(context)
-                                      ..pop()
-                                      ..pop();
-                                  },
-                                  child: const Text("取消"),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // 关闭删除确认对话框和更多菜单对话框
-                                    Navigator.of(context)
-                                      ..pop()
-                                      ..pop();
-                                    SqliteUtil.deleteNoteById(note.id)
-                                        .then((val) {
-                                      // 关闭下拉菜单，并重新获取评价列表
-                                      // 将笔记从中移除
-                                      rateNotes.removeWhere(
-                                          (element) => element.id == note.id);
-                                      setState(() {});
-                                    });
-                                  },
-                                  child: const Text("确定"),
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    )
-                  ],
-                );
-              });
-        },
-        icon: const Icon(Icons.more_horiz));
-  }
-
-  _buildNote({required Note note}) {
-    if (note.noteContent.isEmpty) return Container();
-    return ListTile(
-      title: Text(
-        note.noteContent,
-        maxLines: 10,
-        overflow: TextOverflow.ellipsis,
-        style: ThemeUtil.getNoteTextStyle(),
-      ),
-      style: ListTileStyle.drawer,
-    );
-  }
-
-  _buildAnimeListTile(
-      {required setState, required BuildContext context, required Note note}) {
-    return GestureDetector(
-      onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
-      child: ListTile(
-          leading: AnimeListCover(
-            note.anime,
-            showReviewNumber: true,
-            reviewNumber: note.episode.reviewNumber,
-          ),
-          title: Text(
-            note.anime.animeName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textScaleFactor: ThemeUtil.smallScaleFactor,
-            // textAlign: TextAlign.right,
-          ),
-          subtitle: AnimeRatingBar(
-              rate: note.anime.rate,
-              iconSize: 12,
-              spacing: 2,
-              enableRate: false,
-              onRatingUpdate: (v) {
-                Log.info("评价分数：$v");
-                note.anime.rate = v.toInt();
-                SqliteUtil.updateAnimeRate(note.anime.animeId, note.anime.rate);
-              })),
-    );
-  }
-
-  _enterAnimeDetail({required BuildContext context, required Anime anime}) {
+  _enterAnimeDetail(Anime anime) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {

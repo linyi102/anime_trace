@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/pages/modules/note_edit.dart';
+import 'package:flutter_test_future/pages/modules/note_card.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/anime_list_cover.dart';
 import '../../models/anime.dart';
 import '../../models/params/page_params.dart';
-import '../../utils/theme_util.dart';
 import '../anime_detail/anime_detail.dart';
 
 class EpisodeNoteListPage extends StatefulWidget {
@@ -46,7 +43,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     episodeNotePageParams.resetPageIndex();
     Future(() {
       Log.info("note_list_page: 开始加载数据");
-      // return SqliteUtil.getAllNotesByTableHistory();
       return NoteDao.getAllNotesByTableNoteAndKeyword(
           0, episodeNotePageParams.pageSize, widget.noteFilter);
     }).then((value) {
@@ -112,104 +108,19 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               itemBuilder: (BuildContext context, int index) {
                 // Log.info("$runtimeType: index=$index");
                 _loadMoreEpisodeNoteData(index);
+                Note note = episodeNotes[index];
 
-                return Container(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Card(
-                    elevation: 0,
-                    child: MaterialButton(
-                      elevation: 0,
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          // MaterialPageRoute(
-                          //   builder: (context) => EpisodeNoteSF(episodeNotes[index]),
-                          // ),
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return NoteEdit(episodeNotes[index]);
-                            },
-                          ),
-                        ).then((value) {
-                          // 如果返回的笔记id为0，则说明已经从笔记列表页进入的动漫详细页删除了动漫，因此需要根据动漫id删除所有相关笔记
-                          Note newEpisodeNote = value;
-                          Log.info(
-                              "newEpisodeNote.anime.animeId=${newEpisodeNote.anime.animeId}");
-                          if (newEpisodeNote.id == 0) {
-                            episodeNotes.removeWhere((element) =>
-                                element.anime.animeId ==
-                                newEpisodeNote.anime.animeId);
-                          } else {
-                            episodeNotes[index] = newEpisodeNote; // 更新修改
-                          }
-                          setState(() {});
-                        });
-                      },
-                      child: Flex(
-                        direction: Axis.vertical,
-                        children: [
-                          // 动漫行
-                          _buildAnimeListTile(
-                              setState: setState,
-                              context: context,
-                              note: episodeNotes[index]),
-                          // const Divider()
-                          // 笔记内容
-                          _buildNote(note: episodeNotes[index]),
-                          // 笔记图片
-                          NoteImgGrid(
-                              relativeLocalImages:
-                                  episodeNotes[index].relativeLocalImages),
-                        ],
-                      ),
-                    ),
-                  ),
+                return NoteCard(
+                  note,
+                  showAnimeTile: true,
+                  enterAnimeDetail: () => _enterAnimeDetail(note.anime),
                 );
               },
             ),
           );
   }
 
-  _buildNote({required Note note}) {
-    if (note.noteContent.isEmpty) return Container();
-    return ListTile(
-      title: Text(
-        note.noteContent,
-        maxLines: 10,
-        overflow: TextOverflow.ellipsis,
-        style: ThemeUtil.getNoteTextStyle(),
-      ),
-      style: ListTileStyle.drawer,
-    );
-  }
-
-  _buildAnimeListTile(
-      {required setState, required BuildContext context, required Note note}) {
-    bool isRateNote = note.episode.number == 0;
-
-    return GestureDetector(
-      onTap: () => _enterAnimeDetail(context: context, anime: note.anime),
-      child: ListTile(
-        leading: AnimeListCover(
-          note.anime,
-          showReviewNumber: true,
-          reviewNumber: note.episode.reviewNumber,
-        ),
-        title: Text(
-          note.anime.animeName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textScaleFactor: ThemeUtil.smallScaleFactor,
-        ),
-        subtitle: isRateNote
-            ? null
-            : Text("第${note.episode.number}集 ${note.episode.getDate()}",
-                textScaleFactor: ThemeUtil.tinyScaleFactor),
-      ),
-    );
-  }
-
-  _enterAnimeDetail({required BuildContext context, required Anime anime}) {
+  _enterAnimeDetail(Anime anime) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
