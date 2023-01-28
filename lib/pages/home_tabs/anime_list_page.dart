@@ -149,10 +149,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                           child: TabBar(
                             tabs: _buildTagAndAnimeCnt(),
                             controller: _tabController,
-                            padding: const EdgeInsets.all(2),
                             // 居中，而不是靠左下
-                            isScrollable: true,
+                            padding: const EdgeInsets.all(2),
                             // 清单可以滑动，避免拥挤
+                            isScrollable: true,
                             labelPadding:
                                 const EdgeInsets.fromLTRB(10, 0, 10, 0),
                             indicatorSize: TabBarIndicatorSize.label,
@@ -613,8 +613,18 @@ class _AnimeListPageState extends State<AnimeListPage>
       list.add(Tab(
           child: Obx(
         () => _animeDisplayController.showAnimeCntAfterTag.value
-            ? Text("${tags[i]} (${animeCntPerTag[i]})",
-                textScaleFactor: ThemeUtil.smallScaleFactor)
+            // ? Text("${tags[i]} (${animeCntPerTag[i]})",
+            //     textScaleFactor: ThemeUtil.smallScaleFactor)
+            ? Text.rich(TextSpan(children: [
+                WidgetSpan(
+                    child: Text(tags[i],
+                        textScaleFactor: ThemeUtil.smallScaleFactor)),
+                WidgetSpan(
+                    child: Text(
+                  animeCntPerTag[i].toString(),
+                  textScaleFactor: ThemeUtil.tinyScaleFactor,
+                )),
+              ]))
             : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor),
       )));
       // list.add(Column(
