@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../components/anime_grid_cover.dart';
 import '../../components/get_anime_grid_delegate.dart';
@@ -35,7 +36,8 @@ class _AnimeGridViewState extends State<AnimeGridView>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return GridView.builder(
+    // 这里添加obx是为了当设置标题在封面下时，网格也能变化，否则会造成溢出
+    return Obx(() => GridView.builder(
         controller: widget.scrollController,
         // 整体的填充
         padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
@@ -61,7 +63,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
                       : widget.isSelected!(animeIdx)),
             ),
           );
-        });
+        }));
   }
 
   // 保证切换tab回来后仍然处于先前滚动位置

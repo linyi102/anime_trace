@@ -30,34 +30,36 @@ class AnimeGridCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final AnimeDisplayController _animeDisplayController = Get.find();
 
-    return onlyShowCover
-        ? _buildCover(context, false)
-        : Obx(() => Column(
+    if (onlyShowCover) return _buildCover(context, false);
+
+    return Obx(() => Column(
+          children: [
+            // 封面
+            Stack(
               children: [
-                // 封面
-                Stack(
-                  children: [
-                    _buildCover(
-                        context,
-                        _animeDisplayController.showGridAnimeName.value &&
-                            _animeDisplayController.showNameInCover.value),
-                    if (showProgress)
-                      _buildEpisodeState(_anime.isCollected() &&
-                          _animeDisplayController.showGridAnimeProgress.value),
-                    if (showReviewNumber)
-                      _buildReviewNumber(_anime.isCollected() &&
-                          _animeDisplayController.showReviewNumber.value &&
-                          _anime.reviewNumber > 1)
-                  ],
-                ),
-                // 名字
-                _buildNameBelowCover(
-                    _animeDisplayController.showNameBelowCover),
+                _buildCover(
+                    context,
+                    _animeDisplayController.showGridAnimeName.value &&
+                        _animeDisplayController.showNameInCover.value),
+                if (showProgress)
+                  _buildEpisodeState(_anime.isCollected() &&
+                      _animeDisplayController.showGridAnimeProgress.value),
+                if (showReviewNumber)
+                  _buildReviewNumber(_anime.isCollected() &&
+                      _animeDisplayController.showReviewNumber.value &&
+                      _anime.reviewNumber > 1)
               ],
-            ));
+            ),
+            // 名字
+            if (_animeDisplayController.showNameBelowCover)
+              _buildNameBelowCover(),
+          ],
+        ));
   }
 
   _buildCover(BuildContext context, bool showNameInCover) {
+    Size mqSize = MediaQuery.of(context).size;
+
     return Container(
         width: coverWidth == 0 ? null : coverWidth,
         padding: const EdgeInsets.all(3.0),
@@ -70,24 +72,20 @@ class AnimeGridCover extends StatelessWidget {
               children: [
                 // 确保图片填充
                 SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
+                  width: mqSize.width,
+                  height: mqSize.height,
                   child: CommonImage(_anime.getCommonCoverUrl()),
                 ),
-                // 被选中时，添加边框
                 if (isSelected)
                   Container(
-                    // child: Center(
-                    //     child: Icon(Icons.check_circle_outline,
-                    //         color: ThemeUtil.getPrimaryIconColor())),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                          width: 4, color: ThemeUtil.getPrimaryIconColor()),
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.transparent.withOpacity(0.5),
-                    ),
+                    width: mqSize.width,
+                    height: mqSize.height,
+                    // color: ThemeUtil.getPrimaryIconColor().withOpacity(0.4),
+                    color: Colors.black.withOpacity(0.6),
+                    child: const Center(
+                        child: Icon(Icons.check, color: Colors.white)),
                   ),
-                _buildNameInCover(showNameInCover)
+                if (showNameInCover) _buildNameInCover()
               ],
             ),
           ),
@@ -135,8 +133,7 @@ class AnimeGridCover extends StatelessWidget {
     }
   }
 
-  _buildNameInCover(bool show) {
-    if (!show) return Container();
+  _buildNameInCover() {
     return Stack(
       children: [
         Column(
@@ -200,15 +197,13 @@ class AnimeGridCover extends StatelessWidget {
     return true;
   }
 
-  _buildNameBelowCover(bool show) {
-    return show
-        ? Container(
-            width: coverWidth == 0 ? null : coverWidth,
-            padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
-            // 保证文字左对齐
-            alignment: Alignment.centerLeft,
-            child: _buildNameText(ThemeUtil.getFontColor()))
-        : Container();
+  _buildNameBelowCover() {
+    return Container(
+        width: coverWidth == 0 ? null : coverWidth,
+        padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
+        // 保证文字左对齐
+        alignment: Alignment.centerLeft,
+        child: _buildNameText(ThemeUtil.getFontColor()));
   }
 
   _buildNameText(Color color) {
