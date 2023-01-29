@@ -261,9 +261,11 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       sliver: SliverList(
         delegate: SliverChildListDelegate([
           // 动漫名字
-          SelectableText(_anime.animeName,
-              style:
-                  const TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+          Obx(
+            () => SelectableText(animeController.anime.value.animeName,
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+          ),
           // 评价
           _buildRatingStars(),
           const SizedBox(height: 15),

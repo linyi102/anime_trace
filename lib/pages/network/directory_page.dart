@@ -181,7 +181,7 @@ class _DirectoryPageState extends State<DirectoryPage>
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => PhotoView(
                                   imageProvider: imageProvider,
-                                  onTapDown: (arg1, arg2, arg3) =>
+                                  onTapDown: (_, __, ___) =>
                                       Navigator.of(context).pop())));
                         },
                         child: AnimeGridCover(anime, onlyShowCover: true),

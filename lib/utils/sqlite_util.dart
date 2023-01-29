@@ -149,7 +149,9 @@ class SqliteUtil {
 
   // 迁移动漫、全局更新动漫
   static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
-      {bool migrateCover = false}) async {
+      {bool updateCover = false,
+      bool updateName = true,
+      bool updateInfo = true}) async {
     Log.info("sql: updateAnime");
     String datetime = DateTime.now().toString();
     Log.info("oldAnime=$oldAnime, newAnime=$newAnime");
@@ -169,34 +171,46 @@ class SqliteUtil {
     if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
     }
-    // 如果不迁移封面，则恢复为旧动漫的封面地址
-    if (!migrateCover) {
-      newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
+
+    if (!updateName) {
+      newAnime.animeName = oldAnime.animeName;
     }
 
     // 如果新动漫某些属性为空字符串，则把旧的赋值上去
     if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
     if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
-    if (newAnime.animeCoverUrl.isEmpty) {
+
+    // 如果没有新封面，或者不迁移封面，就使用旧的
+    if (newAnime.animeCoverUrl.isEmpty || !updateCover) {
       newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
     }
-    if (newAnime.premiereTime.isEmpty) {
+    // 如果新信息为空，或者不迁移信息，就使用旧的
+    if (newAnime.premiereTime.isEmpty | !updateInfo) {
       newAnime.premiereTime = oldAnime.premiereTime;
     }
-    if (newAnime.nameAnother.isEmpty) {
+    if (newAnime.nameAnother.isEmpty | !updateInfo) {
       newAnime.nameAnother = oldAnime.nameAnother;
     }
-    if (newAnime.nameOri.isEmpty) newAnime.nameOri = oldAnime.nameOri;
-    if (newAnime.authorOri.isEmpty) newAnime.authorOri = oldAnime.authorOri;
-    if (newAnime.area.isEmpty) newAnime.area = oldAnime.area;
-    if (newAnime.playStatus.isEmpty) newAnime.playStatus = oldAnime.playStatus;
-    if (newAnime.productionCompany.isEmpty) {
+    if (newAnime.nameOri.isEmpty | !updateInfo) {
+      newAnime.nameOri = oldAnime.nameOri;
+    }
+    if (newAnime.authorOri.isEmpty | !updateInfo) {
+      newAnime.authorOri = oldAnime.authorOri;
+    }
+    if (newAnime.area.isEmpty | !updateInfo) newAnime.area = oldAnime.area;
+    if (newAnime.playStatus.isEmpty | !updateInfo) {
+      newAnime.playStatus = oldAnime.playStatus;
+    }
+    if (newAnime.productionCompany.isEmpty | !updateInfo) {
       newAnime.productionCompany = oldAnime.productionCompany;
     }
-    if (newAnime.officialSite.isEmpty) {
+    if (newAnime.officialSite.isEmpty | !updateInfo) {
       newAnime.officialSite = oldAnime.officialSite;
     }
-    if (newAnime.category.isEmpty) newAnime.category = oldAnime.category;
+    if (newAnime.category.isEmpty | !updateInfo) {
+      newAnime.category = oldAnime.category;
+    }
+
     if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
 
     if (newAnime.reviewNumber == 0) {
