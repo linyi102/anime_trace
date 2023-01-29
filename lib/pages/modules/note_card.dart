@@ -46,17 +46,7 @@ class _NoteCardState extends State<NoteCard> {
         child: MaterialButton(
           elevation: 0,
           padding: const EdgeInsets.all(0),
-          onPressed: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => NoteEdit(note)))
-                .then((value) {
-              // 重新获取列表
-              // _loadData();
-              // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
-              // 也不需要重新获取，因为笔记编辑页修改的就是传入的note数据，但注意返回后需要重新绘制
-              setState(() {});
-            });
-          },
+          onPressed: () => _enterNoteEditPage(note),
           child: Flex(
             direction: Axis.vertical,
             children: [
@@ -75,41 +65,83 @@ class _NoteCardState extends State<NoteCard> {
     );
   }
 
+  void _enterNoteEditPage(Note note) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => NoteEdit(note)))
+        .then((value) {
+      // 重新获取列表
+      // _loadData();
+      // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
+      // 也不需要重新获取，因为笔记编辑页修改的就是传入的note数据，但注意返回后需要重新绘制
+      setState(() {});
+    });
+  }
+
+  _enterAnimeDetailPage() {
+    if (widget.enterAnimeDetail != null) {
+      widget.enterAnimeDetail!();
+    }
+  }
+
   _buildAnimeListTile(Note note) {
-    return GestureDetector(
-        onTap: () {
-          if (widget.enterAnimeDetail != null) {
-            widget.enterAnimeDetail!();
-          }
-        },
-        child: ListTile(
-          leading: AnimeListCover(
-            note.anime,
-            showReviewNumber: true,
-            reviewNumber: note.episode.reviewNumber,
+    return ListTile(
+      leading: GestureDetector(
+        onTap: _enterAnimeDetailPage,
+        child: AnimeListCover(
+          note.anime,
+          showReviewNumber: true,
+          reviewNumber: note.episode.reviewNumber,
+        ),
+      ),
+      // Row的作用是为了避免title组件占满整行，应该只在文字上点击后才进入详细页
+      title: Row(
+        children: [
+          GestureDetector(
+            onTap: _enterAnimeDetailPage,
+            child: Container(
+              // color: Colors.red[200],
+              alignment: Alignment.centerLeft,
+              child: Text(
+                note.anime.animeName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: ThemeUtil.smallScaleFactor,
+                // textAlign: TextAlign.right,
+              ),
+            ),
           ),
-          title: Text(
-            note.anime.animeName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textScaleFactor: ThemeUtil.smallScaleFactor,
-            // textAlign: TextAlign.right,
+        ],
+      ),
+      subtitle: Row(
+        children: [
+          GestureDetector(
+            onTap: _enterAnimeDetailPage,
+            child: widget.isRateNote
+                ? AnimeRatingBar(
+                    rate: note.anime.rate,
+                    iconSize: 12,
+                    spacing: 2,
+                    enableRate: false,
+                    onRatingUpdate: (v) {
+                      Log.info("评价分数：$v");
+                      note.anime.rate = v.toInt();
+                      SqliteUtil.updateAnimeRate(
+                          note.anime.animeId, note.anime.rate);
+                    })
+                : Text("第${note.episode.number}集 ${note.episode.getDate()}",
+                    textScaleFactor: ThemeUtil.tinyScaleFactor),
           ),
-          subtitle: widget.isRateNote
-              ? AnimeRatingBar(
-                  rate: note.anime.rate,
-                  iconSize: 12,
-                  spacing: 2,
-                  enableRate: false,
-                  onRatingUpdate: (v) {
-                    Log.info("评价分数：$v");
-                    note.anime.rate = v.toInt();
-                    SqliteUtil.updateAnimeRate(
-                        note.anime.animeId, note.anime.rate);
-                  })
-              : Text("第${note.episode.number}集 ${note.episode.getDate()}",
-                  textScaleFactor: ThemeUtil.tinyScaleFactor),
-        ));
+        ],
+      ),
+      // trailing: widget.isRateNote
+      //     ? null
+      //     : IconButton(
+      //         onPressed: () => _enterNoteEditPage(note),
+      //         icon: const Icon(
+      //           Icons.edit,
+      //           size: 16,
+      //         )),
+    );
   }
 
   _buildNoteContent(Note note) {
