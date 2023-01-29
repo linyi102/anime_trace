@@ -18,7 +18,7 @@ import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/MyTabBar.dart';
+import '../../components/common_tab_bar.dart';
 import '../../components/get_anime_grid_delegate.dart';
 import '../../models/params/anime_sort_cond.dart';
 import '../modules/anime_grid_view.dart';
@@ -142,7 +142,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     : null,
                 actions: multiSelected ? _getActionsOnMulti() : _getActions(),
                 bottom: useTopTab
-                    ? MyTabBar(
+                    ? CommonTabBar(
                         tabs: _buildTagAndAnimeCnt(),
                         controller: _tabController,
                         isScrollable: true,
@@ -595,30 +595,26 @@ class _AnimeListPageState extends State<AnimeListPage>
       list.add(Tab(
           child: Obx(
         () => _animeDisplayController.showAnimeCntAfterTag.value
+            // 样式1：清单名(数量)
             // ? Text("${tags[i]} (${animeCntPerTag[i]})",
             //     textScaleFactor: ThemeUtil.smallScaleFactor)
+
+            // 样式2：清单名紧跟缩小的数量
             ? Text.rich(TextSpan(children: [
                 WidgetSpan(
                     child: Text(tags[i],
                         textScaleFactor: ThemeUtil.smallScaleFactor)),
                 WidgetSpan(
-                    child: Text(
-                  animeCntPerTag[i].toString(),
-                  textScaleFactor: ThemeUtil.tinyScaleFactor,
+                    child: Opacity(
+                  opacity: 1.0, // 候选：0.8
+                  child: Text(
+                    animeCntPerTag[i].toString(),
+                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                  ),
                 )),
               ]))
             : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor),
       )));
-//       list.add(Column(
-//         children: [
-//           const SizedBox(height: 10),
-//           Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
-//               ? Text("${tags[i]} (${animeCntPerTag[i]})",
-//                   textScaleFactor: ThemeUtil.smallScaleFactor)
-//               : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
-//           const SizedBox(height: 10)
-//         ],
-//       ));
     }
     return list;
   }

@@ -100,19 +100,8 @@ class _MainScreenState extends State<MainScreen> {
     List<Widget> widgets = [];
 
     widgets.add(SizedBox(
-      height: expandSideBar ? 120 : 60,
-      // 手机横屏时，图片很占空间
-      child: DrawerHeader(
-          padding: const EdgeInsets.all(0),
-          child: Transform.scale(
-              scale: 0.8, child: Image.asset("assets/images/logo.png")
-              // ListTile(
-              //     title: const Icon(Icons.menu),
-              //     onTap: () {
-              //       expandSideBar = true;
-              //       setState(() {});
-              //     }),
-              )),
+      height: 100,
+      child: DrawerHeader(child: Image.asset("assets/images/logo.png")),
     ));
     for (int i = 0; i < _mainTabs.length; ++i) {
       var mainTab = _mainTabs[i];

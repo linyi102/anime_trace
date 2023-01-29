@@ -6,7 +6,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
-import '../../components/website_icon.dart';
+import '../../components/website_logo.dart';
 
 class FavWebsiteListPage extends StatelessWidget {
   FavWebsiteListPage({Key? key}) : super(key: key);
@@ -44,7 +44,7 @@ class FavWebsiteListPage extends StatelessWidget {
           FavWebsite favWebsite = defaultList[index];
           return ListTile(
             title: Text(favWebsite.name),
-            leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
+            leading: WebSiteLogo(url: favWebsite.icoUrl, size: 35),
             onTap: () =>
                 LaunchUrlUtil.launch(context: context, uriStr: favWebsite.url),
           );
@@ -71,7 +71,7 @@ class FavWebsiteListPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
+                  WebSiteLogo(url: favWebsite.icoUrl, size: 35),
                   const SizedBox(
                     height: 5,
                   ),

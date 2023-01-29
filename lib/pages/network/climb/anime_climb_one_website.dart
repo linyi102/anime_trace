@@ -6,7 +6,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/components/website_icon.dart';
+import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -140,7 +140,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: buildWebSiteIcon(
+                  child: WebSiteLogo(
                       url: widget.climbWebStie.iconUrl, size: 25),
                 ),
                 const SizedBox(width: 10),

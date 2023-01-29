@@ -82,8 +82,7 @@ class AnimePropertiesPage extends StatelessWidget {
                       title: "编辑简介", property: animeDesc, confirm: (newDesc) {
                     Log.info("更新简介：$newDesc");
                     animeController.updateAnimeDesc(newDesc);
-                    SqliteUtil.updateAnimeDescByAnimeId(
-                        anime.animeId, newDesc);
+                    SqliteUtil.updateAnimeDescByAnimeId(anime.animeId, newDesc);
                   });
                 },
               ),
@@ -103,11 +102,15 @@ class AnimePropertiesPage extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: Text(title),
-          trailing: onPressed == null
-              ? null
-              : IconButton(
-                  onPressed: onPressed, icon: const Icon(Icons.edit, size: 20)),
+          title: GestureDetector(
+            onTap: onPressed,
+            child: Row(
+              children: [
+                Text("$title "),
+                if (onPressed != null) const Icon(Icons.edit, size: 14)
+              ],
+            ),
+          ),
           subtitle: _buildSelectedOrUrlText(context, content),
         )
       ],

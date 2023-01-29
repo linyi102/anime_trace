@@ -8,7 +8,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/MyTabBar.dart';
+import '../../components/common_tab_bar.dart';
 import '../../models/note_filter.dart';
 import '../../utils/sp_util.dart';
 
@@ -79,7 +79,7 @@ class _NoteListPageState extends State<NoteListPage>
   }
 
   _buildTabBar() {
-    return MyTabBar(
+    return CommonTabBar(
       tabs: _navs
           .map((nav) => Tab(
           child:

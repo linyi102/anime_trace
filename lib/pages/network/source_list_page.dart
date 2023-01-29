@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/log.dart';
 
 import '../../models/fav_website.dart';
 import '../../utils/launch_uri_util.dart';
-import '../../components/website_icon.dart';
+import '../../components/website_logo.dart';
 import '../settings/lapse_cover_animes_page.dart';
 
 class SourceListPage extends StatefulWidget {
@@ -95,8 +95,9 @@ class _SourceListPageState extends State<SourceListPage> {
         onRefresh: () async {
           _refresh();
         },
-        child: ListView( // 使用ListView，而非SingleChildScrollView>Column，否则无法下拉刷新
-        children: [
+        // 使用ListView，而非SingleChildScrollView>Column，否则无法下拉刷新
+        child: ListView(
+          children: [
             // _buildClimbWebsiteGridCard(),
             Responsive.isMobile(context)
                 ? _buildClimbWebsiteList()
@@ -121,8 +122,7 @@ class _SourceListPageState extends State<SourceListPage> {
                   title: Text.rich(TextSpan(children: [
                     TextSpan(text: favWebsite.name),
                     // WidgetSpan(child: Text(favWebsite.name + "")),
-                    const WidgetSpan(
-                        child: Icon(Icons.open_in_new, size: 18)),
+                    const WidgetSpan(child: Icon(Icons.open_in_new, size: 18)),
                     // WidgetSpan(
                     //     child: buildWebSiteIcon(
                     //         url: favWebsite.icoUrl, size: 20)),
@@ -183,8 +183,7 @@ class _SourceListPageState extends State<SourceListPage> {
                   Container(
                     // 圆形边界和网站图标的距离
                     padding: const EdgeInsets.all(5),
-                    child:
-                        buildWebSiteIcon(url: climbWebsite.iconUrl, size: 30),
+                    child: WebSiteLogo(url: climbWebsite.iconUrl, size: 30),
                     decoration: BoxDecoration(
                         border: Border.all(
                             width: 1, color: climbWebsite.pingStatus.color),
@@ -235,8 +234,7 @@ class _SourceListPageState extends State<SourceListPage> {
                     title: Text(climbWebsite.name,
                         overflow: TextOverflow.ellipsis),
                     subtitle: _buildPingStatusRow(climbWebsite),
-                    leading:
-                        buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
+                    leading: WebSiteLogo(url: climbWebsite.iconUrl, size: 35),
                     trailing: _buildSwitchButton(climbWebsite),
                   ),
                 ],
@@ -258,7 +256,7 @@ class _SourceListPageState extends State<SourceListPage> {
           ],
         ),
         subtitle: showPingDetail ? _buildPingStatusRow(climbWebsite) : null,
-        leading: buildWebSiteIcon(url: climbWebsite.iconUrl, size: 35),
+        leading: WebSiteLogo(url: climbWebsite.iconUrl, size: 35),
         trailing: _buildSwitchButton(climbWebsite),
         onTap: () => enterSourceDetail(climbWebsite));
   }

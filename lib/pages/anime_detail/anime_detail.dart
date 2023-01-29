@@ -253,9 +253,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
 
   // 构建动漫信息(名字、评分、其他信息)
   _buildAnimeInfo(BuildContext context) {
-    const double smallIconSize = 14;
-    const double textScaleFactor = 1;
-
     return SliverPadding(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
       sliver: SliverList(
@@ -270,88 +267,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           _buildRatingStars(),
           const SizedBox(height: 15),
           // 动漫信息(左侧)和相关按钮(右侧)
-          Row(
-            children: [
-              // 动漫信息
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_anime.getAnimeInfoFirstLine().isNotEmpty)
-                    // 第一行信息
-                    Text.rich(
-                      TextSpan(children: [
-                        WidgetSpan(
-                          child: Text(_anime.getAnimeInfoFirstLine()),
-                        ),
-                      ]),
-                      textScaleFactor: textScaleFactor,
-                    ),
-                  // 第二行信息
-                  Text.rich(
-                    TextSpan(children: [
-                      WidgetSpan(
-                          child: GestureDetector(
-                        onTap: () {
-                          if (_anime.animeUrl.isNotEmpty) {
-                            LaunchUrlUtil.launch(
-                                context: context, uriStr: _anime.animeUrl);
-                          } else {
-                            showToast("空网址无法打开");
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Text(_anime.getAnimeSource()),
-                            const Icon(EvaIcons.externalLink,
-                                size: smallIconSize),
-                          ],
-                        ),
-                      )),
-                      // const WidgetSpan(child: Text(" • ")),
-                      const WidgetSpan(child: Text(" ")),
-                      WidgetSpan(
-                          child: GestureDetector(
-                        onTap: () {
-                          showDialogSelectPlayStatus(context, animeController);
-                        },
-                        // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
-                        child: Obx(() => Row(
-                              children: [
-                                Text(animeController.anime.value
-                                    .getPlayStatus()
-                                    .text),
-                                Icon(
-                                    animeController.anime.value
-                                        .getPlayStatus()
-                                        .iconData,
-                                    size: smallIconSize),
-                              ],
-                            )),
-                      )),
-                      // const WidgetSpan(child: Text(" • ")),
-                      const WidgetSpan(child: Text(" ")),
-                      WidgetSpan(
-                          child: GestureDetector(
-                        onTap: showDialogmodifyEpisodeCnt,
-                        child: Row(
-                          children: [
-                            Text("${_anime.animeEpisodeCnt}集"),
-                            const Icon(EvaIcons.editOutline,
-                                size: smallIconSize),
-                          ],
-                        ),
-                      )),
-                    ]),
-                    textScaleFactor: textScaleFactor,
-                  ),
-                ],
-              ),
-              const Spacer(),
-              _showInfoIcon(),
-              _showRateIcon(),
-              _showCollectIcon()
-            ],
-          ),
+          _buildInfoAndIconRow(),
           // 简介
           Obx(
             () => animeController.anime.value.animeDesc.isNotEmpty &&
@@ -376,6 +292,91 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           )
         ]),
       ),
+    );
+  }
+
+  _buildInfoAndIconRow() {
+    const double smallIconSize = 14;
+    const double textScaleFactor = 1;
+
+    return Row(
+      children: [
+        // 动漫信息
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_anime.getAnimeInfoFirstLine().isNotEmpty)
+              // 第一行信息
+              Text.rich(
+                TextSpan(children: [
+                  WidgetSpan(
+                    child: Text(_anime.getAnimeInfoFirstLine()),
+                  ),
+                ]),
+                textScaleFactor: textScaleFactor,
+              ),
+            // 第二行信息
+            Text.rich(
+              TextSpan(children: [
+                WidgetSpan(
+                    child: GestureDetector(
+                  onTap: () {
+                    if (_anime.animeUrl.isNotEmpty) {
+                      LaunchUrlUtil.launch(
+                          context: context, uriStr: _anime.animeUrl);
+                    } else {
+                      showToast("空网址无法打开");
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Text(_anime.getAnimeSource()),
+                      const Icon(EvaIcons.externalLink, size: smallIconSize),
+                    ],
+                  ),
+                )),
+                // const WidgetSpan(child: Text(" • ")),
+                const WidgetSpan(child: Text(" ")),
+                WidgetSpan(
+                    child: GestureDetector(
+                  onTap: () {
+                    showDialogSelectPlayStatus(context, animeController);
+                  },
+                  // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
+                  child: Obx(() => Row(
+                        children: [
+                          Text(
+                              animeController.anime.value.getPlayStatus().text),
+                          Icon(
+                              animeController.anime.value
+                                  .getPlayStatus()
+                                  .iconData,
+                              size: smallIconSize),
+                        ],
+                      )),
+                )),
+                // const WidgetSpan(child: Text(" • ")),
+                const WidgetSpan(child: Text(" ")),
+                WidgetSpan(
+                    child: GestureDetector(
+                  onTap: showDialogmodifyEpisodeCnt,
+                  child: Row(
+                    children: [
+                      Text("${_anime.animeEpisodeCnt}集"),
+                      const Icon(EvaIcons.editOutline, size: smallIconSize),
+                    ],
+                  ),
+                )),
+              ]),
+              textScaleFactor: textScaleFactor,
+            ),
+          ],
+        ),
+        const Spacer(),
+        _showInfoIcon(),
+        _showRateIcon(),
+        _showCollectIcon()
+      ],
     );
   }
 
@@ -523,8 +524,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                 // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
                                 ThemeUtil.getScaffoldBackgroundColor()
                                     .withOpacity(0),
-                                // ThemeUtil.getScaffoldBackgroundColor()
-                                //     .withOpacity(0),
                                 // 过渡到主体颜色
                                 ThemeUtil.getScaffoldBackgroundColor(),
                               ]
@@ -532,9 +531,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                 Colors.black.withOpacity(0.2),
                                 ThemeUtil.getScaffoldBackgroundColor()
                                     .withOpacity(0),
-                                ThemeUtil.getScaffoldBackgroundColor()
-                                    .withOpacity(0),
-                                // 最后1个换成透明色，就取消渐变了，上面两个透明色仍要保留，否则黑色会直接过渡到下面透明色，中间会有一点黑色
+                                // 最后1个换成透明色，就取消渐变了
                                 Colors.transparent
                               ]),
                   ),

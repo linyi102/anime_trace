@@ -2,7 +2,7 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/components/website_icon.dart';
+import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -37,8 +37,7 @@ class _SourceDetailState extends State<SourceDetail> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            buildWebSiteIcon(
-                url: climbWebstie.iconUrl, size: 100, addShadow: true),
+            WebSiteLogo(url: climbWebstie.iconUrl, size: 100, addShadow: true),
             Container(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: ExpandText(climbWebstie.desc,
@@ -83,7 +82,8 @@ class _SourceDetailState extends State<SourceDetail> {
                 color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
                   return AnimeClimbOneWebsite(climbWebStie: climbWebstie);
                 }));
               },
@@ -95,7 +95,8 @@ class _SourceDetailState extends State<SourceDetail> {
                 color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
                   return AnimeListInSource(sourceKeyword: climbWebstie.keyword);
                 }));
               },

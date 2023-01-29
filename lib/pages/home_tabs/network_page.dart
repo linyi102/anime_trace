@@ -8,7 +8,7 @@ import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
-import '../../components/MyTabBar.dart';
+import '../../components/common_tab_bar.dart';
 
 /// 与网络相关的页面
 class NetWorkPage extends StatefulWidget {
@@ -56,7 +56,7 @@ class _NetWorkPageState extends State<NetWorkPage>
       appBar: AppBar(
         title: const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
         actions: actions,
-        bottom: MyTabBar(
+        bottom: CommonTabBar(
           tabs: navs
               .map((e) => Tab(
                   child: Text(e, textScaleFactor: ThemeUtil.smallScaleFactor)))

@@ -3,12 +3,12 @@ import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 
 import '../utils/theme_util.dart';
 
-class MyTabBar extends StatelessWidget implements PreferredSizeWidget {
+class CommonTabBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> tabs;
   final TabController? controller;
   final bool isScrollable;
 
-  const MyTabBar(
+  const CommonTabBar(
       {required this.tabs,
       this.controller,
       this.isScrollable = false,
