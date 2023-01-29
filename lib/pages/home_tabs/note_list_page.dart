@@ -8,6 +8,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
+import '../../components/MyTabBar.dart';
 import '../../models/note_filter.dart';
 import '../../utils/sp_util.dart';
 
@@ -77,35 +78,14 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  PreferredSize _buildTabBar() {
-    return PreferredSize(
-      // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-      preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: Material(
-        color: ThemeUtil.getAppBarBackgroundColor(),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TabBar(
-            tabs: _navs
-                .map((nav) => Tab(
-                    child:
-                        Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
-                .toList(),
-            controller: _tabController,
-            // 居中，而不是靠左下
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            // 标签可以滑动，避免拥挤
-            // isScrollable: true,
-            labelPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            // 指示器长短和标签一样
-            indicatorSize: TabBarIndicatorSize.label,
-            // 第三方指示器样式
-            indicator: MaterialIndicator(
-                color: ThemeUtil.getPrimaryColor(),
-                paintingStyle: PaintingStyle.fill),
-          ),
-        ),
-      ),
+  _buildTabBar() {
+    return MyTabBar(
+      tabs: _navs
+          .map((nav) => Tab(
+          child:
+          Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
+          .toList(),
+      controller: _tabController,
     );
   }
 

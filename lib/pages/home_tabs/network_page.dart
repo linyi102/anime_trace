@@ -8,6 +8,8 @@ import 'package:flutter_test_future/pages/network/update_record_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
+import '../../components/MyTabBar.dart';
+
 /// 与网络相关的页面
 class NetWorkPage extends StatefulWidget {
   const NetWorkPage({Key? key}) : super(key: key);
@@ -52,34 +54,16 @@ class _NetWorkPageState extends State<NetWorkPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:
-              const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
-          actions: actions,
-          bottom: PreferredSize(
-              // 默认情况下，要将标签栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: TabBar(
-                  tabs: navs
-                      .map((e) => Tab(
-                          child: Text(e,
-                              textScaleFactor: ThemeUtil.smallScaleFactor)))
-                      .toList(),
-                  // 指定tab控制器
-                  controller: _tabController,
-                  // 标签可以滑动，避免拥挤
-                  isScrollable: false,
-                  // 指示器长短和标签一样
-                  labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  // 第三方指示器样式
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicator: MaterialIndicator(
-                    color: ThemeUtil.getPrimaryColor(),
-                    paintingStyle: PaintingStyle.fill,
-                  ),
-                ),
-              ))),
+        title: const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
+        actions: actions,
+        bottom: MyTabBar(
+          tabs: navs
+              .map((e) => Tab(
+                  child: Text(e, textScaleFactor: ThemeUtil.smallScaleFactor)))
+              .toList(),
+          controller: _tabController,
+        ),
+      ),
       body: TabBarView(controller: _tabController, // 指定tab控制器
           children: [
             const SourceListPage(),

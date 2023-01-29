@@ -1,6 +1,7 @@
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/models/params/result.dart';
@@ -59,6 +60,7 @@ class DioPackage {
         return false;
       }
     } catch (e) {
+      // debugPrint(e.toString());
       // 400会报异常，这里捕捉到后返回false
       return false;
     }

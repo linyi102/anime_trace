@@ -18,6 +18,7 @@ import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
+import '../../components/MyTabBar.dart';
 import '../../components/get_anime_grid_delegate.dart';
 import '../../models/params/anime_sort_cond.dart';
 import '../modules/anime_grid_view.dart';
@@ -141,29 +142,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                     : null,
                 actions: multiSelected ? _getActionsOnMulti() : _getActions(),
                 bottom: useTopTab
-                    ? PreferredSize(
-                        // 默认情况下，要将清单栏与相同的标题栏高度对齐，可以使用常量kToolbarHeight
-                        preferredSize: const Size.fromHeight(kToolbarHeight),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: TabBar(
-                            tabs: _buildTagAndAnimeCnt(),
-                            controller: _tabController,
-                            // 居中，而不是靠左下
-                            padding: const EdgeInsets.all(2),
-                            // 清单可以滑动，避免拥挤
-                            isScrollable: true,
-                            labelPadding:
-                                const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            indicatorSize: TabBarIndicatorSize.label,
-                            // 第三方指示器样式
-                            indicator: MaterialIndicator(
-                              horizontalPadding: 8.5,
-                              color: ThemeUtil.getPrimaryColor(),
-                              paintingStyle: PaintingStyle.fill,
-                            ),
-                          ),
-                        ),
+                    ? MyTabBar(
+                        tabs: _buildTagAndAnimeCnt(),
+                        controller: _tabController,
+                        isScrollable: true,
                       )
                     : null,
               ),
@@ -627,16 +609,16 @@ class _AnimeListPageState extends State<AnimeListPage>
               ]))
             : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor),
       )));
-      // list.add(Column(
-      //   children: [
-      //     const SizedBox(height: 10),
-      //     Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
-      //         ? Text("${tags[i]} (${animeCntPerTag[i]})",
-      //             textScaleFactor: ThemeUtil.smallScaleFactor)
-      //         : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
-      //     const SizedBox(height: 10)
-      //   ],
-      // ));
+//       list.add(Column(
+//         children: [
+//           const SizedBox(height: 10),
+//           Obx(() => _animeDisplayController.showAnimeCntAfterTag.value
+//               ? Text("${tags[i]} (${animeCntPerTag[i]})",
+//                   textScaleFactor: ThemeUtil.smallScaleFactor)
+//               : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor)),
+//           const SizedBox(height: 10)
+//         ],
+//       ));
     }
     return list;
   }
