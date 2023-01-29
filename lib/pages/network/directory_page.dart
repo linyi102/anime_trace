@@ -170,7 +170,7 @@ class _DirectoryPageState extends State<DirectoryPage>
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
                   child: SizedBox(
                     width: 90,
                     child: ClipRRect(
@@ -194,9 +194,10 @@ class _DirectoryPageState extends State<DirectoryPage>
                     children: [
                       // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
                       _showAnimeName(anime.animeName),
-                      _showNameAnother(anime.nameAnother),
+                      // _showNameAnother(anime.nameAnother),
                       _showAnimeInfo(anime.getAnimeInfoFirstLine()),
                       _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                      // _showCollectIcon(anime)
                     ],
                   ),
                 ),
@@ -480,7 +481,7 @@ class _DirectoryPageState extends State<DirectoryPage>
   _showAnimeName(animeName) {
     return Container(
       alignment: Alignment.topLeft,
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
       child: Text(
         animeName,
         style: TextStyle(
@@ -496,7 +497,7 @@ class _DirectoryPageState extends State<DirectoryPage>
         ? Container()
         : Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
             child: Text(
               nameAnother,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
@@ -511,7 +512,7 @@ class _DirectoryPageState extends State<DirectoryPage>
         ? Container()
         : Container(
             alignment: Alignment.topLeft,
-            padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
             child: Text(
               animeInfo,
               style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
@@ -532,7 +533,8 @@ class _DirectoryPageState extends State<DirectoryPage>
               },
               icon: anime.isCollected()
                   ? const Icon(Icons.favorite, color: Colors.red)
-                  : const Icon(Icons.favorite_border)),
+                  : const Icon(Icons.favorite_border,
+                      color: Colors.white)),
           anime.isCollected()
               ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor)
               : Container()

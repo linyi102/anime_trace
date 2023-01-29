@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -224,7 +226,12 @@ class _ImageViewerState extends State<ImageViewer> {
     ];
   }
 
-  Future<dynamic> _showDialogAboutImageAttributes(BuildContext context) {
+  _showDialogAboutImageAttributes(BuildContext context) {
+    File file = File(ImageUtil.getAbsoluteNoteImagePath(widget.relativeLocalImages[currentIndex].path));
+    if (!file.existsSync()) {
+      return;
+    }
+
     return showDialog(
         context: context,
         builder: (dialogContext) {
@@ -250,12 +257,22 @@ class _ImageViewerState extends State<ImageViewer> {
                         widget.relativeLocalImages[currentIndex].path,
                         textScaleFactor: 0.9,
                       )),
+                  ListTile(
+                      contentPadding: EdgeInsetsDirectional.zero,
+                      dense: true,
+                      title: const Text("图片大小"),
+                      subtitle: Text(
+                        FileUtil.getReadableFileSize(file.lengthSync()),
+                        textScaleFactor: 0.9,
+                      )),
                 ],
               ),
             ),
           );
         });
   }
+
+
 
   _buildScrollAxis() {
     return ListView.builder(

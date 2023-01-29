@@ -25,19 +25,57 @@ class FadeTransitionsBuilder extends PageTransitionsBuilder {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
+    // Log.info("${animation.value}");
+
     return FadeTransition(
       opacity: animation,
       child: child,
     );
 
     // 缺点：返回时没有效果
-    return TweenAnimationBuilder(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 400),
-      builder: (BuildContext context, double value, Widget? child1) {
-        Log.info("value=$value");
-        return Opacity(opacity: value, child: child);
-      },
-    );
+    // return TweenAnimationBuilder(
+    //   tween: Tween(begin: 0.0, end: 1.0),
+    //   duration: const Duration(milliseconds: 400),
+    //   builder: (BuildContext context, double value, Widget? child1) {
+    //     Log.info("value=$value");
+    //     return Opacity(opacity: value, child: child);
+    //   },
+    // );
+
+    // 同上
+    // return FastFadeTransition(child: child);
+  }
+}
+
+class FastFadeTransition extends StatefulWidget {
+  final Widget child;
+
+  const FastFadeTransition({required this.child, Key? key}) : super(key: key);
+
+  @override
+  State<FastFadeTransition> createState() => _FastFadeTransitionState();
+}
+
+class _FastFadeTransitionState extends State<FastFadeTransition>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this)
+      ..forward();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(opacity: _controller, child: widget.child);
   }
 }

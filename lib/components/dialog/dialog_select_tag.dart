@@ -55,11 +55,11 @@ dialogSelectTag(setState, context, Anime anime) {
                 Navigator.pop(context);
                 // 更新父级页面
                 setState(() {});
-                showToast("收藏成功！");
+                // showToast("收藏成功！");
               } else {
                 SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
                 anime.tagName = tags[i];
-                showToast("修改成功！");
+                // showToast("修改成功！");
                 setState(() {});
                 Navigator.pop(context);
               }

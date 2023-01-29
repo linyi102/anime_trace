@@ -479,8 +479,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     return Obx(() => SliverAppBar(
           // floating: true,
           // snap: true,
+          // 下滑后显示收缩后的AppBar
           // pinned: true,
-          // 收缩后仍显示AppBar
           expandedHeight: expandedHeight,
           flexibleSpace: FlexibleSpaceBar(
             // 标题，不指定无法对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
@@ -504,8 +504,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                       sigmaY: sigma,
                     ),
                     child: CommonImage(
-                        animeController.anime.value.getCommonCoverUrl(),
-                        showIconWhenUrlIsEmptyOrError: false),
+                      animeController.anime.value.getCommonCoverUrl(),
+                      showIconWhenUrlIsEmptyOrError: false,
+                      reduceMemCache: false,
+                    ),
                   ),
                 ),
                 // 为底层背景添加渐变效果
