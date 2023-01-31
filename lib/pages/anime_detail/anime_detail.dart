@@ -42,9 +42,9 @@ import '../modules/search_db_anime.dart';
 import 'anime_properties_page.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
-  Anime anime;
+  final Anime anime;
 
-  AnimeDetailPlus(
+  const AnimeDetailPlus(
     this.anime, {
     Key? key,
   }) : super(key: key);
@@ -84,6 +84,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
   // 界面
   double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
   double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
+  Color? appBarIconColor = ThemeUtil.isDark
+      // ? null
+      ? Colors.white
+      : null;
 
   @override
   void initState() {
@@ -481,9 +485,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           // floating: true,
           // snap: true,
           // 下滑后显示收缩后的AppBar
-          // pinned: true,
+          pinned: true,
           expandedHeight: expandedHeight,
           flexibleSpace: FlexibleSpaceBar(
+            // title: Text("${animeController.anime.value.animeName}"),
             // 标题，不指定无法对齐，指定padding后又因为下滑后，标题移动到最上面时会歪，所以不采用
             // titlePadding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             // expandedTitleScale: 1.2,
@@ -521,6 +526,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                             ? [
                                 // 最上面添加一点黑色，这样就能看清按钮了
                                 Colors.black.withOpacity(0.2),
+                                // Colors.white.withOpacity(0.5),
                                 // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
                                 ThemeUtil.getScaffoldBackgroundColor()
                                     .withOpacity(0),
@@ -552,7 +558,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                 Navigator.pop(context, _anime);
               },
               icon: const Icon(Icons.arrow_back_ios, size: 20),
-              color: Colors.white),
+              color: appBarIconColor),
           actions: _buildActions(),
           // bottom: _buildTabRow(),
         ));
@@ -562,7 +568,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
     if (!_anime.isCollected()) return [];
     return [
       PopupMenuButton(
-        icon: const Icon(Icons.more_vert, color: Colors.white),
+        icon: Icon(Icons.more_vert, color: appBarIconColor),
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(

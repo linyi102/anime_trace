@@ -242,19 +242,17 @@ class MyAppState extends State<MyApp> with WindowListener {
           );
 
           return ScaleTransition(
-              alignment: Alignment.bottomCenter, child: child, scale: animation);
+              alignment: Alignment.bottomCenter,
+              child: child,
+              scale: animation);
         },
         // true表示弹出消息时会先关闭前一个消息
         dismissOtherOnShow: true,
         radius: 10,
         textPadding: const EdgeInsets.all(8),
-        backgroundColor: themeController.themeColor.value.isDarkMode
-            ? Colors.white
-            : Colors.black,
+        backgroundColor: ThemeUtil.isDark ? Colors.white : Colors.black,
         textStyle: TextStyle(
-            color: themeController.themeColor.value.isDarkMode
-                ? Colors.black
-                : Colors.white,
+            color: ThemeUtil.isDark ? Colors.black : Colors.white,
             fontSize: 13,
             fontWeight: FontWeight.normal,
             decoration: TextDecoration.none,
@@ -306,11 +304,11 @@ class MyAppState extends State<MyApp> with WindowListener {
         fontWeight: FontWeight.normal);
     return ThemeData(
       // primarySwatch: createMaterialColor(Colors.amber),
-      // brightness: themeController.themeColor.value.isDarkMode
+      // brightness: ThemeUtil.isDark
       //     ? Brightness.dark
       //     : Brightness.light,
       // 在白天或夜色的基础上增加主题色
-      colorScheme: themeController.themeColor.value.isDarkMode
+      colorScheme: ThemeUtil.isDark
           ? ColorScheme.dark(
               primary: ThemeUtil.getPrimaryColor(),
               // 回弹效果颜色
@@ -364,9 +362,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       inputDecorationTheme:
           InputDecorationTheme(suffixIconColor: ThemeUtil.getCommonIconColor()),
       listTileTheme: ListTileThemeData(
-          iconColor: themeController.themeColor.value.isDarkMode
-              ? Colors.white70
-              : Colors.black54,
+          iconColor: ThemeUtil.isDark ? Colors.white70 : Colors.black54,
           style: ListTileStyle.drawer,
           selectedColor: ThemeUtil.getPrimaryColor()
           // dense: true,
@@ -394,9 +390,8 @@ class MyAppState extends State<MyApp> with WindowListener {
               backgroundColor:
                   MaterialStateProperty.all(ThemeUtil.getPrimaryColor()))),
       tabBarTheme: TabBarTheme(
-        unselectedLabelColor: themeController.themeColor.value.isDarkMode
-            ? Colors.white70
-            : Colors.black54,
+        unselectedLabelColor:
+            ThemeUtil.isDark ? Colors.white70 : Colors.black54,
         labelColor: ThemeUtil.getPrimaryColor(), // 选中的tab字体颜色
         // tabbar不要再添加labelStyle，否则此处设置无效
         labelStyle: TextStyle(
@@ -413,7 +408,7 @@ class MyAppState extends State<MyApp> with WindowListener {
         interactive: true,
         radius: const Radius.circular(10),
         thumbColor: MaterialStateProperty.all(
-          themeController.themeColor.value.isDarkMode
+          ThemeUtil.isDark
               ? Colors.white.withOpacity(0.2)
               : Colors.black.withOpacity(0.2),
         ),

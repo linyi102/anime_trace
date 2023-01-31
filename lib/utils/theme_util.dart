@@ -91,6 +91,9 @@ class ThemeUtil {
     return themeController.themeColor.value.primaryColor;
   }
 
+  // 判断是亮色还是夜间主题
+  static bool get isDark => themeController.themeColor.value.isDarkMode;
+
   // 笔记字体样式：动漫详细页里的笔记、评价，以及笔记列表中的笔记，以及笔记编辑页
   static TextStyle getNoteTextStyle() {
     return const TextStyle(
@@ -104,14 +107,12 @@ class ThemeUtil {
 
   // 普通按钮的颜色
   static Color getCommonIconColor() {
-    return themeController.themeColor.value.isDarkMode
-        ? Colors.white70
-        : Colors.black87;
+    return isDark ? Colors.white70 : Colors.black87;
   }
 
   // 获取评分卡片背景色
   static Color getRateCardBgColor() {
-    return themeController.themeColor.value.isDarkMode
+    return isDark
         ? const Color.fromRGBO(255, 255, 255, 0.1)
         : const Color.fromRGBO(0, 0, 0, 0.1);
   }
@@ -140,14 +141,12 @@ class ThemeUtil {
 
   // 目录页中，动漫详细信息(别名、首播时间等)的字体颜色
   static Color getCommentColor() {
-    return themeController.themeColor.value.isDarkMode
-        ? Colors.white70
-        : Colors.black54;
+    return isDark ? Colors.white70 : Colors.black54;
   }
 
   // 动漫详细页图片背景混合
   static Color getModulateColor() {
-    return themeController.themeColor.value.isDarkMode
+    return isDark
         // ? const Color.fromRGBO(255, 255, 255, 0.9)
         ? const Color.fromRGBO(150, 150, 150, 0.9)
         : const Color.fromRGBO(255, 255, 255, 0.9);
@@ -156,13 +155,9 @@ class ThemeUtil {
   // 动漫详细页集ListTile颜色
   static Color getEpisodeListTile(bool isChecked) {
     if (isChecked) {
-      return themeController.themeColor.value.isDarkMode
-          ? Colors.white38
-          : Colors.black54;
+      return isDark ? Colors.white38 : Colors.black54;
     }
-    return themeController.themeColor.value.isDarkMode
-        ? Colors.white70
-        : Colors.black87;
+    return isDark ? Colors.white70 : Colors.black87;
   }
 
   // 笔记列表页中笔记的背景色
