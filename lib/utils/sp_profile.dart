@@ -14,15 +14,23 @@ class SpProfile {
     SPUtil.setInt("selectedPageSwitchAnimationId", id);
   }
 
+  // 获取页面切换动画小哥哥
   static PageSwitchAnimation getPageSwitchAnimation() {
+    final defaultVal = Platform.isWindows
+        ? PageSwitchAnimation.fade
+        : PageSwitchAnimation.cupertino;
+
+    // 返回用户选择的效果
     int id = SPUtil.getInt("selectedPageSwitchAnimationId",
-        defaultValue: PageSwitchAnimation.cupertino.id);
+        defaultValue: defaultVal.id);
     for (var e in PageSwitchAnimation.values) {
       if (e.id == id) {
         return e;
       }
     }
-    return PageSwitchAnimation.cupertino;
+
+    // 如果记录的id找不到，则使用默认效果
+    return defaultVal;
   }
 
   // 设置动漫网格列数

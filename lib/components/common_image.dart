@@ -12,7 +12,7 @@ class CommonImage extends StatelessWidget {
   const CommonImage(this.url,
       {this.showIconWhenUrlIsEmptyOrError = true,
       this.reduceMemCache = true,
-      this.memCacheWidth = 600,
+      this.memCacheWidth = 400,
       Key? key})
       : super(key: key);
   final String url;
@@ -23,6 +23,7 @@ class CommonImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color imgIconColor = ThemeUtil.getCommonIconColor();
+    Duration fadeInDuration = const Duration(milliseconds: 200);
 
     // 没有图片
     if (url.isEmpty) {
@@ -42,6 +43,7 @@ class CommonImage extends StatelessWidget {
         memCacheWidth: reduceMemCache ? memCacheWidth : null,
         imageUrl: url,
         errorWidget: (_, __, ___) => errorImageWidget(),
+        fadeInDuration: fadeInDuration,
         // 未加载完图片时显示进度圈
         // placeholder: (_, __) => const Center(child: SizedBox(
         //     height: 20,
@@ -63,8 +65,7 @@ class CommonImage extends StatelessWidget {
                 as ImageProvider<Object>
             : fileImage,
         fit: BoxFit.cover,
-        // CachedNetworkImage过渡也是500
-        fadeInDuration: const Duration(milliseconds: 500),
+        fadeInDuration: fadeInDuration,
         imageErrorBuilder: (_, __, ___) => errorImageWidget(),
       );
     } else {

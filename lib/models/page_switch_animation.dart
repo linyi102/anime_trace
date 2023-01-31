@@ -4,9 +4,9 @@ import 'package:flutter_test_future/utils/log.dart';
 enum PageSwitchAnimation {
   zoom(1, "放大", ZoomPageTransitionsBuilder()),
   cupertino(2, "从右往左平移", CupertinoPageTransitionsBuilder()),
-  fade(3, "渐变", FadeTransitionsBuilder()),
-  fadeUpwards(4, "向上渐变", FadeUpwardsPageTransitionsBuilder()),
-  openUpwards(5, "向上展开", OpenUpwardsPageTransitionsBuilder());
+  fade(3, "渐变", FadeTransitionsBuilder());
+  // fadeUpwards(4, "向上渐变", FadeUpwardsPageTransitionsBuilder()),
+  // openUpwards(5, "向上展开", OpenUpwardsPageTransitionsBuilder());
 
   final int id;
   final String title;
