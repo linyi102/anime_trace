@@ -23,7 +23,7 @@ class ClimbYhdm implements Climb {
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
+      if (showMessage) showToast("樱花动漫：${result.msg}");
       return anime;
     }
     Response response = result.data;
@@ -115,7 +115,7 @@ class ClimbYhdm implements Climb {
     List<Anime> animes = [];
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
-      showToast(result.msg);
+      showToast("樱花动漫：${result.msg}");
       return [];
     }
     Response response = result.data;

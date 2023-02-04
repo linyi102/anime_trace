@@ -22,7 +22,7 @@ class ClimbQdm implements Climb {
     Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
-      showToast(result.msg);
+      showToast("趣动漫：${result.msg}");
       return [];
     }
     Response response = result.data;
@@ -56,7 +56,7 @@ class ClimbQdm implements Climb {
     Log.info("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
+      if (showMessage) showToast("趣动漫：${result.msg}");
       return anime;
     }
     Response response = result.data;

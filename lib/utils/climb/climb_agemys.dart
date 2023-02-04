@@ -25,8 +25,7 @@ class ClimbAgemys implements Climb {
     Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
-
+      if (showMessage) showToast("AGE动漫：${result.msg}");
       return [];
     }
     Response response = result.data;

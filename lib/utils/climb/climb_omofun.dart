@@ -16,7 +16,9 @@ class ClimbOmofun implements Climb {
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
-      {String url = "", String foreignBaseUrl = ""}) async {
+      {String url = "",
+      String foreignBaseUrl = "",
+      String sourceName = "OmoFun"}) async {
     if (url.isEmpty) {
       // 如果没有传入url，则说明访问的是omofun。如果url非空，则说明是同类型网站，直接使用传入的url
       url = baseUrl + "/vod/search.html?wd=$keyword";
@@ -26,7 +28,7 @@ class ClimbOmofun implements Climb {
     Log.info("正在获取文档...");
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
-      showToast(result.msg);
+      showToast("$sourceName：${result.msg}");
       return [];
     }
     Response response = result.data;
@@ -85,11 +87,12 @@ class ClimbOmofun implements Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+  Future<Anime> climbAnimeInfo(Anime anime,
+      {bool showMessage = true, String sourceName = "OmoFun"}) async {
     Log.info("爬取动漫详细网址：${anime.animeUrl}");
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
+      if (showMessage) showToast("$sourceName：${result.msg}");
       return anime;
     }
     Response response = result.data;

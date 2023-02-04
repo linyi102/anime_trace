@@ -22,7 +22,8 @@ class ErrorFormatUtil {
         msg = "响应超时";
       } else if (e.type == DioErrorType.response) {
         // When the server response, but with a incorrect status, such as 404, 503...
-        msg = "出现异常";
+        // msg = "出现异常";
+        msg = getMsgByErrorCode(e);
       } else if (e.type == DioErrorType.cancel) {
         // When the request is cancelled, dio will throw a error with this type.
         msg = "请求取消";
@@ -56,5 +57,32 @@ class ErrorFormatUtil {
       Log.info(msg);
     }
     return msg;
+  }
+
+  static String getMsgByErrorCode(error) {
+    int errCode = error.response?.statusCode ?? 0;
+
+    switch (errCode) {
+      case 400:
+        return "请求语法错误";
+      case 401:
+        return "没有权限";
+      case 403:
+        return "服务器拒绝执行";
+      case 404:
+        return "无法连接服务器";
+      case 405:
+        return "请求方法被禁止";
+      case 500:
+        return "服务器内部错误";
+      case 502:
+        return "无效的请求";
+      case 503:
+        return "服务器不可用";
+      case 505:
+        return "不支持HTTP协议请求";
+      default:
+        return "未知错误";
+    }
   }
 }

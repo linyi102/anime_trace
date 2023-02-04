@@ -18,14 +18,15 @@ class ClimbDouban implements Climb {
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
+      if (showMessage) showToast("豆瓣：${result.msg}");
       return anime;
     }
 
     Response response = result.data;
     var document = parse(response.data);
     var mainpicElement = document.getElementById("mainpic");
-    anime.animeCoverUrl = mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
+    anime.animeCoverUrl =
+        mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
 
     var infoElement = document.getElementById("info");
     // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
@@ -75,7 +76,7 @@ class ClimbDouban implements Climb {
     Result result = await DioPackage.get(url);
 
     if (result.code != 200) {
-      if (showMessage) showToast(result.msg);
+      if (showMessage) showToast("豆瓣：${result.msg}");
       return animes;
     }
 

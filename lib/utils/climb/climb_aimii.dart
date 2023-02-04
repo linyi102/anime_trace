@@ -12,15 +12,16 @@ class ClimbAimi implements Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    anime = await ClimbOmofun().climbAnimeInfo(anime, showMessage: showMessage);
+    anime = await ClimbOmofun()
+        .climbAnimeInfo(anime, showMessage: showMessage, sourceName: "艾米动漫");
     return anime;
   }
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = "$baseUrl/index.php/vod/search.html?wd=$keyword";
-    List<Anime> climbAnimes = await ClimbOmofun()
-        .searchAnimeByKeyword(keyword, url: url, foreignBaseUrl: baseUrl);
+    List<Anime> climbAnimes = await ClimbOmofun().searchAnimeByKeyword(keyword,
+        url: url, foreignBaseUrl: baseUrl, sourceName: "艾米动漫");
     return climbAnimes;
   }
 
