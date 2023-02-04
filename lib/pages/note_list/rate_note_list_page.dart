@@ -10,7 +10,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../models/anime.dart';
 import '../../models/params/page_params.dart';
 import '../anime_detail/anime_detail.dart';
-import '../modules/note_card.dart';
+import '../../components/note_card.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;

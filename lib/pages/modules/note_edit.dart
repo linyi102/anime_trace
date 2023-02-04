@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
@@ -15,22 +14,21 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/dao/note_dao.dart';
+import 'package:flutter_test_future/responsive.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/components/anime_rating_bar.dart';
 
-import '../../dao/note_dao.dart';
-import '../../responsive.dart';
-import '../../utils/theme_util.dart';
-import '../../components/anime_rating_bar.dart';
-
-class NoteEdit extends StatefulWidget {
+class NoteEditPage extends StatefulWidget {
   final Note note;
 
-  const NoteEdit(this.note, {Key? key}) : super(key: key);
+  const NoteEditPage(this.note, {Key? key}) : super(key: key);
 
   @override
-  State<NoteEdit> createState() => _NoteEditState();
+  State<NoteEditPage> createState() => _NoteEditPageState();
 }
 
-class _NoteEditState extends State<NoteEdit> {
+class _NoteEditPageState extends State<NoteEditPage> {
   bool _loadOk = false;
   bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
   var noteContentController = TextEditingController();

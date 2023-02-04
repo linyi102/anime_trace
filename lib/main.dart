@@ -1,130 +1,43 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/pages/main_screen.dart';
+import 'package:flutter_test_future/pages/main_screen/main_screen.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'components/update_hint.dart';
-import 'controllers/anime_display_controller.dart';
-import 'controllers/update_record_controller.dart';
-
-class TestApp extends StatelessWidget {
-  const TestApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListTile(
-        title: const Text("进入测试页"),
-        onTap: () {
-          // 只会build一次
-          // Get.to(TestPage(), transition: Transition.fadeIn);
-          // 会build多次
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => TestPage()));
-          // 只会build一次
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => TestPage()));
-        },
-      ),
-    );
-  }
-}
 
 void main() {
-  // runApp(MaterialApp(
-  //   home: TestApp(),
-  // ));
-  beforeRunApp().then((value) => runApp(const GetMaterialApp(
-        // GetMaterialApp必须放在这里，而不能在MyApp的build返回GetMaterialApp，否则导致Windows端无法关闭
-        home: MyApp(),
-        // 中文(必须放在GetMaterialApp)
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: [
-          Locale('zh', 'CN'),
-          Locale('en', 'US'),
-        ],
-      )));
+  Global.init().then((_) => runApp(_getMaterialApp()));
 }
 
-Future<void> beforeRunApp() async {
-  // 透明状态栏
-  SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  // 确保初始化，否则Unhandled Exception: Null check operator used on a null value
-  WidgetsFlutterBinding.ensureInitialized();
-  // 获取SharedPreferences
-  await SPUtil.getInstance();
-  // 桌面应用的sqflite初始化
-  sqfliteFfiInit();
-  // 确保数据库表最新结构
-  await SqliteUtil.ensureDBTable();
-  // put常用的getController
-  putGetController();
-  // 设置Windows窗口
-  handleWindowsManager();
-  // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
-  HttpOverrides.global = MyHttpOverrides();
-}
-
-void putGetController() {
-  Get.put(UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
-  Get.put(AnimeDisplayController());
-  Get.put(LabelsController());
-}
-
-void handleWindowsManager() async {
-  // 只在Windows系统下开启窗口设置，否则Android端会白屏
-  if (Platform.isWindows) {
-    // Windows端窗口设置
-    await windowManager.ensureInitialized();
-    WindowOptions windowOptions = WindowOptions(
-      title: "漫迹",
-      size: Size(SpProfile.getWindowWidth(), SpProfile.getWindowHeight()),
-      // 最小尺寸
-      // minimumSize: const Size(900, 600),
-      minimumSize: const Size(400, 400),
-      fullScreen: false,
-      // 需要居中，否则会偏右
-      center: true,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      // titleBarStyle: TitleBarStyle.hidden,
-    );
-
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
-}
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
+GetMaterialApp _getMaterialApp() {
+  return const GetMaterialApp(
+    // GetMaterialApp必须放在这里，而不能在MyApp的build返回GetMaterialApp，否则导致Windows端无法关闭
+    home: MyApp(),
+    // 中文(必须放在GetMaterialApp)
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: [
+      Locale('zh', 'CN'),
+      Locale('en', 'US'),
+    ],
+  );
 }
 
 class MyApp extends StatefulWidget {

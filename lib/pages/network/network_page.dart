@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/pages/network/directory_page.dart';
-import 'package:flutter_test_future/pages/network/source_list_page.dart';
-import 'package:flutter_test_future/pages/network/update_record_page.dart';
+import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
+import 'package:flutter_test_future/pages/network/sources/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 

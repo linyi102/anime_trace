@@ -26,6 +26,7 @@ class UpdateRecordController extends GetxController {
 
   // 更新记录页全局更新
   Future<void> updateData() async {
+    // await Future.delayed(const Duration(seconds: 3));
     Log.info("重新获取数据库内容并覆盖");
     pageParams.resetPageIndex();
     updateRecordVos.value = await UpdateRecordDao.findAll(pageParams);

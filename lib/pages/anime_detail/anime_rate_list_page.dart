@@ -12,7 +12,7 @@ import '../../components/note_img_grid.dart';
 import '../../dao/note_dao.dart';
 import '../../models/anime.dart';
 import '../../utils/theme_util.dart';
-import '../modules/note_card.dart';
+import '../../components/note_card.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {
@@ -77,9 +77,10 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
     NoteDao.insertEpisodeNote(episodeNote).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
       episodeNote.id = value;
-      Navigator.push(context,
-              MaterialPageRoute(builder: (context) => NoteEdit(episodeNote)))
-          .then((value) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteEditPage(episodeNote))).then((value) {
         // 重新获取列表
         _loadData();
       });

@@ -6,14 +6,14 @@ import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/need_update_anime_list.dart';
+import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../utils/theme_util.dart';
+import '../../../utils/theme_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);

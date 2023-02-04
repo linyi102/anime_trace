@@ -8,7 +8,7 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../models/anime.dart';
+import '../../../models/anime.dart';
 
 class AnimeListInSource extends StatefulWidget {
   final String sourceKeyword; // 表示搜索源的关键字
@@ -87,7 +87,8 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
               leading: AnimeListCover(anime),
               title: Text(anime.animeName),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
                   return AnimeDetailPlus(anime);
                 })).then((value) {
                   Anime retAnime = value as Anime;

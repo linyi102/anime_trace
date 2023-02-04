@@ -82,8 +82,7 @@ class _NoteListPageState extends State<NoteListPage>
     return CommonTabBar(
       tabs: _navs
           .map((nav) => Tab(
-          child:
-          Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
+              child: Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
           .toList(),
       controller: _tabController,
     );

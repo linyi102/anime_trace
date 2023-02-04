@@ -1,7 +1,6 @@
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/models/params/result.dart';
@@ -12,8 +11,7 @@ class DioPackage {
       method: "get",
       connectTimeout: 5000,
       sendTimeout: 5000,
-      receiveTimeout: 5000
-  );
+      receiveTimeout: 5000);
 
   static Dio _getDio() {
     /**

@@ -12,7 +12,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 
 import '../../models/label.dart';
-import 'anime_list_view.dart';
+import '../../components/anime_list_view.dart';
 
 /// 搜索已添加的动漫
 class SearchDbAnime extends StatefulWidget {

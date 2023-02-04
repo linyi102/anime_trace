@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 
-import 'package:flutter_test_future/pages/modules/backup_file_list.dart';
+import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
@@ -290,7 +290,7 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
               if (SPUtil.getBool("online")) {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) {
-                    return const BackUpFileList();
+                    return const BackUpFileListPage();
                   },
                 )).then((value) {
                   // 可能还原了数据，此时需要重新显示文件数据大小

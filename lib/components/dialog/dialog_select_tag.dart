@@ -4,9 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:oktoast/oktoast.dart';
-
-import '../../utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 
 dialogSelectTag(setState, context, Anime anime) {
   bool climbingDetail = false;

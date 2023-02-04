@@ -8,7 +8,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/modules/search_db_anime.dart';
+import 'package:flutter_test_future/pages/anime_collection/search_db_anime.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -21,7 +21,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../components/common_tab_bar.dart';
 import '../../components/get_anime_grid_delegate.dart';
 import '../../models/params/anime_sort_cond.dart';
-import '../modules/anime_grid_view.dart';
+import '../../components/anime_grid_view.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);

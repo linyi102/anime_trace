@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
-
-import '../../components/anime_list_cover.dart';
-import '../../components/anime_rating_bar.dart';
-import '../../components/note_img_grid.dart';
-import '../../models/note.dart';
-import '../../utils/log.dart';
-import '../../utils/sqlite_util.dart';
-import '../../utils/theme_util.dart';
-import '../../utils/time_show_util.dart';
-import 'note_edit.dart';
+import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/anime_rating_bar.dart';
+import 'package:flutter_test_future/components/note_img_grid.dart';
+import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/utils/time_show_util.dart';
+import '../pages/modules/note_edit.dart';
 
 /// 笔记卡片
 /// 使用：所有笔记页、所有评价页、动漫详细评价页
@@ -67,7 +66,7 @@ class _NoteCardState extends State<NoteCard> {
 
   void _enterNoteEditPage(Note note) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => NoteEdit(note)))
+        .push(MaterialPageRoute(builder: (context) => NoteEditPage(note)))
         .then((value) {
       // 重新获取列表
       // _loadData();

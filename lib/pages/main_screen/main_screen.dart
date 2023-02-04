@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import 'home_tabs/anime_list_page.dart';
-import 'home_tabs/history_page.dart';
-import 'home_tabs/network_page.dart';
-import 'home_tabs/note_list_page.dart';
-import 'home_tabs/setting_page.dart';
+import '../anime_collection/anime_list_page.dart';
+import '../history/history_page.dart';
+import '../network/network_page.dart';
+import '../note_list/note_list_page.dart';
+import '../settings/settings_page.dart';
 
 class MainTab {
   String name;

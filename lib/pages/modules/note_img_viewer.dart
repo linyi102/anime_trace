@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -12,24 +11,22 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../settings/image_path_setting.dart';
-
 // 点击笔记图片，进入浏览页面
-class ImageViewer extends StatefulWidget {
+class ImageViewerPage extends StatefulWidget {
   final List<RelativeLocalImage> relativeLocalImages;
   final int initialIndex;
 
-  const ImageViewer({
+  const ImageViewerPage({
     Key? key,
     required this.relativeLocalImages,
     this.initialIndex = 0,
   }) : super(key: key);
 
   @override
-  State<ImageViewer> createState() => _ImageViewerState();
+  State<ImageViewerPage> createState() => _ImageViewerPageState();
 }
 
-class _ImageViewerState extends State<ImageViewer> {
+class _ImageViewerPageState extends State<ImageViewerPage> {
   List<String> imageLocalPaths = [];
   int imagesCount = 0;
   int currentIndex = 0;
@@ -227,7 +224,8 @@ class _ImageViewerState extends State<ImageViewer> {
   }
 
   _showDialogAboutImageAttributes(BuildContext context) {
-    File file = File(ImageUtil.getAbsoluteNoteImagePath(widget.relativeLocalImages[currentIndex].path));
+    File file = File(ImageUtil.getAbsoluteNoteImagePath(
+        widget.relativeLocalImages[currentIndex].path));
     if (!file.existsSync()) {
       return;
     }
@@ -271,8 +269,6 @@ class _ImageViewerState extends State<ImageViewer> {
           );
         });
   }
-
-
 
   _buildScrollAxis() {
     return ListView.builder(

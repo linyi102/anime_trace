@@ -14,8 +14,8 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../settings/general_setting.dart';
-import '../settings/test_page.dart';
+import 'general_setting.dart';
+import 'test_page.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);

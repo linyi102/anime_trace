@@ -2,7 +2,7 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/pages/network/source_detail_page.dart';
+import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -12,10 +12,10 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../models/fav_website.dart';
-import '../../utils/launch_uri_util.dart';
-import '../../components/website_logo.dart';
-import '../settings/lapse_cover_animes_page.dart';
+import '../../../models/fav_website.dart';
+import '../../../utils/launch_uri_util.dart';
+import '../../../components/website_logo.dart';
+import '../../settings/lapse_cover_animes_page.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({Key? key}) : super(key: key);

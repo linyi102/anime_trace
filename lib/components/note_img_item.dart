@@ -33,7 +33,7 @@ class NoteImgItem extends StatelessWidget {
             // reverseTransitionDuration: Duration.zero,
             builder: (context) {
           // 点击图片进入图片浏览页面
-          return ImageViewer(
+          return ImageViewerPage(
               relativeLocalImages: relativeLocalImages,
               initialIndex: initialIndex);
         })).then((dirChanged) {
@@ -50,7 +50,8 @@ class NoteImgItem extends StatelessWidget {
             key: Key("$initialIndex:$dirChangedWrapper"),
             // 圆角
             borderRadius: BorderRadius.circular(5),
-            child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
+            child: CommonImage(
+                ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
           ),
         ),
         imageRemainCount > 0

@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:get/get.dart';
-
-import '../../components/anime_grid_cover.dart';
-import '../../components/get_anime_grid_delegate.dart';
-import '../../models/anime.dart';
 
 class AnimeGridView extends StatefulWidget {
   const AnimeGridView(

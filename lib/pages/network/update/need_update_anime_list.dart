@@ -6,8 +6,8 @@ import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../models/anime.dart';
-import '../modules/anime_list_view.dart';
+import '../../../models/anime.dart';
+import '../../../components/anime_list_view.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);

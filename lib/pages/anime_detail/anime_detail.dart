@@ -38,7 +38,7 @@ import 'package:oktoast/oktoast.dart';
 import '../../components/dialog/dialog_select_play_status.dart';
 import '../../dao/note_dao.dart';
 import '../../components/toggle_list_tile.dart';
-import '../modules/search_db_anime.dart';
+import '../anime_collection/search_db_anime.dart';
 import 'anime_properties_page.dart';
 
 class AnimeDetailPlus extends StatefulWidget {
@@ -1015,7 +1015,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
-                        return NoteEdit(_notes[noteIdx]);
+                        return NoteEditPage(_notes[noteIdx]);
                       },
                     ),
                   ).then((value) {
@@ -1061,7 +1061,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
                                         // 点击图片进入图片浏览页面
-                                        return ImageViewer(
+                                        return ImageViewerPage(
                                           relativeLocalImages: _notes[noteIdx]
                                               .relativeLocalImages,
                                           initialIndex: imgIdx,
@@ -1115,7 +1115,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
           //     builder: (context) => EpisodeNoteSF(episodeNotes[i])),
           MaterialPageRoute(
             builder: (context) {
-              return NoteEdit(_notes[episodeIndex]);
+              return NoteEditPage(_notes[episodeIndex]);
             },
           ),
         ).then((value) {
