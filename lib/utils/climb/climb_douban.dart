@@ -55,7 +55,12 @@ class ClimbDouban implements Climb {
       for (var plElement in plElements) {
         String innerHtml = plElement.innerHtml;
         if (innerHtml.contains("首播")) {
+          // 1997-02-23(日本)
           anime.premiereTime = plElement.nextElementSibling?.innerHtml ?? "";
+          // 1997-02-23
+          if (anime.premiereTime.contains("(")) {
+            anime.premiereTime = anime.premiereTime.split("(")[0];
+          }
         } else if (innerHtml.contains("作者")) {
           anime.authorOri = plElement.nextElementSibling?.innerHtml ?? "";
         }
