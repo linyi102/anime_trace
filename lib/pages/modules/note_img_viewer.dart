@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
@@ -35,10 +36,6 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
   bool fullScreen =
       SPUtil.getBool(fullScreenKey, defaultValue: false); // 全屏显示图片，此时因此顶部栏和滚动轴
 
-  // 在图片浏览器中进入图片设置页面，可能会更改目录，为true时，用于图片浏览页的上级页面重新加载图片。
-  // 暂时没有办法，因为上一级是NoteImgItem，是无状态组件，不能更新
-  bool dirChangedWrapper = false;
-
   late PageController pageController;
   ScrollController scrollController = ScrollController();
 
@@ -70,11 +67,15 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     });
   }
 
+  _pop() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pop(dirChangedWrapper);
+          _pop();
           return true;
         },
         child: Scaffold(
@@ -108,9 +109,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         automaticallyImplyLeading: false,
         // 返回按钮
         leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop(dirChangedWrapper);
-          },
+          onPressed: () => _pop(),
           icon: const Icon(Icons.arrow_back_outlined, color: Colors.white),
         ),
         centerTitle: true,
@@ -127,6 +126,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
   _buildPhotoViewGallery() {
     return PhotoViewGallery.builder(
+      enableRotation: true,
       itemCount: imageLocalPaths.length,
       pageController: pageController,
       onPageChanged: (index) {
@@ -179,7 +179,8 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                       Log.info("修改了图片目录，重新获取本地图片");
                       _getImageLocalPaths();
                       setState(() {});
-                      dirChangedWrapper = true; // 用于图片浏览器的上级页面更新状态
+                      // 用于图片浏览器的上级页面更新状态
+                      Global.modifiedNoteImgRootPath = true;
                     }
                   });
                 },
@@ -287,8 +288,6 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                   }
                   // 先设置当前下标，然后在移动
                   currentIndex = index;
-                  // _scrollToCurrentImage();
-                  // setState(() {});
 
                   // 页号变化时，onPageChanged里会调用_scrollToCurrentImage，因此这里不需要再调用
                   pageController.jumpToPage(index);
@@ -307,9 +306,6 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: SizedBox(
-                      // 从设置界面返回来，如果改变了目录，则这里应该重新渲染
-                      // key发生变化，所以就会重新渲染该组件
-                      key: Key("$index:$dirChangedWrapper"),
                       height: 100,
                       width: 140,
                       child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(

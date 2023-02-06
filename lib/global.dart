@@ -19,6 +19,9 @@ class Global {
   // 是否 release
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
 
+  // 修改了笔记图片根路径
+  static bool modifiedNoteImgRootPath = false;
+
   static Future<void> init() async {
     // 透明状态栏
     if (Platform.isAndroid) {
@@ -42,9 +45,10 @@ class Global {
   }
 
   static void _putGetController() {
-    Get.put(UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
-    Get.put(AnimeDisplayController());
-    Get.put(LabelsController());
+    Get.lazyPut(
+        () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
+    Get.lazyPut(() => AnimeDisplayController());
+    Get.lazyPut(() => LabelsController());
   }
 
   static void _handleWindowsManager() async {

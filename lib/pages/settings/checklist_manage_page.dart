@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_app_bar.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -36,13 +37,8 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "清单管理",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+      appBar: const CommonAppBar(
+        caption: "清单管理",
       ),
       body: ReorderableListView(
         proxyDecorator: _proxyDecorator,

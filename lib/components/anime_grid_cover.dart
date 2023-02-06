@@ -16,44 +16,51 @@ class AnimeGridCover extends StatelessWidget {
   final bool showProgress;
   final bool showReviewNumber;
   final bool isSelected;
+  final void Function()? onPressed;
 
-  const AnimeGridCover(this._anime,
-      {Key? key,
-      this.onlyShowCover = false,
-      this.showProgress = true,
-      this.showReviewNumber = true,
-      this.isSelected = false,
-      this.coverWidth = 0})
-      : super(key: key);
+  const AnimeGridCover(
+    this._anime, {
+    Key? key,
+    this.onlyShowCover = false,
+    this.showProgress = true,
+    this.showReviewNumber = true,
+    this.isSelected = false,
+    this.coverWidth = 0,
+    this.onPressed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final AnimeDisplayController _animeDisplayController = Get.find();
 
     if (onlyShowCover) return _buildCover(context, false);
-    return Obx(() => Column(
-          children: [
-            // 封面
-            Stack(
-              children: [
-                _buildCover(
-                    context,
-                    _animeDisplayController.showGridAnimeName.value &&
-                        _animeDisplayController.showNameInCover.value),
-                if (showProgress)
-                  _buildEpisodeState(_anime.isCollected() &&
-                      _animeDisplayController.showGridAnimeProgress.value),
-                if (showReviewNumber)
-                  _buildReviewNumber(_anime.isCollected() &&
-                      _animeDisplayController.showReviewNumber.value &&
-                      _anime.reviewNumber > 1)
-              ],
-            ),
-            // 名字
-            if (_animeDisplayController.showNameBelowCover)
-              _buildNameBelowCover(),
-          ],
-        ));
+    return MaterialButton(
+      padding: const EdgeInsets.all(0),
+      onPressed: onPressed,
+      child: Obx(() => Column(
+            children: [
+              // 封面
+              Stack(
+                children: [
+                  _buildCover(
+                      context,
+                      _animeDisplayController.showGridAnimeName.value &&
+                          _animeDisplayController.showNameInCover.value),
+                  if (showProgress)
+                    _buildEpisodeState(_anime.isCollected() &&
+                        _animeDisplayController.showGridAnimeProgress.value),
+                  if (showReviewNumber)
+                    _buildReviewNumber(_anime.isCollected() &&
+                        _animeDisplayController.showReviewNumber.value &&
+                        _anime.reviewNumber > 1)
+                ],
+              ),
+              // 名字
+              if (_animeDisplayController.showNameBelowCover)
+                _buildNameBelowCover(),
+            ],
+          )),
+    );
   }
 
   _buildCover(BuildContext context, bool showNameInCover) {

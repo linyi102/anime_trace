@@ -12,14 +12,12 @@ class NoteImgItem extends StatelessWidget {
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
-  NoteImgItem(
+  const NoteImgItem(
       {required this.relativeLocalImages,
       this.initialIndex = 0,
       this.imageRemainCount = 0,
       Key? key})
       : super(key: key);
-
-  bool dirChangedWrapper = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +34,21 @@ class NoteImgItem extends StatelessWidget {
           return ImageViewerPage(
               relativeLocalImages: relativeLocalImages,
               initialIndex: initialIndex);
-        })).then((dirChanged) {
-          if (dirChanged) {
-            dirChangedWrapper = true;
-          }
+        })).then((value) {
+          // if (Global.modifiedNoteImgRootPath) {
+          //   // 修改了路径，重新渲染，然后重置
+          //   // 注：不应该在这里渲染，因为这只是单个图片，应该渲染所有图片
+          //   // 暂时没找到哪里应该执行这段代码，因为上级把该NoteImgItem作为组件，并不是push
+          //   Global.modifiedNoteImgRootPath = false;
+          // }
         });
       },
       child: Stack(children: [
+        // 正方形
         AspectRatio(
-          aspectRatio: 1, // 正方形
+          aspectRatio: 1,
+          // 圆角
           child: ClipRRect(
-            // 无效，不会重新渲染，可能是因为是无状态组件
-            key: Key("$initialIndex:$dirChangedWrapper"),
-            // 圆角
             borderRadius: BorderRadius.circular(5),
             child: CommonImage(
                 ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),

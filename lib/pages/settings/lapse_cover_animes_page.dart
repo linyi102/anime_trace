@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -122,26 +123,27 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                   itemCount: lapseCoverAnimes.length,
                   itemBuilder: (BuildContext context, int index) {
                     Anime anime = lapseCoverAnimes[index];
-                    return MaterialButton(
-                        padding: const EdgeInsets.all(0),
-                        child: AnimeGridCover(anime,
-                            showProgress: false, showReviewNumber: false),
-                        onPressed: () {
-                          // 恢复中，不允许进入封面详细页
-                          if (recovering) return;
+                    return AnimeGridCover(
+                      anime,
+                      showProgress: false,
+                      showReviewNumber: false,
+                      onPressed: () {
+                        // 恢复中，不允许进入详细页
+                        if (recovering) return;
 
-                          // 恢复备份后，如果之前没有进入过动漫详细页，则没有put过，所以不能使用Get.find
-                          final AnimeController animeController =
-                              Get.put(AnimeController());
-                          animeController.setAnime(anime);
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(
-                                  builder: (context) => AnimeCoverDetail()))
-                              .then((value) {
-                            // 将这里的anime传入了animeController，在封面详细页修改封面后返回，需要重新刷新状态
-                            setState(() {});
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                                builder: (context) => AnimeDetailPlus(anime)))
+                            .then((value) {
+                          // 可能内部迁移了动漫或修改了封面
+                          // 仍然build是该页面，而不是只build AnimeGridCover，必须要在AnimeGridCover里使用setState
+                          setState(() {
+                            // anime = value; 返回后封面没有变化，需要使用index，如下
+                            lapseCoverAnimes[index] = value;
                           });
                         });
+                      },
+                    );
                   },
                 ),
     );
