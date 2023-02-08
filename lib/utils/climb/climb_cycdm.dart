@@ -16,10 +16,12 @@ class ClimbCycdm implements Climb {
   // String baseUrl = "https://www.cycacg.com";
   String baseUrl = "https://www.cycdm01.top"; // 2022.10.27
 
+  bool isMobile = true;
+
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     Log.info("爬取动漫详细网址：${anime.animeUrl}");
-    Result result = await DioPackage.get(anime.animeUrl);
+    Result result = await DioPackage.get(anime.animeUrl, isMobile: isMobile);
     if (result.code != 200) {
       if (showMessage) showToast("次元城动漫：${result.msg}");
       return anime;
@@ -74,7 +76,7 @@ class ClimbCycdm implements Climb {
     List<Anime> climbAnimes = [];
 
     Log.info("正在获取文档...");
-    Result result = await DioPackage.get(url);
+    Result result = await DioPackage.get(url, isMobile: isMobile);
     if (result.code != 200) {
       showToast("次元城动漫：${result.msg}");
       return [];

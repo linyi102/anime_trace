@@ -31,10 +31,18 @@ class DioPackage {
     return dio;
   }
 
-  static Future<Result> get<T>(String path) async {
+  static Future<Result> get<T>(String path, {bool isMobile = false}) async {
     try {
       Dio dio = _getDio();
-      Response response = await dio.request(path);
+
+      Options? options;
+      if (isMobile) {
+        options = Options(headers: {
+          "User-Agent":
+              "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36 Edg/109.0.1518.78",
+        });
+      }
+      Response response = await dio.request(path, options: options);
 
       return Result.success(response);
     } catch (e) {

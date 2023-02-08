@@ -416,6 +416,12 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) =>
                 const LabelManagePage(enableSelectLabelForAnime: true)));
+
+        // 不适配主题，且搜索时显示空白
+        // Get.bottomSheet(
+        //   const LabelManagePage(enableSelectLabelForAnime: true),
+        // );
+
         // 弹出软键盘时报错，尽管可以正常运行
         // showFlexibleBottomSheet(
         //     duration: const Duration(milliseconds: 200),
@@ -428,7 +434,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
         //       ScrollController scrollController,
         //       double bottomSheetOffset,
         //     ) =>
-        //         LabelManagePage(),
+        //         const LabelManagePage(enableSelectLabelForAnime: true),
         //     isExpand: true);
       },
       child: Chip(
