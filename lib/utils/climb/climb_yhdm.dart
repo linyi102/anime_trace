@@ -21,12 +21,7 @@ class ClimbYhdm implements Climb {
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {String? foreignBaseUrl, String sourceName = "樱花动漫"}) async {
-    String url;
-    if (foreignBaseUrl != null) {
-      url = "$foreignBaseUrl/s_all?ex=1&kw=$keyword";
-    } else {
-      url = "$baseUrl/s_all?ex=1&kw=$keyword";
-    }
+    String url = "${foreignBaseUrl ?? baseUrl}/s_all?ex=1&kw=$keyword";
     return _climbOfyhdm(foreignBaseUrl ?? baseUrl, url, sourceName: sourceName);
   }
 
@@ -163,12 +158,13 @@ class ClimbYhdm implements Climb {
 
   @override
   Future<List<Anime>> climbDirectory(AnimeFilter filter, PageParams pageParams,
-      {String? foreignBaseUrl}) async {
+      {String? foreignBaseUrl, String sourceName = "樱花动漫"}) async {
     String url =
-        "$baseUrl/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
+        "${foreignBaseUrl ?? baseUrl}/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
     url = "$url&pageindex=${pageParams.pageIndex}";
 
-    List<Anime> directory = await _climbOfyhdm(foreignBaseUrl ?? baseUrl, url);
+    List<Anime> directory = await _climbOfyhdm(foreignBaseUrl ?? baseUrl, url,
+        sourceName: sourceName);
     return directory;
   }
 }

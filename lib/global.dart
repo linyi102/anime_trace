@@ -22,6 +22,9 @@ class Global {
   // 修改了笔记图片根路径
   static bool modifiedNoteImgRootPath = false;
 
+  // 展开/收缩目录过滤器
+  static bool expandDirectoryFilter = true;
+
   static Future<void> init() async {
     // 透明状态栏
     if (Platform.isAndroid) {

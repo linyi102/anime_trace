@@ -34,6 +34,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
   eva_icons_flutter: ^3.1.0
   fluttericon: ^2.0.0
   simple_icons: ^7.1.0 #github、gitee图标

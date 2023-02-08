@@ -16,8 +16,8 @@ class ClimbQuqi implements Climb {
   @override
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) {
-    return ClimbYhdm()
-        .climbDirectory(filter, pageParams, foreignBaseUrl: baseUrl);
+    return ClimbYhdm().climbDirectory(filter, pageParams,
+        foreignBaseUrl: baseUrl, sourceName: "曲奇动漫");
   }
 
   @override

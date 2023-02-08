@@ -1,20 +1,27 @@
-import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/refresher_footer.dart';
+import 'package:flutter_test_future/components/website_logo.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
+import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -28,25 +35,39 @@ class _DirectoryPageState extends State<DirectoryPage>
   @override
   bool get wantKeepAlive => true;
 
-  bool _loadOk = false;
-
   // 页大小是固定24个，不管设置多少都始终会获取24个动漫
   // 这里设置是为了方便加载更多数据
   PageParams pageParams = PageParams(pageIndex: 0, pageSize: 24);
 
+  final ScrollController _scrollController = ScrollController();
+
+  late ClimbWebsite curWebsite;
+
+  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbQuqi()];
+
+  final _refreshController = RefreshController(initialRefresh: false);
+
+  final _itemHeight = 120.0;
+  final _coverWidth = 90.0;
+
   @override
   void initState() {
     super.initState();
+
+    int websiteIdx = SPUtil.getInt(selectedDirectorySourceIdx, defaultValue: 0);
+    if (websiteIdx > climbWebsites.length) {
+      websiteIdx = 0;
+    } else {
+      curWebsite = climbWebsites[websiteIdx];
+    }
+
     if (directory.isEmpty) {
       _loadData();
     } else {
       // 如果已有数据，则直接显示，但也要根据重新查询数据库中的动漫来替换
-      _loadOk = true; // 不用显示加载圈
       _replaceDbAnimes();
     }
   }
-
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -62,72 +83,84 @@ class _DirectoryPageState extends State<DirectoryPage>
     for (int i = 0; i < directory.length; ++i) {
       directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
     }
-    _loadOk = true;
     setState(() {});
   }
 
-  void _loadData() {
-    _loadOk = false;
-    setState(() {});
+  void _loadData() async {
+    if (_refreshController.position != null) {
+      _refreshController.requestRefresh();
+    }
 
-    Future(() async {
-      directory = await ClimbAnimeUtil.climbDirectory(filter, pageParams);
-    }).then((value) async {
-      Log.info("目录页：数据获取完毕");
-      // 根据动漫名和来源查询动漫，如果存在
-      // 则获取到id(用于进入详细页)和tagName(用于修改tag)
-      // 下面两种方式修改了anime，都不能修改数组中的值
-      // 1. for (var anime in directory) {
-      // 2. for (int i = 0; i < directory.length; ++i) {
-      //   Anime anime = directory[i];
-      for (int i = 0; i < directory.length; ++i) {
-        directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
-      }
-      _loadOk = true;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    pageParams.resetPageIndex(); // 更改条件后，需要重置页号
+    directory = await curWebsite.climb.climbDirectory(filter, pageParams);
+    Log.info("目录页：数据获取完毕");
+    // 根据动漫名和来源查询动漫，如果存在
+    // 则获取到id(用于进入详细页)和tagName(用于修改tag)
+    // 下面两种方式修改了anime，都不能修改数组中的值
+    // 1. for (var anime in directory) {
+    // 2. for (int i = 0; i < directory.length; ++i) {
+    //   Anime anime = directory[i];
+    for (int i = 0; i < directory.length; ++i) {
+      directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
+    }
+    if (mounted) {
+      setState(() {});
+    }
+    _refreshController.refreshCompleted();
+    // 切换过滤条件后会重新加载数据，因此这里要把footer设置为idle，否则如果之前到底了，然后再切换过滤条件，则仍显示的是到底状态
+    _refreshController.loadComplete();
   }
 
-  _loadMoreData() {
+  _loadMoreData() async {
     Log.info("目录页：加载更多数据中，当前动漫数量：${directory.length}");
     pageParams.pageIndex++;
     int startIdx = directory.length;
-    Future(() async {
-      directory.addAll(await ClimbAnimeUtil.climbDirectory(filter, pageParams));
-    }).then((value) async {
+
+    var moreAnimes = await curWebsite.climb.climbDirectory(filter, pageParams);
+    if (moreAnimes.isEmpty) {
+      Log.info("目录页：没有更多数据了");
+      _refreshController.loadNoData();
+    } else {
       Log.info("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
+      directory.addAll(moreAnimes);
       for (int i = startIdx; i < directory.length; ++i) {
         directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
       }
-      setState(() {});
-    });
+      if (mounted) {
+        setState(() {});
+      }
+      _refreshController.loadComplete();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _loadData();
-        },
-        child: Scrollbar(
-          controller: _scrollController,
+      body: Scrollbar(
+        controller: _scrollController,
+        // Scrollbar嵌套SmartRefresher，反过来无法下拉刷新
+        child: SmartRefresher(
+          controller: _refreshController,
+          enablePullDown: true,
+          enablePullUp: true,
+          onRefresh: _loadData,
+          onLoading: _loadMoreData,
+          header: MaterialClassicHeader(
+            color: ThemeUtil.getPrimaryColor(),
+            backgroundColor: ThemeUtil.getCardColor(),
+          ),
+          // footer: const LoadingMoreIndicator(),
+          footer: const RefresherFooter(),
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
               SliverList(
                   delegate: SliverChildListDelegate([
+                // _buildSourceTile(),
                 _buildFilter(),
               ])),
-              _loadOk
-                  ? _buildAnimeSliverList()
-                  : SliverList(
-                      key: UniqueKey(),
-                      delegate: SliverChildListDelegate(
-                          [const Center(child: RefreshProgressIndicator())]))
+              _buildAnimeSliverList(),
             ],
           ),
         ),
@@ -135,76 +168,123 @@ class _DirectoryPageState extends State<DirectoryPage>
     );
   }
 
+  // 构建当前搜索源
+  _buildSourceTile() {
+    return ListTile(
+      title: Row(
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+          const SizedBox(width: 10),
+          Text(curWebsite.name),
+        ],
+      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => SimpleDialog(
+            children: climbWebsites.map((e) {
+              if (e.discard) return Container();
+
+              // 如果该搜索源e的climb工具在usableClimbs中，则显示可用
+              bool usable = usableClimbs.indexWhere(
+                    (element) => element.runtimeType == e.climb.runtimeType,
+                  ) >=
+                  0;
+              return ListTile(
+                title: Text(
+                  e.name,
+                  style: usable ? null : const TextStyle(color: Colors.grey),
+                ),
+                leading: WebSiteLogo(url: e.iconUrl, size: 25),
+                trailing:
+                    e.name == curWebsite.name ? const Icon(Icons.check) : null,
+                enabled: usable,
+                onTap: () {
+                  curWebsite = e;
+                  SPUtil.setInt(selectedDirectorySourceIdx,
+                      climbWebsites.indexWhere((element) => element == e));
+                  _loadData();
+                  Navigator.pop(context);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   SliverList _buildAnimeSliverList() {
-    if (directory.isEmpty) {
-      return SliverList(
-          delegate: SliverChildListDelegate([emptyDataHint("什么都没找到")]));
-    }
+    // if (directory.isEmpty) {
+    //   return SliverList(
+    //       delegate: SliverChildListDelegate([emptyDataHint("什么都没找到")]));
+    // }
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
       // Log.info("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
-      if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
+      // if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
 
       Anime anime = directory[index];
       final imageProvider = Image.network(anime.animeCoverUrl).image;
-      return MaterialButton(
-        padding: const EdgeInsets.all(0),
-        onPressed: () {
-          Log.info("单击");
-          // 如果收藏了，则单击进入详细页面
-          if (anime.isCollected()) {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return AnimeDetailPlus(anime);
-            })).then((value) {
-              setState(() {
-                // anime = value;
-                directory[index] = value;
+      return SizedBox(
+        height: _itemHeight,
+        child: MaterialButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () {
+            Log.info("单击");
+            // 如果收藏了，则单击进入详细页面
+            if (anime.isCollected()) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return AnimeDetailPlus(anime);
+              })).then((value) {
+                setState(() {
+                  // anime = value;
+                  directory[index] = value;
+                });
               });
-            });
-          } else {
-            showToast("收藏后即可进入详细页面");
-          }
-        },
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                  child: SizedBox(
-                    width: 90,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: MaterialButton(
-                        padding: const EdgeInsets.all(0),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => PhotoView(
-                                  imageProvider: imageProvider,
-                                  onTapDown: (_, __, ___) =>
-                                      Navigator.of(context).pop())));
-                        },
-                        child: AnimeGridCover(anime, onlyShowCover: true),
-                      ),
+            } else {
+              showToast("收藏后即可进入详细页面");
+            }
+          },
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                child: SizedBox(
+                  width: _coverWidth,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: MaterialButton(
+                      padding: const EdgeInsets.all(0),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => PhotoView(
+                                imageProvider: imageProvider,
+                                onTapDown: (_, __, ___) =>
+                                    Navigator.of(context).pop())));
+                      },
+                      child: AnimeGridCover(anime, onlyShowCover: true),
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
-                      _showAnimeName(anime.animeName),
-                      // _showNameAnother(anime.nameAnother),
-                      _showAnimeInfo(anime.getAnimeInfoFirstLine()),
-                      _showAnimeInfo(anime.getAnimeInfoSecondLine()),
-                      // _showCollectIcon(anime)
-                    ],
-                  ),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
+                    _showAnimeName(anime.animeName),
+                    // _showNameAnother(anime.nameAnother),
+                    _showAnimeInfo(anime.getAnimeInfoFirstLine()),
+                    _showAnimeInfo(anime.getAnimeInfoSecondLine()),
+                    // _showCollectIcon(anime)
+                  ],
                 ),
-                _showCollectIcon(anime)
-              ],
-            ),
-          ],
+              ),
+              _showCollectIcon(anime)
+            ],
+          ),
         ),
       );
     }, childCount: directory.length));
@@ -330,38 +410,37 @@ class _DirectoryPageState extends State<DirectoryPage>
     );
   }
 
-  // bool _expandFilter = false;
   _buildFilter() {
     // 使用插件expand_widget
-    return ExpandChild(
-      child: _buildFilterBody(),
-      expandArrowStyle: ExpandArrowStyle.both,
-      expandedHint: "收起过滤",
-      collapsedHint: "展开过滤",
-    );
+    // 缺点：不能设置默认为展开状态
+    // return ExpandChild(
+    //   child: _buildFilterBody(),
+    //   expandArrowStyle: ExpandArrowStyle.both,
+    //   expandedHint: "收起过滤",
+    //   collapsedHint: "展开过滤",
+    // );
+
     // 使用自带的折叠
-    // return ExpansionPanelList(
-    //     elevation: 1,
-    //     expansionCallback: (panelIndex, isExpanded) {
-    //       setState(() {
-    //         _expandFilter = !isExpanded;
-    //       });
-    //     },
-    //     animationDuration: kThemeAnimationDuration,
-    //     children: <ExpansionPanel>[
-    //       ExpansionPanel(
-    //         backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
-    //         headerBuilder: (context, isExpanded) {
-    //           return ListTile(
-    //             title: _expandFilter ? const Text("隐藏过滤") : const Text("展开过滤"),
-    //             visualDensity: const VisualDensity(vertical: -4),
-    //           );
-    //         },
-    //         isExpanded: _expandFilter,
-    //         canTapOnHeader: true,
-    //         body: _buildFilterBody(),
-    //       )
-    //     ]);
+    return ExpansionPanelList(
+        elevation: 0,
+        expandedHeaderPadding: EdgeInsets.zero,
+        expansionCallback: (panelIndex, isExpanded) {
+          setState(() {
+            Global.expandDirectoryFilter = !Global.expandDirectoryFilter;
+          });
+        },
+        animationDuration: kThemeAnimationDuration,
+        children: <ExpansionPanel>[
+          ExpansionPanel(
+            backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
+            headerBuilder: (context, isExpanded) {
+              return _buildSourceTile();
+            },
+            isExpanded: Global.expandDirectoryFilter,
+            // canTapOnHeader: true,
+            body: _buildFilterBody(),
+          )
+        ]);
   }
 
   _showRadioYear() {
@@ -369,7 +448,7 @@ class _DirectoryPageState extends State<DirectoryPage>
 
     List<String> years = [""]; // 空字符串对应全部
     // groupValue(filter.year)对应选中的value
-    int endYear = DateTime.now().year + 2;
+    int endYear = DateTime.now().year;
     for (int year = endYear; year >= 2000; --year) {
       years.add("$year"); // 转为字符串
     }
@@ -382,7 +461,6 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.year,
               onChanged: (value) {
                 filter.year = value.toString();
-
                 // Log.info(filter.year);
                 _loadData();
               }),
@@ -523,22 +601,27 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   _showCollectIcon(Anime anime) {
-    return Container(
-      padding: const EdgeInsets.only(right: 15),
-      child: Column(
-        children: [
-          IconButton(
-              onPressed: () {
-                dialogSelectTag(setState, context, anime);
-              },
-              icon: anime.isCollected()
-                  ? const Icon(Icons.favorite, color: Colors.red)
-                  : const Icon(Icons.favorite_border,
-                      color: Colors.white)),
-          anime.isCollected()
-              ? Text(anime.tagName, textScaleFactor: ThemeUtil.tinyScaleFactor)
-              : Container()
-        ],
+    return SizedBox(
+      height: _itemHeight,
+      child: MaterialButton(
+        padding: EdgeInsets.zero,
+        visualDensity:
+            const VisualDensity(horizontal: VisualDensity.minimumDensity),
+        onPressed: () {
+          dialogSelectTag(setState, context, anime);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            anime.isCollected()
+                ? const Icon(Icons.favorite, color: Colors.red, size: 18)
+                : const Icon(Icons.favorite_border, size: 18),
+            anime.isCollected()
+                ? Text(anime.tagName,
+                    textScaleFactor: ThemeUtil.tinyScaleFactor)
+                : Container()
+          ],
+        ),
       ),
     );
   }

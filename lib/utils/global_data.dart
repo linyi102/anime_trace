@@ -22,7 +22,7 @@ List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "樱花动漫",
       // iconUrl: "https://www.yhdmp.cc/yxsf/yh_pic/favicon.ico",
-      iconUrl: "https://img1.imgtp.com/2023/02/08/MairCuPk.ico",
+      iconUrl: "https://t.gmit.vip/2023/02/08/kn3ywr.ico",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),

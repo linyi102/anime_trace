@@ -31,14 +31,6 @@ class ClimbAnimeUtil {
     return null;
   }
 
-  // 根据过滤查询目录动漫
-  static Future<List<Anime>> climbDirectory(
-      AnimeFilter filter, PageParams pageParams) async {
-    Climb climb = ClimbYhdm();
-    List<Anime> directory = await climb.climbDirectory(filter, pageParams);
-    return directory;
-  }
-
   // 多搜索源。根据关键字搜索动漫
   static Future<List<Anime>> climbAnimesByKeywordAndWebSite(
       String keyword, ClimbWebsite climbWebStie) async {

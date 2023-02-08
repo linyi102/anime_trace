@@ -11,6 +11,11 @@ import '../log.dart';
 import '../../models/params/result.dart';
 
 class ClimbQdm implements Climb {
+  // 单例
+  static final ClimbQdm _instance = ClimbQdm._();
+  factory ClimbQdm() => _instance;
+  ClimbQdm._();
+
   @override
   String baseUrl = "https://www.qdm66.com";
 

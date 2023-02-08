@@ -138,11 +138,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: WebSiteLogo(
-                      url: widget.climbWebStie.iconUrl, size: 25),
-                ),
+                WebSiteLogo(url: widget.climbWebStie.iconUrl, size: 25),
                 const SizedBox(width: 10),
                 Text(widget.climbWebStie.name)
               ],
