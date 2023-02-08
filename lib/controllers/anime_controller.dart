@@ -23,23 +23,29 @@ class AnimeController extends GetxController {
   // 多选
   Map<int, bool> mapSelected = {};
   var multiSelected = false.obs; // 集长按，修改该值为true，详细页监测要为true，显示底部操作栏。所以使用obs
-  int lastMultiSelectedIndex = 0; // 记住最后一次多选的集下标
+  int lastMultiSelectedIndex = -1; // 记住最后一次多选的集下标
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
   final int episodeRangeSize = 50;
 
   // 首次进入动漫详细页，会把动漫put controller并设置动漫，以便tab页通过get获取controller，然后获取anime
-  void setAnime(Anime newAnime) {
-    // anime.value = newAnime; // 无效
-    anime.update((anime) => anime = newAnime);
-    // 重置其他信息
+  void enterDetailPage() {
+    // 重置信息
     episodes.clear();
     notes.clear();
     loadEpisodeOk = false;
+    multiSelected.value = false;
     mapSelected.clear();
-    lastMultiSelectedIndex = 0;
+    lastMultiSelectedIndex = -1;
     currentStartEpisodeNumber = 1;
+  }
+
+  void setAnime(Anime newAnime) {
+    // 进入详细页可以看到变化
+    anime.value = newAnime;
+    // 下面方式可以实时更新播放状态，但进入详细页仍然是之前的动漫
+    // anime.update((val) => val = newAnime);
   }
 
   // 显示简介

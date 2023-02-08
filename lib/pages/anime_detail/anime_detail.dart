@@ -53,6 +53,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       // tag: widget.anime.animeId.toString(),
       // tag: UniqueKey().toString(),
     );
+    animeController.enterDetailPage();
 
     if (widget.anime.animeId > 0) {
       currentStartEpisodeNumber = SPUtil.getInt(
@@ -256,7 +257,10 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus>
       }
     });
     _climbing = false;
+    // 播放状态无法实时更新
     animeController.setAnime(newAnime);
+    // 手动更新
+    animeController.updateAnimePlayStatus(newAnime.playStatus);
     return true;
   }
 

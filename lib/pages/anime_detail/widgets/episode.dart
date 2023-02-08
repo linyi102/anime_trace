@@ -457,12 +457,15 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
   }
 
   void onLongPressEpisode(int index) {
-    int lastMultiSelectedIndex = widget.animeController.lastMultiSelectedIndex;
+    final int lastMultiSelectedIndex =
+        widget.animeController.lastMultiSelectedIndex;
+
     // 非多选状态下才需要进入多选状态
     if (widget.animeController.multiSelected.value == false) {
       widget.animeController.multiSelected.value = true;
       widget.animeController.mapSelected[index] = true;
-      lastMultiSelectedIndex = index; // 第一次也要设置最后一次多选的集下标
+      widget.animeController.lastMultiSelectedIndex =
+          index; // 第一次也要设置最后一次多选的集下标
       setState(() {}); // 添加操作按钮
     } else {
       // 如果存在上一次多选集的下标，则将中间的所有集选择
