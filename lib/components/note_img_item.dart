@@ -56,7 +56,7 @@ class NoteImgItem extends StatelessWidget {
         ),
         imageRemainCount > 0
             ? Container(
-                color: const Color.fromRGBO(0, 0, 0, 0.2),
+                color: const Color.fromRGBO(0, 0, 0, 0.5),
                 child: Center(
                   child: Text("+$imageRemainCount",
                       textScaleFactor: 2,

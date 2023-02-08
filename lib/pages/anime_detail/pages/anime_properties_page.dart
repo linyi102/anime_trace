@@ -8,12 +8,12 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../components/dialog/dialog_select_play_status.dart';
+import '../../../components/dialog/dialog_select_play_status.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
-  AnimePropertiesPage({Key? key}) : super(key: key);
-
-  final AnimeController animeController = Get.find();
+  AnimePropertiesPage({required this.animeController, Key? key})
+      : super(key: key);
+  final AnimeController animeController;
   final textController = TextEditingController();
 
   @override

@@ -10,6 +10,4 @@ Widget loadingWidget(BuildContext context) {
     color: ThemeUtil.getScaffoldBackgroundColor(),
     // child: const Center(child: Text("加载数据中...")),
   );
-
-  // const Center(child: RefreshProgressIndicator()
 }

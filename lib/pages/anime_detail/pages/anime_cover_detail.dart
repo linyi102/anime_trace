@@ -11,18 +11,18 @@ import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../../models/anime.dart';
-import '../../utils/climb/climb_anime_util.dart';
-import '../../utils/image_util.dart';
-import '../../utils/sqlite_util.dart';
-import '../../utils/theme_util.dart';
-import '../settings/image_path_setting.dart';
+import '../../../models/anime.dart';
+import '../../../utils/climb/climb_anime_util.dart';
+import '../../../utils/image_util.dart';
+import '../../../utils/sqlite_util.dart';
+import '../../../utils/theme_util.dart';
+import '../../settings/image_path_setting.dart';
 
 /// 动漫详细页点击封面，进入该页面
 /// 提供缩放、修改封面、重新根据动漫网址获取封面的功能
 class AnimeCoverDetail extends StatelessWidget {
-  AnimeCoverDetail({Key? key}) : super(key: key);
-  final AnimeController animeController = Get.find();
+  AnimeCoverDetail({required this.animeController, Key? key}) : super(key: key);
+  final AnimeController animeController;
   var textController = TextEditingController();
 
   @override

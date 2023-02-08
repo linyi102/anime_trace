@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_cover_detail.dart';
+import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';

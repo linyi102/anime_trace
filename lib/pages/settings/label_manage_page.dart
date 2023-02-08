@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
@@ -9,9 +10,11 @@ import 'package:get/get.dart';
 import '../../utils/theme_util.dart';
 
 class LabelManagePage extends StatelessWidget {
-  const LabelManagePage({this.enableSelectLabelForAnime = false, Key? key})
+  const LabelManagePage(
+      {this.enableSelectLabelForAnime = false, this.animeController, Key? key})
       : super(key: key);
   final bool enableSelectLabelForAnime;
+  final AnimeController? animeController;
 
   static const int labelMaxLength = 30;
 
@@ -51,9 +54,12 @@ class LabelManagePage extends StatelessWidget {
         spacing: 4,
         runSpacing: 4,
         children: labelsController.labels.reversed.map((label) {
-          bool selected = labelsController.labelsInAnimeDetail
-                  .indexWhere((element) => element.id == label.id) >
-              -1;
+          bool selected = false;
+          if (animeController != null) {
+            selected = animeController!.labels
+                    .indexWhere((element) => element.id == label.id) >
+                -1;
+          }
 
           return GestureDetector(
             child: Chip(
@@ -67,11 +73,11 @@ class LabelManagePage extends StatelessWidget {
                 if (selected) {
                   // 为这个动漫移除该标签
                   if (await AnimeLabelDao.deleteAnimeLabel(
-                      labelsController.animeId, label.id)) {
+                      animeController!.anime.value.animeId, label.id)) {
                     Log.info(
-                        "移除动漫标签记录成功(animeId=${labelsController.animeId}, labelId=${label.id})");
+                        "移除动漫标签记录成功(animeId=${animeController!.anime.value.animeId}, labelId=${label.id})");
                     // 从controller中移除
-                    labelsController.labelsInAnimeDetail
+                    animeController!.labels
                         .removeWhere((element) => element.id == label.id);
                   } else {
                     Log.info("移除动漫标签记录失败");
@@ -79,11 +85,11 @@ class LabelManagePage extends StatelessWidget {
                 } else {
                   // 为这个动漫添加该标签
                   int newId = await AnimeLabelDao.insertAnimeLabel(
-                      labelsController.animeId, label.id);
+                      animeController!.anime.value.animeId, label.id);
                   if (newId > 0) {
                     Log.info("添加新动漫标签纪录成功：$newId");
                     // 添加到controller
-                    labelsController.labelsInAnimeDetail.add(label);
+                    animeController!.labels.add(label);
                   } else {
                     Log.info("添加新动漫标签纪录失败");
                   }
@@ -162,8 +168,8 @@ class LabelManagePage extends StatelessWidget {
                                       labelsController.labels.removeAt(index);
                                       // 如果在动漫详细页打开的标签管理页中删除了标签，那么也需要移除下面的标签
                                       if (enableSelectLabelForAnime) {
-                                        labelsController.labelsInAnimeDetail
-                                            .removeWhere((element) =>
+                                        animeController!.labels.removeWhere(
+                                            (element) =>
                                                 element.id == label.id);
                                       }
                                       Navigator.pop(context);
@@ -319,9 +325,9 @@ class LabelManagePage extends StatelessWidget {
                       labelsController.labels[index] = label; // 必须要重新赋值，才能看到变化
                       if (enableSelectLabelForAnime) {
                         // 更新动漫详细页中的标签
-                        int index = labelsController.labelsInAnimeDetail
+                        int index = animeController!.labels
                             .indexWhere((element) => element.id == label.id);
-                        labelsController.labelsInAnimeDetail[index] = label;
+                        animeController!.labels[index] = label;
                       }
                       Navigator.of(context).pop();
                     } else {

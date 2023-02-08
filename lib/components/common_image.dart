@@ -44,6 +44,18 @@ class CommonImage extends StatelessWidget {
         imageUrl: url,
         errorWidget: (_, __, ___) => errorImageWidget(),
         fadeInDuration: fadeInDuration,
+        // placeholder: reduceMemCache
+        //     ? null
+        //     // 如果不压缩，则在加载原图时先显示压缩后的图片
+        //     // 会闪烁，效果不好
+        //     : (context, url) => CachedNetworkImage(
+        //           memCacheWidth: memCacheWidth,
+        //           fadeInDuration: fadeInDuration,
+        //           fadeOutDuration: Duration.zero,
+        //           imageUrl: url,
+        //           fit: BoxFit.cover,
+        //         ),
+
         // 未加载完图片时显示进度圈
         // placeholder: (_, __) => const Center(child: SizedBox(
         //     height: 20,
@@ -59,12 +71,19 @@ class CommonImage extends StatelessWidget {
       // 如果存在该文件，才使用fileImage(否则FileImage里面会抛出找不到文件的异常，而且这里捕获不到)
       FileImage fileImage = FileImage(file);
       return FadeInImage(
-        placeholder: MemoryImage(kTransparentImage),
         image: reduceMemCache
             ? ResizeImage(fileImage, width: memCacheWidth)
                 as ImageProvider<Object>
             : fileImage,
         fit: BoxFit.cover,
+        placeholder: MemoryImage(kTransparentImage),
+        // placeholder: reduceMemCache
+        //     ? MemoryImage(kTransparentImage)
+        //     // 如果不压缩，则在加载原图时先显示压缩后的图片
+        //     : ResizeImage(fileImage, width: memCacheWidth)
+        //         as ImageProvider<Object>,
+        // 去除占位图的渐变移除效果(为0会报错，而为1则会很快闪烁，所以都不行)
+        // fadeOutDuration: const Duration(milliseconds: 1),
         fadeInDuration: fadeInDuration,
         imageErrorBuilder: (_, __, ___) => errorImageWidget(),
       );

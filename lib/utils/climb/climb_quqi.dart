@@ -10,7 +10,7 @@ class ClimbQuqi implements Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    return ClimbYhdm().climbAnimeInfo(anime);
+    return ClimbYhdm().climbAnimeInfo(anime, sourceName: "曲奇动漫");
   }
 
   @override

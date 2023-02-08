@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:oktoast/oktoast.dart';
 
-import '../../components/note_img_grid.dart';
-import '../../dao/note_dao.dart';
-import '../../models/anime.dart';
-import '../../utils/theme_util.dart';
-import '../../components/note_card.dart';
+import '../../../dao/note_dao.dart';
+import '../../../models/anime.dart';
+import '../../../utils/theme_util.dart';
+import '../../../components/note_card.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {

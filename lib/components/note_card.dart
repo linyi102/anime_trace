@@ -46,8 +46,7 @@ class _NoteCardState extends State<NoteCard> {
           elevation: 0,
           padding: const EdgeInsets.all(0),
           onPressed: () => _enterNoteEditPage(note),
-          child: Flex(
-            direction: Axis.vertical,
+          child: Column(
             children: [
               if (widget.showAnimeTile) _buildAnimeListTile(note),
               // 笔记内容
@@ -56,7 +55,8 @@ class _NoteCardState extends State<NoteCard> {
               NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
               if (widget.isRateNote)
                 // 创建时间和操作按钮
-                _buildCreateTimeAndMoreAction(note)
+                _buildCreateTimeAndMoreAction(note),
+              // const Divider(),
             ],
           ),
         ),
