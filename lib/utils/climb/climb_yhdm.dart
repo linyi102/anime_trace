@@ -10,20 +10,32 @@ import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbYhdm implements Climb {
+  // 单例，作用是曲奇动漫使用ClimbYhdm().方法时，不会再次创建ClimbYhdm对象
+  static final ClimbYhdm _instance = ClimbYhdm._();
+  factory ClimbYhdm() => _instance;
+  ClimbYhdm._();
+
   @override
   String baseUrl = "https://www.yhdmp.cc";
 
   @override
-  Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
-    String url = baseUrl + "/s_all?ex=1&kw=$keyword";
-    return await _climbOfyhdm(baseUrl, url);
+  Future<List<Anime>> searchAnimeByKeyword(String keyword,
+      {String? foreignBaseUrl, String sourceName = "樱花动漫"}) async {
+    String url;
+    if (foreignBaseUrl != null) {
+      url = "$foreignBaseUrl/s_all?ex=1&kw=$keyword";
+    } else {
+      url = "$baseUrl/s_all?ex=1&kw=$keyword";
+    }
+    return _climbOfyhdm(foreignBaseUrl ?? baseUrl, url, sourceName: sourceName);
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+  Future<Anime> climbAnimeInfo(Anime anime,
+      {bool showMessage = true, String sourceName = "樱花动漫"}) async {
     Result result = await DioPackage.get(anime.animeUrl);
     if (result.code != 200) {
-      if (showMessage) showToast("樱花动漫：${result.msg}");
+      if (showMessage) showToast("$sourceName：${result.msg}");
       return anime;
     }
     Response response = result.data;
@@ -111,11 +123,12 @@ class ClimbYhdm implements Climb {
   }
 
   // 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
-  static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url) async {
+  static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url,
+      {String sourceName = "樱花动漫"}) async {
     List<Anime> animes = [];
     Result result = await DioPackage.get(url);
     if (result.code != 200) {
-      showToast("樱花动漫：${result.msg}");
+      showToast("$sourceName：${result.msg}");
       return [];
     }
     Response response = result.data;
@@ -149,13 +162,13 @@ class ClimbYhdm implements Climb {
   }
 
   @override
-  Future<List<Anime>> climbDirectory(
-      AnimeFilter filter, PageParams pageParams) async {
+  Future<List<Anime>> climbDirectory(AnimeFilter filter, PageParams pageParams,
+      {String? foreignBaseUrl}) async {
     String url =
         "$baseUrl/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
     url = "$url&pageindex=${pageParams.pageIndex}";
 
-    List<Anime> directory = await _climbOfyhdm(baseUrl, url);
+    List<Anime> directory = await _climbOfyhdm(foreignBaseUrl ?? baseUrl, url);
     return directory;
   }
 }

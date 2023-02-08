@@ -7,6 +7,7 @@ import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
+import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -20,7 +21,8 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "樱花动漫",
-      iconUrl: "https://www.yhdmp.cc/yxsf/yh_pic/favicon.ico",
+      // iconUrl: "https://www.yhdmp.cc/yxsf/yh_pic/favicon.ico",
+      iconUrl: "https://img1.imgtp.com/2023/02/08/MairCuPk.ico",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
@@ -86,5 +88,15 @@ List<ClimbWebsite> climbWebsites = [
       keyword: "qdm",
       climb: ClimbQdm(),
       desc:
-          "趣动漫致力为所有动漫迷们提供最好看的动漫、最新最快的高清动画下载及全集资源，观看完全免费、无须注册、高速播放、更新及时的专业在线动漫站。")
+          "趣动漫致力为所有动漫迷们提供最好看的动漫、最新最快的高清动画下载及全集资源，观看完全免费、无须注册、高速播放、更新及时的专业在线动漫站。"),
+  ClimbWebsite(
+      name: "曲奇动漫",
+      iconUrl: "https://www.dmpck.me/tpsf/qd_pic/favicon.ico",
+      keyword: "quqi",
+      spkey: "enableWebSiteQuqi",
+      enable: SPUtil.getBool("enableWebSiteQuqi", defaultValue: false),
+      pingStatus: PingStatus(),
+      climb: ClimbQuqi(),
+      desc:
+          "曲奇动漫是由民间动漫爱好者创立，仅供学习交流使用。曲奇动漫致力于精品动漫资源收集整理，动漫免费在线观看、免费下载、新番动漫同步连载，动漫资讯同步更新，——欢迎访问曲奇动漫。"),
 ];

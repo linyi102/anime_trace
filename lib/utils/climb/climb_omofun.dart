@@ -11,6 +11,11 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../models/params/page_params.dart';
 
 class ClimbOmofun implements Climb {
+  // 单例
+  static final ClimbOmofun _instance = ClimbOmofun._();
+  factory ClimbOmofun() => _instance;
+  ClimbOmofun._();
+
   @override
   String baseUrl = "https://omofun.tv";
 
