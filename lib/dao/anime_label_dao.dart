@@ -44,24 +44,6 @@ class AnimeLabelDao {
     return labels;
   }
 
-  // 查询某个标签下的所有动漫
-  static Future<List<Anime>> getAnimesByLabelId(int labelId) async {
-    Log.info("sql:getAnimesByLabelId(labelId=$labelId)");
-    // 先获取该标签下的所有动漫id
-    List<Map<String, Object?>> maps = await db.query(table,
-        columns: [columnAnimeId],
-        where: "$columnLabelId = ?",
-        whereArgs: [labelId]);
-    // 在根据动漫id查询完整动漫信息
-    List<Anime> animes = [];
-    for (var map in maps) {
-      int animeId = map[columnAnimeId] as int;
-      animes.add(await SqliteUtil.getAnimeByAnimeId(animeId));
-    }
-
-    return animes;
-  }
-
   // 查询含有指定多个标签的所有动漫
   static Future<List<Anime>> getAnimesByLabelIds(List<int> labelIds) async {
     Log.info("sql:getAnimesByLabelId(labelIds=$labelIds)");
@@ -77,7 +59,11 @@ class AnimeLabelDao {
     List<Anime> animes = [];
     for (var map in maps) {
       int animeId = map[columnAnimeId] as int;
-      animes.add(await SqliteUtil.getAnimeByAnimeId(animeId));
+      Anime anime = await SqliteUtil.getAnimeByAnimeId(animeId);
+      // 如果没有找到动漫，则不添加(可能是因为之前删除了动漫，但没有删除标签列表里的添加记录)
+      if (anime.isCollected()) {
+        animes.add(anime);
+      }
     }
 
     return animes;
