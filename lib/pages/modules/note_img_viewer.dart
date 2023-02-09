@@ -34,7 +34,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
   static const fullScreenKey = "fullScreenInNoteImageViewer";
   bool fullScreen =
-      SPUtil.getBool(fullScreenKey, defaultValue: false); // 全屏显示图片，此时因此顶部栏和滚动轴
+      SPUtil.getBool(fullScreenKey, defaultValue: false); // 默认不开启全屏，全屏时隐藏预览轴
 
   late PageController pageController;
   ScrollController scrollController = ScrollController();
@@ -84,6 +84,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
               _buildPhotoViewGallery(),
               // 都叠放在图片上面，否则无法显示
               _buildStackAppBar(context),
+              // 没有全屏时显示预览图片
               if (!fullScreen)
                 Positioned(
                   bottom: 10,
@@ -92,13 +93,13 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                     width: MediaQuery.of(context).size.width,
                     child: _buildScrollAxis(),
                   ),
-                )
+                ),
             ],
           ),
         ));
   }
 
-  SizedBox _buildStackAppBar(BuildContext context) {
+  _buildStackAppBar(BuildContext context) {
     return SizedBox(
       // 高度为手机状态栏高度+AppBar高度
       height: kToolbarHeight + MediaQuery.of(context).padding.top,
@@ -114,7 +115,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         ),
         centerTitle: true,
         title: imageLocalPaths.length > 1 ? _buildImageProgressText() : null,
-        actions: _buildActions(context),
+        actions: _buildActions(),
       ),
     );
   }
@@ -130,8 +131,9 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
       itemCount: imageLocalPaths.length,
       pageController: pageController,
       onPageChanged: (index) {
-        currentIndex = index;
-        setState(() {});
+        setState(() {
+          currentIndex = index;
+        });
         _scrollToCurrentImage();
       },
       // 设置加载时的背景色，避免加载时突然白屏
@@ -139,17 +141,14 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
           Container(color: Colors.black),
       builder: (context, index) {
         return PhotoViewGalleryPageOptions(
-            imageProvider: FileImage(File(imageLocalPaths[index])),
-            errorBuilder: (buildContext, object, stackTrace) {
-              return _buildErrorImage(context);
-            },
-            onTapUp: (_, __, ___) {
-              if (fullScreen) {
-                _exitFullScreen();
-              } else {
-                _enterFullScreen();
-              }
-            });
+          imageProvider: FileImage(File(imageLocalPaths[index])),
+          errorBuilder: (buildContext, object, stackTrace) {
+            return _buildErrorImage(context);
+          },
+          onTapUp: (_, __, ___) {
+            _turnFullScreen();
+          },
+        );
       },
     );
   }
@@ -161,34 +160,25 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "无法正常显示图片",
-              style: TextStyle(color: Colors.white),
-            ),
-            const Text(
-              "请检查目录下是否存在该图片",
-              style: TextStyle(color: Colors.white),
-            ),
+            const Text("无法正常显示图片", style: TextStyle(color: Colors.white)),
+            const Text("请检查目录下是否存在该图片", style: TextStyle(color: Colors.white)),
             TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) => const ImagePathSetting()))
-                      .then((dirChanged) {
-                    if (dirChanged) {
-                      Log.info("修改了图片目录，重新获取本地图片");
-                      _getImageLocalPaths();
-                      setState(() {});
-                      // 用于图片浏览器的上级页面更新状态
-                      Global.modifiedNoteImgRootPath = true;
-                    }
-                  });
-                },
-                child: const Text("点此处设置目录")),
-            // 当构建错误组件时，全屏后无法单击退出全屏，所以这里提供文字按钮
-            if (fullScreen)
-              TextButton(
-                  onPressed: () => _exitFullScreen(), child: const Text("退出全屏"))
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                        builder: (context) => const ImagePathSetting()))
+                    .then((dirChanged) {
+                  if (dirChanged) {
+                    Log.info("修改了图片目录，重新获取本地图片");
+                    _getImageLocalPaths();
+                    setState(() {});
+                    // 用于图片浏览器的上级页面更新状态
+                    Global.modifiedNoteImgRootPath = true;
+                  }
+                });
+              },
+              child: const Text("点此处设置目录"),
+            ),
           ],
         ),
       ),
@@ -202,6 +192,14 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     SPUtil.setBool(fullScreenKey, fullScreen);
   }
 
+  _turnFullScreen() {
+    if (fullScreen) {
+      _exitFullScreen();
+    } else {
+      _enterFullScreen();
+    }
+  }
+
   _exitFullScreen() {
     setState(() {
       fullScreen = false;
@@ -213,18 +211,41 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     });
   }
 
-  List<Widget> _buildActions(BuildContext context) {
+  List<Widget> _buildActions() {
     return [
-      IconButton(
-          tooltip: "图片信息",
-          onPressed: () {
-            _showDialogAboutImageAttributes(context);
-          },
-          icon: const Icon(Icons.info_outlined, color: Colors.white))
+      PopupMenuButton(
+        icon: const Icon(Icons.more_vert, color: Colors.white),
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: Text("${fullScreen ? "开启" : "关闭"}图片预览"),
+                minLeadingWidth: 0,
+                onTap: () {
+                  Navigator.pop(context);
+                  _turnFullScreen();
+                },
+              ),
+            ),
+            PopupMenuItem(
+              padding: const EdgeInsets.all(0),
+              child: ListTile(
+                title: const Text("查看属性"),
+                minLeadingWidth: 0,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDialogAboutImageAttributes();
+                },
+              ),
+            ),
+          ];
+        },
+      ),
     ];
   }
 
-  _showDialogAboutImageAttributes(BuildContext context) {
+  _showDialogAboutImageAttributes() {
     File file = File(ImageUtil.getAbsoluteNoteImagePath(
         widget.relativeLocalImages[currentIndex].path));
     if (!file.existsSync()) {
