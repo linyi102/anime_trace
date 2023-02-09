@@ -132,13 +132,25 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   _buildInfoAndIconRow() {
-    const double smallIconSize = 14;
-    const double textScaleFactor = 1;
-
     return Row(
       children: [
         // 动漫信息
-        Column(
+        _buildInfo(),
+        const Spacer(),
+        // 相关按钮
+        _showInfoIcon(),
+        _showRateIcon(),
+        _showCollectIcon()
+      ],
+    );
+  }
+
+  _buildInfo() {
+    const double smallIconSize = 14;
+    const double textScaleFactor = 1;
+
+    // 迁移后信息会变化，所以使用obx监听
+    return Obx(() => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_anime.getAnimeInfoFirstLine().isNotEmpty)
@@ -199,7 +211,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   onTap: showDialogmodifyEpisodeCnt,
                   child: Row(
                     children: [
-                      Obx(() => Text("${_anime.animeEpisodeCnt}集")),
+                      Text("${_anime.animeEpisodeCnt}集"),
                       const Icon(EvaIcons.editOutline, size: smallIconSize),
                     ],
                   ),
@@ -208,13 +220,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               textScaleFactor: textScaleFactor,
             ),
           ],
-        ),
-        const Spacer(),
-        _showInfoIcon(),
-        _showRateIcon(),
-        _showCollectIcon()
-      ],
-    );
+        ));
   }
 
   void showDialogmodifyEpisodeCnt() {
