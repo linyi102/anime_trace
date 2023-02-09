@@ -114,6 +114,16 @@ class LabelManagePage extends StatelessWidget {
       decoration: const InputDecoration(
         hintText: "搜索标签",
         prefixIcon: Icon(Icons.search),
+        contentPadding: EdgeInsets.all(0),
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
       ),
       onChanged: (kw) async {
         Log.info("搜索标签关键字：$kw");
