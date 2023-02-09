@@ -324,10 +324,12 @@ class LabelManagePage extends StatelessWidget {
                       label.name = newLabelName;
                       labelsController.labels[index] = label; // 必须要重新赋值，才能看到变化
                       if (enableSelectLabelForAnime) {
-                        // 更新动漫详细页中的标签
                         int index = animeController!.labels
                             .indexWhere((element) => element.id == label.id);
-                        animeController!.labels[index] = label;
+                        // 如果动漫添加了该标签，则更新动漫里的这个标签
+                        if (index >= 0) {
+                          animeController!.labels[index] = label;
+                        }
                       }
                       Navigator.of(context).pop();
                     } else {
