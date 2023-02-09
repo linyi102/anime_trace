@@ -66,14 +66,13 @@ class AnimeController extends GetxController {
     SpProfile.turnShowDescInAnimeDetailPage();
   }
 
+  List<Object> episodeBuilderIds = ["getbuilder_episode"];
   void loadEpisode() async {
-    List<Object> ids = ["getbuilder_episode"];
-
     // 重置，然后重新渲染
     loadEpisodeOk = false;
     episodes.clear();
     notes.clear();
-    update(ids);
+    update(episodeBuilderIds);
 
     // 加载集信息
     // await Future.delayed(const Duration(seconds: 1));
@@ -115,7 +114,7 @@ class AnimeController extends GetxController {
       notes.add(episodeNote);
     }
     loadEpisodeOk = true;
-    update(ids);
+    update(episodeBuilderIds);
   }
 
   // 多选后，选择日期，并更新数据库
@@ -280,6 +279,9 @@ class AnimeController extends GetxController {
       throw "不可能的排序方式";
     }
     SPUtil.setString("episodeSortMethod", sortMethod);
+
+    // 更新
+    update(episodeBuilderIds);
   }
 
   void _sortByEpisodeNumberAsc() {
