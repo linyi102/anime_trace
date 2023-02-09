@@ -29,6 +29,17 @@ class AnimeController extends GetxController {
   int currentStartEpisodeNumber = 1;
   final int episodeRangeSize = 50;
 
+  // 显示简介
+  var showDescInAnimeDetailPage = SpProfile.getShowDescInAnimeDetailPage().obs;
+
+  // 标签
+  var labels = <Label>[].obs;
+
+  // 评价数量
+  var rateNoteCount = 0.obs;
+
+  /////////////////////////////// 方法 ///////////////////////////////
+
   // 首次进入动漫详细页，会把动漫put controller并设置动漫，以便tab页通过get获取controller，然后获取anime
   void enterDetailPage() {
     // 重置信息
@@ -39,6 +50,7 @@ class AnimeController extends GetxController {
     mapSelected.clear();
     lastMultiSelectedIndex = -1;
     currentStartEpisodeNumber = 1;
+    rateNoteCount.value = 0;
   }
 
   void setAnime(Anime newAnime) {
@@ -48,14 +60,13 @@ class AnimeController extends GetxController {
     // anime.update((val) => val = newAnime);
   }
 
-  // 显示简介
-  var showDescInAnimeDetailPage = SpProfile.getShowDescInAnimeDetailPage().obs;
+  // 获取评价数量
+  void acqRateNoteCount() async {
+    rateNoteCount.value =
+        await NoteDao.getRateNoteCountByAnimeId(anime.value.animeId);
+  }
 
-  // 标签
-  var labels = <Label>[].obs;
-
-  /////////////////////////////// 方法 ///////////////////////////////
-
+  // 获取添加的标签
   void acqLabels() async {
     labels.clear();
     labels.addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.value.animeId));

@@ -5,7 +5,6 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
-import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
@@ -29,13 +28,12 @@ class AnimeDetailInfo extends StatefulWidget {
 
 class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   Anime get _anime => widget.animeController.anime.value;
-
-  int rateNoteCount = 0; // 评价数量
+  int rateNoteCount = 0; // 最初的评价数量
 
   @override
   void initState() {
     super.initState();
-    _loadRateNoteCnt();
+    widget.animeController.acqRateNoteCount();
   }
 
   @override
@@ -106,29 +104,30 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
 
   // 显示评价按钮，点击后进入评价列表页
   _showRateIcon() {
-    return IconTextButton(
-      iconData: EvaIcons.messageCircleOutline,
-      title: "$rateNoteCount条评价",
-      onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(
-                builder: (context) => AnimeRateListPage(_anime)))
-            .then((value) {
-          // 重新查询评价数量
-          _loadRateNoteCnt();
-        });
-      },
-    );
+    return Obx(() => IconTextButton(
+          iconData: EvaIcons.messageCircleOutline,
+          title: "${widget.animeController.rateNoteCount}条评价",
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (context) => AnimeRateListPage(_anime)))
+                .then((value) async {
+              // 更新评价数量
+              widget.animeController.acqRateNoteCount();
+            });
+          },
+        ));
   }
 
   // 显示收藏按钮，点击后可以修改清单
   _showCollectIcon() {
-    return IconTextButton(
-      iconData: _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
-      iconColor: _anime.isCollected() ? Colors.red : null,
-      title: _anime.isCollected() ? _anime.tagName : "",
-      onTap: () => _dialogSelectTag(),
-    );
+    return Obx(() => IconTextButton(
+          iconData:
+              _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
+          iconColor: _anime.isCollected() ? Colors.red : null,
+          title: _anime.isCollected() ? _anime.tagName : "",
+          onTap: () => _dialogSelectTag(),
+        ));
   }
 
   _buildInfoAndIconRow() {
@@ -250,15 +249,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         widget.animeController.updateAnimeEpisodeCnt(episodeCnt);
         widget.animeController.loadEpisode();
       });
-    });
-  }
-
-  _loadRateNoteCnt() {
-    NoteDao.getRateNoteCountByAnimeId(_anime.animeId).then((value) {
-      setState(() {
-        rateNoteCount = value;
-      });
-      Log.info("评价数量：$rateNoteCount");
     });
   }
 
