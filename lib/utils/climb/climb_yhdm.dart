@@ -9,7 +9,7 @@ import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class ClimbYhdm implements Climb {
+class ClimbYhdm extends Climb {
   // 单例，作用是曲奇动漫使用ClimbYhdm().方法时，不会再次创建ClimbYhdm对象
   static final ClimbYhdm _instance = ClimbYhdm._();
   factory ClimbYhdm() => _instance;

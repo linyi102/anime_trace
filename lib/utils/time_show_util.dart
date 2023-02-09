@@ -71,8 +71,6 @@ class TimeShowUtil {
       showTimeStr = "$yearStr-$showTimeStr";
     }
 
-
-
     // if (dateTime.year != now.year) {
     //   // 如果要显示精确时间，则加上时分
     //   if (showTime && showPreciseTime) {
@@ -104,35 +102,30 @@ class TimeShowUtil {
     // }
 
     if (showDayOfWeek) {
-      String weekdayStr;
-      switch (dateTime.weekday) {
-        case 1:
-          weekdayStr = "一";
-          break;
-        case 2:
-          weekdayStr = "二";
-          break;
-        case 3:
-          weekdayStr = "三";
-          break;
-        case 4:
-          weekdayStr = "四";
-          break;
-        case 5:
-          weekdayStr = "五";
-          break;
-        case 6:
-          weekdayStr = "六";
-          break;
-        case 7:
-          weekdayStr = "日";
-          break;
-        default:
-          weekdayStr = "";
-      }
-      showTimeStr += " 周$weekdayStr";
+      showTimeStr += " 周${getChineseWeekdayByNumber(dateTime.weekday)}";
     }
 
     return showTimeStr;
+  }
+
+  static String getChineseWeekdayByNumber(int weekday) {
+    switch (weekday) {
+      case 1:
+        return "一";
+      case 2:
+        return "二";
+      case 3:
+        return "三";
+      case 4:
+        return "四";
+      case 5:
+        return "五";
+      case 6:
+        return "六";
+      case 7:
+        return "日";
+      default:
+        return "？";
+    }
   }
 }

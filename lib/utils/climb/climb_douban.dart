@@ -10,8 +10,7 @@ import 'package:oktoast/oktoast.dart';
 
 import '../../models/params/page_params.dart';
 
-class ClimbDouban implements Climb {
-  @override
+class ClimbDouban extends Climb {
   String baseUrl = "https://www.douban.com";
 
   @override

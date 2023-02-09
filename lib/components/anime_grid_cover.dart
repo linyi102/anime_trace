@@ -3,6 +3,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 import '../controllers/anime_display_controller.dart';
 import 'common_image.dart';
@@ -17,6 +18,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool showReviewNumber;
   final bool isSelected;
   final void Function()? onPressed;
+  final bool loadingCover;
 
   const AnimeGridCover(
     this._anime, {
@@ -27,6 +29,7 @@ class AnimeGridCover extends StatelessWidget {
     this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
+    this.loadingCover = false,
   }) : super(key: key);
 
   @override
@@ -76,12 +79,20 @@ class AnimeGridCover extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             child: Stack(
               children: [
-                // 确保图片填充
-                SizedBox(
-                  width: mqSize.width,
-                  height: mqSize.height,
-                  child: CommonImage(_anime.getCommonCoverUrl()),
-                ),
+                loadingCover
+                    ? const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : SizedBox(
+                        // 确保图片填充
+                        width: mqSize.width,
+                        height: mqSize.height,
+                        child: CommonImage(_anime.getCommonCoverUrl()),
+                      ),
                 if (isSelected)
                   Container(
                     width: mqSize.width,
@@ -197,7 +208,7 @@ class AnimeGridCover extends StatelessWidget {
         textDirection: TextDirection.ltr);
     textPainter.layout(maxWidth: constraints.maxWidth);
     if (textPainter.didExceedMaxLines) {
-      Log.info("溢出：$name");
+      // Log.info("动漫名字溢出：$name");
       return false;
     }
     return true;

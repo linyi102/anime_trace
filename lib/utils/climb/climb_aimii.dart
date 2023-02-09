@@ -6,8 +6,7 @@ import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import '../../models/params/page_params.dart';
 
 // 艾米动漫
-class ClimbAimi implements Climb {
-  @override
+class ClimbAimi extends Climb {
   String baseUrl = "https://www.aimidm.com";
 
   @override

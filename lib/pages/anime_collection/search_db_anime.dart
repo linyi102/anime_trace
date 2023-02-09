@@ -16,8 +16,10 @@ import '../../components/anime_list_view.dart';
 
 /// 搜索已添加的动漫
 class SearchDbAnime extends StatefulWidget {
-  const SearchDbAnime({this.incomingLabelId, Key? key}) : super(key: key);
+  const SearchDbAnime({this.incomingLabelId, this.kw, Key? key})
+      : super(key: key);
   final int? incomingLabelId;
+  final String? kw;
 
   @override
   _SearchDbAnimeState createState() => _SearchDbAnimeState();
@@ -48,6 +50,15 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
       selectedLabels.add(labelsController.labels
           .singleWhere((element) => element.id == widget.incomingLabelId));
       _searchAnimesByLabels();
+    }
+
+    // 周表中点击某个动漫会进入该搜索页，来查找已收藏的动漫
+    if (widget.kw != null) {
+      // 不显示标签
+      showLabelPage = false;
+      // 等待200ms再去搜索，避免导致页面切换动画卡顿
+      Future.delayed(const Duration(milliseconds: 200))
+          .then((value) => _searchDbAnimesByKeyword(widget.kw!));
     }
   }
 
@@ -232,9 +243,6 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   }
 
   void _searchDbAnimesByKeyword(String text) {
-    Log.info(
-        "Localizations.localeOf(context)=${Localizations.localeOf(context)}");
-
     if (_lastInputText == text) {
       Log.info("相同内容，不进行搜索");
       return;

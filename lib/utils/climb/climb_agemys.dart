@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
@@ -9,10 +8,7 @@ import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../models/params/page_params.dart';
-
-class ClimbAgemys implements Climb {
-  @override
+class ClimbAgemys extends Climb {
   // String baseUrl = "https://www.agemys.cc";
   String baseUrl = "https://www.agemys.net"; // 2022.10.27
 
@@ -107,11 +103,5 @@ class ClimbAgemys implements Climb {
     if (showMessage) showToast("更新完毕");
 
     return anime;
-  }
-
-  @override
-  Future<List<Anime>> climbDirectory(
-      AnimeFilter filter, PageParams pageParams) async {
-    return [];
   }
 }

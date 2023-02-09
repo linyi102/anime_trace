@@ -25,7 +25,7 @@ class AnimeLabelDao {
 
   // 查询某个动漫下的所有标签
   static Future<List<Label>> getLabelsByAnimeId(int animeId) async {
-    Log.info("sql:deleteAnimeLabel(animeId=$animeId)");
+    Log.info("sql:getLabelsByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有标签id
     List<Map<String, Object?>> maps = await db.query(table,
         columns: [columnLabelId],

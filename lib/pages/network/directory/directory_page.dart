@@ -44,20 +44,24 @@ class _DirectoryPageState extends State<DirectoryPage>
 
   late ClimbWebsite curWebsite;
 
-  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbQuqi()];
+  final List<Climb> usableClimbs = [ClimbQuqi(), ClimbYhdm()];
 
   late final RefreshController _refreshController;
 
   final _itemHeight = 120.0;
-  final _coverWidth = 90.0;
+  final _coverWidth = 80.0;
 
   @override
   void initState() {
     super.initState();
 
-    int websiteIdx = SPUtil.getInt(selectedDirectorySourceIdx, defaultValue: 0);
+    // 默认为可用列表中的第一个，然后从所有搜索源中找到对应的下标
+    int defaultIdx = climbWebsites.indexWhere((element) =>
+        element.climb.runtimeType == usableClimbs.first.runtimeType);
+    int websiteIdx =
+        SPUtil.getInt(selectedDirectorySourceIdx, defaultValue: defaultIdx);
     if (websiteIdx > climbWebsites.length) {
-      websiteIdx = 0;
+      websiteIdx = defaultIdx;
     } else {
       curWebsite = climbWebsites[websiteIdx];
     }
@@ -234,7 +238,7 @@ class _DirectoryPageState extends State<DirectoryPage>
       return SizedBox(
         height: _itemHeight,
         child: MaterialButton(
-          padding: const EdgeInsets.all(0),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           onPressed: () {
             Log.info("单击");
             // 如果收藏了，则单击进入详细页面
@@ -255,21 +259,20 @@ class _DirectoryPageState extends State<DirectoryPage>
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                child: SizedBox(
-                  width: _coverWidth,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: MaterialButton(
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => PhotoView(
-                                imageProvider: imageProvider,
-                                onTapDown: (_, __, ___) =>
-                                    Navigator.of(context).pop())));
-                      },
-                      child: AnimeGridCover(anime, onlyShowCover: true),
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: MaterialButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => PhotoView(
+                              imageProvider: imageProvider,
+                              onTapDown: (_, __, ___) =>
+                                  Navigator.of(context).pop())));
+                    },
+                    child: SizedBox(
+                        width: _coverWidth,
+                        child: AnimeGridCover(anime, onlyShowCover: true)),
                   ),
                 ),
               ),

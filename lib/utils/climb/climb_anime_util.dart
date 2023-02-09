@@ -1,19 +1,16 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/anime_update_record.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../models/params/page_params.dart';
 
 class ClimbAnimeUtil {
   // 根据动漫网址中的关键字来判断来源
@@ -29,6 +26,12 @@ class ClimbAnimeUtil {
       }
     }
     return null;
+  }
+
+  // 查询周表中某天的更新记录
+  static Future<List<WeekRecord>> climbWeekRecords(
+      ClimbWebsite climbWebsite, int weekday) async {
+    return climbWebsite.climb.climbWeeklyTable(weekday);
   }
 
   // 多搜索源。根据关键字搜索动漫

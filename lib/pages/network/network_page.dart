@@ -5,6 +5,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.
 import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
 import 'package:flutter_test_future/pages/network/sources/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
+import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
@@ -21,7 +22,7 @@ class NetWorkPage extends StatefulWidget {
 class _NetWorkPageState extends State<NetWorkPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
-  final List<String> navs = ["搜索源", "更新", "目录"];
+  final List<String> navs = ["搜索源", "更新", "周表", "目录"];
   List<Widget> actions = [];
 
   @override
@@ -68,6 +69,7 @@ class _NetWorkPageState extends State<NetWorkPage>
           children: [
             const SourceListPage(),
             UpdateRecordPage(),
+            const WeeklyPage(),
             const DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(

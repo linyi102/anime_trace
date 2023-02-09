@@ -11,8 +11,7 @@ import '../dio_package.dart';
 import '../../models/params/result.dart';
 
 // 次元城动漫
-class ClimbCycdm implements Climb {
-  @override
+class ClimbCycdm extends Climb {
   // String baseUrl = "https://www.cycacg.com";
   String baseUrl = "https://www.cycdm01.top"; // 2022.10.27
 
