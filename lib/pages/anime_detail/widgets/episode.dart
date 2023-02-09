@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -112,6 +113,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     );
   }
 
+  bool enableEpisodeRangeBottomSheetStyle = true;
   // 动漫信息下面的操作栏
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
@@ -124,21 +126,37 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text("选择范围"),
-                    content: SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 2,
-                        runSpacing: 2,
-                        children: _buildEpisodeRangeChips(context),
+              if (enableEpisodeRangeBottomSheetStyle) {
+                showFlexibleBottomSheet(
+                    duration: const Duration(milliseconds: 200),
+                    minHeight: 0,
+                    initHeight: 0.5,
+                    maxHeight: 1,
+                    context: context,
+                    isExpand: true,
+                    builder: (
+                      BuildContext context,
+                      ScrollController scrollController,
+                      double bottomSheetOffset,
+                    ) =>
+                        Scaffold(body: _buildEpisodeRangeGridView()));
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (dialogContext) {
+                    return AlertDialog(
+                      title: const Text("选择范围"),
+                      content: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 2,
+                          runSpacing: 2,
+                          children: _buildEpisodeRangeChips(dialogContext),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
+                    );
+                  },
+                );
+              }
             },
             child: Row(
               children: [
@@ -215,6 +233,47 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           ),
         ],
       ),
+    );
+  }
+
+  _buildEpisodeRangeGridView() {
+    return GridView(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          mainAxisExtent: 60, maxCrossAxisExtent: 120),
+      padding: const EdgeInsets.all(8.0),
+      children: () {
+        List<Widget> items = [];
+        for (var startEpisodeNumber = 1;
+            startEpisodeNumber <= _anime.animeEpisodeCnt;
+            startEpisodeNumber += widget.animeController.episodeRangeSize) {
+          bool cur = widget.animeController.currentStartEpisodeNumber ==
+              startEpisodeNumber;
+
+          items.add(Card(
+            elevation: 0,
+            child: TextButton(
+              autofocus: cur ? true : false,
+              onPressed: () {
+                widget.animeController.currentStartEpisodeNumber =
+                    startEpisodeNumber;
+                SPUtil.setInt("${_anime.animeId}-currentStartEpisodeNumber",
+                    widget.animeController.currentStartEpisodeNumber);
+                Navigator.of(context).pop();
+                // 获取集数据
+                widget.animeController.loadEpisode();
+              },
+              child: Text(
+                _getEpisodeRangeStr((startEpisodeNumber)),
+                style: TextStyle(
+                    color: cur
+                        ? ThemeUtil.getPrimaryColor()
+                        : ThemeUtil.getFontColor()),
+              ),
+            ),
+          ));
+        }
+        return items;
+      }(),
     );
   }
 
@@ -635,7 +694,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         endEpisodeNumber.toString().padLeft(2, '0');
   }
 
-  _buildEpisodeRangeChips(context) {
+  _buildEpisodeRangeChips(BuildContext dialogContext) {
     List<Widget> chips = [];
     for (var startEpisodeNumber = 1;
         startEpisodeNumber <= _anime.animeEpisodeCnt;
@@ -645,7 +704,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           widget.animeController.currentStartEpisodeNumber = startEpisodeNumber;
           SPUtil.setInt("${_anime.animeId}-currentStartEpisodeNumber",
               widget.animeController.currentStartEpisodeNumber);
-          Navigator.of(context).pop();
+          Navigator.pop(dialogContext);
           // 获取集数据
           widget.animeController.loadEpisode();
         },
