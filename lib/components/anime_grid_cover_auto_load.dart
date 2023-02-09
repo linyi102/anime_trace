@@ -6,9 +6,15 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 /// 自动根据动漫详细地址来获取封面
 class AnimeGridCoverAutoLoad extends StatefulWidget {
   const AnimeGridCoverAutoLoad(
-      {required this.anime, this.onPressed, super.key});
+      {required this.anime,
+      this.onPressed,
+      this.showProgress = false,
+      this.showReviewNumber = false,
+      super.key});
   final Anime anime;
   final void Function()? onPressed;
+  final bool showProgress;
+  final bool showReviewNumber;
 
   @override
   State<AnimeGridCoverAutoLoad> createState() => _AnimeGridCoverAutoLoadState();
@@ -26,9 +32,11 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
       loadingCover = true;
       _loadCover();
     } else {
-      setState(() {
-        loadingCover = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingCover = false;
+        });
+      }
     }
   }
 
@@ -38,6 +46,8 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
       anime,
       onPressed: widget.onPressed,
       loadingCover: loadingCover,
+      showProgress: widget.showProgress,
+      showReviewNumber: widget.showReviewNumber,
     );
   }
 

@@ -529,7 +529,7 @@ class SqliteUtil {
   }
 
   static void deleteAnimeByAnimeId(int animeId) async {
-    Log.info("sql: deleteAnimeByAnimeId");
+    Log.info("sql: deleteAnimeByAnimeId(animeId=$animeId)");
     // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
     await database.rawDelete('''
       delete from history

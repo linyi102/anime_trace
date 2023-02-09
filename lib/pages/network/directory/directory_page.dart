@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 
@@ -615,7 +615,7 @@ class _DirectoryPageState extends State<DirectoryPage>
         visualDensity:
             const VisualDensity(horizontal: VisualDensity.minimumDensity),
         onPressed: () {
-          dialogSelectTag(setState, context, anime);
+          dialogSelectChecklist(setState, context, anime);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

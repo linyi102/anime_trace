@@ -47,83 +47,95 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
     double expandedHeight =
         MediaQuery.of(context).size.height * coverBgHeightRatio;
 
-    return SliverAppBar(
-      // 下滑后显示收缩后的AppBar
-      pinned: true,
-      expandedHeight: expandedHeight,
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
-            ? CollapseMode.parallax // 下滑时添加视差
-            : CollapseMode.pin, // 下滑时固定
-        background: Stack(
-          children: [
-            // 底层背景
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              // 模糊
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(
-                  sigmaX: sigma,
-                  sigmaY: sigma,
-                ),
-                child: Obx(() => CommonImage(
-                      widget.animeController.anime.value.getCommonCoverUrl(),
-                      showIconWhenUrlIsEmptyOrError: false,
-                      reduceMemCache: false,
-                    )),
-              ),
+    return Obx(() => SliverAppBar(
+          // 下滑后显示收缩后的AppBar
+          pinned: true,
+          expandedHeight: expandedHeight,
+          flexibleSpace: FlexibleSpaceBar(
+            collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
+                ? CollapseMode.parallax // 下滑时添加视差
+                : CollapseMode.pin, // 下滑时固定
+            background: Stack(
+              children: [
+                _buildBg(),
+                _buildGradient(),
+                _buildGestureDetector(),
+              ],
             ),
-            // 为底层背景添加渐变效果
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: SpProfile.getEnableCoverBgGradient()
-                        ? [
-                            // 最上面添加一点黑色，这样就能看清按钮了
-                            Colors.black.withOpacity(0.2),
-                            // Colors.white.withOpacity(0.5),
-                            // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
-                            ThemeUtil.getScaffoldBackgroundColor()
-                                .withOpacity(0),
-                            // 过渡到主体颜色
-                            ThemeUtil.getScaffoldBackgroundColor(),
-                          ]
-                        : [
-                            Colors.black.withOpacity(0.2),
-                            ThemeUtil.getScaffoldBackgroundColor()
-                                .withOpacity(0),
-                            // 最后1个换成透明色，就取消渐变了
-                            Colors.transparent
-                          ]),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AnimeCoverDetail(
-                          animeController: widget.animeController,
-                        )));
+          ),
+          leading: IconButton(
+              onPressed: () {
+                widget.popPage();
               },
-            )
-          ],
-        ),
-      ),
-      leading: IconButton(
-          onPressed: () {
-            widget.popPage();
-          },
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          color: appBarIconColor),
-      actions: _buildActions(),
-      // bottom: _buildTabRow(),
+              icon: const Icon(Icons.arrow_back_ios, size: 20),
+              color: appBarIconColor),
+          actions: _generateActions(),
+        ));
+  }
+
+  /// 点击进入封面详情页
+  _buildGestureDetector() {
+    return GestureDetector(
+      onTap: () {
+        if (widget.animeController.isCollected) {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AnimeCoverDetail(
+                    animeController: widget.animeController,
+                  )));
+        }
+      },
     );
   }
 
-  List<Widget> _buildActions() {
-    if (!_anime.isCollected()) return [];
+  /// 为底层背景添加渐变效果
+  _buildGradient() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: SpProfile.getEnableCoverBgGradient()
+                ? [
+                    // 最上面添加一点黑色，这样就能看清按钮了
+                    Colors.black.withOpacity(0.2),
+                    // Colors.white.withOpacity(0.5),
+                    // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
+                    ThemeUtil.getScaffoldBackgroundColor().withOpacity(0),
+                    // 过渡到主体颜色
+                    ThemeUtil.getScaffoldBackgroundColor(),
+                  ]
+                : [
+                    Colors.black.withOpacity(0.2),
+                    ThemeUtil.getScaffoldBackgroundColor().withOpacity(0),
+                    // 最后1个换成透明色，就取消渐变了
+                    Colors.transparent
+                  ]),
+      ),
+    );
+  }
+
+  /// 底层背景
+  _buildBg() {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      // 模糊
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(
+          sigmaX: sigma,
+          sigmaY: sigma,
+        ),
+        child: Obx(() => CommonImage(
+              widget.animeController.anime.value.getCommonCoverUrl(),
+              showIconWhenUrlIsEmptyOrError: false,
+              reduceMemCache: false,
+            )),
+      ),
+    );
+  }
+
+  List<Widget> _generateActions() {
+    if (!widget.animeController.isCollected) return [];
     return [
       PopupMenuButton(
         icon: Icon(Icons.more_vert, color: appBarIconColor),
@@ -200,9 +212,12 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               ElevatedButton(
                   onPressed: () {
                     SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
-                    // 关闭当前对话框后，调用函数去关闭动漫详细页，注意两者的context是不同的
+                    // 关闭当前对话框
                     Navigator.of(context).pop();
-                    _popAnimeDetailPage();
+                    // 退出当前页
+                    // _popAnimeDetailPage();
+                    // 不用退出
+                    widget.animeController.deleteAnime();
                   },
                   child: const Text("确认")),
             ],

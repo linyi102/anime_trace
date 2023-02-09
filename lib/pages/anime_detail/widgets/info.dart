@@ -2,10 +2,12 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
@@ -50,37 +52,42 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
           ),
           // 评价
           _buildRatingStars(),
-          const SizedBox(height: 15),
           // 动漫信息(左侧)和相关按钮(右侧)
-          _buildInfoAndIconRow(),
+          Obx(() => _buildInfoAndIconRow()),
           // 简介
-          Obx(
-            () => widget.animeController.anime.value.animeDesc.isNotEmpty &&
-                    widget.animeController.showDescInAnimeDetailPage.value
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: ExpandText(
-                        widget.animeController.anime.value.animeDesc,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12),
-                        arrowSize: 20),
-                  )
-                : Container(),
-          ),
+          Obx(() => _buildDesc()),
           // 标签列表
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: AnimeDetailLabels(animeController: widget.animeController),
-          )
+          AnimeDetailLabels(animeController: widget.animeController)
         ]),
       ),
     );
   }
 
+  _buildDesc() {
+    if (widget.animeController.anime.value.animeDesc.isNotEmpty &&
+        widget.animeController.showDescInAnimeDetailPage.value) {
+      return widget.animeController.isCollected
+          ? ExpandText(widget.animeController.anime.value.animeDesc,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor()),
+              arrowSize: 20)
+          // 如果没有收藏，这不折叠简介
+          : Text(
+              widget.animeController.anime.value.animeDesc,
+              style:
+                  TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor()),
+            );
+    } else {
+      return Container();
+    }
+  }
+
   // 构建评分栏
   _buildRatingStars() {
     return AnimeRatingBar(
+        enableRate: widget.animeController.isCollected, // 未收藏时不能评分
         rate: _anime.rate,
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
@@ -131,17 +138,46 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   _buildInfoAndIconRow() {
-    return Row(
-      children: [
-        // 动漫信息
+    if (widget.animeController.isCollected) {
+      return Row(
+        children: [
+          // 动漫信息
+          _buildInfo(),
+          const Spacer(),
+          // 相关按钮
+          _showInfoIcon(), _showRateIcon(), _showCollectIcon()
+        ],
+      );
+    } else {
+      return Row(children: [
         _buildInfo(),
         const Spacer(),
-        // 相关按钮
-        _showInfoIcon(),
-        _showRateIcon(),
-        _showCollectIcon()
-      ],
-    );
+        SizedBox(
+          height: 40,
+          width: 100,
+          child: MaterialButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              onPressed: () {
+                dialogSelectChecklist(setState, context, _anime,
+                    onlyShowChecklist: true,
+                    enableClimbDetailInfo: false, callback: (newAnime) {
+                  widget.animeController.setAnime(newAnime);
+                  widget.animeController.loadEpisode();
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.favorite_border, size: 18),
+                  SizedBox(width: 5),
+                  Text("收藏"),
+                ],
+              )),
+        )
+      ]);
+    }
   }
 
   _buildInfo() {
@@ -152,6 +188,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
     return Obx(() => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 因为动漫未收藏时显示的收藏按钮撑高整个Row
+            // 而收藏后，三个按钮会撑高一些，导致收藏后信息行位置变了，所以在上下添加10高度box
+            const SizedBox(height: 10),
             if (_anime.getAnimeInfoFirstLine().isNotEmpty)
               // 第一行信息
               Text.rich(
@@ -187,7 +226,10 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 WidgetSpan(
                     child: GestureDetector(
                   onTap: () {
-                    showDialogSelectPlayStatus(context, widget.animeController);
+                    if (widget.animeController.isCollected) {
+                      showDialogSelectPlayStatus(
+                          context, widget.animeController);
+                    }
                   },
                   // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
                   child: Obx(() => Row(
@@ -207,7 +249,11 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 const WidgetSpan(child: Text(" ")),
                 WidgetSpan(
                     child: GestureDetector(
-                  onTap: showDialogmodifyEpisodeCnt,
+                  onTap: () {
+                    if (widget.animeController.isCollected) {
+                      showDialogmodifyEpisodeCnt();
+                    }
+                  },
                   child: Row(
                     children: [
                       Text("${_anime.animeEpisodeCnt}集"),
@@ -218,6 +264,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               ]),
               textScaleFactor: textScaleFactor,
             ),
+            const SizedBox(height: 10),
           ],
         ));
   }

@@ -42,10 +42,17 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 200)).then((value) {
-      // 200ms后再去请求数据，避免在页面过渡动画卡顿
-      widget.animeController.loadEpisode();
-    });
+
+    if (widget.animeController.isCollected) {
+      widget.animeController.currentStartEpisodeNumber = SPUtil.getInt(
+          "${_anime.animeId}-currentStartEpisodeNumber",
+          defaultValue: 1);
+
+      Future.delayed(const Duration(milliseconds: 200)).then((value) {
+        // 200ms后再去请求数据，避免在页面过渡动画卡顿
+        widget.animeController.loadEpisode();
+      });
+    }
   }
 
   @override
@@ -64,6 +71,12 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         id: "getbuilder_episode",
         initState: (_) {},
         builder: (_) {
+          // 如果没有收藏，则不展示集信息，注意需要放在GetBuilder里
+          // 这样收藏后，其他地方执行animeController.loadEpisode()更新时就会看到变化
+          if (!widget.animeController.isCollected) {
+            return SliverToBoxAdapter(child: Container());
+          }
+
           if (!widget.animeController.loadEpisodeOk) {
             return SliverToBoxAdapter(
               child: Container(),
@@ -252,7 +265,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           items.add(Card(
             elevation: 0,
             child: TextButton(
-              autofocus: cur ? true : false,
+              // autofocus仅仅改变的是背景色
+              // autofocus: cur ? true : false,
               onPressed: () {
                 widget.animeController.currentStartEpisodeNumber =
                     startEpisodeNumber;

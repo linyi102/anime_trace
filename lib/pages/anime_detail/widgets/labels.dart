@@ -24,11 +24,11 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   @override
   void initState() {
     super.initState();
+
     _loadLabels();
   }
 
   _loadLabels() async {
-    Log.info("查询当前动漫(id=${_anime.animeId})的所有标签");
     // labelsController.labelsInAnimeDetail.value =
     //     await AnimeLabelDao.getLabelsByAnimeId(_anime.animeId);
     // labelsController.animeId = _anime.animeId;
@@ -37,11 +37,13 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Wrap(
-          spacing: 4,
-          runSpacing: 4,
-          children: _getLabelChips(),
-        ));
+    return Obx(() => widget.animeController.isCollected
+        ? Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            children: _getLabelChips(),
+          )
+        : Container());
   }
 
   // 构建标签chips，最后添加增加标签和管理删除chip

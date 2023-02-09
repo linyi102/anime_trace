@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
   var anime = Anime(animeName: "", animeEpisodeCnt: 0).obs;
+  bool get isCollected => anime.value.isCollected();
 
   List<Episode> episodes = []; // 集
   List<Note> notes = []; // 集对应的笔记
@@ -40,12 +41,31 @@ class AnimeController extends GetxController {
 
   /////////////////////////////// 方法 ///////////////////////////////
 
-  // 首次进入动漫详细页，会把动漫put controller并设置动漫，以便tab页通过get获取controller，然后获取anime
-  void enterDetailPage() {
-    // 重置信息
+  // 删除动漫，需要清空集信息、笔记、标签
+  void deleteAnime() {
+    anime.update((val) {
+      val?.animeId = 0;
+      val?.checkedEpisodeCnt = 0;
+      val?.tagName = "";
+      // 保留其他信息
+    });
+
     episodes.clear();
-    notes.clear();
     loadEpisodeOk = false;
+    update(episodeBuilderIds);
+
+    labels.clear();
+    notes.clear();
+    mapSelected.clear();
+  }
+
+  // 退出动漫详情页，清空信息
+  void popPage() {
+    anime.value = Anime(animeName: "", animeEpisodeCnt: 0);
+
+    episodes.clear();
+    loadEpisodeOk = false;
+    notes.clear();
     multiSelected.value = false;
     mapSelected.clear();
     lastMultiSelectedIndex = -1;
@@ -54,6 +74,7 @@ class AnimeController extends GetxController {
   }
 
   void setAnime(Anime newAnime) {
+    anime.value = Anime(animeName: "", animeEpisodeCnt: 0);
     // 进入详细页可以看到变化
     anime.value = newAnime;
     // 下面方式可以实时更新播放状态，但进入详细页仍然是之前的动漫
@@ -62,14 +83,20 @@ class AnimeController extends GetxController {
 
   // 获取评价数量
   void acqRateNoteCount() async {
-    rateNoteCount.value =
-        await NoteDao.getRateNoteCountByAnimeId(anime.value.animeId);
+    if (isCollected) {
+      rateNoteCount.value =
+          await NoteDao.getRateNoteCountByAnimeId(anime.value.animeId);
+    }
   }
 
   // 获取添加的标签
   void acqLabels() async {
     labels.clear();
-    labels.addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.value.animeId));
+    if (isCollected) {
+      Log.info("查询当前动漫(id=${anime.value.animeId})的所有标签");
+      labels
+          .addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.value.animeId));
+    }
   }
 
   void turnShowDescInAnimeDetailPage() {

@@ -29,8 +29,6 @@ class WeeklyPage extends StatefulWidget {
 class _WeeklyPageState extends State<WeeklyPage> {
   final weeklyController = Get.put(WeeklyController());
   int selectedWeekday = DateTime.now().weekday; // 默认选中当天
-  late final PageController pageController;
-
   int get selectedWeekdayIdx => selectedWeekday - 1;
 
   final List<Climb> usableClimbs = [ClimbQuqi()];
@@ -38,11 +36,14 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
   late bool loading;
 
+  bool enableSlide = false; // 开启左右滑动切换周几
+  late final PageController pageController;
+
   @override
   void initState() {
     super.initState();
 
-    pageController = PageController(initialPage: selectedWeekday);
+    pageController = PageController(initialPage: selectedWeekdayIdx);
     for (int i = 0; i < 7; ++i) {
       weeklyController.weeks.add([]);
     }
@@ -100,11 +101,24 @@ class _WeeklyPageState extends State<WeeklyPage> {
     return Expanded(
       child: PageView.builder(
         // 不允许滚动，因为tabbar也要滚动。所以改用底部周按钮来切换周几
-        physics: const NeverScrollableScrollPhysics(),
+        physics: enableSlide ? null : const NeverScrollableScrollPhysics(),
         controller: pageController,
-        itemCount: 7,
-        itemBuilder: (context, index) {
-          Log.info("page$index build");
+        itemCount: weeklyController.weeks.length,
+        onPageChanged: (changedPage) {
+          selectedWeekday = changedPage + 1;
+          Log.info(
+              "changedPage=$changedPage, selectedWeekday=$selectedWeekday");
+          if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
+            // 加载数据，里面会重新渲染，所以会同时渲染日期栏和动漫列表
+            _loadData();
+          } else {
+            setState(() {
+              // 需要重新渲染日期栏
+            });
+          }
+        },
+        itemBuilder: (context, pageIndex) {
+          Log.info("pageIndex=$pageIndex");
 
           if (loading) {
             return const Center(child: CircularProgressIndicator());
@@ -114,11 +128,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
             // child: _buildAnimeList(),
             child: GridView.builder(
               gridDelegate: getAnimeGridDelegate(context),
-              itemCount: weeklyController.weeks[selectedWeekdayIdx].length,
+              // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
+              itemCount: weeklyController.weeks[pageIndex].length,
               itemBuilder: (context, recordIdx) {
                 // Log.info("recordIdx=$recordIdx");
                 WeekRecord record =
-                    weeklyController.weeks[selectedWeekdayIdx][recordIdx];
+                    weeklyController.weeks[pageIndex][recordIdx];
 
                 return Column(
                   children: [
@@ -126,13 +141,16 @@ class _WeeklyPageState extends State<WeeklyPage> {
                       anime: record.anime,
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  // SearchDbAnime(kw: record.anime.animeName),
-                                  AnimeDetailPlus(record.anime),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                // SearchDbAnime(kw: record.anime.animeName),
+                                AnimeDetailPlus(record.anime),
+                          ),
+                        );
                       },
+                      showProgress: false,
+                      showReviewNumber: false,
                     ),
                   ],
                 );
@@ -170,8 +188,10 @@ class _WeeklyPageState extends State<WeeklyPage> {
     );
   }
 
-  WeeklyBar _buildWeeklyBar() {
+  _buildWeeklyBar() {
     return WeeklyBar(
+      // 必须添加key，才能保证左右滑动pageview后，setState重新渲染WeeklyBar后，发生变化
+      key: Key("weekley-bar-$selectedWeekday"),
       selectedWeekday: selectedWeekday,
       onChanged: (newWeekday) {
         Log.info("newWeekday=$newWeekday");
@@ -188,9 +208,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
         // });
         // 切换页面较大时，短时间内播完动画有些卡顿，所以改用jump
         pageController.jumpToPage(selectedWeekdayIdx);
-        if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
-          _loadData();
-        }
+        // 跳转或动画到某页时，会指定pageView里的代码，所以把加载数据放在那里
       },
     );
   }
@@ -244,8 +262,11 @@ class _WeeklyPageState extends State<WeeklyPage> {
   }
 }
 
+/// 周日期栏
+/// 不要转为无状态组件，因为要传入selectedWeekday，而它不是const，所以无法使用const WeeklyBar
+/// 那么重新渲染时也会重新渲染WeeklyBar
 class WeeklyBar extends StatefulWidget {
-  const WeeklyBar({required this.selectedWeekday, this.onChanged, super.key});
+  const WeeklyBar({this.selectedWeekday = 1, this.onChanged, super.key});
   final int selectedWeekday;
   final void Function(int newWeekday)? onChanged;
 
@@ -256,7 +277,7 @@ class WeeklyBar extends StatefulWidget {
 class _WeeklyBarState extends State<WeeklyBar> {
   List<DateTime> weekDateTimes = [];
   late int selectedWeekday;
-  DateTime now = DateTime.now();
+  final DateTime now = DateTime.now();
 
   @override
   void initState() {
@@ -265,12 +286,10 @@ class _WeeklyBarState extends State<WeeklyBar> {
     DateTime monday = now.subtract(Duration(days: now.weekday - 1));
     Log.info("now: $now, monday: $monday");
 
-    setState(() {
-      selectedWeekday = widget.selectedWeekday;
-      for (int i = 0; i < 7; ++i) {
-        weekDateTimes.add(monday.add(Duration(days: i)));
-      }
-    });
+    selectedWeekday = widget.selectedWeekday;
+    for (int i = 0; i < 7; ++i) {
+      weekDateTimes.add(monday.add(Duration(days: i)));
+    }
   }
 
   @override
@@ -316,9 +335,8 @@ class _WeeklyBarState extends State<WeeklyBar> {
                     decoration: isSelected
                         ? BoxDecoration(
                             shape: BoxShape.circle,
-                            color: ThemeUtil.getPrimaryColor(),
-                          )
-                        : null,
+                            color: ThemeUtil.getPrimaryColor())
+                        : const BoxDecoration(),
                   )
                 ],
               ),

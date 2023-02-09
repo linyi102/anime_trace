@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_tag.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -96,7 +96,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                   });
                 } else {
                   Log.info("添加动漫");
-                  dialogSelectTag(setState, context, anime);
+                  dialogSelectChecklist(setState, context, anime);
                 }
               },
               child: AnimeGridCover(anime, coverWidth: _coverWidth),

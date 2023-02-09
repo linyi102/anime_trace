@@ -6,13 +6,20 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 
-dialogSelectTag(setState, context, Anime anime) {
+dialogSelectChecklist(
+  setState,
+  context,
+  Anime anime, {
+  bool onlyShowChecklist = false, // 只显示清单列表
+  bool enableClimbDetailInfo = true, // 开启爬取详细信息
+  void Function(Anime newAnime)? callback,
+}) {
   bool climbingDetail = false;
   showDialog(
     context: context,
     builder: (BuildContext context) {
       List<Widget> items = [];
-      if (!anime.isCollected()) {
+      if (!anime.isCollected() && !onlyShowChecklist) {
         items.add(_buildCommonItem(content: "动漫名字", isTitle: true));
         items.add(_buildCommonItem(content: anime.animeName));
         items.add(_buildCommonItem(content: "选择清单", isTitle: true));
@@ -37,11 +44,10 @@ dialogSelectTag(setState, context, Anime anime) {
               // 如果起初没有收藏，则说明是新增，否则修改
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
-                if (anime.animeUrl.contains("age")) {
-                  // 如果是age，则不需要首次更新详细页
+                // 如果是age，或者传入的就是不更新，那么就不爬取详细页
+                if (anime.animeUrl.contains("age") || !enableClimbDetailInfo) {
                 } else {
-                  // 不允许点击，避免快速多次点击收藏
-                  climbingDetail = true;
+                  climbingDetail = true; // 不允许点击，避免快速多次点击收藏
                   (context as Element).markNeedsBuild();
                   // 爬取详细页
                   anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
@@ -54,6 +60,9 @@ dialogSelectTag(setState, context, Anime anime) {
                 // 更新父级页面
                 setState(() {});
                 // showToast("收藏成功！");
+                if (callback != null) {
+                  callback(anime);
+                }
               } else {
                 SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
                 anime.tagName = tags[i];
