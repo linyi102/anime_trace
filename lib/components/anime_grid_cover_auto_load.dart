@@ -5,6 +5,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 /// 自动根据动漫详细地址来获取封面
 class AnimeGridCoverAutoLoad extends StatefulWidget {
@@ -34,17 +35,6 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
     } else {
       _load();
     }
-
-    // if (anime.animeCoverUrl.isEmpty) {
-    //   loadingCover = true;
-    //   _loadCover();
-    // } else {
-    //   if (mounted) {
-    //     setState(() {
-    //       loadingCover = false;
-    //     });
-    //   }
-    // }
   }
 
   @override
@@ -52,6 +42,12 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
     return AnimeGridCover(
       anime,
       onPressed: () {
+        // 加载时不允许进入详情页
+        if (loading) {
+          showToast("加载中，请稍后进入");
+          return;
+        }
+
         // 一定要在内部进入详情页，因为widget.anime和这里的anime不一样，这里的anime是最新的
         Navigator.push(
           context,
