@@ -15,17 +15,17 @@ import '../../models/label.dart';
 import '../../components/anime_list_view.dart';
 
 /// 搜索已添加的动漫
-class SearchDbAnime extends StatefulWidget {
-  const SearchDbAnime({this.incomingLabelId, this.kw, Key? key})
+class DbAnimeSearchPage extends StatefulWidget {
+  const DbAnimeSearchPage({this.incomingLabelId, this.kw, Key? key})
       : super(key: key);
   final int? incomingLabelId;
   final String? kw;
 
   @override
-  _SearchDbAnimeState createState() => _SearchDbAnimeState();
+  _DbAnimeSearchPageState createState() => _DbAnimeSearchPageState();
 }
 
-class _SearchDbAnimeState extends State<SearchDbAnime> {
+class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   bool searchOk = false;
   List<Anime> _animes = [];
   String _lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
@@ -36,6 +36,8 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   bool showLabelPage = true;
   LabelsController labelsController = Get.find();
   List<Label> selectedLabels = [];
+
+  bool autofocus = true;
 
   @override
   void initState() {
@@ -56,6 +58,8 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     if (widget.kw != null) {
       // 不显示标签
       showLabelPage = false;
+      // 取消输入框聚焦
+      autofocus = false;
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
       Future.delayed(const Duration(milliseconds: 200))
           .then((value) => _searchDbAnimesByKeyword(widget.kw!));
@@ -124,7 +128,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
   TextField _buildSearchBar(TextEditingController inputController) {
     return TextField(
       // 自动弹出键盘
-      autofocus: true,
+      autofocus: autofocus,
       controller: inputController,
       decoration: InputDecoration(
           hintText: "按关键字搜索",

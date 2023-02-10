@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_collection/search_db_anime.dart';
+import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -52,7 +52,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                SearchDbAnime(incomingLabelId: label.id)),
+                                DbAnimeSearchPage(incomingLabelId: label.id)),
                         result: _anime);
 
                     // 进入某些动漫无法显示集信息，很奇怪，也不是ids的问题

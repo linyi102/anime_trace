@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/pages/anime_collection/search_db_anime.dart';
+import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -205,7 +205,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => SearchDbAnime(kw: _anime.animeName)),
+                builder: (context) => DbAnimeSearchPage(kw: _anime.animeName)),
             result: _anime);
       },
     );

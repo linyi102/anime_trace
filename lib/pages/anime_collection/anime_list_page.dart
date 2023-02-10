@@ -8,7 +8,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_collection/search_db_anime.dart';
+import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -300,7 +300,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return const SearchDbAnime();
+              return const DbAnimeSearchPage();
             },
           ),
         ).then((value) {
