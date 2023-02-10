@@ -34,6 +34,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  sliver_tools: ^0.2.9 # sliver工具：渐变过渡
   pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
   eva_icons_flutter: ^3.1.0
   fluttericon: ^2.0.0

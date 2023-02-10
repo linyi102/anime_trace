@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
+import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';

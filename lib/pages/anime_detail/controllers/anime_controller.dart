@@ -56,11 +56,15 @@ class AnimeController extends GetxController {
   @override
   void dispose() {
     anime = Anime(animeName: "", animeEpisodeCnt: 0);
+    popPage();
+    super.dispose();
+  }
+
+  void popPage() {
     episodes.clear();
     labels.clear();
     notes.clear();
     mapSelected.clear();
-    super.dispose();
   }
 
   // 取消收藏时需要重置动漫：清空集信息、笔记、标签等等
@@ -84,7 +88,7 @@ class AnimeController extends GetxController {
 
   void loadAnime(Anime newAnime) async {
     loadingAnime = true;
-    // 重绘整个详情页
+    // 重绘整个详情页，显示加载圈，避免显示上一个动漫的信息或者显示空动漫(可能会点击收藏按钮)
     update([detailPageId]);
 
     bool existDbAnime = false;
@@ -106,20 +110,15 @@ class AnimeController extends GetxController {
     // await Future.delayed(const Duration(seconds: 2));
     if (existDbAnime) {
       Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
+      // 最新动漫指向数据库动漫
       newAnime = dbAnime;
-      // 加载数据库动漫，然后重新加载集、标签
-      // updateAnime(dbAnime);
-      // loadLabels();
-      // loadEpisode();
-    } else {
-      // 加载未收藏的动漫
-      // updateAnime(newAnime);
     }
-    loadingAnime = false;
-    // updateAnime(newAnime);
+    // 控制器中的anime指向最新动漫
     anime = newAnime;
-    loadLabels();
+    loadLabels(); // labels由obs变化，所有要手动获取最新标签
+
     // 重绘整个详情页
+    loadingAnime = false;
     update([detailPageId]);
   }
 
@@ -168,7 +167,7 @@ class AnimeController extends GetxController {
     update([episodeId]);
 
     // 加载集信息
-    // await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 2));
     if (anime.animeEpisodeCnt == 0) {
       // 如果为0，则不修改currentStartEpisodeNumber
     } else if (currentStartEpisodeNumber > anime.animeEpisodeCnt) {
@@ -181,13 +180,11 @@ class AnimeController extends GetxController {
         currentStartEpisodeNumber -= episodeRangeSize;
       }
     }
+
     episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndRange(
         anime,
         currentStartEpisodeNumber,
         currentStartEpisodeNumber + episodeRangeSize - 1);
-    Log.info("削减后，集长度为${episodes.length}");
-    _sortEpisodes(SPUtil.getString("episodeSortMethod",
-        defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
 
     for (var episode in episodes) {
       Note episodeNote = Note(
@@ -202,6 +199,8 @@ class AnimeController extends GetxController {
       }
       notes.add(episodeNote);
     }
+    _sortEpisodes(SPUtil.getString("episodeSortMethod",
+        defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
     loadEpisodeOk = true;
     update([episodeId]);
   }
@@ -294,10 +293,10 @@ class AnimeController extends GetxController {
               onTap: () {
                 Log.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
+                // 重绘
+                update([episodeId]);
                 // 退出对话框
                 Navigator.pop(context);
-                // 更新
-                update();
               },
             ),
           );
@@ -325,9 +324,6 @@ class AnimeController extends GetxController {
       throw "不可能的排序方式";
     }
     SPUtil.setString("episodeSortMethod", sortMethod);
-
-    // 更新
-    update([episodeId]);
   }
 
   void _sortByEpisodeNumberAsc() {

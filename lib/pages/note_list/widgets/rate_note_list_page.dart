@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/fade_animated_switcher.dart';
+import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';

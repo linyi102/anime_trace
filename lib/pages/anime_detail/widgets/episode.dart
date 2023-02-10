@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
   const AnimeDetailEpisodeInfo({required this.animeController, super.key});
@@ -79,51 +81,54 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             return SliverToBoxAdapter(child: Container());
           }
 
-          if (!widget.animeController.loadEpisodeOk) {
-            return SliverToBoxAdapter(
-              child: Container(),
-              // child: Center(
-              //   child: Container(
-              //     margin: const EdgeInsets.only(top: 10),
-              //     width: 20, // 可外套SizeBox指定大小，也可不指定
-              //     height: 20,
-              //     child: const CircularProgressIndicator(strokeWidth: 2),
-              //   ),
-              // ),
-            );
-          }
+          return SliverAnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: !widget.animeController.loadEpisodeOk
+                ? _buildSliverLoadingWidget()
+                : SliverList(
+                    delegate:
+                        SliverChildBuilderDelegate((context, episodeIndex) {
+                      // Log.info(": episodeIndex=");
 
-          if (_episodes.isEmpty) {
-            return SliverToBoxAdapter(child: _buildButtonsAboutEpisode());
-          }
+                      List<Widget> episodeInfo = [];
+                      if (episodeIndex == 0) {
+                        episodeInfo.add(_buildButtonsAboutEpisode());
+                      }
+                      episodeInfo.add(
+                        _buildEpisodeTile(episodeIndex),
+                      );
 
-          return SliverList(
-              delegate: SliverChildBuilderDelegate((context, episodeIndex) {
-            // Log.info(": episodeIndex=");
+                      // 在每一集下面添加笔记
+                      if (!hideNoteInAnimeDetail &&
+                          _episodes[episodeIndex].isChecked()) {
+                        episodeInfo.add(_buildNote(episodeIndex, context));
+                      }
 
-            List<Widget> episodeInfo = [];
-            if (episodeIndex == 0) {
-              episodeInfo.add(_buildButtonsAboutEpisode());
-            }
-            episodeInfo.add(
-              _buildEpisodeTile(episodeIndex),
-            );
+                      // 在最后一集下面添加空白
+                      if (episodeIndex == _episodes.length - 1) {
+                        episodeInfo.add(const ListTile());
+                      }
 
-            // 在每一集下面添加笔记
-            if (!hideNoteInAnimeDetail && _episodes[episodeIndex].isChecked()) {
-              episodeInfo.add(_buildNote(episodeIndex, context));
-            }
-
-            // 在最后一集下面添加空白
-            if (episodeIndex == _episodes.length - 1) {
-              episodeInfo.add(const ListTile());
-            }
-
-            return Column(
-              children: episodeInfo,
-            );
-          }, childCount: _episodes.length));
+                      return Column(
+                        children: episodeInfo,
+                      );
+                    }, childCount: _episodes.length),
+                  ),
+          );
         },
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _buildSliverLoadingWidget() {
+    return SliverToBoxAdapter(
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.only(top: 20),
+          width: 20, // 可外套SizeBox指定大小，也可不指定
+          height: 20,
+          child: const CircularProgressIndicator(strokeWidth: 2),
+        ),
       ),
     );
   }

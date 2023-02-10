@@ -6,7 +6,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
-import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -54,6 +53,9 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       if (episode.isChecked()) _anime.checkedEpisodeCnt++;
     }
     Navigator.pop(context, _anime);
+
+    // 清空标签和集信息
+    animeController.popPage();
   }
 
   @override
@@ -86,8 +88,14 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     Log.info("build ${animeController.detailPageId}");
 
                     if (animeController.loadingAnime) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
+                      return Scaffold(
+                        appBar: AppBar(
+                            leading: IconButton(
+                                onPressed: _popPage,
+                                icon: const Icon(Icons.arrow_back))),
+                        body: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       );
                     }
                     return CustomScrollView(
