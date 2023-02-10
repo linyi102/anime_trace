@@ -4,7 +4,7 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/toggle_list_tile.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
@@ -40,37 +40,37 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       ? Colors.white
       : null;
 
-  Anime get _anime => widget.animeController.anime.value;
+  Anime get _anime => widget.animeController.anime;
 
   @override
   Widget build(BuildContext context) {
     double expandedHeight =
         MediaQuery.of(context).size.height * coverBgHeightRatio;
 
-    return Obx(() => SliverAppBar(
-          // 下滑后显示收缩后的AppBar
-          pinned: true,
-          expandedHeight: expandedHeight,
-          flexibleSpace: FlexibleSpaceBar(
-            collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
-                ? CollapseMode.parallax // 下滑时添加视差
-                : CollapseMode.pin, // 下滑时固定
-            background: Stack(
-              children: [
-                _buildBg(),
-                _buildGradient(),
-                _buildGestureDetector(),
-              ],
-            ),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                widget.popPage();
-              },
-              icon: const Icon(Icons.arrow_back_ios, size: 20),
-              color: appBarIconColor),
-          actions: _generateActions(),
-        ));
+    return SliverAppBar(
+      // 下滑后显示收缩后的AppBar
+      pinned: true,
+      expandedHeight: expandedHeight,
+      flexibleSpace: FlexibleSpaceBar(
+        collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
+            ? CollapseMode.parallax // 下滑时添加视差
+            : CollapseMode.pin, // 下滑时固定
+        background: Stack(
+          children: [
+            _buildBg(),
+            _buildGradient(),
+            _buildGestureDetector(),
+          ],
+        ),
+      ),
+      leading: IconButton(
+          onPressed: () {
+            widget.popPage();
+          },
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
+          color: appBarIconColor),
+      actions: _generateActions(),
+    );
   }
 
   /// 点击进入封面详情页
@@ -125,11 +125,17 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
           sigmaX: sigma,
           sigmaY: sigma,
         ),
-        child: Obx(() => CommonImage(
-              widget.animeController.anime.value.getCommonCoverUrl(),
+        child: GetBuilder<AnimeController>(
+          id: widget.animeController.coverId,
+          init: widget.animeController,
+          builder: (controller) {
+            return CommonImage(
+              widget.animeController.anime.getCommonCoverUrl(),
               showIconWhenUrlIsEmptyOrError: false,
               reduceMemCache: false,
-            )),
+            );
+          },
+        ),
       ),
     );
   }
@@ -173,6 +179,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                       },
                     ),
                   ).then((value) {
+                    // 从数据库中获取迁移后的动漫
                     widget.loadData();
                   });
                 },
@@ -281,6 +288,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                             setBottomSheetState(() {});
                             // 不需要重新渲染AppBar
                             // setState(() {});
+                            // 而是通知控制器重绘
+                            widget.animeController.updateAnimeInfo();
                           },
                         ),
                         ToggleListTile(

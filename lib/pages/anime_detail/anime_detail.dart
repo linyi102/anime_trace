@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -29,7 +28,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
   late final AnimeController animeController; // 动漫详细页的动漫
   final LabelsController labelsController = Get.find(); // 动漫详细页的标签
 
-  Anime get _anime => animeController.anime.value;
+  Anime get _anime => animeController.anime;
 
   @override
   void initState() {
@@ -40,8 +39,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
     animeController = Get.put(
       AnimeController(),
-      // 不能使用动漫id作为tag，因为可能会再次进入相同id的动漫详细页
-      // tag: widget.anime.animeId.toString(),
+      tag: widget.anime.animeId.toString(), // 用id作为tag，当重复进入相同id的动漫时信息仍相同
       // tag: UniqueKey().toString(),
     );
 
@@ -52,14 +50,8 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     }
   }
 
-  @override
-  void dispose() {
-    animeController.popPage();
-    super.dispose();
-  }
-
   void _loadData() async {
-    animeController.setAnime(widget.anime);
+    animeController.updateAnime(widget.anime);
     // await Future.delayed(const Duration(seconds: 2));
 
     // 从数据库中获取动漫
@@ -67,10 +59,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     // 如果收藏了，则更新为完整的动漫信息
     if (anime.isCollected()) {
       Log.info("数据库中存在动漫：${anime.animeId}, ${anime.animeName}");
-      // 不要重新设置，要保证animeController里记录的anime和widget.anime是同一个
-      // 否则如果widget.anime id>0，那么取消收藏后animeController里的anime的id会重置，而widget.anime的id却没有
-      // 此时退出再进入仍然会显示收藏了
-      // animeController.setAnime(anime);
+      animeController.updateAnime(anime);
     }
   }
 
@@ -140,7 +129,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
   /// 显示底部集多选操作栏
   _buildButtonsBarAboutEpisodeMulti() {
-    return Obx(() => !animeController.multiSelected.value
+    return !animeController.multiSelected.value
         ? Container()
         : Container(
             alignment: Alignment.bottomCenter,
@@ -197,7 +186,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
                 ],
               ),
             ),
-          ));
+          );
   }
 
   void _quitMultiSelectState() {
@@ -238,7 +227,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
       if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
         animeController.loadEpisode();
-        animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
+        // animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
         // 调用控制器，添加更新记录到数据库并更新内存数据
         final UpdateRecordController updateRecordController = Get.find();
         updateRecordController.updateSingaleAnimeData(oldAnime, newAnime);
@@ -246,9 +235,9 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
     });
     _climbing = false;
     // 播放状态无法实时更新
-    animeController.setAnime(newAnime);
+    animeController.updateAnime(newAnime);
     // 手动更新
-    animeController.updateAnimePlayStatus(newAnime.playStatus);
+    // animeController.updateAnimePlayStatus(newAnime.playStatus);
     return true;
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/search_db_anime.dart';
@@ -19,31 +19,24 @@ class AnimeDetailLabels extends StatefulWidget {
 class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   final LabelsController labelsController = Get.find(); // 动漫详细页的标签
 
-  Anime get _anime => widget.animeController.anime.value;
+  Anime get _anime => widget.animeController.anime;
 
   @override
   void initState() {
     super.initState();
 
-    _loadLabels();
-  }
-
-  _loadLabels() async {
-    // labelsController.labelsInAnimeDetail.value =
-    //     await AnimeLabelDao.getLabelsByAnimeId(_anime.animeId);
-    // labelsController.animeId = _anime.animeId;
     widget.animeController.acqLabels();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => widget.animeController.isCollected
-        ? Wrap(
-            spacing: 4,
-            runSpacing: 4,
-            children: _getLabelChips(),
-          )
-        : Container());
+    return widget.animeController.isCollected
+        ? Obx(() => Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: _getLabelChips(),
+            ))
+        : Container();
   }
 
   // 构建标签chips，最后添加增加标签和管理删除chip

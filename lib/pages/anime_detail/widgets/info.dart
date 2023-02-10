@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
@@ -29,7 +29,7 @@ class AnimeDetailInfo extends StatefulWidget {
 }
 
 class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
-  Anime get _anime => widget.animeController.anime.value;
+  Anime get _anime => widget.animeController.anime;
   int rateNoteCount = 0; // 最初的评价数量
 
   @override
@@ -40,34 +40,42 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-      sliver: SliverList(
-        delegate: SliverChildListDelegate([
-          // 动漫名字
-          Obx(
-            () => SelectableText(widget.animeController.anime.value.animeName,
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+    return GetBuilder<AnimeController>(
+      id: widget.animeController.infoId,
+      init: widget.animeController,
+      initState: (_) {},
+      builder: (_) {
+        return SliverPadding(
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              // 动漫名字
+              SelectableText(widget.animeController.anime.animeName,
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w600)),
+              // 评价
+              _buildRatingStars(),
+              const SizedBox(height: 10),
+              // 动漫信息(左侧)和相关按钮(右侧)
+              _buildInfoAndIconRow(),
+              // 简介
+              _buildDesc(),
+              // 加大间距，避免当添加按钮在展开按钮下方时，点击不了添加按钮
+              const SizedBox(height: 10),
+              // 标签列表
+              AnimeDetailLabels(animeController: widget.animeController)
+            ]),
           ),
-          // 评价
-          _buildRatingStars(),
-          // 动漫信息(左侧)和相关按钮(右侧)
-          Obx(() => _buildInfoAndIconRow()),
-          // 简介
-          Obx(() => _buildDesc()),
-          // 标签列表
-          AnimeDetailLabels(animeController: widget.animeController)
-        ]),
-      ),
+        );
+      },
     );
   }
 
   _buildDesc() {
-    if (widget.animeController.anime.value.animeDesc.isNotEmpty &&
+    if (widget.animeController.anime.animeDesc.isNotEmpty &&
         widget.animeController.showDescInAnimeDetailPage.value) {
       return widget.animeController.isCollected
-          ? ExpandText(widget.animeController.anime.value.animeDesc,
+          ? ExpandText(widget.animeController.anime.animeDesc,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style:
@@ -75,7 +83,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               arrowSize: 20)
           // 如果没有收藏，这不折叠简介
           : Text(
-              widget.animeController.anime.value.animeDesc,
+              widget.animeController.anime.animeDesc,
               style:
                   TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor()),
             );
@@ -111,7 +119,12 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
 
   // 显示评价按钮，点击后进入评价列表页
   _showRateIcon() {
-    return Obx(() => IconTextButton(
+    return GetBuilder<AnimeController>(
+      id: widget.animeController.rateNoteCountId,
+      init: widget.animeController,
+      initState: (_) {},
+      builder: (_) {
+        return IconTextButton(
           iconData: EvaIcons.messageCircleOutline,
           title: "${widget.animeController.rateNoteCount}条评价",
           onTap: () {
@@ -123,18 +136,19 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               widget.animeController.acqRateNoteCount();
             });
           },
-        ));
+        );
+      },
+    );
   }
 
   // 显示收藏按钮，点击后可以修改清单
   _showCollectIcon() {
-    return Obx(() => IconTextButton(
-          iconData:
-              _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
-          iconColor: _anime.isCollected() ? Colors.red : null,
-          title: _anime.isCollected() ? _anime.tagName : "",
-          onTap: () => _dialogSelectTag(),
-        ));
+    return IconTextButton(
+      iconData: _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
+      iconColor: _anime.isCollected() ? Colors.red : null,
+      title: _anime.isCollected() ? _anime.tagName : "",
+      onTap: () => _dialogSelectTag(),
+    );
   }
 
   _buildInfoAndIconRow() {
@@ -163,7 +177,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 dialogSelectChecklist(setState, context, _anime,
                     onlyShowChecklist: true,
                     enableClimbDetailInfo: false, callback: (newAnime) {
-                  widget.animeController.setAnime(newAnime);
+                  widget.animeController.updateAnime(newAnime);
                   widget.animeController.loadEpisode();
                 });
               },
@@ -185,88 +199,82 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
     const double textScaleFactor = 1;
 
     // 迁移后信息会变化，所以使用obx监听
-    return Obx(() => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 因为动漫未收藏时显示的收藏按钮撑高整个Row
-            // 而收藏后，三个按钮会撑高一些，导致收藏后信息行位置变了，所以在上下添加10高度box
-            const SizedBox(height: 10),
-            if (_anime.getAnimeInfoFirstLine().isNotEmpty)
-              // 第一行信息
-              Text.rich(
-                TextSpan(children: [
-                  WidgetSpan(
-                    child: Text(_anime.getAnimeInfoFirstLine()),
-                  ),
-                ]),
-                textScaleFactor: textScaleFactor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 因为动漫未收藏时显示的收藏按钮撑高整个Row
+        // 而收藏后，三个按钮会撑高一些，导致收藏后信息行位置变了，所以在上下添加10高度box
+        const SizedBox(height: 10),
+        if (_anime.getAnimeInfoFirstLine().isNotEmpty)
+          // 第一行信息
+          Text.rich(
+            TextSpan(children: [
+              WidgetSpan(
+                child: Text(_anime.getAnimeInfoFirstLine()),
               ),
-            // 第二行信息
-            Text.rich(
-              TextSpan(children: [
-                WidgetSpan(
-                    child: GestureDetector(
-                  onTap: () {
-                    if (_anime.animeUrl.isNotEmpty) {
-                      LaunchUrlUtil.launch(
-                          context: context, uriStr: _anime.animeUrl);
-                    } else {
-                      showToast("空网址无法打开");
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Text(_anime.getAnimeSource()),
-                      const Icon(EvaIcons.externalLink, size: smallIconSize),
-                    ],
-                  ),
-                )),
-                // const WidgetSpan(child: Text(" • ")),
-                const WidgetSpan(child: Text(" ")),
-                WidgetSpan(
-                    child: GestureDetector(
-                  onTap: () {
-                    if (widget.animeController.isCollected) {
-                      showDialogSelectPlayStatus(
-                          context, widget.animeController);
-                    }
-                  },
-                  // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
-                  child: Obx(() => Row(
-                        children: [
-                          Text(widget.animeController.anime.value
-                              .getPlayStatus()
-                              .text),
-                          Icon(
-                              widget.animeController.anime.value
-                                  .getPlayStatus()
-                                  .iconData,
-                              size: smallIconSize),
-                        ],
-                      )),
-                )),
-                // const WidgetSpan(child: Text(" • ")),
-                const WidgetSpan(child: Text(" ")),
-                WidgetSpan(
-                    child: GestureDetector(
-                  onTap: () {
-                    if (widget.animeController.isCollected) {
-                      showDialogmodifyEpisodeCnt();
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Text("${_anime.animeEpisodeCnt}集"),
-                      const Icon(EvaIcons.editOutline, size: smallIconSize),
-                    ],
-                  ),
-                )),
-              ]),
-              textScaleFactor: textScaleFactor,
-            ),
-            const SizedBox(height: 10),
-          ],
-        ));
+            ]),
+            textScaleFactor: textScaleFactor,
+          ),
+        // 第二行信息
+        Text.rich(
+          TextSpan(children: [
+            WidgetSpan(
+                child: GestureDetector(
+              onTap: () {
+                if (_anime.animeUrl.isNotEmpty) {
+                  LaunchUrlUtil.launch(
+                      context: context, uriStr: _anime.animeUrl);
+                } else {
+                  showToast("空网址无法打开");
+                }
+              },
+              child: Row(
+                children: [
+                  Text(_anime.getAnimeSource()),
+                  const Icon(EvaIcons.externalLink, size: smallIconSize),
+                ],
+              ),
+            )),
+            // const WidgetSpan(child: Text(" • ")),
+            const WidgetSpan(child: Text(" ")),
+            WidgetSpan(
+                child: GestureDetector(
+              onTap: () {
+                if (widget.animeController.isCollected) {
+                  showDialogSelectPlayStatus(context, widget.animeController);
+                }
+              },
+              // 这里使用animeController里的anime，而不是_anime，否则修改状态后没有变化
+              child: Row(
+                children: [
+                  Text(widget.animeController.anime.getPlayStatus().text),
+                  Icon(widget.animeController.anime.getPlayStatus().iconData,
+                      size: smallIconSize),
+                ],
+              ),
+            )),
+            // const WidgetSpan(child: Text(" • ")),
+            const WidgetSpan(child: Text(" ")),
+            WidgetSpan(
+                child: GestureDetector(
+              onTap: () {
+                if (widget.animeController.isCollected) {
+                  showDialogmodifyEpisodeCnt();
+                }
+              },
+              child: Row(
+                children: [
+                  Text("${_anime.animeEpisodeCnt}集"),
+                  const Icon(EvaIcons.editOutline, size: smallIconSize),
+                ],
+              ),
+            )),
+          ]),
+          textScaleFactor: textScaleFactor,
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
   }
 
   void showDialogmodifyEpisodeCnt() {
@@ -293,7 +301,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
           .then((value) {
         // 重新获取集信息，改用obx监听
         // _anime.animeEpisodeCnt = episodeCnt;
-        widget.animeController.updateAnimeEpisodeCnt(episodeCnt);
+        // widget.animeController.updateAnimeEpisodeCnt(episodeCnt);
         widget.animeController.loadEpisode();
       });
     });

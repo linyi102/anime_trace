@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 
 import '../../models/play_status.dart';
 import '../../utils/sqlite_util.dart';
@@ -16,19 +16,18 @@ showDialogSelectPlayStatus(
             child: Column(
               children: PlayStatus.values
                   .map((playStatus) => ListTile(
-                        leading: playStatus ==
-                                animeController.anime.value.getPlayStatus()
-                            ? Icon(Icons.radio_button_on,
-                                color: ThemeUtil.getPrimaryIconColor())
-                            : const Icon(Icons.radio_button_off),
+                        leading:
+                            playStatus == animeController.anime.getPlayStatus()
+                                ? Icon(Icons.radio_button_on,
+                                    color: ThemeUtil.getPrimaryIconColor())
+                                : const Icon(Icons.radio_button_off),
                         title: Text(playStatus.text),
                         trailing: Icon(playStatus.iconData),
                         onTap: () {
-                          animeController
-                              .updateAnimePlayStatus(playStatus.text);
+                          animeController.anime.playStatus = playStatus.text;
+                          animeController.updateAnimeInfo();
                           SqliteUtil.updateAnimePlayStatusByAnimeId(
-                              animeController.anime.value.animeId,
-                              playStatus.text);
+                              animeController.anime.animeId, playStatus.text);
                           Navigator.pop(context);
                         },
                       ))

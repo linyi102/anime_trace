@@ -14,8 +14,8 @@ import 'package:get/get.dart';
 
 class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
-  var anime = Anime(animeName: "", animeEpisodeCnt: 0).obs;
-  bool get isCollected => anime.value.isCollected();
+  var anime = Anime(animeName: "", animeEpisodeCnt: 0);
+  bool get isCollected => anime.isCollected();
 
   List<Episode> episodes = []; // 集
   List<Note> notes = []; // 集对应的笔记
@@ -37,65 +37,66 @@ class AnimeController extends GetxController {
   var labels = <Label>[].obs;
 
   // 评价数量
-  var rateNoteCount = 0.obs;
+  var rateNoteCount = 0;
+
+  /////////////////////////////// ids ///////////////////////////////
+
+  static const String prefix = "getbuilder-anime-detail-page";
+  String infoId = "$prefix-info";
+  String appbarId = "$prefix-appbar";
+  String episodeId = "$prefix-episode";
+  String infoPageId = "$prefix-info-page";
+  String coverId = "$prefix-cover-page";
+  String rateNoteCountId = "$prefix-rateNoteCount";
 
   /////////////////////////////// 方法 ///////////////////////////////
 
   // 删除动漫，需要清空集信息、笔记、标签
   void deleteAnime() {
-    anime.update((val) {
-      val?.animeId = 0;
-      val?.checkedEpisodeCnt = 0;
-      val?.tagName = "";
-      // 保留其他信息
-    });
+    // 只删除固定信息，保留其他信息
+    anime.animeId = 0;
+    anime.checkedEpisodeCnt = 0;
+    anime.tagName = "";
+    update([episodeId]);
 
     episodes.clear();
     loadEpisodeOk = false;
-    update(episodeBuilderIds);
+    update([episodeId]);
 
     labels.clear();
     notes.clear();
     mapSelected.clear();
   }
 
-  // 退出动漫详情页，清空信息
-  void popPage() {
-    anime.value = Anime(animeName: "", animeEpisodeCnt: 0);
-
-    episodes.clear();
-    loadEpisodeOk = false;
-    notes.clear();
-    multiSelected.value = false;
-    mapSelected.clear();
-    lastMultiSelectedIndex = -1;
-    currentStartEpisodeNumber = 1;
-    rateNoteCount.value = 0;
+  void updateAnime(Anime newAnime) {
+    anime = newAnime;
+    update([infoId, coverId]);
   }
 
-  void setAnime(Anime newAnime) {
-    anime.value = Anime(animeName: "", animeEpisodeCnt: 0);
-    // 进入详细页可以看到变化
-    anime.value = newAnime;
-    // 下面方式可以实时更新播放状态，但进入详细页仍然是之前的动漫
-    // anime.update((val) => val = newAnime);
+  void updateAnimeInfo() {
+    // 因为信息有很多个，所以在外面更改控制器中的anime后，调用该方法去重绘
+    update([infoId, infoPageId]);
+  }
+
+  void updateCoverUrl(String url) {
+    anime.animeCoverUrl = url;
+    update([coverId]);
   }
 
   // 获取评价数量
   void acqRateNoteCount() async {
     if (isCollected) {
-      rateNoteCount.value =
-          await NoteDao.getRateNoteCountByAnimeId(anime.value.animeId);
+      rateNoteCount = await NoteDao.getRateNoteCountByAnimeId(anime.animeId);
     }
+    update([rateNoteCountId]);
   }
 
   // 获取添加的标签
   void acqLabels() async {
     labels.clear();
     if (isCollected) {
-      Log.info("查询当前动漫(id=${anime.value.animeId})的所有标签");
-      labels
-          .addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.value.animeId));
+      Log.info("查询当前动漫(id=${anime.animeId})的所有标签");
+      labels.addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.animeId));
     }
   }
 
@@ -104,31 +105,29 @@ class AnimeController extends GetxController {
     SpProfile.turnShowDescInAnimeDetailPage();
   }
 
-  List<Object> episodeBuilderIds = ["getbuilder_episode"];
   void loadEpisode() async {
     // 重置，然后重新渲染
     loadEpisodeOk = false;
     episodes.clear();
     notes.clear();
-    update(episodeBuilderIds);
+    update([episodeId]);
 
     // 加载集信息
     // await Future.delayed(const Duration(seconds: 1));
-    if (anime.value.animeEpisodeCnt == 0) {
+    if (anime.animeEpisodeCnt == 0) {
       // 如果为0，则不修改currentStartEpisodeNumber
-    } else if (currentStartEpisodeNumber > anime.value.animeEpisodeCnt) {
+    } else if (currentStartEpisodeNumber > anime.animeEpisodeCnt) {
       // 起始集编号>动漫集数，则从最后一个范围开始x
       // 修改后集数为260，则(260/50)=5.2=5, 5*50=250, 250+1=251
       // 修改后集数为250，则(250/50)=5，(5-1)*50=200, 200+1=201，也就是251-50
       currentStartEpisodeNumber =
-          anime.value.animeEpisodeCnt ~/ episodeRangeSize * episodeRangeSize +
-              1;
-      if (anime.value.animeEpisodeCnt % episodeRangeSize == 0) {
+          anime.animeEpisodeCnt ~/ episodeRangeSize * episodeRangeSize + 1;
+      if (anime.animeEpisodeCnt % episodeRangeSize == 0) {
         currentStartEpisodeNumber -= episodeRangeSize;
       }
     }
     episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndRange(
-        anime.value,
+        anime,
         currentStartEpisodeNumber,
         currentStartEpisodeNumber + episodeRangeSize - 1);
     Log.info("削减后，集长度为${episodes.length}");
@@ -137,10 +136,7 @@ class AnimeController extends GetxController {
 
     for (var episode in episodes) {
       Note episodeNote = Note(
-          anime: anime.value,
-          episode: episode,
-          relativeLocalImages: [],
-          imgUrls: []);
+          anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
       if (episode.isChecked()) {
         // 如果该集完成了，就去获取该集笔记（内容+图片）
         episodeNote = await NoteDao
@@ -152,7 +148,7 @@ class AnimeController extends GetxController {
       notes.add(episodeNote);
     }
     loadEpisodeOk = true;
-    update(episodeBuilderIds);
+    update([episodeId]);
   }
 
   // 多选后，选择日期，并更新数据库
@@ -167,14 +163,14 @@ class AnimeController extends GetxController {
     mapSelected.forEach((episodeIndex, value) {
       int episodeNumber = episodes[episodeIndex].number;
       if (episodes[episodeIndex].isChecked()) {
-        SqliteUtil.updateHistoryItem(anime.value.animeId, episodeNumber,
-            dateTime, anime.value.reviewNumber);
+        SqliteUtil.updateHistoryItem(
+            anime.animeId, episodeNumber, dateTime, anime.reviewNumber);
       } else {
-        SqliteUtil.insertHistoryItem(anime.value.animeId, episodeNumber,
-            dateTime, anime.value.reviewNumber);
+        SqliteUtil.insertHistoryItem(
+            anime.animeId, episodeNumber, dateTime, anime.reviewNumber);
         // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
         Note episodeNote = Note(
-            anime: anime.value,
+            anime: anime,
             episode: episodes[episodeIndex],
             relativeLocalImages: [],
             imgUrls: []);
@@ -211,50 +207,7 @@ class AnimeController extends GetxController {
         .toString();
   }
 
-  /////////////////////////////// 更新anime ///////////////////////////////
-
   //  其他页面(例如详情页修改了动漫封面)更新动漫时，动漫详细页可以收到通知并重新渲染
-  updateAnimeUrl(String animeUrl) {
-    anime.update((anime) {
-      anime?.animeUrl = animeUrl;
-    });
-  }
-
-  updateAnimeCoverUrl(String coverUrl) {
-    anime.update((anime) {
-      anime?.animeCoverUrl = coverUrl;
-    });
-  }
-
-  updateAnimeName(String newName) {
-    anime.update((anime) {
-      anime?.animeName = newName;
-    });
-  }
-
-  updateAnimeNameAnother(String newNameAnother) {
-    anime.update((anime) {
-      anime?.nameAnother = newNameAnother;
-    });
-  }
-
-  updateAnimeDesc(String newDesc) {
-    anime.update((anime) {
-      anime?.animeDesc = newDesc;
-    });
-  }
-
-  updateAnimePlayStatus(String playStatus) {
-    anime.update((anime) {
-      anime?.playStatus = playStatus;
-    });
-  }
-
-  updateAnimeEpisodeCnt(int cnt) {
-    anime.update((anime) {
-      anime?.animeEpisodeCnt = cnt;
-    });
-  }
 
   /////////////////////////////// 排序 ///////////////////////////////
 
@@ -319,7 +272,7 @@ class AnimeController extends GetxController {
     SPUtil.setString("episodeSortMethod", sortMethod);
 
     // 更新
-    update(episodeBuilderIds);
+    update([episodeId]);
   }
 
   void _sortByEpisodeNumberAsc() {

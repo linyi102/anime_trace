@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -16,6 +16,8 @@ class AnimePropertiesPage extends StatelessWidget {
   final AnimeController animeController;
   final textController = TextEditingController();
 
+  Anime get anime => animeController.anime;
+
   @override
   Widget build(BuildContext context) {
     // 不能使用ListView，因为外部是SliverChildListDelegate
@@ -23,73 +25,89 @@ class AnimePropertiesPage extends StatelessWidget {
       appBar: AppBar(
           title: const Text("动漫信息",
               style: TextStyle(fontWeight: FontWeight.w600))),
-      body: SingleChildScrollView(
-        child: Obx(() {
-          Anime anime = animeController.anime.value;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPropRow(context, title: "名称", content: anime.animeName,
-                  onPressed: () {
-                String animeName = anime.animeName;
-                _showDialogAboutEdit(context,
-                    title: "编辑名称", property: animeName, confirm: (newName) {
-                  if (newName.isEmpty) {
-                    showToast("动漫名不允许为空");
-                    return;
-                  }
-                  Log.info("更新名称：$newName");
-                  animeController.updateAnimeName(newName);
-                  SqliteUtil.updateAnimeNameByAnimeId(anime.animeId, newName);
-                });
-              }),
-              _buildPropRow(context, title: "别名", content: anime.nameAnother,
-                  onPressed: () {
-                String nameAnother = anime.nameAnother;
-                _showDialogAboutEdit(context,
-                    title: "编辑别名",
-                    property: nameAnother, confirm: (newNameAnother) {
-                  Log.info("更新别名：$newNameAnother");
-                  animeController.updateAnimeNameAnother(newNameAnother);
-                  SqliteUtil.updateAnimeNameAnotherByAnimeId(
-                      anime.animeId, newNameAnother);
-                });
-              }),
-              _buildPropRow(context, title: "地区", content: anime.area),
-              _buildPropRow(context, title: "类别", content: anime.category),
-              _buildPropRow(context,
-                  title: "首播时间", content: anime.premiereTime),
-              _buildPropRow(context,
-                  title: "播放状态",
-                  content: anime.getPlayStatus().text, onPressed: () {
-                showDialogSelectPlayStatus(context, animeController);
-              }),
-              // _buildPropRow(context, title: "原作者", content: anime.authorOri),
-              // _buildPropRow(context, title: "原作名", content: anime.nameOri),
-              // _buildPropRow(context, title: "官网", content: anime.officialSite),
-              // _buildPropRow(context,
-              //     title: "制作公司", content: anime.productionCompany),
-              _buildPropRow(context, title: "动漫链接", content: anime.animeUrl),
-              _buildPropRow(context,
-                  title: "封面链接", content: anime.animeCoverUrl),
-              _buildPropRow(
-                context,
-                title: "简介",
-                content: anime.animeDesc,
-                onPressed: () {
-                  String animeDesc = anime.animeDesc;
-                  _showDialogAboutEdit(context,
-                      title: "编辑简介", property: animeDesc, confirm: (newDesc) {
-                    Log.info("更新简介：$newDesc");
-                    animeController.updateAnimeDesc(newDesc);
-                    SqliteUtil.updateAnimeDescByAnimeId(anime.animeId, newDesc);
-                  });
-                },
-              ),
-              const ListTile()
-            ],
-          );
-        }),
+      body: GetBuilder<AnimeController>(
+        id: animeController.infoPageId,
+        init: animeController,
+        builder: (controller) {
+          return _buildBody(context);
+        },
+      ),
+    );
+  }
+
+  _buildBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPropRow(context, title: "名称", content: anime.animeName,
+              onPressed: () {
+            String animeName = anime.animeName;
+            _showDialogAboutEdit(context, title: "编辑名称", property: animeName,
+                confirm: (newName) {
+              if (newName.isEmpty) {
+                showToast("动漫名不允许为空");
+                return;
+              }
+              Log.info("更新名称：$newName");
+
+              animeController.anime.animeName = newName;
+              animeController.updateAnimeInfo();
+
+              SqliteUtil.updateAnimeNameByAnimeId(anime.animeId, newName);
+            });
+          }),
+          _buildPropRow(context, title: "别名", content: anime.nameAnother,
+              onPressed: () {
+            String nameAnother = anime.nameAnother;
+            _showDialogAboutEdit(context, title: "编辑别名", property: nameAnother,
+                confirm: (newNameAnother) {
+              Log.info("更新别名：$newNameAnother");
+
+              animeController.anime.nameAnother = newNameAnother;
+              animeController.updateAnimeInfo();
+
+              SqliteUtil.updateAnimeNameAnotherByAnimeId(
+                  anime.animeId, newNameAnother);
+            });
+          }),
+          _buildPropRow(context, title: "地区", content: anime.area),
+          _buildPropRow(context, title: "类别", content: anime.category),
+          _buildPropRow(context, title: "首播时间", content: anime.premiereTime),
+          _buildPropRow(
+            context,
+            title: "播放状态",
+            content: anime.getPlayStatus().text,
+            onPressed: () {
+              showDialogSelectPlayStatus(context, animeController);
+            },
+          ),
+          // _buildPropRow(context, title: "原作者", content: anime.authorOri),
+          // _buildPropRow(context, title: "原作名", content: anime.nameOri),
+          // _buildPropRow(context, title: "官网", content: anime.officialSite),
+          // _buildPropRow(context,
+          //     title: "制作公司", content: anime.productionCompany),
+          _buildPropRow(context, title: "动漫链接", content: anime.animeUrl),
+          _buildPropRow(context, title: "封面链接", content: anime.animeCoverUrl),
+          _buildPropRow(
+            context,
+            title: "简介",
+            content: anime.animeDesc,
+            onPressed: () {
+              String animeDesc = anime.animeDesc;
+              _showDialogAboutEdit(context, title: "编辑简介", property: animeDesc,
+                  confirm: (newDesc) {
+                Log.info("更新简介：$newDesc");
+
+                animeController.anime.animeDesc = newDesc;
+                animeController.updateAnimeInfo();
+
+                SqliteUtil.updateAnimeDescByAnimeId(anime.animeId, newDesc);
+              });
+            },
+          ),
+          const ListTile()
+        ],
       ),
     );
   }

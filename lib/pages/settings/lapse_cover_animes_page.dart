@@ -15,7 +15,7 @@ import '../../components/anime_grid_cover.dart';
 import '../../components/get_anime_grid_delegate.dart';
 import '../../components/empty_data_hint.dart';
 import '../../components/loading_dialog.dart';
-import '../../controllers/anime_controller.dart';
+import '../anime_detail/controllers/anime_controller.dart';
 import '../../utils/sqlite_util.dart';
 
 /// 展示网络封面失效的所有动漫

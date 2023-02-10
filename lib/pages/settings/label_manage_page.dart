@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
@@ -73,9 +73,9 @@ class LabelManagePage extends StatelessWidget {
                 if (selected) {
                   // 为这个动漫移除该标签
                   if (await AnimeLabelDao.deleteAnimeLabel(
-                      animeController!.anime.value.animeId, label.id)) {
+                      animeController!.anime.animeId, label.id)) {
                     Log.info(
-                        "移除动漫标签记录成功(animeId=${animeController!.anime.value.animeId}, labelId=${label.id})");
+                        "移除动漫标签记录成功(animeId=${animeController!.anime.animeId}, labelId=${label.id})");
                     // 从controller中移除
                     animeController!.labels
                         .removeWhere((element) => element.id == label.id);
@@ -85,7 +85,7 @@ class LabelManagePage extends StatelessWidget {
                 } else {
                   // 为这个动漫添加该标签
                   int newId = await AnimeLabelDao.insertAnimeLabel(
-                      animeController!.anime.value.animeId, label.id);
+                      animeController!.anime.animeId, label.id);
                   if (newId > 0) {
                     Log.info("添加新动漫标签纪录成功：$newId");
                     // 添加到controller

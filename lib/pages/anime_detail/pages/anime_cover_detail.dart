@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -38,10 +38,13 @@ class AnimeCoverDetail extends StatelessWidget {
         ],
       ),
       body: Center(
-        // obx监听封面修改
-        child: Obx(() => _buildAnimeCover(
-            animeController.anime.value.animeCoverUrl, context)),
-      ),
+          child: GetBuilder<AnimeController>(
+              id: animeController.coverId,
+              init: animeController,
+              builder: (controller) {
+                return _buildAnimeCover(
+                    animeController.anime.animeCoverUrl, context);
+              })),
     );
   }
 
@@ -64,7 +67,7 @@ class AnimeCoverDetail extends StatelessWidget {
                     ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(dialogContext);
-                          Anime anime = animeController.anime.value;
+                          Anime anime = animeController.anime;
                           if (anime.animeUrl.isEmpty) {
                             showToast("无来源，无法获取封面");
                             return;
@@ -78,8 +81,7 @@ class AnimeCoverDetail extends StatelessWidget {
                                   anime.animeId, anime.animeCoverUrl)
                               .then((value) {
                             // 更新控制器中的动漫封面
-                            animeController
-                                .updateAnimeCoverUrl(anime.animeCoverUrl);
+                            animeController.updateCoverUrl(anime.animeCoverUrl);
 
                             // 获取失败后会提示连接超时，所以这里不显示
                             // showToast("更新封面成功！");
@@ -104,13 +106,13 @@ class AnimeCoverDetail extends StatelessWidget {
                   content: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Obx(() => ListTile(
-                              contentPadding: EdgeInsetsDirectional.zero,
-                              dense: true,
-                              title: const Text("链接"),
-                              subtitle: SelectableText(
-                                  animeController.anime.value.animeCoverUrl),
-                            ))
+                        ListTile(
+                          contentPadding: EdgeInsetsDirectional.zero,
+                          dense: true,
+                          title: const Text("链接"),
+                          subtitle: SelectableText(
+                              animeController.anime.animeCoverUrl),
+                        )
                       ],
                     ),
                   ),
@@ -244,7 +246,7 @@ class AnimeCoverDetail extends StatelessWidget {
             title: const Text("封面链接编辑"),
             content: TextField(
               controller: textController
-                ..text = animeController.anime.value.animeCoverUrl,
+                ..text = animeController.anime.animeCoverUrl,
               minLines: 1,
               maxLines: 5,
               maxLength: 999,
@@ -276,12 +278,11 @@ class AnimeCoverDetail extends StatelessWidget {
                           child: const Text("取消")),
                       ElevatedButton(
                           onPressed: () {
-                            animeController
-                                .updateAnimeCoverUrl(textController.text);
+                            animeController.updateCoverUrl(textController.text);
 
                             SqliteUtil.updateAnimeCoverUrl(
-                                animeController.anime.value.animeId,
-                                animeController.anime.value.animeCoverUrl);
+                                animeController.anime.animeId,
+                                animeController.anime.animeCoverUrl);
                             Navigator.pop(dialogContext); // 退出编辑对话框
                             Navigator.pop(
                                 howToEditCoverUrlDialogContext); // 退出选择对话框
@@ -326,8 +327,8 @@ class AnimeCoverDetail extends StatelessWidget {
           ImageUtil.getRelativeCoverImagePath(absoluteImagePath);
       // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
       SqliteUtil.updateAnimeCoverUrl(
-          animeController.anime.value.animeId, relativeImagePath);
-      animeController.updateAnimeCoverUrl(relativeImagePath);
+          animeController.anime.animeId, relativeImagePath);
+      animeController.updateCoverUrl(relativeImagePath);
       // 退出选择
       Navigator.pop(howToEditCoverUrlDialogContext);
     } else {

@@ -7,7 +7,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_card.dart';
-import 'package:flutter_test_future/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
@@ -32,7 +32,7 @@ class AnimeDetailEpisodeInfo extends StatefulWidget {
 }
 
 class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
-  Anime get _anime => widget.animeController.anime.value;
+  Anime get _anime => widget.animeController.anime;
   List<Episode> get _episodes => widget.animeController.episodes;
   List<Note> get _notes => widget.animeController.notes;
 
@@ -67,8 +67,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     return SliverPadding(
       padding: const EdgeInsets.all(0),
       sliver: GetBuilder<AnimeController>(
+        id: widget.animeController.episodeId,
         init: widget.animeController,
-        id: "getbuilder_episode",
         initState: (_) {},
         builder: (_) {
           // 如果没有收藏，则不展示集信息，注意需要放在GetBuilder里
