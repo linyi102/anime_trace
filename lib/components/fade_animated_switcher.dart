@@ -5,17 +5,19 @@ class FadeAnimatedSwitcher extends StatelessWidget {
   final bool loadOk;
   final Widget destWidget;
   final Widget? specifiedLoadingWidget;
-  const FadeAnimatedSwitcher(
-      {Key? key,
-      required this.loadOk,
-      required this.destWidget,
-      this.specifiedLoadingWidget})
-      : super(key: key);
+  final Duration? duration;
+  const FadeAnimatedSwitcher({
+    Key? key,
+    required this.loadOk,
+    required this.destWidget,
+    this.specifiedLoadingWidget,
+    this.duration,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: duration ?? const Duration(milliseconds: 200),
       child: loadOk
           ? destWidget
           : (specifiedLoadingWidget ??

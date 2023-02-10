@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover_auto_load.dart';
+import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -123,53 +123,47 @@ class _WeeklyPageState extends State<WeeklyPage> {
           }
           return RefreshIndicator(
             onRefresh: () => _loadData(),
-            // child: _buildAnimeList(),
-            child: GridView.builder(
-              gridDelegate: getAnimeGridDelegate(context),
-              // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
-              itemCount: weeklyController.weeks[pageIndex].length,
-              itemBuilder: (context, recordIdx) {
-                // Log.info("recordIdx=$recordIdx");
-                WeekRecord record =
-                    weeklyController.weeks[pageIndex][recordIdx];
-
-                return Column(
-                  children: [
-                    AnimeGridCoverAutoLoad(
-                      anime: record.anime,
-                      onChanged: (newAnime) => record.anime = newAnime,
-                    ),
-                  ],
-                );
-              },
-            ),
+            child: _buildAnimeList(pageIndex),
+            // child: _buildAnimeGrid(pageIndex),
           );
         },
       ),
     );
   }
 
-  ListView _buildAnimeList() {
-    return ListView.builder(
-      itemCount: weeklyController.weeks[selectedWeekdayIdx].length,
+  GridView _buildAnimeGrid(int pageIndex) {
+    return GridView.builder(
+      gridDelegate: getAnimeGridDelegate(context),
+      // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
+      itemCount: weeklyController.weeks[pageIndex].length,
       itemBuilder: (context, recordIdx) {
         // Log.info("recordIdx=$recordIdx");
-        WeekRecord record =
-            weeklyController.weeks[selectedWeekdayIdx][recordIdx];
+        WeekRecord record = weeklyController.weeks[pageIndex][recordIdx];
 
-        return ListTile(
-          title: Text(record.anime.animeName,
-              maxLines: 1, overflow: TextOverflow.ellipsis),
-          trailing: Text(record.info),
-          onTap: () {
-            Log.info(record.anime.animeUrl);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SearchDbAnime(kw: record.anime.animeName),
-                ));
-          },
+        return Column(
+          children: [
+            AnimeItemAutoLoad(
+              anime: record.anime,
+              onChanged: (newAnime) => record.anime = newAnime,
+              style: AnimeItemStyle.grid,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  ListView _buildAnimeList(int pageIndex) {
+    return ListView.builder(
+      itemCount: weeklyController.weeks[pageIndex].length,
+      itemBuilder: (context, recordIdx) {
+        // Log.info("recordIdx=$recordIdx");
+        WeekRecord record = weeklyController.weeks[pageIndex][recordIdx];
+        return AnimeItemAutoLoad(
+          anime: record.anime,
+          onChanged: (newAnime) => record.anime = newAnime,
+          style: AnimeItemStyle.list,
+          subtitles: [record.info],
         );
       },
     );

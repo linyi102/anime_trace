@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
+import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-
-import '../controllers/anime_display_controller.dart';
-import 'common_image.dart';
 
 // 网格状态下，用于显示一个完整的动漫封面
 // 包括进度、第几次观看、名字
@@ -17,6 +14,7 @@ class AnimeGridCover extends StatelessWidget {
   final double coverWidth; // 传入固定宽度，用于水平列表
   final bool showProgress;
   final bool showReviewNumber;
+  final bool showName;
   final bool isSelected;
   final void Function()? onPressed;
   final bool loading;
@@ -28,6 +26,7 @@ class AnimeGridCover extends StatelessWidget {
     this.showProgress = true,
     this.showReviewNumber = true,
     this.isSelected = false,
+    this.showName = true,
     this.coverWidth = 0,
     this.onPressed,
     this.loading = false,
@@ -60,7 +59,7 @@ class AnimeGridCover extends StatelessWidget {
                 ],
               ),
               // 名字
-              if (_animeDisplayController.showNameBelowCover)
+              if (_animeDisplayController.showNameBelowCover && showName)
                 _buildNameBelowCover(),
             ],
           )),
@@ -80,8 +79,10 @@ class AnimeGridCover extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             child: Stack(
               children: [
+                // loading放在这里是为了保证加载圈处于封面正中央
                 FadeAnimatedSwitcher(
                   loadOk: !loading,
+                  duration: const Duration(milliseconds: 400),
                   specifiedLoadingWidget: const Center(
                     child: SizedBox(
                         height: 20,
@@ -104,7 +105,7 @@ class AnimeGridCover extends StatelessWidget {
                     child: const Center(
                         child: Icon(Icons.check, color: Colors.white)),
                   ),
-                if (showNameInCover) _buildNameInCover()
+                if (showNameInCover && showName) _buildNameInCover()
               ],
             ),
           ),

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
-import 'package:flutter_test_future/components/refresher_footer.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 
 import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
@@ -19,8 +16,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -48,9 +43,6 @@ class _DirectoryPageState extends State<DirectoryPage>
 
   late final RefreshController _refreshController;
 
-  final _itemHeight = 120.0;
-  final _coverWidth = 80.0;
-
   @override
   void initState() {
     super.initState();
@@ -73,8 +65,7 @@ class _DirectoryPageState extends State<DirectoryPage>
       // _loadData();
     } else {
       _refreshController = RefreshController(initialRefresh: false);
-      // 如果已有数据，则直接显示，但也要根据重新查询数据库中的动漫来替换
-      _replaceDbAnimes();
+      // 如果已有数据，则直接显示
     }
   }
 
@@ -83,16 +74,6 @@ class _DirectoryPageState extends State<DirectoryPage>
     super.dispose();
     //为了避免内存泄露，需要调用.dispose
     _scrollController.dispose();
-  }
-
-  // 从聚合搜索页返回后需要用到。不过目前用不到了，因为搜索按钮在network_nav中，无法直接处理目录页中的数据。并不影响，如果在聚合搜索页中添加了某个动漫，然后再从目录页中添加动漫，则会添加两个动漫
-  // 切换到目录页也会用到
-  void _replaceDbAnimes() async {
-    // 即使查询过了，也需要查询数据库中的动漫，因为可能会已经取消收藏了
-    for (int i = 0; i < directory.length; ++i) {
-      directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
-    }
-    setState(() {});
   }
 
   // 不要手动调用，而是通过_refreshController.requestRefresh()，这样可以有刷新效果
@@ -234,65 +215,18 @@ class _DirectoryPageState extends State<DirectoryPage>
       // if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
 
       Anime anime = directory[index];
-      final imageProvider = Image.network(anime.animeCoverUrl).image;
-      return SizedBox(
-        height: _itemHeight,
-        child: MaterialButton(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-          onPressed: () {
-            Log.info("单击");
-            // 如果收藏了，则单击进入详细页面
-            if (anime.isCollected()) {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return AnimeDetailPage(anime);
-              })).then((value) {
-                setState(() {
-                  // anime = value;
-                  directory[index] = value;
-                });
-              });
-            } else {
-              showToast("收藏后即可进入详细页面");
-            }
-          },
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => PhotoView(
-                              imageProvider: imageProvider,
-                              onTapDown: (_, __, ___) =>
-                                  Navigator.of(context).pop())));
-                    },
-                    child: SizedBox(
-                        width: _coverWidth,
-                        child: AnimeGridCover(anime, onlyShowCover: true)),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // 不要和动漫详细页里的复用，因为这里的不应该可以复制文字
-                    _showAnimeName(anime.animeName),
-                    // _showNameAnother(anime.nameAnother),
-                    _showAnimeInfo(anime.getAnimeInfoFirstLine()),
-                    _showAnimeInfo(anime.getAnimeInfoSecondLine()),
-                    // _showCollectIcon(anime)
-                  ],
-                ),
-              ),
-              _showCollectIcon(anime)
-            ],
-          ),
-        ),
+      return AnimeItemAutoLoad(
+        // 需要指定key，否则看不出来变化
+        key: UniqueKey(),
+        anime: anime,
+        onChanged: (newAnime) => anime = newAnime,
+        style: AnimeItemStyle.list,
+        // 不会实时变化
+        // subtitles: [
+        //   anime.getAnimeInfoFirstLine(),
+        //   anime.getAnimeInfoSecondLine()
+        // ],
+        showAnimeInfo: true,
       );
     }, childCount: directory.length));
   }
@@ -561,75 +495,5 @@ class _DirectoryPageState extends State<DirectoryPage>
       ));
     }
     return children;
-  }
-
-  _showAnimeName(animeName) {
-    return Container(
-      alignment: Alignment.topLeft,
-      padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
-      child: Text(
-        animeName,
-        style: TextStyle(
-            fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  _showNameAnother(String nameAnother) {
-    return nameAnother.isEmpty
-        ? Container()
-        : Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
-            child: Text(
-              nameAnother,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
-              overflow: TextOverflow.ellipsis,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
-            ),
-          );
-  }
-
-  _showAnimeInfo(String animeInfo) {
-    return animeInfo.isEmpty
-        ? Container()
-        : Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
-            child: Text(
-              animeInfo,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
-              overflow: TextOverflow.ellipsis,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
-            ),
-          );
-  }
-
-  _showCollectIcon(Anime anime) {
-    return SizedBox(
-      height: _itemHeight,
-      child: MaterialButton(
-        padding: EdgeInsets.zero,
-        visualDensity:
-            const VisualDensity(horizontal: VisualDensity.minimumDensity),
-        onPressed: () {
-          dialogSelectChecklist(setState, context, anime);
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            anime.isCollected()
-                ? const Icon(Icons.favorite, color: Colors.red, size: 18)
-                : const Icon(Icons.favorite_border, size: 18),
-            anime.isCollected()
-                ? Text(anime.tagName,
-                    textScaleFactor: ThemeUtil.tinyScaleFactor)
-                : Container()
-          ],
-        ),
-      ),
-    );
   }
 }
