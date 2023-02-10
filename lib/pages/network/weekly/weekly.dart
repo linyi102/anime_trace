@@ -137,21 +137,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
                 return Column(
                   children: [
-                    AnimeGridCoverAutoLoad(
-                      anime: record.anime,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                // SearchDbAnime(kw: record.anime.animeName),
-                                AnimeDetailPlus(record.anime),
-                          ),
-                        );
-                      },
-                      showProgress: false,
-                      showReviewNumber: false,
-                    ),
+                    AnimeGridCoverAutoLoad(anime: record.anime),
                   ],
                 );
               },

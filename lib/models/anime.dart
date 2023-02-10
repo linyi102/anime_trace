@@ -25,6 +25,8 @@ class Anime {
   String productionCompany;
   String officialSite;
 
+  bool climbFinished;
+
   Anime(
       {this.animeId = 0,
       required this.animeName,
@@ -44,7 +46,8 @@ class Anime {
       this.playStatus = "",
       this.productionCompany = "",
       this.officialSite = "",
-      this.rate = 0});
+      this.rate = 0,
+      this.climbFinished = false});
 
   @override
   String toString() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -18,7 +19,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool showReviewNumber;
   final bool isSelected;
   final void Function()? onPressed;
-  final bool loadingCover;
+  final bool loading;
 
   const AnimeGridCover(
     this._anime, {
@@ -29,7 +30,7 @@ class AnimeGridCover extends StatelessWidget {
     this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
-    this.loadingCover = false,
+    this.loading = false,
   }) : super(key: key);
 
   @override
@@ -79,20 +80,21 @@ class AnimeGridCover extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
             child: Stack(
               children: [
-                loadingCover
-                    ? const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : SizedBox(
-                        // 确保图片填充
-                        width: mqSize.width,
-                        height: mqSize.height,
-                        child: CommonImage(_anime.getCommonCoverUrl()),
-                      ),
+                FadeAnimatedSwitcher(
+                  loadOk: !loading,
+                  specifiedLoadingWidget: const Center(
+                    child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                  destWidget: SizedBox(
+                    // 确保图片填充
+                    width: mqSize.width,
+                    height: mqSize.height,
+                    child: CommonImage(_anime.getCommonCoverUrl()),
+                  ),
+                ),
                 if (isSelected)
                   Container(
                     width: mqSize.width,
