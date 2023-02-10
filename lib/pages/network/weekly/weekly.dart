@@ -194,49 +194,53 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
   // 构建当前搜索源
   _buildSourceTile() {
-    return ListTile(
-      title: Row(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          WebSiteLogo(url: curWebsite.iconUrl, size: 25),
-          const SizedBox(width: 10),
-          Text(curWebsite.name),
-        ],
+    return Card(
+      child: ListTile(
+        title: Row(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+            const SizedBox(width: 10),
+            Text(curWebsite.name),
+          ],
+        ),
+        trailing: const Icon(Icons.keyboard_arrow_right),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => SimpleDialog(
+              children: climbWebsites.map((e) {
+                if (e.discard) return Container();
+
+                // 如果该搜索源e的climb工具在usableClimbs中，则显示可用
+                bool usable = usableClimbs.indexWhere(
+                      (element) => element.runtimeType == e.climb.runtimeType,
+                    ) >=
+                    0;
+                return ListTile(
+                  title: Text(
+                    e.name,
+                    style: usable ? null : const TextStyle(color: Colors.grey),
+                  ),
+                  leading: WebSiteLogo(url: e.iconUrl, size: 25),
+                  trailing: e.name == curWebsite.name
+                      ? const Icon(Icons.check)
+                      : null,
+                  enabled: usable,
+                  onTap: () {
+                    curWebsite = e;
+                    SPUtil.setInt(selectedDirectorySourceIdx,
+                        climbWebsites.indexWhere((element) => element == e));
+
+                    _loadData();
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
+          );
+        },
       ),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => SimpleDialog(
-            children: climbWebsites.map((e) {
-              if (e.discard) return Container();
-
-              // 如果该搜索源e的climb工具在usableClimbs中，则显示可用
-              bool usable = usableClimbs.indexWhere(
-                    (element) => element.runtimeType == e.climb.runtimeType,
-                  ) >=
-                  0;
-              return ListTile(
-                title: Text(
-                  e.name,
-                  style: usable ? null : const TextStyle(color: Colors.grey),
-                ),
-                leading: WebSiteLogo(url: e.iconUrl, size: 25),
-                trailing:
-                    e.name == curWebsite.name ? const Icon(Icons.check) : null,
-                enabled: usable,
-                onTap: () {
-                  curWebsite = e;
-                  SPUtil.setInt(selectedDirectorySourceIdx,
-                      climbWebsites.indexWhere((element) => element == e));
-
-                  _loadData();
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
-          ),
-        );
-      },
     );
   }
 }

@@ -20,7 +20,7 @@ class NetWorkPage extends StatefulWidget {
 class _NetWorkPageState extends State<NetWorkPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
-  final List<String> navs = ["搜索源", "更新", "时间表", "目录"];
+  final List<String> navs = ["聚合", "更新", "时间表", "目录"];
   List<Widget> actions = [];
 
   @override

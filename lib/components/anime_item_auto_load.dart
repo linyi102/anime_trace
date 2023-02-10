@@ -89,44 +89,46 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     }
   }
 
-  SizedBox _buildListItem() {
-    return SizedBox(
-      height: itemHeight,
-      child: MaterialButton(
-        onPressed: _enterDetailPage,
-        child: Row(
-          children: [
-            // 封面
-            Padding(
-              padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-              child: SizedBox(
-                width: coverWidth,
-                child: AnimeGridCover(
-                  anime,
-                  loading: loading,
-                  showName: false,
-                  showProgress: anime.isCollected() ? true : false,
-                  showReviewNumber: anime.isCollected() ? true : false,
-                  onPressed: _openImage,
+  _buildListItem() {
+    return Card(
+      child: SizedBox(
+        height: itemHeight,
+        child: MaterialButton(
+          onPressed: _enterDetailPage,
+          child: Row(
+            children: [
+              // 封面
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 5, 10, 0),
+                child: SizedBox(
+                  width: coverWidth,
+                  child: AnimeGridCover(
+                    anime,
+                    loading: loading,
+                    showName: false,
+                    showProgress: anime.isCollected() ? true : false,
+                    showReviewNumber: anime.isCollected() ? true : false,
+                    onPressed: _openImage,
+                  ),
                 ),
               ),
-            ),
-            // 信息
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _showAnimeName(anime.animeName),
-                  for (var subtitle in widget.subtitles)
-                    _showAnimeSubtitle(subtitle),
-                  if (widget.showAnimeInfo)
-                    _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
-                  if (widget.showAnimeInfo)
-                    _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
-                ],
+              // 信息
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _showAnimeName(anime.animeName),
+                    for (var subtitle in widget.subtitles)
+                      _showAnimeSubtitle(subtitle),
+                    if (widget.showAnimeInfo)
+                      _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
+                    if (widget.showAnimeInfo)
+                      _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

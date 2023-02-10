@@ -138,42 +138,44 @@ class UpdateRecordPage extends StatelessWidget {
           return const NeedUpdateAnimeList();
         }));
       },
-      child: Container(
-        height: 60,
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-        margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: ThemeUtil.getCardColor()),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: Container()),
-                Text("更新进度：$updateOkCnt/$needUpdateCnt",
-                    textScaleFactor: ThemeUtil.smallScaleFactor),
-                Text("查看未完结动漫",
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
-                    style: TextStyle(color: ThemeUtil.getCommentColor())),
-                Expanded(child: Container()),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: () {
-                ClimbAnimeUtil.updateAllAnimesInfo();
-              },
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)))),
-              child: const Text(
-                "立即更新",
-                textScaleFactor: ThemeUtil.smallScaleFactor,
-                style: TextStyle(color: Colors.white),
+      child: Card(
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+          margin: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: ThemeUtil.getCardColor()),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: Container()),
+                  Text("更新进度：$updateOkCnt/$needUpdateCnt",
+                      textScaleFactor: ThemeUtil.smallScaleFactor),
+                  Text("查看未完结动漫",
+                      textScaleFactor: ThemeUtil.tinyScaleFactor,
+                      style: TextStyle(color: ThemeUtil.getCommentColor())),
+                  Expanded(child: Container()),
+                ],
               ),
-            )
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  ClimbAnimeUtil.updateAllAnimesInfo();
+                },
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)))),
+                child: const Text(
+                  "立即更新",
+                  textScaleFactor: ThemeUtil.smallScaleFactor,
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

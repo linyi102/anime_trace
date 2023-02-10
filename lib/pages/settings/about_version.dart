@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/logo.dart';
 
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
@@ -69,13 +70,7 @@ class _AboutVersionState extends State<AboutVersion> {
 
     lvc.add(Column(
       children: [
-        Container(
-          height: 120,
-          width: 120,
-          margin: const EdgeInsets.fromLTRB(0, 20, 0, 10),
-          alignment: Alignment.center,
-          child: Image.asset('assets/images/logo.png'),
-        ),
+        const Logo(),
         loadOk ? Text("当前版本: ${packageInfo.version}") : const Text(""),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

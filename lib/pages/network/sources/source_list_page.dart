@@ -1,5 +1,6 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_app_bar.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
@@ -98,58 +99,98 @@ class _SourceListPageState extends State<SourceListPage> {
         // 使用ListView，而非SingleChildScrollView>Column，否则无法下拉刷新
         child: ListView(
           children: [
+            // Responsive.isMobile(context)
+            //     ? _buildClimbWebsiteListView()
+            //     : _buildClimbWebsiteGridView(),
+
             // _buildClimbWebsiteGridCard(),
-            Responsive.isMobile(context)
-                ? _buildClimbWebsiteList()
-                : _buildGridView(),
-            // _buildClimbWebsiteList(),
-            // 展开已弃用
-            ExpandChild(
-              child: _buildDiscardList(),
-              collapsedHint: "展开",
-              expandedHint: "收起",
-              expandArrowStyle: ExpandArrowStyle.both,
-            ),
-            Column(
-              children: [
-                const ListTile(
-                    title: Text(
-                  "工具",
-                  textScaleFactor: 1.2,
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                )),
-                ListTile(
-                  title: Text.rich(TextSpan(children: [
-                    TextSpan(text: favWebsite.name),
-                    // WidgetSpan(child: Text(favWebsite.name + "")),
-                    const WidgetSpan(child: Icon(Icons.open_in_new, size: 18)),
-                    // WidgetSpan(
-                    //     child: buildWebSiteIcon(
-                    //         url: favWebsite.icoUrl, size: 20)),
-                  ])),
-                  // leading: buildWebSiteIcon(url: favWebsite.icoUrl, size: 35),
-                  onTap: () => LaunchUrlUtil.launch(
-                      context: context, uriStr: favWebsite.url),
-                ),
-                ListTile(
-                  title: const Text("修复失效网络封面"),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const LapseCoverAnimesPage()));
-                  },
-                ),
-                // ListTile(
-                //   title: const Text("查看自定义动漫"),
-                //   onTap: () {
-                //     Navigator.of(context).push(MaterialPageRoute(
-                //         builder: (context) => const LapseCoverAnimesPage()));
-                //   },
-                // ),
-              ],
-            )
+
+            _buildClimbWebsiteListViewCard(),
+            _buildTools()
             // FavWebsiteListPage()
           ],
         ),
+      ),
+    );
+  }
+
+  _buildCardTitle(String title, {Widget? trailing}) {
+    return ListTile(
+      title: Text(
+        title,
+        // textScaleFactor: 1.2,
+        // style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      trailing: trailing,
+    );
+  }
+
+  _buildTools() {
+    return Card(
+      child: Column(
+        children: [
+          _buildCardTitle("工具"),
+          Row(
+            children: [
+              MaterialButton(
+                padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+                onPressed: () => LaunchUrlUtil.launch(
+                    context: context, uriStr: favWebsite.url),
+                child: Column(
+                  children: [
+                    WebSiteLogo(url: favWebsite.icoUrl, size: 24),
+                    const SizedBox(height: 5),
+                    const Text("番组放送", textScaleFactor: 0.9)
+                  ],
+                ),
+              ),
+              MaterialButton(
+                padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LapseCoverAnimesPage()));
+                },
+                child: Column(
+                  children: const [
+                    Icon(Icons.auto_fix_high),
+                    SizedBox(height: 5),
+                    Text("修复封面", textScaleFactor: 0.9)
+                  ],
+                ),
+              )
+            ],
+          ),
+
+          // ListTile(
+          //   title: Text.rich(TextSpan(children: [
+          //     TextSpan(text: favWebsite.name),
+          //     // WidgetSpan(child: Text(favWebsite.name + "")),
+          //     // const WidgetSpan(child: Icon(Icons.open_in_new, size: 18)),
+          //     // WidgetSpan(
+          //     //     child: buildWebSiteIcon(
+          //     //         url: favWebsite.icoUrl, size: 20)),
+          //   ])),
+          //   leading: WebSiteLogo(url: favWebsite.icoUrl, size: 24),
+          //   onTap: () =>
+          //       LaunchUrlUtil.launch(context: context, uriStr: favWebsite.url),
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.auto_fix_high),
+          //   title: const Text("修复失效网络封面"),
+          //   onTap: () {
+          //     Navigator.of(context).push(MaterialPageRoute(
+          //         builder: (context) => const LapseCoverAnimesPage()));
+          //   },
+          // ),
+
+          // ListTile(
+          //   title: const Text("查看自定义动漫"),
+          //   onTap: () {
+          //     Navigator.of(context).push(MaterialPageRoute(
+          //         builder: (context) => const LapseCoverAnimesPage()));
+          //   },
+          // ),
+        ],
       ),
     );
   }
@@ -202,7 +243,7 @@ class _SourceListPageState extends State<SourceListPage> {
     );
   }
 
-  GridView _buildGridView() {
+  GridView _buildClimbWebsiteGridView() {
     // 获取还没有失效的搜索源列表
     List<ClimbWebsite> fineClimbWebsites = [];
     for (var e in climbWebsites) {
@@ -261,14 +302,33 @@ class _SourceListPageState extends State<SourceListPage> {
         onTap: () => enterSourceDetail(climbWebsite));
   }
 
-  _buildClimbWebsiteList() {
+  _buildClimbWebsiteListViewCard() {
+    return Card(
+      child: Column(
+        children: [
+          _buildCardTitle("搜索源"),
+          _buildClimbWebsiteListView(),
+          // 展开已弃用
+          ExpandChild(
+            child: _buildDiscardList(),
+            collapsedHint: "展开",
+            expandedHint: "收起",
+            expandArrowStyle: ExpandArrowStyle.both,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildClimbWebsiteListView() {
     return Column(
-        children: climbWebsites.map((climbWebsite) {
-      if (climbWebsite.discard) {
-        return Container();
-      }
-      return _buildClimbWebsiteListItem(climbWebsite);
-    }).toList());
+      children: [
+        for (var climbWebsite in climbWebsites)
+          climbWebsite.discard
+              ? Container()
+              : _buildClimbWebsiteListItem(climbWebsite),
+      ],
+    );
   }
 
   _buildDiscardList() {

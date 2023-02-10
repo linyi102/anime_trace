@@ -362,26 +362,28 @@ class _DirectoryPageState extends State<DirectoryPage>
     // );
 
     // 使用自带的折叠
-    return ExpansionPanelList(
-        elevation: 0,
-        expandedHeaderPadding: EdgeInsets.zero,
-        expansionCallback: (panelIndex, isExpanded) {
-          setState(() {
-            Global.expandDirectoryFilter = !Global.expandDirectoryFilter;
-          });
-        },
-        animationDuration: kThemeAnimationDuration,
-        children: <ExpansionPanel>[
-          ExpansionPanel(
-            backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
-            headerBuilder: (context, isExpanded) {
-              return _buildSourceTile();
-            },
-            isExpanded: Global.expandDirectoryFilter,
-            // canTapOnHeader: true,
-            body: _buildFilterBody(),
-          )
-        ]);
+    return Card(
+      child: ExpansionPanelList(
+          elevation: 0,
+          expandedHeaderPadding: EdgeInsets.zero,
+          expansionCallback: (panelIndex, isExpanded) {
+            setState(() {
+              Global.expandDirectoryFilter = !Global.expandDirectoryFilter;
+            });
+          },
+          animationDuration: kThemeAnimationDuration,
+          children: <ExpansionPanel>[
+            ExpansionPanel(
+              backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
+              headerBuilder: (context, isExpanded) {
+                return _buildSourceTile();
+              },
+              isExpanded: Global.expandDirectoryFilter,
+              // canTapOnHeader: true,
+              body: _buildFilterBody(),
+            )
+          ]),
+    );
   }
 
   _showRadioYear() {

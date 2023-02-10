@@ -233,7 +233,10 @@ class MyAppState extends State<MyApp> with WindowListener {
             ),
       // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
       fontFamily: "invalidFont",
-      cardTheme: CardTheme(color: ThemeUtil.getCardColor()),
+      cardTheme: CardTheme(
+          color: ThemeUtil.getCardColor(),
+          elevation: 0,
+          margin: const EdgeInsets.fromLTRB(10, 5, 10, 5)),
       popupMenuTheme: PopupMenuThemeData(color: ThemeUtil.getCardColor()),
       dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
       timePickerTheme:

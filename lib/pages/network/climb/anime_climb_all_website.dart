@@ -240,7 +240,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                     ListTile(
                       title: Text(webstie.name),
                       leading: WebSiteLogo(url: webstie.iconUrl, size: 25),
-                      trailing: const Icon(Icons.arrow_forward),
+                      trailing: const Icon(Icons.keyboard_arrow_right),
                       onTap: () {
                         // 进入详细搜索页
                         Navigator.of(context)
