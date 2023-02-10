@@ -14,6 +14,8 @@ class CommonTitleTabBar extends StatelessWidget {
     return TabBar(
       tabs: tabs,
       controller: tabController,
+      // true均分，false左对齐
+      // isScrollable: true,
       // 指示器
       indicatorSize: TabBarIndicatorSize.label,
       indicatorColor: Colors.transparent,

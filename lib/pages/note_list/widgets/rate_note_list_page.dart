@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../models/anime.dart';
-import '../../../models/params/page_params.dart';
-import '../../anime_detail/anime_detail.dart';
-import '../../../components/note_card.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
