@@ -170,3 +170,72 @@ Future<List<Anime>> getAllLapseCoverAnimes(List<Anime> animes) async {
   await Future.wait(futures);
   return lapseCoverAnimes;
 }
+
+/// 自动拉取最新封面
+/// 缺点：如果是GridView懒加载，那么后面的就不会自动拉取。而如果去掉懒加载，则会很卡
+class AnimeItemWithAutoPullCover extends StatefulWidget {
+  const AnimeItemWithAutoPullCover(
+      {this.needPull = false, required this.anime, this.onChanged, super.key});
+  final bool needPull; // 传入true则开始自动拉取最新封面
+  final Anime anime;
+  final void Function(Anime newAnime)? onChanged;
+
+  @override
+  State<AnimeItemWithAutoPullCover> createState() =>
+      _AnimItemWitheAutoPullCoverState();
+}
+
+class _AnimItemWitheAutoPullCoverState
+    extends State<AnimeItemWithAutoPullCover> {
+  bool recovering = false;
+  late Anime anime;
+
+  @override
+  void initState() {
+    super.initState();
+    anime = widget.anime;
+
+    _pullCover();
+  }
+
+  void _pullCover() async {
+    if (widget.needPull) {
+      Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(widget.anime,
+          showMessage: false);
+      if (mounted) {
+        setState(() {
+          anime = newAnime;
+          recovering = false;
+        });
+      }
+      SqliteUtil.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimeGridCover(
+      widget.anime,
+      showProgress: false,
+      showReviewNumber: false,
+      showName: true,
+      loading: recovering,
+      onPressed: () {
+        // 恢复中，不允许进入详细页
+        if (recovering) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnimeDetailPage(widget.anime),
+          ),
+        ).then((value) {
+          // 可能内部迁移了动漫或修改了封面
+          setState(() {
+            anime = value;
+          });
+        });
+      },
+    );
+  }
+}
