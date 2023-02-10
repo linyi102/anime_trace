@@ -16,6 +16,7 @@ class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
   var anime = Anime(animeName: "", animeEpisodeCnt: 0);
   bool get isCollected => anime.isCollected();
+  bool loadingAnime = false;
 
   List<Episode> episodes = []; // 集
   List<Note> notes = []; // 集对应的笔记
@@ -42,6 +43,7 @@ class AnimeController extends GetxController {
   /////////////////////////////// ids ///////////////////////////////
 
   static const String prefix = "getbuilder-anime-detail-page";
+  String detailPageId = "$prefix-detailPage";
   String infoId = "$prefix-info";
   String appbarId = "$prefix-appbar";
   String episodeId = "$prefix-episode";
@@ -61,8 +63,9 @@ class AnimeController extends GetxController {
     super.dispose();
   }
 
-  // 删除动漫，需要清空集信息、笔记、标签
-  void deleteAnime() {
+  // 取消收藏时需要重置动漫：清空集信息、笔记、标签等等
+  // 不要在退出详情页时使用重置，因为pop后返回的_anime也是这个对象，如果重置会导致收藏页进入详情页再返回后移除收藏列表
+  void resetAnime() {
     // 只删除固定信息，保留其他信息
     anime.animeId = 0;
     anime.checkedEpisodeCnt = 0;
@@ -77,6 +80,47 @@ class AnimeController extends GetxController {
 
     // 重绘appbar(隐藏更多按钮)、重绘信息行(右侧显示收藏按钮)、重绘集(不显示集信息)
     update([appbarId, infoId, episodeId]);
+  }
+
+  void loadAnime(Anime newAnime) async {
+    loadingAnime = true;
+    // 重绘整个详情页
+    update([detailPageId]);
+
+    bool existDbAnime = false;
+    // 从数据库中获取动漫
+    Anime dbAnime = await SqliteUtil.getAnimeByAnimeId(newAnime.animeId);
+    // 如果收藏了，则更新为完整的动漫信息
+    if (dbAnime.isCollected()) {
+      // 数据库中存在该id动漫
+      existDbAnime = true;
+    } else {
+      // 如果根据id找不到，则尝试查询动漫网址
+      dbAnime = await SqliteUtil.getAnimeByAnimeUrl(
+          newAnime); // 要传入widget.anime，而不是dbAnime(因为dbAnime没找到)
+      if (dbAnime.isCollected()) {
+        existDbAnime = true;
+      }
+    }
+
+    // await Future.delayed(const Duration(seconds: 2));
+    if (existDbAnime) {
+      Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
+      newAnime = dbAnime;
+      // 加载数据库动漫，然后重新加载集、标签
+      // updateAnime(dbAnime);
+      // loadLabels();
+      // loadEpisode();
+    } else {
+      // 加载未收藏的动漫
+      // updateAnime(newAnime);
+    }
+    loadingAnime = false;
+    // updateAnime(newAnime);
+    anime = newAnime;
+    loadLabels();
+    // 重绘整个详情页
+    update([detailPageId]);
   }
 
   void updateAnime(Anime newAnime) {

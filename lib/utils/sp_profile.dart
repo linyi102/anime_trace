@@ -89,7 +89,7 @@ class SpProfile {
   }
 
   static double getCoverBgHeightRatio() {
-    return SPUtil.getDouble("coverBgHeightRatio", defaultValue: 0.3);
+    return SPUtil.getDouble("coverBgHeightRatio", defaultValue: 0.4);
   }
 
   // 动漫详细页显示/因此简介

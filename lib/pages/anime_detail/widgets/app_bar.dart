@@ -17,14 +17,10 @@ import 'package:get/get.dart';
 
 class AnimeDetailAppBar extends StatefulWidget {
   const AnimeDetailAppBar(
-      {required this.animeController,
-      required this.popPage,
-      required this.loadData,
-      super.key});
+      {required this.animeController, required this.popPage, super.key});
 
   final AnimeController animeController;
   final Function popPage;
-  final Function loadData;
 
   @override
   State<AnimeDetailAppBar> createState() => _AnimeDetailAppBarState();
@@ -52,6 +48,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
+        Log.info("build ${widget.animeController.appbarId}");
+
         return SliverAppBar(
           // 下滑后显示收缩后的AppBar
           pinned: true,
@@ -187,7 +185,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     ),
                   ).then((value) {
                     // 从数据库中获取迁移后的动漫
-                    widget.loadData();
+                    widget.animeController.loadAnime(_anime);
                   });
                 },
               ),
@@ -231,7 +229,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     // 退出当前页
                     // _popAnimeDetailPage();
                     // 不用退出
-                    widget.animeController.deleteAnime();
+                    widget.animeController.resetAnime();
                   },
                   child: const Text("确认")),
             ],

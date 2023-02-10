@@ -46,6 +46,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
+        Log.info("build ${widget.animeController.infoId}");
+
         return SliverPadding(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
             sliver: SliverList(
@@ -104,7 +106,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   // 显示信息按钮，点击后进入动漫属性信息页
-  _showInfoIcon() {
+  _buildInfoIcon() {
     return IconTextButton(
       iconData: EvaIcons.infoOutline,
       title: "信息",
@@ -117,7 +119,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   // 显示评价按钮，点击后进入评价列表页
-  _showRateIcon() {
+  _buildRateIcon() {
     return GetBuilder<AnimeController>(
       id: widget.animeController.rateNoteCountId,
       init: widget.animeController,
@@ -141,7 +143,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   // 显示收藏按钮，点击后可以修改清单
-  _showCollectIcon() {
+  _buildCollectIcon() {
     return IconTextButton(
       iconData: _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
       iconColor: _anime.isCollected() ? Colors.red : null,
@@ -170,10 +172,15 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         _buildInfo(),
         const Spacer(),
         // 相关按钮
-        if (widget.animeController.isCollected) _showInfoIcon(),
-        if (widget.animeController.isCollected) _showRateIcon(),
+        if (widget.animeController.isCollected) _buildInfoIcon(),
+        if (widget.animeController.isCollected) _buildRateIcon(),
+
+        // 方案1：没有收藏时显示搜索按钮，始终显示收藏按钮
         if (!widget.animeController.isCollected) _buildSearchBtn(),
-        _showCollectIcon(),
+        _buildCollectIcon(),
+        // 方案2：没有收藏时显示添加按钮，收藏后改用收藏按钮
+        // if (!widget.animeController.isCollected) _buildAddBtn(),
+        // if (widget.animeController.isCollected) _buildCollectIcon(),
       ],
     );
   }
@@ -183,13 +190,23 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       iconData: EvaIcons.search,
       title: "搜索",
       onTap: () {
-        Navigator.push(
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => SearchDbAnime(
+        //         kw: _anime.animeName,
+        //       ),
+        //     )).then((value) {
+        //   // 可能在搜索内部添加该动漫了，因此需要重新获取动漫信息
+        //   // 当前仍存在问题，所以改用pushreplacement
+        //   // widget.animeController.loadAnime(_anime);
+        // });
+
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => SearchDbAnime(
-                kw: _anime.animeName,
-              ),
-            ));
+                builder: (context) => SearchDbAnime(kw: _anime.animeName)),
+            result: _anime);
       },
     );
   }

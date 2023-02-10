@@ -44,36 +44,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       // tag: UniqueKey().toString(),
     );
 
-    _loadData();
-  }
-
-  void _loadData() async {
-    // await Future.delayed(const Duration(seconds: 2));
-    animeController.updateAnime(widget.anime);
-
-    bool existDbAnime = false;
-    // 从数据库中获取动漫
-    Anime dbAnime = await SqliteUtil.getAnimeByAnimeId(widget.anime.animeId);
-    // 如果收藏了，则更新为完整的动漫信息
-    if (dbAnime.isCollected()) {
-      // 数据库中存在该id动漫
-      existDbAnime = true;
-    } else {
-      // 如果根据id找不到，则尝试查询动漫网址
-      dbAnime = await SqliteUtil.getAnimeByAnimeUrl(
-          widget.anime); // 要传入widget.anime，而不是dbAnime(因为dbAnime没找到)
-      if (dbAnime.isCollected()) {
-        existDbAnime = true;
-      }
-    }
-
-    if (existDbAnime) {
-      Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
-      animeController.updateAnime(dbAnime);
-      // 加载最新动漫后，再去重新加载集、标签
-      animeController.loadLabels();
-      animeController.loadEpisode();
-    }
+    animeController.loadAnime(widget.anime);
   }
 
   // 用于传回到动漫列表页
@@ -107,19 +78,32 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                 await _climbAnimeInfo();
               },
               child: Stack(children: [
-                CustomScrollView(
-                  slivers: [
-                    // 构建顶部栏
-                    AnimeDetailAppBar(
-                      animeController: animeController,
-                      popPage: _popPage,
-                      loadData: _loadData,
-                    ),
-                    // 构建动漫信息(名字、评分、其他信息)
-                    AnimeDetailInfo(animeController: animeController),
-                    // 构建主体(集信息页)
-                    AnimeDetailEpisodeInfo(animeController: animeController)
-                  ],
+                GetBuilder<AnimeController>(
+                  id: animeController.detailPageId,
+                  init: animeController,
+                  initState: (_) {},
+                  builder: (_) {
+                    Log.info("build ${animeController.detailPageId}");
+
+                    if (animeController.loadingAnime) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return CustomScrollView(
+                      slivers: [
+                        // 构建顶部栏
+                        AnimeDetailAppBar(
+                          animeController: animeController,
+                          popPage: _popPage,
+                        ),
+                        // 构建动漫信息(名字、评分、其他信息)
+                        AnimeDetailInfo(animeController: animeController),
+                        // 构建主体(集信息页)
+                        AnimeDetailEpisodeInfo(animeController: animeController)
+                      ],
+                    );
+                  },
                 ),
                 _buildButtonsBarAboutEpisodeMulti()
               ]),
