@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
@@ -41,6 +42,8 @@ class _MainScreenState extends State<MainScreen> {
     MainTab(name: "笔记", iconData: Icons.edit_road, page: const NoteListPage()),
     MainTab(name: "更多", iconData: Icons.more_horiz, page: const SettingPage())
   ];
+
+  bool showBottomBarLabel = true;
 
   @override
   Widget build(BuildContext context) {
@@ -140,23 +143,32 @@ class _MainScreenState extends State<MainScreen> {
       //   index: _currentIndex,
       //   children: _list,
       // ),
-      bottomNavigationBar: Obx(() => BottomNavigationBar(
-            backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-            type: BottomNavigationBarType.fixed,
-            // 当item数量超过3个，则会显示空白，此时需要设置该属性
-            currentIndex: _selectedTabIdx,
-            // elevation: 0,
-            // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-            onTap: (int index) {
-              setState(() {
-                _selectedTabIdx = index;
-              });
-            },
-            items: [
-              for (var tab in _mainTabs)
-                BottomNavigationBarItem(
-                    icon: Icon(tab.iconData), label: tab.name)
-            ],
+      bottomNavigationBar: Obx(() => SizedBox(
+            height: showBottomBarLabel ? null : 45,
+            child: BottomNavigationBar(
+              // 不显示文字方法1
+              selectedFontSize: showBottomBarLabel ? 14.0 : 0,
+              // 不显示文字方法2
+              // selectedFontSize: 12,
+              // showSelectedLabels: false,
+              // showUnselectedLabels: false,
+              backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
+              type: BottomNavigationBarType.fixed,
+              // 当item数量超过3个，则会显示空白，此时需要设置该属性
+              currentIndex: _selectedTabIdx,
+              // elevation: 0,
+              // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+              onTap: (int index) {
+                setState(() {
+                  _selectedTabIdx = index;
+                });
+              },
+              items: [
+                for (var tab in _mainTabs)
+                  BottomNavigationBarItem(
+                      icon: Icon(tab.iconData), label: tab.name)
+              ],
+            ),
           )),
     );
   }
