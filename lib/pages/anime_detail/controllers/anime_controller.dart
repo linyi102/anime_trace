@@ -65,6 +65,7 @@ class AnimeController extends GetxController {
     labels.clear();
     notes.clear();
     mapSelected.clear();
+    multiSelected.value = false;
   }
 
   // 取消收藏时需要重置动漫：清空集信息、笔记、标签等等

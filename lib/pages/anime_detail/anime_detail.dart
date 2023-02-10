@@ -92,7 +92,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                         appBar: AppBar(
                             leading: IconButton(
                                 onPressed: _popPage,
-                                icon: const Icon(Icons.arrow_back))),
+                                icon: Icon(Icons.arrow_back))),
                         body: const Center(
                           child: CircularProgressIndicator(),
                         ),
@@ -113,7 +113,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     );
                   },
                 ),
-                _buildButtonsBarAboutEpisodeMulti()
+                Obx(() => _buildButtonsBarAboutEpisodeMulti())
               ]),
             )),
       ),
@@ -152,7 +152,10 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                             animeController.mapSelected[j] = true;
                           }
                         }
-                        setState(() {});
+                        // 不重绘整个详情页面
+                        // setState(() {});
+                        // 只重绘集页面
+                        animeController.update([animeController.episodeId]);
                       },
                       icon: const Icon(Icons.select_all_rounded),
                     ),
@@ -170,9 +173,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: () {
-                        _quitMultiSelectState();
-                      },
+                      onPressed: _quitMultiSelectState,
                       icon: const Icon(Icons.exit_to_app),
                     ),
                   ),
@@ -186,7 +187,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
     animeController.multiSelected.value = false;
     animeController.mapSelected.clear();
-    setState(() {});
+    // 清空选择的集后，需要重绘集页面
+    animeController.update([animeController.episodeId]);
   }
 
   bool _climbing = false;
