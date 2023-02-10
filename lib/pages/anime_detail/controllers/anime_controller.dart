@@ -57,20 +57,21 @@ class AnimeController extends GetxController {
     anime.animeId = 0;
     anime.checkedEpisodeCnt = 0;
     anime.tagName = "";
-    update([episodeId]);
 
     episodes.clear();
     loadEpisodeOk = false;
-    update([episodeId]);
 
     labels.clear();
     notes.clear();
     mapSelected.clear();
+
+    // 重绘集(不显示集信息)、重绘信息行(右侧显示收藏按钮)、重绘appbar(隐藏更多按钮)
+    update([episodeId, infoId, appbarId]);
   }
 
   void updateAnime(Anime newAnime) {
     anime = newAnime;
-    update([infoId, coverId]);
+    update([appbarId, infoId]);
   }
 
   void updateAnimeInfo() {

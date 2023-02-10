@@ -47,29 +47,36 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
     double expandedHeight =
         MediaQuery.of(context).size.height * coverBgHeightRatio;
 
-    return SliverAppBar(
-      // 下滑后显示收缩后的AppBar
-      pinned: true,
-      expandedHeight: expandedHeight,
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
-            ? CollapseMode.parallax // 下滑时添加视差
-            : CollapseMode.pin, // 下滑时固定
-        background: Stack(
-          children: [
-            _buildBg(),
-            _buildGradient(),
-            _buildGestureDetector(),
-          ],
-        ),
-      ),
-      leading: IconButton(
-          onPressed: () {
-            widget.popPage();
-          },
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          color: appBarIconColor),
-      actions: _generateActions(),
+    return GetBuilder<AnimeController>(
+      id: widget.animeController.appbarId,
+      init: widget.animeController,
+      initState: (_) {},
+      builder: (_) {
+        return SliverAppBar(
+          // 下滑后显示收缩后的AppBar
+          pinned: true,
+          expandedHeight: expandedHeight,
+          flexibleSpace: FlexibleSpaceBar(
+            collapseMode: SpProfile.getEnableParallaxInAnimeDetailPage()
+                ? CollapseMode.parallax // 下滑时添加视差
+                : CollapseMode.pin, // 下滑时固定
+            background: Stack(
+              children: [
+                _buildBg(),
+                _buildGradient(),
+                _buildGestureDetector(),
+              ],
+            ),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                widget.popPage();
+              },
+              icon: const Icon(Icons.arrow_back_ios, size: 20),
+              color: appBarIconColor),
+          actions: _generateActions(),
+        );
+      },
     );
   }
 
@@ -230,13 +237,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             ],
           );
         });
-  }
-
-  void _popAnimeDetailPage() {
-    // 置为0，用于在收藏页得知已取消收藏
-    _anime.animeId = 0;
-    // 退出动漫详细页面
-    Navigator.of(context).pop(_anime);
   }
 
   // 弹出底部弹出菜单，用于外观设置

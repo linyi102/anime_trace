@@ -8,8 +8,10 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 /// 自动根据动漫详细地址来获取封面
 class AnimeGridCoverAutoLoad extends StatefulWidget {
-  const AnimeGridCoverAutoLoad({required this.anime, super.key});
+  const AnimeGridCoverAutoLoad(
+      {required this.anime, required this.onChanged, super.key});
   final Anime anime;
+  final void Function(Anime newAnime) onChanged;
 
   @override
   State<AnimeGridCoverAutoLoad> createState() => _AnimeGridCoverAutoLoadState();
@@ -56,7 +58,13 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
           MaterialPageRoute(
             builder: (context) => AnimeDetailPlus(anime),
           ),
-        );
+        ).then((value) {
+          // 退出动漫详情页后，更新为最新动漫信息
+          setState(() {
+            anime = value;
+          });
+          widget.onChanged(anime);
+        });
       },
       loading: loading,
       showProgress: anime.isCollected() ? true : false,
@@ -70,6 +78,8 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
       loading = true;
     });
 
+    // dbAnime指向一个对象，而anime和widget.anime指向一个对象。所以会导致出现很多奇怪现象
+    // 解决方法就是当anime变化时，widget.anime也跟着anime指向最新对象
     Anime dbAnime = await SqliteUtil.getAnimeByAnimeUrl(anime);
     if (dbAnime.isCollected()) {
       // 数据库中找到了
@@ -78,11 +88,14 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
       // 数据库中没有找到，则爬取信息
       // 如果之前爬取过信息，就不再爬取了
       if (!anime.climbFinished) {
-        anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(widget.anime,
-            showMessage: false);
+        anime =
+            await ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false);
         anime.climbFinished = true;
       }
     }
+
+    // 返回给最新anime
+    widget.onChanged(anime);
 
     // 加载完毕
     if (mounted) {

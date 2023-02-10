@@ -137,7 +137,10 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
                 return Column(
                   children: [
-                    AnimeGridCoverAutoLoad(anime: record.anime),
+                    AnimeGridCoverAutoLoad(
+                      anime: record.anime,
+                      onChanged: (newAnime) => record.anime = newAnime,
+                    ),
                   ],
                 );
               },
