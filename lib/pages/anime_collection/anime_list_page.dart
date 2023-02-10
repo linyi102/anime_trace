@@ -142,9 +142,9 @@ class _AnimeListPageState extends State<AnimeListPage>
                     : null,
                 actions: multiSelected ? _getActionsOnMulti() : _getActions(),
                 bottom: useTopTab
-                    ? CommonTabBar(
+                    ? CommonBottomTabBar(
                         tabs: _buildTagAndAnimeCnt(),
-                        controller: _tabController,
+                        tabController: _tabController,
                         isScrollable: true,
                       )
                     : null,

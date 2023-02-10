@@ -12,6 +12,8 @@ class ThemeController extends GetxController {
   Rx<PageSwitchAnimation> pageSwitchAnimation =
       SpProfile.getPageSwitchAnimation().obs;
 
+  static ThemeController get to => Get.find();
+
   // 字体
   RxList<String> fontFamilyFallback = [
     SPUtil.getString("customFontFamily"),

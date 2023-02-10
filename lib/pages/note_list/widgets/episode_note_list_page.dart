@@ -8,9 +8,9 @@ import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-import '../../models/anime.dart';
-import '../../models/params/page_params.dart';
-import '../anime_detail/anime_detail.dart';
+import '../../../models/anime.dart';
+import '../../../models/params/page_params.dart';
+import '../../anime_detail/anime_detail.dart';
 
 class EpisodeNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;

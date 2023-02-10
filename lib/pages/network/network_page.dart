@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
+import 'package:flutter_test_future/components/common_tab_bar.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
@@ -8,8 +8,6 @@ import 'package:flutter_test_future/pages/network/update/update_record_page.dart
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-
-import '../../components/common_tab_bar.dart';
 
 /// 与网络相关的页面
 class NetWorkPage extends StatefulWidget {
@@ -55,15 +53,19 @@ class _NetWorkPageState extends State<NetWorkPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
-        actions: actions,
-        bottom: CommonTabBar(
-          tabs: navs
-              .map((e) => Tab(
-                  child: Text(e, textScaleFactor: ThemeUtil.smallScaleFactor)))
-              .toList(),
-          controller: _tabController,
+        // title: const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
+        title: CommonTitleTabBar(
+          tabs: navs.map((e) => Tab(child: Text(e))).toList(),
+          tabController: _tabController,
         ),
+        actions: actions,
+        // bottom: CommonBottomTabBar(
+        //   tabs: navs
+        //       .map((e) => Tab(
+        //           child: Text(e, textScaleFactor: ThemeUtil.smallScaleFactor)))
+        //       .toList(),
+        //   controller: _tabController,
+        // ),
       ),
       body: TabBarView(controller: _tabController, // 指定tab控制器
           children: [

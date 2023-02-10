@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 
-import 'package:flutter_test_future/pages/note_list/episode_note_list_page.dart';
-import 'package:flutter_test_future/pages/note_list/rate_note_list_page.dart';
+import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
+import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -23,7 +24,7 @@ class _NoteListPageState extends State<NoteListPage>
     with SingleTickerProviderStateMixin {
   // tab
   late TabController _tabController;
-  final List<String> _navs = ["每集", "评价"];
+  final List<String> _navs = ["笔记", "评价"];
   NoteFilter noteFilter = NoteFilter();
 
   @override
@@ -56,17 +57,13 @@ class _NoteListPageState extends State<NoteListPage>
     return Scaffold(
       backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
       appBar: AppBar(
-        title: const Text(
-          "笔记",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        // title: const Text("笔记", style: TextStyle(fontWeight: FontWeight.w600)),
+        title: _buildTabBar(),
         actions: [
           _buildSearchIconButton(setState),
           _buildImageSettingIconButton(),
         ],
-        bottom: _buildTabBar(),
+        // bottom: _buildTabBar(),
       ),
       body: TabBarView(
         controller: _tabController,
@@ -79,13 +76,17 @@ class _NoteListPageState extends State<NoteListPage>
   }
 
   _buildTabBar() {
-    return CommonTabBar(
-      tabs: _navs
-          .map((nav) => Tab(
-              child: Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
-          .toList(),
-      controller: _tabController,
+    return CommonTitleTabBar(
+      tabs: _navs.map((nav) => Tab(child: Text(nav))).toList(),
+      tabController: _tabController,
     );
+    // return CommonTabBar(
+    //   tabs: _navs
+    //       .map((nav) => Tab(
+    //           child: Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
+    //       .toList(),
+    //   controller: _tabController,
+    // );
   }
 
   _buildImageSettingIconButton() {
