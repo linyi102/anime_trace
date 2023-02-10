@@ -258,7 +258,7 @@ class _RecordItemState extends State<RecordItem> {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) {
-            return AnimeDetailPlus(record.anime);
+            return AnimeDetailPage(record.anime);
           },
         )).then((value) async {
           record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(

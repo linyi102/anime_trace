@@ -51,6 +51,16 @@ class AnimeController extends GetxController {
 
   /////////////////////////////// 方法 ///////////////////////////////
 
+  @override
+  void dispose() {
+    anime = Anime(animeName: "", animeEpisodeCnt: 0);
+    episodes.clear();
+    labels.clear();
+    notes.clear();
+    mapSelected.clear();
+    super.dispose();
+  }
+
   // 删除动漫，需要清空集信息、笔记、标签
   void deleteAnime() {
     // 只删除固定信息，保留其他信息
@@ -65,8 +75,8 @@ class AnimeController extends GetxController {
     notes.clear();
     mapSelected.clear();
 
-    // 重绘集(不显示集信息)、重绘信息行(右侧显示收藏按钮)、重绘appbar(隐藏更多按钮)
-    update([episodeId, infoId, appbarId]);
+    // 重绘appbar(隐藏更多按钮)、重绘信息行(右侧显示收藏按钮)、重绘集(不显示集信息)
+    update([appbarId, infoId, episodeId]);
   }
 
   void updateAnime(Anime newAnime) {
@@ -93,7 +103,7 @@ class AnimeController extends GetxController {
   }
 
   // 获取添加的标签
-  void acqLabels() async {
+  void loadLabels() async {
     labels.clear();
     if (isCollected) {
       Log.info("查询当前动漫(id=${anime.animeId})的所有标签");

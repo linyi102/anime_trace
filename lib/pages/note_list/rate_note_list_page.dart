@@ -131,7 +131,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return AnimeDetailPlus(anime);
+          return AnimeDetailPage(anime);
         },
       ),
     ).then((value) async {

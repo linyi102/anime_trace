@@ -316,7 +316,7 @@ class _SearchDbAnimeState extends State<SearchDbAnime> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return AnimeDetailPlus(anime);
+          return AnimeDetailPage(anime);
         },
       ),
     ).then((value) async {

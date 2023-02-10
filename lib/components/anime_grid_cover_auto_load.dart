@@ -56,7 +56,7 @@ class _AnimeGridCoverAutoLoadState extends State<AnimeGridCoverAutoLoad> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnimeDetailPlus(anime),
+            builder: (context) => AnimeDetailPage(anime),
           ),
         ).then((value) {
           // 退出动漫详情页后，更新为最新动漫信息

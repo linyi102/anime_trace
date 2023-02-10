@@ -182,7 +182,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   // ),
                   MaterialPageRoute(
                     builder: (context) {
-                      return AnimeDetailPlus(anime);
+                      return AnimeDetailPage(anime);
                     },
                   ),
                 ).then((value) {

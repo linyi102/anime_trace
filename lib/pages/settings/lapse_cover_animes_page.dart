@@ -133,7 +133,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
                         Navigator.of(context)
                             .push(MaterialPageRoute(
-                                builder: (context) => AnimeDetailPlus(anime)))
+                                builder: (context) => AnimeDetailPage(anime)))
                             .then((value) {
                           // 可能内部迁移了动漫或修改了封面
                           // 仍然build是该页面，而不是只build AnimeGridCover，必须要在AnimeGridCover里使用setState

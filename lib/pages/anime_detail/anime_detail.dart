@@ -6,25 +6,26 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
+import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
-class AnimeDetailPlus extends StatefulWidget {
+class AnimeDetailPage extends StatefulWidget {
   final Anime anime;
 
-  const AnimeDetailPlus(
+  const AnimeDetailPage(
     this.anime, {
     Key? key,
   }) : super(key: key);
 
   @override
-  _AnimeDetailPlusState createState() => _AnimeDetailPlusState();
+  _AnimeDetailPageState createState() => _AnimeDetailPageState();
 }
 
-class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
+class _AnimeDetailPageState extends State<AnimeDetailPage> {
   late final AnimeController animeController; // 动漫详细页的动漫
   final LabelsController labelsController = Get.find(); // 动漫详细页的标签
 
@@ -39,27 +40,39 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
 
     animeController = Get.put(
       AnimeController(),
-      tag: widget.anime.animeId.toString(), // 用id作为tag，当重复进入相同id的动漫时信息仍相同
+      // tag: widget.anime.animeId.toString(), // 用id作为tag，当重复进入相同id的动漫时信息仍相同
       // tag: UniqueKey().toString(),
     );
 
     _loadData();
-    if (!widget.anime.isCollected()) {
-      // 爬取详细信息
-      // _climbAnimeInfo();
-    }
   }
 
   void _loadData() async {
-    animeController.updateAnime(widget.anime);
     // await Future.delayed(const Duration(seconds: 2));
+    animeController.updateAnime(widget.anime);
 
+    bool existDbAnime = false;
     // 从数据库中获取动漫
-    Anime anime = await SqliteUtil.getAnimeByAnimeId(widget.anime.animeId);
+    Anime dbAnime = await SqliteUtil.getAnimeByAnimeId(widget.anime.animeId);
     // 如果收藏了，则更新为完整的动漫信息
-    if (anime.isCollected()) {
-      Log.info("数据库中存在动漫：${anime.animeId}, ${anime.animeName}");
-      animeController.updateAnime(anime);
+    if (dbAnime.isCollected()) {
+      // 数据库中存在该id动漫
+      existDbAnime = true;
+    } else {
+      // 如果根据id找不到，则尝试查询动漫网址
+      dbAnime = await SqliteUtil.getAnimeByAnimeUrl(
+          widget.anime); // 要传入widget.anime，而不是dbAnime(因为dbAnime没找到)
+      if (dbAnime.isCollected()) {
+        existDbAnime = true;
+      }
+    }
+
+    if (existDbAnime) {
+      Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
+      animeController.updateAnime(dbAnime);
+      // 加载最新动漫后，再去重新加载集、标签
+      animeController.loadLabels();
+      animeController.loadEpisode();
     }
   }
 
@@ -96,9 +109,16 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
               child: Stack(children: [
                 CustomScrollView(
                   slivers: [
-                    _buildSliverAppBar(),
-                    _buildAnimeInfo(),
-                    _buildSliverListBody()
+                    // 构建顶部栏
+                    AnimeDetailAppBar(
+                      animeController: animeController,
+                      popPage: _popPage,
+                      loadData: _loadData,
+                    ),
+                    // 构建动漫信息(名字、评分、其他信息)
+                    AnimeDetailInfo(animeController: animeController),
+                    // 构建主体(集信息页)
+                    AnimeDetailEpisodeInfo(animeController: animeController)
                   ],
                 ),
                 _buildButtonsBarAboutEpisodeMulti()
@@ -106,25 +126,6 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
             )),
       ),
     );
-  }
-
-  /// 构建顶部栏
-  _buildSliverAppBar() {
-    return AnimeDetailAppBar(
-      animeController: animeController,
-      popPage: _popPage,
-      loadData: _loadData,
-    );
-  }
-
-  /// 构建动漫信息(名字、评分、其他信息)
-  _buildAnimeInfo() {
-    return AnimeDetailInfo(animeController: animeController);
-  }
-
-  /// 构建主体(集信息页)
-  _buildSliverListBody() {
-    return AnimeDetailEpisodeInfo(animeController: animeController);
   }
 
   /// 显示底部集多选操作栏
@@ -234,10 +235,7 @@ class _AnimeDetailPlusState extends State<AnimeDetailPlus> {
       }
     });
     _climbing = false;
-    // 播放状态无法实时更新
     animeController.updateAnime(newAnime);
-    // 手动更新
-    // animeController.updateAnimePlayStatus(newAnime.playStatus);
     return true;
   }
 

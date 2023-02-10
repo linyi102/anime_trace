@@ -24,8 +24,6 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   @override
   void initState() {
     super.initState();
-
-    widget.animeController.acqLabels();
   }
 
   @override

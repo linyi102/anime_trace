@@ -663,6 +663,11 @@ class SqliteUtil {
     // 不需要根据animeName查找，只根据动漫地址就能知道数据库是否添加了该搜索源下的这个动漫
     // 不能使用的animeName的原因：如果网络搜索fate，可能会找到带有单引号的动漫名，如果按这个动漫名查找，则会出错，需要进行转义。
     // Log.info("sql: getAnimeIdByAnimeNameAndSource()");
+    if (anime.animeUrl.isEmpty) {
+      anime.animeId = 0;
+      anime.tagName = "";
+      return anime;
+    }
     var list = await database.rawQuery('''
       select *
       from anime

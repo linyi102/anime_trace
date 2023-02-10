@@ -89,7 +89,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
-                  return AnimeDetailPlus(anime);
+                  return AnimeDetailPage(anime);
                 })).then((value) {
                   Anime retAnime = value as Anime;
                   String newUrl = retAnime.animeUrl;

@@ -450,7 +450,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return AnimeDetailPlus(anime);
+          return AnimeDetailPage(anime);
         },
       ),
     ).then((value) async {

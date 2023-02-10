@@ -123,7 +123,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return AnimeDetailPlus(anime);
+          return AnimeDetailPage(anime);
         },
       ),
     ).then((value) async {

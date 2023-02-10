@@ -78,7 +78,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
             Anime anime = animes[index];
 
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return AnimeDetailPlus(anime);
+              return AnimeDetailPage(anime);
             })).then((value) {
               Anime retAnime = value as Anime;
               String newPlayStatus = retAnime.playStatus;

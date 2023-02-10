@@ -244,7 +244,7 @@ class _DirectoryPageState extends State<DirectoryPage>
             // 如果收藏了，则单击进入详细页面
             if (anime.isCollected()) {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return AnimeDetailPlus(anime);
+                return AnimeDetailPage(anime);
               })).then((value) {
                 setState(() {
                   // anime = value;
