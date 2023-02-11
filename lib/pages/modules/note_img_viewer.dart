@@ -174,7 +174,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                     _getImageLocalPaths();
                     setState(() {});
                     // 用于图片浏览器的上级页面更新状态
-                    Global.modifiedNoteImgRootPath = true;
+                    Global.modifiedImgRootPath = true;
                   }
                 });
               },

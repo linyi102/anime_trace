@@ -20,7 +20,7 @@ class Global {
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
 
   // 修改了笔记图片根路径
-  static bool modifiedNoteImgRootPath = false;
+  static bool modifiedImgRootPath = false;
 
   // 展开/收缩目录过滤器
   static bool expandDirectoryFilter = true;

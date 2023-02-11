@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/global.dart';
 
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
@@ -155,9 +156,10 @@ class _NoteListPageState extends State<NoteListPage>
                     },
                   )).then((dirChanged) {
                     Navigator.pop(popupMenuContext);
-                    if (dirChanged) {
-                      Log.info("修改了图片目录，更新状态");
+                    if (Global.modifiedImgRootPath) {
+                      Log.info("修改了图片或封面目录，更新状态，确保图片或封面可以及时正常显示");
                       setState(() {});
+                      Global.modifiedImgRootPath = false;
                     }
                   });
                 },
