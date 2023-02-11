@@ -41,7 +41,7 @@ class ThemeUtil {
         representativeColor: const Color.fromRGBO(248, 248, 248, 1),
         primaryColor: Colors.blue,
         appBarColor: Colors.white,
-        bodyColor: const Color.fromRGBO(248, 248, 250, 1),
+        bodyColor: const Color.fromRGBO(248, 248, 252, 1),
         cardColor: Colors.white),
     ThemeColor(
         isDarkMode: true,

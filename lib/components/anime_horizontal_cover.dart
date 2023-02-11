@@ -45,10 +45,10 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
 
   @override
   Widget build(BuildContext context) {
-    final AnimeDisplayController animeDisplayController = Get.find();
     if (widget.animes.isEmpty) {
       return const Center(child: Text("什么都没有~"));
     }
+    final AnimeDisplayController animeDisplayController = Get.find();
     double height = _coverHeight;
     bool nameBelowCover = false; // 名字在封面下面，就增加高度
     if (animeDisplayController.showGridAnimeName.value &&
@@ -56,7 +56,11 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
       nameBelowCover = true;
     }
     if (nameBelowCover) {
-      height += 60;
+      if (animeDisplayController.nameMaxLines.value == 2) {
+        height += 60;
+      } else {
+        height += 30;
+      }
     }
 
     return Container(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
+import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
@@ -123,9 +124,12 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     mixedAnimes[climbWebsite.name] =
         websiteClimbAnimes[climbWebsite.name] as List<Anime>;
 
-    for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
-      mixedAnimes[climbWebsite.name]![i] = await SqliteUtil.getAnimeByAnimeUrl(
-          mixedAnimes[climbWebsite.name]![i]);
+    if (websiteClimbAnimes.containsKey(climbWebsite.name)) {
+      for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
+        mixedAnimes[climbWebsite.name]![i] =
+            await SqliteUtil.getAnimeByAnimeUrl(
+                mixedAnimes[climbWebsite.name]![i]);
+      }
     }
     return true;
   }
@@ -155,137 +159,166 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
   @override
   Widget build(BuildContext context) {
-    bool isFirstEnableSource = false;
     return Scaffold(
-      appBar: SearchAppBar(
-        hintText: ismigrate ? "迁移动漫" : "搜索动漫",
-        inputController: inputKeywordController..text,
-        onTapClear: () => inputKeywordController.clear(),
-        onEditingComplete: () {
-          String text = inputKeywordController.text;
-          // 如果输入的名字为空，则不再爬取
-          if (text.isEmpty) return;
-
-          lastInputKeyword = text; // 更新上一次输入的名字
-          _climbAnime(keyword: text);
-        },
-        onChanged: (inputStr) {
-          lastInputKeyword = inputStr;
-          // 避免输入好后切换搜索源后，清空了输入的内容
-        },
-      ),
+      appBar: _buildSearchAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           _climbAnime(keyword: lastInputKeyword);
         },
         child: ListView(
           children: [
-            // 自定义添加的动漫
-            ismigrate
-                ? Container() // 迁移时不显示自定义
-                : const ListTile(
-                    title: Text("自定义"),
-                  ),
-            ismigrate
-                ? Container()
-                : customSearchOK // 搜索完毕后显示动漫
-                    ? AnimeHorizontalCover(
-                        animes: customAnimes,
-                        animeId: widget.animeId,
-                        callback: _generateMixedAnimesAllWebsite,
-                      )
-                    : customSearching // 正在搜索时显示加载圈
-                        ? const SizedBox(
-                            height: 137 + 60,
-                            child: Center(
-                              child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2)),
-                            ),
-                          )
-                        : Container(),
-            // 搜索源
-            ListView.builder(
-              shrinkWrap: true, //解决无限高度问题
-              physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-
-              itemCount: climbWebsites
-                  .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
-              itemBuilder: (context, index) {
-                ClimbWebsite webstie = climbWebsites[index];
-                // 如果关闭了，则不显示
-                if (!climbWebsites[index].enable) return Container();
-                // 遍历时，第一次(isFirstEnableSource为false)到达这里，则说明是第一个启动了的搜索源，需要在上面添加自定义
-                if (!isFirstEnableSource) {
-                  isFirstEnableSource = true;
-                }
-
-                return ListView(
-                  shrinkWrap: true, //解决无限高度问题
-                  physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-                  children: [
-                    // 搜索源行
-                    ListTile(
-                      title: Text(webstie.name),
-                      leading: WebSiteLogo(url: webstie.iconUrl, size: 25),
-                      trailing: const Icon(Icons.keyboard_arrow_right),
-                      onTap: () {
-                        // 进入详细搜索页
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return AnimeClimbOneWebsite(
-                            animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
-                            keyword: lastInputKeyword,
-                            climbWebStie: climbWebsites[index],
-                          );
-                        })).then((value) {
-                          // 如果是进入详细页迁移后，则直接返回到动漫详细页
-                          if (ismigrate) {
-                            Navigator.of(context).pop();
-                          } else {
-                            // 可能进入详细搜索页后修改了数据库动漫，因此也需要重新搜索数据库(只搜索该搜索源下爬取的动漫网址)
-                            // 小问题：进入动漫详细页后，迁移到了其他搜索源的动漫，animeUrl发生变化，此时该函数会通过animeUrl从数据库找到相应的动漫，并赋值，因此会出现原搜索源下面出现了一个其它搜索源的动漫
-                            // 2022.05.01无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
-                            // _generateMixedAnimes(climbWebsites[index])
-                            //     .then((value) => setState(() {}));
-
-                            // 2022.05.03修复
-                            _generateMixedAnimesAllWebsite()
-                                .then((value) => setState(() {}));
-                          }
-                        });
-                      },
-                    ),
-                    // 搜索结果
-                    websiteClimbSearchOk[webstie.name] ?? false
-                        ? AnimeHorizontalCover(
-                            animes: mixedAnimes[webstie.name] ?? [],
-                            animeId: widget.animeId,
-                            callback: _generateMixedAnimesAllWebsite,
-                          ) // 查询好后显示结果
-                        : websiteClimbSearching[webstie.name] ?? false
-                            ? const SizedBox(
-                                // 每个搜索结果的显示高度(封面+名字高度)
-                                height: 137 + 60,
-                                child: Center(
-                                  // 固定宽高的指示器
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              ) // 搜索时显示加载圈
-                            : Container(), // 没有搜索则什么都不显示
-                  ],
-                );
-              },
-            ),
+            // 自定义动漫
+            _buildCustomItem(),
+            // 所有搜索源
+            _buildAllSource(),
             // 最下面(最后一个搜索源)填充空白
             const SizedBox(height: 50)
           ],
+        ),
+      ),
+    );
+  }
+
+  ListView _buildAllSource() {
+    bool isFirstEnableSource = false;
+    return ListView.builder(
+      shrinkWrap: true, //解决无限高度问题
+      physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+
+      itemCount: climbWebsites
+          .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
+      itemBuilder: (context, index) {
+        ClimbWebsite webstie = climbWebsites[index];
+        // 如果关闭了，则不显示
+        if (!climbWebsites[index].enable) return Container();
+        // 遍历时，第一次(isFirstEnableSource为false)到达这里，则说明是第一个启动了的搜索源，需要在上面添加自定义
+        if (!isFirstEnableSource) {
+          isFirstEnableSource = true;
+        }
+
+        // 搜索源行+搜索结果
+        return ListView(
+          shrinkWrap: true, //解决无限高度问题
+          physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+          children: [
+            // 搜索源行
+            ListTile(
+              title: Text(webstie.name),
+              leading: WebSiteLogo(url: webstie.iconUrl, size: 25),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () => _enterAnimeDetailPage(index),
+            ),
+            // 搜索结果
+            websiteClimbSearchOk[webstie.name] ?? false
+                // 查询好后显示结果
+                ? AnimeHorizontalCover(
+                    animes: mixedAnimes[webstie.name] ?? [],
+                    animeId: widget.animeId,
+                    callback: _generateMixedAnimesAllWebsite,
+                  )
+                : websiteClimbSearching[webstie.name] ?? false
+                    ?
+                    // 搜索时显示加载圈
+                    _buildLoadingWidget()
+                    // 还没搜索时，什么都不显示
+                    : Container(),
+          ],
+        );
+      },
+    );
+  }
+
+  void _enterAnimeDetailPage(int websiteIndex) {
+    // 进入详细搜索页
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return AnimeClimbOneWebsite(
+        animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
+        keyword: lastInputKeyword,
+        climbWebStie: climbWebsites[websiteIndex],
+      );
+    })).then((value) {
+      // 如果是进入详细页迁移后，则直接返回到动漫详细页
+      if (ismigrate) {
+        Navigator.of(context).pop();
+      } else {
+        // 可能进入详细搜索页后修改了数据库动漫，因此也需要重新搜索数据库(只搜索该搜索源下爬取的动漫网址)
+        // 小问题：进入动漫详细页后，迁移到了其他搜索源的动漫，animeUrl发生变化，此时该函数会通过animeUrl从数据库找到相应的动漫，并赋值，因此会出现原搜索源下面出现了一个其它搜索源的动漫
+        // 2022.05.01无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
+        // _generateMixedAnimes(climbWebsites[index])
+        //     .then((value) => setState(() {}));
+
+        // 2022.05.03修复
+        _generateMixedAnimesAllWebsite().then((value) => setState(() {}));
+      }
+    });
+  }
+
+  SearchAppBar _buildSearchAppBar() {
+    return SearchAppBar(
+      hintText: ismigrate ? "迁移动漫" : "搜索动漫",
+      inputController: inputKeywordController..text,
+      onTapClear: () => inputKeywordController.clear(),
+      onEditingComplete: () {
+        String text = inputKeywordController.text;
+        // 如果输入的名字为空，则不再爬取
+        if (text.isEmpty) return;
+
+        lastInputKeyword = text; // 更新上一次输入的名字
+        _climbAnime(keyword: text);
+      },
+      onChanged: (inputStr) {
+        lastInputKeyword = inputStr;
+        // 避免输入好后切换搜索源后，清空了输入的内容
+      },
+    );
+  }
+
+  _buildCustomItem() {
+    return Column(
+      children: [
+        // 自定义添加的动漫
+        ismigrate
+            ? Container() // 迁移时不显示自定义
+            : const ListTile(
+                title: Text("自定义"),
+              ),
+        ismigrate
+            ? Container()
+            : customSearchOK // 搜索完毕后显示动漫
+                ? AnimeHorizontalCover(
+                    animes: customAnimes,
+                    animeId: widget.animeId,
+                    callback: _generateMixedAnimesAllWebsite,
+                  )
+                : customSearching // 正在搜索时显示加载圈
+                    ? _buildLoadingWidget()
+                    : Container(),
+      ],
+    );
+  }
+
+  SizedBox _buildLoadingWidget() {
+    final AnimeDisplayController adc = AnimeDisplayController.to;
+    double height = 137.0;
+    bool nameBelowCover = false; // 名字在封面下面，就增加高度
+    if (adc.showGridAnimeName.value && !adc.showNameInCover.value) {
+      nameBelowCover = true;
+    }
+    if (nameBelowCover) {
+      if (adc.nameMaxLines.value == 2) {
+        height += 60;
+      } else {
+        height += 30;
+      }
+    }
+
+    return SizedBox(
+      // 每个搜索结果的显示高度(封面+名字高度)
+      height: height,
+      child: const Center(
+        // 固定宽高的指示器
+        child: SizedBox(
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
     );
