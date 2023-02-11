@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
@@ -264,12 +264,19 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
           TextSpan(children: [
             WidgetSpan(
                 child: GestureDetector(
+              // 短按打开网址，长按复制到剪切板
               onTap: () {
                 if (_anime.animeUrl.isNotEmpty) {
                   LaunchUrlUtil.launch(
                       context: context, uriStr: _anime.animeUrl);
                 } else {
-                  showToast("空网址无法打开");
+                  showToast("无法打开空的链接");
+                }
+              },
+              onLongPress: () {
+                if (_anime.animeUrl.isNotEmpty) {
+                  Clipboard.setData(ClipboardData(text: _anime.animeUrl));
+                  showToast("链接已复制到剪切板");
                 }
               },
               child: Row(

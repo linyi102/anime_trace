@@ -1,3 +1,4 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -74,14 +75,11 @@ class AnimePropertiesPage extends StatelessWidget {
           _buildPropRow(context, title: "地区", content: anime.area),
           _buildPropRow(context, title: "类别", content: anime.category),
           _buildPropRow(context, title: "首播时间", content: anime.premiereTime),
-          _buildPropRow(
-            context,
-            title: "播放状态",
-            content: anime.getPlayStatus().text,
-            onPressed: () {
-              showDialogSelectPlayStatus(context, animeController);
-            },
-          ),
+          _buildPropRow(context,
+              title: "播放状态",
+              content: anime.getPlayStatus().text, onPressed: () {
+            showDialogSelectPlayStatus(context, animeController);
+          }),
           // _buildPropRow(context, title: "原作者", content: anime.authorOri),
           // _buildPropRow(context, title: "原作名", content: anime.nameOri),
           // _buildPropRow(context, title: "官网", content: anime.officialSite),
@@ -113,10 +111,12 @@ class AnimePropertiesPage extends StatelessWidget {
   }
 
   /// 点击后会弹出编辑文本框的动漫属性行
-  _buildPropRow(BuildContext context,
-      {required String title,
-      required String content,
-      void Function()? onPressed}) {
+  _buildPropRow(
+    BuildContext context, {
+    required String title,
+    required String content,
+    void Function()? onPressed,
+  }) {
     return Column(
       children: [
         ListTile(
@@ -125,11 +125,20 @@ class AnimePropertiesPage extends StatelessWidget {
             child: Row(
               children: [
                 Text("$title "),
-                if (onPressed != null) const Icon(Icons.edit, size: 14)
+                if (onPressed != null)
+                  const Icon(EvaIcons.editOutline, size: 18)
               ],
             ),
           ),
-          subtitle: _buildSelectedOrUrlText(context, content),
+          subtitle: GestureDetector(
+            onTap: onPressed,
+            child: _buildSelectedOrUrlText(
+              context,
+              content,
+              // 如果可以点击，则文字不可选，保证能够触发点击事件
+              select: onPressed == null ? true : false,
+            ),
+          ),
         )
       ],
     );
@@ -193,15 +202,18 @@ class AnimePropertiesPage extends StatelessWidget {
   }
 
   // 文本http开头提供访问功能，其他则是复制
-  _buildSelectedOrUrlText(BuildContext context, String text) {
+  _buildSelectedOrUrlText(BuildContext context, String text,
+      {bool select = true}) {
     if (text.startsWith("http")) {
       return GestureDetector(
         onTap: () => LaunchUrlUtil.launch(context: context, uriStr: text),
         child: Text(text, style: const TextStyle(color: Colors.blue)),
       );
-    } else {
+    } else if (select) {
       // 下滑时有时候没有反应，因为会触发到选中文本
       return SelectableText(text.isEmpty ? "无" : text);
+    } else {
+      return Text(text.isEmpty ? "无" : text);
     }
   }
 }
