@@ -32,10 +32,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
 
-  Color? appBarIconColor = ThemeUtil.isDark
-      // ? null
-      ? Colors.white
-      : null;
+  Color? appBarIconColor = ThemeUtil.isDark ? Colors.white : null;
+  // Color? appBarIconColor = Colors.white;
 
   Anime get _anime => widget.animeController.anime;
 

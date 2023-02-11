@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class UpdateRecordController extends GetxController {
+  static UpdateRecordController get to => Get.find();
+
   PageParams pageParams =
       PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;

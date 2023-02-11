@@ -246,6 +246,26 @@ class _AnimeListPageState extends State<AnimeListPage>
       builder: (context, setState) {
         List<Widget> sortCondList = [];
 
+        Widget checkBox = animeSortCond.desc
+            ? Icon(Icons.check_box_outlined,
+                color: ThemeUtil.getPrimaryIconColor())
+            : const Icon(Icons.check_box_outline_blank);
+
+        sortCondList.add(ListTile(
+          title: const Text("降序"),
+          leading: checkBox,
+          onTap: () {
+            animeSortCond.desc = !animeSortCond.desc;
+            SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
+            setState(() {}); // 更新对话框里的状态
+            // 改变排序时，需要滚动到顶部，否则会加载很多页
+            _scrollControllers[_tabController.index].jumpTo(0);
+            _loadData();
+          },
+        ));
+
+        sortCondList.add(const Divider());
+
         for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
           var sortCondItem = AnimeSortCond.sortConds[i];
           bool isChecked = animeSortCond.specSortColumnIdx == i;
@@ -271,24 +291,6 @@ class _AnimeListPageState extends State<AnimeListPage>
             },
           ));
         }
-        sortCondList.add(const Divider());
-
-        Widget checkBox = animeSortCond.desc
-            ? Icon(Icons.check_box_outlined,
-                color: ThemeUtil.getPrimaryIconColor())
-            : const Icon(Icons.check_box_outline_blank);
-        sortCondList.add(ListTile(
-          title: const Text("降序"),
-          leading: checkBox,
-          onTap: () {
-            animeSortCond.desc = !animeSortCond.desc;
-            SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
-            setState(() {}); // 更新对话框里的状态
-            // 改变排序时，需要滚动到顶部，否则会加载很多页
-            _scrollControllers[_tabController.index].jumpTo(0);
-            _loadData();
-          },
-        ));
 
         Widget body =
             SingleChildScrollView(child: Column(children: sortCondList));

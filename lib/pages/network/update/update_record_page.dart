@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_show_util.dart';
 import 'package:get/get.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../utils/theme_util.dart';
+import 'package:oktoast/oktoast.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -115,9 +114,45 @@ class UpdateRecordPage extends StatelessWidget {
             },
           ));
         },
+        onLongPress: () {
+          // 提供删除操作
+          _showDialogAboutRecordItem(context, record, records);
+        },
       ));
     }
     return recordsWidget;
+  }
+
+  _showDialogAboutRecordItem(
+      context, UpdateRecordVo record, List<UpdateRecordVo> records) async {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return SimpleDialog(
+          children: [
+            SimpleDialogOption(
+              onPressed: () async {
+                // 删除数据库数据
+                bool deleteOk = await UpdateRecordDao.delete(record.id);
+                if (deleteOk) {
+                  // 删除内存数据
+                  // records.remove(record); // 错误
+                  UpdateRecordController.to.updateRecordVos
+                      .remove(record); // 应删除控制器中的数据
+                  // 关闭对话框
+                  Navigator.pop(dialogContext);
+                  // 提示
+                  showToast("删除成功");
+                } else {
+                  showToast("删除失败");
+                }
+              },
+              child: const Text("删除该更新记录"),
+            )
+          ],
+        );
+      },
+    );
   }
 
   _buildEmptyDataPage() {

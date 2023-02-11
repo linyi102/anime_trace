@@ -284,8 +284,7 @@ class _SettingPageState extends State<SettingPage> {
                   "assets/images/logo.png",
                   width: MediaQuery.of(context).size.height / 8,
                 ))
-              : CommonImage(url,
-                  memCacheWidth: MediaQuery.of(context).size.width.toInt()),
+              : CommonImage(url, reduceMemCache: false),
         ),
       ),
     );

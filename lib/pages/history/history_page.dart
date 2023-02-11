@@ -95,9 +95,11 @@ class _HistoryPageState extends State<HistoryPage> {
         await HistoryDao.getHistoryPageable(
             pageParams: views[selectedViewIndex].pageParams,
             dateLength: views[selectedViewIndex].dateLength);
-    setState(() {
-      loadOk = true;
-    });
+    if (mounted) {
+      setState(() {
+        loadOk = true;
+      });
+    }
   }
 
   _loadMoreData() async {
@@ -106,7 +108,9 @@ class _HistoryPageState extends State<HistoryPage> {
         await HistoryDao.getHistoryPageable(
             pageParams: views[selectedViewIndex].pageParams,
             dateLength: views[selectedViewIndex].dateLength));
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -137,30 +141,33 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   _buildCupertinoViewSwitch() {
-    return CupertinoSlidingSegmentedControl(
-      groupValue: selectedHistoryLabel,
-      children: () {
-        Map<HistoryLabel, Widget> map = {};
-        for (int i = 0; i < views.length; ++i) {
-          var view = views[i];
-          map[view.label] = Text(view.label.title);
-        }
-        return map;
-      }(),
-      onValueChanged: (HistoryLabel? value) {
-        if (value != null) {
-          Log.info("value=$value");
-          setState(() {
-            // 先重绘进度圈和开关
-            loadOk = false;
-            selectedHistoryLabel = value;
-          });
-          selectedViewIndex =
-              views.indexWhere((element) => element.label == value);
-          SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
-          _initData();
-        }
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: CupertinoSlidingSegmentedControl(
+        groupValue: selectedHistoryLabel,
+        children: () {
+          Map<HistoryLabel, Widget> map = {};
+          for (int i = 0; i < views.length; ++i) {
+            var view = views[i];
+            map[view.label] = Text(view.label.title);
+          }
+          return map;
+        }(),
+        onValueChanged: (HistoryLabel? value) {
+          if (value != null) {
+            Log.info("value=$value");
+            setState(() {
+              // 先重绘进度圈和开关
+              loadOk = false;
+              selectedHistoryLabel = value;
+            });
+            selectedViewIndex =
+                views.indexWhere((element) => element.label == value);
+            SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
+            _initData();
+          }
+        },
+      ),
     );
   }
 

@@ -218,16 +218,20 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
     }
-    SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
-      // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
-      if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
-        animeController.loadEpisode();
-        // animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
-        // 调用控制器，添加更新记录到数据库并更新内存数据
-        final UpdateRecordController updateRecordController = Get.find();
-        updateRecordController.updateSingaleAnimeData(oldAnime, newAnime);
-      }
-    });
+
+    if (_anime.isCollected()) {
+      // 如果收藏了，才去更新
+      SqliteUtil.updateAnime(oldAnime, newAnime).then((value) {
+        // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
+        if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
+          animeController.loadEpisode();
+          // animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
+          // 调用控制器，添加更新记录到数据库并更新内存数据
+          final UpdateRecordController updateRecordController = Get.find();
+          updateRecordController.updateSingaleAnimeData(oldAnime, newAnime);
+        }
+      });
+    }
     _climbing = false;
     animeController.updateAnime(newAnime);
     return true;

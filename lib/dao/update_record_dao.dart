@@ -5,11 +5,13 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class UpdateRecordDao {
-  static var database = SqliteUtil.database;
+  static var db = SqliteUtil.database;
+
+  static String table = "update_record";
 
   static insert(AnimeUpdateRecord updateRecord) {
     Log.info("sql:insertUpdateRecord(updateRecord=$updateRecord)");
-    database.insert("update_record", {
+    db.insert(table, {
       "anime_id": updateRecord.animeId,
       "old_episode_cnt": updateRecord.oldEpisodeCnt,
       "new_episode_cnt": updateRecord.newEpisodeCnt,
@@ -19,10 +21,10 @@ class UpdateRecordDao {
 
   static Future<List<Object?>> batchInsert(
       List<AnimeUpdateRecord> updateRecords) async {
-    var batchInsert = SqliteUtil.database.batch();
+    var batchInsert = db.batch();
     for (var updateRecord in updateRecords) {
       Log.info("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
-      batchInsert.insert("update_record", {
+      batchInsert.insert(table, {
         "anime_id": updateRecord.animeId,
         "old_episode_cnt": updateRecord.oldEpisodeCnt,
         "new_episode_cnt": updateRecord.newEpisodeCnt,
@@ -36,7 +38,7 @@ class UpdateRecordDao {
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
     Log.info("UpdateRecordDao: findAll(pageParams=$pageParams)");
     List<UpdateRecordVo> updateRecordVos = [];
-    List<Map<String, Object?>> list = await SqliteUtil.database.rawQuery('''
+    List<Map<String, Object?>> list = await db.rawQuery('''
     select substr(manual_update_time, 1, 10) day from update_record
     group by day
     order by day desc
@@ -75,5 +77,9 @@ class UpdateRecordDao {
       }
     }
     return updateRecordVos;
+  }
+
+  static Future<bool> delete(int id) async {
+    return await db.rawDelete('DELETE FROM $table WHERE id = ?', [id]) > 0;
   }
 }
