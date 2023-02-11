@@ -127,7 +127,8 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
   _buildPhotoViewGallery() {
     return PhotoViewGallery.builder(
-      enableRotation: true,
+      // 如果开启旋转，手机双指放大时很容易歪
+      // enableRotation: true,
       itemCount: imageLocalPaths.length,
       pageController: pageController,
       onPageChanged: (index) {

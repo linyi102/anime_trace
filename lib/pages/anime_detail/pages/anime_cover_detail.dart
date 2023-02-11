@@ -5,46 +5,66 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../../../models/anime.dart';
-import '../../../utils/climb/climb_anime_util.dart';
-import '../../../utils/image_util.dart';
-import '../../../utils/sqlite_util.dart';
-import '../../../utils/theme_util.dart';
-import '../../settings/image_path_setting.dart';
-
 /// 动漫详细页点击封面，进入该页面
 /// 提供缩放、修改封面、重新根据动漫网址获取封面的功能
 class AnimeCoverDetail extends StatelessWidget {
-  AnimeCoverDetail({required this.animeController, Key? key}) : super(key: key);
+  const AnimeCoverDetail({required this.animeController, Key? key})
+      : super(key: key);
   final AnimeController animeController;
-  var textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          _buildInfoButton(context),
-          _buildRefreshButton(context),
-          IconButton(
-              onPressed: () => _showDialogAboutHowToEditCoverUrl(context),
-              icon: const Icon(Icons.edit))
+      // appBar: _buildAppbar(context),
+      body: Stack(
+        children: [
+          Center(
+              child: GetBuilder<AnimeController>(
+                  id: animeController.coverId,
+                  init: animeController,
+                  builder: (controller) {
+                    return _buildAnimeCover(
+                        animeController.anime.animeCoverUrl);
+                  })),
+          Positioned(
+            // bottom: 0,
+            top: 0,
+            child: SizedBox(
+              height: kToolbarHeight,
+              width: MediaQuery.of(context).size.width,
+              child: _buildAppbar(context, enableOpacity: true),
+            ),
+          ),
         ],
       ),
-      body: Center(
-          child: GetBuilder<AnimeController>(
-              id: animeController.coverId,
-              init: animeController,
-              builder: (controller) {
-                return _buildAnimeCover(
-                    animeController.anime.animeCoverUrl, context);
-              })),
+    );
+  }
+
+  AppBar _buildAppbar(BuildContext context, {bool enableOpacity = false}) {
+    return AppBar(
+      backgroundColor: enableOpacity
+          // 获取当前context对应的Element的的scaffold背景，并调整不透明度
+          ? Theme.of(context).scaffoldBackgroundColor.withOpacity(0.4)
+          : null,
+      actions: [
+        _buildInfoButton(context),
+        _buildRefreshButton(context),
+        IconButton(
+            onPressed: () => _showDialogAboutHowToEditCoverUrl(context),
+            icon: const Icon(Icons.edit))
+      ],
     );
   }
 
@@ -122,7 +142,7 @@ class AnimeCoverDetail extends StatelessWidget {
         icon: const Icon(Icons.error_outline));
   }
 
-  _buildAnimeCover(String coverUrl, BuildContext context) {
+  _buildAnimeCover(String coverUrl) {
     if (coverUrl.isEmpty) {
       return emptyDataHint("没有封面~");
     }
@@ -239,6 +259,8 @@ class AnimeCoverDetail extends StatelessWidget {
   }
 
   _showDialogAboutEditCoverUrl(BuildContext howToEditCoverUrlDialogContext) {
+    var textController = TextEditingController();
+
     showDialog(
         context: howToEditCoverUrlDialogContext,
         builder: (dialogContext) {
