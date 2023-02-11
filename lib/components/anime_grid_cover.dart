@@ -155,13 +155,16 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildNameInCover() {
+    // 封面内部底部文字的背景阴影高度
+    double _shadowHeight = 60.0;
+
     return Stack(
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
-              height: 80,
+              height: _shadowHeight,
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -178,7 +181,7 @@ class AnimeGridCover extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           child: Container(
             padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
-            child: _buildNameText(Colors.white),
+            child: _buildNameText(nameBelowCover: false),
           ),
         )
       ],
@@ -224,20 +227,74 @@ class AnimeGridCover extends StatelessWidget {
         padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
         // 保证文字左对齐
         alignment: Alignment.centerLeft,
-        child: _buildNameText(ThemeUtil.getFontColor()));
+        child: _buildNameText(nameBelowCover: true));
   }
 
-  _buildNameText(Color color) {
+  final bool addStroke = false;
+  final bool addShadow = true;
+  _buildNameText({required bool nameBelowCover}) {
+    Color color;
+    if (nameBelowCover) {
+      color = ThemeUtil.getFontColor();
+    } else {
+      color = Colors.white;
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        // obx监听动漫名字行数
-        return Obx(() => Text(
-            _getEllipsisMiddleAnimeName(_anime.animeName, constraints),
-            maxLines: AnimeDisplayController.to.nameMaxLines.value,
-            overflow: TextOverflow.ellipsis,
-            textScaleFactor: ThemeUtil.smallScaleFactor,
-            style: TextStyle(color: color)));
+        String displayName =
+            _getEllipsisMiddleAnimeName(_anime.animeName, constraints);
+
+        // 如果在封面下，则不添加效果
+        if (nameBelowCover) {
+          return _buildText(displayName, style: TextStyle(color: color));
+        }
+
+        // 文字在封面内底部，添加效果使其更加明显
+        if (addStroke) {
+          return Stack(
+            children: [
+              // 描边效果
+              _buildText(displayName,
+                  style: TextStyle(
+                      // fontWeight: FontWeight.bold,
+                      foreground: Paint()
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = 1
+                        ..color = Colors.black)),
+              // 正常文字
+              _buildText(displayName,
+                  style: TextStyle(
+                    color: color,
+                  )),
+            ],
+          );
+        } else if (addShadow) {
+          // 阴影文字
+          return _buildText(displayName,
+              style: TextStyle(
+                color: color,
+                shadows: const [
+                  Shadow(blurRadius: 3, color: Colors.black),
+                  Shadow(blurRadius: 3, color: Colors.black),
+                ],
+              ));
+        } else {
+          // 普通文字
+          return _buildText(displayName, style: TextStyle(color: color));
+        }
       },
     );
+  }
+
+  _buildText(String displayName, {TextStyle? style}) {
+    // obx监听动漫名字行数
+    return Obx(() => Text(
+          displayName,
+          maxLines: AnimeDisplayController.to.nameMaxLines.value,
+          overflow: TextOverflow.ellipsis,
+          textScaleFactor: ThemeUtil.smallScaleFactor,
+          style: style,
+        ));
   }
 }

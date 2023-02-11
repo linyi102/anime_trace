@@ -10,6 +10,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 
 /// 自动根据动漫详细地址来获取封面和信息
+/// 注意配合List/Grid.builder懒加载时，后面的组件因没有渲染，所以暂时不会获取封面和信息
 class AnimeItemAutoLoad extends StatefulWidget {
   const AnimeItemAutoLoad(
       {required this.anime,
