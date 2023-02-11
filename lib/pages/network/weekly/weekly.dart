@@ -4,7 +4,6 @@ import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/week_record.dart';
-import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly_bar.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
@@ -146,6 +145,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
               anime: record.anime,
               onChanged: (newAnime) => record.anime = newAnime,
               style: AnimeItemStyle.grid,
+              showProgress: true,
+              showReviewNumber: true,
             ),
           ],
         );
@@ -164,6 +165,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
           onChanged: (newAnime) => record.anime = newAnime,
           style: AnimeItemStyle.list,
           subtitles: [record.info],
+          showProgress: true,
+          showReviewNumber: true,
         );
       },
     );

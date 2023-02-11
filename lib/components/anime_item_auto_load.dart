@@ -14,14 +14,18 @@ class AnimeItemAutoLoad extends StatefulWidget {
   const AnimeItemAutoLoad(
       {required this.anime,
       required this.onChanged,
-      required this.style,
+      this.style = AnimeItemStyle.list,
       this.subtitles = const [],
+      this.showProgress = false,
+      this.showReviewNumber = false,
       this.showAnimeInfo = false,
       super.key});
   final Anime anime;
   final void Function(Anime newAnime) onChanged;
   final List<String> subtitles;
   final AnimeItemStyle style;
+  final bool showProgress;
+  final bool showReviewNumber;
   final bool showAnimeInfo; // 显示与动漫相关的两行信息
 
   @override
@@ -106,8 +110,8 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
                     anime,
                     loading: loading,
                     showName: false,
-                    showProgress: anime.isCollected() ? true : false,
-                    showReviewNumber: anime.isCollected() ? true : false,
+                    showProgress: widget.showProgress,
+                    showReviewNumber: widget.showReviewNumber,
                     onPressed: _openImage,
                   ),
                 ),
@@ -139,8 +143,8 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
       anime,
       onPressed: _enterDetailPage,
       loading: loading,
-      showProgress: anime.isCollected() ? true : false,
-      showReviewNumber: anime.isCollected() ? true : false,
+      showProgress: widget.showProgress,
+      showReviewNumber: widget.showReviewNumber,
     );
   }
 

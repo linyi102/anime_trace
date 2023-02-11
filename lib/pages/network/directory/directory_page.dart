@@ -227,6 +227,8 @@ class _DirectoryPageState extends State<DirectoryPage>
         //   anime.getAnimeInfoSecondLine()
         // ],
         showAnimeInfo: true,
+        showProgress: true,
+        showReviewNumber: true,
       );
     }, childCount: directory.length));
   }
