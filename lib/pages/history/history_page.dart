@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -11,16 +12,22 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+
+enum HistoryLabel {
+  year("年"),
+  month("月"),
+  day("日");
+
+  final String title;
+  const HistoryLabel(this.title);
+}
 
 class HistoryView {
-  String label;
+  HistoryLabel label;
   PageParams pageParams;
   int dateLength; // 用于匹配数据库中日期xxxx-xx-xx的子串
   List<HistoryPlus> historyRecords = [];
   ScrollController scrollController = ScrollController();
-
-  // Future<List<DateHistoryRecord>> Function(PageParams) loadData;
 
   HistoryView(
       {required this.label,
@@ -38,25 +45,28 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   List<HistoryView> views = [
     HistoryView(
-        label: "年",
+        label: HistoryLabel.year,
         pageParams: PageParams(pageIndex: 0, pageSize: 5),
         dateLength: 4),
     HistoryView(
-        label: "月",
+        label: HistoryLabel.month,
         pageParams: PageParams(pageIndex: 0, pageSize: 10),
         dateLength: 7),
     HistoryView(
-        label: "日",
+        label: HistoryLabel.day,
         pageParams: PageParams(pageIndex: 0, pageSize: 15),
         dateLength: 10)
   ];
-  int selectedViewIndex =
-      SPUtil.getInt("selectedViewIndexInHistoryPage", defaultValue: 1);
+  int selectedViewIndex = SPUtil.getInt("selectedViewIndexInHistoryPage",
+      defaultValue: 1); // 默认为1，也就是月视图
   bool loadOk = false;
+  late HistoryLabel selectedHistoryLabel;
 
   @override
   void initState() {
     super.initState();
+
+    selectedHistoryLabel = views[selectedViewIndex].label;
     _initData();
   }
 
@@ -68,13 +78,16 @@ class _HistoryPageState extends State<HistoryPage> {
         view.pageParams.pageIndex = view.pageParams.baseIndex;
         view.historyRecords.clear();
       }
-      loadOk = false;
-      setState(() {});
+      setState(() {
+        loadOk = false;
+      });
     }
 
     // 如果之前切换过该视图，使得不为空，就直接返回
     if (views[selectedViewIndex].historyRecords.isNotEmpty) {
-      setState(() {});
+      setState(() {
+        loadOk = true;
+      });
       return;
     }
 
@@ -82,9 +95,8 @@ class _HistoryPageState extends State<HistoryPage> {
         await HistoryDao.getHistoryPageable(
             pageParams: views[selectedViewIndex].pageParams,
             dateLength: views[selectedViewIndex].dateLength);
-    loadOk = true;
     setState(() {
-      Log.info("setState");
+      loadOk = true;
     });
   }
 
@@ -97,19 +109,12 @@ class _HistoryPageState extends State<HistoryPage> {
     setState(() {});
   }
 
-  // 进入动漫详细页，退出后需要更新进入动漫的已完成集信息
-  _updateData(AnimeHistoryRecord record, String date) async {
-    record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
-        record.anime, record.reviewNumber, date);
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("历史", style: TextStyle(fontWeight: FontWeight.w600)),
-        actions: [_buildViewSwitch()],
+        actions: [_buildCupertinoViewSwitch()],
       ),
       body: RefreshIndicator(
         onRefresh: () async => _initData(forceLoad: true),
@@ -131,34 +136,31 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Container _buildViewSwitch() {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-      child: ToggleSwitch(
-        initialLabelIndex: selectedViewIndex,
-        labels: views.map((e) => e.label).toList(),
-        onToggle: (index) {
-          // 重复点击当前tab，直接返回
-          if (selectedViewIndex == index) return;
-
-          selectedViewIndex = index ?? 0;
-          Log.info(
-              "切换index=$selectedViewIndex，label=${views[selectedViewIndex].label}");
+  _buildCupertinoViewSwitch() {
+    return CupertinoSlidingSegmentedControl(
+      groupValue: selectedHistoryLabel,
+      children: () {
+        Map<HistoryLabel, Widget> map = {};
+        for (int i = 0; i < views.length; ++i) {
+          var view = views[i];
+          map[view.label] = Text(view.label.title);
+        }
+        return map;
+      }(),
+      onValueChanged: (HistoryLabel? value) {
+        if (value != null) {
+          Log.info("value=$value");
+          setState(() {
+            // 先重绘进度圈和开关
+            loadOk = false;
+            selectedHistoryLabel = value;
+          });
+          selectedViewIndex =
+              views.indexWhere((element) => element.label == value);
           SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
           _initData();
-        },
-        // dividerColor: ThemeUtil.getCommentColor().withOpacity(0.2),
-        dividerColor: Colors.transparent,
-        minWidth: 50,
-        // 方案1
-        // activeBgColor: [ThemeUtil.getPrimaryColor()],
-        // inactiveBgColor: ThemeUtil.getCardColor(),
-        // 方案2
-        activeBgColor: const [Colors.transparent],
-        inactiveBgColor: ThemeUtil.getCardColor(),
-        activeFgColor: ThemeUtil.getPrimaryColor(),
-      ),
+        }
+      },
     );
   }
 
@@ -167,7 +169,7 @@ class _HistoryPageState extends State<HistoryPage> {
       controller: views[selectedViewIndex].scrollController,
       child: ListView.builder(
         // key保证切换视图时滚动条在最上面
-        key: Key("$selectedViewIndex"),
+        key: Key("history-page-view-$selectedViewIndex"),
         // TODO 为什么切换视图后滚动条不能恢复之前的位置？
         controller: views[selectedViewIndex].scrollController,
         itemCount: views[selectedViewIndex].historyRecords.length,
@@ -230,7 +232,6 @@ class _RecordItemState extends State<RecordItem> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     record = widget.record;
   }
