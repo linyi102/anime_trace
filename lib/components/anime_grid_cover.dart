@@ -3,10 +3,11 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
-// 网格状态下，用于显示一个完整的动漫封面
+// 显示一个完整的动漫封面
 // 包括进度、第几次观看、名字
 class AnimeGridCover extends StatelessWidget {
   final Anime _anime;
@@ -25,8 +26,8 @@ class AnimeGridCover extends StatelessWidget {
     this.onlyShowCover = false,
     this.showProgress = true,
     this.showReviewNumber = true,
-    this.isSelected = false,
     this.showName = true,
+    this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
     this.loading = false,
@@ -74,7 +75,7 @@ class AnimeGridCover extends StatelessWidget {
         padding: const EdgeInsets.all(3.0),
         child: AspectRatio(
           // 固定宽高比
-          aspectRatio: 0.72, // 198 / 275
+          aspectRatio: 0.72,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: Stack(
@@ -207,7 +208,7 @@ class AnimeGridCover extends StatelessWidget {
   bool _notOverflow(String name, BoxConstraints constraints) {
     final textPainter = TextPainter(
         text: TextSpan(text: name),
-        maxLines: 2,
+        maxLines: AnimeDisplayController.to.nameMaxLines.value,
         textDirection: TextDirection.ltr);
     textPainter.layout(maxWidth: constraints.maxWidth);
     if (textPainter.didExceedMaxLines) {
@@ -230,7 +231,7 @@ class AnimeGridCover extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Text(_getEllipsisMiddleAnimeName(_anime.animeName, constraints),
-            maxLines: 2,
+            maxLines: AnimeDisplayController.to.nameMaxLines.value,
             overflow: TextOverflow.ellipsis,
             textScaleFactor: ThemeUtil.smallScaleFactor,
             style: TextStyle(color: color));

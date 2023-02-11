@@ -116,6 +116,15 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(ListTile(
+        title: const Text("动漫名称只显示一行(默认两行)"),
+        trailing:
+            showToggleButton(animeDisplayController.nameMaxLines.value == 1),
+        onTap: () {
+          animeDisplayController.turnNameMaxLines();
+        },
+      ));
+
+      list.add(ListTile(
         title: const Text("显示动漫进度"),
         trailing: showToggleButton(
             animeDisplayController.showGridAnimeProgress.value),

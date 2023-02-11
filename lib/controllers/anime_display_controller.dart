@@ -1,9 +1,10 @@
+import 'package:flutter_test_future/utils/sp_profile.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get/get.dart';
 
-import '../utils/sp_profile.dart';
-import '../utils/sp_util.dart';
-
 class AnimeDisplayController extends GetxController {
+  static AnimeDisplayController get to => Get.find();
+
   RxBool displayList = SPUtil.getBool("display_list").obs; // 列表或网格
   RxInt gridColumnCnt = SpProfile.getGridColumnCnt().obs; // 动漫网格列数
   RxBool enableResponsiveGridColumnCnt =
@@ -14,6 +15,7 @@ class AnimeDisplayController extends GetxController {
           .obs; // 网格样式下显示动漫名(封面内或封面下)
   RxBool showNameInCover = SPUtil.getBool("showNameInCover", defaultValue: true)
       .obs; // 网格样式下动漫名字显示在封面内底部
+  RxInt nameMaxLines = SPUtil.getInt("coverNameMaxLines", defaultValue: 2).obs;
   RxBool showGridAnimeProgress =
       SPUtil.getBool("showGridAnimeProgress", defaultValue: true)
           .obs; // 网格样式下显示进度
@@ -66,5 +68,14 @@ class AnimeDisplayController extends GetxController {
   turnShowAnimeCntAfterTag() {
     showAnimeCntAfterTag.value = !showAnimeCntAfterTag.value;
     SPUtil.setBool("showAnimeCntAfterTag", showAnimeCntAfterTag.value);
+  }
+
+  turnNameMaxLines() {
+    if (nameMaxLines.value == 1) {
+      nameMaxLines.value = 2;
+    } else {
+      nameMaxLines.value = 1;
+    }
+    SPUtil.setInt("coverNameMaxLines", nameMaxLines.value);
   }
 }

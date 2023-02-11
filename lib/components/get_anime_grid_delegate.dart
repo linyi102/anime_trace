@@ -9,6 +9,18 @@ SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
       _animeDisplayController.enableResponsiveGridColumnCnt.value;
   int gridColumnCnt = _animeDisplayController.gridColumnCnt.value;
 
+  double childAspectRatio;
+  // 宽高比，三种情况：名字(2行)在封面下面，名字(1行)在封面下面，名字在封面内底部。高不断缩小
+  if (_animeDisplayController.showNameBelowCover) {
+    if (_animeDisplayController.nameMaxLines.value == 2) {
+      childAspectRatio = 31 / 56;
+    } else {
+      childAspectRatio = 31 / 50;
+    }
+  } else {
+    childAspectRatio = 31 / 43;
+  }
+
   // Size size = MediaQuery.of(context).size;
   if (enableResponsive) {
     // if (Responsive.isMobile(context)) {
@@ -28,8 +40,7 @@ SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
       // 竖轴距离
       mainAxisSpacing: 6,
       // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
-      childAspectRatio:
-          _animeDisplayController.showNameBelowCover ? 31 / 56 : 31 / 43,
+      childAspectRatio: childAspectRatio,
     );
   } else {
     return SliverGridDelegateWithFixedCrossAxisCount(
