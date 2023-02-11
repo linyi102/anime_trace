@@ -23,7 +23,7 @@ class CommonImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color imgIconColor = ThemeUtil.getCommonIconColor();
-    Duration fadeInDuration = const Duration(milliseconds: 200);
+    Duration fadeInDuration = const Duration(milliseconds: 400);
 
     // 没有图片
     if (url.isEmpty) {
