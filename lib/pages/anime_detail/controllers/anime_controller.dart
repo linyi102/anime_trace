@@ -278,38 +278,39 @@ class AnimeController extends GetxController {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('排序方式'),
+          content: buildSortPage(),
+        );
+      },
+    );
+  }
+
+  Widget buildSortPage() {
+    return StatefulBuilder(
+      builder: (context, setState) {
         List<Widget> radioList = [];
         for (int i = 0; i < sortMethods.length; ++i) {
           radioList.add(
             ListTile(
               title: Text(sortMethodsName[i]),
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
-                  ? Icon(
-                      Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getPrimaryColor(),
-                    )
-                  : const Icon(
-                      Icons.radio_button_off_outlined,
-                    ),
+                  ? Icon(Icons.radio_button_on_outlined,
+                      color: ThemeUtil.getPrimaryColor())
+                  : const Icon(Icons.radio_button_off_outlined),
               onTap: () {
                 Log.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
                 // 重绘
                 update([episodeId]);
-                // 退出对话框
-                Navigator.pop(context);
+                // 修改单选状态
+                setState(() {});
               },
             ),
           );
         }
-        return AlertDialog(
-          title: const Text('排序方式'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: radioList,
-            ),
-          ),
-        );
+
+        return SingleChildScrollView(child: Column(children: radioList));
       },
     );
   }

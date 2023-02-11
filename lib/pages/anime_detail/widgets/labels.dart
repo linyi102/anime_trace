@@ -90,18 +90,15 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
 
         // 弹出软键盘时报错，尽管可以正常运行
         // showFlexibleBottomSheet(
-        //     duration: const Duration(milliseconds: 200),
-        //     minHeight: 0,
-        //     initHeight: 0.5,
-        //     maxHeight: 1,
         //     context: context,
+        //     duration: const Duration(milliseconds: 200),
         //     builder: (
         //       BuildContext context,
         //       ScrollController scrollController,
         //       double bottomSheetOffset,
         //     ) =>
         //         const LabelManagePage(enableSelectLabelForAnime: true),
-        //     isExpand: true);
+        //     );
       },
       child: Chip(
         label: const Text("  +  "),

@@ -1,31 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/components/rounded_sheet.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class AnimesDisplaySetting extends StatelessWidget {
+class AnimesDisplaySetting extends StatefulWidget {
   final bool showAppBar;
+  final Widget sortPage;
 
-  const AnimesDisplaySetting({Key? key, this.showAppBar = true})
+  const AnimesDisplaySetting(
+      {Key? key, this.showAppBar = true, required this.sortPage})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final AnimeDisplayController animeDisplayController = Get.find();
+  State<AnimesDisplaySetting> createState() => _AnimesDisplaySettingState();
+}
 
-    return Scaffold(
-        appBar: showAppBar
-            ? AppBar(
-                title: const Text("动漫界面",
-                    style: TextStyle(fontWeight: FontWeight.w600)))
-            : null,
-        body: Obx(
-          () => ListView(
-            children: _buildListTiles(context, animeDisplayController),
-          ),
-        ));
+class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
+    with SingleTickerProviderStateMixin {
+  final AnimeDisplayController animeDisplayController = Get.find();
+
+  final List<String> tabStr = ["排序", "界面"];
+
+  late final TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(length: tabStr.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RoundedSheet(
+        title: CommonBottomTabBar(
+            tabController: tabController,
+            tabs: tabStr.map((e) => Tab(text: e)).toList()),
+        body: TabBarView(controller: tabController, children: [
+          widget.sortPage,
+          Obx(() => SingleChildScrollView(
+                child: Column(
+                    children: _buildListTiles(context, animeDisplayController)),
+              ))
+        ]));
   }
 
   List<ListTile> _buildListTiles(

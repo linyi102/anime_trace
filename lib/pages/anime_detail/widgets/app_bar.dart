@@ -1,18 +1,19 @@
 import 'dart:ui';
 
 import 'package:bottom_sheet/bottom_sheet.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/toggle_list_tile.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
+import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailAppBar extends StatefulWidget {
@@ -148,14 +149,18 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   List<Widget> _generateActions() {
     if (!widget.animeController.isCollected) return [];
     return [
+      IconButton(
+          onPressed: () => _showLayoutBottomSheet(),
+          icon: Icon(Icons.filter_list, color: appBarIconColor)),
       PopupMenuButton(
+        // position: PopupMenuPosition.under,
         icon: Icon(Icons.more_vert, color: appBarIconColor),
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                leading: const Icon(Icons.delete_forever),
+                leading: const Icon(Icons.delete),
                 title: const Text("取消收藏"),
                 onTap: () {
                   // 关闭下拉菜单
@@ -168,7 +173,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             PopupMenuItem(
               padding: const EdgeInsets.all(0),
               child: ListTile(
-                leading: const Icon(Icons.move_down),
+                leading: const Icon(EvaIcons.car),
                 title: const Text("迁移动漫"),
                 onTap: () {
                   // 关闭下拉菜单
@@ -190,18 +195,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                 },
               ),
             ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                leading: const Icon(Entypo.layout),
-                title: const Text("外观设置"),
-                onTap: () {
-                  // 关闭下拉菜单
-                  Navigator.pop(context);
-                  _showLayoutBottomSheet();
-                },
-              ),
-            )
           ];
         },
       ),
@@ -240,71 +233,73 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   // 弹出底部弹出菜单，用于外观设置
   _showLayoutBottomSheet() {
     showFlexibleBottomSheet(
+      initHeight: 0.5,
       duration: const Duration(milliseconds: 200),
-      minHeight: 0,
-      initHeight: 0.3,
-      maxHeight: 1,
+      bottomSheetColor: Colors.transparent,
       context: context,
-      isExpand: true,
       builder: (
         BuildContext context,
         ScrollController scrollController,
         double bottomSheetOffset,
       ) =>
           StatefulBuilder(
-              builder: (context, setBottomSheetState) => Scaffold(
-                    body: ListView(
-                      children: [
-                        ToggleListTile(
-                          title: const Text("背景模糊"),
-                          toggleOn: sigma > 0, // >0说明开启了模糊
-                          onTap: () {
-                            sigma = sigma > 0 ? 0.0 : 10.0;
-                            SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
-                            // 重新渲染开关
-                            setBottomSheetState(() {});
-                            // 重新渲染背景
-                            setState(() {});
-                          },
-                        ),
-                        ToggleListTile(
-                          title: const Text("背景渐变"),
-                          toggleOn: SpProfile.getEnableCoverBgGradient(),
-                          onTap: () {
-                            SpProfile.turnEnableCoverBgGradient();
-                            setBottomSheetState(() {});
-                            setState(() {});
-                          },
-                        ),
-                        ToggleListTile(
-                          title: const Text("显示简介"),
-                          toggleOn: widget
-                              .animeController.showDescInAnimeDetailPage.value,
-                          onTap: () {
-                            widget.animeController
-                                .turnShowDescInAnimeDetailPage();
-                            setBottomSheetState(() {});
-                            // 不需要重新渲染AppBar
-                            // setState(() {});
-                            // 而是通知控制器重绘
-                            widget.animeController.updateAnimeInfo();
-                          },
-                        ),
-                        ToggleListTile(
-                          title: const Text("滚动视差"),
-                          toggleOn:
-                              SpProfile.getEnableParallaxInAnimeDetailPage(),
-                          onTap: () {
-                            SpProfile.turnEnableParallaxInAnimeDetailPage();
-                            setBottomSheetState(() {});
-                            setState(() {});
-                          },
-                        ),
-                        // 调节封面背景高度
-                        _buildSetCoverHeightTile(setBottomSheetState)
-                      ],
-                    ),
-                  )),
+              builder: (context, setBottomSheetState) =>
+                  AnimeDetailUISettingPage(
+                      sortPage: widget.animeController.buildSortPage(),
+                      uiPage: _buildUISettingPage(setBottomSheetState))),
+    );
+  }
+
+  Scaffold _buildUISettingPage(StateSetter setBottomSheetState) {
+    return Scaffold(
+      body: ListView(
+        children: [
+          ToggleListTile(
+            title: const Text("背景模糊"),
+            toggleOn: sigma > 0, // >0说明开启了模糊
+            onTap: () {
+              sigma = sigma > 0 ? 0.0 : 10.0;
+              SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
+              // 重新渲染开关
+              setBottomSheetState(() {});
+              // 重新渲染背景
+              setState(() {});
+            },
+          ),
+          ToggleListTile(
+            title: const Text("背景渐变"),
+            toggleOn: SpProfile.getEnableCoverBgGradient(),
+            onTap: () {
+              SpProfile.turnEnableCoverBgGradient();
+              setBottomSheetState(() {});
+              setState(() {});
+            },
+          ),
+          ToggleListTile(
+            title: const Text("显示简介"),
+            toggleOn: widget.animeController.showDescInAnimeDetailPage.value,
+            onTap: () {
+              widget.animeController.turnShowDescInAnimeDetailPage();
+              setBottomSheetState(() {});
+              // 不需要重新渲染AppBar
+              // setState(() {});
+              // 而是通知控制器重绘
+              widget.animeController.updateAnimeInfo();
+            },
+          ),
+          ToggleListTile(
+            title: const Text("滚动视差"),
+            toggleOn: SpProfile.getEnableParallaxInAnimeDetailPage(),
+            onTap: () {
+              SpProfile.turnEnableParallaxInAnimeDetailPage();
+              setBottomSheetState(() {});
+              setState(() {});
+            },
+          ),
+          // 调节封面背景高度
+          _buildSetCoverHeightTile(setBottomSheetState)
+        ],
+      ),
     );
   }
 

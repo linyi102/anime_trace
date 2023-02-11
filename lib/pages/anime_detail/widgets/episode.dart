@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_card.dart';
+import 'package:flutter_test_future/components/rounded_sheet.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -148,24 +149,25 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             onPressed: () {
               if (enableEpisodeRangeBottomSheetStyle) {
                 showFlexibleBottomSheet(
-                    duration: const Duration(milliseconds: 200),
-                    minHeight: 0,
-                    initHeight: 0.5,
-                    maxHeight: 1,
                     context: context,
-                    isExpand: true,
+                    duration: const Duration(milliseconds: 200),
+                    bottomSheetColor: Colors.transparent,
                     builder: (
                       BuildContext context,
                       ScrollController scrollController,
                       double bottomSheetOffset,
                     ) =>
-                        Scaffold(body: _buildEpisodeRangeGridView()));
+                        RoundedSheet(
+                          body: _buildEpisodeRangeGridView(),
+                          title: const Text("选择区域"),
+                          centerTitle: true,
+                        ));
               } else {
                 showDialog(
                   context: context,
                   builder: (dialogContext) {
                     return AlertDialog(
-                      title: const Text("选择范围"),
+                      title: const Text("选择区域"),
                       content: SingleChildScrollView(
                         child: Wrap(
                           spacing: 2,
@@ -217,15 +219,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                           width: 2)),
                 ),
               ),
-              IconButton(
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  onPressed: () {
-                    widget.animeController.dialogSelectSortMethod(context);
-                  },
-                  tooltip: "排序方式",
-                  icon: const Icon(Icons.filter_list)),
               IconButton(
                   hoverColor: Colors.transparent,
                   splashColor: Colors.transparent,

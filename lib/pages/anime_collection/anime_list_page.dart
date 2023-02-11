@@ -1,11 +1,11 @@
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/anime_grid_view.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-
+import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
@@ -17,11 +17,6 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../components/common_tab_bar.dart';
-import '../../components/get_anime_grid_delegate.dart';
-import '../../models/params/anime_sort_cond.dart';
-import '../../components/anime_grid_view.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -190,7 +185,6 @@ class _AnimeListPageState extends State<AnimeListPage>
                           ),
                         ),
                         Expanded(
-                          // TODO：切换左侧tab后，滚动条位置并没有恢复到之前位置，而是共用了同一个滚动条
                           child: Scrollbar(
                             controller:
                                 _scrollControllers[_tabController.index],
@@ -215,85 +209,18 @@ class _AnimeListPageState extends State<AnimeListPage>
 
     actions.add(IconButton(
       onPressed: () {
-        showDialog(
+        showFlexibleBottomSheet(
+            duration: const Duration(milliseconds: 200),
             context: context,
-            builder: (dialogContext) {
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  List<Widget> sortCondList = [];
-
-                  for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
-                    var sortCondItem = AnimeSortCond.sortConds[i];
-                    bool isChecked = animeSortCond.specSortColumnIdx == i;
-                    sortCondList.add(ListTile(
-                      title: Text(sortCondItem.showName),
-                      leading: isChecked
-                          ? Icon(Icons.radio_button_checked,
-                              color: ThemeUtil.getPrimaryIconColor())
-                          : const Icon(Icons.radio_button_off),
-                      onTap: () {
-                        // 不相等时才设置
-                        if (animeSortCond.specSortColumnIdx != i) {
-                          animeSortCond.specSortColumnIdx = i;
-                          SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", i);
-                          setState(() {}); // 更新对话框里的状态
-                          // 改变排序时，需要滚动到顶部，否则会加载很多页
-                          _scrollControllers[_tabController.index].jumpTo(0);
-                          _loadData();
-                        }
-                      },
-                    ));
-                  }
-                  sortCondList.add(const Divider());
-                  sortCondList.add(ListTile(
-                    title: const Text("降序"),
-                    leading: animeSortCond.desc
-                        ? Icon(Icons.check_box_outlined,
-                            color: ThemeUtil.getPrimaryIconColor())
-                        : const Icon(Icons.check_box_outline_blank),
-                    onTap: () {
-                      animeSortCond.desc = !animeSortCond.desc;
-                      SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
-                      setState(() {}); // 更新对话框里的状态
-                      // 改变排序时，需要滚动到顶部，否则会加载很多页
-                      _scrollControllers[_tabController.index].jumpTo(0);
-                      _loadData();
-                    },
-                  ));
-
-                  return AlertDialog(
-                    title: const Text("动漫排序"),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: sortCondList,
-                      ),
-                    ),
-                  );
-                },
-              );
-            });
+            bottomSheetColor: Colors.transparent,
+            builder: (BuildContext context, ScrollController scrollController,
+                    double bottomSheetOffset) =>
+                AnimesDisplaySetting(
+                    showAppBar: false, sortPage: _buildSortPage(dialog: false)),
+            isExpand: true);
       },
       icon: const Icon(Icons.filter_list),
       tooltip: "动漫排序",
-    ));
-    actions.add(IconButton(
-      onPressed: () {
-        showFlexibleBottomSheet(
-            duration: const Duration(milliseconds: 200),
-            minHeight: 0,
-            initHeight: 0.5,
-            maxHeight: 1,
-            context: context,
-            builder: (
-              BuildContext context,
-              ScrollController scrollController,
-              double bottomSheetOffset,
-            ) =>
-                const AnimesDisplaySetting(showAppBar: false),
-            isExpand: true);
-      },
-      icon: const Icon(Entypo.layout),
-      tooltip: "外观设置",
     ));
     actions.add(IconButton(
       onPressed: () async {
@@ -312,6 +239,66 @@ class _AnimeListPageState extends State<AnimeListPage>
       tooltip: "搜索动漫",
     ));
     return actions;
+  }
+
+  StatefulBuilder _buildSortPage({bool dialog = true}) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        List<Widget> sortCondList = [];
+
+        for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
+          var sortCondItem = AnimeSortCond.sortConds[i];
+          bool isChecked = animeSortCond.specSortColumnIdx == i;
+
+          Widget radio = isChecked
+              ? Icon(Icons.radio_button_checked,
+                  color: ThemeUtil.getPrimaryIconColor())
+              : const Icon(Icons.radio_button_off);
+
+          sortCondList.add(ListTile(
+            title: Text(sortCondItem.showName),
+            leading: radio,
+            onTap: () {
+              // 不相等时才设置
+              if (animeSortCond.specSortColumnIdx != i) {
+                animeSortCond.specSortColumnIdx = i;
+                SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", i);
+                setState(() {}); // 更新对话框里的状态
+                // 改变排序时，需要滚动到顶部，否则会加载很多页
+                _scrollControllers[_tabController.index].jumpTo(0);
+                _loadData();
+              }
+            },
+          ));
+        }
+        sortCondList.add(const Divider());
+
+        Widget checkBox = animeSortCond.desc
+            ? Icon(Icons.check_box_outlined,
+                color: ThemeUtil.getPrimaryIconColor())
+            : const Icon(Icons.check_box_outline_blank);
+        sortCondList.add(ListTile(
+          title: const Text("降序"),
+          leading: checkBox,
+          onTap: () {
+            animeSortCond.desc = !animeSortCond.desc;
+            SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
+            setState(() {}); // 更新对话框里的状态
+            // 改变排序时，需要滚动到顶部，否则会加载很多页
+            _scrollControllers[_tabController.index].jumpTo(0);
+            _loadData();
+          },
+        ));
+
+        Widget body =
+            SingleChildScrollView(child: Column(children: sortCondList));
+        if (dialog) {
+          return AlertDialog(title: const Text("动漫排序"), content: body);
+        } else {
+          return body;
+        }
+      },
+    );
   }
 
   List<Widget> _getAnimesPlus() {
