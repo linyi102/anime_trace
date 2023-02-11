@@ -230,11 +230,13 @@ class AnimeGridCover extends StatelessWidget {
   _buildNameText(Color color) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Text(_getEllipsisMiddleAnimeName(_anime.animeName, constraints),
+        // obx监听动漫名字行数
+        return Obx(() => Text(
+            _getEllipsisMiddleAnimeName(_anime.animeName, constraints),
             maxLines: AnimeDisplayController.to.nameMaxLines.value,
             overflow: TextOverflow.ellipsis,
             textScaleFactor: ThemeUtil.smallScaleFactor,
-            style: TextStyle(color: color));
+            style: TextStyle(color: color)));
       },
     );
   }
