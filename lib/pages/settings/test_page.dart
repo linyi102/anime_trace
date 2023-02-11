@@ -7,7 +7,7 @@ import 'package:oktoast/oktoast.dart';
 
 import '../../dao/anime_dao.dart';
 import '../../models/anime.dart';
-import 'lapse_cover_animes_page.dart';
+import '../network/sources/lapse_cover_fix/lapse_cover_animes_page.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);

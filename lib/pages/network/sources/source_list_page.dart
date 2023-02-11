@@ -16,7 +16,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import '../../../models/fav_website.dart';
 import '../../../utils/launch_uri_util.dart';
 import '../../../components/website_logo.dart';
-import '../../settings/lapse_cover_animes_page.dart';
+import 'lapse_cover_fix/lapse_cover_animes_page.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({Key? key}) : super(key: key);
