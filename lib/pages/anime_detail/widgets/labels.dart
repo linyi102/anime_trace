@@ -30,8 +30,8 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   Widget build(BuildContext context) {
     return widget.animeController.isCollected
         ? Obx(() => Wrap(
-              spacing: 4,
-              runSpacing: 4,
+              spacing: ThemeUtil.wrapSacing,
+              runSpacing: ThemeUtil.wrapRunSpacing,
               children: _getLabelChips(),
             ))
         : Container();

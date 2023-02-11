@@ -274,41 +274,43 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   }
 
   _buildLabelWrap() {
-    return Wrap(
-      spacing: 4,
-      runSpacing: 4,
-      children: labelsController.labels.reversed.map((e) {
-        bool checked = selectedLabels.contains(e);
+    // 使用obx监听，否则labelController懒加载，打开app后进入本地搜索页看不到标签
+    return Obx(() => Wrap(
+          spacing: ThemeUtil.wrapSacing,
+          runSpacing: ThemeUtil.wrapRunSpacing,
+          children: labelsController.labels.reversed.map((e) {
+            bool checked = selectedLabels.contains(e);
 
-        return GestureDetector(
-          onTap: () async {
-            // 点击标签后，取消搜索输入框的聚焦
-            _cancelFocus();
+            return GestureDetector(
+              onTap: () async {
+                // 点击标签后，取消搜索输入框的聚焦
+                _cancelFocus();
 
-            // 查询数据库
-            if (SpProfile.getEnableMultiLabelQuery()) {
-              // 多标签查询
-              if (checked) {
-                Log.info("移除$e");
-                selectedLabels.remove(e);
-              } else {
-                selectedLabels.add(e);
-              }
-            } else {
-              // 单标签查询，需要先清空选中的标签
-              selectedLabels.clear();
-              selectedLabels.add(e);
-            }
+                // 查询数据库
+                if (SpProfile.getEnableMultiLabelQuery()) {
+                  // 多标签查询
+                  if (checked) {
+                    Log.info("移除");
+                    selectedLabels.remove(e);
+                  } else {
+                    selectedLabels.add(e);
+                  }
+                } else {
+                  // 单标签查询，需要先清空选中的标签
+                  selectedLabels.clear();
+                  selectedLabels.add(e);
+                }
 
-            _searchAnimesByLabels();
-          },
-          child: Chip(
-            label: Text(e.name),
-            backgroundColor: checked ? Colors.grey : ThemeUtil.getCardColor(),
-          ),
-        );
-      }).toList(),
-    );
+                _searchAnimesByLabels();
+              },
+              child: Chip(
+                label: Text(e.name),
+                backgroundColor:
+                    checked ? Colors.grey : ThemeUtil.getCardColor(),
+              ),
+            );
+          }).toList(),
+        ));
   }
 
   _enterAnimeDetail(int index) {

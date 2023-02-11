@@ -168,4 +168,8 @@ class ThemeUtil {
   static getSideBarBackgroundColor() {
     return getAppBarBackgroundColor();
   }
+
+  // wrap
+  static double wrapSacing = 2.0;
+  static double wrapRunSpacing = 2.0;
 }

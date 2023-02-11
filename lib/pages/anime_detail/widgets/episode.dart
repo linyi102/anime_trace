@@ -170,8 +170,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                       title: const Text("选择区域"),
                       content: SingleChildScrollView(
                         child: Wrap(
-                          spacing: 2,
-                          runSpacing: 2,
+                          spacing: ThemeUtil.wrapSacing,
+                          runSpacing: ThemeUtil.wrapRunSpacing,
                           children: _buildEpisodeRangeChips(dialogContext),
                         ),
                       ),

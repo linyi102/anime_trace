@@ -53,8 +53,8 @@ class LabelManagePage extends StatelessWidget {
 
   _buildLabelWrap(LabelsController labelsController, BuildContext context) {
     return Wrap(
-        spacing: 4,
-        runSpacing: 4,
+        spacing: ThemeUtil.wrapSacing,
+        runSpacing: ThemeUtil.wrapRunSpacing,
         children: labelsController.labels.reversed.map((label) {
           bool selected = false;
           if (animeController != null) {
