@@ -205,15 +205,8 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   SliverList _buildAnimeSliverList() {
-    // if (directory.isEmpty) {
-    //   return SliverList(
-    //       delegate: SliverChildListDelegate([emptyDataHint("什么都没找到")]));
-    // }
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-      // Log.info("index=$index, pageParams.getQueriedSize()=${pageParams.getQueriedSize()}");
-      // if (index + 5 == pageParams.getQueriedSize()) _loadMoreData();
-
       Anime anime = directory[index];
       return AnimeItemAutoLoad(
         // 需要指定key，否则看不出来变化
@@ -238,118 +231,69 @@ class _DirectoryPageState extends State<DirectoryPage>
       shrinkWrap: true, //解决无限高度问题
       physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            // 给出高度才可以横向排列
-            height: 30,
-            child: Row(
-              children: [
-                GestureDetector(
-                  child: const Text("年份："),
-                  onTap: () {
-                    int defaultYear = filter.year.isEmpty
-                        ? DateTime.now().year
-                        : int.parse(filter.year);
-                    dialogSelectUint(context, "选择年份",
-                            minValue: 2000,
-                            maxValue: DateTime.now().year + 2,
-                            initialValue: defaultYear)
-                        .then((value) {
-                      if (value == null || value == 0 || value == defaultYear) {
-                        Log.info("未选择，直接返回");
-                        return;
-                      }
-                      Log.info("选择了$value");
-                      filter.year = value.toString();
-                      _refreshController.requestRefresh();
-                    });
-                  },
-                ),
-                // Row嵌套ListView，需要使用Expanded嵌套ListView
-                Expanded(
-                  child: ListView(
-                    // 横向滚动
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioYear(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            height: 30,
-            child: Row(
-              children: [
-                const Text("季度："),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioSeason(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            height: 30,
-            child: Row(
-              children: [
-                const Text("地区："),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioRegion(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            height: 30,
-            child: Row(
-              children: [
-                const Text("状态："),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioStatus(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-          child: SizedBox(
-            height: 30,
-            child: Row(
-              children: [
-                const Text("类型："),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _showRadioCategory(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        )
+        _buildFilterItemRow(
+            name: "年份",
+            children: _generateRadioYear(),
+            onTapName: () => _showDialogSelectYear()),
+        _buildFilterItemRow(name: "季度", children: _generateRadioSeason()),
+        _buildFilterItemRow(name: "地区", children: _generateRadioRegion()),
+        _buildFilterItemRow(name: "状态", children: _generateRadioStatus()),
+        _buildFilterItemRow(name: "类型", children: _generateRadioCategory()),
+        const SizedBox(height: 10),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     TextButton(onPressed: () {}, child: const Text("重置")),
+        //     const SizedBox(width: 10),
+        //     ElevatedButton(
+        //         onPressed: () {},
+        //         child: const Text("查询", style: TextStyle(color: Colors.white)))
+        //   ],
+        // )
       ],
+    );
+  }
+
+  void _showDialogSelectYear() {
+    int defaultYear =
+        filter.year.isEmpty ? DateTime.now().year : int.parse(filter.year);
+    dialogSelectUint(context, "选择年份",
+            minValue: 2000,
+            maxValue: DateTime.now().year + 2,
+            initialValue: defaultYear)
+        .then((value) {
+      if (value == null || value == 0 || value == defaultYear) {
+        Log.info("未选择，直接返回");
+        return;
+      }
+      Log.info("选择了$value");
+      filter.year = value.toString();
+      _refreshController.requestRefresh();
+    });
+  }
+
+  _buildFilterItemRow({
+    required String name,
+    List<Widget> children = const [],
+    void Function()? onTapName,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      child: SizedBox(
+        // 给出高度才可以横向排列
+        height: 30,
+        child: Row(
+          children: [
+            InkWell(onTap: onTapName, child: Text("$name：")),
+            Expanded(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: children,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -388,7 +332,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     );
   }
 
-  _showRadioYear() {
+  _generateRadioYear() {
     List<Widget> children = [];
 
     List<String> years = [""]; // 空字符串对应全部
@@ -416,7 +360,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     return children;
   }
 
-  _showRadioSeason() {
+  _generateRadioSeason() {
     List<Widget> children = [];
 
     var seasons = ["", "1", "4", "7", "10"];
@@ -438,7 +382,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     return children;
   }
 
-  _showRadioRegion() {
+  _generateRadioRegion() {
     List<Widget> children = [];
 
     var regions = ["", "日本", "中国", "欧美"];
@@ -459,7 +403,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     return children;
   }
 
-  _showRadioStatus() {
+  _generateRadioStatus() {
     List<Widget> children = [];
 
     var statuss = ["", "连载", "完结", "未播放"];
@@ -480,7 +424,7 @@ class _DirectoryPageState extends State<DirectoryPage>
     return children;
   }
 
-  _showRadioCategory() {
+  _generateRadioCategory() {
     List<Widget> children = [];
 
     var categorys = ["", "TV", "剧场版", "OVA"];
