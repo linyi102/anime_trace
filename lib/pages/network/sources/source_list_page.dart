@@ -7,7 +7,7 @@ import 'package:flutter_test_future/pages/network/sources/source_detail_page.dar
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/ping_result.dart';
+import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';

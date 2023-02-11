@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -28,6 +30,7 @@ class DbAnimeSearchPage extends StatefulWidget {
 class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   bool searchOk = false;
   List<Anime> _animes = [];
+
   String _lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
@@ -74,6 +77,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 如果传入了标签id，则说明是从动漫详细页进来的，此时不显示搜索栏
+    bool showSearchBar = widget.incomingLabelId == null;
+
     Log.build(runtimeType);
     var inputController = TextEditingController.fromValue(TextEditingValue(
         // 设置内容
@@ -84,11 +90,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
             offset: _lastInputText.length))));
 
     return Scaffold(
-      appBar: AppBar(
-        title: widget.incomingLabelId == null
-            ? _buildSearchBar(inputController)
-            : null, // 如果传入了标签id，则说明是从动漫详细页进来的，此时不显示搜索栏
-      ),
+      appBar: showSearchBar ? _buildSearchBar(inputController) : AppBar(),
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -125,33 +127,25 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     );
   }
 
-  TextField _buildSearchBar(TextEditingController inputController) {
-    return TextField(
-      // 自动弹出键盘
+  _buildSearchBar(TextEditingController inputController) {
+    return SearchAppBar(
       autofocus: autofocus,
-      controller: inputController,
-      decoration: InputDecoration(
-          hintText: "按关键字搜索",
-          border: InputBorder.none,
-          suffixIcon: IconButton(
-              onPressed: () {
-                inputController.clear();
-                _lastInputText = "";
-                // 清空搜索的动漫，并显示标签页
-                _animes.clear();
-                showLabelPage = true;
-                setState(() {});
-              },
-              icon: const Icon(Icons.close))),
-      onEditingComplete: () async {
-        String text = inputController.text;
-        if (text.isEmpty) {
-          return;
-        }
-        _searchDbAnimesByKeyword(text);
-        _cancelFocus();
+      inputController: inputController,
+      onTapClear: () {
+        inputController.clear();
+        _lastInputText = "";
+        // 清空搜索的动漫，并显示标签页
+        _animes.clear();
+        showLabelPage = true;
+        setState(() {});
       },
-      onChanged: (value) async {
+      onEditingComplete: () {
+        String text = inputController.text;
+        if (text.isEmpty) return;
+
+        _searchDbAnimesByKeyword(text);
+      },
+      onChanged: (value) {
         Log.info("value=$value");
         if (value.isEmpty) {
           // 删除了搜索关键字，那么就清空搜索的动漫，展示所有标签
@@ -165,7 +159,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         // 按关键字搜索动漫时，不显示label页面，并且清空选中的label
         showLabelPage = false;
         selectedLabels.clear();
-        _searchDbAnimesByKeyword(value);
+
+        // 延时搜索
+        DelayUtil.delaySearch(() {
+          _searchDbAnimesByKeyword(value);
+        });
       },
     );
   }

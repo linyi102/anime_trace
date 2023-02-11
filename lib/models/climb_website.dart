@@ -1,5 +1,5 @@
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/ping_result.dart';
+import 'package:flutter_test_future/models/ping_result.dart';
 
 class ClimbWebsite {
   String name;

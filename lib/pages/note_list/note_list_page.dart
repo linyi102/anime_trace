@@ -27,6 +27,9 @@ class _NoteListPageState extends State<NoteListPage>
   final List<String> _navs = ["笔记", "评价"];
   NoteFilter noteFilter = NoteFilter();
 
+  // 输入框
+  bool _showSearchField = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,21 +59,65 @@ class _NoteListPageState extends State<NoteListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
-      appBar: AppBar(
-        // title: const Text("笔记", style: TextStyle(fontWeight: FontWeight.w600)),
-        title: _buildTabBar(),
-        actions: [
-          _buildSearchIconButton(setState),
-          _buildImageSettingIconButton(),
-        ],
-        // bottom: _buildTabBar(),
-      ),
+      appBar: _showSearchField
+          ? _buildSearchField()
+          : AppBar(
+              // title: const Text("笔记", style: TextStyle(fontWeight: FontWeight.w600)),
+              title: _buildTabBar(),
+              actions: [
+                _buildSearchIconButton(),
+                _buildImageSettingIconButton(),
+              ],
+              // bottom: _buildTabBar(),
+            ),
       body: TabBarView(
         controller: _tabController,
         children: [
           EpisodeNoteListPage(noteFilter: noteFilter),
           RateNoteListPage(noteFilter: noteFilter)
         ],
+      ),
+    );
+  }
+
+  _buildSearchAppBar() {
+    return AppBar(
+      leading: IconButton(
+        onPressed: () {
+          setState(() {
+            _showSearchField = false;
+          });
+        },
+        icon: Icon(Icons.arrow_back),
+      ),
+      title: _buildSearchField(),
+      // actions: [
+      //   InkWell(
+      //     onTap: () {},
+      //     child: Container(width: 50, child: Center(child: Text("搜索"))),
+      //   ),
+      // ],
+    );
+  }
+
+  _buildSearchField() {
+    var inputKeywordController = TextEditingController();
+
+    return TextField(
+      controller: inputKeywordController,
+      decoration: const InputDecoration(
+        hintText: "搜索笔记",
+        prefixIcon: Icon(Icons.search),
+        contentPadding: EdgeInsets.all(0),
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
       ),
     );
   }
@@ -133,9 +180,18 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  IconButton _buildSearchIconButton(setState) {
+  IconButton _buildSearchIconButton() {
     var animeNameController = TextEditingController();
     var noteContentController = TextEditingController();
+
+    // return IconButton(
+    //     onPressed: () {
+    //       // appbar显示输入框
+    //       setState(() {
+    //         _showSearchField = true;
+    //       });
+    //     },
+    //     icon: const Icon(Icons.search));
 
     return IconButton(
         tooltip: "搜索",

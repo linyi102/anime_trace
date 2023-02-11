@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
+import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
@@ -156,33 +157,22 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Widget build(BuildContext context) {
     bool isFirstEnableSource = false;
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          autofocus: widget.keyword.isEmpty ? true : false,
-          // 自动弹出键盘，如果是修改封面，则为false
-          controller: inputKeywordController..text,
-          decoration: InputDecoration(
-              hintText: ismigrate ? "迁移动漫" : "搜索动漫",
-              border: InputBorder.none,
-              suffixIcon: IconButton(
-                  onPressed: () {
-                    inputKeywordController.clear();
-                  },
-                  icon: const Icon(Icons.close))),
-          onEditingComplete: () async {
-            String text = inputKeywordController.text;
-            // 如果输入的名字为空，则不再爬取
-            if (text.isEmpty) {
-              return;
-            }
-            lastInputKeyword = text; // 更新上一次输入的名字
-            _climbAnime(keyword: text);
-          },
-          onChanged: (inputStr) {
-            lastInputKeyword = inputStr;
-            // 避免输入好后切换搜索源后，清空了输入的内容
-          },
-        ),
+      appBar: SearchAppBar(
+        hintText: ismigrate ? "迁移动漫" : "搜索动漫",
+        inputController: inputKeywordController..text,
+        onTapClear: () => inputKeywordController.clear(),
+        onEditingComplete: () {
+          String text = inputKeywordController.text;
+          // 如果输入的名字为空，则不再爬取
+          if (text.isEmpty) return;
+
+          lastInputKeyword = text; // 更新上一次输入的名字
+          _climbAnime(keyword: text);
+        },
+        onChanged: (inputStr) {
+          lastInputKeyword = inputStr;
+          // 避免输入好后切换搜索源后，清空了输入的内容
+        },
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -209,10 +199,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                             height: 137 + 60,
                             child: Center(
                               child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(),
-                              ),
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
                             ),
                           )
                         : Container(),

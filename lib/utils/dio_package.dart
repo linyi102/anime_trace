@@ -2,7 +2,7 @@ import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
-import 'package:flutter_test_future/utils/ping_result.dart';
+import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/log.dart';
 

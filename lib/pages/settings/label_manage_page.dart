@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/models/label.dart';
+import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 
@@ -109,33 +111,27 @@ class LabelManagePage extends StatelessWidget {
 
   _buildSearchBar(TextEditingController inputKeywordController,
       LabelsController labelsController) {
-    return TextField(
-      controller: inputKeywordController,
-      decoration: const InputDecoration(
-        hintText: "搜索标签",
-        prefixIcon: Icon(Icons.search),
-        contentPadding: EdgeInsets.all(0),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
-      ),
+    return SearchAppBar(
+      isAppBar: false,
+      autofocus: false,
+      inputController: inputKeywordController,
+      hintText: "搜索标签",
       onChanged: (kw) async {
         Log.info("搜索标签关键字：$kw");
         // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
-        labelsController.labels.value = await LabelDao.searchLabel(kw);
-        labelsController.kw = kw; // 记录关键字
+        DelayUtil.delaySearch(() async {
+          labelsController.labels.value = await LabelDao.searchLabel(kw);
+          labelsController.kw = kw; // 记录关键字
+        });
       },
-      onEditingComplete: () {},
+      onTapClear: () async {
+        inputKeywordController.clear();
+        labelsController.labels.value = await LabelDao.getAllLabels();
+      },
     );
   }
 
-  Future<dynamic> _showOpMenuDialog(
+  _showOpMenuDialog(
       BuildContext context, Label label, LabelsController labelsController) {
     return showDialog(
         context: context,

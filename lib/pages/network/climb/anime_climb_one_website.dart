@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
+import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -11,9 +14,6 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../components/get_anime_grid_delegate.dart';
-import '../../../components/empty_data_hint.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
@@ -103,34 +103,25 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          autofocus: widget.keyword.isEmpty ? true : false,
-          // 自动弹出键盘，如果是修改封面，则为false
-          controller: animeNameController..text,
-          decoration: InputDecoration(
-              hintText: "搜索动漫",
-              border: InputBorder.none,
-              suffixIcon: IconButton(
-                  onPressed: () {
-                    animeNameController.clear();
-                  },
-                  icon: const Icon(Icons.close))),
-          onEditingComplete: () async {
-            String text = animeNameController.text;
-            // 如果输入的名字为空，则不再爬取
-            if (text.isEmpty) {
-              return;
-            }
-            lastInputName = text; // 更新上一次输入的名字
-            searchOk = false;
-            searching = true;
-            _climbAnime(keyword: text);
-          },
-          onChanged: (inputStr) {
-            lastInputName = inputStr;
-          },
-        ),
+      appBar: SearchAppBar(
+        hintText: "搜索动漫",
+        // 自动弹出键盘，如果是修改封面，则为false
+        autofocus: widget.keyword.isEmpty ? true : false,
+        inputController: animeNameController..text,
+        onEditingComplete: () async {
+          String text = animeNameController.text;
+          // 如果输入的名字为空，则不再爬取
+          if (text.isEmpty) {
+            return;
+          }
+          lastInputName = text; // 更新上一次输入的名字
+          searchOk = false;
+          searching = true;
+          _climbAnime(keyword: text);
+        },
+        onChanged: (inputStr) {
+          lastInputName = inputStr;
+        },
       ),
       body: Column(
         children: [
@@ -147,9 +138,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
-                  ? const Center(
-                      child: RefreshProgressIndicator(),
-                    )
+                  ? const Expanded(
+                      child: Center(child: CircularProgressIndicator()))
                   : Container(),
         ],
       ),

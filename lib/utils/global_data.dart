@@ -9,7 +9,7 @@ import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
-import 'package:flutter_test_future/utils/ping_result.dart';
+import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
 List<String> tags = [];
