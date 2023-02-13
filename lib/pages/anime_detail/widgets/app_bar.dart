@@ -214,17 +214,18 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     Navigator.pop(context);
                   },
                   child: const Text("取消")),
-              ElevatedButton(
+              TextButton(
                   onPressed: () {
                     SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
                     // 关闭当前对话框
                     Navigator.of(context).pop();
-                    // 退出当前页
-                    // _popAnimeDetailPage();
+                    // 退出当前页，没必要不退出，而且搜索源详情页的详细列表进入后取消收藏后返回没有删除
+                    _anime.animeId = 0;
+                    widget.popPage();
                     // 不用退出
-                    widget.animeController.resetAnime();
+                    // widget.animeController.resetAnime();
                   },
-                  child: const Text("确认")),
+                  child: const Text("确认", style: TextStyle(color: Colors.red))),
             ],
           );
         });

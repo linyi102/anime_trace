@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../models/anime.dart';
 
 class AnimeListInSource extends StatefulWidget {
   final String sourceKeyword; // 表示搜索源的关键字
@@ -94,13 +92,17 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
                   Anime retAnime = value as Anime;
                   String newUrl = retAnime.animeUrl;
                   Log.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
-                  if (anime.animeUrl != newUrl) {
-                    Log.info("已迁移，从列表中删除");
-                    animes.removeAt(index);
-                    cnt = animes.length;
+                  if (anime.animeUrl != newUrl || !retAnime.isCollected()) {
+                    Log.info("已迁移或取消收藏，从列表中删除");
+                    setState(() {
+                      animes.removeAt(index);
+                      cnt = animes.length;
+                    });
                   } else {
                     // 更新动漫(封面可能发生变化)
-                    animes[index] = retAnime;
+                    setState(() {
+                      animes[index] = retAnime;
+                    });
                   }
                 });
               });
