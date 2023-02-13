@@ -146,7 +146,12 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     mixedAnimes = websiteClimbAnimes;
 
     for (var climbWebsite in climbWebsites) {
-      if (!climbWebsite.enable) continue; // 如果没有开启，直接跳过，否则映射的是null
+      // 如果没有开启，直接跳过，否则映射的是null
+      if (!climbWebsite.enable) continue;
+      // 直接进入了单个搜索页，返回后此时没有key，所以需要跳过
+      if (!websiteClimbAnimes.containsKey(climbWebsite.name)) {
+        continue;
+      }
 
       for (var i = 0; i < websiteClimbAnimes[climbWebsite.name]!.length; i++) {
         mixedAnimes[climbWebsite.name]![i] =

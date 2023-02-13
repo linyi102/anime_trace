@@ -478,7 +478,10 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                     onTap: () async {
                       // 退出对话框
                       Navigator.of(dialogContext).pop();
-                      // 添加到多选中
+                      // 先清空多选，然后退出多选状态
+                      widget.animeController.mapSelected.clear();
+                      widget.animeController.multiSelected.value = false;
+                      // 添加到多选中，保证只有这一个
                       widget.animeController.mapSelected[episodeIndex] = true;
                       // 选择时间
                       await widget.animeController
