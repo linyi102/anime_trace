@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
@@ -75,7 +76,7 @@ class _AboutVersionState extends State<AboutVersion> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
+            MyIconButton(
                 onPressed: () {
                   LaunchUrlUtil.launch(
                       context: context,
@@ -87,15 +88,17 @@ class _AboutVersionState extends State<AboutVersion> {
                       ? Colors.white
                       : Colors.black,
                 )),
-            IconButton(
+            MyIconButton(
               onPressed: () {
                 LaunchUrlUtil.launch(
                     context: context,
                     uriStr: "https://gitee.com/linyi517/anime_trace",
                     inApp: false);
               },
-              icon: const Icon(SimpleIcons.gitee),
-              color: const Color.fromRGBO(187, 33, 36, 1),
+              icon: const Icon(
+                SimpleIcons.gitee,
+                color: Color.fromRGBO(187, 33, 36, 1),
+              ),
             )
           ],
         ),

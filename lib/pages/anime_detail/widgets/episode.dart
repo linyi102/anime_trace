@@ -7,6 +7,7 @@ import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/components/rounded_sheet.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -139,14 +140,12 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
     return Container(
-      padding: const EdgeInsets.fromLTRB(8, 10, 12, 0),
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MaterialButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onPressed: () {
+          InkWell(
+            onTap: () {
               if (enableEpisodeRangeBottomSheetStyle) {
                 showFlexibleBottomSheet(
                     context: context,
@@ -180,12 +179,16 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                 );
               }
             },
-            child: Row(
-              children: [
-                const Icon(Icons.arrow_right_rounded),
-                Text(_getEpisodeRangeStr(
-                    widget.animeController.currentStartEpisodeNumber)),
-              ],
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: EdgeInsets.fromLTRB(0, 3, 8, 3),
+              child: Row(
+                children: [
+                  const Icon(Icons.arrow_right_rounded),
+                  Text(_getEpisodeRangeStr(
+                      widget.animeController.currentStartEpisodeNumber)),
+                ],
+              ),
             ),
           ),
           // _buildReviewNumberTextButton(),
@@ -194,10 +197,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(
-                hoverColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
+              MyIconButton(
                 onPressed: _dialogSelectReviewNumber,
                 // 使用自带图标
                 // icon: _showReviewNumberIcon()
@@ -219,10 +219,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                           width: 2)),
                 ),
               ),
-              IconButton(
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
+              MyIconButton(
                   onPressed: () {
                     if (hideNoteInAnimeDetail) {
                       // 原先隐藏，则设置为false，表示显示
@@ -307,12 +304,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
   }
 
   _buildEpisodeTileLeading(int episodeIndex) {
-    return IconButton(
-      // iconSize: 20,
-      visualDensity: VisualDensity.compact, // 缩小leading
-      // hoverColor: Colors.transparent, // 悬停时的颜色
-      // highlightColor: Colors.transparent, // 长按时的颜色
-      // splashColor: Colors.transparent, // 点击时的颜色
+    return MyIconButton(
       onPressed: () async {
         if (_episodes[episodeIndex].isChecked()) {
           _dialogRemoveDate(
@@ -462,8 +454,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     );
   }
 
-  IconButton _buildEpisodeTileTrailing(int episodeIndex) {
-    return IconButton(
+  _buildEpisodeTileTrailing(int episodeIndex) {
+    return MyIconButton(
       icon: const Icon(Icons.more_horiz),
       onPressed: () {
         showDialog(

@@ -239,6 +239,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 5)),
       popupMenuTheme: PopupMenuThemeData(color: ThemeUtil.getCardColor()),
       dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
+
       timePickerTheme:
           TimePickerThemeData(backgroundColor: ThemeUtil.getCardColor()),
       textSelectionTheme: TextSelectionThemeData(

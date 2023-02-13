@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future<int?> dialogSelectUint(context, String title,
@@ -25,7 +26,7 @@ Future<int?> dialogSelectUint(context, String title,
                           helperText: "范围：[$minValue, $maxValue]"),
                     ),
                   ),
-                  IconButton(
+                  MyIconButton(
                       onPressed: () {
                         // 最小值为minValue
                         if (tmpValue - 1 >= minValue) {
@@ -35,7 +36,7 @@ Future<int?> dialogSelectUint(context, String title,
                         }
                       },
                       icon: const Icon(Icons.remove)),
-                  IconButton(
+                  MyIconButton(
                       onPressed: () {
                         tmpValue++;
                         // 最大值为maxValue

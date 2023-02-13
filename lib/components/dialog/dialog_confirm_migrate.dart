@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -41,7 +42,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                     dense: true,
                     title: const Text("更新名字"),
                     subtitle: Text(newAnime.animeName),
-                    leading: IconButton(
+                    leading: MyIconButton(
                       onPressed: () {
                         dialogState(() {
                           updateName = !updateName;
@@ -70,7 +71,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                               onTapDown: (_, __, ___) =>
                                   Navigator.of(context).pop())));
                     },
-                    leading: IconButton(
+                    leading: MyIconButton(
                         onPressed: () {
                           dialogState(() {
                             updateCover = !updateCover;
@@ -88,7 +89,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                     style: ListTileStyle.drawer,
                     dense: true,
                     title: const Text("更新动漫信息"),
-                    leading: IconButton(
+                    leading: MyIconButton(
                       onPressed: () {
                         dialogState(() {
                           updateInfo = !updateInfo;

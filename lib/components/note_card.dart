@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -136,7 +137,7 @@ class _NoteCardState extends State<NoteCard> {
       ),
       // trailing: widget.isRateNote
       //     ? null
-      //     : IconButton(
+      //     : MyIconButton(
       //         onPressed: () => _enterNoteEditPage(note),
       //         icon: const Icon(
       //           Icons.edit,
@@ -173,7 +174,7 @@ class _NoteCardState extends State<NoteCard> {
               fontWeight: FontWeight.normal,
               color: ThemeUtil.getCommentColor()),
         ),
-        trailing: IconButton(
+        trailing: MyIconButton(
             onPressed: () {
               showDialog(
                   context: context,

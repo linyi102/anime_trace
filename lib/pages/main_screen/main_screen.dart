@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history/history_page.dart';
 import 'package:flutter_test_future/pages/network/network_page.dart';
@@ -167,25 +168,19 @@ class _MainScreenState extends State<MainScreen> {
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
       children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(100),
-          onTap: () {
+        MyIconButton(
+          icon: Icon(
+            expandSideBar ? Icons.arrow_back_ios_new : Icons.arrow_forward_ios,
+            // 不适合暗色主题
+            // color: Colors.black54,
+          ),
+          onPressed: () {
             SpProfile.turnExpandSideBar();
             setState(() {
               expandSideBar = !expandSideBar;
             });
           },
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            margin: const EdgeInsets.all(8),
-            child: Icon(
-              expandSideBar
-                  ? Icons.arrow_back_ios_new
-                  : Icons.arrow_forward_ios,
-              color: Colors.black54,
-            ),
-          ),
-        )
+        ),
       ],
     ));
 

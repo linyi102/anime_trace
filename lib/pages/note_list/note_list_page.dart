@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/global.dart';
 
@@ -83,13 +84,13 @@ class _NoteListPageState extends State<NoteListPage>
 
   _buildSearchAppBar() {
     return AppBar(
-      leading: IconButton(
+      leading: MyIconButton(
         onPressed: () {
           setState(() {
             _showSearchField = false;
           });
         },
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
       ),
       title: _buildSearchField(),
       // actions: [
@@ -139,7 +140,7 @@ class _NoteListPageState extends State<NoteListPage>
 
   _buildImageSettingIconButton() {
     return PopupMenuButton(
-      tooltip: "更多",
+      position: PopupMenuPosition.under,
       icon: const Icon(Icons.more_vert),
       itemBuilder: (popupMenuContext) {
         bool showAllNoteGridImage = SpProfile.getShowAllNoteGridImage();
@@ -182,11 +183,11 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  IconButton _buildSearchIconButton() {
+  _buildSearchIconButton() {
     var animeNameController = TextEditingController();
     var noteContentController = TextEditingController();
 
-    // return IconButton(
+    // return MyIconButton(
     //     onPressed: () {
     //       // appbar显示输入框
     //       setState(() {
@@ -195,7 +196,7 @@ class _NoteListPageState extends State<NoteListPage>
     //     },
     //     icon: const Icon(Icons.search));
 
-    return IconButton(
+    return MyIconButton(
         tooltip: "搜索",
         onPressed: () {
           showDialog(
@@ -211,12 +212,12 @@ class _NoteListPageState extends State<NoteListPage>
                             ..text = noteFilter.animeNameKeyword,
                           decoration: InputDecoration(
                               labelText: "动漫关键字",
-                              suffixIcon: IconButton(
-                                  onPressed: () {
-                                    animeNameController.text = "";
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  iconSize: 18)),
+                              suffixIcon: MyIconButton(
+                                onPressed: () {
+                                  animeNameController.text = "";
+                                },
+                                icon: const Icon(Icons.close, size: 18),
+                              )),
                         ),
                         TextField(
                           controller: noteContentController
@@ -224,12 +225,12 @@ class _NoteListPageState extends State<NoteListPage>
                           decoration: InputDecoration(
                               labelText: "笔记关键字",
                               helperText: "评价页暂不支持查询",
-                              suffixIcon: IconButton(
-                                  onPressed: () {
-                                    noteContentController.text = "";
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  iconSize: 18)),
+                              suffixIcon: MyIconButton(
+                                onPressed: () {
+                                  noteContentController.text = "";
+                                },
+                                icon: const Icon(Icons.close, size: 18),
+                              )),
                         )
                       ],
                     ),

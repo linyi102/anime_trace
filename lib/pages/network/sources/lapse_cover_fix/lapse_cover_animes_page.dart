@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -132,7 +133,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
   }
 
   _buildHintButton() {
-    return IconButton(
+    return MyIconButton(
         onPressed: () {
           showDialog(
               context: context,
@@ -145,7 +146,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
   }
 
   _buildFixButton() {
-    return IconButton(
+    return MyIconButton(
       onPressed: () async {
         // 如果在恢复时再次点击，则直接返回
         if (lapseCoverController.recovering) {

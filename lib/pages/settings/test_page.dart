@@ -27,6 +27,22 @@ class _TestPageState extends State<TestPage> {
       ),
       body: ListView(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 50,
+              ),
+              InkWell(
+                borderRadius: BorderRadius.circular(50),
+                onTap: () {},
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  child: const Icon(Icons.favorite, color: Colors.red),
+                ),
+              ),
+            ],
+          ),
           ListTile(
             title: const Text("测试图片失效"),
             onTap: () async {

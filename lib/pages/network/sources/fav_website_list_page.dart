@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -83,8 +84,8 @@ class FavWebsiteListPage extends StatelessWidget {
         });
   }
 
-  IconButton _buildSettingButton(BuildContext context) {
-    return IconButton(
+  _buildSettingButton(BuildContext context) {
+    return MyIconButton(
         onPressed: () {
           showDialog(
               context: context,

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_app_bar.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
@@ -103,7 +104,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
   }
 
   _getDeleteButton(int i) {
-    return IconButton(
+    return MyIconButton(
         onPressed: () {
           _dialogDeleteTag(i + 1, tags[i]);
         },

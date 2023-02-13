@@ -24,6 +24,7 @@ class _MyWebViewState extends State<MyWebView> {
             style: const TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           PopupMenuButton(
+            position: PopupMenuPosition.under,
             icon: const Icon(Icons.more_vert),
             itemBuilder: (popMenuContext) {
               return [

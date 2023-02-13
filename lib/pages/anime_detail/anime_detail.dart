@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
@@ -90,7 +91,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     if (animeController.loadingAnime) {
                       return Scaffold(
                         appBar: AppBar(
-                            leading: IconButton(
+                            leading: MyIconButton(
                                 onPressed: _popPage,
                                 icon: Icon(Icons.arrow_back))),
                         body: const Center(
@@ -138,7 +139,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                 // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: IconButton(
+                    child: MyIconButton(
                       onPressed: () {
                         if (animeController.mapSelected.length ==
                             animeController.episodes.length) {
@@ -161,7 +162,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     ),
                   ),
                   Expanded(
-                    child: IconButton(
+                    child: MyIconButton(
                       onPressed: () async {
                         await animeController.pickDateForEpisodes(
                             context: context);
@@ -172,7 +173,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     ),
                   ),
                   Expanded(
-                    child: IconButton(
+                    child: MyIconButton(
                       onPressed: () => animeController.quitMultiSelectionMode(),
                       icon: const Icon(Icons.exit_to_app),
                     ),

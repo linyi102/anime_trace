@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -124,7 +125,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       child: Scaffold(
         appBar: AppBar(
           // title: const Text("笔记编辑"),
-          leading: IconButton(
+          leading: MyIconButton(
               // 返回按钮
               onPressed: () => _onWillpop(),
               tooltip: "返回上一级",

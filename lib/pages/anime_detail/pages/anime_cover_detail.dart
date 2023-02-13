@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
@@ -61,15 +62,15 @@ class AnimeCoverDetail extends StatelessWidget {
       actions: [
         _buildInfoButton(context),
         _buildRefreshButton(context),
-        IconButton(
+        MyIconButton(
             onPressed: () => _showDialogAboutHowToEditCoverUrl(context),
             icon: const Icon(Icons.edit))
       ],
     );
   }
 
-  IconButton _buildRefreshButton(BuildContext context) {
-    return IconButton(
+  _buildRefreshButton(BuildContext context) {
+    return MyIconButton(
         onPressed: () {
           showDialog(
               context: context,
@@ -115,8 +116,8 @@ class AnimeCoverDetail extends StatelessWidget {
         icon: const Icon(Icons.refresh));
   }
 
-  IconButton _buildInfoButton(BuildContext context) {
-    return IconButton(
+  _buildInfoButton(BuildContext context) {
+    return MyIconButton(
         onPressed: () {
           showDialog(
               context: context,
@@ -182,7 +183,7 @@ class AnimeCoverDetail extends StatelessWidget {
       children: [
         const Text("X_X"),
         const Text("无法正常显示图片"),
-        IconButton(
+        MyIconButton(
             onPressed: () {
               showDialog(
                   context: context,

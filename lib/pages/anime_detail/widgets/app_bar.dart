@@ -4,6 +4,7 @@ import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/toggle_list_tile.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -67,12 +68,12 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               ],
             ),
           ),
-          leading: IconButton(
-              onPressed: () {
-                widget.popPage();
-              },
-              icon: const Icon(Icons.arrow_back_ios, size: 20),
-              color: appBarIconColor),
+          leading: MyIconButton(
+            onPressed: () {
+              widget.popPage();
+            },
+            icon: Icon(Icons.arrow_back_ios, color: appBarIconColor, size: 20),
+          ),
           actions: _generateActions(),
         );
       },
@@ -149,11 +150,11 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   List<Widget> _generateActions() {
     if (!widget.animeController.isCollected) return [];
     return [
-      IconButton(
+      MyIconButton(
           onPressed: () => _showLayoutBottomSheet(),
           icon: Icon(Icons.filter_list, color: appBarIconColor)),
       PopupMenuButton(
-        // position: PopupMenuPosition.under,
+        position: PopupMenuPosition.under,
         icon: Icon(Icons.more_vert, color: appBarIconColor),
         itemBuilder: (BuildContext context) {
           return [

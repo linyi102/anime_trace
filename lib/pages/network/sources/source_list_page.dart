@@ -1,6 +1,7 @@
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_app_bar.dart';
+import 'package:flutter_test_future/components/my_icon_button.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
@@ -388,13 +389,13 @@ class _SourceListPageState extends State<SourceListPage> {
   _buildSwitchButton(ClimbWebsite climbWebsite) {
     if (climbWebsite.discard) {
       return null;
-      // return IconButton(
+      // return MyIconButton(
       //     onPressed: () {
       //       showToast("很抱歉，该搜索源已经无法使用");
       //     },
       //     icon: const Icon(Icons.not_interested));
     }
-    return IconButton(
+    return MyIconButton(
       onPressed: () {
         _invertSource(climbWebsite);
       },
