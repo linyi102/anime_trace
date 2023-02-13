@@ -48,9 +48,6 @@ class _WeeklyPageState extends State<WeeklyPage> {
     super.initState();
 
     pageController = PageController(initialPage: selectedWeekdayIdx);
-    for (int i = 0; i < 7; ++i) {
-      weeklyController.weeks.add([]);
-    }
 
     // 默认为可用列表中的第一个，然后从所有搜索源中找到对应的下标
     int defaultIdx = climbWebsites.indexWhere((element) =>
@@ -243,11 +240,15 @@ class _WeeklyPageState extends State<WeeklyPage> {
                     e.name == curWebsite.name ? const Icon(Icons.check) : null,
                 enabled: usable,
                 onTap: () {
+                  // 记录
                   curWebsite = e;
                   SPUtil.setInt(selectedWeeklyTableSourceIdx,
                       climbWebsites.indexWhere((element) => element == e));
-
+                  // 修改搜索源后，需要清空所有星期的动漫，避免保留了之前搜索源留下的动漫列表
+                  weeklyController.clearWeeks();
+                  // 加载数据
                   _loadData();
+                  // 关闭选择框
                   Navigator.pop(context);
                 },
               );
