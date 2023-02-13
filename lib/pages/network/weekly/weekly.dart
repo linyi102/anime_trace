@@ -9,6 +9,7 @@ import 'package:flutter_test_future/pages/network/weekly/weekly_controller.dart'
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -29,7 +30,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
   final weeklyController = Get.put(WeeklyController());
   int get selectedWeekdayIdx => weeklyController.selectedWeekday - 1;
 
-  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbAgemys(), ClimbQuqi()];
+  final List<Climb> usableClimbs = [
+    ClimbYhdm(),
+    ClimbAgemys(),
+    ClimbQdm(),
+    ClimbQuqi()
+  ];
   late ClimbWebsite curWebsite;
 
   late bool loading;

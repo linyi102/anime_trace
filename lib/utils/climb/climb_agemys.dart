@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:flutter_test_future/models/age_record.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/week_record.dart';
@@ -105,6 +108,16 @@ class ClimbAgemys extends Climb {
         .innerHtml;
     anime.animeCoverUrl =
         document.getElementsByClassName("poster")[0].attributes["src"]!;
+
+    // 集数：从所有播放列表中选择最大的
+    List<int> episodeNumbers = [];
+    var movUrls = document.getElementsByClassName("movurl");
+    for (var movUrl in movUrls) {
+      // 最后一话可能是OVA3或OAD，而不是第xx集，所以获取长度而非OVA
+      episodeNumbers.add(movUrl.getElementsByTagName("li").length);
+    }
+    anime.animeEpisodeCnt =
+        episodeNumbers.reduce((value, element) => max(value, element));
 
     if (showMessage) showToast("更新完毕");
 

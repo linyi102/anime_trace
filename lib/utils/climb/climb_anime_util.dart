@@ -31,6 +31,10 @@ class ClimbAnimeUtil {
   // 查询周表中某天的更新记录
   static Future<List<WeekRecord>> climbWeekRecords(
       ClimbWebsite climbWebsite, int weekday) async {
+    if (weekday <= 0 && weekday > 7) {
+      Log.info("非法weekday: $weekday");
+      return [];
+    }
     return climbWebsite.climb.climbWeeklyTable(weekday);
   }
 

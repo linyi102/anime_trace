@@ -11,33 +11,33 @@ import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
 class Climb {
-  // 直接使用Climb.baseUrl，不用在意具体子类
+  /// 直接使用Climb.baseUrl，不用在意具体子类
   String baseUrl = "";
 
   String sourceName = "";
 
-  // 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
+  /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     throw '未实现';
   }
 
-  // 爬取动漫详细信息
+  /// 爬取动漫详细信息
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     throw '未实现';
   }
 
-  // 爬取目录
+  /// 爬取目录
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) async {
     throw '未实现';
   }
 
-  // 爬取周表
+  /// 爬取周表，weekday范围[1,7]
   Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
     throw '未实现';
   }
 
-  // 统一解析
+  /// 统一解析
   Future<Document?> dioGetAndParse(String url,
       {bool isMobile = false, String? foreignSourceName}) async {
     String sourceName = foreignSourceName ?? this.sourceName;

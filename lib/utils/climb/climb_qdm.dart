@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -119,5 +120,29 @@ class ClimbQdm extends Climb {
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) async {
     return [];
+  }
+
+  @override
+  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
+    var document = await dioGetAndParse(baseUrl);
+    if (document == null) {
+      return [];
+    }
+
+    List<WeekRecord> records = [];
+    var lis = document
+        .getElementsByClassName("mod")[weekday - 1]
+        .getElementsByTagName("li");
+    for (var li in lis) {
+      Anime anime = Anime(animeName: "");
+      var a = li.getElementsByTagName("a")[0];
+      anime.animeName = a.innerHtml;
+      anime.animeUrl = "$baseUrl${a.attributes['href']}";
+      String info = li.getElementsByTagName("span")[0].innerHtml;
+
+      WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
+      records.add(weekRecord);
+    }
+    return records;
   }
 }
