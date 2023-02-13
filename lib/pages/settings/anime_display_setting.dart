@@ -54,10 +54,10 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
         ]));
   }
 
-  List<ListTile> _buildListTiles(
+  _buildListTiles(
       BuildContext context, AnimeDisplayController animeDisplayController) {
     bool displayList = animeDisplayController.displayList.value;
-    List<ListTile> list = [];
+    List<Widget> list = [];
     list.add(ListTile(
       title: displayList ? const Text("列表样式") : const Text("网格样式"),
       subtitle: const Text("单击切换列表样式/网格样式"),

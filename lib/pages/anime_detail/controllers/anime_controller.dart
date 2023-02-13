@@ -156,6 +156,16 @@ class AnimeController extends GetxController {
     }
   }
 
+  // 退出多选模式
+  void quitMultiSelectionMode() {
+    // 清空选中
+    mapSelected.clear();
+    // 隐藏多选操作栏
+    multiSelected.value = false;
+    // 重绘集页面
+    update([episodeId]);
+  }
+
   void turnShowDescInAnimeDetailPage() {
     showDescInAnimeDetailPage.value = !showDescInAnimeDetailPage.value;
     SpProfile.turnShowDescInAnimeDetailPage();

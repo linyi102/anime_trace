@@ -166,14 +166,14 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                         await animeController.pickDateForEpisodes(
                             context: context);
                         // 退出多选模式
-                        _quitMultiSelectState();
+                        animeController.quitMultiSelectionMode();
                       },
                       icon: const Icon(Icons.edit_calendar_rounded),
                     ),
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: _quitMultiSelectState,
+                      onPressed: () => animeController.quitMultiSelectionMode(),
                       icon: const Icon(Icons.exit_to_app),
                     ),
                   ),
@@ -181,14 +181,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               ),
             ),
           );
-  }
-
-  void _quitMultiSelectState() {
-    // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    animeController.multiSelected.value = false;
-    animeController.mapSelected.clear();
-    // 清空选择的集后，需要重绘集页面
-    animeController.update([animeController.episodeId]);
   }
 
   bool _climbing = false;

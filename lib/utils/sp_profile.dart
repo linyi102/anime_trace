@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -51,12 +52,20 @@ class SpProfile {
   // 1280*720
   // 1024*720
   // 900*600
-  static getWindowWidth() {
-    return SPUtil.getDouble("WindowWidth", defaultValue: 1024);
+  static double getWindowWidth() {
+    double defaultValue = 1024.0;
+    if (Global.isRelease) {
+      return SPUtil.getDouble("WindowWidth", defaultValue: defaultValue);
+    }
+    return 1024.0;
   }
 
-  static getWindowHeight() {
-    return SPUtil.getDouble("WindowHeight", defaultValue: 720);
+  static double getWindowHeight() {
+    double defaultValue = 720.0;
+    if (Global.isRelease) {
+      return SPUtil.getDouble("WindowHeight", defaultValue: defaultValue);
+    }
+    return 720.0;
   }
 
   //  Windows侧边栏展开或收缩
