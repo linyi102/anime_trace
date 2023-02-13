@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -90,6 +91,7 @@ class _NoteCardState extends State<NoteCard> {
           note.anime,
           showReviewNumber: true,
           reviewNumber: note.episode.reviewNumber,
+          circular: false,
         ),
       ),
       // Row的作用是为了避免title组件占满整行，应该只在文字上点击后才进入详细页
@@ -106,6 +108,7 @@ class _NoteCardState extends State<NoteCard> {
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: ThemeUtil.smallScaleFactor,
                 // textAlign: TextAlign.right,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ),
