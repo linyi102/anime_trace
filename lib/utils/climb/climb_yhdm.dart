@@ -1,11 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -16,25 +13,27 @@ class ClimbYhdm extends Climb {
   ClimbYhdm._();
 
   @override
-  String baseUrl = "https://www.yhdmp.cc";
+  String get baseUrl => "https://www.yhdmp.cc";
+
+  @override
+  String get sourceName => "樱花动漫";
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
-      {String? foreignBaseUrl, String sourceName = "樱花动漫"}) async {
+      {String? foreignBaseUrl, String? foreignSourceName}) async {
     String url = "${foreignBaseUrl ?? baseUrl}/s_all?ex=1&kw=$keyword";
-    return _climbOfyhdm(foreignBaseUrl ?? baseUrl, url, sourceName: sourceName);
+    return _climbOfyhdm(foreignBaseUrl ?? baseUrl, url,
+        foreignSourceName: foreignSourceName);
   }
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime,
-      {bool showMessage = true, String sourceName = "樱花动漫"}) async {
-    Result result = await DioPackage.get(anime.animeUrl);
-    if (result.code != 200) {
-      if (showMessage) showToast("$sourceName：${result.msg}");
+      {bool showMessage = true, String? foreignSourceName}) async {
+    var document = await dioGetAndParse(anime.animeUrl);
+    if (document == null) {
       return anime;
     }
-    Response response = result.data;
-    var document = parse(response.data);
+
     var animeInfo = document.getElementsByClassName("sinfo")[0];
     String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
     // str内容：
@@ -118,16 +117,15 @@ class ClimbYhdm extends Climb {
   }
 
   // 目录页和搜索页的结果一致，只是链接不一样，共用爬取片段
-  static Future<List<Anime>> _climbOfyhdm(String baseUrl, String url,
-      {String sourceName = "樱花动漫"}) async {
-    List<Anime> animes = [];
-    Result result = await DioPackage.get(url);
-    if (result.code != 200) {
-      showToast("$sourceName：${result.msg}");
+  Future<List<Anime>> _climbOfyhdm(String baseUrl, String url,
+      {String? foreignSourceName}) async {
+    var document =
+        await dioGetAndParse(url, foreignSourceName: foreignSourceName);
+    if (document == null) {
       return [];
     }
-    Response response = result.data;
-    var document = parse(response.data);
+
+    List<Anime> animes = [];
     var lpic = document.getElementsByClassName("lpic")[0];
     var lis = lpic.getElementsByTagName("li");
     for (var li in lis) {
@@ -158,13 +156,55 @@ class ClimbYhdm extends Climb {
 
   @override
   Future<List<Anime>> climbDirectory(AnimeFilter filter, PageParams pageParams,
-      {String? foreignBaseUrl, String sourceName = "樱花动漫"}) async {
+      {String? foreignBaseUrl, String? foreignSourceName}) async {
     String url =
         "${foreignBaseUrl ?? baseUrl}/list/?region=${filter.region}&year=${filter.year}&season=${filter.season}&status=${filter.status}&label=${filter.label}&order=${filter.order}&genre=${filter.category}";
     url = "$url&pageindex=${pageParams.pageIndex}";
 
     List<Anime> directory = await _climbOfyhdm(foreignBaseUrl ?? baseUrl, url,
-        sourceName: sourceName);
+        foreignSourceName: foreignSourceName);
     return directory;
+  }
+
+  @override
+  Future<List<WeekRecord>> climbWeeklyTable(int weekday,
+      {String? foreignBaseUrl, String? foreignSourceName}) async {
+    if (weekday <= 0 || weekday > 7) {
+      showToast("获取错误：weekday=$weekday");
+      return [];
+    }
+
+    String baseUrl = foreignBaseUrl ?? this.baseUrl;
+    var document = await dioGetAndParse(baseUrl);
+    if (document == null) {
+      return [];
+    }
+
+    List<WeekRecord> records = [];
+
+    var tlist = document.getElementsByClassName("tlist")[0];
+    var ul = tlist.getElementsByTagName("ul")[weekday - 1];
+    var lis = ul.getElementsByTagName("li");
+
+    // 第[0-9]{1,}集(\(完结\)){0,}
+    RegExp regExp = RegExp("第[0-9]{1,}集(\\(完结\\)){0,}");
+    for (var li in lis) {
+      var as = li.getElementsByTagName("a");
+
+      Anime anime = Anime(animeName: "");
+      anime.animeName = as[1].innerHtml;
+      anime.animeUrl = "$baseUrl${as[1].attributes["href"]}";
+
+      // 因为有些记录没有集数，只显示「完结」，所以改用info而非episodeNumber
+      // innerHtml的三种情况：
+      // 第16集(完结)
+      // 第5集
+      // 第16集<font color="#FF0000"> new</font>
+      String info = regExp.stringMatch(as[0].innerHtml).toString();
+
+      records.add(WeekRecord(anime: anime, info: info));
+    }
+
+    return records;
   }
 }

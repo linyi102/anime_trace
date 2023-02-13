@@ -1,34 +1,32 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
-
-import '../../models/params/page_params.dart';
-import '../dio_package.dart';
-import '../../models/params/result.dart';
 
 // 次元城动漫
 class ClimbCycdm extends Climb {
+  // 单例
+  static final ClimbCycdm _instance = ClimbCycdm._();
+  factory ClimbCycdm() => _instance;
+  ClimbCycdm._();
+
+  @override
   // String baseUrl = "https://www.cycacg.com";
-  String baseUrl = "https://www.cycdm01.top"; // 2022.10.27
+  String get baseUrl => "https://www.cycdm01.top"; // 2022.10.27
+  @override
+  String get sourceName => "次元城动漫";
 
   bool isMobile = true;
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
     Log.info("爬取动漫详细网址：${anime.animeUrl}");
-    Result result = await DioPackage.get(anime.animeUrl, isMobile: isMobile);
-    if (result.code != 200) {
-      if (showMessage) showToast("次元城动漫：${result.msg}");
+    var document = await dioGetAndParse(anime.animeUrl, isMobile: isMobile);
+    if (document == null) {
       return anime;
     }
-    Response response = result.data;
-
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     anime.animeEpisodeCnt = document
         .getElementsByClassName("anthology-list-box")[0]
@@ -74,15 +72,10 @@ class ClimbCycdm extends Climb {
     String url = baseUrl + "/search.html?wd=$keyword";
     List<Anime> climbAnimes = [];
 
-    Log.info("正在获取文档...");
-    Result result = await DioPackage.get(url, isMobile: isMobile);
-    if (result.code != 200) {
-      showToast("次元城动漫：${result.msg}");
+    var document = await dioGetAndParse(url, isMobile: isMobile);
+    if (document == null) {
       return [];
     }
-    Response response = result.data;
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     var coverElements = document.getElementsByClassName("lazy");
 

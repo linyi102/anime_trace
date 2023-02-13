@@ -39,7 +39,7 @@ class _DirectoryPageState extends State<DirectoryPage>
 
   late ClimbWebsite curWebsite;
 
-  final List<Climb> usableClimbs = [ClimbQuqi(), ClimbYhdm()];
+  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbQuqi()];
 
   late final RefreshController _refreshController;
 

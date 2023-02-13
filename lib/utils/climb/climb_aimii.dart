@@ -7,12 +7,20 @@ import '../../models/params/page_params.dart';
 
 // 艾米动漫
 class ClimbAimi extends Climb {
-  String baseUrl = "https://www.aimidm.com";
+  // 单例
+  static final ClimbAimi _instance = ClimbAimi._();
+  factory ClimbAimi() => _instance;
+  ClimbAimi._();
+
+  @override
+  String get baseUrl => "https://www.aimidm.com";
+  @override
+  String get sourceName => "艾米动漫";
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    anime = await ClimbOmofun()
-        .climbAnimeInfo(anime, showMessage: showMessage, sourceName: "艾米动漫");
+    anime = await ClimbOmofun().climbAnimeInfo(anime,
+        showMessage: showMessage, foreignSourceName: sourceName);
     return anime;
   }
 
@@ -20,7 +28,7 @@ class ClimbAimi extends Climb {
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = "$baseUrl/index.php/vod/search.html?wd=$keyword";
     List<Anime> climbAnimes = await ClimbOmofun().searchAnimeByKeyword(keyword,
-        url: url, foreignBaseUrl: baseUrl, sourceName: "艾米动漫");
+        url: url, foreignBaseUrl: baseUrl, foreignSourceName: sourceName);
     return climbAnimes;
   }
 

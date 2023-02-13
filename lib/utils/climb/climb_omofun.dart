@@ -1,14 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../models/params/page_params.dart';
 
 class ClimbOmofun extends Climb {
   // 单例
@@ -16,28 +11,28 @@ class ClimbOmofun extends Climb {
   factory ClimbOmofun() => _instance;
   ClimbOmofun._();
 
-  String baseUrl = "https://omofun.tv";
+  @override
+  String get baseUrl => "https://omofun.tv";
+
+  @override
+  String get sourceName => "OmoFun";
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {String url = "",
       String foreignBaseUrl = "",
-      String sourceName = "OmoFun"}) async {
+      String? foreignSourceName}) async {
     if (url.isEmpty) {
       // 如果没有传入url，则说明访问的是omofun。如果url非空，则说明是同类型网站，直接使用传入的url
       url = baseUrl + "/vod/search.html?wd=$keyword";
     }
     List<Anime> climbAnimes = [];
 
-    Log.info("正在获取文档...");
-    Result result = await DioPackage.get(url);
-    if (result.code != 200) {
-      showToast("$sourceName：${result.msg}");
+    var document =
+        await dioGetAndParse(url, foreignSourceName: foreignSourceName);
+    if (document == null) {
       return [];
     }
-    Response response = result.data;
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     var elements = document.getElementsByClassName("lazy lazyload");
 
@@ -92,17 +87,13 @@ class ClimbOmofun extends Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime,
-      {bool showMessage = true, String sourceName = "OmoFun"}) async {
+      {bool showMessage = true, String? foreignSourceName}) async {
     Log.info("爬取动漫详细网址：${anime.animeUrl}");
-    Result result = await DioPackage.get(anime.animeUrl);
-    if (result.code != 200) {
-      if (showMessage) showToast("$sourceName：${result.msg}");
+    var document = await dioGetAndParse(anime.animeUrl,
+        foreignSourceName: foreignSourceName);
+    if (document == null) {
       return anime;
     }
-    Response response = result.data;
-
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     List elements;
     if ((elements = document.getElementsByTagName("small")).length >= 2) {

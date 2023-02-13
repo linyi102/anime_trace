@@ -66,6 +66,7 @@ class AnimeController extends GetxController {
     notes.clear();
     mapSelected.clear();
     multiSelected.value = false;
+    rateNoteCount = 0;
   }
 
   // 取消收藏时需要重置动漫：清空集信息、笔记、标签等等
@@ -139,7 +140,7 @@ class AnimeController extends GetxController {
   }
 
   // 获取评价数量
-  void acqRateNoteCount() async {
+  void loadRateNoteCount() async {
     if (isCollected) {
       rateNoteCount = await NoteDao.getRateNoteCountByAnimeId(anime.animeId);
     }

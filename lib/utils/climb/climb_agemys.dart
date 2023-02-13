@@ -1,33 +1,33 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbAgemys extends Climb {
+  // 单例
+  static final ClimbAgemys _instance = ClimbAgemys._();
+  factory ClimbAgemys() => _instance;
+  ClimbAgemys._();
+
   // String baseUrl = "https://www.agemys.cc";
-  String baseUrl = "https://www.agemys.net"; // 2022.10.27
+  @override
+  String get baseUrl => "https://www.agemys.net"; // 2022.10.27
+
+  @override
+  String get sourceName => "AGE动漫";
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {bool showMessage = true}) async {
     String url = baseUrl + "/search?query=$keyword";
-    List<Anime> climbAnimes = [];
 
-    Log.info("正在获取文档...");
-    Result result = await DioPackage.get(url);
-    if (result.code != 200) {
-      if (showMessage) showToast("AGE动漫：${result.msg}");
+    var document = await dioGetAndParse(url);
+    if (document == null) {
       return [];
     }
-    Response response = result.data;
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
+    List<Anime> climbAnimes = [];
     var elements = document.getElementsByClassName("cell_poster");
 
     for (var element in elements) {

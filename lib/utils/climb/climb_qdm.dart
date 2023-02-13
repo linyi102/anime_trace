@@ -1,14 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
-
-import '../dio_package.dart';
-import '../log.dart';
-import '../../models/params/result.dart';
 
 class ClimbQdm extends Climb {
   // 单例
@@ -16,22 +10,21 @@ class ClimbQdm extends Climb {
   factory ClimbQdm() => _instance;
   ClimbQdm._();
 
-  String baseUrl = "https://www.qdm66.com";
+  @override
+  String get baseUrl => "https://www.qdm66.com";
+
+  @override
+  String get sourceName => "趣动漫";
 
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl + "/search/-------------.html?wd=$keyword";
     List<Anime> climbAnimes = [];
 
-    Log.info("正在获取文档...");
-    Result result = await DioPackage.get(url);
-    if (result.code != 200) {
-      showToast("趣动漫：${result.msg}");
+    var document = await dioGetAndParse(url);
+    if (document == null) {
       return [];
     }
-    Response response = result.data;
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     var coverElements = document.getElementsByClassName("myui-vodlist__thumb");
     var nameElements = document.getElementsByClassName("searchkey");
@@ -57,16 +50,10 @@ class ClimbQdm extends Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    Log.info("爬取动漫详细网址：${anime.animeUrl}");
-    Result result = await DioPackage.get(anime.animeUrl);
-    if (result.code != 200) {
-      if (showMessage) showToast("趣动漫：${result.msg}");
+    var document = await dioGetAndParse(anime.animeUrl);
+    if (document == null) {
       return anime;
     }
-    Response response = result.data;
-
-    var document = parse(response.data);
-    Log.info("获取文档成功√，正在解析...");
 
     // 获取封面
     anime.animeCoverUrl = document
@@ -130,8 +117,7 @@ class ClimbQdm extends Climb {
 
   @override
   Future<List<Anime>> climbDirectory(
-      AnimeFilter filter, PageParams pageParams) {
-    // TODO: implement climbDirectory
-    throw UnimplementedError();
+      AnimeFilter filter, PageParams pageParams) async {
+    return [];
   }
 }

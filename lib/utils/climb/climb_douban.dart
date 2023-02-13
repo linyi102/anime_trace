@@ -1,28 +1,28 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:html/parser.dart';
 import 'package:oktoast/oktoast.dart';
 
-import '../../models/params/page_params.dart';
-
 class ClimbDouban extends Climb {
-  String baseUrl = "https://www.douban.com";
+  // 单例
+  static final ClimbDouban _instance = ClimbDouban._();
+  factory ClimbDouban() => _instance;
+  ClimbDouban._();
+
+  @override
+  String get baseUrl => "https://www.douban.com";
+  @override
+  String get sourceName => "豆瓣";
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    Result result = await DioPackage.get(anime.animeUrl);
-    if (result.code != 200) {
-      if (showMessage) showToast("豆瓣：${result.msg}");
+    var document = await dioGetAndParse(anime.animeUrl);
+    if (document == null) {
       return anime;
     }
 
-    Response response = result.data;
-    var document = parse(response.data);
     var mainpicElement = document.getElementById("mainpic");
     anime.animeCoverUrl =
         mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
@@ -77,15 +77,12 @@ class ClimbDouban extends Climb {
 
     keyword = keyword.replaceAll(" ", "+"); // 网页搜索时输入空格会被替换为加号
     String url = "$baseUrl/search?q=$keyword";
-    Result result = await DioPackage.get(url);
 
-    if (result.code != 200) {
-      if (showMessage) showToast("豆瓣：${result.msg}");
-      return animes;
+    var document = await dioGetAndParse(url);
+    if (document == null) {
+      return [];
     }
 
-    Response response = result.data;
-    var document = parse(response.data);
     // 只获取第一个<div class="result-list">，也就是相关豆瓣内容，后面两个都是相关豆瓣用户和相关日记
     var h2Elements = document.getElementsByTagName("h2");
     bool existResult = false;
@@ -125,7 +122,7 @@ class ClimbDouban extends Climb {
 
   @override
   Future<List<Anime>> climbDirectory(
-      AnimeFilter filter, PageParams pageParams) {
-    throw UnimplementedError();
+      AnimeFilter filter, PageParams pageParams) async {
+    return [];
   }
 }

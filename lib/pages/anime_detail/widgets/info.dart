@@ -36,7 +36,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   @override
   void initState() {
     super.initState();
-    widget.animeController.acqRateNoteCount();
+    widget.animeController.loadRateNoteCount();
   }
 
   @override
@@ -134,7 +134,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                     builder: (context) => AnimeRateListPage(_anime)))
                 .then((value) async {
               // 更新评价数量
-              widget.animeController.acqRateNoteCount();
+              widget.animeController.loadRateNoteCount();
             });
           },
         );
