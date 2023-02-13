@@ -35,7 +35,7 @@ class ErrorFormatUtil {
             "HandshakeException: Connection terminated during handshake") {
           msg = "连接失败";
         } else if (childE is SocketException) {
-          msg = "网络无连接,请检查网络设置";
+          msg = "网络无连接，请检查网络设置";
           if (childE.osError.toString().contains("OS Error: 信号灯超时时间已到")) {
             msg = "信号灯超时";
           }

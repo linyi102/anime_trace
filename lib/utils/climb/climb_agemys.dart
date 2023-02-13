@@ -89,6 +89,7 @@ class ClimbAgemys extends Climb {
     // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
     List<Anime> climbAnimes =
         await searchAnimeByKeyword(anime.animeName, showMessage: showMessage);
+
     for (var climbAnime in climbAnimes) {
       if (climbAnime.animeUrl == anime.animeUrl) {
         // 不能直接赋值，因为有id等信息
@@ -100,7 +101,7 @@ class ClimbAgemys extends Climb {
     }
     Log.info("解析完毕√");
     Log.info(anime.toString());
-    if (showMessage) showToast("更新完毕");
+    if (climbAnimes.isNotEmpty && showMessage) showToast("更新完毕");
 
     return anime;
   }
