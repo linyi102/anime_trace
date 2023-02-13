@@ -49,8 +49,8 @@ class Climb {
       return null;
     }
     Response response = result.data;
+    Log.info("$sourceName：获取文档成功√");
     Document document = parse(response.data);
-    Log.info("$sourceName：获取文档成功√，正在解析...");
     return document;
   }
 }

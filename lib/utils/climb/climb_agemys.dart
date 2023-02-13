@@ -1,4 +1,6 @@
+import 'package:flutter_test_future/models/age_record.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:oktoast/oktoast.dart';
@@ -81,28 +83,68 @@ class ClimbAgemys extends Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    // Log.info("正在获取文档...");
-    // var response = await Dio().get(anime.animeUrl);
-    // var document = parse(response.data);
-    // Log.info("获取文档成功√，正在解析...");
-    // 因为该动漫网址集数不容易解析，但又因为查询页面中很多信息都已经写上了，还包括了容易解析的集信息
-    // 所以根据该动漫名查询，然后根据动漫地址找到动漫并更新信息
-    List<Anime> climbAnimes =
-        await searchAnimeByKeyword(anime.animeName, showMessage: showMessage);
-
-    for (var climbAnime in climbAnimes) {
-      if (climbAnime.animeUrl == anime.animeUrl) {
-        // 不能直接赋值，因为有id等信息
-        anime.animeEpisodeCnt = climbAnime.animeEpisodeCnt;
-        anime.playStatus = climbAnime.playStatus;
-        anime.animeCoverUrl = climbAnime.animeCoverUrl;
-        break;
-      }
+    var document = await dioGetAndParse(anime.animeUrl);
+    if (document == null) {
+      return anime;
     }
-    Log.info("解析完毕√");
-    Log.info(anime.toString());
-    if (climbAnimes.isNotEmpty && showMessage) showToast("更新完毕");
+
+    var detailImformValues =
+        document.getElementsByClassName("detail_imform_value");
+    anime.area = detailImformValues[0].innerHtml;
+    anime.category = detailImformValues[1].innerHtml;
+    anime.nameOri = detailImformValues[2].innerHtml;
+    anime.nameAnother = detailImformValues[3].innerHtml;
+    anime.authorOri = detailImformValues[4].innerHtml;
+    anime.productionCompany = detailImformValues[5].innerHtml;
+    anime.premiereTime = detailImformValues[6].innerHtml;
+    anime.playStatus = detailImformValues[7].innerHtml;
+
+    anime.animeDesc = document
+        .getElementsByClassName("detail_imform_desc_pre")[0]
+        .getElementsByTagName("p")[0]
+        .innerHtml;
+    anime.animeCoverUrl =
+        document.getElementsByClassName("poster")[0].attributes["src"]!;
+
+    if (showMessage) showToast("更新完毕");
 
     return anime;
+  }
+
+  @override
+  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
+    var document = await dioGetAndParse(baseUrl);
+    if (document == null) {
+      return [];
+    }
+
+    List<WeekRecord> records = [];
+    String script = document
+        .getElementById("new_anime_page")!
+        .nextElementSibling!
+        .innerHtml;
+
+    // \[.*\]
+    RegExp regExp = RegExp("\\[.*\\]");
+    String jsonStr = regExp.stringMatch(script).toString();
+    List<AgeRecord> ageRecords = ageRecordFromJson(jsonStr);
+    for (var ageRecord in ageRecords) {
+      // 跳过不是该天的
+      if (ageRecord.wd != weekday) continue;
+
+      Anime anime = Anime(animeName: "");
+      anime.animeName = ageRecord.name;
+      anime.animeUrl = "$baseUrl/detail/${ageRecord.id}";
+
+      String info = ageRecord.namefornew;
+      if (ageRecord.isnew) {
+        info += " new!";
+      }
+
+      WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
+      records.add(weekRecord);
+    }
+
+    return records;
   }
 }

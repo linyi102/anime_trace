@@ -169,11 +169,6 @@ class ClimbYhdm extends Climb {
   @override
   Future<List<WeekRecord>> climbWeeklyTable(int weekday,
       {String? foreignBaseUrl, String? foreignSourceName}) async {
-    if (weekday <= 0 || weekday > 7) {
-      showToast("获取错误：weekday=$weekday");
-      return [];
-    }
-
     String baseUrl = foreignBaseUrl ?? this.baseUrl;
     var document = await dioGetAndParse(baseUrl);
     if (document == null) {
@@ -186,8 +181,8 @@ class ClimbYhdm extends Climb {
     var ul = tlist.getElementsByTagName("ul")[weekday - 1];
     var lis = ul.getElementsByTagName("li");
 
-    // 第[0-9]{1,}集(\(完结\)){0,}
-    RegExp regExp = RegExp("第[0-9]{1,}集(\\(完结\\)){0,}");
+    // 第[0-9]{1,}集(\(完结\)){0,}(.*new){0,}
+    RegExp regExp = RegExp("第[0-9]{1,}集(\\(完结\\)){0,}(.*new){0,}");
     for (var li in lis) {
       var as = li.getElementsByTagName("a");
 
@@ -195,12 +190,14 @@ class ClimbYhdm extends Climb {
       anime.animeName = as[1].innerHtml;
       anime.animeUrl = "$baseUrl${as[1].attributes["href"]}";
 
-      // 因为有些记录没有集数，只显示「完结」，所以改用info而非episodeNumber
       // innerHtml的三种情况：
       // 第16集(完结)
       // 第5集
       // 第16集<font color="#FF0000"> new</font>
       String info = regExp.stringMatch(as[0].innerHtml).toString();
+      if (info.contains("new")) {
+        info = info.replaceFirst("<font color=\"#FF0000\"> new", " new!");
+      }
 
       records.add(WeekRecord(anime: anime, info: info));
     }
