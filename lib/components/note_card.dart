@@ -107,8 +107,7 @@ class _NoteCardState extends State<NoteCard> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: ThemeUtil.smallScaleFactor,
-                // textAlign: TextAlign.right,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                // style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -190,7 +189,7 @@ class _NoteCardState extends State<NoteCard> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  content: const Text("确定删除笔记吗？"),
+                                  content: const Text("确认删除笔记吗？"),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -201,7 +200,7 @@ class _NoteCardState extends State<NoteCard> {
                                       },
                                       child: const Text("取消"),
                                     ),
-                                    ElevatedButton(
+                                    TextButton(
                                       onPressed: () async {
                                         // 关闭删除确认对话框和更多菜单对话框
                                         Navigator.of(context)
@@ -216,7 +215,10 @@ class _NoteCardState extends State<NoteCard> {
                                           showToast("删除失败！");
                                         }
                                       },
-                                      child: const Text("确定"),
+                                      child: const Text(
+                                        "删除",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     )
                                   ],
                                 );

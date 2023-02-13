@@ -129,6 +129,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
   _buildSearchBar(TextEditingController inputController) {
     return SearchAppBar(
+      useModernStyle: false,
       autofocus: autofocus,
       inputController: inputController,
       onTapClear: () {

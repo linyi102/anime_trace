@@ -19,14 +19,14 @@ import '../../utils/file_util.dart';
 import '../../utils/log.dart';
 import '../../utils/sqlite_util.dart';
 
-class BackupAndRestore extends StatefulWidget {
-  const BackupAndRestore({Key? key}) : super(key: key);
+class BackupAndRestorePage extends StatefulWidget {
+  const BackupAndRestorePage({Key? key}) : super(key: key);
 
   @override
-  _BackupAndRestoreState createState() => _BackupAndRestoreState();
+  _BackupAndRestorePageState createState() => _BackupAndRestorePageState();
 }
 
-class _BackupAndRestoreState extends State<BackupAndRestore> {
+class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   String autoBackupWebDav = SPUtil.getBool("auto_backup_webdav") ? "开启" : "关闭";
   String autoBackupLocal = SPUtil.getBool("auto_backup_local") ? "开启" : "关闭";
   int autoBackupWebDavNumber =
@@ -324,17 +324,15 @@ class _BackupAndRestoreState extends State<BackupAndRestore> {
 
     List<Widget> listTextFields = [];
     for (int i = 0; i < keys.length; ++i) {
-      listTextFields.add(
-        TextField(
-          obscureText: labelTexts[i] == "密码"
-              ? true
-              : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
-          controller: controllers[i]
-            ..text = SPUtil.getString(keys[i], defaultValue: defaultContent[i]),
-          decoration: InputDecoration(labelText: labelTexts[i]),
-          // autofillHints: autofillHintsList[i],
-        ),
-      );
+      listTextFields.add(TextField(
+        obscureText: labelTexts[i] == "密码"
+            ? true
+            : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
+        controller: controllers[i]
+          ..text = SPUtil.getString(keys[i], defaultValue: defaultContent[i]),
+        decoration: InputDecoration(labelText: labelTexts[i]),
+        // autofillHints: autofillHintsList[i],
+      ));
     }
     showDialog(
       context: context,

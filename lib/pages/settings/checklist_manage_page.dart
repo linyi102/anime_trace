@@ -184,7 +184,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                     Navigator.of(context).pop();
                   },
                   child: const Text("取消")),
-              ElevatedButton(
+              TextButton(
                   onPressed: () async {
                     if (await SqliteUtil.getAnimesCntBytagName(tagName) > 0) {
                       showToast("当前清单存在动漫，无法删除");
@@ -195,7 +195,10 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: const Text("确认")),
+                  child: const Text(
+                    "确认",
+                    style: TextStyle(color: Colors.red),
+                  )),
             ],
           );
         });

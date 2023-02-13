@@ -4,6 +4,8 @@ import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
+import 'package:flutter_test_future/utils/file_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:webdav_client/webdav_client.dart';
@@ -60,7 +62,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
           loadOk: _loadOk,
           destWidget: _buildFileList(),
           specifiedLoadingWidget:
-              const Center(child: RefreshProgressIndicator()),
+              const Center(child: CircularProgressIndicator()),
         ));
   }
 
@@ -78,7 +80,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     );
   }
 
-  ListTile _buildFileItem(BuildContext context, int index) {
+  _buildFileItem(BuildContext context, int index) {
     Log.info("index=$index");
     String fileName = "";
     File file = files[index];
@@ -91,13 +93,12 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
 
     // KB
     // ignore: non_constant_identifier_names
-    num KBSize = (file.size ?? 0) / 1024;
+    String KBSize = FileUtil.getReadableFileSize(file.size ?? 0);
     String backupWay = file.path!.contains("automatic") ? "自动备份" : "手动备份";
 
     return ListTile(
       title: Text("${index + 1}. $fileName"),
-      subtitle: Text(
-          "$createdTime ${KBSize.toStringAsFixed(3)}KB $backupWay"), // 保留3位小数
+      subtitle: Text("$createdTime $KBSize $backupWay"),
       trailing: IconButton(
           onPressed: () => _showDeleteDialog(context, file, index),
           icon: const Icon(Icons.delete_outline)),
@@ -118,7 +119,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                     Navigator.of(dialogContext).pop();
                   },
                   child: const Text("取消")),
-              ElevatedButton(
+              TextButton(
                   onPressed: () {
                     if (file.path != null) {
                       BackupUtil.deleteRemoteFile(file.path!);
@@ -128,7 +129,10 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                     files.removeAt(index);
                     setState(() {});
                   },
-                  child: const Text("确认")),
+                  child: const Text(
+                    "删除",
+                    style: TextStyle(color: Colors.red),
+                  )),
             ],
           );
         });

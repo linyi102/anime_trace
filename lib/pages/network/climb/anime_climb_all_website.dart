@@ -256,6 +256,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   SearchAppBar _buildSearchAppBar() {
     return SearchAppBar(
       hintText: ismigrate ? "迁移动漫" : "搜索动漫",
+      useModernStyle: false,
       inputController: inputKeywordController..text,
       onTapClear: () => inputKeywordController.clear(),
       onEditingComplete: () {
@@ -318,7 +319,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       child: const Center(
         // 固定宽高的指示器
         child: SizedBox(
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(),
         ),
       ),
     );

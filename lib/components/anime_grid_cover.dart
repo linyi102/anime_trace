@@ -276,7 +276,7 @@ class AnimeGridCover extends StatelessWidget {
                 color: color,
                 shadows: const [
                   Shadow(blurRadius: 3, color: Colors.black),
-                  Shadow(blurRadius: 3, color: Colors.black),
+                  // Shadow(blurRadius: 3, color: Colors.black),
                 ],
               ));
         } else {

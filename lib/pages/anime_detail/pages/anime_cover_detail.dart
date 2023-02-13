@@ -27,7 +27,7 @@ class AnimeCoverDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: _buildAppbar(context),
+      appBar: _buildAppbar(context),
       body: Stack(
         children: [
           Center(
@@ -38,15 +38,15 @@ class AnimeCoverDetail extends StatelessWidget {
                     return _buildAnimeCover(
                         animeController.anime.animeCoverUrl);
                   })),
-          Positioned(
-            // bottom: 0,
-            top: 0,
-            child: SizedBox(
-              height: kToolbarHeight,
-              width: MediaQuery.of(context).size.width,
-              child: _buildAppbar(context, enableOpacity: true),
-            ),
-          ),
+          // Positioned(
+          //   // bottom: 0,
+          //   top: 0,
+          //   child: SizedBox(
+          //     height: MediaQuery.of(context).padding.top + kToolbarHeight,
+          //     width: MediaQuery.of(context).size.width,
+          //     child: _buildAppbar(context, enableOpacity: true),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -56,7 +56,7 @@ class AnimeCoverDetail extends StatelessWidget {
     return AppBar(
       backgroundColor: enableOpacity
           // 获取当前context对应的Element的的scaffold背景，并调整不透明度
-          ? Theme.of(context).scaffoldBackgroundColor.withOpacity(0.4)
+          ? Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6)
           : null,
       actions: [
         _buildInfoButton(context),

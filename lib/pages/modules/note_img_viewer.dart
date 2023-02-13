@@ -249,9 +249,6 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
   _showDialogAboutImageAttributes() {
     File file = File(ImageUtil.getAbsoluteNoteImagePath(
         widget.relativeLocalImages[currentIndex].path));
-    if (!file.existsSync()) {
-      return;
-    }
 
     return showDialog(
         context: context,
@@ -278,14 +275,15 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                         widget.relativeLocalImages[currentIndex].path,
                         textScaleFactor: 0.9,
                       )),
-                  ListTile(
-                      contentPadding: EdgeInsetsDirectional.zero,
-                      dense: true,
-                      title: const Text("图片大小"),
-                      subtitle: Text(
-                        FileUtil.getReadableFileSize(file.lengthSync()),
-                        textScaleFactor: 0.9,
-                      )),
+                  if (file.existsSync())
+                    ListTile(
+                        contentPadding: EdgeInsetsDirectional.zero,
+                        dense: true,
+                        title: const Text("图片大小"),
+                        subtitle: Text(
+                          FileUtil.getReadableFileSize(file.lengthSync()),
+                          textScaleFactor: 0.9,
+                        )),
                 ],
               ),
             ),

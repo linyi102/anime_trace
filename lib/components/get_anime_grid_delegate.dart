@@ -39,7 +39,7 @@ SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
       crossAxisSpacing: 3,
       // 竖轴距离
       mainAxisSpacing: 6,
-      // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
+      // 每个网格的比例
       childAspectRatio: childAspectRatio,
     );
   } else {
@@ -50,9 +50,8 @@ SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
       crossAxisSpacing: 3,
       // 竖轴距离
       mainAxisSpacing: 6,
-      // 每个网格的比例(如果不显示名字或名字显示在封面内部，则使用31/45，否则31/56)
-      childAspectRatio:
-          _animeDisplayController.showNameBelowCover ? 31 / 56 : 31 / 43,
+      // 每个网格的比例
+      childAspectRatio: childAspectRatio,
     );
   }
 }

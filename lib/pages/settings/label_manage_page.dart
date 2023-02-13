@@ -160,7 +160,7 @@ class LabelManagePage extends StatelessWidget {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              title: const Text("确定删除吗？"),
+                              title: const Text("确认删除吗？"),
                               content: Text("要删除的标签：${label.name}"),
                               actions: [
                                 TextButton(
@@ -168,7 +168,7 @@ class LabelManagePage extends StatelessWidget {
                                       Navigator.pop(context);
                                     },
                                     child: const Text("取消")),
-                                ElevatedButton(
+                                TextButton(
                                     onPressed: () {
                                       LabelDao.delete(label.id);
                                       labelsController.labels.removeAt(index);
@@ -180,7 +180,10 @@ class LabelManagePage extends StatelessWidget {
                                       }
                                       Navigator.pop(context);
                                     },
-                                    child: const Text("确定")),
+                                    child: const Text(
+                                      "删除",
+                                      style: TextStyle(color: Colors.red),
+                                    )),
                               ],
                             ));
                   },

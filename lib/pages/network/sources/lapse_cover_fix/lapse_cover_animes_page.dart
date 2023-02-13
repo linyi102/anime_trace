@@ -57,8 +57,8 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text("修复封面", style: TextStyle(fontWeight: FontWeight.w600)),
+        title: Text("修复封面 (${lapseCoverController.lapseCoverAnimes.length})",
+            style: TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           // 只有当全部检测完毕后，才能刷新
           if (lapseCoverController.loadOk) _buildFixButton(),
@@ -146,12 +146,17 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
   _buildFixButton() {
     return IconButton(
-      onPressed: () {
-        if (mounted) {
-          setState(() {
-            lapseCoverController.recovering = true;
-          });
+      onPressed: () async {
+        // 如果在恢复时再次点击，则直接返回
+        if (lapseCoverController.recovering) {
+          // 必须放在点击事件内部，否则重绘时就会执行此处
+          showToast("正在恢复中...");
+          return;
         }
+
+        setState(() {
+          lapseCoverController.recovering = true;
+        });
 
         BuildContext? loadingContext;
         showDialog(
@@ -161,30 +166,48 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
               loadingContext = context; // 将对话框context赋值给变量，用于任务完成后完毕
               return const LoadingDialog("重新获取封面中...");
             });
+
+        int limit = 5, curCnt = 0;
+        // 同时恢复。要恢复的图片很多时，显示加载圈时卡顿
+        // 还有一种方法是每5个每5个去更新封面
         List<Future> futures = [];
         for (var anime in lapseCoverController.lapseCoverAnimes) {
           futures.add(
               ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
                   .then((value) {
+            SqliteUtil.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
             if (mounted) {
               setState(() {
                 anime = value;
               });
             }
-            SqliteUtil.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
           }));
-        }
-        Future.wait(futures).then((value) async {
-          await Future.delayed(
-              const Duration(milliseconds: 200)); // 避免任务很快结束，没有关闭加载框
-          if (loadingContext != null) Navigator.pop(loadingContext!);
-          showToast("封面恢复完毕");
-          if (mounted) {
-            setState(() {
-              lapseCoverController.recovering = false;
-            });
+
+          curCnt++;
+          if (curCnt > limit) {
+            // 超过限制，先等待上一组全部更新完毕后，再恢复下一组
+            await Future.wait(futures);
+            // 重置
+            futures.clear();
+            curCnt = 0;
           }
-        });
+        }
+        // 最后一组不足5个
+        if (futures.isNotEmpty) {
+          await Future.wait(futures);
+          futures.clear();
+          curCnt = 0;
+        }
+
+        // 提示恢复完毕，并关闭加载框
+        showToast("封面恢复完毕");
+        lapseCoverController.recovering =
+            false; // 可以进入详情页或再次修复，因为是点击事件中用到，所以不需要重绘
+        await Future.delayed(
+            const Duration(milliseconds: 200)); // 避免任务很快结束，没有关闭加载框
+        if (mounted) {
+          if (loadingContext != null) Navigator.pop(loadingContext!);
+        }
       },
       icon: const Icon(Icons.auto_fix_high),
       tooltip: "恢复失效封面",

@@ -171,5 +171,5 @@ class ThemeUtil {
 
   // wrap
   static double wrapSacing = 2.0;
-  static double wrapRunSpacing = 2.0;
+  static double wrapRunSpacing = 0.0;
 }

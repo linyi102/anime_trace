@@ -217,7 +217,7 @@ class _SettingPageState extends State<SettingPage> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
-                  return const BackupAndRestore();
+                  return const BackupAndRestorePage();
                 },
               ),
             );
