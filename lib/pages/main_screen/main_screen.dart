@@ -1,16 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
+import 'package:flutter_test_future/pages/history/history_page.dart';
+import 'package:flutter_test_future/pages/network/network_page.dart';
+import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
+import 'package:flutter_test_future/pages/settings/settings_page.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../anime_collection/anime_list_page.dart';
-import '../history/history_page.dart';
-import '../network/network_page.dart';
-import '../note_list/note_list_page.dart';
-import '../settings/settings_page.dart';
 
 class MainTab {
   String name;
@@ -43,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   bool showBottomBarLabel = true;
+  bool expandSideBar = SpProfile.getExpandSideBar();
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +60,7 @@ class _MainScreenState extends State<MainScreen> {
                 child: Row(
                   children: [
                     // 侧边栏
-                    size.width > 800
-                        ? SizedBox(width: 150, child: _buildSideBar())
-                        : SizedBox(
-                            width: 60,
-                            child: _buildSideBar(expandSideBar: false)),
+                    _buildSideBar(),
                     // 主体
                     Expanded(child: _mainTabs[_selectedTabIdx].page)
                   ],
@@ -86,49 +83,111 @@ class _MainScreenState extends State<MainScreen> {
     return false;
   }
 
-  _buildSideBar({bool expandSideBar = true}) {
-    return Obx(() => Drawer(
-          backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-          // 缩小界面后可以滚动，防止溢出
-          child: SingleChildScrollView(
-            child: Column(
-              children: _buildSideMenu(expandSideBar: expandSideBar),
+  _buildSideBar() {
+    return AnimatedContainer(
+      width: expandSideBar ? 150 : 70,
+      duration: const Duration(milliseconds: 200),
+      child: Obx(() => Drawer(
+            backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
+            // 缩小界面后可以滚动，防止溢出
+            child: CustomScrollView(
+              slivers: [
+                // SliverFillRemaining作用：在Column中使用Spacer
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: _buildSideMenu(),
+                  ),
+                )
+              ],
             ),
-          ),
-        ));
+          )),
+    );
   }
 
-  _buildSideMenu({bool expandSideBar = true}) {
+  _buildSideMenu() {
     List<Widget> widgets = [];
 
     widgets.add(SizedBox(
       height: 100,
-      child: DrawerHeader(child: Image.asset("assets/images/logo.png")),
+      child: DrawerHeader(
+        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
+        child: Image.asset("assets/images/logo.png"),
+      ),
     ));
     for (int i = 0; i < _mainTabs.length; ++i) {
       var mainTab = _mainTabs[i];
-      widgets.add(InkWell(
-        // 长按时的扩散效果设置为透明(取消扩散)
-        splashColor: Colors.transparent,
-        // 点击时的高亮效果设置为透明
-        highlightColor: Colors.transparent,
-        // 为InkWell指定onTap，而不是子组件ListTile
-        onTap: () {
-          _selectedTabIdx = i;
-          setState(() {});
-        },
-        child: ListTile(
-          // 图标和标题距离
-          // horizontalTitleGap: 0,
-          selected: _selectedTabIdx == i,
-          enableFeedback: false,
-          title: expandSideBar
-              ? Text(mainTab.name)
-              : Icon(mainTab.iconData, size: 20),
-          leading: expandSideBar ? Icon(mainTab.iconData, size: 20) : null,
+
+      bool isSelected = _selectedTabIdx == i;
+      widgets.add(
+        MaterialButton(
+          padding: EdgeInsets.zero,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          onPressed: () {
+            _selectedTabIdx = i;
+            setState(() {});
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? Theme.of(context).hoverColor.withAlpha(20)
+                  : null,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+            child: Row(
+                mainAxisAlignment: expandSideBar
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
+                children: [
+                  Icon(mainTab.iconData),
+                  // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
+                  if (expandSideBar) const Spacer(flex: 2),
+                  if (expandSideBar)
+                    Expanded(
+                      flex: 4,
+                      child: Text(
+                        mainTab.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ]),
+          ),
         ),
-      ));
+      );
     }
+
+    widgets.add(const Spacer());
+    widgets.add(const Divider());
+    widgets.add(Row(
+      mainAxisAlignment:
+          expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(100),
+          onTap: () {
+            SpProfile.turnExpandSideBar();
+            setState(() {
+              expandSideBar = !expandSideBar;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            margin: const EdgeInsets.all(8),
+            child: Icon(
+              expandSideBar
+                  ? Icons.arrow_back_ios_new
+                  : Icons.arrow_forward_ios,
+              color: Colors.black54,
+            ),
+          ),
+        )
+      ],
+    ));
 
     return widgets;
   }

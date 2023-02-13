@@ -69,8 +69,12 @@ class SpProfile {
   }
 
   //  Windows侧边栏展开或收缩
-  static getExpandSideBar() {
+  static bool getExpandSideBar() {
     return SPUtil.getBool("expandSideBar", defaultValue: false);
+  }
+
+  static turnExpandSideBar() {
+    return SPUtil.setBool("expandSideBar", !getExpandSideBar());
   }
 
   // 设置模糊伽马值
