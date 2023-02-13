@@ -14,7 +14,6 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:fluttericon/entypo_icons.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 

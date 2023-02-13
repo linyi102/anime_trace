@@ -5,9 +5,13 @@ import 'package:flutter_test_future/components/rounded_sheet.dart';
 /// 动漫详情页ui和集排序设置
 class AnimeDetailUISettingPage extends StatefulWidget {
   const AnimeDetailUISettingPage(
-      {required this.sortPage, required this.uiPage, super.key});
+      {required this.sortPage,
+      required this.uiPage,
+      this.transparent = false,
+      super.key});
   final Widget sortPage;
   final Widget uiPage;
+  final bool transparent; // 拖动封面背景高度时添加透明度
 
   @override
   State<AnimeDetailUISettingPage> createState() =>
@@ -34,13 +38,16 @@ class _AnimeDetailUISettingPageState extends State<AnimeDetailUISettingPage>
 
   @override
   Widget build(BuildContext context) {
-    return RoundedSheet(
-        title: CommonBottomTabBar(
-            tabController: tabController,
-            tabs: tabStr.map((e) => Tab(text: e)).toList()),
-        body: TabBarView(controller: tabController, children: [
-          widget.sortPage,
-          widget.uiPage,
-        ]));
+    return Opacity(
+      opacity: widget.transparent ? 0.4 : 1,
+      child: RoundedSheet(
+          title: CommonBottomTabBar(
+              tabController: tabController,
+              tabs: tabStr.map((e) => Tab(text: e)).toList()),
+          body: TabBarView(controller: tabController, children: [
+            widget.sortPage,
+            widget.uiPage,
+          ])),
+    );
   }
 }

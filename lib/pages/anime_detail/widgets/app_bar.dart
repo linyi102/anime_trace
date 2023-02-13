@@ -35,6 +35,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   Color? appBarIconColor = ThemeUtil.isDark ? Colors.white : null;
   // Color? appBarIconColor = Colors.white;
 
+  bool transparentBottomSheet = false;
+
   Anime get _anime => widget.animeController.anime;
 
   @override
@@ -235,16 +237,23 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       duration: const Duration(milliseconds: 200),
       bottomSheetColor: Colors.transparent,
       context: context,
+      // 拖动封面高度时，需要透明底部面板，同时原页面不要变暗
+      // [失效]因为是show，所以重绘时并不会重新弹出底部面板，原页面也就仍然是暗的
+      // isModal: transparentBottomSheet ? false : true,
+      // 解决方法是自己实现在原页面上层实现暗化页面，拖动时则不暗化。但这需要在整个页面而不是只在appbar上添加
+      // isModal: false,
       builder: (
         BuildContext context,
         ScrollController scrollController,
         double bottomSheetOffset,
       ) =>
           StatefulBuilder(
-              builder: (context, setBottomSheetState) =>
-                  AnimeDetailUISettingPage(
-                      sortPage: widget.animeController.buildSortPage(),
-                      uiPage: _buildUISettingPage(setBottomSheetState))),
+        builder: (context, setBottomSheetState) => AnimeDetailUISettingPage(
+          sortPage: widget.animeController.buildSortPage(),
+          uiPage: _buildUISettingPage(setBottomSheetState),
+          transparent: transparentBottomSheet,
+        ),
+      ),
     );
   }
 
@@ -319,17 +328,26 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   divisions: 30,
                   // 分成30个刻度
                   value: coverBgHeightRatio,
+                  onChangeStart: (value) {
+                    transparentBottomSheet = true;
+                    setBottomSheetState(() {});
+                    setState(() {});
+                  },
                   onChanged: (value) {
                     Log.info("拖动中，value=$value");
-                    coverBgHeightRatio = value;
 
+                    coverBgHeightRatio = value;
                     setBottomSheetState(() {});
                     setState(() {});
                   },
                   onChangeEnd: (value) {
-                    // 拖动结束后
+                    // 拖动结束后，保存
                     Log.info("拖动结束，value=$value");
                     SpProfile.setCoverBgHeightRatio(value);
+
+                    transparentBottomSheet = false;
+                    setBottomSheetState(() {});
+                    setState(() {});
                   },
                 ),
               ),
