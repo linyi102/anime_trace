@@ -37,57 +37,54 @@ class _WeeklyBarState extends State<WeeklyBar> {
   Widget build(BuildContext context) {
     Log.build(runtimeType);
 
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-        child: Row(
-          children: weekDateTimes.map((dateTime) {
-            // 周几
-            int weekday = dateTime.weekday;
-            // 是否被选中
-            bool isSelected = dateTime.weekday == selectedWeekday;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+      child: Row(
+        children: weekDateTimes.map((dateTime) {
+          // 周几
+          int weekday = dateTime.weekday;
+          // 是否被选中
+          bool isSelected = dateTime.weekday == selectedWeekday;
 
-            return Expanded(
-              child: MaterialButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                onPressed: () {
-                  Log.info("点击weekday: $weekday");
-                  setState(() {
-                    selectedWeekday = weekday;
-                  });
-                  if (widget.onChanged != null) {
-                    widget.onChanged!(weekday);
-                  }
-                },
-                child: Column(
-                  children: [
-                    // 显示周几
-                    Text(TimeShowUtil.getChineseWeekdayByNumber(weekday),
-                        style: const TextStyle(color: Colors.grey)),
-                    // 显示日期
-                    Container(
-                      height: 24,
-                      width: 24,
-                      child: Center(
-                          child: Text(
-                        dateTime.day == now.day ? "今" : "${dateTime.day}",
-                        style:
-                            TextStyle(color: isSelected ? Colors.white : null),
-                      )),
-                      decoration: isSelected
-                          ? BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: ThemeUtil.getPrimaryColor())
-                          : const BoxDecoration(),
-                    )
-                  ],
-                ),
+          return Expanded(
+            child: MaterialButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              onPressed: () {
+                Log.info("点击weekday: $weekday");
+                setState(() {
+                  selectedWeekday = weekday;
+                });
+                if (widget.onChanged != null) {
+                  widget.onChanged!(weekday);
+                }
+              },
+              child: Column(
+                children: [
+                  // 显示周几
+                  Text(TimeShowUtil.getChineseWeekdayByNumber(weekday),
+                      style: const TextStyle(color: Colors.grey)),
+                  // 显示日期
+                  Container(
+                    height: 24,
+                    width: 24,
+                    child: Center(
+                        child: Text(
+                      dateTime.day == now.day ? "今" : "${dateTime.day}",
+                      style: TextStyle(color: isSelected ? Colors.white : null),
+                    )),
+                    decoration: isSelected
+                        ? BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: ThemeUtil.getPrimaryColor())
+                        : const BoxDecoration(),
+                  )
+                ],
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
