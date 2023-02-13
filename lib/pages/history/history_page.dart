@@ -12,6 +12,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/utils/time_show_util.dart';
 
 enum HistoryLabel {
   year("年"),
@@ -197,8 +198,11 @@ class _HistoryPageState extends State<HistoryPage> {
                 // 卡片标题
                 ListTile(
                   minLeadingWidth: 0,
-                  title:
-                      Text(date, textScaleFactor: ThemeUtil.smallScaleFactor),
+                  title: Text(
+                    date.replaceAll("-", "/"),
+                    // textScaleFactor: ThemeUtil.smallScaleFactor,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   trailing: Text(
                     "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
                     textScaleFactor: 0.8,

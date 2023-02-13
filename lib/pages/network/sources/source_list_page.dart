@@ -119,7 +119,7 @@ class _SourceListPageState extends State<SourceListPage> {
       title: Text(
         title,
         // textScaleFactor: 1.2,
-        // style: const TextStyle(fontWeight: FontWeight.w600),
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       trailing: trailing,
     );

@@ -75,6 +75,7 @@ class ClimbAnimeUtil {
       return;
     }
 
+    showToast("全局更新中...");
     canUpdateAllAnimesInfo = false;
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);

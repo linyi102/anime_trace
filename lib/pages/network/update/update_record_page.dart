@@ -74,9 +74,12 @@ class UpdateRecordPage extends StatelessWidget {
                 children: [
                   ListTile(
                     title: Text(
-                        TimeShowUtil.getHumanReadableDateTimeStr(date,
-                            showTime: false, showDayOfWeek: true),
-                        textScaleFactor: ThemeUtil.smallScaleFactor),
+                      TimeShowUtil.getHumanReadableDateTimeStr(date,
+                          showTime: false, showDayOfWeek: true
+                          // chineseDelimiter: true,
+                          ),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     trailing: Text(
                       "${map[date]!.length}个动漫",
                       textScaleFactor: 0.8,
@@ -188,8 +191,11 @@ class UpdateRecordPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: Container()),
-                  Text("更新进度：$updateOkCnt/$needUpdateCnt",
-                      textScaleFactor: ThemeUtil.smallScaleFactor),
+                  Text(
+                    "更新进度：$updateOkCnt/$needUpdateCnt",
+                    textScaleFactor: ThemeUtil.smallScaleFactor,
+                    // style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   Text("查看未完结动漫",
                       textScaleFactor: ThemeUtil.tinyScaleFactor,
                       style: TextStyle(color: ThemeUtil.getCommentColor())),

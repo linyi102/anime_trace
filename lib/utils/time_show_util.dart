@@ -24,8 +24,13 @@ class TimeShowUtil {
   }
 
   // 显示年月日时分
-  static String getHumanReadableDateTimeStr(String time,
-      {bool showTime = true, bool showDayOfWeek = false}) {
+  static String getHumanReadableDateTimeStr(
+    String time, {
+    bool showTime = true,
+    bool showDayOfWeek = false,
+    String delimiter = "-",
+    bool chineseDelimiter = false, // 如果为true，优先采用xxxx年xx月xx日，否则使用delimiter
+  }) {
     if (time.isEmpty) return "";
 
     DateTime dateTime = DateTime.parse(time);
@@ -38,6 +43,13 @@ class TimeShowUtil {
     String monthStr = dateTimeStr.substring(5, 7);
     String dayStr = dateTimeStr.substring(8, 10);
     String hourAndMinuteStr = dateTimeStr.substring(11, 16);
+    if (chineseDelimiter) {
+      delimiter = "";
+      yearStr += "年";
+      monthStr += "月";
+      dayStr += "日";
+    }
+
     // 先得到年后面的月日时分
     String showTimeStr = "";
     // 同月，并且设置了显示昨天或今天
@@ -48,11 +60,11 @@ class TimeShowUtil {
         showTimeStr += "昨天";
       } else {
         // 同月但不是昨天和今天
-        showTimeStr += "$monthStr-$dayStr";
+        showTimeStr += "$monthStr$delimiter$dayStr";
       }
     } else {
       // 始终显示月日
-      showTimeStr += "$monthStr-$dayStr";
+      showTimeStr += "$monthStr$delimiter$dayStr";
     }
     // 如果允许，并且如果用户设置了显示精确时间，才会加上时分
     if (showTime && showPreciseTime) {
@@ -62,13 +74,13 @@ class TimeShowUtil {
     if (dateTime.year == now.year) {
       // 如果是今年，且仍要显示年份。注意如果显示了今天或昨天，则不显示年份
       if (showCurYear && !showTimeStr.contains("天")) {
-        showTimeStr = "$yearStr-$showTimeStr";
+        showTimeStr = "$yearStr$delimiter$showTimeStr";
       } else {
         // 不显示今年
       }
     } else {
       // 不是今年，始终添加年份
-      showTimeStr = "$yearStr-$showTimeStr";
+      showTimeStr = "$yearStr$delimiter$showTimeStr";
     }
 
     // if (dateTime.year != now.year) {
@@ -127,5 +139,19 @@ class TimeShowUtil {
       default:
         return "？";
     }
+  }
+
+  /// 传入格式：2023、2023-02、2023-02-13
+  /// 输出格式：2023年、2023年02月、2023年02月13日
+  static String getChineseDate(String date) {
+    String res = "";
+    List<String> numStrs = date.split("-");
+    List<String> units = ["年", "月", "日"];
+
+    for (int i = 0; i < numStrs.length; ++i) {
+      if (i >= units.length) break;
+      res += "${numStrs[i]}${units[i]}";
+    }
+    return res;
   }
 }
