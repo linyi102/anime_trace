@@ -49,8 +49,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
       // child: _buildBottomNavigationBar(),

@@ -1,8 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
+import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
@@ -13,7 +13,6 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import '../pages/modules/note_edit.dart';
 
 /// 笔记卡片
 /// 使用：所有笔记页、所有评价页、动漫详细评价页

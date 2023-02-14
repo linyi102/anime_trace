@@ -14,24 +14,24 @@ class MyIconButton extends StatelessWidget {
     return IconButton(onPressed: onPressed, icon: icon);
 
     // 悬浮操作栏高度不受限制，解决方法SizedBox指定高度
-    return SizedBox(
-      height: 40,
-      // AppBar-actions处为椭圆而不是圆形，解决方法：Column
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(50),
-            onTap: onPressed,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              child: tooltip == null
-                  ? icon
-                  : Tooltip(message: tooltip, child: icon),
-            ),
-          ),
-        ],
-      ),
-    );
+    // return SizedBox(
+    //   height: 40,
+    //   // AppBar-actions处为椭圆而不是圆形，解决方法：Column
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       InkWell(
+    //         borderRadius: BorderRadius.circular(50),
+    //         onTap: onPressed,
+    //         child: Container(
+    //           padding: const EdgeInsets.all(8),
+    //           child: tooltip == null
+    //               ? icon
+    //               : Tooltip(message: tooltip, child: icon),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 

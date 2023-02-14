@@ -1,7 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
@@ -212,32 +211,32 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
     );
   }
 
-  SizedBox _buildAddBtn() {
-    return SizedBox(
-      height: 40,
-      width: 80,
-      child: MaterialButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-          onPressed: () {
-            dialogSelectChecklist(setState, context, _anime,
-                onlyShowChecklist: true,
-                enableClimbDetailInfo: false, callback: (newAnime) {
-              widget.animeController.updateAnime(newAnime);
-              widget.animeController.loadEpisode();
-            });
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.favorite_border, size: 18),
-              SizedBox(width: 5),
-              Text("收藏"),
-            ],
-          )),
-    );
-  }
+  // SizedBox _buildAddBtn() {
+  //   return SizedBox(
+  //     height: 40,
+  //     width: 80,
+  //     child: MaterialButton(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(50),
+  //         ),
+  //         onPressed: () {
+  //           dialogSelectChecklist(setState, context, _anime,
+  //               onlyShowChecklist: true,
+  //               enableClimbDetailInfo: false, callback: (newAnime) {
+  //             widget.animeController.updateAnime(newAnime);
+  //             widget.animeController.loadEpisode();
+  //           });
+  //         },
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: const [
+  //             Icon(Icons.favorite_border, size: 18),
+  //             SizedBox(width: 5),
+  //             Text("收藏"),
+  //           ],
+  //         )),
+  //   );
+  // }
 
   _buildInfo() {
     const double smallIconSize = 14;

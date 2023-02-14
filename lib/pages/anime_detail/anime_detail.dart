@@ -94,7 +94,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                         appBar: AppBar(
                             leading: MyIconButton(
                                 onPressed: _popPage,
-                                icon: Icon(Icons.arrow_back))),
+                                icon: const Icon(Icons.arrow_back))),
                         body: const Center(
                           child: CircularProgressIndicator(),
                         ),
@@ -231,22 +231,22 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     return true;
   }
 
-  _showReviewNumberIcon() {
-    switch (_anime.reviewNumber) {
-      case 1:
-        return const Icon(Icons.looks_one_outlined);
-      case 2:
-        return const Icon(Icons.looks_two_outlined);
-      case 3:
-        return const Icon(Icons.looks_3_outlined);
-      case 4:
-        return const Icon(Icons.looks_4_outlined);
-      case 5:
-        return const Icon(Icons.looks_5_outlined);
-      case 6:
-        return const Icon(Icons.looks_6_outlined);
-      default:
-        return const Icon(Icons.error_outline_outlined);
-    }
-  }
+  // _showReviewNumberIcon() {
+  //   switch (_anime.reviewNumber) {
+  //     case 1:
+  //       return const Icon(Icons.looks_one_outlined);
+  //     case 2:
+  //       return const Icon(Icons.looks_two_outlined);
+  //     case 3:
+  //       return const Icon(Icons.looks_3_outlined);
+  //     case 4:
+  //       return const Icon(Icons.looks_4_outlined);
+  //     case 5:
+  //       return const Icon(Icons.looks_5_outlined);
+  //     case 6:
+  //       return const Icon(Icons.looks_6_outlined);
+  //     default:
+  //       return const Icon(Icons.error_outline_outlined);
+  //   }
+  // }
 }

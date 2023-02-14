@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
+import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/global.dart';
-
+import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../components/common_tab_bar.dart';
-import '../../models/note_filter.dart';
-import '../../utils/sp_util.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -179,31 +178,31 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   }
 
   // 不展示收藏按钮，因为可能已经收藏了，但没有显示，只有进入详情页后才会看到
-  _showCollectIcon(Anime anime) {
-    return SizedBox(
-      height: itemHeight,
-      child: MaterialButton(
-        padding: EdgeInsets.zero,
-        visualDensity:
-            const VisualDensity(horizontal: VisualDensity.minimumDensity),
-        onPressed: () {
-          dialogSelectChecklist(setState, context, anime);
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            anime.isCollected()
-                ? const Icon(Icons.favorite, color: Colors.red, size: 18)
-                : const Icon(Icons.favorite_border, size: 18),
-            anime.isCollected()
-                ? Text(anime.tagName,
-                    textScaleFactor: ThemeUtil.tinyScaleFactor)
-                : Container()
-          ],
-        ),
-      ),
-    );
-  }
+  // _showCollectIcon(Anime anime) {
+  //   return SizedBox(
+  //     height: itemHeight,
+  //     child: MaterialButton(
+  //       padding: EdgeInsets.zero,
+  //       visualDensity:
+  //           const VisualDensity(horizontal: VisualDensity.minimumDensity),
+  //       onPressed: () {
+  //         dialogSelectChecklist(setState, context, anime);
+  //       },
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           anime.isCollected()
+  //               ? const Icon(Icons.favorite, color: Colors.red, size: 18)
+  //               : const Icon(Icons.favorite_border, size: 18),
+  //           anime.isCollected()
+  //               ? Text(anime.tagName,
+  //                   textScaleFactor: ThemeUtil.tinyScaleFactor)
+  //               : Container()
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   _openImage() {
     if (loading) return;

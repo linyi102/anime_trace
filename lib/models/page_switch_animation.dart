@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/log.dart';
 
 enum PageSwitchAnimation {
   zoom(1, "放大", ZoomPageTransitionsBuilder()),

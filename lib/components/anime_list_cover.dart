@@ -27,7 +27,7 @@ class AnimeListCover extends StatelessWidget {
         children: [
           circular
               ? ClipOval(
-                  child: Container(
+                  child: SizedBox(
                     height: 40,
                     width: 40,
                     child: CommonImage(_anime.getCommonCoverUrl()),

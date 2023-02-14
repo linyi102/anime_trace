@@ -1,13 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:oktoast/oktoast.dart';
-
-import '../../dao/anime_dao.dart';
-import '../../models/anime.dart';
-import '../network/sources/lapse_cover_fix/lapse_cover_animes_page.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -22,17 +16,13 @@ class _TestPageState extends State<TestPage> {
     Log.build(runtimeType);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("测试"),
-      ),
+      appBar: AppBar(title: const Text("测试")),
       body: ListView(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 50),
               InkWell(
                 borderRadius: BorderRadius.circular(50),
                 onTap: () {},
@@ -48,9 +38,9 @@ class _TestPageState extends State<TestPage> {
             onTap: () async {
               // 模拟器测试时不管有无使用compute，大多数图片都会捕捉到连接超时错误
               // head改成get也是
-              List<Anime> animes = await AnimeDao.getAllAnimes();
-              List<Anime> lapseCoverAnimes =
-                  await compute(getAllLapseCoverAnimes, animes);
+              // List<Anime> animes = await AnimeDao.getAllAnimes();
+              // List<Anime> lapseCoverAnimes =
+              //     await compute(getAllLapseCoverAnimes, animes);
 
               // String url =
               //     "https://proxy-tf-all-ws.bilivideo.com/?url=https://lain.bgm.tv/pic/cover/l/d6/4f/332261_szZEK.jpg";
