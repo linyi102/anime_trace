@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
@@ -39,10 +40,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           "${_anime.animeId}-currentStartEpisodeNumber",
           defaultValue: 1);
 
-      Future.delayed(const Duration(milliseconds: 200)).then((value) {
-        // 200ms后再去请求数据，避免在页面过渡动画卡顿
-        widget.animeController.loadEpisode();
-      });
+      widget.animeController.loadEpisode();
     }
   }
 
@@ -208,11 +206,11 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                       // 原先隐藏，则设置为false，表示显示
                       SPUtil.setBool("hideNoteInAnimeDetail", false);
                       hideNoteInAnimeDetail = false;
-                      // showToast("已展开笔记");
+                      showToast("已展开笔记");
                     } else {
                       SPUtil.setBool("hideNoteInAnimeDetail", true);
                       hideNoteInAnimeDetail = true;
-                      // showToast("已隐藏笔记");
+                      showToast("已隐藏笔记");
                     }
                     setState(() {});
                   },

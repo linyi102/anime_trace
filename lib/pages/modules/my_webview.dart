@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -46,7 +47,7 @@ class _MyWebViewState extends State<MyWebView> {
                     title: const Text("复制链接"),
                     style: ListTileStyle.drawer,
                     onTap: () {
-                      Clipboard.setData(ClipboardData(text: widget.url));
+                      CommonUtil.copyContent(widget.url);
                       Navigator.pop(popMenuContext);
                     },
                   ),

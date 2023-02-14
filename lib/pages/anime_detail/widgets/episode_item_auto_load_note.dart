@@ -54,10 +54,13 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   void initState() {
     super.initState();
 
+    // 不管有没有隐藏笔记，都去要查询，否则更多按钮中的状态不匹配(创建/编辑笔记等等)
+
     if (!_episode.noteLoaded) {
+      // 如果没有查询过数据库中的笔记，则进行查询
       _loadNote();
     } else {
-      // 已查询过数据库
+      // 已查询过数据库，直接去掉加载中状态
       if (mounted) {
         setState(() {
           _loadingNote = false;
@@ -89,7 +92,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     return Column(
       children: [
         _buildEpisodeTile(),
-        if (!_loadingNote &&
+        if (!widget.hideNote &&
+            !_loadingNote &&
             _episode.note != null &&
             (_episode.note!.noteContent.isNotEmpty ||
                 _episode.note!.relativeLocalImages.isNotEmpty))

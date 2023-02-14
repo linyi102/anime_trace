@@ -12,6 +12,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
+import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -275,8 +276,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               },
               onLongPress: () {
                 if (_anime.animeUrl.isNotEmpty) {
-                  Clipboard.setData(ClipboardData(text: _anime.animeUrl));
-                  showToast("链接已复制到剪切板");
+                  CommonUtil.copyContent(_anime.animeUrl,
+                      successMsg: "链接已复制到剪切板");
                 }
               },
               child: Row(

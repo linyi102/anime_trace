@@ -175,10 +175,11 @@ class AnimeController extends GetxController {
     update([episodeId]);
 
     // 加载集信息
-    // 一定要延时，否则前面集不会重绘导致没有加载笔记
+    // 一定要延时，否则修改集范围后，前面集不会重绘导致没有加载笔记
+    // 首次进入动漫详情页也要延迟，是为了避免页面切换动画卡顿
     await Future.delayed(const Duration(milliseconds: 200));
-    // await Future.delayed(const Duration(seconds: 4));
 
+    // await Future.delayed(const Duration(seconds: 4));
     if (anime.animeEpisodeCnt == 0) {
       // 如果为0，则不修改currentStartEpisodeNumber
     } else if (currentStartEpisodeNumber > anime.animeEpisodeCnt) {
