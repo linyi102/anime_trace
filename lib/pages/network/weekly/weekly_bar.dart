@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 
 /// 周日期栏
 /// 不要转为无状态组件，因为要传入selectedWeekday，而它不是const，所以无法使用const WeeklyBar
@@ -63,7 +63,7 @@ class _WeeklyBarState extends State<WeeklyBar> {
               child: Column(
                 children: [
                   // 显示周几
-                  Text(TimeShowUtil.getChineseWeekdayByNumber(weekday),
+                  Text(TimeUtil.getChineseWeekdayByNumber(weekday),
                       style: const TextStyle(color: Colors.grey)),
                   // 显示日期
                   Container(

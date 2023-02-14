@@ -27,4 +27,14 @@ class Note {
   String toString() {
     return "${anime.animeName}-${episode.number}: $noteContent";
   }
+
+  static Note createRateNote(Anime anime) {
+    return Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
+        relativeLocalImages: [], imgUrls: []);
+  }
+
+  static Note createEpisodeNote(Anime anime, Episode episode) {
+    return Note(
+        anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
+  }
 }

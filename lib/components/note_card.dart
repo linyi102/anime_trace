@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
+import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import '../pages/modules/note_edit.dart';
 
 /// 笔记卡片
@@ -164,7 +165,7 @@ class _NoteCardState extends State<NoteCard> {
   }
 
   _buildCreateTimeAndMoreAction(Note note) {
-    String timeStr = TimeShowUtil.getHumanReadableDateTimeStr(note.createTime);
+    String timeStr = TimeUtil.getHumanReadableDateTimeStr(note.createTime);
     timeStr = timeStr.isEmpty ? "" : "创建于$timeStr";
 
     return ListTile(
@@ -186,7 +187,6 @@ class _NoteCardState extends State<NoteCard> {
                         ListTile(
                           leading: const Icon(EvaIcons.edit2Outline),
                           title: const Text("编辑"),
-                          style: ListTileStyle.drawer, // 变小
                           onTap: () {
                             Navigator.pop(dialogContext);
                             _enterNoteEditPage(note);
@@ -195,18 +195,14 @@ class _NoteCardState extends State<NoteCard> {
                         ListTile(
                           leading: const Icon(EvaIcons.copyOutline),
                           title: const Text("复制内容"),
-                          style: ListTileStyle.drawer, // 变小
                           onTap: () {
-                            Clipboard.setData(
-                                ClipboardData(text: note.noteContent));
-                            showToast("已复制到剪贴板");
+                            CommonUtil.copyContent(note.noteContent);
                             Navigator.pop(dialogContext);
                           },
                         ),
                         ListTile(
                           leading: const Icon(EvaIcons.trash2Outline),
                           title: const Text("删除笔记"),
-                          style: ListTileStyle.drawer, // 变小
                           onTap: () {
                             _dialogDeleteConfirm(note);
                           },

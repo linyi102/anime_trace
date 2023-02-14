@@ -35,7 +35,10 @@ class RoundedSheet extends StatelessWidget {
                 title: title,
                 centerTitle: centerTitle,
               ),
-            Expanded(child: body)
+            Expanded(
+              // 需要外套Scaffold，否则底色Container会导致没有按压效果
+              child: Scaffold(body: body),
+            )
           ],
         )
       ],

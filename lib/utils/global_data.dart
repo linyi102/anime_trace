@@ -81,7 +81,7 @@ List<ClimbWebsite> climbWebsites = [
   ),
   ClimbWebsite(
       name: "趣动漫",
-      iconUrl: "https://m1.im5i.com/2023/01/11/UGeZNh.png",
+      iconUrl: "https://t.gmit.vip/2023/02/14/ozxhvn.png",
       enable: SPUtil.getBool("enableWebSiteQdm", defaultValue: false),
       spkey: "enableWebSiteQdm",
       pingStatus: PingStatus(),

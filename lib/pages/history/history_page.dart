@@ -12,7 +12,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 
 enum HistoryLabel {
   year("年"),

@@ -19,7 +19,6 @@ class AnimeController extends GetxController {
   bool loadingAnime = false;
 
   List<Episode> episodes = []; // 集
-  List<Note> notes = []; // 集对应的笔记
   var loadEpisodeOk = false;
 
   // 多选
@@ -63,7 +62,6 @@ class AnimeController extends GetxController {
   void popPage() {
     episodes.clear();
     labels.clear();
-    notes.clear();
     mapSelected.clear();
     multiSelected.value = false;
     rateNoteCount = 0;
@@ -81,7 +79,6 @@ class AnimeController extends GetxController {
     loadEpisodeOk = false;
 
     labels.clear();
-    notes.clear();
     mapSelected.clear();
 
     // 重绘appbar(隐藏更多按钮)、重绘信息行(右侧显示收藏按钮)、重绘集(不显示集信息)
@@ -175,11 +172,13 @@ class AnimeController extends GetxController {
     // 重置，然后重新渲染
     loadEpisodeOk = false;
     episodes.clear();
-    notes.clear();
     update([episodeId]);
 
     // 加载集信息
-    // await Future.delayed(const Duration(seconds: 2));
+    // 一定要延时，否则前面集不会重绘导致没有加载笔记
+    await Future.delayed(const Duration(milliseconds: 200));
+    // await Future.delayed(const Duration(seconds: 4));
+
     if (anime.animeEpisodeCnt == 0) {
       // 如果为0，则不修改currentStartEpisodeNumber
     } else if (currentStartEpisodeNumber > anime.animeEpisodeCnt) {
@@ -198,19 +197,6 @@ class AnimeController extends GetxController {
         currentStartEpisodeNumber,
         currentStartEpisodeNumber + episodeRangeSize - 1);
 
-    for (var episode in episodes) {
-      Note episodeNote = Note(
-          anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
-      if (episode.isChecked()) {
-        // 如果该集完成了，就去获取该集笔记（内容+图片）
-        episodeNote = await NoteDao
-            .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                episodeNote);
-        // Log.info(
-        //     "第${episodeNote.episode.number}集的图片数量: ${episodeNote.relativeLocalImages.length}");
-      }
-      notes.add(episodeNote);
-    }
     _sortEpisodes(SPUtil.getString("episodeSortMethod",
         defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
     loadEpisodeOk = true;
@@ -234,18 +220,6 @@ class AnimeController extends GetxController {
       } else {
         SqliteUtil.insertHistoryItem(
             anime.animeId, episodeNumber, dateTime, anime.reviewNumber);
-        // 同时插入空笔记，记得获取最新插入的id，否则进入的是笔记0，会造成修改笔记无效
-        Note episodeNote = Note(
-            anime: anime,
-            episode: episodes[episodeIndex],
-            relativeLocalImages: [],
-            imgUrls: []);
-        // 如果存在，恢复之前做的笔记。(完成该集并添加笔记后，又完成该集，需要恢复笔记)
-        () async {
-          notes[episodeIndex] = await NoteDao
-              .getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-                  episodeNote);
-        }(); // 只让恢复笔记作为异步，如果让forEach中的函数作为异步，则可能会在改变所有时间前退出多选模式
       }
       episodes[episodeIndex].dateTime = dateTime;
     });
@@ -343,17 +317,11 @@ class AnimeController extends GetxController {
     episodes.sort((a, b) {
       return a.number.compareTo(b.number);
     });
-    notes.sort((a, b) {
-      return a.episode.number.compareTo(b.episode.number);
-    });
   }
 
   void _sortByEpisodeNumberDesc() {
     episodes.sort((a, b) {
       return b.number.compareTo(a.number);
-    });
-    notes.sort((a, b) {
-      return b.episode.number.compareTo(a.episode.number);
     });
   }
 
@@ -367,18 +335,6 @@ class AnimeController extends GetxController {
       // 双方都没有完成或都完成(状态一致)时，按number升序排序
       if (a.isChecked() == b.isChecked()) {
         return a.number.compareTo(b.number);
-      } else {
-        // 否则未完成的靠前
-        return ac.compareTo(bc);
-      }
-    });
-    notes.sort((a, b) {
-      int ac, bc;
-      ac = a.episode.isChecked() ? 1 : 0;
-      bc = b.episode.isChecked() ? 1 : 0;
-      // 双方都没有完成或都完成(状态一致)时，按number升序排序
-      if (a.episode.isChecked() == b.episode.isChecked()) {
-        return a.episode.number.compareTo(b.episode.number);
       } else {
         // 否则未完成的靠前
         return ac.compareTo(bc);

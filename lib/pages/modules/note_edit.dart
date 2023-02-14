@@ -109,7 +109,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
     //   }
     // }
     if (_updateNoteContent) {
-      NoteDao.updateEpisodeNoteContentByNoteId(
+      NoteDao.updateNoteContentByNoteId(
           widget.note.id, widget.note.noteContent);
     }
   }

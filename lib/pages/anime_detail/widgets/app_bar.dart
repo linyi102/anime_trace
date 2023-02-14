@@ -259,56 +259,54 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
     );
   }
 
-  Scaffold _buildUISettingPage(StateSetter setBottomSheetState) {
-    return Scaffold(
-      body: ListView(
-        children: [
-          ToggleListTile(
-            title: const Text("背景模糊"),
-            toggleOn: sigma > 0, // >0说明开启了模糊
-            onTap: () {
-              sigma = sigma > 0 ? 0.0 : 10.0;
-              SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
-              // 重新渲染开关
-              setBottomSheetState(() {});
-              // 重新渲染背景
-              setState(() {});
-            },
-          ),
-          ToggleListTile(
-            title: const Text("背景渐变"),
-            toggleOn: SpProfile.getEnableCoverBgGradient(),
-            onTap: () {
-              SpProfile.turnEnableCoverBgGradient();
-              setBottomSheetState(() {});
-              setState(() {});
-            },
-          ),
-          ToggleListTile(
-            title: const Text("显示简介"),
-            toggleOn: widget.animeController.showDescInAnimeDetailPage.value,
-            onTap: () {
-              widget.animeController.turnShowDescInAnimeDetailPage();
-              setBottomSheetState(() {});
-              // 不需要重新渲染AppBar
-              // setState(() {});
-              // 而是通知控制器重绘
-              widget.animeController.updateAnimeInfo();
-            },
-          ),
-          ToggleListTile(
-            title: const Text("滚动视差"),
-            toggleOn: SpProfile.getEnableParallaxInAnimeDetailPage(),
-            onTap: () {
-              SpProfile.turnEnableParallaxInAnimeDetailPage();
-              setBottomSheetState(() {});
-              setState(() {});
-            },
-          ),
-          // 调节封面背景高度
-          _buildSetCoverHeightTile(setBottomSheetState)
-        ],
-      ),
+  _buildUISettingPage(StateSetter setBottomSheetState) {
+    return ListView(
+      children: [
+        ToggleListTile(
+          title: const Text("背景模糊"),
+          toggleOn: sigma > 0, // >0说明开启了模糊
+          onTap: () {
+            sigma = sigma > 0 ? 0.0 : 10.0;
+            SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
+            // 重新渲染开关
+            setBottomSheetState(() {});
+            // 重新渲染背景
+            setState(() {});
+          },
+        ),
+        ToggleListTile(
+          title: const Text("背景渐变"),
+          toggleOn: SpProfile.getEnableCoverBgGradient(),
+          onTap: () {
+            SpProfile.turnEnableCoverBgGradient();
+            setBottomSheetState(() {});
+            setState(() {});
+          },
+        ),
+        ToggleListTile(
+          title: const Text("显示简介"),
+          toggleOn: widget.animeController.showDescInAnimeDetailPage.value,
+          onTap: () {
+            widget.animeController.turnShowDescInAnimeDetailPage();
+            setBottomSheetState(() {});
+            // 不需要重新渲染AppBar
+            // setState(() {});
+            // 而是通知控制器重绘
+            widget.animeController.updateAnimeInfo();
+          },
+        ),
+        ToggleListTile(
+          title: const Text("滚动视差"),
+          toggleOn: SpProfile.getEnableParallaxInAnimeDetailPage(),
+          onTap: () {
+            SpProfile.turnEnableParallaxInAnimeDetailPage();
+            setBottomSheetState(() {});
+            setState(() {});
+          },
+        ),
+        // 调节封面背景高度
+        _buildSetCoverHeightTile(setBottomSheetState)
+      ],
     );
   }
 

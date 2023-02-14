@@ -6,7 +6,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -104,31 +104,31 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                   style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
           ListTile(
             title: const Text("精确到时分"),
-            subtitle: Text(TimeShowUtil.getHumanReadableDateTimeStr(
-                beforeCurYearTimeExample)),
-            trailing: _buildToggle(TimeShowUtil.showPreciseTime),
+            subtitle: Text(
+                TimeUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
+            trailing: _buildToggle(TimeUtil.showPreciseTime),
             onTap: () {
-              TimeShowUtil.turnShowPreciseTime();
+              TimeUtil.turnShowPreciseTime();
               setState(() {});
             },
           ),
           ListTile(
             title: const Text("显示昨天/今天"),
-            subtitle: Text(
-                TimeShowUtil.getHumanReadableDateTimeStr(todayTimeExample)),
-            trailing: _buildToggle(TimeShowUtil.showYesterdayAndToday),
+            subtitle:
+                Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
+            trailing: _buildToggle(TimeUtil.showYesterdayAndToday),
             onTap: () {
-              TimeShowUtil.turnShowYesterdayAndToday();
+              TimeUtil.turnShowYesterdayAndToday();
               setState(() {});
             },
           ),
           ListTile(
             title: const Text("今年时间隐藏年份"),
-            subtitle: Text(
-                TimeShowUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
-            trailing: _buildToggle(!TimeShowUtil.showCurYear),
+            subtitle:
+                Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
+            trailing: _buildToggle(!TimeUtil.showCurYear),
             onTap: () {
-              TimeShowUtil.turnShowCurYear();
+              TimeUtil.turnShowCurYear();
               setState(() {});
             },
           )

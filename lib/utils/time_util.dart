@@ -1,6 +1,6 @@
 import 'package:flutter_test_future/utils/sp_util.dart';
 
-class TimeShowUtil {
+class TimeUtil {
   static bool showPreciseTime = SPUtil.getBool("showPreciseTime",
       defaultValue: true); // 为true表示显示时间时，精确到时分
   static bool showYesterdayAndToday = SPUtil.getBool("showYesterdayAndToday",
@@ -21,6 +21,11 @@ class TimeShowUtil {
   static void turnShowCurYear() {
     showCurYear = !showCurYear;
     SPUtil.setBool("showCurYear", showCurYear);
+  }
+
+  // 获取当前时间的字符串形式
+  static String getDateTimeNowStr() {
+    return DateTime.now().toString().substring(0, 19);
   }
 
   // 显示年月日时分

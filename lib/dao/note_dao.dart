@@ -2,6 +2,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 
 import '../models/anime.dart';
 import '../models/episode.dart';
@@ -112,14 +113,13 @@ class NoteDao {
     return relativeLocalImages;
   }
 
-  static updateEpisodeNoteContentByNoteId(
-      int noteId, String noteContent) async {
+  static updateNoteContentByNoteId(int noteId, String noteContent) async {
     Log.info("sql: updateEpisodeNoteContent($noteId)");
     // Log.info("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     noteContent = EscapeUtil.escapeStr(noteContent);
     database.rawUpdate('''
     update episode_note
-    set note_content = '$noteContent'
+    set note_content = '$noteContent', update_time = '${TimeUtil.getDateTimeNowStr()}'
     where note_id = $noteId;
     ''');
   }
@@ -140,11 +140,22 @@ class NoteDao {
     return episodeNote;
   }
 
+  // 添加评价笔记
+  static Future<int> insertRateNote(int animeId) async {
+    Log.info("sql: insertRateNote(animeId=$animeId)");
+    String createTime = TimeUtil.getDateTimeNowStr();
+
+    return await database.rawInsert('''
+    insert into episode_note (anime_id, episode_number, note_content, create_time)
+    values ($animeId, 0, '', '$createTime');
+    ''');
+  }
+
+  // 添加集笔记
   static Future<int> insertEpisodeNote(Note episodeNote) async {
     Log.info(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
-    episodeNote = escapeEpisodeNote(episodeNote);
-    String createTime = DateTime.now().toString();
+    String createTime = TimeUtil.getDateTimeNowStr();
 
     return await database.rawInsert('''
     insert into episode_note (anime_id, episode_number, review_number, note_content, create_time)
@@ -175,23 +186,25 @@ class NoteDao {
     return note;
   }
 
-  static Future<Note> getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-      Note episodeNote) async {
-    // Log.info(
-    //     "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episodeNote.episode.number}, review_number=${episodeNote.episode.reviewNumber})");
+  static Future<Note?> getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
+      Anime anime, Episode episode) async {
+    Log.info(
+        "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episode.number}, review_number=${anime.reviewNumber})");
     // 查询内容
     var lm1 = await database.rawQuery('''
       select note_id, note_content from episode_note
-      where anime_id = ${episodeNote.anime.animeId} and episode_number = ${episodeNote.episode.number} and review_number = ${episodeNote.episode.reviewNumber};
+      where anime_id = ${anime.animeId} and episode_number = ${episode.number} and review_number = ${anime.reviewNumber};
       ''');
     if (lm1.isEmpty) {
-      // 如果没有则插入笔记(为了兼容之前完成某集后不会插入空笔记)
-      episodeNote.id = await insertEpisodeNote(episodeNote);
-    } else {
-      episodeNote.id = lm1[0]['note_id'] as int;
-      // 获取笔记内容
-      episodeNote.noteContent = lm1[0]['note_content'] as String;
+      return null;
     }
+
+    Note episodeNote = Note(
+        anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
+    episodeNote.id = lm1[0]['note_id'] as int;
+    // 获取笔记内容
+    episodeNote.noteContent = lm1[0]['note_content'] as String;
+
     // Log.info("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
     // 查询图片
     episodeNote.relativeLocalImages =
@@ -220,15 +233,16 @@ class NoteDao {
         item['review_number'] as int,
         dateTime: item['date'] as String,
       );
-      Note episodeNote = Note(
-          anime: anime, episode: episode, relativeLocalImages: [], imgUrls: []);
+      Note? episodeNote;
       episodeNote =
           await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
-              episodeNote);
-      // Log.info(episodeNote);
-      episodeNote.relativeLocalImages =
-          await getRelativeLocalImgsByNoteId(episodeNote.id);
-      episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
+              anime, episode);
+      if (episodeNote != null) {
+        // Log.info(episodeNote);
+        episodeNote.relativeLocalImages =
+            await getRelativeLocalImgsByNoteId(episodeNote.id);
+        episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
+      }
     }
     return episodeNotes;
   }
@@ -315,6 +329,8 @@ class NoteDao {
   // 删除评价笔记/集笔记
   // 先删除与笔记相关的图片，再删除该笔记(id唯一，不用在意reviewNumber，而且删除集笔记后当进入详情页会自动创建空笔记)
   static Future<bool> deleteNoteById(int noteId) async {
+    Log.info("deleteNoteById(noteId=$noteId)");
+
     int num = await database.rawDelete('''
     delete from image
     where note_id = $noteId;

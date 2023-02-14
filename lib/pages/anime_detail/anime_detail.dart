@@ -1,3 +1,4 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -123,72 +124,72 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   /// 显示底部集多选操作栏
   _buildButtonsBarAboutEpisodeMulti() {
-    return !animeController.multiSelected.value
-        ? Container()
-        : Container(
-            alignment: Alignment.bottomCenter,
-            child: Card(
-              elevation: 8,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(50))),
-              // 圆角
-              clipBehavior: Clip.antiAlias,
-              // 设置抗锯齿，实现圆角背景
-              margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: MyIconButton(
-                      onPressed: () {
-                        if (animeController.mapSelected.length ==
-                            animeController.episodes.length) {
-                          // 全选了，点击则会取消全选
-                          animeController.mapSelected.clear();
-                        } else {
-                          // 其他情况下，全选
-                          for (int j = 0;
-                              j < animeController.episodes.length;
-                              ++j) {
-                            animeController.mapSelected[j] = true;
-                          }
-                        }
-                        // 不重绘整个详情页面
-                        // setState(() {});
-                        // 只重绘集页面
-                        animeController.update([animeController.episodeId]);
-                      },
-                      icon: const Icon(Icons.select_all_rounded),
-                    ),
-                  ),
-                  Expanded(
-                    child: MyIconButton(
-                      onPressed: () async {
-                        await animeController.pickDateForEpisodes(
-                            context: context);
-                        // 退出多选模式
-                        animeController.quitMultiSelectionMode();
-                      },
-                      icon: const Icon(Icons.edit_calendar_rounded),
-                    ),
-                  ),
-                  Expanded(
-                    child: MyIconButton(
-                      onPressed: () => animeController.quitMultiSelectionMode(),
-                      icon: const Icon(Icons.exit_to_app),
-                    ),
-                  ),
-                ],
+    if (!animeController.multiSelected.value) return Container();
+
+    return Container(
+      alignment: Alignment.bottomCenter,
+      child: Card(
+        elevation: 8,
+        // 圆角
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        // 设置抗锯齿，实现圆角背景
+        clipBehavior: Clip.antiAlias,
+        margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: MyIconButton(
+                onPressed: () {
+                  if (animeController.mapSelected.length ==
+                      animeController.episodes.length) {
+                    // 全选了，点击则会取消全选
+                    animeController.mapSelected.clear();
+                  } else {
+                    // 其他情况下，全选
+                    for (int j = 0; j < animeController.episodes.length; ++j) {
+                      animeController.mapSelected[j] = true;
+                    }
+                  }
+                  // 不重绘整个详情页面
+                  // setState(() {});
+                  // 只重绘集页面
+                  animeController.update([animeController.episodeId]);
+                },
+                icon: const Icon(Icons.select_all_rounded),
+                tooltip: "全选",
               ),
             ),
-          );
+            Expanded(
+              child: MyIconButton(
+                onPressed: () async {
+                  await animeController.pickDateForEpisodes(context: context);
+                  // 退出多选模式
+                  animeController.quitMultiSelectionMode();
+                },
+                icon: const Icon(EvaIcons.clockOutline),
+                tooltip: "设置观看时间",
+              ),
+            ),
+            Expanded(
+              child: MyIconButton(
+                onPressed: () => animeController.quitMultiSelectionMode(),
+                icon: const Icon(Icons.exit_to_app),
+                tooltip: "退出多选",
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   bool _climbing = false;
 
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
-      if (_anime.isCollected()) showToast("不能更新自定义动漫");
+      if (_anime.isCollected()) showToast("无法更新自定义动漫");
       return false;
     }
     if (_climbing) {

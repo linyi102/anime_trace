@@ -9,7 +9,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:flutter_test_future/utils/time_show_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:oktoast/oktoast.dart';
@@ -74,7 +74,7 @@ class UpdateRecordPage extends StatelessWidget {
                 children: [
                   ListTile(
                     title: Text(
-                      TimeShowUtil.getHumanReadableDateTimeStr(date,
+                      TimeUtil.getHumanReadableDateTimeStr(date,
                           showTime: false, showDayOfWeek: true
                           // chineseDelimiter: true,
                           ),

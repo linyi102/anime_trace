@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/components/note_card.dart';
+import 'package:flutter_test_future/dao/note_dao.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../dao/note_dao.dart';
-import '../../../models/anime.dart';
-import '../../../utils/theme_util.dart';
-import '../../../components/note_card.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {
@@ -58,19 +55,17 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
               : Container()
           : Container(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _createRateNote(context),
+        onPressed: () => _createRateNote(),
         backgroundColor: ThemeUtil.getPrimaryIconColor(),
         child: const Icon(Icons.edit, color: Colors.white),
       ),
     );
   }
 
-  void _createRateNote(BuildContext context) {
+  void _createRateNote() async {
     Log.info("添加评价");
-    Note episodeNote =
-        Note(anime: widget.anime, episode: Episode(0, 1), // 第0集作为评价
-            relativeLocalImages: [], imgUrls: []);
-    NoteDao.insertEpisodeNote(episodeNote).then((value) {
+    Note episodeNote = Note.createRateNote(widget.anime);
+    NoteDao.insertRateNote(widget.anime.animeId).then((value) {
       // 获取到刚插入的笔记id，然后再进入笔记
       episodeNote.id = value;
       Navigator.push(
