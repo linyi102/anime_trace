@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
@@ -33,9 +34,11 @@ class UpdateRecordPage extends StatelessWidget {
           children: [
             _buildUpdateProgress(context),
             Expanded(
-                child: updateRecordController.updateRecordVos.isEmpty
-                    ? _buildEmptyDataPage()
-                    : _buildUpdateRecordList(updateRecordController)),
+                child: FadeAnimatedSwitcher(
+                    loadOk: updateRecordController.loadOk.value,
+                    destWidget: updateRecordController.updateRecordVos.isEmpty
+                        ? _buildEmptyDataPage()
+                        : _buildUpdateRecordList(updateRecordController))),
           ],
         ),
       ),

@@ -17,6 +17,7 @@ class UpdateRecordController extends GetxController {
   bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
+  RxBool loadOk = false.obs;
   List<Anime> needUpdateAnimes = [];
 
   @override
@@ -36,6 +37,8 @@ class UpdateRecordController extends GetxController {
     // 获取需要更新的动漫数量
     needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
     needUpdateCnt.value = needUpdateAnimes.length;
+
+    loadOk.value = true;
   }
 
   // 加载更多，追加而非直接赋值
