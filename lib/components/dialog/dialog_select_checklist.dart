@@ -44,8 +44,8 @@ dialogSelectChecklist(
               // 如果起初没有收藏，则说明是新增，否则修改
               if (!anime.isCollected()) {
                 anime.tagName = tags[i];
-                // 如果是age，或者传入的就是不更新，那么就不爬取详细页
-                if (anime.animeUrl.contains("age") || !enableClimbDetailInfo) {
+                // 如果传入的就是不更新，那么就不爬取详细页
+                if (!enableClimbDetailInfo) {
                 } else {
                   climbingDetail = true; // 不允许点击，避免快速多次点击收藏
                   (context as Element).markNeedsBuild();

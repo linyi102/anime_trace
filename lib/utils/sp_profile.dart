@@ -53,19 +53,19 @@ class SpProfile {
   // 1024*720
   // 900*600
   static double getWindowWidth() {
-    double defaultValue = 1024.0;
+    double defaultValue = 900.0;
     if (Global.isRelease) {
       return SPUtil.getDouble("WindowWidth", defaultValue: defaultValue);
     }
-    return 1024.0;
+    return defaultValue;
   }
 
   static double getWindowHeight() {
-    double defaultValue = 720.0;
+    double defaultValue = 700.0;
     if (Global.isRelease) {
       return SPUtil.getDouble("WindowHeight", defaultValue: defaultValue);
     }
-    return 720.0;
+    return defaultValue;
   }
 
   //  Windows侧边栏展开或收缩

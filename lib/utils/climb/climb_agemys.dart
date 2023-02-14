@@ -110,14 +110,32 @@ class ClimbAgemys extends Climb {
         document.getElementsByClassName("poster")[0].attributes["src"]!;
 
     // 集数：从所有播放列表中选择最大的
+    // 如果播放列表中有PV，直接跳过看下一个播放列表
+    // 如果有全集，直接返回1
+    // 然后获取播放列表的长度
     List<int> episodeNumbers = [];
     var movUrls = document.getElementsByClassName("movurl");
     for (var movUrl in movUrls) {
-      // 最后一话可能是OVA3或OAD，而不是第xx集，所以获取长度而非OVA
-      episodeNumbers.add(movUrl.getElementsByTagName("li").length);
+      var lis = movUrl.getElementsByTagName("li");
+      if (lis.isNotEmpty) {
+        String first = lis[0].getElementsByTagName("a")[0].innerHtml;
+        if (first.contains("PV")) {
+          continue;
+        } else if (first.contains("全集")) {
+          anime.animeEpisodeCnt = 1;
+          break;
+        } else {
+          // 最后一话可能是OVA3或OAD，而不是第xx集，所以获取长度而非OVA
+          episodeNumbers.add(movUrl.getElementsByTagName("li").length);
+        }
+      } else {
+        // 播放列表是空的，此时不添加到episodeNumbers
+      }
     }
-    anime.animeEpisodeCnt =
-        episodeNumbers.reduce((value, element) => max(value, element));
+    if (episodeNumbers.isNotEmpty) {
+      anime.animeEpisodeCnt =
+          episodeNumbers.reduce((value, element) => max(value, element));
+    }
 
     if (showMessage) showToast("更新完毕");
 
