@@ -1,7 +1,28 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 
-Widget emptyDataHint(String msg, {String toastMsg = ""}) {
+List<String> emoticons = [
+  "|･ω･｀)",
+  "ヽ(*。>Д<)o゜",
+  "(๑°⌓°๑)",
+  "o(╥﹏╥)o",
+  "o(TωT)o",
+  "(๑╹っ╹๑)",
+  "╰(￣▽￣)╭",
+  "φ(*￣0￣)",
+  "(_　_)。゜zｚＺ",
+  "(～﹃～)~zZ",
+  "(￣o￣) . z Z",
+  "ԅ(¯﹃¯ԅ)",
+  "ヾ(•ω•`)o",
+  "_(:з)∠)_",
+];
+
+Widget emptyDataHint({String msg = "什么都没有~", String toastMsg = ""}) {
+  String emoticon = emoticons[Random().nextInt(emoticons.length)];
+
   return Stack(
     children: [
       Center(
@@ -9,7 +30,7 @@ Widget emptyDataHint(String msg, {String toastMsg = ""}) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 10),
-            const Text("(°ー°〃)"),
+            Text(emoticon, style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 10),
             Text(msg),
             toastMsg.isEmpty

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -204,7 +205,11 @@ class _DirectoryPageState extends State<DirectoryPage>
     );
   }
 
-  SliverList _buildAnimeSliverList() {
+  _buildAnimeSliverList() {
+    if (directory.isEmpty) {
+      return SliverToBoxAdapter(child: emptyDataHint());
+    }
+
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
       Anime anime = directory[index];

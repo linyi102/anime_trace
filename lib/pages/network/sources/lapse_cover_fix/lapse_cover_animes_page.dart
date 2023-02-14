@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -91,8 +93,11 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("什么都没有"),
-        ElevatedButton(onPressed: () => detect(), child: const Text("再次检测"))
+        emptyDataHint(),
+        const SizedBox(height: 20),
+        ElevatedButton(
+            onPressed: () => detect(),
+            child: const Text("再次检测", style: TextStyle(color: Colors.white)))
       ],
     ));
   }

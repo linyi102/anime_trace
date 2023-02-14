@@ -145,7 +145,7 @@ class AnimeCoverDetail extends StatelessWidget {
 
   _buildAnimeCover(String coverUrl) {
     if (coverUrl.isEmpty) {
-      return emptyDataHint("没有封面~");
+      return emptyDataHint(msg: "没有封面~");
     }
 
     ImageProvider imageProvider;

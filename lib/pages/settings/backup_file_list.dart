@@ -68,7 +68,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   _buildFileList() {
-    if (files.isEmpty) return emptyDataHint("没有找到备份文件");
+    if (files.isEmpty) return emptyDataHint(msg: "没有找到备份文件");
     return Scrollbar(
       controller: _scrollController,
       child: ListView.builder(

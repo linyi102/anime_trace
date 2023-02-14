@@ -148,7 +148,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   }
 
   _displayClimbAnime() {
-    if (mixedAnimes.isEmpty) return emptyDataHint("什么都没找到");
+    if (mixedAnimes.isEmpty) return emptyDataHint();
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充

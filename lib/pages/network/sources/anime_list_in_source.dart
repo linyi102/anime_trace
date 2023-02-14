@@ -73,7 +73,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   }
 
   _buildAnimesListView() {
-    if (animes.isEmpty) return emptyDataHint("什么都没找到");
+    if (animes.isEmpty) return emptyDataHint();
     return ListView.builder(
         itemCount: animes.length,
         itemBuilder: ((context, index) {

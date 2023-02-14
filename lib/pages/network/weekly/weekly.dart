@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -165,7 +166,11 @@ class _WeeklyPageState extends State<WeeklyPage> {
     );
   }
 
-  ListView _buildAnimeList(int pageIndex) {
+  _buildAnimeList(int pageIndex) {
+    if (weeklyController.weeks[pageIndex].isEmpty) {
+      return emptyDataHint();
+    }
+
     return ListView.builder(
       itemCount: weeklyController.weeks[pageIndex].length,
       itemBuilder: (context, recordIdx) {
