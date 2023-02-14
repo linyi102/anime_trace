@@ -113,6 +113,12 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
                   note,
                   showAnimeTile: true,
                   enterAnimeDetail: () => _enterAnimeDetail(note.anime),
+                  removeNote: () {
+                    // 从notes中移除，并重绘整个页面
+                    setState(() {
+                      episodeNotes.removeAt(index);
+                    });
+                  },
                 );
               },
             ),

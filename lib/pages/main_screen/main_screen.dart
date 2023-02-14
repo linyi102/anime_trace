@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
@@ -170,7 +171,7 @@ class _MainScreenState extends State<MainScreen> {
       children: [
         MyIconButton(
           icon: Icon(
-            expandSideBar ? Icons.arrow_back_ios_new : Icons.arrow_forward_ios,
+            expandSideBar ? EvaIcons.arrowIosBack : EvaIcons.arrowIosForward,
             // 不适合暗色主题
             // color: Colors.black54,
           ),

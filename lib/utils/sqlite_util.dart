@@ -710,17 +710,6 @@ class SqliteUtil {
     return searchedanime;
   }
 
-  static Future<int> getAnimeLastId() async {
-    Log.info("sql: getAnimeLastId");
-    var list = await database.rawQuery('''
-    select last_insert_rowid() as last_id
-    from anime;
-    ''');
-    int lastId = list[0]["last_id"] as int;
-    Log.info("sql: getAnimeLastId=$lastId");
-    return lastId;
-  }
-
   static Future<String> getTagNameByAnimeId(int animeId) async {
     Log.info("sql: getTagNameByAnimeId");
     var list = await database.rawQuery('''
@@ -1113,21 +1102,6 @@ class SqliteUtil {
           REFERENCES anime (anime_id)
       );
       ''');
-  }
-
-  // 删除笔记前，先删除与笔记相关的图片，再删除该笔记
-  static Future<bool> deleteNoteById(int noteId) async {
-    int num = await database.rawDelete('''
-    delete from image
-    where note_id = $noteId;
-    ''');
-    Log.info("删除了$num个与该笔记相关的图片");
-    num = await database.rawDelete('''
-    delete from episode_note
-    where note_id = $noteId;
-    ''');
-    Log.info("删除了$num条笔记(id=$noteId)");
-    return true;
   }
 
   static addColumnOrderIdxToImage() async {

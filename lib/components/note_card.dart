@@ -1,6 +1,8 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
+import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -55,9 +57,9 @@ class _NoteCardState extends State<NoteCard> {
               _buildNoteContent(note),
               // 笔记图片
               NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-              if (widget.isRateNote)
-                // 创建时间和操作按钮
-                _buildCreateTimeAndMoreAction(note),
+              // if (widget.isRateNote)
+              // 创建时间和操作按钮
+              _buildCreateTimeAndMoreAction(note),
               // const Divider(),
             ],
           ),
@@ -178,53 +180,35 @@ class _NoteCardState extends State<NoteCard> {
             onPressed: () {
               showDialog(
                   context: context,
-                  builder: (context) {
+                  builder: (dialogContext) {
                     return SimpleDialog(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.delete),
+                          leading: const Icon(EvaIcons.edit2Outline),
+                          title: const Text("编辑"),
+                          style: ListTileStyle.drawer, // 变小
+                          onTap: () {
+                            Navigator.pop(dialogContext);
+                            _enterNoteEditPage(note);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(EvaIcons.copyOutline),
+                          title: const Text("复制内容"),
+                          style: ListTileStyle.drawer, // 变小
+                          onTap: () {
+                            Clipboard.setData(
+                                ClipboardData(text: note.noteContent));
+                            showToast("已复制到剪贴板");
+                            Navigator.pop(dialogContext);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(EvaIcons.trash2Outline),
                           title: const Text("删除笔记"),
                           style: ListTileStyle.drawer, // 变小
                           onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: const Text("确认删除笔记吗？"),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        // 关闭删除确认对话框和更多菜单对话框
-                                        Navigator.of(context)
-                                          ..pop()
-                                          ..pop();
-                                      },
-                                      child: const Text("取消"),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        // 关闭删除确认对话框和更多菜单对话框
-                                        Navigator.of(context)
-                                          ..pop()
-                                          ..pop();
-                                        if (await SqliteUtil.deleteNoteById(
-                                            note.id)) {
-                                          if (widget.removeNote != null) {
-                                            widget.removeNote!();
-                                          }
-                                        } else {
-                                          showToast("删除失败！");
-                                        }
-                                      },
-                                      child: const Text(
-                                        "删除",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    )
-                                  ],
-                                );
-                              },
-                            );
+                            _dialogDeleteConfirm(note);
                           },
                         )
                       ],
@@ -232,5 +216,46 @@ class _NoteCardState extends State<NoteCard> {
                   });
             },
             icon: const Icon(Icons.more_horiz)));
+  }
+
+  _dialogDeleteConfirm(Note note) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: const Text("确认删除笔记吗？"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // 关闭删除确认对话框和更多菜单对话框
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+              },
+              child: const Text("取消"),
+            ),
+            TextButton(
+              onPressed: () async {
+                // 关闭删除确认对话框和更多菜单对话框
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+                if (await NoteDao.deleteNoteById(note.id)) {
+                  if (widget.removeNote != null) {
+                    widget.removeNote!();
+                  }
+                } else {
+                  showToast("删除失败！");
+                }
+              },
+              child: const Text(
+                "删除",
+                style: TextStyle(color: Colors.red),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 }

@@ -146,16 +146,10 @@ class NoteDao {
     episodeNote = escapeEpisodeNote(episodeNote);
     String createTime = DateTime.now().toString();
 
-    await database.rawInsert('''
+    return await database.rawInsert('''
     insert into episode_note (anime_id, episode_number, review_number, note_content, create_time)
     values (${episodeNote.anime.animeId}, ${episodeNote.episode.number}, ${episodeNote.episode.reviewNumber}, '', '$createTime'); -- 空内容
     ''');
-
-    var lm2 = await database.rawQuery('''
-      select last_insert_rowid() as last_id
-      from episode_note;
-      ''');
-    return lm2[0]["last_id"] as int; // 返回最新插入的id
   }
 
   static Future<Note> getNoteContentAndImagesByNoteId(int noteId) async {
@@ -316,5 +310,21 @@ class NoteDao {
     episodeNote.noteContent =
         EscapeUtil.restoreEscapeStr(episodeNote.noteContent);
     return episodeNote;
+  }
+
+  // 删除评价笔记/集笔记
+  // 先删除与笔记相关的图片，再删除该笔记(id唯一，不用在意reviewNumber，而且删除集笔记后当进入详情页会自动创建空笔记)
+  static Future<bool> deleteNoteById(int noteId) async {
+    int num = await database.rawDelete('''
+    delete from image
+    where note_id = $noteId;
+    ''');
+    Log.info("删除了$num个与该笔记相关的图片");
+    num = await database.rawDelete('''
+    delete from episode_note
+    where note_id = $noteId;
+    ''');
+    Log.info("删除了$num条笔记(id=$noteId)");
+    return true;
   }
 }

@@ -72,7 +72,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             onPressed: () {
               widget.popPage();
             },
-            icon: Icon(Icons.arrow_back_ios, color: appBarIconColor, size: 20),
+            icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
           ),
           actions: _generateActions(),
         );
