@@ -75,11 +75,11 @@ class ClimbAnimeUtil {
   // 获取数据库中所有动漫，然后更新未完结的动漫信息
   static void updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
-      showToast("更新间隔为10s");
+      showToast("更新间隔为10s，请稍后再试");
       return;
     }
 
-    showToast("全局更新中...");
+    // showToast("全局更新中...");
     canUpdateAllAnimesInfo = false;
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);

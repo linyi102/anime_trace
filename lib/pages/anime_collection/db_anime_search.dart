@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/anime_list_view.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/label.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -12,9 +14,6 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
-
-import '../../models/label.dart';
-import '../../components/anime_list_view.dart';
 
 /// 搜索已添加的动漫
 class DbAnimeSearchPage extends StatefulWidget {

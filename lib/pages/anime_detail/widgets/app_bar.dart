@@ -72,7 +72,9 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             onPressed: () {
               widget.popPage();
             },
-            icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
+            // icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
+            icon: Icon(Icons.arrow_back_ios_new,
+                color: appBarIconColor, size: 20),
           ),
           actions: _generateActions(),
         );
@@ -103,9 +105,10 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             end: Alignment.bottomCenter,
             colors: SpProfile.getEnableCoverBgGradient()
                 ? [
+                    // Colors.black.withOpacity(0),
                     // 最上面添加一点黑色，这样就能看清按钮了
                     Colors.black.withOpacity(0.2),
-                    // Colors.white.withOpacity(0.5),
+                    // Colors.white.withOpacity(0.2),
                     // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
                     ThemeUtil.getScaffoldBackgroundColor().withOpacity(0),
                     // 过渡到主体颜色

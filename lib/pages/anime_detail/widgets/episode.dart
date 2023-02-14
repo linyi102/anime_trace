@@ -339,7 +339,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
 
   void _dialogSelectReviewNumber() {
     dialogSelectUint(context, "选择第几次观看",
-            initialValue: _anime.reviewNumber, minValue: 1, maxValue: 9)
+            initialValue: _anime.reviewNumber, minValue: 1, maxValue: 99)
         .then((value) {
       if (value != null) {
         if (_anime.reviewNumber != value) {
