@@ -65,9 +65,11 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
         title: Text("收藏列表 ($cnt)",
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
-      body: FadeAnimatedSwitcher(
-        destWidget: _buildAnimesListView(),
-        loadOk: loadOk,
+      body: Scrollbar(
+        child: FadeAnimatedSwitcher(
+          destWidget: _buildAnimesListView(),
+          loadOk: loadOk,
+        ),
       ),
     );
   }

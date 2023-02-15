@@ -9,9 +9,10 @@ import 'package:flutter_test_future/utils/log.dart';
 class DioPackage {
   static final BaseOptions _baseOptions = BaseOptions(
       method: "get",
-      connectTimeout: 5000,
-      sendTimeout: 5000,
-      receiveTimeout: 5000);
+      // 由5000改为8000，避免模拟器上趣动漫超时
+      connectTimeout: 8000,
+      sendTimeout: 8000,
+      receiveTimeout: 8000);
 
   static Dio _getDio() {
     /**

@@ -132,10 +132,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
           if (loading) {
             return const Center(child: CircularProgressIndicator());
           }
-          return RefreshIndicator(
-            onRefresh: () => _loadData(),
-            child: _buildAnimeList(pageIndex),
-            // child: _buildAnimeGrid(pageIndex),
+          return Scrollbar(
+            child: RefreshIndicator(
+              onRefresh: () => _loadData(),
+              child: _buildAnimeList(pageIndex),
+              // child: _buildAnimeGrid(pageIndex),
+            ),
           );
         },
       ),
@@ -167,9 +169,11 @@ class _WeeklyPageState extends State<WeeklyPage> {
   }
 
   _buildAnimeList(int pageIndex) {
-    if (weeklyController.weeks[pageIndex].isEmpty) {
-      return emptyDataHint();
-    }
+    // if (weeklyController.weeks[pageIndex].isEmpty) {
+    //   return ListView( // ListView保证空数据下能够刷新
+    //     children: [emptyDataHint()],
+    //   );
+    // }
 
     return ListView.builder(
       itemCount: weeklyController.weeks[pageIndex].length,

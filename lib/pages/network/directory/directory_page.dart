@@ -206,9 +206,9 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   _buildAnimeSliverList() {
-    if (directory.isEmpty) {
-      return SliverToBoxAdapter(child: emptyDataHint());
-    }
+    // if (directory.isEmpty) {
+    //   return SliverToBoxAdapter(child: emptyDataHint());
+    // }
 
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {

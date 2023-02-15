@@ -21,6 +21,8 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   bool loadOk = false;
   int cnt = 0;
 
+  bool useCard = true;
+
   @override
   void initState() {
     super.initState();
@@ -69,10 +71,12 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
         title: Text("未完结动漫 ($cnt)",
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
-      body: FadeAnimatedSwitcher(
-        // destWidget: _buildAnimeTileListView(),
-        destWidget: _buildAnimeCardListView(),
-        loadOk: loadOk,
+      body: Scrollbar(
+        child: FadeAnimatedSwitcher(
+          destWidget:
+              useCard ? _buildAnimeCardListView() : _buildAnimeTileListView(),
+          loadOk: loadOk,
+        ),
       ),
     );
   }
