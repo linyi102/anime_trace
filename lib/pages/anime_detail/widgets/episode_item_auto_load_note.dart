@@ -440,13 +440,44 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       setState(() {});
     } else {
       // 没有多选时，进入笔记编辑页
-      _enterNoteEditPage();
+
+      if (_episode.note == null && !_episode.isChecked()) {
+        // 如果没有设置观看时间，且没有笔记，则提示创建
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("没有找到笔记"),
+              content: const Text("需要立即创建吗？"),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("取消")),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _enterNoteEditPage(needCreate: true);
+                    },
+                    child: const Text("创建")),
+              ],
+            );
+          },
+        );
+      } else {
+        // 如果已设置时间，那么自动创建笔记并进入编辑页
+        _enterNoteEditPage();
+      }
     }
   }
 
   /// 进入笔记编辑页
   void _enterNoteEditPage({bool needCreate = false}) async {
-    if (_episode.isChecked() || needCreate) {
+    // 四种情况：
+    // 1.集完成后，单击可以进入笔记编辑页(如果没有笔记则会自动创建)
+    // 2.集没有完成，但有笔记，那么可以直接进入
+    // 3.即没有完成，更多按钮中点击创建笔记
+    // 4.集没有完成，弹出了创建提示
+    if (_episode.isChecked() || _episode.note != null || needCreate) {
       // 如果没有笔记(为null)，那么先插入到数据库中
       if (_episode.note == null) {
         _episode.note = Note.createEpisodeNote(_anime, _episode);
