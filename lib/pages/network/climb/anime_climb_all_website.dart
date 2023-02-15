@@ -70,7 +70,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     _generateCustomAnimes();
 
     Log.info("开始爬取动漫封面");
-    // 遍历所有搜素源
+    // 遍历所有搜索源
     for (var climbWebsite in climbWebsites) {
       Log.info(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源

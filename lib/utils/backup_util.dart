@@ -31,24 +31,14 @@ class BackupUtil {
     return localRootDirPath;
   }
 
-  // 应该返回webdav包中的File，可惜加上后会和io中的File冲突
-  static Future<String> backup({
-    String localBackupDirPath = "",
-    String remoteBackupDirPath = "",
-    bool showToastFlag = true,
-    bool automatic = false,
-  }) async {
-    // DateTime dateTime = DateTime.now();
-    // String time =
-    //     "${dateTime.year}-${dateTime.month}-${dateTime.day}-${dateTime.hour}-${dateTime.minute}-${dateTime.second}"; // 不足：没有用两位数显示<10的数
+  /// 备份时，用于生成文件名
+  static Future<String> generateZipName() async {
     // 2020-02-22 01:01:01.182096取到秒
     String time = DateTime.now().toString().split(".")[0];
     // :和空格转为-
     time = time.replaceAll(":", "-");
     time = time.replaceAll(" ", "-");
 
-    var encoder = ZipFileEncoder();
-    String localRootDirPath = await getLocalRootDirPath();
     String zipName = "";
     if (Platform.isAndroid) {
       zipName = "$backupZipNamePrefix-$time-android.zip";
@@ -57,6 +47,15 @@ class BackupUtil {
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
+
+    return zipName;
+  }
+
+  /// 创建临时备份文件
+  static Future<File> createTempBackUpFile(String zipName) async {
+    var encoder = ZipFileEncoder();
+    String localRootDirPath = await getLocalRootDirPath();
+
     String tempZipFilePath = "$localRootDirPath/$zipName";
     encoder.create(tempZipFilePath);
     Directory directory = Directory(localRootDirPath);
@@ -81,6 +80,20 @@ class BackupUtil {
       }
     });
     encoder.close();
+
+    return File(tempZipFilePath);
+  }
+
+  // 应该返回webdav包中的File，可惜加上后会和io中的File冲突
+  static Future<String> backup({
+    String localBackupDirPath = "",
+    String remoteBackupDirPath = "",
+    bool showToastFlag = true,
+    bool automatic = false,
+  }) async {
+    String zipName = await generateZipName();
+    File tempZipFile = await createTempBackUpFile(zipName);
+
     if (localBackupDirPath.isNotEmpty) {
       // 已设置路径，直接备份
       if (localBackupDirPath != "unset") {
@@ -92,11 +105,11 @@ class BackupUtil {
         } else {
           localBackupFilePath = "$localBackupDirPath/$zipName";
         }
-        await File(tempZipFilePath).copy(localBackupFilePath);
+        await tempZipFile.copy(localBackupFilePath);
         if (showToastFlag) showToast("备份成功：$localBackupFilePath");
         // 如果还要备份到webdav，则先不删除
         if (remoteBackupDirPath.isEmpty) {
-          File(tempZipFilePath).delete();
+          tempZipFile.delete();
           return localBackupFilePath;
         }
       } else {
@@ -110,7 +123,7 @@ class BackupUtil {
       if (!SPUtil.getBool("online")) {
         Log.info("WebDav 备份失败，请检查网络状态");
         showToast("WebDav 备份失败，请检查网络状态");
-        File(tempZipFilePath).delete(); // 备份失败后需要删掉临时备份文件
+        tempZipFile.delete(); // 备份失败后需要删掉临时备份文件
         return "";
       }
       String remoteBackupFilePath;
@@ -119,10 +132,10 @@ class BackupUtil {
       } else {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
-      await WebDavUtil.upload(tempZipFilePath, remoteBackupFilePath);
+      await WebDavUtil.upload(tempZipFile.path, remoteBackupFilePath);
       if (showToastFlag) showToast("WebDav 备份成功：$remoteBackupFilePath");
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
-      File(tempZipFilePath).delete();
+      tempZipFile.delete();
       deleteOldAutoBackupFileFromRemote(
           remoteBackupDirPath); // 删除自动备份中超过用户备份数量的文件
       return remoteBackupFilePath;

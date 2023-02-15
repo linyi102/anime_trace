@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  file_saver
   screen_retriever
   url_launcher_windows
   window_manager

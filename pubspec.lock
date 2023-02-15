@@ -162,6 +162,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.6.1"
+  file_saver:
+    dependency: "direct main"
+    description:
+      name: file_saver
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.1"
   flutter:
     dependency: "direct main"
     description: flutter

@@ -47,8 +47,9 @@ class AnimeDao {
   static Future<bool> clearAllAnimeDesc() async {
     await db.rawUpdate('''
     update anime set anime_desc = null;
-    vacuum; --消除空闲页，否则数据库文件大小没有变化
     ''');
+    // 消除空闲页，否则数据库文件大小没有变化。注意不要放在rawUpdate中，否则Android端没有变化(Windows端文件却变小了)
+    await db.execute('vacuum');
     return true;
   }
 
