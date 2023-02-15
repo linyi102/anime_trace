@@ -49,13 +49,15 @@ class AnimeGridCover extends StatelessWidget {
                       context,
                       _animeDisplayController.showGridAnimeName.value &&
                           _animeDisplayController.showNameInCover.value),
-                  if (showProgress)
-                    _buildEpisodeState(_anime.isCollected() &&
-                        _animeDisplayController.showGridAnimeProgress.value),
-                  if (showReviewNumber)
-                    _buildReviewNumber(_anime.isCollected() &&
-                        _animeDisplayController.showReviewNumber.value &&
-                        _anime.reviewNumber > 1)
+                  if (showProgress &&
+                      _anime.isCollected() &&
+                      _animeDisplayController.showGridAnimeProgress.value)
+                    _buildEpisodeState(),
+                  if (showReviewNumber &&
+                      _anime.isCollected() &&
+                      _animeDisplayController.showReviewNumber.value &&
+                      _anime.reviewNumber > 1)
+                    _buildReviewNumber()
                 ],
               ),
               // 名字
@@ -112,45 +114,39 @@ class AnimeGridCover extends StatelessWidget {
         ));
   }
 
-  _buildEpisodeState(bool show) {
-    if (show) {
-      return Positioned(
-          left: 5,
-          top: 5,
-          child: Container(
-            // height: 20,
-            padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: ThemeUtil.getPrimaryColor(),
-            ),
-            child: Text(
-              "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
-              textScaleFactor: 0.8,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ));
-    } else {
-      return Container();
-    }
+  _buildEpisodeState() {
+    return Positioned(
+        left: 5,
+        top: 5,
+        child: Container(
+          // height: 20,
+          padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            color: ThemeUtil.getPrimaryColor(),
+          ),
+          child: Text(
+            "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
+            textScaleFactor: 0.8,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ));
   }
 
-  _buildReviewNumber(bool show) {
-    if (show) {
-      return Positioned(
-          right: 5,
-          top: 5,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3), color: Colors.orange),
-            child: Text(" ${_anime.reviewNumber} ",
-                textScaleFactor: 0.8,
-                style: const TextStyle(color: Colors.white)),
-          ));
-    } else {
-      return Container();
-    }
+  _buildReviewNumber() {
+    return Positioned(
+        right: 5,
+        top: 5,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3),
+            color: Colors.orange,
+          ),
+          child: Text(" ${_anime.reviewNumber} ",
+              textScaleFactor: 0.8,
+              style: const TextStyle(color: Colors.white)),
+        ));
   }
 
   _buildNameInCover() {

@@ -161,7 +161,7 @@ class LabelManagePage extends StatelessWidget {
                         context: context,
                         builder: (context) => AlertDialog(
                               title: const Text("确认删除吗？"),
-                              content: Text("要删除的标签：${label.name}"),
+                              content: Text("将要删除的标签：${label.name}"),
                               actions: [
                                 TextButton(
                                     onPressed: () {

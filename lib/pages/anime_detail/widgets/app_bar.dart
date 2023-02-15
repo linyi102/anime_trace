@@ -213,8 +213,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("提示"),
-            content: const Text("这将会删除所有相关记录，\n确认取消收藏吗？"),
+            title: const Text("确认取消收藏吗？"),
+            content: const Text("这将会删除所有相关记录！"),
             actions: [
               TextButton(
                   onPressed: () {

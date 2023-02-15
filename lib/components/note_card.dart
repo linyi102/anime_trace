@@ -203,6 +203,8 @@ class _NoteCardState extends State<NoteCard> {
                           leading: const Icon(EvaIcons.trash2Outline),
                           title: const Text("删除笔记"),
                           onTap: () {
+                            Navigator.pop(dialogContext);
+
                             _dialogDeleteConfirm(note);
                           },
                         )
@@ -222,19 +224,14 @@ class _NoteCardState extends State<NoteCard> {
           actions: [
             TextButton(
               onPressed: () {
-                // 关闭删除确认对话框和更多菜单对话框
-                Navigator.of(context)
-                  ..pop()
-                  ..pop();
+                Navigator.pop(context);
               },
               child: const Text("取消"),
             ),
             TextButton(
               onPressed: () async {
-                // 关闭删除确认对话框和更多菜单对话框
-                Navigator.of(context)
-                  ..pop()
-                  ..pop();
+                Navigator.pop(context);
+
                 if (await NoteDao.deleteNoteById(note.id)) {
                   if (widget.removeNote != null) {
                     widget.removeNote!();

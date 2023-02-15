@@ -82,7 +82,8 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text("这会清除已收藏动漫的简介信息，确认这么做吗？"),
+                title: const Text("确认这么做吗？"),
+                content: const Text("这会清除已收藏动漫的简介信息！"),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),

@@ -28,8 +28,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  bool _loadOk = false;
-
   // style
   final bool _addDivider = false;
   static const _thickness = 0.5;
@@ -43,12 +41,6 @@ class _SettingPageState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(const Duration(milliseconds: 0)).then((value) {
-      setState(() {
-        _loadOk = true;
-      });
-    });
 
     _selectedImageTypeIdx =
         SPUtil.getInt(bannerSelectedImageTypeIdx, defaultValue: 0);
@@ -78,28 +70,26 @@ class _SettingPageState extends State<SettingPage> {
 
   _buildBody() {
     // 监听切换主题后的primaryColor(leadingIconColor)
-    return FadeAnimatedSwitcher(
-      loadOk: _loadOk,
-      specifiedLoadingWidget: Container(),
-      destWidget: Obx(() => ListView(
-            children: [
-              _buildBanner(),
-              // _buildBannerButton(),
-              // const Logo(),
+    return Obx(
+      () => ListView(
+        children: [
+          _buildBanner(),
+          // _buildBannerButton(),
+          // const Logo(),
 
-              if (_addDivider) const Divider(thickness: _thickness),
+          if (_addDivider) const Divider(thickness: _thickness),
 
-              Card(child: _buildFunctionGroup()),
+          Card(child: _buildFunctionGroup()),
 
-              if (_addDivider) const Divider(thickness: _thickness),
+          if (_addDivider) const Divider(thickness: _thickness),
 
-              Card(child: _buildSettingGroup()),
+          Card(child: _buildSettingGroup()),
 
-              if (_addDivider) const Divider(thickness: _thickness),
+          if (_addDivider) const Divider(thickness: _thickness),
 
-              Card(child: _buildOtherGroup()),
-            ],
-          )),
+          Card(child: _buildOtherGroup()),
+        ],
+      ),
     );
   }
 

@@ -349,8 +349,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
         builder: (context) {
           // 返回警告对话框
           return AlertDialog(
-            title: const Text("提示"),
-            content: const Text("确认移除该图片吗？"),
+            title: const Text("确认移除吗？"),
+            content: const Text("这并不会删除您的图片文件"),
             // 动作集合
             actions: <Widget>[
               TextButton(

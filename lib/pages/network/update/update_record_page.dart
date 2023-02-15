@@ -163,7 +163,7 @@ class UpdateRecordPage extends StatelessWidget {
 
   _buildEmptyDataPage() {
     return ListView(
-      children: [emptyDataHint(msg: "尝试下拉更新动漫")],
+      children: [emptyDataHint()],
     );
   }
 

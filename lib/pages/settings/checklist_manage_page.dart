@@ -177,8 +177,8 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("删除清单"),
-            content: Text("确认删除「$tagName」清单吗？"),
+            title: const Text("确认删除吗？"),
+            content: Text("将要删除的清单：$tagName"),
             actions: [
               TextButton(
                   onPressed: () {
@@ -197,7 +197,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                     Navigator.of(context).pop();
                   },
                   child: const Text(
-                    "确认",
+                    "删除",
                     style: TextStyle(color: Colors.red),
                   )),
             ],
