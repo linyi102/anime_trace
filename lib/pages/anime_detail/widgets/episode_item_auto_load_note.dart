@@ -489,7 +489,10 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         for (var i = begin; i <= end; i++) {
           widget.animeController.mapSelected[i] = true;
         }
-        setState(() {});
+        // 不能只重绘这一个
+        // setState(() {});
+        // 只要重回集页面
+        widget.animeController.update([widget.animeController.episodeId]);
       }
     }
   }
