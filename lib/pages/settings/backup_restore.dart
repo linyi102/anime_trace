@@ -74,21 +74,18 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     File dbFile = File(SqliteUtil.dbPath);
 
     return ListTile(
-      title: const Text("清空动漫简介"),
+      title: const Text("减小数据文件"),
       subtitle:
-          Text("当前数据大小：${FileUtil.getReadableFileSize(dbFile.lengthSync())}"),
+          Text("当前大小：${FileUtil.getReadableFileSize(dbFile.lengthSync())}"),
       onTap: () {
         showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text("确定清除吗？"),
-                content: const Text("这会清除已收藏动漫的简介信息"),
+                title: const Text("这会清除已收藏动漫的简介信息，确认这么做吗？"),
                 actions: [
                   TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => Navigator.pop(context),
                       child: const Text("取消")),
                   ElevatedButton(
                       onPressed: () {
@@ -110,7 +107,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                                   ));
                         });
                       },
-                      child: const Text("确定")),
+                      child: const Text("确认")),
                 ],
               );
             });
