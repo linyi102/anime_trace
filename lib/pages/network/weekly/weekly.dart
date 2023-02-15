@@ -44,6 +44,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
   bool enableSlide = false; // 开启左右滑动切换周几
   late final PageController pageController;
 
+  final scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +85,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
         loading = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -133,6 +141,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
             return const Center(child: CircularProgressIndicator());
           }
           return Scrollbar(
+            controller: scrollController,
             child: RefreshIndicator(
               onRefresh: () => _loadData(),
               child: _buildAnimeList(pageIndex),
@@ -146,6 +155,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
   GridView _buildAnimeGrid(int pageIndex) {
     return GridView.builder(
+      controller: scrollController,
       gridDelegate: getAnimeGridDelegate(context),
       // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
       itemCount: weeklyController.weeks[pageIndex].length,
@@ -176,6 +186,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
     // }
 
     return ListView.builder(
+      controller: scrollController,
       itemCount: weeklyController.weeks[pageIndex].length,
       itemBuilder: (context, recordIdx) {
         // Log.info("recordIdx=$recordIdx");

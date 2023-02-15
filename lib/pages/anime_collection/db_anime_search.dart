@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_list_view.dart';
+import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
@@ -104,11 +104,10 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   Log.info("$runtimeType: index=$index");
                   return AnimeListTile(
                     anime: _animes[index],
-                    index: index,
                     animeTileSubTitle: AnimeTileSubTitle.nameAnother,
                     showReviewNumber: true,
                     showTrailingProgress: true,
-                    onClick: (index) {
+                    onTap: () {
                       _enterAnimeDetail(index);
                     },
                   );

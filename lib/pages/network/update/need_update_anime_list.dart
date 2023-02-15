@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/anime_list_view.dart';
+import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/play_status.dart';
@@ -23,10 +23,18 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
   bool useCard = true;
 
+  final scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   _loadData() {
@@ -72,6 +80,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
             style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: Scrollbar(
+        controller: scrollController,
         child: FadeAnimatedSwitcher(
           destWidget:
               useCard ? _buildAnimeCardListView() : _buildAnimeTileListView(),
@@ -83,6 +92,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
   ListView _buildAnimeCardListView() {
     return ListView.builder(
+      controller: scrollController,
       itemCount: animes.length,
       itemBuilder: (context, index) => AnimeItemAutoLoad(
         anime: animes[index],
@@ -109,17 +119,24 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
     );
   }
 
-  AnimeListView _buildAnimeTileListView() {
-    return AnimeListView(
-      animes: animes,
-      animeTileSubTitle: AnimeTileSubTitle.twoLinesOfInfo,
-      isThreeLine: true,
-      onClick: (index) {
-        Anime anime = animes[index];
-
-        _enterAnimeDetailPage(anime, index);
-      },
-    );
+  _buildAnimeTileListView() {
+    return ListView.builder(
+        controller: scrollController,
+        itemCount: animes.length,
+        itemBuilder: (context, index) {
+          Log.info("$runtimeType: index=$index");
+          Anime anime = animes[index];
+          return AnimeListTile(
+            isThreeLine: true,
+            anime: anime,
+            animeTileSubTitle: AnimeTileSubTitle.twoLinesOfInfo,
+            showReviewNumber: false,
+            showTrailingProgress: false,
+            onTap: () {
+              _enterAnimeDetailPage(anime, index);
+            },
+          );
+        });
   }
 
   _enterAnimeDetailPage(Anime anime, int index) {
