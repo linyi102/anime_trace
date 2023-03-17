@@ -23,7 +23,7 @@ List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "樱花动漫",
       // iconUrl: "https://www.yhdmp.cc/yxsf/yh_pic/favicon.ico",
-      iconUrl: "https://t.gmit.vip/2023/02/08/kn3ywr.ico",
+      iconUrl: "assets/images/website/yhdm.ico",
       keyword: "yhdm",
       spkey: "enableWebSiteYhdm",
       enable: SPUtil.getBool("enableWebSiteYhdm", defaultValue: true),
@@ -41,7 +41,7 @@ List<ClimbWebsite> climbWebsites = [
       desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载"),
   ClimbWebsite(
       name: "OmoFun",
-      iconUrl: "assets/images/website/OmoFun.jpg",
+      iconUrl: "assets/images/website/omofun.jpg",
       keyword: "omofun",
       spkey: "enableWebSiteOmofun",
       enable: false,
@@ -52,8 +52,7 @@ List<ClimbWebsite> climbWebsites = [
       desc: "提供最新最快的动漫新番资讯和在线播放，开心看动漫，无圣骑、无暗牧"),
   ClimbWebsite(
       name: "次元城动漫",
-      iconUrl:
-          "https://www.cycdm01.top/upload/mxprocms/20220825-1/94f5bbad3547f250ed2ed3684d11e19d.png",
+      iconUrl: "assets/images/website/cyc.png",
       keyword: "cyc",
       spkey: "enableWebSiteCycdm",
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
@@ -62,8 +61,7 @@ List<ClimbWebsite> climbWebsites = [
       desc: "高质量在线追番平台！"),
   ClimbWebsite(
       name: "艾米动漫",
-      iconUrl:
-          "https://img.gejiba.com/images/f1f102fc413011625bd2a610cac6c83b.png",
+      iconUrl: "assets/images/website/aimi.jpg",
       keyword: "aimi",
       discard: true,
       spkey: "enableWebSiteAimi",
@@ -73,7 +71,8 @@ List<ClimbWebsite> climbWebsites = [
       desc: "艾米动漫致力于收集动漫资源，为广大网友提供各种好番而生。"),
   ClimbWebsite(
     name: "豆瓣",
-    iconUrl: "https://www.douban.com/favicon.ico",
+    // iconUrl: "https://www.douban.com/favicon.ico",
+    iconUrl: "assets/images/website/douban.ico",
     enable: SPUtil.getBool("enableWebSiteDouban", defaultValue: false),
     spkey: "enableWebSiteDouban",
     pingStatus: PingStatus(),
@@ -83,7 +82,7 @@ List<ClimbWebsite> climbWebsites = [
   ),
   ClimbWebsite(
       name: "趣动漫",
-      iconUrl: "https://t.gmit.vip/2023/02/14/ozxhvn.png",
+      iconUrl: "assets/images/website/qdm.png",
       enable: SPUtil.getBool("enableWebSiteQdm", defaultValue: false),
       spkey: "enableWebSiteQdm",
       pingStatus: PingStatus(),
@@ -93,7 +92,7 @@ List<ClimbWebsite> climbWebsites = [
           "趣动漫致力为所有动漫迷们提供最好看的动漫、最新最快的高清动画下载及全集资源，观看完全免费、无须注册、高速播放、更新及时的专业在线动漫站。"),
   ClimbWebsite(
       name: "曲奇动漫",
-      iconUrl: "https://www.dmpck.me/tpsf/qd_pic/favicon.ico",
+      iconUrl: "assets/images/website/quqi.ico",
       keyword: "quqi",
       spkey: "enableWebSiteQuqi",
       enable: SPUtil.getBool("enableWebSiteQuqi", defaultValue: false),
@@ -103,7 +102,7 @@ List<ClimbWebsite> climbWebsites = [
           "曲奇动漫是由民间动漫爱好者创立，仅供学习交流使用。曲奇动漫致力于精品动漫资源收集整理，动漫免费在线观看、免费下载、新番动漫同步连载，动漫资讯同步更新，——欢迎访问曲奇动漫。"),
   ClimbWebsite(
       name: "Bangumi",
-      iconUrl: "https://bangumi.tv/img/favicon.ico",
+      iconUrl: "assets/images/website/bangumi.ico",
       keyword: "bangumi",
       spkey: "enableWebSiteBangumi",
       enable: SPUtil.getBool("enableWebSiteBangumi", defaultValue: false),
