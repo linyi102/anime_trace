@@ -2,9 +2,11 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:html/dom.dart';
 import 'package:oktoast/oktoast.dart';
 
 class ClimbDouban extends Climb {
@@ -20,14 +22,17 @@ class ClimbDouban extends Climb {
   String get sourceName => "豆瓣";
 
   @override
-  List<UserCollection> get collections => [
-        UserCollection(title: "在看", word: "do"),
-        UserCollection(title: "想看", word: "wish"),
-        UserCollection(title: "看过", word: "collect"),
+  List<SiteCollectionTab> get siteCollectionTabs => [
+        SiteCollectionTab(title: "在看", word: "do"),
+        SiteCollectionTab(title: "想看", word: "wish"),
+        SiteCollectionTab(title: "看过", word: "collect"),
       ];
 
   @override
   String get userCollBaseUrl => "https://movie.douban.com/people";
+
+  @override
+  int get userCollPageSize => 15;
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
@@ -152,16 +157,7 @@ class ClimbDouban extends Climb {
     return DioPackage.urlResponseOk(url);
   }
 
-  @override
-  Future<int> climbUserCollectionCnt(
-      String userId, UserCollection userCollection) async {
-    String url = "$userCollBaseUrl/$userId/${userCollection.word}";
-
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return 0;
-    }
-
+  Future<int> climbUserCollectionCnt(Document document) async {
     // 例：埃路皮在看的电视剧(10)
     String? title = document
         .getElementById("db-usr-profile")
@@ -178,16 +174,18 @@ class ClimbDouban extends Climb {
 
   /// 查询某个用户的收藏
   @override
-  Future<List<Anime>> climbUserCollection(
-      String userId, UserCollection userCollection,
+  Future<UserCollection> climbUserCollection(
+      String userId, SiteCollectionTab siteCollectionTab,
       {int page = 1}) async {
     String url =
-        "$userCollBaseUrl/$userId/${userCollection.word}?start=${(page - 1) * 15}";
+        "$userCollBaseUrl/$userId/${siteCollectionTab.word}?start=${(page - 1) * userCollPageSize}";
 
     var document = await dioGetAndParse(url);
     if (document == null) {
-      return [];
+      return UserCollection(totalCnt: 0, animes: []);
     }
+
+    int totalCnt = await climbUserCollectionCnt(document);
 
     List<Anime> animes = [];
     var elements = document.getElementsByClassName("item");
@@ -207,6 +205,6 @@ class ClimbDouban extends Climb {
       animes.add(anime);
     }
 
-    return animes;
+    return UserCollection(totalCnt: totalCnt, animes: animes);
   }
 }

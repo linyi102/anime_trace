@@ -1,12 +1,14 @@
+import 'package:flutter_test_future/models/anime.dart';
+
 class UserCollection {
-  String title; // 标题，例如「想看」
-  String word; // url尾部单词，例如「wish」
+  int totalCnt; // 收藏总数
+  List<Anime> animes; // 收藏列表
 
   UserCollection({
-    required this.title,
-    required this.word,
+    required this.totalCnt,
+    required this.animes,
   });
 
   @override
-  String toString() => 'UserCollection(title: $title, word: $word)';
+  String toString() => 'UserCollection(totalCnt: $totalCnt, animes: $animes)';
 }

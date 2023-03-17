@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -21,30 +22,26 @@ class ImportCollectionPage extends StatefulWidget {
 
 class _ImportCollectionPagrState extends State<ImportCollectionPage>
     with SingleTickerProviderStateMixin {
+  Climb get climb => widget.climbWebsite.climb;
+  List<SiteCollectionTab> get siteCollectionTab => climb.siteCollectionTabs;
+
   late TabController tabController;
   List<bool> searching = [];
-  Climb get climb => widget.climbWebsite.climb;
-  List<UserCollection> get collections => climb.collections;
-  List<List<Anime>> animeLists = [];
-  List<int> totalCnts = [];
+  List<UserCollection> userCollection = [];
 
   late String userId;
   TextEditingController inputController = TextEditingController();
-  List<RefreshController> refreshControllers = [
-    RefreshController(),
-    RefreshController(),
-    RefreshController()
-  ];
+  List<RefreshController> refreshControllers = [];
 
   @override
   void initState() {
-    for (int i = 0; i < collections.length; ++i) {
+    for (int i = 0; i < siteCollectionTab.length; ++i) {
       searching.add(false);
-      animeLists.add([]);
-      totalCnts.add(0);
+      userCollection.add(UserCollection(totalCnt: 0, animes: []));
+      refreshControllers.add(RefreshController());
     }
     tabController = TabController(
-      length: collections.length,
+      length: siteCollectionTab.length,
       vsync: this,
     );
     super.initState();
@@ -53,8 +50,8 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   @override
   void dispose() {
     tabController.dispose();
-    for (var controller in refreshControllers) {
-      controller.dispose();
+    for (var refreshController in refreshControllers) {
+      refreshController.dispose();
     }
     super.dispose();
   }
@@ -78,22 +75,40 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
               return;
             }
 
+            // 有时查询有些慢，此时应该也显示加载圈
+            for (int collIdx = 0;
+                collIdx < siteCollectionTab.length;
+                ++collIdx) {
+              searching[collIdx] = true;
+            }
+            if (mounted) setState(() {});
+            // 查询用户
             bool exist = await climb.existUser(userId);
+
             if (!exist) {
               showToast("不存在该用户");
+              // 取消加载圈
+              for (int collIdx = 0;
+                  collIdx < siteCollectionTab.length;
+                  ++collIdx) {
+                searching[collIdx] = false;
+              }
+              if (mounted) setState(() {});
               return;
             }
 
-            for (int i = 0; i < collections.length; ++i) {
+            // 查询所有tab
+            for (int i = 0; i < siteCollectionTab.length; ++i) {
               _onRefresh(i);
             }
           },
         ),
         bottom: CommonBottomTabBar(
           tabs: List.generate(
-            collections.length,
+            siteCollectionTab.length,
             (collIdx) => Tab(
-              text: "${collections[collIdx].title} (${totalCnts[collIdx]})",
+              text:
+                  "${siteCollectionTab[collIdx].title} (${userCollection[collIdx].totalCnt})",
             ),
           ),
           tabController: tabController,
@@ -101,9 +116,9 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       ),
       body: TabBarView(
         controller: tabController,
-        children: List.generate(collections.length, (collIdx) {
+        children: List.generate(siteCollectionTab.length, (collIdx) {
           if (searching[collIdx]) return loadingWidget(context);
-          if (animeLists[collIdx].isEmpty) return emptyDataHint();
+          if (userCollection[collIdx].animes.isEmpty) return emptyDataHint();
 
           return SmartRefresher(
             controller: refreshControllers[collIdx],
@@ -112,9 +127,9 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             onRefresh: () => _onRefresh(collIdx),
             onLoading: () => _loadMore(collIdx),
             child: ListView.builder(
-                itemCount: animeLists[collIdx].length,
-                itemBuilder: (context, index) {
-                  Anime anime = animeLists[collIdx][index];
+                itemCount: userCollection[collIdx].animes.length,
+                itemBuilder: (context, animeIdx) {
+                  Anime anime = userCollection[collIdx].animes[animeIdx];
                   return AnimeItemAutoLoad(
                     anime: anime,
                     climbDetail: false, // 过多会提示拒绝执行
@@ -134,32 +149,36 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   _onRefresh(int collIdx) async {
     // 重置数据
     searching[collIdx] = true;
-    animeLists[collIdx].clear();
-    totalCnts[collIdx] = 0;
+    userCollection[collIdx].animes.clear();
+    userCollection[collIdx].totalCnt = 0;
     if (mounted) setState(() {});
 
     // 不放在setState是为了避免mounted为false时，不会赋值数据
-    var collection = collections[collIdx];
-    animeLists[collIdx] = await climb.climbUserCollection(userId, collection);
-    totalCnts[collIdx] = await climb.climbUserCollectionCnt(userId, collection);
+    var collection = siteCollectionTab[collIdx];
+    userCollection[collIdx] =
+        await climb.climbUserCollection(userId, collection);
     searching[collIdx] = false;
     if (mounted) setState(() {});
   }
 
   _loadMore(int collIdx) async {
     // 如果已查询的数量>=最大数量，则标记为没有更多数据了
-    if (animeLists[collIdx].length >= totalCnts[collIdx]) {
+    if (userCollection[collIdx].animes.length >=
+        userCollection[collIdx].totalCnt) {
       refreshControllers[collIdx].loadNoData();
       return;
     }
 
-    var collection = collections[collIdx];
-    List<Anime> animes = await climb.climbUserCollection(
+    var newPageAnimes = (await climb.climbUserCollection(
       userId,
-      collection,
-      page: animeLists[collIdx].length ~/ 15,
-    );
-    animeLists[collIdx].addAll(animes);
+      siteCollectionTab[collIdx],
+      // 每页x个，如果当前已查询了x个，那么x~/x=1，会再次查询第1页，因此最终要+1
+      page:
+          (userCollection[collIdx].animes.length ~/ climb.userCollPageSize) + 1,
+    ))
+        .animes;
+    // 添加新增的动漫，不要重新赋值userCollection
+    userCollection[collIdx].animes.addAll(newPageAnimes);
     if (mounted) setState(() {});
   }
 }

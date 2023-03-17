@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/models/week_record.dart';
+import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -16,10 +17,6 @@ class Climb {
   String baseUrl = "";
 
   String sourceName = "";
-
-  String userCollBaseUrl = "";
-
-  List<UserCollection> collections = [];
 
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
@@ -42,27 +39,26 @@ class Climb {
     throw '未实现';
   }
 
+  //////////////////// 用户收藏 ////////////////////
+  String userCollBaseUrl = "";
+
+  List<SiteCollectionTab> siteCollectionTabs = [];
+
+  int userCollPageSize = 0;
+
   /// 查询是否存在该用户
   Future<bool> existUser(String userId) async {
     throw '未实现';
   }
 
-  /// 查询用户某个收藏下的总数
-  Future<int> climbUserCollectionCnt(
-    String userId,
-    UserCollection userCollection,
-  ) async {
-    throw '未实现';
-  }
-
   /// 查询用户某个收藏下的列表
-  Future<List<Anime>> climbUserCollection(
-      String userId, UserCollection userCollection,
+  Future<UserCollection> climbUserCollection(
+      String userId, SiteCollectionTab siteCollectionTab,
       {int page = 1}) async {
     throw '未实现';
   }
 
-  /// 统一解析
+  //////////////////// 统一解析 ////////////////////
   Future<Document?> dioGetAndParse(String url,
       {bool isMobile = false, String? foreignSourceName}) async {
     String sourceName = foreignSourceName ?? this.sourceName;
