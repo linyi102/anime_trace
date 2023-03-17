@@ -13,18 +13,21 @@ class ClimbWebsite {
   String desc; // 描述
   Climb climb; // 爬取工具
   bool discard; // 放弃使用
+  bool supportImport; // 支持导入
 
-  ClimbWebsite(
-      {required this.name,
-      required this.iconUrl,
-      required this.enable,
-      required this.spkey,
-      required this.pingStatus,
-      required this.keyword,
-      required this.climb,
-      this.discard = false,
-      this.comment = "",
-      this.desc = ""});
+  ClimbWebsite({
+    required this.name,
+    required this.iconUrl,
+    required this.enable,
+    required this.spkey,
+    required this.pingStatus,
+    required this.keyword,
+    required this.climb,
+    this.comment = "",
+    this.desc = "",
+    this.discard = false,
+    this.supportImport = false,
+  });
 
   @override
   String toString() {

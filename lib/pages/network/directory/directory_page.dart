@@ -139,8 +139,6 @@ class _DirectoryPageState extends State<DirectoryPage>
           //   color: ThemeUtil.getPrimaryColor(),
           //   backgroundColor: ThemeUtil.getCardColor(),
           // ),
-          header: const MyClassicHeader(),
-          footer: const MyClassicFooter(),
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
@@ -227,6 +225,7 @@ class _DirectoryPageState extends State<DirectoryPage>
         showAnimeInfo: true,
         showProgress: true,
         showReviewNumber: true,
+        climbDetail: false,
       );
     }, childCount: directory.length));
   }

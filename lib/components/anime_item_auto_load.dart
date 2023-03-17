@@ -19,6 +19,8 @@ class AnimeItemAutoLoad extends StatefulWidget {
       this.showProgress = false,
       this.showReviewNumber = false,
       this.showAnimeInfo = false,
+      this.mixDb = true,
+      this.climbDetail = true,
       super.key});
   final Anime anime;
   final void Function(Anime newAnime) onChanged;
@@ -27,6 +29,8 @@ class AnimeItemAutoLoad extends StatefulWidget {
   final bool showProgress;
   final bool showReviewNumber;
   final bool showAnimeInfo; // 显示与动漫相关的两行信息
+  final bool mixDb; // 如果数据库已收藏，则混入
+  final bool climbDetail; // 爬取详细信息
 
   @override
   State<AnimeItemAutoLoad> createState() => _AnimeItemAutoLoadState();
@@ -52,7 +56,13 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
         loading = false;
       });
     } else {
-      _load();
+      if (widget.climbDetail) {
+        _load();
+      } else {
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 

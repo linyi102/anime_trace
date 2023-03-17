@@ -3,6 +3,7 @@ import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
 import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
+import 'package:flutter_test_future/utils/climb/climb_bangumi.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
@@ -78,6 +79,7 @@ List<ClimbWebsite> climbWebsites = [
     pingStatus: PingStatus(),
     keyword: "douban",
     climb: ClimbDouban(),
+    supportImport: true,
   ),
   ClimbWebsite(
       name: "趣动漫",
@@ -99,4 +101,14 @@ List<ClimbWebsite> climbWebsites = [
       climb: ClimbQuqi(),
       desc:
           "曲奇动漫是由民间动漫爱好者创立，仅供学习交流使用。曲奇动漫致力于精品动漫资源收集整理，动漫免费在线观看、免费下载、新番动漫同步连载，动漫资讯同步更新，——欢迎访问曲奇动漫。"),
+  ClimbWebsite(
+      name: "Bangumi",
+      iconUrl: "https://bangumi.tv/img/favicon.ico",
+      keyword: "bangumi",
+      spkey: "enableWebSiteBangumi",
+      enable: SPUtil.getBool("enableWebSiteBangumi", defaultValue: false),
+      pingStatus: PingStatus(),
+      climb: ClimbBangumi(),
+      supportImport: true,
+      desc: "专注于动漫、音乐、游戏领域，帮助你分享、发现与结识同好的ACG网络"),
 ];

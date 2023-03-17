@@ -2,6 +2,8 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/climb/user_collection.dart';
+import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -13,8 +15,19 @@ class ClimbDouban extends Climb {
 
   @override
   String get baseUrl => "https://www.douban.com";
+
   @override
   String get sourceName => "豆瓣";
+
+  @override
+  List<UserCollection> get collections => [
+        UserCollection(title: "在看", word: "do"),
+        UserCollection(title: "想看", word: "wish"),
+        UserCollection(title: "看过", word: "collect"),
+      ];
+
+  @override
+  String get userCollBaseUrl => "https://movie.douban.com/people";
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
@@ -26,6 +39,11 @@ class ClimbDouban extends Climb {
     var mainpicElement = document.getElementById("mainpic");
     anime.animeCoverUrl =
         mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
+
+    anime.animeName = document
+        .getElementsByTagName("h1")[0]
+        .getElementsByTagName("span")[0]
+        .innerHtml;
 
     var infoElement = document.getElementById("info");
     // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
@@ -41,8 +59,8 @@ class ClimbDouban extends Climb {
         // Log.info("集数=${line.substring(start, end)}");
         anime.animeEpisodeCnt = int.parse(line.substring(start, end));
       } else if (line.contains("又名")) {
-        Log.info("又名=${line.substring(start, end)}");
-        // anime.nameAnother = line.substring(start, end);
+        // Log.info("又名=${line.substring(start, end)}");
+        anime.nameAnother = line.substring(start, end);
       } else if (line.contains("制片国家/地区")) {
         // Log.info("地区=${line.substring(start, end)}");
         anime.area = line.substring(start, end);
@@ -124,5 +142,71 @@ class ClimbDouban extends Climb {
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) async {
     return [];
+  }
+
+  /// 查询是否存在该用户
+  @override
+  Future<bool> existUser(String userId) async {
+    String url = "$userCollBaseUrl/$userId";
+
+    return DioPackage.urlResponseOk(url);
+  }
+
+  @override
+  Future<int> climbUserCollectionCnt(
+      String userId, UserCollection userCollection) async {
+    String url = "$userCollBaseUrl/$userId/${userCollection.word}";
+
+    var document = await dioGetAndParse(url);
+    if (document == null) {
+      return 0;
+    }
+
+    // 例：埃路皮在看的电视剧(10)
+    String? title = document
+        .getElementById("db-usr-profile")
+        ?.getElementsByTagName("h1")[0]
+        .innerHtml;
+    if (title == null) return 0;
+
+    var allMatches = RegExp("\\([0-9]*\\)").allMatches(title);
+    // (10)
+    String str = allMatches.last[0].toString();
+    int? cnt = int.tryParse(str.substring(1, str.length - 1));
+    return cnt ?? 0;
+  }
+
+  /// 查询某个用户的收藏
+  @override
+  Future<List<Anime>> climbUserCollection(
+      String userId, UserCollection userCollection,
+      {int page = 1}) async {
+    String url =
+        "$userCollBaseUrl/$userId/${userCollection.word}?start=${(page - 1) * 15}";
+
+    var document = await dioGetAndParse(url);
+    if (document == null) {
+      return [];
+    }
+
+    List<Anime> animes = [];
+    var elements = document.getElementsByClassName("item");
+    for (var element in elements) {
+      String name =
+          element.getElementsByTagName("a")[0].attributes["title"] ?? "";
+      String img =
+          element.getElementsByTagName("img")[0].attributes["src"] ?? "";
+      String animeUrl = element
+              .getElementsByClassName("title")[0]
+              .getElementsByTagName("a")[0]
+              .attributes["href"] ??
+          "";
+
+      Anime anime =
+          Anime(animeName: name, animeCoverUrl: img, animeUrl: animeUrl);
+      animes.add(anime);
+    }
+
+    return animes;
   }
 }

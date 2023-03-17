@@ -11,6 +11,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.onTapClear,
       this.useModernStyle = true,
       this.isAppBar = true,
+      this.bottom,
       super.key});
   final void Function()? onEditingComplete;
   final void Function(String)? onChanged;
@@ -22,6 +23,9 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool useModernStyle;
   final bool isAppBar;
 
+  /// isAppBar为true时才会有bottom
+  final PreferredSizeWidget? bottom;
+
   @override
   Widget build(BuildContext context) {
     if (isAppBar) {
@@ -29,6 +33,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
         automaticallyImplyLeading: useModernStyle ? false : true,
         actions: useModernStyle ? [_buildCancelButton(context)] : null,
         title: _buildSearchField(context),
+        bottom: bottom,
       );
     } else {
       return _buildSearchField(context);

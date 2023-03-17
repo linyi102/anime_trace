@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter_test_future/components/classic_refresh_style.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -15,6 +16,7 @@ import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'components/update_hint.dart';
@@ -170,20 +172,25 @@ class MyAppState extends State<MyApp> with WindowListener {
             fontWeight: FontWeight.normal,
             decoration: TextDecoration.none,
             fontFamilyFallback: themeController.fontFamilyFallback),
-        child: MaterialApp(
-          theme: buildThemeData(themeController),
-          home: Stack(
-            children: const [
-              MainScreen(),
-              UpdateHint(checkLatestVersion: true)
-            ],
+        child: RefreshConfiguration(
+          headerBuilder: () => const MyClassicHeader(),
+          footerBuilder: () => const MyClassicFooter(),
+          hideFooterWhenNotFull: true,
+          child: MaterialApp(
+            theme: buildThemeData(themeController),
+            home: Stack(
+              children: const [
+                MainScreen(),
+                UpdateHint(checkLatestVersion: true)
+              ],
+            ),
+            // 后台应用显示名称
+            title: '漫迹',
+            // 去除右上角的debug标签
+            debugShowCheckedModeBanner: false,
+            // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
+            scrollBehavior: MyCustomScrollBehavior(),
           ),
-          // 后台应用显示名称
-          title: '漫迹',
-          // 去除右上角的debug标签
-          debugShowCheckedModeBanner: false,
-          // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-          scrollBehavior: MyCustomScrollBehavior(),
         ),
       ),
     );
