@@ -184,14 +184,13 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                 // icon: _showReviewNumberIcon()
                 // 绘制圆角方块，中间添加数字
                 icon: Container(
-                  width: 18,
-                  height: 18,
+                  width: 24,
+                  height: 24,
                   child: Center(
                       child: Text("${_anime.reviewNumber}",
-                          style: const TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.w500))),
+                          style: const TextStyle(fontWeight: FontWeight.w500))),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
+                      borderRadius: BorderRadius.circular(6),
                       border: Border.all(
                           color: ThemeUtil
                                   .themeController.themeColor.value.isDarkMode

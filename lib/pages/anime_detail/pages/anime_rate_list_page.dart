@@ -20,11 +20,18 @@ class AnimeRateListPage extends StatefulWidget {
 class _AnimeRateListPageState extends State<AnimeRateListPage> {
   List<Note> notes = [];
   bool noteOk = false;
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   _loadData() {
@@ -79,23 +86,27 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
   }
 
   _buildRateNoteList() {
-    return ListView.builder(
-        padding: const EdgeInsetsDirectional.all(5),
-        itemCount: notes.length,
-        itemBuilder: (context, index) {
-          Log.info("$runtimeType: index=$index");
-          Note note = notes[index];
+    return Scrollbar(
+      controller: scrollController,
+      child: ListView.builder(
+          controller: scrollController,
+          padding: const EdgeInsetsDirectional.all(5),
+          itemCount: notes.length,
+          itemBuilder: (context, index) {
+            Log.info("$runtimeType: index=$index");
+            Note note = notes[index];
 
-          return NoteCard(
-            note,
-            removeNote: () {
-              // 从notes中移除，并重绘整个页面
-              setState(() {
-                notes.removeAt(index);
-              });
-            },
-            isRateNote: true,
-          );
-        });
+            return NoteCard(
+              note,
+              removeNote: () {
+                // 从notes中移除，并重绘整个页面
+                setState(() {
+                  notes.removeAt(index);
+                });
+              },
+              isRateNote: true,
+            );
+          }),
+    );
   }
 }
