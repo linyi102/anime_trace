@@ -1,5 +1,7 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
+import 'package:flutter_test_future/components/bottom_sheet.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
@@ -9,6 +11,8 @@ import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -104,6 +108,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           },
         ),
         bottom: CommonBottomTabBar(
+          isScrollable: true,
           tabs: List.generate(
             siteCollectionTab.length,
             (collIdx) => Tab(
@@ -114,38 +119,97 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           tabController: tabController,
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: List.generate(siteCollectionTab.length, (collIdx) {
-          if (searching[collIdx]) return loadingWidget(context);
-          if (userCollection[collIdx].animes.isEmpty) return emptyDataHint();
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // 一键添加当前tab下的所有收藏
+          // 提示选择清单
+          showCommonBottomSheet(
+              context: context,
+              expanded: true,
+              title: const Text("选择清单"),
+              child: ListView.builder(
+                itemCount: tags.length,
+                itemBuilder: (context, index) {
+                  var tag = tags[index];
 
-          return SmartRefresher(
-            controller: refreshControllers[collIdx],
-            enablePullDown: true,
-            enablePullUp: true,
-            onRefresh: () => _onRefresh(collIdx),
-            onLoading: () => _loadMore(collIdx),
-            child: ListView.builder(
-                itemCount: userCollection[collIdx].animes.length,
-                itemBuilder: (context, animeIdx) {
-                  Anime anime = userCollection[collIdx].animes[animeIdx];
-                  return AnimeItemAutoLoad(
-                    anime: anime,
-                    climbDetail: false, // 过多会提示拒绝执行
-                    subtitles: [
-                      anime.nameAnother,
-                      anime.tempInfo ?? "",
-                    ],
-                    showProgress: true,
-                    onChanged: (newAnime) {
-                      anime = newAnime;
-                      if (mounted) setState(() {});
+                  return ListTile(
+                    title: Text(tag),
+                    onTap: () {
+                      // 关闭底部面板
+                      Navigator.pop(context);
+                      // 收藏该tab下的所有动漫
                     },
                   );
-                }),
-          );
-        }),
+                },
+              ));
+        },
+        child: const Icon(EvaIcons.starOutline, color: Colors.white),
+      ),
+      body: Stack(
+        children: [
+          TabBarView(
+            controller: tabController,
+            children: List.generate(siteCollectionTab.length, (collIdx) {
+              if (searching[collIdx]) return loadingWidget(context);
+              if (userCollection[collIdx].animes.isEmpty) {
+                return emptyDataHint();
+              }
+
+              return SmartRefresher(
+                controller: refreshControllers[collIdx],
+                enablePullDown: true,
+                enablePullUp: true,
+                onRefresh: () => _onRefresh(collIdx),
+                onLoading: () => _loadMore(collIdx),
+                child: ListView.builder(
+                    itemCount: userCollection[collIdx].animes.length,
+                    itemBuilder: (context, animeIdx) {
+                      Anime anime = userCollection[collIdx].animes[animeIdx];
+                      return AnimeItemAutoLoad(
+                        anime: anime,
+                        climbDetail: false, // 频繁爬取会导致豆瓣提示拒绝执行
+                        subtitles: [
+                          anime.nameAnother,
+                          anime.tempInfo ?? "",
+                        ],
+                        showProgress: false,
+                        onChanged: (newAnime) {
+                          anime = newAnime;
+                          if (mounted) setState(() {});
+                        },
+                      );
+                    }),
+              );
+            }),
+          ),
+          // _buildBottomCollectButton(context)
+        ],
+      ),
+    );
+  }
+
+  Align _buildBottomCollectButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: InkWell(
+        onTap: () {},
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: ThemeUtil.getPrimaryColor(),
+            // border: Border.all(),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                "一键收藏",
+                style: TextStyle(color: Colors.white),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -181,8 +245,15 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           (userCollection[collIdx].animes.length ~/ climb.userCollPageSize) + 1,
     ))
         .animes;
-    // 添加新增的动漫，不要重新赋值userCollection
-    userCollection[collIdx].animes.addAll(newPageAnimes);
-    if (mounted) setState(() {});
+    if (newPageAnimes.isNotEmpty) {
+      // 添加新增的动漫，不要重新赋值userCollection
+      userCollection[collIdx].animes.addAll(newPageAnimes);
+      // 标记为获取完成，否则会一直显示加载，无法再次下拉加载更多
+      refreshControllers[collIdx].loadComplete();
+      if (mounted) setState(() {});
+    } else {
+      // 如果为空，则说明加载失败
+      refreshControllers[collIdx].loadFailed();
+    }
   }
 }
