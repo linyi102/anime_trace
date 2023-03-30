@@ -2,6 +2,8 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
+import 'package:flutter_test_future/utils/log.dart';
+import 'package:oktoast/oktoast.dart';
 
 class ClimbBangumi extends Climb {
   // 单例
@@ -39,7 +41,39 @@ class ClimbBangumi extends Climb {
   /// 爬取动漫详细信息
   @override
   Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    throw '未实现';
+    Log.info("爬取动漫详细网址：${anime.animeUrl}");
+    var document = await dioGetAndParse(anime.animeUrl);
+    if (document == null) {
+      return anime;
+    }
+
+    String? img = document
+        .getElementById("bangumiInfo")
+        ?.getElementsByTagName("a")[0]
+        .attributes["href"];
+    if (img != null) {
+      if (!img.startsWith("https:")) img = "https:$img";
+      anime.animeCoverUrl = img;
+    }
+
+    String? desc = document.getElementById("subject_summary")?.innerHtml;
+    if (desc != null) {
+      anime.animeDesc = desc.replaceAll("<br>", "");
+    }
+
+    final infobox = document.getElementById("infobox");
+    if (infobox != null) {
+      final lis = infobox.getElementsByClassName("li");
+      String tmpStr = lis[1].innerHtml;
+      tmpStr = tmpStr.replaceAll('<span class="tip">话数: </span>', '');
+      anime.animeEpisodeCnt = int.tryParse(tmpStr) ?? anime.animeEpisodeCnt;
+    }
+
+    Log.info("解析完毕√");
+    Log.info(anime.toString());
+    if (showMessage) showToast("更新完毕");
+
+    return anime;
   }
 
   /// 查询是否存在该用户

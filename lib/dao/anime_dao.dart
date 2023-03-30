@@ -59,10 +59,11 @@ class AnimeDao {
     List<Anime> needUpdateAnimes = [];
 
     for (var anime in animes) {
-      // 跳过完结动漫、豆瓣、自定义动漫(也就是没有动漫地址)
+      // 跳过完结动漫、豆瓣、bangumi、自定义动漫(也就是没有动漫地址)
       // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
       if (anime.playStatus.contains("完结") ||
           anime.animeUrl.contains("douban") ||
+          anime.animeUrl.contains("bangumi") ||
           anime.animeUrl.isEmpty) {
         continue;
       }

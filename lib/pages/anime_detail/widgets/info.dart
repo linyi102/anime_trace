@@ -75,19 +75,23 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   _buildDesc() {
     if (widget.animeController.anime.animeDesc.isNotEmpty &&
         widget.animeController.showDescInAnimeDetailPage.value) {
+      var desc = widget.animeController.anime.animeDesc;
+      var textStyle =
+          TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor());
+
       return widget.animeController.isCollected
-          ? ExpandText(widget.animeController.anime.animeDesc,
+          ? ExpandText(
+              desc,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style:
-                  TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor()),
-              arrowSize: 20)
+              style: textStyle,
+              expandWidth: true, // 为false时，若简介每行(换行符分隔)都不足一行，则会居中。则只会true则不会
+              arrowSize: 20,
+              collapsedHint: "展开",
+              expandedHint: "收缩",
+            )
           // 如果没有收藏，这不折叠简介
-          : Text(
-              widget.animeController.anime.animeDesc,
-              style:
-                  TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor()),
-            );
+          : Text(desc, style: textStyle);
     } else {
       return Container();
     }

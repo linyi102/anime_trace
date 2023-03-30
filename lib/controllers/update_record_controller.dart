@@ -50,7 +50,7 @@ class UpdateRecordController extends GetxController {
   }
 
   // 动漫详细页更新
-  updateSingaleAnimeData(Anime oldAnime, Anime newAnime) {
+  updateSingleAnimeData(Anime oldAnime, Anime newAnime) {
     if (newAnime.animeEpisodeCnt <= oldAnime.animeEpisodeCnt) return;
 
     AnimeUpdateRecord updateRecord = AnimeUpdateRecord(
