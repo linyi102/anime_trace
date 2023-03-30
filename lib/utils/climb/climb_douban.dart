@@ -190,8 +190,19 @@ class ClimbDouban extends Climb {
     List<Anime> animes = [];
     var elements = document.getElementsByClassName("item");
     for (var element in elements) {
-      String name =
-          element.getElementsByTagName("a")[0].attributes["title"] ?? "";
+      String title = element
+          .getElementsByClassName("info")[0]
+          .getElementsByClassName("title")[0]
+          .getElementsByTagName("a")[0]
+          .innerHtml;
+      String tempInfo = element.getElementsByClassName("intro")[0].innerHtml;
+      title = title.replaceAll(RegExp("</?em>"), "");
+      var titles = title.split("/");
+      var names = [];
+      for (var title in titles) {
+        names.add(title.trim());
+      }
+
       String img =
           element.getElementsByTagName("img")[0].attributes["src"] ?? "";
       String animeUrl = element
@@ -200,8 +211,13 @@ class ClimbDouban extends Climb {
               .attributes["href"] ??
           "";
 
-      Anime anime =
-          Anime(animeName: name, animeCoverUrl: img, animeUrl: animeUrl);
+      Anime anime = Anime(
+        animeName: names[0],
+        nameAnother: names.skip(1).join(" / "),
+        animeCoverUrl: img,
+        animeUrl: animeUrl,
+        tempInfo: tempInfo,
+      );
       animes.add(anime);
     }
 

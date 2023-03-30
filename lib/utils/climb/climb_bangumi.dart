@@ -104,6 +104,12 @@ class ClimbBangumi extends Climb {
 
       var inner = li.getElementsByClassName("inner")[0];
       String name = inner.getElementsByTagName("a")[0].innerHtml;
+      var smallEs = inner.getElementsByTagName("small");
+      String nameAnother = "";
+      if (smallEs.isNotEmpty) nameAnother = smallEs.first.innerHtml;
+
+      String tempInfo =
+          inner.getElementsByClassName("info tip")[0].innerHtml.trim();
 
       var infos =
           inner.getElementsByClassName("info tip")[0].innerHtml.split("/");
@@ -150,10 +156,12 @@ class ClimbBangumi extends Climb {
 
       Anime anime = Anime(
         animeName: name,
+        nameAnother: nameAnother,
         animeCoverUrl: img,
         animeUrl: animeUrl,
         animeEpisodeCnt: episodeCnt,
         premiereTime: timeStr,
+        tempInfo: tempInfo,
       );
       userCollection.animes.add(anime);
     }

@@ -133,6 +133,10 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                   return AnimeItemAutoLoad(
                     anime: anime,
                     climbDetail: false, // 过多会提示拒绝执行
+                    subtitles: [
+                      anime.nameAnother,
+                      anime.tempInfo ?? "",
+                    ],
                     showProgress: true,
                     onChanged: (newAnime) {
                       anime = newAnime;

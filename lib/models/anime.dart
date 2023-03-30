@@ -27,27 +27,31 @@ class Anime {
 
   bool climbFinished;
 
-  Anime(
-      {this.animeId = 0,
-      required this.animeName,
-      this.animeEpisodeCnt = 0,
-      this.tagName = "",
-      this.animeCoverUrl = "",
-      this.checkedEpisodeCnt = 0,
-      this.animeDesc = "",
-      this.reviewNumber = 1,
-      this.animeUrl = "",
-      this.premiereTime = "",
-      this.nameAnother = "",
-      this.nameOri = "",
-      this.authorOri = "",
-      this.area = "",
-      this.category = "",
-      this.playStatus = "",
-      this.productionCompany = "",
-      this.officialSite = "",
-      this.rate = 0,
-      this.climbFinished = false});
+  String? tempInfo; // 临时信息，例如查询豆瓣用户收藏
+
+  Anime({
+    this.animeId = 0,
+    required this.animeName,
+    this.animeEpisodeCnt = 0,
+    this.tagName = "",
+    this.animeCoverUrl = "",
+    this.checkedEpisodeCnt = 0,
+    this.animeDesc = "",
+    this.reviewNumber = 1,
+    this.animeUrl = "",
+    this.premiereTime = "",
+    this.nameAnother = "",
+    this.nameOri = "",
+    this.authorOri = "",
+    this.area = "",
+    this.category = "",
+    this.playStatus = "",
+    this.productionCompany = "",
+    this.officialSite = "",
+    this.rate = 0,
+    this.climbFinished = false,
+    this.tempInfo,
+  });
 
   @override
   String toString() {
