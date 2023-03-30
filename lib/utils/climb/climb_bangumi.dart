@@ -3,6 +3,7 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:html/dom.dart';
 import 'package:oktoast/oktoast.dart';
 
 class ClimbBangumi extends Climb {
@@ -35,7 +36,16 @@ class ClimbBangumi extends Climb {
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
-    throw '未实现';
+    String url = baseUrl + "/subject_search/$keyword?cat=all";
+    List<Anime> climbAnimes = [];
+
+    var document = await dioGetAndParse(url);
+    if (document == null) {
+      return [];
+    }
+
+    climbAnimes = parseAnimeListByBrowserItemList(document);
+    return climbAnimes;
   }
 
   /// 爬取动漫详细信息
@@ -63,10 +73,12 @@ class ClimbBangumi extends Climb {
 
     final infobox = document.getElementById("infobox");
     if (infobox != null) {
-      final lis = infobox.getElementsByClassName("li");
-      String tmpStr = lis[1].innerHtml;
-      tmpStr = tmpStr.replaceAll('<span class="tip">话数: </span>', '');
-      anime.animeEpisodeCnt = int.tryParse(tmpStr) ?? anime.animeEpisodeCnt;
+      final lis = infobox.getElementsByTagName("li");
+      if (lis.length > 1 && lis[1].innerHtml.contains("话数")) {
+        String tmpStr = lis[1].innerHtml;
+        tmpStr = tmpStr.replaceAll('<span class="tip">话数: </span>', '');
+        anime.animeEpisodeCnt = int.tryParse(tmpStr) ?? anime.animeEpisodeCnt;
+      }
     }
 
     Log.info("解析完毕√");
@@ -106,12 +118,6 @@ class ClimbBangumi extends Climb {
       return userCollection;
     }
 
-    var lis =
-        document.getElementById("browserItemList")?.getElementsByTagName("li");
-    if (lis == null || lis.isEmpty) {
-      return userCollection;
-    }
-
     // 获取该tab动漫数量
     // <li><a href="/anime/list/509755/wish" ><span>想看        (44)</span></a></li>                        <li><a href="/anime/list/509755/collect" class="focus"><span>看过        (138)</span></a></li>                        <li><a href="/anime/list/509755/do" ><span>在看        (56)</span></a></li>                        <li><a href="/anime/list/509755/on_hold" ><span>搁置        (6)</span></a></li>                        <li><a href="/anime/list/509755/dropped" ><span>抛弃        (1)</span></a></li>        </ul>
     // 懒惰匹配 wish.*?\([0-9]*\)
@@ -124,6 +130,19 @@ class ClimbBangumi extends Climb {
       userCollection.totalCnt = int.tryParse(str) ?? 0;
     }
 
+    // 在原来基础上添加(加载更多)，所以使用addAll，而非赋值
+    userCollection.animes.addAll(parseAnimeListByBrowserItemList(document));
+    return userCollection;
+  }
+
+  List<Anime> parseAnimeListByBrowserItemList(Document document) {
+    var lis =
+        document.getElementById("browserItemList")?.getElementsByTagName("li");
+    if (lis == null || lis.isEmpty) {
+      return [];
+    }
+
+    List<Anime> animes = [];
     // 获取该页动漫列表
     for (var li in lis) {
       String detailUrl =
@@ -145,6 +164,13 @@ class ClimbBangumi extends Climb {
       String tempInfo =
           inner.getElementsByClassName("info tip")[0].innerHtml.trim();
 
+      // 解析集数和日期
+      // 示例
+      // 2023年1月7日 / 益山亮司 / 「NieR:Automata」 (スクウェア・エニックス) / 中井準
+      // 12话 / 2023年1月6日 / 吉村文宏 / 恵ノ島すず(カドカワBOOKS)[原作]、逆木ルミヲ(B's-LOG COMICS)[漫画] / 片山みゆき
+      // こげたおこげ / コアミックス
+      // 2020-07-17 / 横槍メンゴ / 集英社
+      // 2023年 / 大庭秀昭 / いのり。(愛中出版・一迅社刊) / 佐藤陽子
       var infos =
           inner.getElementsByClassName("info tip")[0].innerHtml.split("/");
       int episodeCnt = 0;
@@ -186,6 +212,10 @@ class ClimbBangumi extends Climb {
             timeStr += "-$day";
           }
         }
+      } else {
+        timeStr =
+            RegExp("[0-9]{4}-[0-9]{2}-[0-9]{2}").firstMatch(tmpTimeStr)?[0] ??
+                "";
       }
 
       Anime anime = Anime(
@@ -197,9 +227,9 @@ class ClimbBangumi extends Climb {
         premiereTime: timeStr,
         tempInfo: tempInfo,
       );
-      userCollection.animes.add(anime);
+      animes.add(anime);
     }
 
-    return userCollection;
+    return animes;
   }
 }

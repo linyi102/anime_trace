@@ -183,7 +183,6 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                   });
                 });
               } else {
-                Log.info("添加动漫");
                 dialogSelectChecklist(setState, context, anime);
               }
             });

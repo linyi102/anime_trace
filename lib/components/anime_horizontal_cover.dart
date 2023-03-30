@@ -99,7 +99,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     });
                   });
                 } else {
-                  Log.info("添加动漫");
+                  Log.info("");
                   dialogSelectChecklist(setState, context, anime);
                 }
               },
