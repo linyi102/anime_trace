@@ -126,49 +126,6 @@ class _AggregatePageState extends State<AggregatePage> {
     );
   }
 
-  _buildTools() {
-    return Card(
-      child: Column(
-        children: [
-          _buildCardTitle("工具"),
-          GridView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: 80, // 格子高度
-              maxCrossAxisExtent: itemWidth, // 格子最大宽度
-            ),
-            children: [
-              IconTextButton(
-                icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
-                text: const Text("番组放送", textScaleFactor: 0.9),
-                onTap: () => LaunchUrlUtil.launch(
-                    context: context, uriStr: favWebsite.url),
-              ),
-              IconTextButton(
-                  icon: Icon(Icons.auto_fix_high_outlined, size: iconSize),
-                  text: const Text("封面修复", textScaleFactor: 0.9),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const LapseCoverAnimesPage()))),
-              // IconTextButton(
-              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-              //     text: const Text("更新", textScaleFactor: 0.9),
-              //     onTap: () => null),
-              // IconTextButton(
-              //     icon: Icon(Icons.date_range_rounded, size: iconSize),
-              //     text: const Text("时间表", textScaleFactor: 0.9),
-              //     onTap: () => null),
-              // IconTextButton(
-              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-              //     text: const Text("目录", textScaleFactor: 0.9),
-              //     onTap: () => null),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   _buildClimbWebsiteGridCard() {
     return Card(
       child: Column(
@@ -224,6 +181,51 @@ class _AggregatePageState extends State<AggregatePage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return SourceDetail(climbWebsite);
     }));
+  }
+
+  _buildTools() {
+    return Card(
+      child: Column(
+        children: [
+          _buildCardTitle("工具"),
+          GridView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: 80, // 格子高度
+              maxCrossAxisExtent: itemWidth, // 格子最大宽度
+            ),
+            children: [
+              IconTextButton(
+                iconSize: iconSize,
+                icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+                text: const Text("番组放送", textScaleFactor: 0.9),
+                onTap: () => LaunchUrlUtil.launch(
+                    context: context, uriStr: favWebsite.url),
+              ),
+              IconTextButton(
+                  iconSize: iconSize,
+                  icon: Icon(Icons.auto_fix_high, size: iconSize),
+                  text: const Text("封面修复", textScaleFactor: 0.9),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LapseCoverAnimesPage()))),
+              // IconTextButton(
+              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+              //     text: const Text("更新", textScaleFactor: 0.9),
+              //     onTap: () => null),
+              // IconTextButton(
+              //     icon: Icon(Icons.date_range_rounded, size: iconSize),
+              //     text: const Text("时间表", textScaleFactor: 0.9),
+              //     onTap: () => null),
+              // IconTextButton(
+              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+              //     text: const Text("目录", textScaleFactor: 0.9),
+              //     onTap: () => null),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -63,7 +63,8 @@ class AnimeDao {
       // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
       if (anime.playStatus.contains("完结") ||
           anime.animeUrl.contains("douban") ||
-          anime.animeUrl.contains("bangumi") ||
+          anime.animeUrl
+              .contains("bangumi.tv") || // 次元城动漫详细链接包含bangumi，因此要额外添加.tv避免过滤次元城
           anime.animeUrl.isEmpty) {
         continue;
       }

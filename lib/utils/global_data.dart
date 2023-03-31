@@ -88,8 +88,8 @@ List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "Bangumi",
       iconUrl: "assets/images/website/bangumi.png",
-      keyword: "%bangumi%",
-      regexp: "bangumi",
+      keyword: "%bangumi.tv%",
+      regexp: "bangumi\\.tv", // 因为次元城的动漫详细页链接包含bangumi，所以要添加.tv
       spkey: "enableWebSiteBangumi",
       enable: SPUtil.getBool("enableWebSiteBangumi", defaultValue: false),
       pingStatus: PingStatus(),

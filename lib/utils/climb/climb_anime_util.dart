@@ -109,9 +109,12 @@ class ClimbAnimeUtil {
               newEpisodeCnt: anime.animeEpisodeCnt,
               manualUpdateTime:
                   DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
-          updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
           // 只有集数变化才插入更新表
-          UpdateRecordDao.insert(updateRecord);
+          UpdateRecordDao.insert(updateRecord).then((newId) {
+            updateRecord.id = newId;
+            // 获取到id后再添加，避免新增的删除失败
+            updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
+          });
         }
         // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
 

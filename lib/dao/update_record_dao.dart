@@ -9,9 +9,9 @@ class UpdateRecordDao {
 
   static String table = "update_record";
 
-  static insert(AnimeUpdateRecord updateRecord) {
+  static Future<int> insert(AnimeUpdateRecord updateRecord) {
     Log.info("sql:insertUpdateRecord(updateRecord=$updateRecord)");
-    db.insert(table, {
+    return db.insert(table, {
       "anime_id": updateRecord.animeId,
       "old_episode_cnt": updateRecord.oldEpisodeCnt,
       "new_episode_cnt": updateRecord.newEpisodeCnt,
