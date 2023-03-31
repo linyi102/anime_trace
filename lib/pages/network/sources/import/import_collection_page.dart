@@ -40,6 +40,8 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   List<RefreshController> refreshControllers = [];
   int get curCollIdx => tabController.index;
 
+  bool showTip = true; // 最初主体显示使用提示，搜索后显示查询结果
+
   @override
   void initState() {
     for (int i = 0; i < siteCollectionTab.length; ++i) {
@@ -68,13 +70,28 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(),
-      floatingActionButton: _buildFAB(context),
-      body: Stack(
-        children: [
-          _buildTabBarView(context),
-          // _buildBottomCollectButton(context)
-        ],
-      ),
+      floatingActionButton: showTip ? null : _buildFAB(context),
+      body: showTip
+          ? ListView(
+              children: const [
+                ListTile(
+                  title: Text("这个可以干嘛？"),
+                  subtitle: Text(
+                      "如果你之前在Bangumi或豆瓣中收藏过很多电影或动漫，该功能可以帮助把这些数据导入到漫迹中，而不需要手动添加"),
+                ),
+                ListTile(
+                  title: Text("如何获取用户ID？"),
+                  subtitle: Text(
+                      "在Bangumi中查看自己的信息时，访问的链接若为https://bangumi.tv/user/123456，那么该用户的ID就是123456"),
+                ),
+              ],
+            )
+          : Stack(
+              children: [
+                _buildTabBarView(context),
+                // _buildBottomCollectButton(context)
+              ],
+            ),
     );
   }
 
@@ -156,6 +173,8 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             return;
           }
 
+          // 隐藏提示
+          showTip = false;
           // 有时查询有些慢，此时应该也显示加载圈
           for (int collIdx = 0; collIdx < siteCollectionTab.length; ++collIdx) {
             searching[collIdx] = true;
@@ -165,7 +184,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           bool exist = await climb.existUser(userId);
 
           if (!exist) {
-            showToast("不存在该用户");
+            showToast("${climb.sourceName}中不存在该用户");
             // 取消加载圈
             for (int collIdx = 0;
                 collIdx < siteCollectionTab.length;
@@ -182,17 +201,19 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           }
         },
       ),
-      bottom: CommonBottomTabBar(
-        isScrollable: true,
-        tabs: List.generate(
-          siteCollectionTab.length,
-          (collIdx) => Tab(
-            text:
-                "${siteCollectionTab[collIdx].title} (${userCollection[collIdx].totalCnt})",
-          ),
-        ),
-        tabController: tabController,
-      ),
+      bottom: showTip
+          ? null
+          : CommonBottomTabBar(
+              isScrollable: true,
+              tabs: List.generate(
+                siteCollectionTab.length,
+                (collIdx) => Tab(
+                  text:
+                      "${siteCollectionTab[collIdx].title} (${userCollection[collIdx].totalCnt})",
+                ),
+              ),
+              tabController: tabController,
+            ),
     );
   }
 
