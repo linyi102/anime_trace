@@ -36,6 +36,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   var endEpisodeController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   late bool ismigrate;
+  late ClimbWebsite curWebsite;
 
   List<Anime> websiteClimbAnimes = []; // 爬取的动漫列表
   List<Anime> mixedAnimes = []; // 混合的动漫列表(数据库若已有该动漫，则覆盖爬取的动漫)
@@ -47,6 +48,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   @override
   void initState() {
     super.initState();
+    curWebsite = widget.climbWebStie;
     ismigrate = widget.animeId > 0 ? true : false;
 
     // 如果传入了关键字，说明是更新封面，此时需要直接爬取
@@ -64,8 +66,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
 
     Future(() async {
-      return ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(
-          keyword, widget.climbWebStie);
+      return ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(keyword, curWebsite);
     }).then((value) async {
       websiteClimbAnimes = value;
       Log.info("爬取结束");
@@ -109,17 +110,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
         // 自动弹出键盘，如果是修改封面，则为false
         autofocus: widget.keyword.isEmpty ? true : false,
         inputController: animeNameController..text,
-        onEditingComplete: () async {
-          String text = animeNameController.text;
-          // 如果输入的名字为空，则不再爬取
-          if (text.isEmpty) {
-            return;
-          }
-          lastInputName = text; // 更新上一次输入的名字
-          searchOk = false;
-          searching = true;
-          _climbAnime(keyword: text);
-        },
+        onEditingComplete: () => _onEditingComplete(),
         onChanged: (inputStr) {
           lastInputName = inputStr;
         },
@@ -127,15 +118,22 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       body: Column(
         children: [
           ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                WebSiteLogo(url: widget.climbWebStie.iconUrl, size: 25),
-                const SizedBox(width: 10),
-                Text(widget.climbWebStie.name)
-              ],
-            ),
+            title: Text(curWebsite.name),
+            leading: WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+            trailing: const Icon(Icons.keyboard_arrow_down),
+            onTap: () => _showDialogSelectWebsite(context),
           ),
+          // ListTile(
+          //   title: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+          //       const SizedBox(width: 10),
+          //       Text(curWebsite.name)
+          //     ],
+          //   ),
+          //   onTap: () => _showDialogSelectWebsite(context),
+          // ),
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
@@ -143,6 +141,29 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                       child: Center(child: CircularProgressIndicator()))
                   : Container(),
         ],
+      ),
+    );
+  }
+
+  _showDialogSelectWebsite(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: climbWebsites.map((e) {
+          if (e.discard) return Container();
+
+          return ListTile(
+            title: Text(e.name),
+            leading: WebSiteLogo(url: e.iconUrl, size: 25),
+            trailing:
+                e.name == curWebsite.name ? const Icon(Icons.check) : null,
+            onTap: () {
+              curWebsite = e;
+              _onEditingComplete();
+              Navigator.pop(context);
+            },
+          );
+        }).toList(),
       ),
     );
   }
@@ -188,5 +209,16 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
             });
       },
     );
+  }
+
+  _onEditingComplete() async {
+    String text = animeNameController.text;
+    // 如果输入的名字为空，则不再爬取
+    if (text.isEmpty) return;
+
+    lastInputName = text; // 更新上一次输入的名字
+    searchOk = false;
+    searching = true;
+    _climbAnime(keyword: text);
   }
 }

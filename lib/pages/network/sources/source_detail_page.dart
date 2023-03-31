@@ -67,7 +67,7 @@ class _SourceDetailState extends State<SourceDetail> {
             ListTile(
               title: const Text("访问网站"),
               leading: Icon(
-                Icons.open_in_new,
+                Icons.open_in_new_rounded,
                 color: ThemeUtil.getPrimaryIconColor(),
               ),
               onTap: () {
@@ -105,8 +105,12 @@ class _SourceDetailState extends State<SourceDetail> {
             ListTile(
               enabled: climbWebstie.supportImport,
               title: const Text("导入数据"),
-              leading:
-                  Icon(Icons.post_add, color: ThemeUtil.getPrimaryIconColor()),
+              leading: Icon(
+                // Icons.post_add,
+                // Icons.add_chart_outlined,
+                Icons.bar_chart_rounded,
+                color: ThemeUtil.getPrimaryIconColor(),
+              ),
               onTap: () {
                 Navigator.push(
                     context,
