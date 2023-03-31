@@ -3,7 +3,7 @@ import 'package:flutter_test_future/components/common_tab_bar.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
-import 'package:flutter_test_future/pages/network/sources/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -69,7 +69,7 @@ class _NetWorkPageState extends State<NetWorkPage>
       ),
       body: TabBarView(controller: _tabController, // 指定tab控制器
           children: [
-            const SourceListPage(),
+            const AggregatePage(),
             UpdateRecordPage(),
             const WeeklyPage(),
             const DirectoryPage(),

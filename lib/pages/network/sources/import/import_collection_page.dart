@@ -75,9 +75,9 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           ? ListView(
               children: const [
                 ListTile(
-                  title: Text("这个可以干嘛？"),
+                  title: Text("这个可以做什么？"),
                   subtitle: Text(
-                      "如果你之前在Bangumi或豆瓣中收藏过很多电影或动漫，该功能可以帮助把这些数据导入到漫迹中，而不需要手动添加"),
+                      "如果你之前在Bangumi或豆瓣中收藏过很多电影或动漫，该功能可以帮忙把这些数据导入到漫迹中，而不需要手动添加"),
                 ),
                 ListTile(
                   title: Text("如何获取用户ID？"),
@@ -242,7 +242,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                     Navigator.pop(context);
 
                     Log.info("collIdx=$collIdx");
-                    showToast("收藏中...");
+                    showToast("收藏中");
                     addDBing = true;
                     if (mounted) setState(() {});
 
@@ -275,8 +275,14 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                     if (mounted) setState(() {});
                     String msg = "";
                     if (added > 0) msg += "$added个已跳过";
-                    if (addOk > 0) msg += "$addOk个添加成功";
-                    if (addFail > 0) msg += "$addFail个添加失败";
+                    if (addOk > 0) {
+                      if (msg.isNotEmpty) msg += "，";
+                      msg += "$addOk个添加成功";
+                    }
+                    if (addFail > 0) {
+                      if (msg.isNotEmpty) msg += "，";
+                      msg += "$addFail个添加失败";
+                    }
                     showToast(msg);
                     // showToast("$added个已跳过，$addOk个添加成功，$addFail个添加失败");
                   });
