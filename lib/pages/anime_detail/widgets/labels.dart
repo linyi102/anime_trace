@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/bottom_sheet.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -87,6 +88,15 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
         // Get.bottomSheet(
         //   const LabelManagePage(enableSelectLabelForAnime: true),
         // );
+
+        // 可以
+        // showCommonBottomSheet(
+        //     context: context,
+        //     expanded: true,
+        //     child: LabelManagePage(
+        //       enableSelectLabelForAnime: true,
+        //       animeController: widget.animeController,
+        //     ));
 
         // 弹出软键盘时报错，尽管可以正常运行
         // showFlexibleBottomSheet(

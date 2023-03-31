@@ -69,13 +69,13 @@ class ClimbAgemys extends Climb {
           document.getElementsByClassName("cell_imform_value")[3].innerHtml;
       climbAnime.playStatus =
           document.getElementsByClassName("cell_imform_value")[4].innerHtml;
-      climbAnime.authorOri =
-          document.getElementsByClassName("cell_imform_value")[5].innerHtml;
+      // climbAnime.authorOri =
+      //     document.getElementsByClassName("cell_imform_value")[5].innerHtml;
       // 6：剧情类型
-      climbAnime.productionCompany =
-          document.getElementsByClassName("cell_imform_value")[7].innerHtml;
-      climbAnime.animeDesc =
-          document.getElementsByClassName("cell_imform_desc")[0].innerHtml;
+      // climbAnime.productionCompany =
+      //     document.getElementsByClassName("cell_imform_value")[7].innerHtml;
+      // climbAnime.animeDesc =
+      //     document.getElementsByClassName("cell_imform_desc")[0].innerHtml;
 
       climbAnimes.add(climbAnime);
     }
@@ -101,10 +101,11 @@ class ClimbAgemys extends Climb {
     anime.premiereTime = detailImformValues[6].innerHtml;
     anime.playStatus = detailImformValues[7].innerHtml;
 
-    anime.animeDesc = document
+    String desc = document
         .getElementsByClassName("detail_imform_desc_pre")[0]
         .getElementsByTagName("p")[0]
         .innerHtml;
+    anime.animeDesc = desc.replaceAll("<br>", "\n");
     anime.animeCoverUrl =
         document.getElementsByClassName("poster")[0].attributes["src"]!;
 

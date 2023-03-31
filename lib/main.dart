@@ -313,6 +313,9 @@ class MyAppState extends State<MyApp> with WindowListener {
           style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.all(ThemeUtil.getPrimaryColor()))),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
+      ),
       tabBarTheme: TabBarTheme(
         unselectedLabelColor:
             ThemeUtil.isDark ? Colors.white70 : Colors.black54,

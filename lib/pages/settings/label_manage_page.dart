@@ -31,6 +31,7 @@ class LabelManagePage extends StatelessWidget {
     _renewAllLabels(labelsController);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理",
             style: const TextStyle(fontWeight: FontWeight.w600)),

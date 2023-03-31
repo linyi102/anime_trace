@@ -66,6 +66,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(),
       floatingActionButton: _buildFAB(context),
       body: Stack(
@@ -122,6 +123,11 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   FloatingActionButton _buildFAB(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
+        if (userCollection[curCollIdx].totalCnt == 0) {
+          showToast("没有收藏的动漫");
+          return;
+        }
+
         if (addDBing) {
           showToast("收藏中，请稍后再试");
           return;

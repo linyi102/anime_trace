@@ -102,7 +102,7 @@ List<ClimbWebsite> climbWebsites = [
           "曲奇动漫是由民间动漫爱好者创立，仅供学习交流使用。曲奇动漫致力于精品动漫资源收集整理，动漫免费在线观看、免费下载、新番动漫同步连载，动漫资讯同步更新，——欢迎访问曲奇动漫。"),
   ClimbWebsite(
       name: "Bangumi",
-      iconUrl: "assets/images/website/bangumi.ico",
+      iconUrl: "assets/images/website/bangumi.png",
       keyword: "bangumi",
       spkey: "enableWebSiteBangumi",
       enable: SPUtil.getBool("enableWebSiteBangumi", defaultValue: false),
