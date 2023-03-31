@@ -331,8 +331,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   // 显示数字(只有指定divisions后才会显示)
                   // label:
                   // "${coverBgHeightRatio.toPrecision(2)}",
-                  divisions: 30,
-                  // 分成30个刻度
+                  // 分成n个刻度
+                  divisions: 90,
                   value: coverBgHeightRatio,
                   onChangeStart: (value) {
                     transparentBottomSheet = true;
