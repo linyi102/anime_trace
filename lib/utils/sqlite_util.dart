@@ -348,6 +348,7 @@ class SqliteUtil {
     anime.tagName = EscapeUtil.escapeStr(anime.tagName);
     anime.nameAnother = EscapeUtil.escapeStr(anime.nameAnother);
     anime.nameOri = EscapeUtil.escapeStr(anime.nameOri);
+    anime.authorOri = EscapeUtil.escapeStr(anime.nameOri);
     return anime;
   }
 
