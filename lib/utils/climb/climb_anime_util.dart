@@ -21,7 +21,7 @@ class ClimbAnimeUtil {
       // if (animeUrl.startsWith(climbWebsite.baseUrl)) {
       //   return climbWebsite;
       // }
-      if (animeUrl.contains(climbWebsite.keyword)) {
+      if (RegExp(climbWebsite.regexp).hasMatch(animeUrl)) {
         return climbWebsite;
       }
     }

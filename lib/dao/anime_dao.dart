@@ -91,7 +91,8 @@ class AnimeDao {
     List<Map<String, Object?>> list = await db.rawQuery('''
     select anime_id, anime_name, anime_cover_url, anime_url
     from anime
-    where anime_url like '%$sourceKeyword%' order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+    where anime_url like '$sourceKeyword'
+    order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
     ''');
     Log.info(
         "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceKeyword下的动漫");
