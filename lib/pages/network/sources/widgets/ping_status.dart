@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 
 buildPingStatusRow(ClimbWebsite climbWebsite, {bool gridStyle = false}) {
+  var textStyle = TextStyle(height: 1.1, color: ThemeUtil.getCommentColor());
   return Row(
     mainAxisAlignment:
         gridStyle ? MainAxisAlignment.center : MainAxisAlignment.start,
@@ -13,9 +14,16 @@ buildPingStatusRow(ClimbWebsite climbWebsite, {bool gridStyle = false}) {
           : _getPingStatusIcon(climbWebsite.pingStatus),
       const SizedBox(width: 4),
       climbWebsite.discard
-          ? const Text("无法使用", textScaleFactor: ThemeUtil.tinyScaleFactor)
-          : Text(_getPingTimeStr(climbWebsite),
-              textScaleFactor: ThemeUtil.tinyScaleFactor),
+          ? Text(
+              "无法使用",
+              textScaleFactor: ThemeUtil.tinyScaleFactor,
+              style: textStyle,
+            )
+          : Text(
+              _getPingTimeStr(climbWebsite),
+              textScaleFactor: ThemeUtil.tinyScaleFactor,
+              style: textStyle,
+            ),
     ],
   );
 }

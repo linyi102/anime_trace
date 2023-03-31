@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/network/sources/source_list_page.dart'
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
@@ -119,7 +118,7 @@ class _AggregatePageState extends State<AggregatePage> {
   _buildCardTitle(String title, {Widget? trailing}) {
     return ListTile(
       title: Text(
-        "   $title",
+        title,
         textScaleFactor: 1.1,
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
@@ -147,13 +146,22 @@ class _AggregatePageState extends State<AggregatePage> {
                     context: context, uriStr: favWebsite.url),
               ),
               IconTextButton(
-                  icon: Icon(
-                    Icons.auto_fix_high,
-                    size: iconSize,
-                  ),
-                  text: const Text("番组放送", textScaleFactor: 0.9),
+                  icon: Icon(Icons.auto_fix_high_outlined, size: iconSize),
+                  text: const Text("封面修复", textScaleFactor: 0.9),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const LapseCoverAnimesPage()))),
+              // IconTextButton(
+              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+              //     text: const Text("更新", textScaleFactor: 0.9),
+              //     onTap: () => null),
+              // IconTextButton(
+              //     icon: Icon(Icons.date_range_rounded, size: iconSize),
+              //     text: const Text("时间表", textScaleFactor: 0.9),
+              //     onTap: () => null),
+              // IconTextButton(
+              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+              //     text: const Text("目录", textScaleFactor: 0.9),
+              //     onTap: () => null),
             ],
           ),
         ],
