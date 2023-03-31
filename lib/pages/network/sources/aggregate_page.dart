@@ -165,9 +165,13 @@ class _AggregatePageState extends State<AggregatePage> {
                         WebSiteLogo(url: climbWebsite.iconUrl, size: iconSize),
                     text: Column(
                       children: [
-                        Text(climbWebsite.name,
-                            overflow: TextOverflow.ellipsis,
-                            textScaleFactor: 0.9),
+                        Text(
+                          climbWebsite.name,
+                          overflow: TextOverflow.ellipsis,
+                          textScaleFactor: 0.9,
+                          style: const TextStyle(height: 1.1),
+                        ),
+                        const SizedBox(height: 5),
                         buildPingStatusRow(climbWebsite, gridStyle: true),
                       ],
                     ));

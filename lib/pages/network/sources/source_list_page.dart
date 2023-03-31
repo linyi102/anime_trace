@@ -31,7 +31,7 @@ class _SourceListPageState extends State<SourceListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("搜索源"),
+        title: const Text("搜索源", style: TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: Scrollbar(
         controller: scrollController,

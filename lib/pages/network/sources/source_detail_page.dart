@@ -38,7 +38,7 @@ class _SourceDetailState extends State<SourceDetail> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            WebSiteLogo(url: climbWebstie.iconUrl, size: 100, addShadow: true),
+            WebSiteLogo(url: climbWebstie.iconUrl, size: 100, addShadow: false),
             Container(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: ExpandText(climbWebstie.desc,

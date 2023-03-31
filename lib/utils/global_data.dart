@@ -42,7 +42,7 @@ List<ClimbWebsite> climbWebsites = [
       climb: ClimbAgemys(),
       desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载"),
   ClimbWebsite(
-      name: "次元城",
+      name: "次元城动漫",
       iconUrl: "assets/images/website/cyc.png",
       keyword: "%cyc%",
       regexp: "cyc",

@@ -166,7 +166,7 @@ class AnimeGridCover extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                     Colors.transparent,
-                    Color.fromRGBO(0, 0, 0, 0.6)
+                    Color.fromRGBO(0, 0, 0, 0.6),
                   ])),
             ),
           ],
