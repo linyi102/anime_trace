@@ -123,7 +123,7 @@ class AnimeCoverDetail extends StatelessWidget {
               context: context,
               builder: (dialogContext) {
                 return AlertDialog(
-                  title: const Text("封面信息"),
+                  title: const Text("属性"),
                   content: SingleChildScrollView(
                     child: Column(
                       children: [

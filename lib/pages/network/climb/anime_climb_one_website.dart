@@ -158,7 +158,9 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
             trailing:
                 e.name == curWebsite.name ? const Icon(Icons.check) : null,
             onTap: () {
-              curWebsite = e;
+              setState(() {
+                curWebsite = e;
+              });
               _onEditingComplete();
               Navigator.pop(context);
             },
