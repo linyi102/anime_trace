@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:photo_view/photo_view.dart';
 
 class AnimeDetailPage extends StatefulWidget {
   final Anime anime;
@@ -223,6 +224,19 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
           builder: (context) => AlertDialog(
             content: const Text("检测到新封面，是否更新"),
             actions: [
+              TextButton(
+                onPressed: () {
+                  final imageProvider =
+                      Image.network(newAnime.animeCoverUrl).image;
+
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PhotoView(
+                          imageProvider: imageProvider,
+                          onTapDown: (_, __, ___) =>
+                              Navigator.of(context).pop())));
+                },
+                child: const Text("查看"),
+              ),
               TextButton(
                 onPressed: () {
                   updateCover = false;
