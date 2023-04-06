@@ -128,7 +128,7 @@ class _HistoryPageState extends State<HistoryPage> {
             children: [
               // _buildViewSwitch(),
               views[selectedViewIndex].historyRecords.isEmpty
-                  ? Expanded(child: emptyDataHint())
+                  ? Expanded(child: emptyDataHint(msg: "没有历史。"))
                   : Expanded(
                       // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
                       child: _buildHistoryPage(),

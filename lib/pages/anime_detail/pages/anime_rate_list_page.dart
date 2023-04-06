@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -34,8 +36,9 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
     super.dispose();
   }
 
-  _loadData() {
+  _loadData() async {
     noteOk = false;
+    // await Future.delayed(const Duration(seconds: 1));
     NoteDao.getRateNotesByAnimeId(widget.anime.animeId).then((value) {
       notes = value;
       // 把所有评价笔记都指定anime，用于编辑评价笔记时显示
@@ -59,8 +62,8 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
       body: noteOk
           ? notes.isNotEmpty
               ? _buildRateNoteList()
-              : Container()
-          : Container(),
+              : emptyDataHint(msg: "没有评价。")
+          : loadingWidget(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(),
         backgroundColor: ThemeUtil.getPrimaryIconColor(),

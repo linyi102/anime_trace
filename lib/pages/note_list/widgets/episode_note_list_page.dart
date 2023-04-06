@@ -98,7 +98,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
 
   _buildEpisodeNotes() {
     return episodeNotes.isEmpty
-        ? emptyDataHint()
+        ? emptyDataHint(msg: "没有笔记。")
         : Scrollbar(
             controller: _noteScrollController,
             child: ListView.builder(

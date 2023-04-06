@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 
-Widget emptyDataHint({String msg = "什么都没有~", String toastMsg = ""}) {
+Widget emptyDataHint({String msg = "没有数据。", String toastMsg = ""}) {
   return Stack(
     children: [
       Center(

@@ -46,7 +46,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
   @override
   Widget build(BuildContext context) {
     if (widget.animes.isEmpty) {
-      return const Center(child: Text("什么都没有~"));
+      return const Center(child: Text("没有找到。"));
     }
     final AnimeDisplayController animeDisplayController = Get.find();
     double height = _coverHeight;

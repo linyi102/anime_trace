@@ -100,7 +100,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
 
   _buildRateNotes() {
     return rateNotes.isEmpty
-        ? emptyDataHint()
+        ? emptyDataHint(msg: "没有评价。")
         : ListView.builder(
             controller: _rateScrollController,
             itemCount: rateNotes.length,

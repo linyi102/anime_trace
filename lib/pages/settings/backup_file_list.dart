@@ -54,7 +54,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "备份文件列表 (${files.length})",
+            "备份 (${files.length})",
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
@@ -67,7 +67,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   _buildFileList() {
-    if (files.isEmpty) return emptyDataHint(msg: "没有找到备份文件");
+    if (files.isEmpty) return emptyDataHint(msg: "没有备份。");
     return Scrollbar(
       controller: _scrollController,
       child: ListView.builder(
