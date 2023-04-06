@@ -43,11 +43,15 @@ class ClimbYhdm extends Climb {
     anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
     // 获取封面
     String? coverUrl = document
-        .getElementsByClassName("thumb")[0]
+        .getElementsByClassName("thumb l")[0]
         .getElementsByTagName("img")[0]
         .attributes["src"];
-    if (coverUrl != null && coverUrl.startsWith("//")) {
-      anime.animeCoverUrl = "https:$coverUrl";
+    if (coverUrl != null) {
+      if (coverUrl.startsWith("//")) {
+        anime.animeCoverUrl = "https:$coverUrl";
+      } else {
+        anime.animeCoverUrl = coverUrl;
+      }
     }
     // 获取首播时间
     // <a href="/list/?year=2020" target="_blank">2020</a>-01-11
