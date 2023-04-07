@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/toggle_list_tile.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
@@ -223,7 +224,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   child: const Text("取消")),
               TextButton(
                   onPressed: () {
-                    SqliteUtil.deleteAnimeByAnimeId(_anime.animeId);
+                    AnimeDao.deleteAnimeByAnimeId(_anime.animeId);
                     // 关闭当前对话框
                     Navigator.of(context).pop();
                     // 退出当前页，没必要不退出，而且搜索源详情页的详细列表进入后取消收藏后返回没有删除

@@ -8,7 +8,7 @@ import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/sources/lapse_cover_fix/lapse_cover_controller.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';

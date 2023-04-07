@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
-import 'package:flutter_test_future/pages/network/sources/import/import_collection_page.dart';
-import 'package:flutter_test_future/pages/network/sources/lapse_cover_fix/lapse_cover_animes_page.dart';
-import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
-import 'package:flutter_test_future/pages/network/sources/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -219,8 +220,9 @@ class _AggregatePageState extends State<AggregatePage> {
               IconTextButton(
                   iconSize: iconSize,
                   icon: Container(
-                      decoration: BoxDecoration(
-                        color: ThemeUtil.getPrimaryColor(),
+                      decoration: const BoxDecoration(
+                        // color: ThemeUtil.getPrimaryColor(),
+                        color: Color.fromRGBO(55, 197, 254, 1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.auto_fix_high_rounded,
@@ -231,18 +233,16 @@ class _AggregatePageState extends State<AggregatePage> {
               IconTextButton(
                   iconSize: iconSize,
                   icon: Container(
-                      decoration: BoxDecoration(
-                        color: ThemeUtil.getPrimaryColor(),
+                      decoration: const BoxDecoration(
+                        // color: ThemeUtil.getPrimaryColor(),
+                        color: Color.fromRGBO(255, 199, 87, 1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.filter_alt,
                           size: 18, color: Colors.white)),
                   text: const Text("动漫去重", textScaleFactor: 0.9),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                            appBar: AppBar(),
-                            body: Container(),
-                          )))),
+                      builder: (context) => const DedupPage()))),
               // IconTextButton(
               //     icon: Icon(Icons.auto_fix_high, size: iconSize),
               //     text: const Text("更新", textScaleFactor: 0.9),

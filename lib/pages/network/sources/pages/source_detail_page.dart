@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
-import 'package:flutter_test_future/pages/network/sources/import/import_collection_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';

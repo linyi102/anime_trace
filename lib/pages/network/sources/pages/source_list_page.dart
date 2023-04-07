@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
-import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';

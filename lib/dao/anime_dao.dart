@@ -73,7 +73,7 @@ class AnimeDao {
     return needUpdateAnimes;
   }
 
-  // 查询某个搜索源下的动漫数量
+  /// 查询某个搜索源下的动漫数量
   static Future<int> getAnimesCntBySourceKeyword(String sourceKeyword) async {
     List<Map<String, Object?>> list = await db.rawQuery('''
     select count(anime_id) cnt
@@ -83,7 +83,7 @@ class AnimeDao {
     return list[0]['cnt'] as int;
   }
 
-  // 查询某个搜索源下的所有动漫
+  /// 查询某个搜索源下的所有动漫
   static Future<List<Anime>> getAnimesBySourceKeyword(
       {required String sourceKeyword, required PageParams pageParams}) async {
     List<Anime> animes = [];
@@ -109,7 +109,7 @@ class AnimeDao {
     return animes;
   }
 
-  // 查询某个动漫的动漫网址
+  /// 查询某个动漫的动漫网址
   static Future<String> getAnimeUrlById(int animeId) async {
     var list = await db.rawQuery('''
     select anime_url
@@ -121,5 +121,75 @@ class AnimeDao {
       return row['anime_url'] ?? '';
     }
     return '';
+  }
+
+  /// 找出相同名字的动漫
+  static Future<List<Anime>> getDupAnimes() async {
+    List<Anime> animes = [];
+
+    // id用于表示动漫，name和cover用于显示，url用于确认是否已迁移
+    List<Map<String, Object?>> list = await db.rawQuery('''
+    select anime_id
+    from anime
+    where anime_name in (
+        select anime_name
+        from anime
+        group by anime_name
+        having count(anime_name) >= 2
+    );
+    ''');
+    for (Map row in list) {
+      // Anime anime = Anime(
+      //     animeId: row['anime_id'],
+      //     animeName: row['anime_name'],
+      //     animeCoverUrl: row['anime_cover_url'],
+      //     animeUrl: row['anime_url']);
+
+      // 最好获取到观看进度，方便用户去重
+      Anime anime = await SqliteUtil.getAnimeByAnimeId(row['anime_id']);
+      animes.add(anime);
+    }
+
+    return animes;
+  }
+
+  static Future<bool> deleteAnimeByAnimeId(int animeId) async {
+    Log.info("sql: deleteAnimeByAnimeId(animeId=$animeId)");
+    // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
+    await db.rawDelete('''
+      delete from history
+      where anime_id = $animeId;
+      ''');
+    await db.rawDelete('''
+      delete from anime
+      where anime_id = $animeId;
+      ''');
+
+    // 删除相关笔记、图片
+    // 先根据animeId找到所有笔记，然后根据笔记id找到图片，删除图片后再删除笔记
+    await db.rawDelete('''
+      delete from image
+      where note_id in (
+        select note_id from episode_note
+        where anime_id = $animeId
+      );
+      ''');
+    await db.rawDelete('''
+      delete from episode_note
+      where anime_id = $animeId;
+      ''');
+    // 删除相关更新记录
+    await db.rawDelete('''
+      delete from update_record
+      where anime_id = $animeId;
+      ''');
+
+    // 删除所关联的标签(不需要await等待)
+    db.rawDelete('''
+      delete from anime_label
+      where anime_id = $animeId;
+      ''');
+
+    return true;
   }
 }
