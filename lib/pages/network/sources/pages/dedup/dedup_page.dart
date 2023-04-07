@@ -30,30 +30,44 @@ class DedupPage extends StatelessWidget {
           id: DedupController.bodyId,
           builder: (_) => FadeAnimatedSwitcher(
             loadOk: dedupController.initOk,
-            destWidget: Column(
-              children: [
-                SwitchListTile(
-                  title: const Text("选中没有进度的动漫"),
-                  value: dedupController.enableRetainAnimeHasProgress,
-                  onChanged: (value) {
-                    dedupController.enableRetainAnimeHasProgress = value;
-                    if (value == true) {
-                      dedupController.retainAnimeHasProgress();
-                    } else {
-                      dedupController.clearSelected();
-                    }
-                  },
-                ),
-                Expanded(
-                  child: Scrollbar(
-                      controller: scrollController,
-                      child: _buildAnimeList(scrollController)),
-                ),
-                if (dedupController.selectedIds.isNotEmpty)
-                  _buildBottomBar(context)
-              ],
-            ),
+            destWidget: dedupController.totalCnt == 0
+                ? _buildEmptyWidget()
+                : Column(
+                    children: [
+                      SwitchListTile(
+                        title: const Text("选中没有看过的动漫"),
+                        value: dedupController.enableRetainAnimeHasProgress,
+                        onChanged: (value) {
+                          dedupController.enableRetainAnimeHasProgress = value;
+                          if (value == true) {
+                            dedupController.retainAnimeHasProgress();
+                          } else {
+                            dedupController.clearSelected();
+                          }
+                        },
+                      ),
+                      Expanded(
+                        child: Scrollbar(
+                            controller: scrollController,
+                            child: _buildAnimeList(scrollController)),
+                      ),
+                      if (dedupController.selectedIds.isNotEmpty)
+                        _buildBottomBar(context)
+                    ],
+                  ),
           ),
+        ),
+      ),
+    );
+  }
+
+  LayoutBuilder _buildEmptyWidget() {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: const Center(child: Text("没有重复。")),
         ),
       ),
     );
