@@ -76,7 +76,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                           Navigator.of(context).pop();
                         },
                         child: const Text("取消")),
-                    ElevatedButton(
+                    TextButton(
                         onPressed: () async {
                           String tagName = inputTagNameController.text;
                           if (tagName.isEmpty) return;
@@ -93,7 +93,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                           setState(() {}); // FutureBuilder会重新build
                           Navigator.of(context).pop();
                         },
-                        child: const Text("确认")),
+                        child: const Text("确定")),
                   ],
                 );
               });
@@ -143,7 +143,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                           Navigator.of(context).pop();
                         },
                         child: const Text("取消")),
-                    ElevatedButton(
+                    TextButton(
                         onPressed: () async {
                           String newTagName = inputTagNameController.text;
                           if (newTagName.isEmpty) return;
@@ -160,7 +160,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                           setState(() {});
                           Navigator.of(context).pop();
                         },
-                        child: const Text("确认")),
+                        child: const Text("确定")),
                   ],
                 );
               },
@@ -177,7 +177,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("确认删除吗？"),
+            title: const Text("确定删除吗？"),
             content: Text("将要删除的清单：$tagName"),
             actions: [
               TextButton(

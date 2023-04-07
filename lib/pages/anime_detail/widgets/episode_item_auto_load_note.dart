@@ -258,7 +258,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                         // 退出对话框
                         Navigator.pop(dialogContext);
 
-                        // 弹出确认对话框
+                        // 弹出确定对话框
                         _dialogRemoveDate();
                       },
                     ),
@@ -453,7 +453,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text("取消")),
-                ElevatedButton(
+                TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                       _enterNoteEditPage(needCreate: true);
@@ -533,7 +533,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('确认撤销观看时间吗？'),
+          title: const Text('确定撤销观看时间吗？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -564,11 +564,11 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: const Text("确认删除笔记吗？"),
+          content: const Text("确定删除笔记吗？"),
           actions: [
             TextButton(
               onPressed: () {
-                // 关闭删除确认对话框和更多菜单对话框
+                // 关闭删除确定对话框和更多菜单对话框
                 Navigator.of(context)
                   ..pop()
                   ..pop();
@@ -577,7 +577,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             ),
             TextButton(
               onPressed: () async {
-                // 关闭删除确认对话框和更多菜单对话框
+                // 关闭删除确定对话框和更多菜单对话框
                 Navigator.of(context)
                   ..pop()
                   ..pop();

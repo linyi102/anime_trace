@@ -235,7 +235,7 @@ class _NoteListPageState extends State<NoteListPage>
                     TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text("取消")),
-                    ElevatedButton(
+                    TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                           noteFilter.animeNameKeyword =

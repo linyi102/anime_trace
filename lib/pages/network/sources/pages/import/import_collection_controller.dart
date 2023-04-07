@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -186,9 +188,14 @@ class ImportCollectionController extends GetxController {
         break;
       }
       queryAnimeCnt += pageAnimes.length;
+
+      bool skipDupNameAnime = SpProfile.getSkipDupNameAnime();
       // 每加载1页，就插入到数据库
       for (var anime in pageAnimes) {
         if ((await SqliteUtil.getAnimeByAnimeUrl(anime)).isCollected()) {
+          added++;
+        } else if (skipDupNameAnime &&
+            (await AnimeDao.existAnimeName(anime.animeName))) {
           added++;
         } else {
           // 如果数据库不存在，则指定清单，然后添加到数据库

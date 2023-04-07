@@ -161,7 +161,7 @@ class LabelManagePage extends StatelessWidget {
                     showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                              title: const Text("确认删除吗？"),
+                              title: const Text("确定删除吗？"),
                               content: Text("将要删除的标签：${label.name}"),
                               actions: [
                                 TextButton(
@@ -225,7 +225,7 @@ class LabelManagePage extends StatelessWidget {
                           Navigator.of(context).pop();
                         },
                         child: const Text("取消")),
-                    ElevatedButton(
+                    TextButton(
                         onPressed: () async {
                           String labelName = inputLabelNameController.text;
                           // 禁止空
@@ -302,7 +302,7 @@ class LabelManagePage extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                   child: const Text("取消")),
-              ElevatedButton(
+              TextButton(
                   onPressed: () async {
                     String newLabelName = inputLabelNameController.text;
                     // 禁止空

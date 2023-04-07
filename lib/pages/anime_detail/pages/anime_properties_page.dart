@@ -186,12 +186,12 @@ class AnimePropertiesPage extends StatelessWidget {
                       TextButton(
                           onPressed: () => Navigator.pop(dialogContext),
                           child: const Text("取消")),
-                      ElevatedButton(
+                      TextButton(
                           onPressed: () {
                             confirm(textController.text);
                             Navigator.pop(dialogContext); // 退出编辑对话框
                           },
-                          child: const Text("确认"))
+                          child: const Text("确定"))
                     ],
                   )
                 ],

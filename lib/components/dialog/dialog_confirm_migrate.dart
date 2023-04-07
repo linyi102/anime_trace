@@ -112,7 +112,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                   Navigator.of(context).pop();
                 },
               ),
-              ElevatedButton(
+              TextButton(
                   onPressed: () async {
                     // 获取详细信息
                     if (updateInfo) {

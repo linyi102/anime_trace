@@ -214,7 +214,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("确认取消收藏吗？"),
+            title: const Text("确定取消收藏吗？"),
             content: const Text("这将会删除所有相关记录！"),
             actions: [
               TextButton(
@@ -233,7 +233,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     // 不用退出
                     // widget.animeController.resetAnime();
                   },
-                  child: const Text("确认", style: TextStyle(color: Colors.red))),
+                  child: const Text("确定", style: TextStyle(color: Colors.red))),
             ],
           );
         });

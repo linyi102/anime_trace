@@ -249,7 +249,7 @@ class _DirectoryPageState extends State<DirectoryPage>
         //   children: [
         //     TextButton(onPressed: () {}, child: const Text("重置")),
         //     const SizedBox(width: 10),
-        //     ElevatedButton(
+        //     TextButton(
         //         onPressed: () {},
         //         child: const Text("查询", style: TextStyle(color: Colors.white)))
         //   ],

@@ -293,7 +293,7 @@ class _SettingPageState extends State<SettingPage> {
                 title: "本地图片",
                 imageTypeIdx: 1,
                 setDialogState: setState,
-                trailing: ElevatedButton(
+                trailing: TextButton(
                     onPressed: () => _handleProvideLocalImage(),
                     child: const Text("指定")),
               ),
@@ -301,7 +301,7 @@ class _SettingPageState extends State<SettingPage> {
                 title: "网络图片",
                 imageTypeIdx: 2,
                 setDialogState: setState,
-                trailing: ElevatedButton(
+                trailing: TextButton(
                     onPressed: () => _handleProvideNetworkImage(),
                     child: const Text("指定")),
               )
@@ -434,7 +434,7 @@ class _SettingPageState extends State<SettingPage> {
                   TextButton(
                       onPressed: () => Navigator.pop(dialogContext),
                       child: const Text("取消")),
-                  ElevatedButton(
+                  TextButton(
                       onPressed: () {
                         SPUtil.setString(
                             bannerNetworkImageUrl, textController.text);
@@ -445,7 +445,7 @@ class _SettingPageState extends State<SettingPage> {
                           _networkImageUrl = textController.text;
                         });
                       },
-                      child: const Text("确认"))
+                      child: const Text("确定"))
                 ],
               )
             ],

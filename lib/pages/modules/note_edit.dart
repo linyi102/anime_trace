@@ -349,7 +349,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         builder: (context) {
           // 返回警告对话框
           return AlertDialog(
-            title: const Text("确认移除吗？"),
+            title: const Text("确定移除吗？"),
             content: const Text("这并不会删除您的图片文件"),
             // 动作集合
             actions: <Widget>[
@@ -359,8 +359,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
                   Navigator.of(context).pop();
                 },
               ),
-              ElevatedButton(
-                child: const Text("确认"),
+              TextButton(
+                child: const Text("确定"),
                 onPressed: () {
                   RelativeLocalImage relativeLocalImage =
                       widget.note.relativeLocalImages[index];

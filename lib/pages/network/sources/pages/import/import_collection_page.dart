@@ -12,6 +12,7 @@ import 'package:flutter_test_future/pages/network/sources/pages/import/import_co
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
@@ -178,19 +179,36 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
         context: context,
         expanded: true,
         title: Text("一键收藏 “${siteCollectionTab[collIdx].title}” 到"),
-        child: Scrollbar(
-          controller: scrollController,
-          child: ListView.builder(
-            controller: scrollController,
-            itemCount: tags.length,
-            itemBuilder: (context, index) {
-              var tag = tags[index];
+        child: Column(
+          children: [
+            StatefulBuilder(
+              builder: (context, setState) => SwitchListTile(
+                title: const Text("若已收藏同名动漫，则跳过"),
+                value: SpProfile.getSkipDupNameAnime(),
+                onChanged: (value) {
+                  SpProfile.setSkipDupNameAnime(value);
+                  setState(() {});
+                },
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: Scrollbar(
+                controller: scrollController,
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: tags.length,
+                  itemBuilder: (context, index) {
+                    var tag = tags[index];
 
-              return ListTile(
-                  title: Text(tag),
-                  onTap: () => icc.quickCollect(context, collIdx, tag));
-            },
-          ),
+                    return ListTile(
+                        title: Text(tag),
+                        onTap: () => icc.quickCollect(context, collIdx, tag));
+                  },
+                ),
+              ),
+            ),
+          ],
         ));
   }
 

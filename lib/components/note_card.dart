@@ -220,7 +220,7 @@ class _NoteCardState extends State<NoteCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: const Text("确认删除笔记吗？"),
+          content: const Text("确定删除笔记吗？"),
           actions: [
             TextButton(
               onPressed: () {

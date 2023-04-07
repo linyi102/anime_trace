@@ -82,13 +82,13 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text("确认这么做吗？"),
+                title: const Text("确定这么做吗？"),
                 content: const Text("这会清除已收藏动漫的简介信息！"),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text("取消")),
-                  ElevatedButton(
+                  TextButton(
                       onPressed: () {
                         Navigator.pop(context);
 
@@ -108,7 +108,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                                   ));
                         });
                       },
-                      child: const Text("确认")),
+                      child: const Text("确定")),
                 ],
               );
             });
@@ -374,7 +374,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                   Navigator.of(dialogContext).pop();
                 },
                 child: const Text("取消")),
-            ElevatedButton(
+            TextButton(
                 onPressed: () async {
                   String uri = inputUriController.text;
                   String user = inputUserController.text;

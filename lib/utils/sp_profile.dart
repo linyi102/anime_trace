@@ -9,13 +9,22 @@ import 'sp_util.dart';
 
 /// 记录和修改shared_preferences的值
 class SpProfile {
+  // 导入数据页是否跳过同名动漫
+  static void setSkipDupNameAnime(bool value) {
+    SPUtil.setBool("skipDupNameAnime", value);
+  }
+
+  static bool getSkipDupNameAnime() {
+    return SPUtil.getBool("skipDupNameAnime", defaultValue: false);
+  }
+
   // 选择的路由动画
   static void savePageSwitchAnimationId(int id) {
     // 不能将其转为map后保存，因为后期可能会修改名称，所以保存不会变化的id
     SPUtil.setInt("selectedPageSwitchAnimationId", id);
   }
 
-  // 获取页面切换动画小哥哥
+  // 获取页面切换动画
   static PageSwitchAnimation getPageSwitchAnimation() {
     final defaultVal = Platform.isWindows
         ? PageSwitchAnimation.fade

@@ -88,7 +88,7 @@ class AnimeDao {
       {required String sourceKeyword, required PageParams pageParams}) async {
     List<Anime> animes = [];
 
-    // id用于表示动漫，name和cover用于显示，url用于确认是否已迁移
+    // id用于表示动漫，name和cover用于显示，url用于确定是否已迁移
     List<Map<String, Object?>> list = await db.rawQuery('''
     select anime_id, anime_name, anime_cover_url, anime_url
     from anime
@@ -127,7 +127,7 @@ class AnimeDao {
   static Future<List<Anime>> getDupAnimes() async {
     List<Anime> animes = [];
 
-    // id用于表示动漫，name和cover用于显示，url用于确认是否已迁移
+    // id用于表示动漫，name和cover用于显示，url用于确定是否已迁移
     List<Map<String, Object?>> list = await db.rawQuery('''
     select anime_id
     from anime
@@ -191,5 +191,12 @@ class AnimeDao {
       ''');
 
     return true;
+  }
+
+  static Future<bool> existAnimeName(String animeName) async {
+    // 使用query而不是rawQuery，不用担心单引号问题
+    return (await db
+            .query("anime", where: "anime_name = ?", whereArgs: [animeName]))
+        .isNotEmpty;
   }
 }

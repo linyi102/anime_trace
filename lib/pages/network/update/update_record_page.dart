@@ -205,7 +205,7 @@ class UpdateRecordPage extends StatelessWidget {
                   Expanded(child: Container()),
                 ],
               ),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
                   ClimbAnimeUtil.updateAllAnimesInfo();
                 },

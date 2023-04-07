@@ -95,7 +95,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
       children: [
         emptyDataHint(),
         const SizedBox(height: 20),
-        ElevatedButton(
+        TextButton(
             onPressed: () => detect(),
             child: const Text("再次检测", style: TextStyle(color: Colors.white)))
       ],

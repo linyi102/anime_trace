@@ -85,7 +85,7 @@ class AnimeCoverDetail extends StatelessWidget {
                           Navigator.pop(dialogContext);
                         },
                         child: const Text("取消")),
-                    ElevatedButton(
+                    TextButton(
                         onPressed: () async {
                           Navigator.pop(dialogContext);
                           Anime anime = animeController.anime;
@@ -299,7 +299,7 @@ class AnimeCoverDetail extends StatelessWidget {
                       TextButton(
                           onPressed: () => Navigator.pop(dialogContext),
                           child: const Text("取消")),
-                      ElevatedButton(
+                      TextButton(
                           onPressed: () {
                             animeController.updateCoverUrl(textController.text);
 
@@ -310,7 +310,7 @@ class AnimeCoverDetail extends StatelessWidget {
                             Navigator.pop(
                                 howToEditCoverUrlDialogContext); // 退出选择对话框
                           },
-                          child: const Text("确认"))
+                          child: const Text("确定"))
                     ],
                   )
                 ],
