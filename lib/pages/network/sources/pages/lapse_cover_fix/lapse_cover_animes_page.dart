@@ -37,7 +37,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
   }
 
   detect() async {
-    Log.info("检测失效网络封面中...");
+    Log.info("检测失效网络封面中");
     setState(() {
       lapseCoverController.loadOk = false;
     });
@@ -79,7 +79,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                   children: const [
                     CircularProgressIndicator(),
                     SizedBox(height: 10),
-                    Text("寻找失效封面中...")
+                    Text("正在寻找失效封面")
                   ],
                 ))
               : lapseCoverController.lapseCoverAnimes.isEmpty
@@ -156,7 +156,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
         // 如果在恢复时再次点击，则直接返回
         if (lapseCoverController.recovering) {
           // 必须放在点击事件内部，否则重绘时就会执行此处
-          showToast("正在恢复中...");
+          showToast("恢复中");
           return;
         }
 
@@ -170,7 +170,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
             builder: (context) {
               // 对话框context
               loadingContext = context; // 将对话框context赋值给变量，用于任务完成后完毕
-              return const LoadingDialog("重新获取封面中...");
+              return const LoadingDialog("重新获取封面中");
             });
 
         int limit = 5, curCnt = 0;

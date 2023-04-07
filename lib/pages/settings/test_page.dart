@@ -92,7 +92,7 @@ class _TestPageState extends State<TestPage> {
                   context: context,
                   builder: (context) {
                     loadingContext = context;
-                    return const LoadingDialog("获取详细信息中...");
+                    return const LoadingDialog("正在获取详细信息");
                   });
               await Future.delayed(const Duration(seconds: 2));
               if (loadingContext != null) Navigator.pop(loadingContext!);

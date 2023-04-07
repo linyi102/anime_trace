@@ -36,7 +36,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   void _initData() async {
-    Log.info("获取备份文件ing...");
+    Log.info("获取备份文件中");
     files.addAll(await WebDavUtil.client.readDir("/animetrace"));
     files.addAll(await WebDavUtil.client.readDir("/animetrace/automatic"));
     // 去除目录
@@ -160,7 +160,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                       context: context,
                       builder: (context) {
                         loadingContext = context;
-                        return const LoadingDialog("还原数据中...");
+                        return const LoadingDialog("还原数据中");
                       });
                   Result result = await BackupUtil.restoreFromWebDav(file);
                   if (loadingContext != null) Navigator.pop(loadingContext!);

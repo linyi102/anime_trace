@@ -93,7 +93,7 @@ class AnimeCoverDetail extends StatelessWidget {
                             showToast("无来源，无法获取封面");
                             return;
                           }
-                          showToast("正在获取封面...");
+                          showToast("正在获取封面");
 
                           anime =
                               await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);

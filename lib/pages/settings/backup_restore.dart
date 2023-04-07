@@ -161,7 +161,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             Future.delayed(const Duration(seconds: 10))
                 .then((value) => canManualBackup = true);
 
-            showToast("正在备份中...");
+            showToast("正在备份");
             String remoteBackupDirPath = await WebDavUtil.getRemoteDirPath();
             if (remoteBackupDirPath.isNotEmpty) {
               BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);
@@ -257,7 +257,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             // subtitle: Text(getDuration()),
             onTap: () {
               // 注意这里是本地手动备份
-              showToast("正在备份中...");
+              showToast("正在备份");
               BackupUtil.backup(
                   localBackupDirPath: SPUtil.getString("backup_local_dir",
                       defaultValue: "unset"));
@@ -314,7 +314,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                   context: context,
                   builder: (context) {
                     loadingContext = context;
-                    return const LoadingDialog("还原数据中...");
+                    return const LoadingDialog("正在还原数据");
                   });
               Result result =
                   await BackupUtil.restoreFromLocal(selectedFilePath);

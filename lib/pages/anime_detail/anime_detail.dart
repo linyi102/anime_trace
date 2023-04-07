@@ -197,7 +197,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       if (_anime.isCollected()) showToast("正在获取信息");
       return false;
     }
-    // if (_anime.isCollected()) showToast("更新中...");
+    // if (_anime.isCollected()) showToast("更新中");
     _climbing = true;
     // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员

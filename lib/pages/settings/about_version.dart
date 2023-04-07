@@ -113,7 +113,7 @@ class _AboutVersionState extends State<AboutVersion> {
           // 必须推迟，否则可能会合并setState
           // 然后再渲染有更新对话框的页面
           Future.delayed(const Duration(milliseconds: 200)).then((value) {
-            showToast("正在获取最新版本...");
+            showToast("正在获取最新版本");
             checkLatestVersion = true;
             setState(() {});
           });

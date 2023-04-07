@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/latest_version_info.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -27,6 +28,9 @@ class _UpdateHintState extends State<UpdateHint> {
   bool showUpdateDialog = false;
   String currentVersion = "";
   LatestVersionInfo latestVersionInfo = LatestVersionInfo("");
+
+  // 测试时修改为true，保证始终弹出更新对话框
+  bool alwaysShowUpdateHint = false;
 
   @override
   void initState() {
@@ -82,9 +86,9 @@ class _UpdateHintState extends State<UpdateHint> {
     }
 
     // 保证避免因忘记注释而导致发布版出现9.99版本
-    // if (!const bool.fromEnvironment("dart.vm.product")) {
-    //   latestVersionInfo.version = "9.99";
-    // }
+    if (alwaysShowUpdateHint && !Global.isRelease) {
+      latestVersionInfo.version = "9.99";
+    }
     // compareTo：如果当前版本排在最新版本前面(当前版本<最新版本)，则会返回负数
     if (currentVersion.compareTo(latestVersionInfo.version) < 0) {
       foundNewVersion = true;
@@ -113,10 +117,11 @@ class _UpdateHintState extends State<UpdateHint> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 100),
       child: showUpdateDialog
           ? WillPopScope(
               onWillPop: () async {
+                // 按虚拟返回键时不关闭更新对话框
                 return false;
               },
               child: Material(
@@ -127,61 +132,56 @@ class _UpdateHintState extends State<UpdateHint> {
                   // 不需要设置宽高
                   // height: MediaQuery.of(context).size.height,
                   // width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AlertDialog(
-                        title: const Text("更新"),
-                        content: Text(
-                            "检测到新版本：${latestVersionInfo.version}\n当前版本：$currentVersion\n更新内容：\n${latestVersionInfo.desc}"),
-                        actions: [
-                          // 手动检查更新时，不显示忽略当前版本
-                          widget.forceShowUpdateDialog
-                              ? const SizedBox.shrink()
-                              : TextButton(
-                                  onPressed: () {
-                                    showUpdateDialog = false;
-                                    SPUtil.setBool(
-                                        "ignore${latestVersionInfo.version}",
-                                        true);
-                                    setState(() {});
-                                  },
-                                  child: const Text("忽略"),
-                                ),
-                          TextButton(
-                            onPressed: () {
-                              // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
-                              // Navigator.of(context).pop();
-                              // 不显示对话框
-                              showUpdateDialog = false;
-                              setState(() {});
-                            },
-                            child: const Text("关闭"),
-                          ),
+                  child: AlertDialog(
+                    title: Text("发现新版本：v${latestVersionInfo.version}"),
+                    content: SingleChildScrollView(
+                      child: Text(
+                          "当前版本：v$currentVersion\n更新内容：\n${latestVersionInfo.desc}"),
+                    ),
+                    actions: [
+                      // 手动检查更新时，不显示忽略当前版本
+                      widget.forceShowUpdateDialog
+                          ? const SizedBox.shrink()
+                          : TextButton(
+                              onPressed: () {
+                                showUpdateDialog = false;
+                                SPUtil.setBool(
+                                    "ignore${latestVersionInfo.version}", true);
+                                setState(() {});
+                              },
+                              child: const Text("忽略"),
+                            ),
+                      TextButton(
+                        onPressed: () {
+                          // 不是退出，因为并不是压入了更新对话框页面，而是作为子组件
+                          // Navigator.of(context).pop();
+                          // 不显示对话框
+                          showUpdateDialog = false;
+                          setState(() {});
+                        },
+                        child: const Text("关闭"),
+                      ),
 
-                          ElevatedButton(
-                            onPressed: () async {
-                              showUpdateDialog = false;
-                              setState(() {});
+                      TextButton(
+                        onPressed: () async {
+                          showUpdateDialog = false;
+                          setState(() {});
 
-                              // 打开下载页面
-                              LaunchUrlUtil.launch(
-                                  context: context,
-                                  uriStr:
-                                      "https://gitee.com/linyi517/anime_trace",
-                                  inApp: false);
-                            },
-                            child: const Text("前往下载"),
-                          ),
-                          // TextButton(
-                          //   onPressed: () {
-                          //     showUpdateDialog = false;
-                          //     setState(() {});
-                          //   },
-                          //   child: const Text("自动更新"),
-                          // ),
-                        ],
-                      )
+                          // 打开下载页面
+                          LaunchUrlUtil.launch(
+                              context: context,
+                              uriStr: "https://gitee.com/linyi517/anime_trace",
+                              inApp: false);
+                        },
+                        child: const Text("前往下载"),
+                      ),
+                      // TextButton(
+                      //   onPressed: () {
+                      //     showUpdateDialog = false;
+                      //     setState(() {});
+                      //   },
+                      //   child: const Text("自动更新"),
+                      // ),
                     ],
                   ),
                 ),
