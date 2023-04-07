@@ -4,6 +4,9 @@ const selectedDirectorySourceIdx = "selectedDirectorySourceIdx";
 /// 用户选择的周表搜索源下标
 const selectedWeeklyTableSourceIdx = "selectedWeeklyTableSourceIdx";
 
+/// 用户选择的导入数据搜索源下标
+const selectedImportCollTableSourceIdx = "selectedImportCollTableSourceIdx";
+
 /// banner本地图片
 const bannerFileImagePath = "bannerFileImagePath";
 

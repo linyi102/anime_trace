@@ -45,11 +45,13 @@ class CommonBottomTabBar extends StatelessWidget
   final List<Widget> tabs;
   final TabController? tabController;
   final bool isScrollable;
+  final Color? bgColor;
 
   const CommonBottomTabBar(
       {required this.tabs,
       this.tabController,
       this.isScrollable = false,
+      this.bgColor,
       Key? key})
       : super(key: key);
 
@@ -58,6 +60,7 @@ class CommonBottomTabBar extends StatelessWidget
     return Container(
       padding: const EdgeInsetsDirectional.only(start: 5, end: 5),
       alignment: Alignment.centerLeft,
+      color: bgColor,
       child: TabBar(
         tabs: tabs,
         controller: tabController,

@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -11,6 +15,8 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
+  int seconds = 3;
+
   @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
@@ -19,19 +25,17 @@ class _TestPageState extends State<TestPage> {
       appBar: AppBar(title: const Text("测试")),
       body: ListView(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 50),
-              InkWell(
-                borderRadius: BorderRadius.circular(50),
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: const Icon(Icons.favorite, color: Colors.red),
-                ),
-              ),
-            ],
+          ListTile(
+            title: Countdown(
+              seconds: seconds,
+              build: (context, value) => Text(TimeUtil.getReadableDuration(
+                  Duration(seconds: value.toInt()))),
+            ),
+            onTap: () {
+              setState(() {
+                seconds = Random().nextInt(10);
+              });
+            },
           ),
           ListTile(
             title: const Text("测试图片失效"),

@@ -102,27 +102,31 @@ class _SourceDetailState extends State<SourceDetail> {
                 }));
               },
             ),
-            ListTile(
-              enabled: climbWebstie.supportImport,
-              title: const Text("导入数据"),
-              leading: Icon(
-                // Icons.post_add,
-                // Icons.add_chart_outlined,
-                Icons.bar_chart_rounded,
-                color: ThemeUtil.getPrimaryIconColor(),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ImportCollectionPage(climbWebsite: climbWebstie),
-                    ));
-              },
-            )
+            _buildImportDataTile(context)
           ],
         ),
       ),
+    );
+  }
+
+  _buildImportDataTile(BuildContext context) {
+    return ListTile(
+      enabled: climbWebstie.supportImport,
+      title: const Text("导入数据"),
+      leading: Icon(
+        // Icons.post_add,
+        // Icons.add_chart_outlined,
+        Icons.bar_chart_rounded,
+        color: ThemeUtil.getPrimaryIconColor(),
+      ),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ImportCollectionPage(
+                      climbWebsite: climbWebstie,
+                    )));
+      },
     );
   }
 }

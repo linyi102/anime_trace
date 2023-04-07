@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
+import 'package:flutter_test_future/pages/network/sources/import/import_collection_page.dart';
 import 'package:flutter_test_future/pages/network/sources/lapse_cover_fix/lapse_cover_animes_page.dart';
 import 'package:flutter_test_future/pages/network/sources/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/source_list_page.dart';
@@ -202,17 +203,46 @@ class _AggregatePageState extends State<AggregatePage> {
             children: [
               IconTextButton(
                 iconSize: iconSize,
-                icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+                // icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+                icon: Container(
+                    decoration: const BoxDecoration(
+                        color: Color.fromRGBO(19, 189, 157, 1),
+                        shape: BoxShape.circle),
+                    child: const Center(
+                        child: Text("番",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16)))),
                 text: const Text("番组放送", textScaleFactor: 0.9),
                 onTap: () => LaunchUrlUtil.launch(
                     context: context, uriStr: favWebsite.url),
               ),
               IconTextButton(
                   iconSize: iconSize,
-                  icon: Icon(Icons.auto_fix_high, size: iconSize),
+                  icon: Container(
+                      decoration: BoxDecoration(
+                        color: ThemeUtil.getPrimaryColor(),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.auto_fix_high_rounded,
+                          size: 18, color: Colors.white)),
                   text: const Text("封面修复", textScaleFactor: 0.9),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const LapseCoverAnimesPage()))),
+              IconTextButton(
+                  iconSize: iconSize,
+                  icon: Container(
+                      decoration: BoxDecoration(
+                        color: ThemeUtil.getPrimaryColor(),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.filter_alt,
+                          size: 18, color: Colors.white)),
+                  text: const Text("动漫去重", textScaleFactor: 0.9),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                            appBar: AppBar(),
+                            body: Container(),
+                          )))),
               // IconTextButton(
               //     icon: Icon(Icons.auto_fix_high, size: iconSize),
               //     text: const Text("更新", textScaleFactor: 0.9),

@@ -1,6 +1,20 @@
+import 'package:flutter_test_future/utils/number_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
 class TimeUtil {
+  /// 根据秒数转为时长字符串
+  static String getReadableDuration(Duration duration) {
+    String res = "";
+    int hour = duration.inHours % 24;
+    int min = duration.inMinutes % 60;
+    int sec = duration.inSeconds % 60;
+
+    if (duration.inHours > 0) res += "$hour:";
+    res += "${NumberUtil.fillPreZero(min)}:${NumberUtil.fillPreZero(sec)}";
+
+    return res;
+  }
+
   static bool showPreciseTime = SPUtil.getBool("showPreciseTime",
       defaultValue: true); // 为true表示显示时间时，精确到时分
   static bool showYesterdayAndToday = SPUtil.getBool("showYesterdayAndToday",
