@@ -37,12 +37,16 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
 
   void _initData() async {
     Log.info("获取备份文件中");
-    files.addAll(await WebDavUtil.client.readDir("/animetrace"));
+    String backupDir = await WebDavUtil.getRemoteDirPath();
+    if (backupDir.isEmpty) {
+      Log.info("远程备份路径为空");
+      _loadOk = true;
+      if (mounted) setState(() {});
+      return;
+    }
 
-    String autoDir = "/animetrace/automatic";
-    // TeraCloud直接执行readDir时，如果目录不存在并不会自动创建，因此会抛出异常DioError [DioErrorType.response]: Not Found
-    // 所以这里要提前创建目录
-    await WebDavUtil.client.mkdir(autoDir);
+    String autoDir = await WebDavUtil.getRemoteAutoDirPath(backupDir);
+    files.addAll(await WebDavUtil.client.readDir(backupDir));
     files.addAll(await WebDavUtil.client.readDir(autoDir));
 
     // 去除目录
@@ -52,7 +56,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     Log.info("获取完毕，共${files.length}个文件");
     files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
     _loadOk = true;
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

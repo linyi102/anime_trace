@@ -71,19 +71,16 @@ class WebDavUtil {
       showToast("请先连接账号，再进行备份");
       return "";
     }
-    // 先判断是否有animetrace目录，没有则创建
-    var list = await client.readDir('/');
-    bool existBackupDir = false;
-    for (var file in list) {
-      if (file.name == "animetrace") {
-        existBackupDir = true;
-        break;
-      }
-    }
     String backupDir = "/animetrace";
-    if (!existBackupDir) {
-      await client.mkdir(backupDir);
-    }
+    // readDir('/')遍历判断是否存在animetrace目录，不如直接创建，如果存在则会跳过
+    await client.mkdir(backupDir);
     return backupDir;
+  }
+
+  static Future<String> getRemoteAutoDirPath(String backupDir) async {
+    String autoDir = "$backupDir/automatic";
+    // TeraCloud直接执行readDir时，如果目录不存在并不会自动创建，因此会抛出异常DioError [DioErrorType.response]: Not Found
+    await WebDavUtil.client.mkdir(autoDir);
+    return autoDir;
   }
 }

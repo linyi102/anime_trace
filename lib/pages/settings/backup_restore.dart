@@ -389,7 +389,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                   SPUtil.setString("webdav_user", user);
                   SPUtil.setString("webdav_password", password);
                   if (await WebDavUtil.initWebDav(uri, user, password)) {
-                    showToast("连接成功！");
+                    showToast("连接成功");
                     setState(() {});
                     Navigator.of(dialogContext).pop();
                   } else {
