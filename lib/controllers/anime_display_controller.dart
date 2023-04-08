@@ -24,6 +24,8 @@ class AnimeDisplayController extends GetxController {
   RxBool showAnimeCntAfterTag =
       SPUtil.getBool("showAnimeCntAfterTag", defaultValue: true)
           .obs; // 清单后面显示动漫数量
+  RxBool showOriCover =
+      SPUtil.getBool("showOriCover", defaultValue: false).obs; // 清单后面显示动漫数量
 
   // Getx运算也是响应是的
   bool get showNameBelowCover =>
@@ -68,6 +70,11 @@ class AnimeDisplayController extends GetxController {
   turnShowAnimeCntAfterTag() {
     showAnimeCntAfterTag.value = !showAnimeCntAfterTag.value;
     SPUtil.setBool("showAnimeCntAfterTag", showAnimeCntAfterTag.value);
+  }
+
+  turnShowOriCover() {
+    showOriCover.value = !showOriCover.value;
+    SPUtil.setBool("showOriCover", showOriCover.value);
   }
 
   turnNameMaxLines() {

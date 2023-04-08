@@ -150,6 +150,12 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       onTap: () => animeDisplayController.turnShowAnimeCntAfterTag(),
     ));
 
+    list.add(ListTile(
+      title: const Text("封面显示原图"),
+      trailing: showToggleButton(animeDisplayController.showOriCover.value),
+      onTap: () => animeDisplayController.turnShowOriCover(),
+    ));
+
     return list;
   }
 

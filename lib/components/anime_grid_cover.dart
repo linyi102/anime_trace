@@ -48,7 +48,9 @@ class AnimeGridCover extends StatelessWidget {
                   _buildCover(
                       context,
                       _animeDisplayController.showGridAnimeName.value &&
-                          _animeDisplayController.showNameInCover.value),
+                          _animeDisplayController.showNameInCover.value,
+                      reduceMemCache:
+                          !_animeDisplayController.showOriCover.value),
                   if (showProgress &&
                       _anime.isCollected() &&
                       _animeDisplayController.showGridAnimeProgress.value)
@@ -68,7 +70,8 @@ class AnimeGridCover extends StatelessWidget {
     );
   }
 
-  _buildCover(BuildContext context, bool showNameInCover) {
+  _buildCover(BuildContext context, bool showNameInCover,
+      {bool reduceMemCache = true}) {
     Size mqSize = MediaQuery.of(context).size;
 
     return Container(
@@ -97,7 +100,7 @@ class AnimeGridCover extends StatelessWidget {
                     height: mqSize.height,
                     child: CommonImage(
                       _anime.getCommonCoverUrl(),
-                      // reduceMemCache: false,
+                      reduceMemCache: reduceMemCache,
                     ),
                   ),
                 ),
