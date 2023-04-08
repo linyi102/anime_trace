@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
@@ -34,17 +35,26 @@ class DedupPage extends StatelessWidget {
                 ? _buildEmptyWidget()
                 : Column(
                     children: [
-                      SwitchListTile(
-                        title: const Text("选中没有看过的动漫"),
-                        value: dedupController.enableRetainAnimeHasProgress,
-                        onChanged: (value) {
-                          dedupController.enableRetainAnimeHasProgress = value;
-                          if (value == true) {
-                            dedupController.retainAnimeHasProgress();
-                          } else {
-                            dedupController.clearSelected();
-                          }
-                        },
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                          child: SwitchListTile(
+                            title: const Text("选中没有看过的动漫"),
+                            value: dedupController.enableRetainAnimeHasProgress,
+                            onChanged: (value) {
+                              dedupController.enableRetainAnimeHasProgress =
+                                  value;
+                              if (value == true) {
+                                dedupController.retainAnimeHasProgress();
+                              } else {
+                                dedupController.clearSelected();
+                              }
+                            },
+                          ),
+                        ),
                       ),
                       Expanded(
                         child: Scrollbar(
@@ -73,26 +83,11 @@ class DedupPage extends StatelessWidget {
     );
   }
 
-  SizedBox _buildBottomBar(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      // 保留的含义不明确，如果有的同名动漫一个都没选，不应该都删除。因此会提供删除按钮
-      child: Row(
-        children: [
-          Expanded(
-            child: InkWell(
-              onTap: () => dedupController.clearSelected(),
-              child: const Center(child: Text("取消")),
-            ),
-          ),
-          Container(width: 0.2, color: ThemeUtil.getCommentColor()),
-          Expanded(
-            child: InkWell(
-                onTap: () => _showDialogDeleteSelectedAnimes(context),
-                child: const Center(child: Text("删除"))),
-          ),
-        ],
-      ),
+  _buildBottomBar(BuildContext context) {
+    // 保留的含义不明确，如果有的同名动漫一个都没选，不应该都删除。因此只提供删除按钮
+    return OperationButton(
+      text: "删除选中动漫",
+      onTap: () => _showDialogDeleteSelectedAnimes(context),
     );
   }
 
@@ -137,56 +132,56 @@ class DedupPage extends StatelessWidget {
   ListView _buildAnimeList(ScrollController scrollController) {
     return ListView.builder(
       controller: scrollController,
+      // 避免没有占满时无法下拉刷新
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: dedupController.nameList.length,
       itemBuilder: (context, index) {
         var name = dedupController.nameList[index];
-        return Card(
-          child: Column(
-            children: [
-              ListTile(
-                title: Text(name,
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
-              ),
-              if (dedupController.animeMap.containsKey(name))
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: SizedBox(
-                    height: 160,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: dedupController.animeMap[name]!.length,
-                      itemBuilder: (context, index) {
-                        var anime = dedupController.animeMap[name]![index];
-                        bool selected =
-                            dedupController.selectedIds.contains(anime.animeId);
+        return Column(
+          children: [
+            ListTile(
+              title: Text(name,
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
+            ),
+            if (dedupController.animeMap.containsKey(name))
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  height: 160,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: dedupController.animeMap[name]!.length,
+                    itemBuilder: (context, index) {
+                      var anime = dedupController.animeMap[name]![index];
+                      bool selected =
+                          dedupController.selectedIds.contains(anime.animeId);
 
-                        return Column(
-                          children: [
-                            Stack(
-                              children: [
-                                InkWell(
-                                  onTap: () => _enterAnimeDetailPage(
-                                      context, name, index),
-                                  child: AnimeGridCover(
-                                    anime,
-                                    coverWidth: 100,
-                                    showProgress: true,
-                                    showReviewNumber: false,
-                                    showName: false,
-                                  ),
+                      return Column(
+                        children: [
+                          Stack(
+                            children: [
+                              InkWell(
+                                onTap: () =>
+                                    _enterAnimeDetailPage(context, name, index),
+                                child: AnimeGridCover(
+                                  anime,
+                                  coverWidth: 100,
+                                  showProgress: true,
+                                  showReviewNumber: false,
+                                  showName: false,
                                 ),
-                                _buildSelectIcon(anime, selected)
-                              ],
-                            ),
-                            Text(anime.getAnimeSource()),
-                          ],
-                        );
-                      },
-                    ),
+                              ),
+                              _buildSelectIcon(anime, selected)
+                            ],
+                          ),
+                          Text(anime.getAnimeSource()),
+                        ],
+                      );
+                    },
                   ),
-                )
-            ],
-          ),
+                ),
+              )
+          ],
         );
       },
     );
@@ -234,46 +229,22 @@ class DedupPage extends StatelessWidget {
               ? Center(
                   // 使用Center，确保Container设置的宽高生效
                   child: Container(
-                    height: 24,
-                    width: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ThemeUtil.getPrimaryIconColor(),
-                    ),
-                    child:
-                        const Icon(Icons.check, color: Colors.white, size: 18),
-                  ),
-                )
+                      height: 24,
+                      width: 24,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: ThemeUtil.getPrimaryIconColor()),
+                      child: const Icon(Icons.check,
+                          color: Colors.white, size: 18)))
               : Center(
                   child: Container(
-                    height: 24,
-                    width: 24,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        // 添加白色边框，并为内部添加不透明度，避免白色封面导致看不见
-                        color: Colors.black.withOpacity(0.3),
-                        border: Border.all(
-                          width: 2,
-                          color: Colors.white,
-                        )),
-                  ),
-                ),
-          // child: selected
-          //     ? Icon(Icons.check_circle,
-          //         shadows: const [
-          //           Shadow(
-          //               blurRadius: 1,
-          //               color: Colors.black),
-          //         ],
-          //         color: ThemeUtil
-          //             .getPrimaryIconColor())
-          //     : const Icon(Icons.circle_outlined,
-          //         shadows: [
-          //           Shadow(
-          //               blurRadius: 1,
-          //               color: Colors.black),
-          //         ],
-          //         color: Colors.white),
+                      height: 24,
+                      width: 24,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          // 添加白色边框，并为内部添加不透明度，避免白色封面导致看不见
+                          color: Colors.black.withOpacity(0.1),
+                          border: Border.all(width: 1, color: Colors.white)))),
         ),
       ),
     );

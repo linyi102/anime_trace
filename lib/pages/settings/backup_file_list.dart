@@ -112,7 +112,8 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text("确定删除该备份吗？"),
+            title: const Text("删除"),
+            content: const Text("确定删除该备份吗？"),
             actions: [
               TextButton(
                   onPressed: () {
@@ -143,8 +144,8 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("还原数据"),
-          content: const Text("这会覆盖已有的数据\n确定还原指定文件吗？"),
+          title: const Text("还原"),
+          content: const Text("这会覆盖已有的数据，确定还原吗？"),
           actions: [
             TextButton(
                 onPressed: () {

@@ -280,6 +280,12 @@ class MyAppState extends State<MyApp> with WindowListener {
         backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
         iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
       ),
+      // switchTheme: SwitchThemeData(
+      //   // All只能定义一种颜色，无法区分激活和非激活状态
+      //   trackColor: MaterialStatePropertyAll(
+      //       ThemeUtil.getPrimaryColor().withOpacity(0.5)),
+      //   thumbColor: MaterialStatePropertyAll(ThemeUtil.getPrimaryColor()),
+      // ),
       iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
       scaffoldBackgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
       inputDecorationTheme:

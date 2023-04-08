@@ -119,7 +119,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       children: List.generate(siteCollectionTab.length, (collIdx) {
         if (icc.searching[collIdx]) return loadingWidget(context);
         if (icc.userCollection[collIdx].animes.isEmpty) {
-          return emptyDataHint();
+          return emptyDataHint(msg: "没有收藏。");
         }
 
         return SmartRefresher(

@@ -62,6 +62,8 @@ class UpdateRecordPage extends StatelessWidget {
       controller: scrollController,
       child: ListView.builder(
           controller: scrollController,
+          // 避免没有占满时无法下拉刷新
+          physics: const AlwaysScrollableScrollPhysics(),
           itemCount: dateList.length,
           itemBuilder: (context, index) {
             String date = dateList[index];
@@ -163,7 +165,10 @@ class UpdateRecordPage extends StatelessWidget {
 
   _buildEmptyDataPage() {
     return ListView(
-      children: [emptyDataHint()],
+      children: [
+        const SizedBox(height: 20),
+        emptyDataHint(msg: "没有更新记录。"),
+      ],
     );
   }
 
@@ -205,17 +210,23 @@ class UpdateRecordPage extends StatelessWidget {
                   Expanded(child: Container()),
                 ],
               ),
-              TextButton(
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   ClimbAnimeUtil.updateAllAnimesInfo();
                 },
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)))),
-                child: const Text(
-                  "立即更新",
-                  textScaleFactor: ThemeUtil.smallScaleFactor,
-                  style: TextStyle(color: Colors.white),
+                child: Container(
+                  height: 30,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: ThemeUtil.getPrimaryColor(),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: const Center(
+                    child: Text(
+                      "立即更新",
+                      textScaleFactor: ThemeUtil.smallScaleFactor,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               )
             ],

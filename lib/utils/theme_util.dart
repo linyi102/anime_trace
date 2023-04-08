@@ -144,6 +144,19 @@ class ThemeUtil {
     return isDark ? Colors.white70 : Colors.black54;
   }
 
+  // 非激活按钮
+  static Color getInActiveButtonBgColor() {
+    return isDark
+        ? const Color.fromRGBO(17, 17, 17, 1)
+        : const Color.fromRGBO(240, 240, 240, 1);
+  }
+
+  static Color getInActiveButtonFgColor() {
+    return isDark
+        ? const Color.fromRGBO(77, 77, 77, 1)
+        : const Color.fromRGBO(170, 170, 170, 1);
+  }
+
   // 动漫详细页图片背景混合
   static Color getModulateColor() {
     return isDark
