@@ -44,7 +44,7 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async => await historyController.refreshData(),
-        child: GetBuilder(
+        child: GetBuilder<HistoryController>(
           init: historyController,
           builder: (_) => FadeAnimatedSwitcher(
             loadOk: historyController.loadOk,
@@ -105,8 +105,9 @@ class _HistoryPageState extends State<HistoryPage> {
         // key: PageStorageKey("history-page-view-$selectedViewIndex"),
         // 指定key后，才能保证切换回历史页时，update()后显示最新数据
         // key: UniqueKey(),
-        // 但不能指定为UniqueKey，否则加载更多时会直接跳转到顶部
-        key: Key("history-page-view-$selectedViewIndex"),
+        // 但不能指定为UniqueKey，否则加载更多时会直接跳转到顶部。可是指定这个下面key又会导致没有显示最新数据，并且新增历史后不匹配
+        // 推测是RecordItem的key问题，后来为RecordItem添加UniqueKey后正确。
+        // key: Key("history-page-view-$selectedViewIndex"),
         controller: views[selectedViewIndex].scrollController,
         itemCount: views[selectedViewIndex].historyRecords.length,
         itemBuilder: (context, index) {
@@ -142,7 +143,20 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: views[selectedViewIndex]
                         .historyRecords[index]
                         .records
-                        .map((record) => RecordItem(record: record, date: date))
+                        .map(
+                          // 测试发现必须为RecordItem添加UniqueKey才能保证切换回历史页后显示出新数据
+                          // 应该和StatefulWidget的状态有关
+                          // (record) => ListTile(
+                          //   title: Text(record.anime.animeName),
+                          //   subtitle: Text(
+                          //       "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
+                          // ),
+                          (record) => RecordItem(
+                            record: record,
+                            date: date,
+                            key: UniqueKey(),
+                          ),
+                        )
                         .toList()),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5)
