@@ -95,7 +95,10 @@ class AnimeGridCover extends StatelessWidget {
                     // 确保图片填充
                     width: mqSize.width,
                     height: mqSize.height,
-                    child: CommonImage(_anime.getCommonCoverUrl()),
+                    child: CommonImage(
+                      _anime.getCommonCoverUrl(),
+                      // reduceMemCache: false,
+                    ),
                   ),
                 ),
                 if (isSelected)

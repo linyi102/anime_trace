@@ -6,34 +6,12 @@ import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/anime_history_record.dart';
-import 'package:flutter_test_future/models/history_plus.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/history/history_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/theme_util.dart';
-
-enum HistoryLabel {
-  year("年"),
-  month("月"),
-  day("日");
-
-  final String title;
-  const HistoryLabel(this.title);
-}
-
-class HistoryView {
-  HistoryLabel label;
-  PageParams pageParams;
-  int dateLength; // 用于匹配数据库中日期xxxx-xx-xx的子串
-  List<HistoryPlus> historyRecords = [];
-  ScrollController scrollController = ScrollController();
-
-  HistoryView(
-      {required this.label,
-      required this.pageParams,
-      required this.dateLength});
-}
+import 'package:get/get.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -43,74 +21,18 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  List<HistoryView> views = [
-    HistoryView(
-        label: HistoryLabel.year,
-        pageParams: PageParams(pageIndex: 0, pageSize: 5),
-        dateLength: 4),
-    HistoryView(
-        label: HistoryLabel.month,
-        pageParams: PageParams(pageIndex: 0, pageSize: 10),
-        dateLength: 7),
-    HistoryView(
-        label: HistoryLabel.day,
-        pageParams: PageParams(pageIndex: 0, pageSize: 15),
-        dateLength: 10)
-  ];
-  int selectedViewIndex = SPUtil.getInt("selectedViewIndexInHistoryPage",
-      defaultValue: 1); // 默认为1，也就是月视图
-  bool loadOk = false;
-  late HistoryLabel selectedHistoryLabel;
+  HistoryController historyController = Get.put(HistoryController());
+
+  List<HistoryView> get views => historyController.views;
+  int get selectedViewIndex => historyController.selectedViewIndex;
 
   @override
   void initState() {
+    if (historyController.initOk) {
+      // 如果已经初始化完毕，则说明之前已经打开过历史页，那么这次需要刷新数据来保证最新数据
+      historyController.refreshData();
+    }
     super.initState();
-
-    selectedHistoryLabel = views[selectedViewIndex].label;
-    _initData();
-  }
-
-  _initData({bool forceLoad = false}) async {
-    if (forceLoad) {
-      Log.info("强制刷新，清空记录");
-      // 如果强制初始化数据，则需要恢复为初始状态
-      for (var view in views) {
-        view.pageParams.pageIndex = view.pageParams.baseIndex;
-        view.historyRecords.clear();
-      }
-      setState(() {
-        loadOk = false;
-      });
-    }
-
-    // 如果之前切换过该视图，使得不为空，就直接返回
-    if (views[selectedViewIndex].historyRecords.isNotEmpty) {
-      setState(() {
-        loadOk = true;
-      });
-      return;
-    }
-
-    views[selectedViewIndex].historyRecords =
-        await HistoryDao.getHistoryPageable(
-            pageParams: views[selectedViewIndex].pageParams,
-            dateLength: views[selectedViewIndex].dateLength);
-    if (mounted) {
-      setState(() {
-        loadOk = true;
-      });
-    }
-  }
-
-  _loadMoreData() async {
-    Log.info("加载更多数据");
-    views[selectedViewIndex].historyRecords.addAll(
-        await HistoryDao.getHistoryPageable(
-            pageParams: views[selectedViewIndex].pageParams,
-            dateLength: views[selectedViewIndex].dateLength));
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
@@ -121,19 +43,22 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [_buildCupertinoViewSwitch()],
       ),
       body: RefreshIndicator(
-        onRefresh: () async => _initData(forceLoad: true),
-        child: FadeAnimatedSwitcher(
-          loadOk: loadOk,
-          destWidget: Column(
-            children: [
-              // _buildViewSwitch(),
-              views[selectedViewIndex].historyRecords.isEmpty
-                  ? Expanded(child: emptyDataHint(msg: "没有历史。"))
-                  : Expanded(
-                      // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
-                      child: _buildHistoryPage(),
-                    ),
-            ],
+        onRefresh: () async => await historyController.refreshData(),
+        child: GetBuilder(
+          init: historyController,
+          builder: (_) => FadeAnimatedSwitcher(
+            loadOk: historyController.loadOk,
+            destWidget: Column(
+              children: [
+                // _buildViewSwitch(),
+                views[selectedViewIndex].historyRecords.isEmpty
+                    ? Expanded(child: emptyDataHint(msg: "没有历史。"))
+                    : Expanded(
+                        // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
+                        child: _buildHistoryPage(),
+                      ),
+              ],
+            ),
           ),
         ),
       ),
@@ -144,11 +69,11 @@ class _HistoryPageState extends State<HistoryPage> {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: CupertinoSlidingSegmentedControl(
-        groupValue: selectedHistoryLabel,
+        groupValue: historyController.selectedHistoryLabel,
         children: () {
           Map<HistoryLabel, Widget> map = {};
-          for (int i = 0; i < views.length; ++i) {
-            var view = views[i];
+          for (int i = 0; i < historyController.views.length; ++i) {
+            var view = historyController.views[i];
             map[view.label] = Text(view.label.title);
           }
           return map;
@@ -158,13 +83,13 @@ class _HistoryPageState extends State<HistoryPage> {
             Log.info("value=$value");
             setState(() {
               // 先重绘进度圈和开关
-              loadOk = false;
-              selectedHistoryLabel = value;
+              historyController.loadOk = false;
+              historyController.selectedHistoryLabel = value;
             });
-            selectedViewIndex =
+            historyController.selectedViewIndex =
                 views.indexWhere((element) => element.label == value);
             SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
-            _initData();
+            historyController.loadData();
           }
         },
       ),
@@ -175,17 +100,18 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scrollbar(
       controller: views[selectedViewIndex].scrollController,
       child: ListView.builder(
-        // key保证切换视图时滚动条在最上面
-        key: Key("history-page-view-$selectedViewIndex"),
-        // TODO 为什么切换视图后滚动条不能恢复之前的位置？
+        // 保留滚动位置，注意：如果滚动位置在加载更多的数据中，那么重新打开当前页面若重新加载数据，则恢复滚动位置不合适，故不采用
+        // key: PageStorageKey("history-page-view-$selectedViewIndex"),
+        // 指定key后，才能保证切换回历史页时，update()后显示最新数据
+        key: UniqueKey(),
         controller: views[selectedViewIndex].scrollController,
         itemCount: views[selectedViewIndex].historyRecords.length,
         itemBuilder: (context, index) {
           int threshold = views[selectedViewIndex].pageParams.getQueriedSize();
-          Log.info("index=$index, threshold=$threshold");
           if (index + 2 == threshold) {
+            Log.info("index=$index, threshold=$threshold");
             views[selectedViewIndex].pageParams.pageIndex++;
-            _loadMoreData();
+            historyController.loadMoreData();
           }
 
           String date = views[selectedViewIndex].historyRecords[index].date;
