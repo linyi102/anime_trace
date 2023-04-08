@@ -89,7 +89,8 @@ class _HistoryPageState extends State<HistoryPage> {
             historyController.selectedViewIndex =
                 views.indexWhere((element) => element.label == value);
             SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
-            historyController.loadData();
+            // 重置页号刷新数据，避免页号不是从0开始导致加载直接加载后面的数据
+            historyController.refreshData();
           }
         },
       ),
@@ -103,7 +104,9 @@ class _HistoryPageState extends State<HistoryPage> {
         // 保留滚动位置，注意：如果滚动位置在加载更多的数据中，那么重新打开当前页面若重新加载数据，则恢复滚动位置不合适，故不采用
         // key: PageStorageKey("history-page-view-$selectedViewIndex"),
         // 指定key后，才能保证切换回历史页时，update()后显示最新数据
-        key: UniqueKey(),
+        // key: UniqueKey(),
+        // 但不能指定为UniqueKey，否则加载更多时会直接跳转到顶部
+        key: Key("history-page-view-$selectedViewIndex"),
         controller: views[selectedViewIndex].scrollController,
         itemCount: views[selectedViewIndex].historyRecords.length,
         itemBuilder: (context, index) {
