@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/params/result.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -221,6 +222,9 @@ class BackupUtil {
       updateRecordController.updateData();
       // 重新获取标签信息
       labelsController.getAllLabels();
+      // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
+      Get.delete<DedupController>();
+
       return Result.success("", msg: "还原成功");
     } else {
       return Result.failure(404, "备份文件不正确，无法还原");

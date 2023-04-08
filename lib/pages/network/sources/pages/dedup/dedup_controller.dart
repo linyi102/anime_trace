@@ -7,7 +7,7 @@ class DedupController extends GetxController {
   List<String> nameList = [];
   int totalCnt = 0;
   Set<int> selectedIds = {};
-  bool initOk = false;
+  bool loading = false;
 
   bool enableRetainAnimeHasProgress = false;
 
@@ -16,18 +16,25 @@ class DedupController extends GetxController {
 
   @override
   void onInit() {
-    _initData();
+    _initData(showLoading: true);
     super.onInit();
   }
 
-  Future<void> refreshData() async {
+  Future<void> refreshData({bool showLoading = false}) async {
     animeMap.clear();
     nameList.clear();
     totalCnt = 0;
-    return _initData();
+    return _initData(showLoading: showLoading);
   }
 
-  Future<void> _initData() async {
+  Future<void> _initData({bool showLoading = false}) async {
+    if (showLoading) {
+      loading = true;
+      update([bodyId, appBarId]);
+    }
+    // 显示加载圈后，等待一段时间再去查询，避免执行页面切换动画时卡顿
+    await Future.delayed(const Duration(milliseconds: 200));
+
     var animes = await AnimeDao.getDupAnimes();
     for (var anime in animes) {
       if (animeMap.containsKey(anime.animeName)) {
@@ -38,7 +45,7 @@ class DedupController extends GetxController {
       }
     }
     totalCnt = animes.length;
-    initOk = true;
+    loading = false;
     update([bodyId, appBarId]);
   }
 
@@ -88,9 +95,15 @@ class DedupController extends GetxController {
             // 如果移除前改名了，那么没有animeName这个key，因此这里需要判断
             if (animeMap.containsKey(key)) {
               animeMap[key]!.removeWhere((element) => element.animeId == id);
-              // 如果移除后，key对应的value列表为空，那么就移除掉这个key
-              if (animeMap[key]!.isEmpty) {
+              totalCnt--;
+
+              var remainCnt = animeMap[key]!.length;
+              // 如果删除后，key对应的value列表为空或只剩1个，那么就移除掉这个key
+              // 若只剩1个，不要移除该key，起初是想让用户避免删除后剩1个却仍显示的干扰，但如果移除了可能会让用户认为误删
+              // if (remainCnt == 0 || remainCnt == 1) {
+              if (remainCnt == 0) {
                 animeMap.remove(key);
+                totalCnt -= remainCnt;
                 // 还要从名字列表中移除
                 nameList.removeWhere((element) => element == anime.animeName);
               }
@@ -101,8 +114,6 @@ class DedupController extends GetxController {
         }
         if (find) break;
       }
-      // 总数-1
-      totalCnt--;
     }
 
     // 退出多选

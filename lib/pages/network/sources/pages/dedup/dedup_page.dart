@@ -29,55 +29,70 @@ class DedupPage extends StatelessWidget {
         child: GetBuilder(
           init: dedupController,
           id: DedupController.bodyId,
-          builder: (_) => FadeAnimatedSwitcher(
-            loadOk: dedupController.initOk,
-            destWidget: dedupController.totalCnt == 0
-                ? _buildEmptyWidget()
-                : Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6)),
-                          child: SwitchListTile(
-                            title: const Text("选中没有看过的动漫"),
-                            value: dedupController.enableRetainAnimeHasProgress,
-                            onChanged: (value) {
-                              dedupController.enableRetainAnimeHasProgress =
-                                  value;
-                              if (value == true) {
-                                dedupController.retainAnimeHasProgress();
-                              } else {
-                                dedupController.clearSelected();
-                              }
-                            },
+          builder: (_) => Stack(
+            children: [
+              FadeAnimatedSwitcher(
+                loadOk: !dedupController.loading,
+                destWidget: dedupController.totalCnt == 0
+                    ? _buildEmptyWidget()
+                    : Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6)),
+                              child: SwitchListTile(
+                                title: const Text("选中没有看过的动漫"),
+                                value: dedupController
+                                    .enableRetainAnimeHasProgress,
+                                onChanged: (value) {
+                                  dedupController.enableRetainAnimeHasProgress =
+                                      value;
+                                  if (value == true) {
+                                    dedupController.retainAnimeHasProgress();
+                                  } else {
+                                    dedupController.clearSelected();
+                                  }
+                                },
+                              ),
+                            ),
                           ),
-                        ),
+                          Expanded(
+                            child: Scrollbar(
+                                controller: scrollController,
+                                child: _buildAnimeList(scrollController)),
+                          ),
+                          if (dedupController.selectedIds.isNotEmpty)
+                            _buildBottomBar(context)
+                        ],
                       ),
-                      Expanded(
-                        child: Scrollbar(
-                            controller: scrollController,
-                            child: _buildAnimeList(scrollController)),
-                      ),
-                      if (dedupController.selectedIds.isNotEmpty)
-                        _buildBottomBar(context)
-                    ],
-                  ),
+              ),
+              if (dedupController.totalCnt == 0)
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: OperationButton(
+                      active: !dedupController.loading,
+                      text: dedupController.loading ? "正在扫描" : "重新扫描",
+                      onTap: () {
+                        dedupController.refreshData(showLoading: true);
+                      },
+                    )),
+            ],
           ),
         ),
       ),
     );
   }
 
-  LayoutBuilder _buildEmptyWidget() {
+  _buildEmptyWidget() {
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: const Center(child: Text("没有重复。")),
+          child: const Center(child: Text("没有同名动漫。")),
         ),
       ),
     );
@@ -108,7 +123,7 @@ class DedupPage extends StatelessWidget {
     );
   }
 
-  Future<dynamic> _showDialogDeleteSelectedAnimes(BuildContext context) {
+  _showDialogDeleteSelectedAnimes(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(

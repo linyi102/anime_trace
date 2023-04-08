@@ -210,25 +210,38 @@ class UpdateRecordPage extends StatelessWidget {
                   Expanded(child: Container()),
                 ],
               ),
-              InkWell(
-                onTap: () {
+              ElevatedButton(
+                onPressed: () {
                   ClimbAnimeUtil.updateAllAnimesInfo();
                 },
-                child: Container(
-                  height: 30,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: ThemeUtil.getPrimaryColor(),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: const Center(
-                    child: Text(
-                      "立即更新",
-                      textScaleFactor: ThemeUtil.smallScaleFactor,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)))),
+                child: const Text(
+                  "立即更新",
+                  textScaleFactor: ThemeUtil.smallScaleFactor,
+                  style: TextStyle(color: Colors.white),
                 ),
-              )
+              ),
+              // InkWell(
+              //   onTap: () {
+              //     ClimbAnimeUtil.updateAllAnimesInfo();
+              //   },
+              //   child: Container(
+              //     height: 30,
+              //     width: 80,
+              //     decoration: BoxDecoration(
+              //         color: ThemeUtil.getPrimaryColor(),
+              //         borderRadius: BorderRadius.circular(20)),
+              //     child: const Center(
+              //       child: Text(
+              //         "立即更新",
+              //         textScaleFactor: ThemeUtil.smallScaleFactor,
+              //         style: TextStyle(color: Colors.white),
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

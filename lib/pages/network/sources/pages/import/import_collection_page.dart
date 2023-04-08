@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/bottom_sheet.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -178,20 +179,9 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
     return showCommonBottomSheet(
         context: context,
         expanded: true,
-        title: Text("一键收藏 “${siteCollectionTab[collIdx].title}” 到"),
+        title: Text("收藏 “${siteCollectionTab[collIdx].title}” 到"),
         child: Column(
           children: [
-            StatefulBuilder(
-              builder: (context, setState) => SwitchListTile(
-                title: const Text("若已收藏同名动漫，则跳过"),
-                value: SpProfile.getSkipDupNameAnime(),
-                onChanged: (value) {
-                  SpProfile.setSkipDupNameAnime(value);
-                  setState(() {});
-                },
-              ),
-            ),
-            const Divider(),
             Expanded(
               child: Scrollbar(
                 controller: scrollController,
@@ -208,6 +198,17 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                 ),
               ),
             ),
+            const Divider(),
+            StatefulBuilder(
+              builder: (context, setState) => SwitchListTile(
+                title: const Text("若已收藏同名动漫，则跳过"),
+                value: SpProfile.getSkipDupNameAnime(),
+                onChanged: (value) {
+                  SpProfile.setSkipDupNameAnime(value);
+                  setState(() {});
+                },
+              ),
+            ),
           ],
         ));
   }
@@ -222,25 +223,31 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           int seconds =
               (icc.totalPage - icc.curPage + 1) * (icc.gap.inSeconds + 1);
 
+          // 如果收藏完毕，应该还要显示进度，而不是收藏按钮，所以就不需要最初只显示收藏按钮了
+          // return const OperationButton(text: "收藏");
+
+          const textStyle = TextStyle(height: 1.2);
           return ListTile(
             leading: _buildBottomBarWebsiteIcon(),
             title: Text.rich(TextSpan(children: [
-              WidgetSpan(child: Text("页数 ${icc.curPage}/${icc.totalPage}")),
+              TextSpan(text: "页数 ${icc.curPage}/${icc.totalPage}"),
               if (icc.quickCollecting)
-                TextSpan(children: [
-                  const WidgetSpan(child: Text("，预计 ")),
+                TextSpan(style: textStyle, children: [
+                  const TextSpan(text: "，预计 "),
                   WidgetSpan(
                       child: Countdown(
                     seconds: seconds,
                     build: (context, value) => Text(
-                        TimeUtil.getReadableDuration(
-                            Duration(seconds: value.toInt()))),
+                      TimeUtil.getReadableDuration(
+                        Duration(seconds: value.toInt()),
+                      ),
+                      style: textStyle,
+                    ),
                   )),
                 ]),
               const TextSpan(text: "\n"),
-              WidgetSpan(
-                  child:
-                      Text("成功 ${icc.addOk}，跳过 ${icc.added}，失败 ${icc.addFail}"))
+              TextSpan(
+                  text: "成功 ${icc.addOk}，跳过 ${icc.added}，失败 ${icc.addFail}")
             ])),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
