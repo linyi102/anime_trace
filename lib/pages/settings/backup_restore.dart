@@ -9,8 +9,8 @@ import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:oktoast/oktoast.dart';
 
 import '../../components/loading_dialog.dart';
@@ -51,12 +51,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "备份还原",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text("备份还原"),
       ),
       body: ListView(
         children: [
@@ -121,7 +116,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
       children: [
         ListTile(
           title: Text("WebDav备份",
-              style: TextStyle(color: ThemeUtil.getPrimaryColor())),
+              style: TextStyle(color: Theme.of(context).primaryColor)),
           // trailing: MyIconButton(onPressed: () {}, icon: Icon(Icons.)),
           subtitle: const Text("点击查看教程"),
           onTap: () {
@@ -136,7 +131,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             Icons.circle,
             size: 12,
             color: SPUtil.getBool("online")
-                ? ThemeUtil.getConnectableColor()
+                ? AppTheme.connectableColor
                 : Colors.grey,
           ),
           onTap: () {
@@ -173,7 +168,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           subtitle: const Text("每次进入应用后会自动备份"),
           trailing: SPUtil.getBool("auto_backup_webdav")
               ? Icon(Icons.toggle_on,
-                  color: ThemeUtil.getPrimaryColor(), size: 32)
+                  color: Theme.of(context).primaryColor, size: 32)
               : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
           onTap: () async {
             if (!SPUtil.getBool("login")) {
@@ -236,7 +231,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
         ListTile(
           title: Text(
             "本地备份",
-            style: TextStyle(color: ThemeUtil.getPrimaryColor()),
+            style: TextStyle(color: Theme.of(context).primaryColor),
           ),
         ),
         if (Platform.isAndroid)
@@ -281,7 +276,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             subtitle: const Text("每次进入应用后会自动备份"),
             trailing: SPUtil.getBool("auto_backup_local")
                 ? Icon(Icons.toggle_on,
-                    color: ThemeUtil.getPrimaryColor(), size: 32)
+                    color: Theme.of(context).primaryColor, size: 32)
                 : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
             onTap: () {
               if (SPUtil.getString("backup_local_dir", defaultValue: "unset") ==

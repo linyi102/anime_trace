@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
@@ -71,8 +70,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("收藏列表 ($cnt)",
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text("收藏列表 ($cnt)"),
       ),
       body: Scrollbar(
         controller: scrollController,

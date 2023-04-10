@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 
 /// 笔记卡片
@@ -109,8 +109,7 @@ class _NoteCardState extends State<NoteCard> {
                 note.anime.animeName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textScaleFactor: ThemeUtil.smallScaleFactor,
-                // style: const TextStyle(fontWeight: FontWeight.w600),
+                textScaleFactor: AppTheme.smallScaleFactor,
               ),
             ),
           ),
@@ -133,7 +132,7 @@ class _NoteCardState extends State<NoteCard> {
                           note.anime.animeId, note.anime.rate);
                     })
                 : Text("第${note.episode.number}集 ${note.episode.getDate()}",
-                    textScaleFactor: ThemeUtil.tinyScaleFactor),
+                    textScaleFactor: AppTheme.tinyScaleFactor),
           ),
         ],
       ),
@@ -158,7 +157,7 @@ class _NoteCardState extends State<NoteCard> {
         note.noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
-        style: ThemeUtil.getNoteTextStyle(),
+        style: AppTheme.noteStyle,
       ),
     );
   }
@@ -168,14 +167,7 @@ class _NoteCardState extends State<NoteCard> {
     timeStr = timeStr.isEmpty ? "" : "创建于$timeStr";
 
     return ListTile(
-        style: ListTileStyle.drawer,
-        title: Text(
-          timeStr,
-          textScaleFactor: ThemeUtil.tinyScaleFactor,
-          style: TextStyle(
-              fontWeight: FontWeight.normal,
-              color: ThemeUtil.getCommentColor()),
-        ),
+        title: Text(timeStr, style: Theme.of(context).textTheme.bodySmall),
         trailing: MyIconButton(
             onPressed: () {
               showDialog(
@@ -220,6 +212,7 @@ class _NoteCardState extends State<NoteCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          title: const Text("删除"),
           content: const Text("确定删除笔记吗？"),
           actions: [
             TextButton(
@@ -241,7 +234,7 @@ class _NoteCardState extends State<NoteCard> {
                 }
               },
               child: const Text(
-                "删除",
+                "确定",
                 style: TextStyle(color: Colors.red),
               ),
             )

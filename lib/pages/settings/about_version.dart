@@ -38,12 +38,7 @@ class _AboutVersionState extends State<AboutVersion> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "关于版本",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text("关于版本"),
       ),
       body: Stack(
         children: [
@@ -84,7 +79,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 },
                 icon: Icon(
                   SimpleIcons.github,
-                  color: themeController.themeColor.value.isDarkMode
+                  color: themeController.lightThemeColor.value.isDarkMode
                       ? Colors.white
                       : Colors.black,
                 )),

@@ -2,11 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_app_bar.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 class ChecklistManagePage extends StatefulWidget {
@@ -26,7 +24,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         final double animValue = Curves.easeInOut.transform(animation.value);
         final double elevation = lerpDouble(0, 6, animValue)!;
         return Material(
-          color: ThemeUtil.getCardColor(), // 改变颜色
+          color: Theme.of(context).cardColor, // 改变颜色
           elevation: elevation,
           child: child,
         );
@@ -38,9 +36,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppBar(
-        caption: "清单管理",
-      ),
+      appBar: AppBar(title: const Text("清单管理")),
       body: ReorderableListView(
         proxyDecorator: _proxyDecorator,
         children: _getTagListWidget(),
@@ -55,7 +51,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: ThemeUtil.getPrimaryColor(),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         onPressed: () {
           showDialog(

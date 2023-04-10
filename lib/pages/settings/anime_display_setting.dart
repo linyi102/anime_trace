@@ -3,7 +3,6 @@ import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/rounded_sheet.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -161,7 +160,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
 
   showToggleButton(bool on) {
     return on
-        ? Icon(Icons.toggle_on, color: ThemeUtil.getPrimaryIconColor())
+        ? Icon(Icons.toggle_on, color: Theme.of(context).primaryColor)
         : const Icon(Icons.toggle_off_outlined);
   }
 }

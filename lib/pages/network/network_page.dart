@@ -7,7 +7,6 @@ import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 /// 与网络相关的页面
 class NetWorkPage extends StatefulWidget {
@@ -53,7 +52,6 @@ class _NetWorkPageState extends State<NetWorkPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: const Text("网络", style: TextStyle(fontWeight: FontWeight.w600)),
         title: CommonTitleTabBar(
           tabs: navs.map((e) => Tab(child: Text(e))).toList(),
           tabController: _tabController,
@@ -62,7 +60,7 @@ class _NetWorkPageState extends State<NetWorkPage>
         // bottom: CommonBottomTabBar(
         //   tabs: navs
         //       .map((e) => Tab(
-        //           child: Text(e, textScaleFactor: ThemeUtil.smallScaleFactor)))
+        //           child: Text(e, textScaleFactor: AppTheme.smallScaleFactor)))
         //       .toList(),
         //   controller: _tabController,
         // ),
@@ -75,8 +73,6 @@ class _NetWorkPageState extends State<NetWorkPage>
             const DirectoryPage(),
           ]),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: ThemeUtil.getPrimaryColor(),
-        foregroundColor: Colors.white,
         child: const Icon(Icons.search),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(

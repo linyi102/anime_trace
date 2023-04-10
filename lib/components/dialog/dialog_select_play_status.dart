@@ -3,7 +3,6 @@ import 'package:flutter_test_future/pages/anime_detail/controllers/anime_control
 
 import '../../models/play_status.dart';
 import '../../utils/sqlite_util.dart';
-import '../../utils/theme_util.dart';
 
 showDialogSelectPlayStatus(
     BuildContext context, AnimeController animeController) {
@@ -19,7 +18,7 @@ showDialogSelectPlayStatus(
                         leading:
                             playStatus == animeController.anime.getPlayStatus()
                                 ? Icon(Icons.radio_button_on,
-                                    color: ThemeUtil.getPrimaryIconColor())
+                                    color: Theme.of(context).primaryColor)
                                 : const Icon(Icons.radio_button_off),
                         title: Text(playStatus.text),
                         trailing: Icon(playStatus.iconData),

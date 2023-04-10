@@ -12,12 +12,12 @@ import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/values/theme.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/responsive.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 
 class NoteEditPage extends StatefulWidget {
@@ -149,7 +149,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               widget.note.anime.animeName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
+              textScaleFactor: AppTheme.smallScaleFactor,
             ),
             subtitle: widget.note.episode.number == 0
                 ? AnimeRatingBar(
@@ -165,7 +165,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                     })
                 : Text(
                     "第${widget.note.episode.number}集 ${widget.note.episode.getDate()}",
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                    textScaleFactor: AppTheme.tinyScaleFactor,
                   ),
           ),
           _showNoteContent(),
@@ -187,9 +187,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       decoration: const InputDecoration(
         hintText: "描述",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
       ),
-      style: ThemeUtil.getNoteTextStyle(),
+      style: AppTheme.noteStyle,
       maxLines: null,
       onChanged: (value) {
         _updateNoteContent = true;
@@ -243,10 +243,11 @@ class _NoteEditPageState extends State<NoteEditPage> {
       dragWidgetBuilder: (int index, Widget child) => Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), // 边框的圆角
-            border: Border.all(color: ThemeUtil.getPrimaryColor(), width: 4)),
+            border:
+                Border.all(color: Theme.of(context).primaryColor, width: 4)),
         // 切割图片为圆角
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(AppTheme.imgRadius),
           child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
               widget.note.relativeLocalImages[index].path)),
         ),
@@ -259,11 +260,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
   Container _buildAddButton() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: ThemeUtil.getPrimaryColor().withOpacity(0.1),
+        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        color: Theme.of(context).primaryColor.withOpacity(0.1),
       ),
-      child: TextButton(
-          onPressed: () => _pickLocalImages(), child: const Icon(Icons.add)),
+      child: InkWell(
+        onTap: () => _pickLocalImages(),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).primaryColor,
+        ),
+      ),
     );
   }
 

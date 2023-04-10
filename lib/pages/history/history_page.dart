@@ -10,7 +10,6 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/history/history_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -39,7 +38,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("历史", style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text("历史"),
         actions: [_buildCupertinoViewSwitch()],
       ),
       body: RefreshIndicator(
@@ -129,13 +128,12 @@ class _HistoryPageState extends State<HistoryPage> {
                   minLeadingWidth: 0,
                   title: Text(
                     date.replaceAll("-", "/"),
-                    // textScaleFactor: ThemeUtil.smallScaleFactor,
+                    // textScaleFactor: AppTheme.smallScaleFactor,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   trailing: Text(
                     "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
-                    textScaleFactor: 0.8,
-                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 // 卡片主体
@@ -198,13 +196,14 @@ class _RecordItemState extends State<RecordItem> {
         showReviewNumber: true,
       ),
       subtitle: Text(
-          (record.startEpisodeNumber == record.endEpisodeNumber
-              ? record.startEpisodeNumber.toString()
-              : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
-          textScaleFactor: ThemeUtil.tinyScaleFactor),
+        (record.startEpisodeNumber == record.endEpisodeNumber
+            ? record.startEpisodeNumber.toString()
+            : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
       title: Text(
         record.anime.animeName,
-        // textScaleFactor: ThemeUtil.smallScaleFactor,
+        // textScaleFactor: AppTheme.smallScaleFactor,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

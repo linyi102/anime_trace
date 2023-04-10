@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_app_bar.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -26,7 +25,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppBar(caption: "图片设置"),
+      appBar: AppBar(title: const Text("图片设置")),
       body: ListView(
         children: [
           ListTile(
@@ -65,12 +64,11 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
             trailing: const Icon(Icons.launch),
           ),
           ListTile(
-            title: const Text(
+            title: Text(
               '注意事项',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).errorColor),
             ),
             subtitle: const Text("添加图片后，请不要修改图片文件的名称，否则无法显示"),
-            onTap: () {},
           ),
         ],
       ),

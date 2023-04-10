@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 
 class PingStatus {
   bool pinging; // 正在ping
@@ -15,7 +15,7 @@ class PingStatus {
 
   Color get color => (needPing || pinging)
       ? Colors.grey // 需要ping，或者正在ping
-      : (connectable ? ThemeUtil.getConnectableColor() : Colors.red);
+      : (connectable ? AppTheme.connectableColor : Colors.red);
 
   @override
   String toString() {

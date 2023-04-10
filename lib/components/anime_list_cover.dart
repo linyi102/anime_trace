@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/values/values.dart';
 
 import 'common_image.dart';
 
@@ -43,15 +44,17 @@ class AnimeListCover extends StatelessWidget {
                   right: 0,
                   top: 0,
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                    padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(AppTheme.stateRadius),
+                      color: AppTheme.reviewNumberBg,
                     ),
                     child: Text(
                       "$reviewNumber",
-                      textScaleFactor: 0.8,
-                      style: const TextStyle(color: Colors.white),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppTheme.reviewNumberFg),
                     ),
                   ),
                 )

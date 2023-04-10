@@ -4,7 +4,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -107,24 +106,29 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     return Card(
       child: SizedBox(
         height: itemHeight,
-        child: MaterialButton(
-          onPressed: _enterDetailPage,
+        child: InkWell(
+          onTap: _enterDetailPage,
           child: Row(
             children: [
               // 封面
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 5, 10, 0),
-                child: SizedBox(
-                  width: coverWidth,
-                  child: AnimeGridCover(
-                    anime,
-                    loading: loading,
-                    showName: false,
-                    showProgress: widget.showProgress,
-                    showReviewNumber: widget.showReviewNumber,
-                    onPressed: _openImage,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: SizedBox(
+                      width: coverWidth,
+                      child: AnimeGridCover(
+                        anime,
+                        loading: loading,
+                        showName: false,
+                        showProgress: widget.showProgress,
+                        showReviewNumber: widget.showReviewNumber,
+                        onPressed: _openImage,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               // 信息
               Expanded(
@@ -164,8 +168,10 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
       padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
       child: Text(
         name,
-        style: TextStyle(
-            fontWeight: FontWeight.w600, color: ThemeUtil.getFontColor()),
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(fontWeight: FontWeight.w600),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
@@ -180,9 +186,12 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
             padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
             child: Text(
               info,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    height: 1.1,
+                    fontSize: 13,
+                  ),
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
+              // textScaleFactor: AppTheme.smallScaleFactor,
             ),
           );
   }
@@ -206,7 +215,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   //               : const Icon(Icons.favorite_border, size: 18),
   //           anime.isCollected()
   //               ? Text(anime.tagName,
-  //                   textScaleFactor: ThemeUtil.tinyScaleFactor)
+  //                   textScaleFactor: AppTheme.tinyScaleFactor)
   //               : Container()
   //         ],
   //       ),

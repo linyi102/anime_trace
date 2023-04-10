@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
-buildPingStatusRow(ClimbWebsite climbWebsite, {bool gridStyle = false}) {
-  var textStyle = TextStyle(height: 1.1, color: ThemeUtil.getCommentColor());
+buildPingStatusRow(BuildContext context, ClimbWebsite climbWebsite,
+    {bool gridStyle = false}) {
+  var textStyle = Theme.of(context).textTheme.caption?.copyWith(height: 1.1);
   return Row(
     mainAxisAlignment:
         gridStyle ? MainAxisAlignment.center : MainAxisAlignment.start,
@@ -14,16 +14,8 @@ buildPingStatusRow(ClimbWebsite climbWebsite, {bool gridStyle = false}) {
           : _getPingStatusIcon(climbWebsite.pingStatus),
       const SizedBox(width: 4),
       climbWebsite.discard
-          ? Text(
-              "无法使用",
-              textScaleFactor: ThemeUtil.tinyScaleFactor,
-              style: textStyle,
-            )
-          : Text(
-              _getPingTimeStr(climbWebsite),
-              textScaleFactor: ThemeUtil.tinyScaleFactor,
-              style: textStyle,
-            ),
+          ? Text("无法使用", style: textStyle)
+          : Text(_getPingTimeStr(climbWebsite), style: textStyle),
     ],
   );
 }

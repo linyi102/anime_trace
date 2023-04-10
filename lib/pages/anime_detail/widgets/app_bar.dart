@@ -17,7 +17,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailAppBar extends StatefulWidget {
@@ -36,7 +36,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
 
-  Color? appBarIconColor = ThemeUtil.isDark ? Colors.white : null;
   // Color? appBarIconColor = Colors.white;
 
   bool transparentBottomSheet = false;
@@ -77,8 +76,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               widget.popPage();
             },
             // icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
-            icon: Icon(Icons.arrow_back_ios_new,
-                color: appBarIconColor, size: 20),
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           ),
           actions: _generateActions(),
         );
@@ -102,6 +100,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   /// 为底层背景添加渐变效果
   _buildGradient() {
+    var scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -114,13 +114,13 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     Colors.black.withOpacity(0.2),
                     // Colors.white.withOpacity(0.2),
                     // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
-                    ThemeUtil.getScaffoldBackgroundColor().withOpacity(0),
+                    scaffoldBgColor.withOpacity(0),
                     // 过渡到主体颜色
-                    ThemeUtil.getScaffoldBackgroundColor(),
+                    scaffoldBgColor,
                   ]
                 : [
                     Colors.black.withOpacity(0.2),
-                    ThemeUtil.getScaffoldBackgroundColor().withOpacity(0),
+                    scaffoldBgColor.withOpacity(0),
                     // 最后1个换成透明色，就取消渐变了
                     Colors.transparent
                   ]),
@@ -159,10 +159,10 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
     return [
       MyIconButton(
           onPressed: () => _showLayoutBottomSheet(),
-          icon: Icon(Icons.filter_list, color: appBarIconColor)),
+          icon: const Icon(Icons.filter_list)),
       PopupMenuButton(
         position: PopupMenuPosition.under,
-        icon: Icon(Icons.more_vert, color: appBarIconColor),
+        icon: const Icon(Icons.more_vert),
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(
@@ -454,10 +454,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       child: SelectableText(
         animeName,
         // maxLines: 1,
-        style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: ThemeUtil.getFontColor()),
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }
@@ -470,9 +467,9 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             padding: const EdgeInsets.fromLTRB(0, 5, 35, 0),
             child: SelectableText(
               nameAnother,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+              style: const TextStyle(height: 1.1),
               maxLines: 1,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
+              textScaleFactor: AppTheme.smallScaleFactor,
             ),
           );
   }
@@ -485,9 +482,9 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
             child: SelectableText(
               animeInfo,
-              style: TextStyle(color: ThemeUtil.getCommentColor(), height: 1.1),
+              style: const TextStyle(height: 1.1),
               maxLines: 1,
-              textScaleFactor: ThemeUtil.smallScaleFactor,
+              textScaleFactor: AppTheme.smallScaleFactor,
             ),
           );
   }

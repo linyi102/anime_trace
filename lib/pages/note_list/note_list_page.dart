@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -56,11 +55,9 @@ class _NoteListPageState extends State<NoteListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
       appBar: _showSearchField
           ? _buildSearchField()
           : AppBar(
-              // title: const Text("笔记", style: TextStyle(fontWeight: FontWeight.w600)),
               title: _buildTabBar(),
               actions: [
                 _buildSearchIconButton(),
@@ -128,7 +125,7 @@ class _NoteListPageState extends State<NoteListPage>
     // return CommonTabBar(
     //   tabs: _navs
     //       .map((nav) => Tab(
-    //           child: Text(nav, textScaleFactor: ThemeUtil.smallScaleFactor)))
+    //           child: Text(nav, textScaleFactor: AppTheme.smallScaleFactor)))
     //       .toList(),
     //   controller: _tabController,
     // );

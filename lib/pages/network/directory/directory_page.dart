@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/classic_refresh_style.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -15,7 +13,6 @@ import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -136,7 +133,7 @@ class _DirectoryPageState extends State<DirectoryPage>
           onRefresh: _loadData,
           onLoading: _loadMoreData,
           // header: MaterialClassicHeader(
-          //   color: ThemeUtil.getPrimaryColor(),
+          //   color: Theme.of(context).primaryColor,
           //   backgroundColor: ThemeUtil.getCardColor(),
           // ),
           child: CustomScrollView(
@@ -324,7 +321,6 @@ class _DirectoryPageState extends State<DirectoryPage>
           animationDuration: kThemeAnimationDuration,
           children: <ExpansionPanel>[
             ExpansionPanel(
-              backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
               headerBuilder: (context, isExpanded) {
                 return _buildSourceTile();
               },

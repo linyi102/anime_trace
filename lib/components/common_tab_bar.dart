@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 
-import '../utils/theme_util.dart';
-
 class CommonTitleTabBar extends StatelessWidget {
   const CommonTitleTabBar({required this.tabs, this.tabController, super.key});
   final List<Widget> tabs;
@@ -24,17 +22,13 @@ class CommonTitleTabBar extends StatelessWidget {
       splashFactory: NoSplash.splashFactory,
       // 文字
       labelPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-      labelColor: ThemeUtil.getFontColor(),
       // labelStyle: Theme.of(context).textTheme.titleLarge,
       // unselectedLabelStyle: Theme.of(context).textTheme.titleSmall,
       labelStyle: TextStyle(
           fontSize: 18,
-          color: ThemeUtil.getFontColor(),
-          fontWeight: FontWeight.w600,
           fontFamilyFallback: ThemeController.to.fontFamilyFallback),
       unselectedLabelStyle: TextStyle(
           fontSize: 14,
-          color: ThemeUtil.getCommentColor(),
           fontFamilyFallback: ThemeController.to.fontFamilyFallback),
     );
   }
@@ -76,7 +70,7 @@ class CommonBottomTabBar extends StatelessWidget
         // 第三方指示器样式
         indicator: MaterialIndicator(
           horizontalPadding: 5,
-          color: ThemeUtil.getPrimaryColor(),
+          color: Theme.of(context).primaryColor,
           paintingStyle: PaintingStyle.fill,
         ),
       ),

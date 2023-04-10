@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.da
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -119,11 +117,7 @@ class _AggregatePageState extends State<AggregatePage> {
 
   _buildCardTitle(String title, {Widget? trailing}) {
     return ListTile(
-      title: Text(
-        title,
-        textScaleFactor: 1.1,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(title),
       trailing: trailing,
     );
   }
@@ -143,8 +137,7 @@ class _AggregatePageState extends State<AggregatePage> {
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
                       "查看全部",
-                      textScaleFactor: 0.9,
-                      style: TextStyle(color: ThemeUtil.getCommentColor()),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ))),
           GridView.builder(
@@ -174,7 +167,8 @@ class _AggregatePageState extends State<AggregatePage> {
                           style: const TextStyle(height: 1.1),
                         ),
                         const SizedBox(height: 5),
-                        buildPingStatusRow(climbWebsite, gridStyle: true),
+                        buildPingStatusRow(context, climbWebsite,
+                            gridStyle: true),
                       ],
                     ));
               }),
@@ -221,7 +215,7 @@ class _AggregatePageState extends State<AggregatePage> {
                   iconSize: iconSize,
                   icon: Container(
                       decoration: const BoxDecoration(
-                        // color: ThemeUtil.getPrimaryColor(),
+                        // color: Theme.of(context).primaryColor,
                         color: Color.fromRGBO(55, 197, 254, 1),
                         shape: BoxShape.circle,
                       ),
@@ -234,7 +228,7 @@ class _AggregatePageState extends State<AggregatePage> {
                   iconSize: iconSize,
                   icon: Container(
                       decoration: const BoxDecoration(
-                        // color: ThemeUtil.getPrimaryColor(),
+                        // color: Theme.of(context).primaryColor,
                         color: Color.fromRGBO(255, 199, 87, 1),
                         shape: BoxShape.circle,
                       ),

@@ -7,7 +7,6 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 
 import 'anime_list_in_source.dart';
@@ -29,10 +28,7 @@ class _SourceDetailState extends State<SourceDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          climbWebstie.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(climbWebstie.name),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -48,10 +44,10 @@ class _SourceDetailState extends State<SourceDetail> {
               enabled: !climbWebstie.discard,
               title: const Text("启动搜索"),
               leading: !climbWebstie.discard && climbWebstie.enable
-                  ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryColor())
+                  ? Icon(Icons.check_box, color: Theme.of(context).primaryColor)
                   : Icon(
                       Icons.check_box_outline_blank,
-                      color: ThemeUtil.getPrimaryIconColor(),
+                      color: Theme.of(context).primaryColor,
                     ),
               onTap: () {
                 if (climbWebstie.discard) {
@@ -68,7 +64,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("访问网站"),
               leading: Icon(
                 Icons.open_in_new_rounded,
-                color: ThemeUtil.getPrimaryIconColor(),
+                color: Theme.of(context).primaryColor,
               ),
               onTap: () {
                 LaunchUrlUtil.launch(
@@ -80,7 +76,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("搜索动漫"),
               leading: Icon(
                 Icons.search_rounded,
-                color: ThemeUtil.getPrimaryIconColor(),
+                color: Theme.of(context).primaryColor,
               ),
               onTap: () {
                 Navigator.of(context)
@@ -93,7 +89,7 @@ class _SourceDetailState extends State<SourceDetail> {
               title: const Text("收藏列表"),
               leading: Icon(
                 Icons.favorite_border,
-                color: ThemeUtil.getPrimaryIconColor(),
+                color: Theme.of(context).primaryColor,
               ),
               onTap: () {
                 Navigator.of(context)
@@ -117,7 +113,7 @@ class _SourceDetailState extends State<SourceDetail> {
         // Icons.post_add,
         // Icons.add_chart_outlined,
         Icons.bar_chart_rounded,
-        color: ThemeUtil.getPrimaryIconColor(),
+        color: Theme.of(context).primaryColor,
       ),
       onTap: () {
         Navigator.push(

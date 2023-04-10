@@ -11,8 +11,8 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 /// 搜索已添加的动漫
@@ -175,9 +175,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("网络搜索更多 ",
-                style: TextStyle(color: ThemeUtil.getPrimaryColor())),
+                style: TextStyle(color: Theme.of(context).primaryColor)),
             Icon(Icons.manage_search_outlined,
-                color: ThemeUtil.getPrimaryColor())
+                color: Theme.of(context).primaryColor)
           ],
         ),
         onTap: () {
@@ -215,8 +215,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   },
                   child: Text(
                     SpProfile.getEnableMultiLabelQuery() ? "关闭多标签" : "开启多标签",
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
-                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 TextButton(
@@ -227,8 +226,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   },
                   child: Text(
                     "清空选中",
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
-                    style: TextStyle(color: ThemeUtil.getCommentColor()),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 )
               ],
@@ -276,8 +274,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   _buildLabelWrap() {
     // 使用obx监听，否则labelController懒加载，打开app后进入本地搜索页看不到标签
     return Obx(() => Wrap(
-          spacing: ThemeUtil.wrapSacing,
-          runSpacing: ThemeUtil.wrapRunSpacing,
+          spacing: AppTheme.wrapSacing,
+          runSpacing: AppTheme.wrapRunSpacing,
           children: labelsController.labels.reversed.map((e) {
             bool checked = selectedLabels.contains(e);
 
@@ -305,8 +303,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
               },
               child: Chip(
                 label: Text(e.name),
-                backgroundColor:
-                    checked ? Colors.grey : ThemeUtil.getCardColor(),
+                backgroundColor: checked
+                    ? Theme.of(context).chipTheme.selectedColor
+                    : Theme.of(context).chipTheme.disabledColor,
               ),
             );
           }).toList(),

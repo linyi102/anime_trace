@@ -76,8 +76,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("未完结 ($cnt)",
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text("未完结 ($cnt)"),
       ),
       body: Scrollbar(
         controller: scrollController,

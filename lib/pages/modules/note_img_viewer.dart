@@ -9,7 +9,6 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -322,7 +321,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                       border: Border.all(
                           width: 4,
                           color: index == currentIndex
-                              ? ThemeUtil.getPrimaryColor()
+                              ? Theme.of(context).primaryColor
                               : Colors.transparent)),
                   // 切割圆角图片
                   child: ClipRRect(

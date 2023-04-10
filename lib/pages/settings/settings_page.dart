@@ -1,20 +1,17 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
+import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/values/sp_key.dart';
-import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'general_setting.dart';
@@ -50,46 +47,33 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  final ThemeController themeController = Get.find();
-
-  @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
 
     return Scaffold(
-      // appBar: AppBar(
-      //     title: const Text("更多",
-      //         style: TextStyle(fontWeight: FontWeight.w600))),
       body: _buildBody(),
     );
   }
 
   _buildBody() {
-    // 监听切换主题后的primaryColor(leadingIconColor)
-    return Obx(
-      () => ListView(
-        children: [
-          _buildBanner(),
-          // _buildBannerButton(),
-          // const Logo(),
+    return ListView(
+      children: [
+        _buildBanner(),
+        // _buildBannerButton(),
+        // const Logo(),
 
-          if (_addDivider) const Divider(thickness: _thickness),
+        if (_addDivider) const Divider(thickness: _thickness),
 
-          Card(child: _buildFunctionGroup()),
+        Card(child: _buildFunctionGroup()),
 
-          if (_addDivider) const Divider(thickness: _thickness),
+        if (_addDivider) const Divider(thickness: _thickness),
 
-          Card(child: _buildSettingGroup()),
+        Card(child: _buildSettingGroup()),
 
-          if (_addDivider) const Divider(thickness: _thickness),
+        if (_addDivider) const Divider(thickness: _thickness),
 
-          Card(child: _buildOtherGroup()),
-        ],
-      ),
+        Card(child: _buildOtherGroup()),
+      ],
     );
   }
 
@@ -97,7 +81,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.info_outlined),
           title: const Text("关于版本"),
           onTap: () {
@@ -112,7 +96,7 @@ class _SettingPageState extends State<SettingPage> {
         ),
         if (!Global.isRelease)
           ListTile(
-            iconColor: ThemeUtil.getPrimaryIconColor(),
+            iconColor: Theme.of(context).primaryColor,
             leading: const Icon(Icons.bug_report_outlined),
             title: const Text("测试页面"),
             onTap: () {
@@ -133,7 +117,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.settings),
           title: const Text("常规设置"),
           onTap: () {
@@ -147,8 +131,11 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
-          leading: const Icon(Icons.photo_size_select_actual_outlined),
+          iconColor: Theme.of(context).primaryColor,
+          leading: const Icon(
+            // Icons.photo_size_select_actual_outlined,
+            Icons.image_outlined,
+          ),
           title: const Text("图片设置"),
           onTap: () {
             Navigator.of(context).push(
@@ -160,36 +147,16 @@ class _SettingPageState extends State<SettingPage> {
             );
           },
         ),
-        // ListTile(
-        //   iconColor: ThemeUtil.getPrimaryIconColor(),
-        //   leading: const Icon(Icons.book_outlined),
-        //   title: const Text("界面设置"),
-        //   onTap: () {
-        //     Navigator.of(context).push(
-        //       MaterialPageRoute(
-        //         builder: (context) {
-        //           return const AnimesDisplaySetting();
-        //         },
-        //       ),
-        //     );
-        //   },
-        // ),
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.color_lens_outlined),
           title: const Text("主题样式"),
           onTap: () {
-            showDialog(
-                context: context,
-                builder: (dialogContext) {
-                  return AlertDialog(
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: _buildColorAtlasList(dialogContext),
-                      ),
-                    ),
-                  );
-                });
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ThemePage(),
+                ));
           },
         ),
       ],
@@ -200,7 +167,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.settings_backup_restore_outlined),
           title: const Text("备份还原"),
           onTap: () {
@@ -214,7 +181,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.checklist_rounded),
           title: const Text("清单管理"),
           onTap: () {
@@ -228,7 +195,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: ThemeUtil.getPrimaryIconColor(),
+          iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.label_outline),
           title: const Text("标签管理"),
           onTap: () {
@@ -334,52 +301,11 @@ class _SettingPageState extends State<SettingPage> {
         title: Text(title),
         leading: _selectedImageTypeIdx == imageTypeIdx
             ? Icon(Icons.radio_button_checked,
-                color: ThemeUtil.getPrimaryColor())
+                color: Theme.of(context).primaryColor)
             : const Icon(Icons.radio_button_off),
         trailing: trailing,
       ),
     );
-  }
-
-  _buildColorAtlasList(dialogContext) {
-    List<Widget> dayList = [], nightList = [];
-    for (var themeColor in ThemeUtil.themeColors) {
-      Log.info("themeColor=$themeColor");
-      if (themeColor.isDarkMode) {
-        nightList.add(_buildColorAtlasItem(themeColor, dialogContext));
-      } else {
-        dayList.add(_buildColorAtlasItem(themeColor, dialogContext));
-      }
-    }
-
-    List<Widget> list = [];
-    list.add(const ListTile(dense: true, title: Text("白天模式")));
-    list.addAll(dayList);
-    list.add(const ListTile(dense: true, title: Text("夜间模式")));
-    list.addAll(nightList);
-
-    return list;
-  }
-
-  _buildColorAtlasItem(ThemeColor themeColor, dialogContext) {
-    return Obx(() => ListTile(
-          trailing: themeController.themeColor.value == themeColor
-              ? const Icon(Icons.check)
-              : null,
-          leading: Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: themeColor.representativeColor,
-                // border: Border.all(width: 2, color: Colors.red.shade200),
-              )),
-          title: Text(themeColor.name),
-          onTap: () {
-            themeController.changeTheme(themeColor.key);
-            Navigator.of(dialogContext).pop();
-          },
-        ));
   }
 
   _handleProvideLocalImage() async {

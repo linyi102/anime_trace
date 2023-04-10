@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CommonImage extends StatelessWidget {
@@ -20,15 +19,13 @@ class CommonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color imgIconColor = ThemeUtil.getCommonIconColor();
     Duration fadeInDuration = const Duration(milliseconds: 400);
 
     // 没有图片
     if (url.isEmpty) {
       if (showIconWhenUrlIsEmptyOrError) {
         return Center(
-            child: Image.asset("assets/icons/default_picture.png",
-                width: 33, color: imgIconColor));
+            child: Image.asset("assets/icons/default_picture.png", width: 33));
       } else {
         return Image.memory(kTransparentImage);
       }
@@ -93,8 +90,7 @@ class CommonImage extends StatelessWidget {
   errorImageWidget() {
     if (showIconWhenUrlIsEmptyOrError) {
       return Center(
-          child: Image.asset("assets/icons/failed_picture.png",
-              width: 30, color: ThemeUtil.getCommonIconColor()));
+          child: Image.asset("assets/icons/failed_picture.png", width: 30));
     } else {
       return Image.memory(kTransparentImage);
     }

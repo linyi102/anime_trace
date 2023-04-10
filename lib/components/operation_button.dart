@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 class OperationButton extends StatelessWidget {
   const OperationButton(
@@ -20,21 +19,20 @@ class OperationButton extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             decoration: BoxDecoration(
               color: active
-                  ? ThemeUtil.getPrimaryColor()
-                  : ThemeUtil.getInActiveButtonBgColor(),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).disabledColor,
               borderRadius: borderRadius,
             ),
             child: InkWell(
                 borderRadius: borderRadius,
                 onTap: onTap,
                 child: Center(
-                    child: Text(
-                  text,
-                  style: TextStyle(
-                      color: active
-                          ? Colors.white
-                          : ThemeUtil.getInActiveButtonFgColor()),
-                )))),
+                    child: Text(text,
+                        style: TextStyle(
+                          color: active
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : null,
+                        ))))),
       ),
     );
   }

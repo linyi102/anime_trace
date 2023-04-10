@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/theme_util.dart';
-
 class ToggleListTile extends StatelessWidget {
   const ToggleListTile(
       {this.title, this.subtitle, this.toggleOn = false, this.onTap, Key? key})
@@ -17,7 +15,7 @@ class ToggleListTile extends StatelessWidget {
       title: title,
       subtitle: subtitle,
       trailing: toggleOn
-          ? Icon(Icons.toggle_on, color: ThemeUtil.getPrimaryIconColor())
+          ? Icon(Icons.toggle_on, color: Theme.of(context).primaryColor)
           : const Icon(Icons.toggle_off),
       onTap: onTap,
     );

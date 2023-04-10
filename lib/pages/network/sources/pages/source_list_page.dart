@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({super.key});
@@ -31,7 +27,7 @@ class _SourceListPageState extends State<SourceListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("搜索源", style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text("搜索源"),
       ),
       body: Scrollbar(
         controller: scrollController,
@@ -50,7 +46,7 @@ class _SourceListPageState extends State<SourceListPage> {
   _buildClimbWebsiteListItem(ClimbWebsite climbWebsite) {
     return ListTile(
         title: Text(climbWebsite.name),
-        subtitle: buildPingStatusRow(climbWebsite),
+        subtitle: buildPingStatusRow(context, climbWebsite),
         leading: WebSiteLogo(url: climbWebsite.iconUrl, size: 35),
         trailing: _buildSwitchButton(climbWebsite),
         onTap: () => _enterSourceDetail(climbWebsite));
@@ -73,7 +69,7 @@ class _SourceListPageState extends State<SourceListPage> {
         _invertSource(climbWebsite);
       },
       icon: climbWebsite.enable
-          ? Icon(Icons.check_box, color: ThemeUtil.getPrimaryColor())
+          ? Icon(Icons.check_box, color: Theme.of(context).primaryColor)
           : const Icon(Icons.check_box_outline_blank),
     );
   }

@@ -14,7 +14,7 @@ import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -41,7 +41,6 @@ class _AnimeListPageState extends State<AnimeListPage>
   // 多选
   Map<int, bool> mapSelected = {};
   bool multiSelected = false;
-  Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
 
   final List<ScrollController> _scrollControllers = [];
   final AnimeDisplayController _animeDisplayController = Get.find();
@@ -124,9 +123,6 @@ class _AnimeListPageState extends State<AnimeListPage>
               appBar: AppBar(
                 title: Text(
                   multiSelected ? "${mapSelected.length}" : "动漫",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
                 leading: multiSelected
                     ? MyIconButton(
@@ -168,10 +164,10 @@ class _AnimeListPageState extends State<AnimeListPage>
                                         ? Text(
                                             "${tags[checklistIdx]} (${animeCntPerTag[checklistIdx]})",
                                             textScaleFactor:
-                                                ThemeUtil.smallScaleFactor)
+                                                AppTheme.smallScaleFactor)
                                         : Text(tags[checklistIdx],
                                             textScaleFactor:
-                                                ThemeUtil.smallScaleFactor),
+                                                AppTheme.smallScaleFactor),
                                   ),
                                   onTap: () {
                                     int checklistIdx = tags.indexWhere(
@@ -248,7 +244,7 @@ class _AnimeListPageState extends State<AnimeListPage>
 
         Widget checkBox = animeSortCond.desc
             ? Icon(Icons.check_box_outlined,
-                color: ThemeUtil.getPrimaryIconColor())
+                color: Theme.of(context).primaryColor)
             : const Icon(Icons.check_box_outline_blank);
 
         sortCondList.add(ListTile(
@@ -272,7 +268,7 @@ class _AnimeListPageState extends State<AnimeListPage>
 
           Widget radio = isChecked
               ? Icon(Icons.radio_button_checked,
-                  color: ThemeUtil.getPrimaryIconColor())
+                  color: Theme.of(context).primaryColor)
               : const Icon(Icons.radio_button_off);
 
           sortCondList.add(ListTile(
@@ -353,7 +349,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
-          selectedTileColor: multiSelectedColor,
+          selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.25),
           selected: mapSelected.containsKey(animeIdx),
           title: Text(
             anime.animeName,
@@ -491,12 +487,11 @@ class _AnimeListPageState extends State<AnimeListPage>
     return Scaffold(
         key: UniqueKey(), // 保证被AnimatedSwitcher视为不同的控件
         appBar: AppBar(
-          title: const Text(
-            "动漫",
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          // actions: _getActions(),
-        ));
+            title: const Text(
+          "动漫",
+        )
+            // actions: _getActions(),
+            ));
   }
 
   void _dialogModifyTag(String defaultTagName) {
@@ -511,7 +506,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               leading: tags[i] == defaultTagName
                   ? Icon(
                       Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getPrimaryColor(),
+                      color: Theme.of(context).primaryColor,
                     )
                   : const Icon(
                       Icons.radio_button_off_outlined,
@@ -586,23 +581,27 @@ class _AnimeListPageState extends State<AnimeListPage>
         () => _animeDisplayController.showAnimeCntAfterTag.value
             // 样式1：清单名(数量)
             // ? Text("${tags[i]} (${animeCntPerTag[i]})",
-            //     textScaleFactor: ThemeUtil.smallScaleFactor)
+            //     textScaleFactor: AppTheme.smallScaleFactor)
 
             // 样式2：清单名紧跟缩小的数量
             ? Text.rich(TextSpan(children: [
                 WidgetSpan(
-                    child: Text(tags[i],
-                        textScaleFactor: ThemeUtil.smallScaleFactor)),
+                    child: Text(
+                  tags[i],
+                  // textScaleFactor: AppTheme.smallScaleFactor,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )),
                 WidgetSpan(
                     child: Opacity(
                   opacity: 1.0, // 候选：0.8
                   child: Text(
                     animeCntPerTag[i].toString(),
-                    textScaleFactor: ThemeUtil.tinyScaleFactor,
+                    // textScaleFactor: AppTheme.tinyScaleFactor,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 )),
               ]))
-            : Text(tags[i], textScaleFactor: ThemeUtil.smallScaleFactor),
+            : Text(tags[i], textScaleFactor: AppTheme.smallScaleFactor),
       )));
     }
     return list;

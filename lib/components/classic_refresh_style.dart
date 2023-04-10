@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyClassicHeader extends StatelessWidget {
@@ -14,10 +13,7 @@ class MyClassicHeader extends StatelessWidget {
     //   completeText: "加载成功",
     //   failedText: "加载失败！",
     // );
-    return MaterialClassicHeader(
-      color: ThemeUtil.getPrimaryColor(),
-      backgroundColor: ThemeUtil.getCardColor(),
-    );
+    return const MaterialClassicHeader();
   }
 }
 

@@ -4,7 +4,6 @@ import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -61,8 +59,9 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("失效封面 (${lapseCoverController.lapseCoverAnimes.length})",
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          "失效封面 (${lapseCoverController.lapseCoverAnimes.length})",
+        ),
       ),
       body: !lapseCoverController.loadOk
           ? Center(

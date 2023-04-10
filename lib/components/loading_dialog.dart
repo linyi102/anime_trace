@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 /// 加载对话框
 /// 来源：https://blog.csdn.net/johnWcheung/article/details/89634582
@@ -23,11 +22,11 @@ class LoadingDialog extends Dialog {
                 const SizedBox(
                     height: 35, width: 35, child: CircularProgressIndicator()),
                 const SizedBox(height: 20),
-                Text(text, style: TextStyle(color: ThemeUtil.getFontColor()))
+                Text(text)
               ],
             ),
             decoration: ShapeDecoration(
-                color: ThemeUtil.getCardColor(),
+                color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
           ),

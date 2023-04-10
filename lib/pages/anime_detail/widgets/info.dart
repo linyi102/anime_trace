@@ -16,7 +16,6 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -54,8 +53,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               delegate: SliverChildListDelegate([
                 // 动漫名字
                 SelectableText(widget.animeController.anime.animeName,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.w600)),
+                    style: Theme.of(context).textTheme.titleLarge),
                 // 评价
                 _buildRatingStars(),
                 const SizedBox(height: 10),
@@ -76,8 +74,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
     if (widget.animeController.anime.animeDesc.isNotEmpty &&
         widget.animeController.showDescInAnimeDetailPage.value) {
       var desc = widget.animeController.anime.animeDesc;
-      var textStyle =
-          TextStyle(fontSize: 12, color: ThemeUtil.getCommentColor());
+      var textStyle = Theme.of(context).textTheme.bodySmall;
 
       return widget.animeController.isCollected
           ? ExpandText(
@@ -364,42 +361,38 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   void _dialogSelectTag() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        List<Widget> radioList = [];
-        for (int i = 0; i < tags.length; ++i) {
-          radioList.add(
-            ListTile(
-              title: Text(tags[i]),
-              leading: tags[i] == _anime.tagName
-                  ? Icon(
-                      Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getPrimaryColor(),
-                    )
-                  : const Icon(
-                      Icons.radio_button_off_outlined,
-                    ),
-              onTap: () {
-                _anime.tagName = tags[i];
-                SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-                Log.info("修改清单为${_anime.tagName}");
-                setState(() {});
-                Navigator.pop(context);
-              },
-            ),
-          );
-        }
-        return AlertDialog(
-          title: const Text('选择清单'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: radioList,
-            ),
-          ),
-        );
-      },
-    );
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: const Text("选择清单"),
+                automaticallyImplyLeading: false,
+              ),
+              body: ListView.builder(
+                itemCount: tags.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(tags[index]),
+                    leading: tags[index] == _anime.tagName
+                        ? Icon(
+                            Icons.radio_button_on_outlined,
+                            color: Theme.of(context).primaryColor,
+                          )
+                        : const Icon(
+                            Icons.radio_button_off_outlined,
+                          ),
+                    onTap: () {
+                      _anime.tagName = tags[index];
+                      SqliteUtil.updateTagByAnimeId(
+                          _anime.animeId, _anime.tagName);
+                      Log.info("修改清单为${_anime.tagName}");
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ));
   }
 }
 

@@ -5,7 +5,6 @@ import 'package:flutter_test_future/components/my_icon_button.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 import '../../../../components/website_logo.dart';
 
@@ -101,7 +100,7 @@ class FavWebsiteListPage extends StatelessWidget {
                               subtitle: const Text("仅对Android端有效"),
                               trailing: openWebInApp
                                   ? Icon(Icons.toggle_on,
-                                      color: ThemeUtil.getPrimaryIconColor())
+                                      color: Theme.of(context).primaryColor)
                                   : const Icon(Icons.toggle_off),
                               onTap: () {
                                 setState(() {

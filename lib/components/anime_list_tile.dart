@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 
 enum AnimeTileSubTitle { nameAnother, twoLinesOfInfo }
 
@@ -34,7 +34,7 @@ class AnimeListTile extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: () {
-        double textScaleFactor = ThemeUtil.tinyScaleFactor;
+        double textScaleFactor = AppTheme.tinyScaleFactor;
         switch (animeTileSubTitle) {
           case AnimeTileSubTitle.nameAnother:
             return anime.nameAnother.isNotEmpty
@@ -47,10 +47,14 @@ class AnimeListTile extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(anime.getAnimeInfoFirstLine(),
-                    textScaleFactor: textScaleFactor),
-                Text(anime.getAnimeInfoSecondLine(),
-                    textScaleFactor: textScaleFactor)
+                Text(
+                  anime.getAnimeInfoFirstLine(),
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Text(
+                  anime.getAnimeInfoSecondLine(),
+                  style: Theme.of(context).textTheme.caption,
+                )
               ],
             );
           default:

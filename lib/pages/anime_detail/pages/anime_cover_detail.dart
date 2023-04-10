@@ -13,7 +13,6 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:photo_view/photo_view.dart';
@@ -37,7 +36,7 @@ class AnimeCoverDetail extends StatelessWidget {
                   init: animeController,
                   builder: (controller) {
                     return _buildAnimeCover(
-                        animeController.anime.animeCoverUrl);
+                        animeController.anime.animeCoverUrl, context);
                   })),
           // Positioned(
           //   // bottom: 0,
@@ -76,9 +75,8 @@ class AnimeCoverDetail extends StatelessWidget {
               context: context,
               builder: (dialogContext) {
                 return AlertDialog(
-                  title: const Text("封面更新"),
-                  content:
-                      const Text("该操作会通过动漫网址更新封面，\n如果有自定义封面，会进行覆盖，\n确定更新吗？"),
+                  title: const Text("更新封面"),
+                  content: const Text("该操作会通过动漫网址更新封面，如果有自定义封面，会进行覆盖，确定更新吗？"),
                   actions: [
                     TextButton(
                         onPressed: () {
@@ -143,7 +141,7 @@ class AnimeCoverDetail extends StatelessWidget {
         icon: const Icon(Icons.error_outline));
   }
 
-  _buildAnimeCover(String coverUrl) {
+  _buildAnimeCover(String coverUrl, BuildContext context) {
     if (coverUrl.isEmpty) {
       return emptyDataHint(msg: "没有封面~");
     }
@@ -173,7 +171,7 @@ class AnimeCoverDetail extends StatelessWidget {
       errorBuilder: (context, url, error) => _buildErrorInfo(context),
       imageProvider: imageProvider,
       backgroundDecoration:
-          BoxDecoration(color: ThemeUtil.getScaffoldBackgroundColor()),
+          BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
     );
   }
 

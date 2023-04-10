@@ -9,8 +9,6 @@ import 'package:flutter_test_future/pages/network/network_page.dart';
 import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/settings_page.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
-import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -46,6 +44,7 @@ class _MainScreenState extends State<MainScreen> {
 
   bool showBottomBarLabel = true;
   bool expandSideBar = SpProfile.getExpandSideBar();
+  double dividerThickness = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +60,7 @@ class _MainScreenState extends State<MainScreen> {
                   children: [
                     // 侧边栏
                     _buildSideBar(),
+                    // VerticalDivider(width: dividerThickness),
                     // 主体
                     Expanded(child: _mainTabs[_selectedTabIdx].page)
                   ],
@@ -86,22 +86,19 @@ class _MainScreenState extends State<MainScreen> {
   _buildSideBar() {
     return AnimatedContainer(
       width: expandSideBar ? 150 : 70,
+      color: Theme.of(context).appBarTheme.backgroundColor,
       duration: const Duration(milliseconds: 200),
-      child: Obx(() => Drawer(
-            backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-            // 缩小界面后可以滚动，防止溢出
-            child: CustomScrollView(
-              slivers: [
-                // SliverFillRemaining作用：在Column中使用Spacer
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Column(
-                    children: _buildSideMenu(),
-                  ),
-                )
-              ],
+      child: CustomScrollView(
+        slivers: [
+          // SliverFillRemaining作用：在Column中使用Spacer
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              children: _buildSideMenu(),
             ),
-          )),
+          )
+        ],
+      ),
     );
   }
 
@@ -120,20 +117,17 @@ class _MainScreenState extends State<MainScreen> {
 
       bool isSelected = _selectedTabIdx == i;
       widgets.add(
-        MaterialButton(
-          padding: EdgeInsets.zero,
+        InkWell(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,
-          onPressed: () {
+          onTap: () {
             _selectedTabIdx = i;
             setState(() {});
           },
           child: Container(
             decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).hoverColor.withAlpha(20)
-                  : null,
+              color: isSelected ? Theme.of(context).focusColor : null,
               borderRadius: BorderRadius.circular(6),
             ),
             margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
@@ -162,7 +156,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     widgets.add(const Spacer());
-    widgets.add(const Divider());
+    widgets.add(Divider(thickness: dividerThickness));
     widgets.add(Row(
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
@@ -195,33 +189,31 @@ class _MainScreenState extends State<MainScreen> {
       //   index: _currentIndex,
       //   children: _list,
       // ),
-      bottomNavigationBar: Obx(() => SizedBox(
-            height: showBottomBarLabel ? null : 45,
-            child: BottomNavigationBar(
-              // 不显示文字方法1
-              selectedFontSize: showBottomBarLabel ? 14.0 : 0,
-              // 不显示文字方法2
-              // selectedFontSize: 12,
-              // showSelectedLabels: false,
-              // showUnselectedLabels: false,
-              backgroundColor: ThemeUtil.getSideBarBackgroundColor(),
-              type: BottomNavigationBarType.fixed,
-              // 当item数量超过3个，则会显示空白，此时需要设置该属性
-              currentIndex: _selectedTabIdx,
-              // elevation: 0,
-              // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-              onTap: (int index) {
-                setState(() {
-                  _selectedTabIdx = index;
-                });
-              },
-              items: [
-                for (var tab in _mainTabs)
-                  BottomNavigationBarItem(
-                      icon: Icon(tab.iconData), label: tab.name)
-              ],
-            ),
-          )),
+      bottomNavigationBar: SizedBox(
+        height: showBottomBarLabel ? null : 45,
+        child: BottomNavigationBar(
+          // 不显示文字方法1
+          selectedFontSize: showBottomBarLabel ? 14.0 : 0,
+          // 不显示文字方法2
+          // selectedFontSize: 12,
+          // showSelectedLabels: false,
+          // showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
+          // 当item数量超过3个，则会显示空白，此时需要设置该属性
+          currentIndex: _selectedTabIdx,
+          // elevation: 0,
+          // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+          onTap: (int index) {
+            setState(() {
+              _selectedTabIdx = index;
+            });
+          },
+          items: [
+            for (var tab in _mainTabs)
+              BottomNavigationBarItem(icon: Icon(tab.iconData), label: tab.name)
+          ],
+        ),
+      ),
     );
   }
 }

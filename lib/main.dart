@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -12,8 +13,8 @@ import 'package:flutter_test_future/pages/main_screen/main_screen.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
+import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -146,215 +147,207 @@ class MyAppState extends State<MyApp> with WindowListener {
     final ThemeController themeController = Get.put(ThemeController());
 
     return Obx(
-      () => OKToast(
-        position: ToastPosition.bottom,
-        animationDuration: const Duration(milliseconds: 200),
-        animationBuilder: (BuildContext context, Widget child,
-            AnimationController controller, double percent) {
-          Animation<double> animation = CurvedAnimation(
-            parent: controller,
-            curve: Curves.ease,
-          );
+      () {
+        TextStyle textStyle = TextStyle(
+          fontFamilyFallback: themeController.fontFamilyFallback,
+        );
 
-          return ScaleTransition(
-              alignment: Alignment.bottomCenter,
-              child: child,
-              scale: animation);
-        },
-        // true表示弹出消息时会先关闭前一个消息
-        dismissOtherOnShow: true,
-        radius: 10,
-        textPadding: const EdgeInsets.all(8),
-        backgroundColor: ThemeUtil.isDark ? Colors.white : Colors.black,
-        textStyle: TextStyle(
-            color: ThemeUtil.isDark ? Colors.black : Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.normal,
-            decoration: TextDecoration.none,
-            fontFamilyFallback: themeController.fontFamilyFallback),
-        child: RefreshConfiguration(
-          headerBuilder: () => const MyClassicHeader(),
-          footerBuilder: () => const MyClassicFooter(),
-          hideFooterWhenNotFull: true,
-          child: MaterialApp(
-            theme: buildThemeData(themeController),
-            home: Stack(
-              children: const [
-                MainScreen(),
-                UpdateHint(checkLatestVersion: true)
-              ],
-            ),
-            // 后台应用显示名称
-            title: '漫迹',
-            // 去除右上角的debug标签
-            debugShowCheckedModeBanner: false,
-            // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-            scrollBehavior: MyCustomScrollBehavior(),
+        var curLightThemeColor = themeController.lightThemeColor.value;
+        var baseScheme = FlexScheme.blue;
+        var light = FlexThemeData.light(
+          scheme: baseScheme,
+          primary: curLightThemeColor.primaryColor,
+          appBarBackground: curLightThemeColor.appBarColor,
+          scaffoldBackground: curLightThemeColor.bodyColor,
+          surface: curLightThemeColor.cardColor,
+          textTheme: _buildTextTheme(textStyle, context),
+          // BottomNavigationBar
+          background: curLightThemeColor.appBarColor,
+          surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+          blendLevel: 9,
+          tabBarStyle: FlexTabBarStyle.forBackground,
+          tooltipsMatchBackground: true,
+          subThemesData: const FlexSubThemesData(
+            // true会导致AppBar的title字体有些大
+            useTextTheme: false,
+            // true会导致文字和按钮颜色受主色影响
+            blendTextTheme: false,
+            // 隐藏输入框底部边界
+            inputDecoratorUnfocusedHasBorder: false,
+            blendOnLevel: 10,
+            blendOnColors: false,
+            inputDecoratorIsFilled: false,
+            inputDecoratorBorderType: FlexInputBorderType.underline,
+            bottomSheetRadius: AppTheme.bottomSheetRadius,
+            cardRadius: AppTheme.cardRadius,
+            chipRadius: AppTheme.chipRadius,
+            dialogRadius: AppTheme.dialogRadius,
+            timePickerDialogRadius: AppTheme.timePickerDialogRadius,
           ),
-        ),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
+          // To use the playground font, add GoogleFonts package and uncomment
+          // fontFamily: GoogleFonts.notoSans().fontFamily,
+        );
+
+        var curDarkThemeColor = themeController.darkThemeColor.value;
+        var dark = FlexThemeData.dark(
+          scheme: baseScheme,
+          primary: curDarkThemeColor.primaryColor,
+          appBarBackground: curDarkThemeColor.appBarColor,
+          scaffoldBackground: curDarkThemeColor.bodyColor,
+          surface: curDarkThemeColor.cardColor,
+          // BottomNavigationBar
+          background: curDarkThemeColor.appBarColor,
+          textTheme: _buildTextTheme(textStyle, context),
+          surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+          tooltipsMatchBackground: true,
+          blendLevel: 15,
+          tabBarStyle: FlexTabBarStyle.forBackground,
+          subThemesData: const FlexSubThemesData(
+            // true会导致AppBar的title字体有些大
+            useTextTheme: false,
+            // true会导致文字和按钮颜色受主色影响
+            blendTextTheme: false,
+            // 隐藏输入框底部边界
+            inputDecoratorUnfocusedHasBorder: false,
+            blendOnLevel: 20,
+            inputDecoratorIsFilled: false,
+            inputDecoratorBorderType: FlexInputBorderType.underline,
+            bottomSheetRadius: AppTheme.bottomSheetRadius,
+            cardRadius: AppTheme.cardRadius,
+            chipRadius: AppTheme.chipRadius,
+            dialogRadius: AppTheme.dialogRadius,
+            timePickerDialogRadius: AppTheme.timePickerDialogRadius,
+          ),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
+        );
+
+        return OKToast(
+          position: ToastPosition.bottom,
+          animationDuration: const Duration(milliseconds: 200),
+          animationBuilder: (BuildContext context, Widget child,
+              AnimationController controller, double percent) {
+            Animation<double> animation = CurvedAnimation(
+              parent: controller,
+              curve: Curves.ease,
+            );
+
+            return ScaleTransition(
+                alignment: Alignment.bottomCenter,
+                child: child,
+                scale: animation);
+          },
+          // true表示弹出消息时会先关闭前一个消息
+          dismissOtherOnShow: true,
+          radius: 10,
+          textPadding: const EdgeInsets.all(8),
+          backgroundColor: Colors.white,
+          textStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 13,
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.none,
+              fontFamilyFallback: themeController.fontFamilyFallback),
+          child: RefreshConfiguration(
+            headerBuilder: () => const MyClassicHeader(),
+            footerBuilder: () => const MyClassicFooter(),
+            hideFooterWhenNotFull: true,
+            child: MaterialApp(
+              themeMode: themeController.getThemeMode(),
+              theme: light.copyWith(
+                scrollbarTheme:
+                    _buildScrollbarThemeData(context, isDark: false),
+                // 使用Theme.of(context).cardTheme会丢失FlexThemeData.light的圆角
+                cardTheme: light.cardTheme.copyWith(
+                  // 不在底部添加margin是为了避免相邻卡片向下间距变大
+                  // 在顶部添加margin是为了保证不紧挨AppBar
+                  margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  elevation: 0,
+                ), // 路由动画
+                pageTransitionsTheme: PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                    TargetPlatform.windows: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  },
+                ),
+              ),
+              // darkTheme: AppTheme.dark,
+              darkTheme: dark.copyWith(
+                scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
+                cardTheme: dark.cardTheme.copyWith(
+                  margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  elevation: 0,
+                ), // 路由动画
+                pageTransitionsTheme: PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                    TargetPlatform.windows: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  },
+                ),
+              ),
+
+              home: _buildHome(),
+              // 后台应用显示名称
+              title: '漫迹',
+              // 去除右上角的debug标签
+              debugShowCheckedModeBanner: false,
+              // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
+              scrollBehavior: MyCustomScrollBehavior(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Stack _buildHome() {
+    return Stack(
+      children: const [
+        MainScreen(),
+        UpdateHint(checkLatestVersion: true),
+      ],
+    );
+  }
+
+  ScrollbarThemeData _buildScrollbarThemeData(BuildContext context,
+      {bool isDark = false}) {
+    return ScrollbarThemeData(
+      trackVisibility: MaterialStateProperty.all(true),
+      thickness: MaterialStateProperty.all(5),
+      interactive: true,
+      radius: const Radius.circular(10),
+      thumbColor: MaterialStateProperty.all(
+        isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
       ),
     );
   }
 
-  /// 自定义primarySwatch，用于指定回弹颜色
-  /// 来源：[Flutter 如何自定义primarySwatch颜色 - 掘金](https://juejin.cn/post/7012818692035756045)
-  MaterialColor createMaterialColor(Color color) {
-    List strengths = <double>[.05];
-    Map<int, Color> swatch = {};
-    final int r = color.red, g = color.green, b = color.blue;
-
-    for (int i = 1; i < 10; i++) {
-      strengths.add(0.1 * i);
-    }
-    for (var strength in strengths) {
-      final double ds = 0.5 - strength;
-      swatch[(strength * 1000).round()] = Color.fromRGBO(
-        r + ((ds < 0 ? r : (255 - r)) * ds).round(),
-        g + ((ds < 0 ? g : (255 - g)) * ds).round(),
-        b + ((ds < 0 ? b : (255 - b)) * ds).round(),
-        1,
-      );
-    }
-    return MaterialColor(color.value, swatch);
-  }
-
-  ThemeData buildThemeData(ThemeController themeController) {
-    TextStyle textStyle = TextStyle(
-        fontFamilyFallback: themeController.fontFamilyFallback,
-        fontWeight: FontWeight.normal);
-    return ThemeData(
-      // primarySwatch: createMaterialColor(Colors.amber),
-      // brightness: ThemeUtil.isDark
-      //     ? Brightness.dark
-      //     : Brightness.light,
-      // 在白天或夜色的基础上增加主题色
-      colorScheme: ThemeUtil.isDark
-          ? ColorScheme.dark(
-              primary: ThemeUtil.getPrimaryColor(),
-              // 回弹效果颜色
-              secondary: ThemeUtil.getPrimaryColor(),
-            )
-          : ColorScheme.light(
-              primary: ThemeUtil.getPrimaryColor(), // 回弹效果颜色
-              secondary: ThemeUtil.getPrimaryColor(),
-            ),
-      // 保证全局使用自定义字体，当自定义字体失效时，就会使用下面的后备字体
-      fontFamily: "invalidFont",
-      cardTheme: CardTheme(
-          color: ThemeUtil.getCardColor(),
-          elevation: 0,
-          margin: const EdgeInsets.fromLTRB(10, 5, 10, 5)),
-      popupMenuTheme: PopupMenuThemeData(color: ThemeUtil.getCardColor()),
-      dialogTheme: DialogTheme(backgroundColor: ThemeUtil.getCardColor()),
-      timePickerTheme:
-          TimePickerThemeData(backgroundColor: ThemeUtil.getCardColor()),
-      textSelectionTheme: TextSelectionThemeData(
-          cursorColor: ThemeUtil.getPrimaryIconColor(),
-          selectionColor: ThemeUtil.getPrimaryIconColor()),
-      textTheme: TextTheme(
-        // ListTile标题
-        subtitle1: textStyle,
-        // 按钮里的文字
-        button: textStyle,
-        // 底部tab，ListTile副标题
-        bodyText2: textStyle,
-        // Text
-        bodyText1: textStyle,
-        // AppBar里的title
-        headline6: textStyle,
-        // 未知
-        // subtitle2: textStyle,
-        // overline: textStyle,
-        // caption: textStyle,
-        // headline1: textStyle,
-        // headline2: textStyle,
-        // headline3: textStyle,
-        // headline4: textStyle,
-        // headline5: textStyle,
-      ),
-      appBarTheme: AppBarTheme(
-        shadowColor: Colors.transparent,
-        centerTitle: false,
-        elevation: 0,
-        foregroundColor: ThemeUtil.getFontColor(),
-        backgroundColor: ThemeUtil.getAppBarBackgroundColor(),
-        iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
-      ),
-      // switchTheme: SwitchThemeData(
-      //   // All只能定义一种颜色，无法区分激活和非激活状态
-      //   trackColor: MaterialStatePropertyAll(
-      //       ThemeUtil.getPrimaryColor().withOpacity(0.5)),
-      //   thumbColor: MaterialStatePropertyAll(ThemeUtil.getPrimaryColor()),
-      // ),
-      iconTheme: IconThemeData(color: ThemeUtil.getCommonIconColor()),
-      scaffoldBackgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
-      inputDecorationTheme:
-          InputDecorationTheme(suffixIconColor: ThemeUtil.getCommonIconColor()),
-      listTileTheme: ListTileThemeData(
-          iconColor: ThemeUtil.isDark ? Colors.white70 : Colors.black54,
-          style: ListTileStyle.drawer,
-          selectedColor: ThemeUtil.getPrimaryColor()
-          // dense: true,
-          // 会影响副标题颜色
-          // textColor: ThemeUtil.getFontColor(),
-          ),
-      radioTheme:
-          RadioThemeData(fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return ThemeUtil.getPrimaryColor();
-        }
-        return null;
-      })),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: ThemeUtil.getPrimaryColor()),
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-              foregroundColor:
-                  MaterialStateProperty.all(ThemeUtil.getPrimaryColor()),
-              textStyle: MaterialStateProperty.all(TextStyle(
-                  color: Colors.black,
-                  fontFamilyFallback: themeController.fontFamilyFallback)))),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(ThemeUtil.getPrimaryColor()))),
-
-      bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: ThemeUtil.getScaffoldBackgroundColor(),
-      ),
-      tabBarTheme: TabBarTheme(
-        unselectedLabelColor:
-            ThemeUtil.isDark ? Colors.white70 : Colors.black54,
-        labelColor: ThemeUtil.getPrimaryColor(), // 选中的tab字体颜色
-        // tabbar不要再添加labelStyle，否则此处设置无效
-        labelStyle: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontFamilyFallback: themeController.fontFamilyFallback),
-        unselectedLabelStyle: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontFamilyFallback: themeController.fontFamilyFallback),
-      ),
-      // 滚动条主题
-      scrollbarTheme: ScrollbarThemeData(
-        trackVisibility: MaterialStateProperty.all(true),
-        thickness: MaterialStateProperty.all(5),
-        interactive: true,
-        radius: const Radius.circular(10),
-        thumbColor: MaterialStateProperty.all(
-          ThemeUtil.isDark
-              ? Colors.white.withOpacity(0.2)
-              : Colors.black.withOpacity(0.2),
-        ),
-      ),
-      // 路由动画
-      pageTransitionsTheme: PageTransitionsTheme(
-        builders: <TargetPlatform, PageTransitionsBuilder>{
-          TargetPlatform.android:
-              themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
-          TargetPlatform.windows:
-              themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
-        },
-      ),
+  TextTheme _buildTextTheme(TextStyle textStyle, BuildContext context) {
+    return TextTheme(
+      // ListTile标题
+      subtitle1: textStyle.copyWith(
+          fontSize: Theme.of(context).textTheme.subtitle2?.fontSize),
+      // 按钮里的文字
+      button: textStyle,
+      // 底部tab，ListTile副标题
+      bodyText2: textStyle,
+      // Text
+      bodyText1: textStyle,
+      // AppBar里的title
+      headline6: textStyle,
+      // 未知
+      subtitle2: textStyle,
+      overline: textStyle,
+      caption: textStyle,
+      headline1: textStyle,
+      headline2: textStyle,
+      headline3: textStyle,
+      headline4: textStyle,
+      headline5: textStyle,
     );
   }
 }

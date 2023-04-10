@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 class AnimeGridView extends StatefulWidget {
@@ -45,13 +46,13 @@ class _AnimeGridViewState extends State<AnimeGridView>
           widget.loadMore(widget.tagIdx, animeIdx);
 
           Anime anime = widget.animes[animeIdx];
-          return MaterialButton(
-            onPressed:
+          return InkWell(
+            onTap:
                 widget.onClick != null ? () => widget.onClick!(animeIdx) : null,
             onLongPress: widget.onLongClick != null
                 ? () => widget.onLongClick!(animeIdx)
                 : null,
-            padding: const EdgeInsets.all(0),
+            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
             child: AnimeGridCover(anime,
                 isSelected: widget.isSelected == null
                     ? false

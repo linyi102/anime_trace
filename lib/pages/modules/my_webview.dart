@@ -20,8 +20,7 @@ class _MyWebViewState extends State<MyWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(widget.title),
         actions: [
           PopupMenuButton(
             position: PopupMenuPosition.under,

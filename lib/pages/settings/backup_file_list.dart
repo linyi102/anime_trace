@@ -63,10 +63,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            "备份 (${files.length})",
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
+          title: Text("备份 (${files.length})"),
         ),
         body: FadeAnimatedSwitcher(
           loadOk: _loadOk,

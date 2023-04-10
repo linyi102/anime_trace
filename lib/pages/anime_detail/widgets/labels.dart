@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/bottom_sheet.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailLabels extends StatefulWidget {
@@ -31,8 +30,8 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   Widget build(BuildContext context) {
     return widget.animeController.isCollected
         ? Obx(() => Wrap(
-              spacing: ThemeUtil.wrapSacing,
-              runSpacing: ThemeUtil.wrapRunSpacing,
+              spacing: AppTheme.wrapSacing,
+              runSpacing: AppTheme.wrapRunSpacing,
               children: _getLabelChips(),
             ))
         : Container();
@@ -69,7 +68,8 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                   },
                   child: Chip(
                     label: Text(label.name),
-                    backgroundColor: ThemeUtil.getCardColor(),
+                    backgroundColor:
+                        Theme.of(context).chipTheme.backgroundColor,
                   ),
                 ))
             .toList();
@@ -112,7 +112,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
       },
       child: Chip(
         label: const Text("  +  "),
-        backgroundColor: ThemeUtil.getCardColor(),
+        backgroundColor: Theme.of(context).chipTheme.backgroundColor,
       ),
     ));
 

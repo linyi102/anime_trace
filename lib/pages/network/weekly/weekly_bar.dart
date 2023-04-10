@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 
 /// 周日期栏
@@ -77,7 +76,7 @@ class _WeeklyBarState extends State<WeeklyBar> {
                     decoration: isSelected
                         ? BoxDecoration(
                             shape: BoxShape.circle,
-                            color: ThemeUtil.getPrimaryColor())
+                            color: Theme.of(context).primaryColor)
                         : const BoxDecoration(),
                   )
                 ],

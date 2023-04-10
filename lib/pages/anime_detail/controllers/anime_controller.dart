@@ -8,7 +8,6 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
 class AnimeController extends GetxController {
@@ -281,7 +280,7 @@ class AnimeController extends GetxController {
               title: Text(sortMethodsName[i]),
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
                   ? Icon(Icons.radio_button_on_outlined,
-                      color: ThemeUtil.getPrimaryColor())
+                      color: Theme.of(context).primaryColor)
                   : const Icon(Icons.radio_button_off_outlined),
               onTap: () {
                 Log.info("修改排序方式为${sortMethods[i]}");

@@ -5,7 +5,6 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:html/dom.dart';
 import 'package:oktoast/oktoast.dart';
 

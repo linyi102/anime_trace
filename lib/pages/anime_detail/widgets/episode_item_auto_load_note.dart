@@ -17,7 +17,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:oktoast/oktoast.dart';
 
 /// 集+自动获取笔记
@@ -42,13 +42,12 @@ class EpisodeItemAutoLoadNote extends StatefulWidget {
 }
 
 class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
-  final Color _multiSelectedColor =
-      ThemeUtil.getPrimaryColor().withOpacity(0.25);
-
   bool _loadingNote = true;
 
   Episode get _episode => widget.episode;
   Anime get _anime => widget.animeController.anime;
+
+  late Color checkedColor;
 
   @override
   void initState() {
@@ -89,6 +88,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   @override
   Widget build(BuildContext context) {
+    checkedColor = Theme.of(context).unselectedWidgetColor;
+
     return Column(
       children: [
         _buildEpisodeTile(),
@@ -106,53 +107,45 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     Note note = _episode.note!;
     // return NoteCard(note);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: Card(
-        elevation: 0,
-        color: ThemeUtil.getCardColor(),
-        child: MaterialButton(
-          padding: note.noteContent.isEmpty
-              ? const EdgeInsets.fromLTRB(0, 15, 0, 15)
-              : const EdgeInsets.fromLTRB(0, 5, 0, 15),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return NoteEditPage(note);
-                },
-              ),
-            ).then((value) {
-              setState(() {
-                note = value; // 更新修改
-              });
+    return Card(
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return NoteEditPage(note);
+              },
+            ),
+          ).then((value) {
+            setState(() {
+              note = value; // 更新修改
             });
-          },
-          child: Column(
-            children: [
-              // 笔记内容
-              if (note.noteContent.isNotEmpty)
-                ListTile(
-                  title: Text(
-                    note.noteContent,
-                    maxLines: 10,
-                    overflow: TextOverflow.ellipsis,
-                    style: ThemeUtil.getNoteTextStyle(),
-                  ),
-                  style: ListTileStyle.drawer,
+          });
+        },
+        child: Column(
+          children: [
+            // 笔记内容
+            if (note.noteContent.isNotEmpty)
+              ListTile(
+                title: Text(
+                  note.noteContent,
+                  maxLines: 10,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.noteStyle,
                 ),
+                style: ListTileStyle.drawer,
+              ),
 
-              // 没有图片时不显示，否则有固定高度
-              if (note.relativeLocalImages.isNotEmpty)
-                // 图片横向排列
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                  height: 120, // 设置高度
-                  // color: Colors.redAccent,
-                  child: _buildHorizontalImages(note),
-                )
-            ],
-          ),
+            // 没有图片时不显示，否则有固定高度
+            if (note.relativeLocalImages.isNotEmpty)
+              // 图片横向排列
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                height: 120, // 设置高度
+                // color: Colors.redAccent,
+                child: _buildHorizontalImages(note),
+              )
+          ],
         ),
       ),
     );
@@ -191,18 +184,21 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   ListTile _buildEpisodeTile() {
     return ListTile(
-      selectedTileColor: _multiSelectedColor,
+      selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.25),
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
-      title: Text("第${_episode.number}集",
-          style: TextStyle(
-              color: ThemeUtil.getEpisodeListTile(_episode.isChecked()))),
+      title: Text(
+        "第${_episode.number}集",
+        style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
+      ),
       // 没有完成时不显示subtitle
       subtitle: widget.episode.isChecked()
-          ? Text(widget.episode.getDate(),
-              style: TextStyle(
-                  color: ThemeUtil.getEpisodeListTile(_episode.isChecked())),
-              textScaleFactor: ThemeUtil.smallScaleFactor)
+          ? Text(
+              widget.episode.getDate(),
+              style:
+                  TextStyle(color: _episode.isChecked() ? checkedColor : null),
+              // style: Theme.of(context).textTheme.bodySmall,
+            )
           : null,
       onTap: () => onpressEpisode(),
       onLongPress: () => onLongPressEpisode(),
@@ -344,7 +340,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         },
         icon: Icon(
           _episode.isChecked() ? EvaIcons.checkmarkSquare : EvaIcons.square,
-          color: ThemeUtil.getEpisodeListTile(_episode.isChecked()),
+          color: _episode.isChecked() ? checkedColor : null,
         ));
   }
 
@@ -360,7 +356,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   children: [
                     const Text("已看完最后一集，\n是否需要移动清单？"),
                     DropdownButton<String>(
-                        dropdownColor: ThemeUtil.getCardColor(),
                         value: selectedFinishedTag,
                         items: tags
                             .map((e) => DropdownMenuItem(
@@ -533,7 +528,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('确定撤销观看时间吗？'),
+          title: const Text('撤销'),
+          content: const Text('确定撤销观看时间吗？'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -551,7 +547,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 });
                 Navigator.pop(context);
               },
-              child: const Text('撤销', style: TextStyle(color: Colors.red)),
+              child: const Text('确定'),
             ),
           ],
         );

@@ -3,7 +3,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 // 显示一个完整的动漫封面
@@ -40,6 +40,7 @@ class AnimeGridCover extends StatelessWidget {
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       onPressed: onPressed,
+      // 监听是否显示进度、观看次数、原图
       child: Obx(() => Column(
             children: [
               // 封面
@@ -54,17 +55,17 @@ class AnimeGridCover extends StatelessWidget {
                   if (showProgress &&
                       _anime.isCollected() &&
                       _animeDisplayController.showGridAnimeProgress.value)
-                    _buildEpisodeState(),
+                    _buildEpisodeState(context),
                   if (showReviewNumber &&
                       _anime.isCollected() &&
                       _animeDisplayController.showReviewNumber.value &&
                       _anime.reviewNumber > 1)
-                    _buildReviewNumber()
+                    _buildReviewNumber(context)
                 ],
               ),
               // 名字
               if (_animeDisplayController.showNameBelowCover && showName)
-                _buildNameBelowCover(),
+                _buildNameBelowCover(context),
             ],
           )),
     );
@@ -81,7 +82,7 @@ class AnimeGridCover extends StatelessWidget {
           // 固定宽高比
           aspectRatio: 0.72,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
             child: Stack(
               children: [
                 // loading放在这里是为了保证加载圈处于封面正中央
@@ -108,19 +109,19 @@ class AnimeGridCover extends StatelessWidget {
                   Container(
                     width: mqSize.width,
                     height: mqSize.height,
-                    // color: ThemeUtil.getPrimaryIconColor().withOpacity(0.4),
+                    // color: Theme.of(context).primaryColor.withOpacity(0.4),
                     color: Colors.black.withOpacity(0.6),
                     child: const Center(
                         child: Icon(Icons.check, color: Colors.white)),
                   ),
-                if (showNameInCover && showName) _buildNameInCover()
+                if (showNameInCover && showName) _buildNameInCover(context)
               ],
             ),
           ),
         ));
   }
 
-  _buildEpisodeState() {
+  _buildEpisodeState(BuildContext context) {
     return Positioned(
         left: 5,
         top: 5,
@@ -128,34 +129,42 @@ class AnimeGridCover extends StatelessWidget {
           // height: 20,
           padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            color: ThemeUtil.getPrimaryColor(),
+            borderRadius: BorderRadius.circular(AppTheme.stateRadius),
+            color: Theme.of(context).colorScheme.primary,
           ),
           child: Text(
             "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
-            textScaleFactor: 0.8,
-            style: const TextStyle(color: Colors.white),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
           ),
         ));
   }
 
-  _buildReviewNumber() {
+  _buildReviewNumber(BuildContext context) {
     return Positioned(
         right: 5,
         top: 5,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            color: Colors.orange,
-          ),
-          child: Text(" ${_anime.reviewNumber} ",
-              textScaleFactor: 0.8,
-              style: const TextStyle(color: Colors.white)),
-        ));
+            padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppTheme.stateRadius),
+              color: AppTheme.reviewNumberBg,
+            ),
+            child: Text(
+              "${_anime.reviewNumber}",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppTheme.reviewNumberFg),
+              // textScaleFactor: 0.8,
+              // style: TextStyle(
+              //     color: Theme.of(context).colorScheme.onSecondaryContainer),
+            )));
   }
 
-  _buildNameInCover() {
+  _buildNameInCover(BuildContext context) {
     // 封面内部底部文字的背景阴影高度
     double _shadowHeight = 60.0;
 
@@ -182,7 +191,7 @@ class AnimeGridCover extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           child: Container(
             padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
-            child: _buildNameText(nameBelowCover: false),
+            child: _buildNameText(context, nameBelowCover: false),
           ),
         )
       ],
@@ -222,21 +231,21 @@ class AnimeGridCover extends StatelessWidget {
     return true;
   }
 
-  _buildNameBelowCover() {
+  _buildNameBelowCover(BuildContext context) {
     return Container(
         width: coverWidth == 0 ? null : coverWidth,
         padding: const EdgeInsets.only(top: 2, left: 3, right: 3),
         // 保证文字左对齐
         alignment: Alignment.centerLeft,
-        child: _buildNameText(nameBelowCover: true));
+        child: _buildNameText(context, nameBelowCover: true));
   }
 
   final bool addStroke = false;
   final bool addShadow = true;
-  _buildNameText({required bool nameBelowCover}) {
-    Color color;
+  _buildNameText(BuildContext context, {required bool nameBelowCover}) {
+    Color? color;
     if (nameBelowCover) {
-      color = ThemeUtil.getFontColor();
+      color = Theme.of(context).textTheme.bodyText2?.color;
     } else {
       color = Colors.white;
     }
@@ -264,10 +273,7 @@ class AnimeGridCover extends StatelessWidget {
                         ..strokeWidth = 1
                         ..color = Colors.black)),
               // 正常文字
-              _buildText(displayName,
-                  style: TextStyle(
-                    color: color,
-                  )),
+              _buildText(displayName, style: TextStyle(color: color)),
             ],
           );
         } else if (addShadow) {
@@ -289,13 +295,12 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildText(String displayName, {TextStyle? style}) {
-    // obx监听动漫名字行数
-    return Obx(() => Text(
-          displayName,
-          maxLines: AnimeDisplayController.to.nameMaxLines.value,
-          overflow: TextOverflow.ellipsis,
-          textScaleFactor: ThemeUtil.smallScaleFactor,
-          style: style,
-        ));
+    return Text(
+      displayName,
+      maxLines: AnimeDisplayController.to.nameMaxLines.value,
+      overflow: TextOverflow.ellipsis,
+      textScaleFactor: AppTheme.smallScaleFactor,
+      style: style?.copyWith(fontWeight: FontWeight.normal),
+    );
   }
 }

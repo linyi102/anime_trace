@@ -7,7 +7,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {
@@ -56,9 +55,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
     Log.build(runtimeType);
 
     return Scaffold(
-      appBar: AppBar(
-          title: const Text("动漫评价",
-              style: TextStyle(fontWeight: FontWeight.w600))),
+      appBar: AppBar(title: const Text("动漫评价")),
       body: noteOk
           ? notes.isNotEmpty
               ? _buildRateNoteList()
@@ -66,7 +63,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
           : loadingWidget(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(),
-        backgroundColor: ThemeUtil.getPrimaryIconColor(),
+        backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.edit, color: Colors.white),
       ),
     );

@@ -23,9 +23,7 @@ class AnimePropertiesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // 不能使用ListView，因为外部是SliverChildListDelegate
     return Scaffold(
-      appBar: AppBar(
-          title: const Text("动漫信息",
-              style: TextStyle(fontWeight: FontWeight.w600))),
+      appBar: AppBar(title: const Text("动漫信息")),
       body: GetBuilder<AnimeController>(
         id: animeController.infoPageId,
         init: animeController,

@@ -5,7 +5,6 @@ import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:get/get.dart';
 
 /// 动漫去重页面
@@ -114,10 +113,10 @@ class DedupPage extends StatelessWidget {
         id: DedupController.appBarId,
         builder: (_) => AppBar(
           title: Text(
-              dedupController.selectedIds.isEmpty
-                  ? "动漫去重"
-                  : "${dedupController.selectedIds.length}/${dedupController.totalCnt}",
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+            dedupController.selectedIds.isEmpty
+                ? "动漫去重"
+                : "${dedupController.selectedIds.length}/${dedupController.totalCnt}",
+          ),
         ),
       ),
     );
@@ -155,8 +154,7 @@ class DedupPage extends StatelessWidget {
         return Column(
           children: [
             ListTile(
-              title: Text(name,
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
+              title: Text(name),
             ),
             if (dedupController.animeMap.containsKey(name))
               Padding(
@@ -186,7 +184,7 @@ class DedupPage extends StatelessWidget {
                                   showName: false,
                                 ),
                               ),
-                              _buildSelectIcon(anime, selected)
+                              _buildSelectIcon(anime, selected, context)
                             ],
                           ),
                           Text(anime.getAnimeSource()),
@@ -225,7 +223,7 @@ class DedupPage extends StatelessWidget {
     });
   }
 
-  _buildSelectIcon(Anime anime, bool selected) {
+  _buildSelectIcon(Anime anime, bool selected, BuildContext context) {
     return Positioned(
       right: 0,
       bottom: 0,
@@ -248,7 +246,7 @@ class DedupPage extends StatelessWidget {
                       width: 24,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: ThemeUtil.getPrimaryIconColor()),
+                          color: Theme.of(context).primaryColor),
                       child: const Icon(Icons.check,
                           color: Colors.white, size: 18)))
               : Center(

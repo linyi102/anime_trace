@@ -11,7 +11,7 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -150,8 +150,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                       title: const Text("选择区域"),
                       content: SingleChildScrollView(
                         child: Wrap(
-                          spacing: ThemeUtil.wrapSacing,
-                          runSpacing: ThemeUtil.wrapRunSpacing,
+                          spacing: AppTheme.wrapSacing,
+                          runSpacing: AppTheme.wrapRunSpacing,
                           children: _buildEpisodeRangeChips(dialogContext),
                         ),
                       ),
@@ -188,15 +188,14 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   height: 24,
                   child: Center(
                       child: Text("${_anime.reviewNumber}",
-                          style: const TextStyle(fontWeight: FontWeight.w500))),
+                          style: Theme.of(context).textTheme.labelLarge)),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                          color: ThemeUtil
-                                  .themeController.themeColor.value.isDarkMode
-                              ? Colors.grey
-                              : Colors.black,
-                          width: 2)),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                        color:
+                            Theme.of(context).iconTheme.color ?? Colors.black,
+                        width: 2),
+                  ),
                 ),
               ),
               MyIconButton(
@@ -240,7 +239,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
               startEpisodeNumber;
 
           items.add(Card(
-            elevation: 0,
             child: TextButton(
               // autofocus仅仅改变的是背景色
               // autofocus: cur ? true : false,
@@ -256,9 +254,11 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
               child: Text(
                 _getEpisodeRangeStr((startEpisodeNumber)),
                 style: TextStyle(
-                    color: cur
-                        ? ThemeUtil.getPrimaryColor()
-                        : ThemeUtil.getFontColor()),
+                  color: cur
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).unselectedWidgetColor,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
             ),
           ));
@@ -267,8 +267,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
       }(),
     );
   }
-
-  Color multiSelectedColor = ThemeUtil.getPrimaryColor().withOpacity(0.25);
 
   _buildEpisodeTile(int episodeIndex) {
     var episode = _episodes[episodeIndex];
@@ -312,7 +310,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         },
         child: Chip(
           label: Text(_getEpisodeRangeStr((startEpisodeNumber)),
-              textScaleFactor: ThemeUtil.tinyScaleFactor),
+              textScaleFactor: AppTheme.tinyScaleFactor),
           backgroundColor: widget.animeController.currentStartEpisodeNumber ==
                   startEpisodeNumber
               ? Colors.grey

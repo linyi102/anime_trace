@@ -9,8 +9,8 @@ import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:oktoast/oktoast.dart';
@@ -74,21 +74,21 @@ class UpdateRecordPage extends StatelessWidget {
             }
 
             return Card(
-              elevation: 0,
               child: Column(
                 children: [
                   ListTile(
                     title: Text(
-                      TimeUtil.getHumanReadableDateTimeStr(date,
-                          showTime: false, showDayOfWeek: true
-                          // chineseDelimiter: true,
-                          ),
+                      TimeUtil.getHumanReadableDateTimeStr(
+                        date,
+                        showTime: false,
+                        showDayOfWeek: true,
+                        chineseDelimiter: true,
+                      ),
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     trailing: Text(
                       "${map[date]!.length}个动漫",
-                      textScaleFactor: 0.8,
-                      style: TextStyle(color: ThemeUtil.getCommentColor()),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                   Column(children: _buildRecords(context, map[date]!)),
@@ -107,10 +107,10 @@ class UpdateRecordPage extends StatelessWidget {
       recordsWidget.add(ListTile(
         leading: AnimeListCover(record.anime),
         subtitle: Text("更新至${record.newEpisodeCnt}集",
-            textScaleFactor: ThemeUtil.tinyScaleFactor),
+            textScaleFactor: AppTheme.tinyScaleFactor),
         title: Text(
           record.anime.animeName,
-          // textScaleFactor: ThemeUtil.smallScaleFactor,
+          // textScaleFactor: AppTheme.smallScaleFactor,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -186,12 +186,8 @@ class UpdateRecordPage extends StatelessWidget {
       },
       child: Card(
         child: Container(
-          height: 60,
-          padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: ThemeUtil.getCardColor()),
+          height: 70,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -199,14 +195,8 @@ class UpdateRecordPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: Container()),
-                  Text(
-                    "更新进度：$updateOkCnt/$needUpdateCnt",
-                    textScaleFactor: ThemeUtil.smallScaleFactor,
-                    // style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  Text("查看未完结动漫",
-                      textScaleFactor: ThemeUtil.tinyScaleFactor,
-                      style: TextStyle(color: ThemeUtil.getCommentColor())),
+                  Text("更新进度：$updateOkCnt/$needUpdateCnt"),
+                  Text("查看未完结动漫", style: Theme.of(context).textTheme.caption),
                   Expanded(child: Container()),
                 ],
               ),
@@ -214,34 +204,11 @@ class UpdateRecordPage extends StatelessWidget {
                 onPressed: () {
                   ClimbAnimeUtil.updateAllAnimesInfo();
                 },
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)))),
                 child: const Text(
                   "立即更新",
-                  textScaleFactor: ThemeUtil.smallScaleFactor,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(fontSize: 13),
                 ),
               ),
-              // InkWell(
-              //   onTap: () {
-              //     ClimbAnimeUtil.updateAllAnimesInfo();
-              //   },
-              //   child: Container(
-              //     height: 30,
-              //     width: 80,
-              //     decoration: BoxDecoration(
-              //         color: ThemeUtil.getPrimaryColor(),
-              //         borderRadius: BorderRadius.circular(20)),
-              //     child: const Center(
-              //       child: Text(
-              //         "立即更新",
-              //         textScaleFactor: ThemeUtil.smallScaleFactor,
-              //         style: TextStyle(color: Colors.white),
-              //       ),
-              //     ),
-              //   ),
-              // )
             ],
           ),
         ),

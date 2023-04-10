@@ -4,7 +4,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:photo_view/photo_view.dart';
@@ -51,7 +50,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       },
                       icon: updateName
                           ? Icon(Icons.check_box,
-                              color: ThemeUtil.getPrimaryIconColor())
+                              color: Theme.of(context).primaryColor)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
                   ),
@@ -81,7 +80,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                         },
                         icon: updateCover
                             ? Icon(Icons.check_box,
-                                color: ThemeUtil.getPrimaryIconColor())
+                                color: Theme.of(context).primaryColor)
                             : const Icon(Icons.check_box_outline_blank)),
                   ),
                   ListTile(
@@ -98,7 +97,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       },
                       icon: updateInfo
                           ? Icon(Icons.check_box,
-                              color: ThemeUtil.getPrimaryIconColor())
+                              color: Theme.of(context).primaryColor)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
                   )

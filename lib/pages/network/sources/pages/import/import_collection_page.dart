@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/bottom_sheet.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -14,7 +12,6 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -101,7 +98,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
 
   _buildTabBar() {
     return CommonBottomTabBar(
-      bgColor: ThemeUtil.getAppBarBackgroundColor(),
+      bgColor: Theme.of(context).appBarTheme.backgroundColor,
       isScrollable: true,
       tabs: List.generate(
         siteCollectionTab.length,
@@ -176,41 +173,46 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
 
     final scrollController = ScrollController();
 
-    return showCommonBottomSheet(
+    showModalBottomSheet(
         context: context,
-        expanded: true,
-        title: Text("收藏 “${siteCollectionTab[collIdx].title}” 到"),
-        child: Column(
-          children: [
-            Expanded(
-              child: Scrollbar(
-                controller: scrollController,
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: tags.length,
-                  itemBuilder: (context, index) {
-                    var tag = tags[index];
+        builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text("收藏 “${siteCollectionTab[collIdx].title}” 到"),
+                automaticallyImplyLeading: false,
+              ),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: Scrollbar(
+                      controller: scrollController,
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: tags.length,
+                        itemBuilder: (context, index) {
+                          var tag = tags[index];
 
-                    return ListTile(
-                        title: Text(tag),
-                        onTap: () => icc.quickCollect(context, collIdx, tag));
-                  },
-                ),
+                          return ListTile(
+                              title: Text(tag),
+                              onTap: () =>
+                                  icc.quickCollect(context, collIdx, tag));
+                        },
+                      ),
+                    ),
+                  ),
+                  const Divider(),
+                  StatefulBuilder(
+                    builder: (context, setState) => SwitchListTile(
+                      title: const Text("若已收藏同名动漫，则跳过"),
+                      value: SpProfile.getSkipDupNameAnime(),
+                      onChanged: (value) {
+                        SpProfile.setSkipDupNameAnime(value);
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const Divider(),
-            StatefulBuilder(
-              builder: (context, setState) => SwitchListTile(
-                title: const Text("若已收藏同名动漫，则跳过"),
-                value: SpProfile.getSkipDupNameAnime(),
-                onChanged: (value) {
-                  SpProfile.setSkipDupNameAnime(value);
-                  setState(() {});
-                },
-              ),
-            ),
-          ],
-        ));
+            ));
   }
 
   _buildBottomBar(BuildContext context) {
@@ -301,9 +303,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
 
   Scaffold _buildFailedAnimeList() {
     return Scaffold(
-        appBar: AppBar(
-            title: const Text("失败列表",
-                style: TextStyle(fontWeight: FontWeight.w600))),
+        appBar: AppBar(title: const Text("失败列表")),
         body: ListView.builder(
             itemCount: icc.failedAnimes.length,
             itemBuilder: (context, animeIdx) {

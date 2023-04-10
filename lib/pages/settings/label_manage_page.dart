@@ -7,9 +7,8 @@ import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
-
-import '../../utils/theme_util.dart';
 
 class LabelManagePage extends StatelessWidget {
   const LabelManagePage(
@@ -33,8 +32,7 @@ class LabelManagePage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理",
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理"),
       ),
       body: ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
@@ -54,8 +52,8 @@ class LabelManagePage extends StatelessWidget {
 
   _buildLabelWrap(LabelsController labelsController, BuildContext context) {
     return Wrap(
-        spacing: ThemeUtil.wrapSacing,
-        runSpacing: ThemeUtil.wrapRunSpacing,
+        spacing: AppTheme.wrapSacing,
+        runSpacing: AppTheme.wrapRunSpacing,
         children: labelsController.labels.reversed.map((label) {
           bool selected = false;
           if (animeController != null) {
@@ -68,8 +66,8 @@ class LabelManagePage extends StatelessWidget {
             child: Chip(
               label: Text(label.name),
               backgroundColor: enableSelectLabelForAnime && selected
-                  ? Colors.grey
-                  : ThemeUtil.getCardColor(),
+                  ? Theme.of(context).chipTheme.selectedColor
+                  : Theme.of(context).chipTheme.disabledColor,
             ),
             onTap: () async {
               if (enableSelectLabelForAnime) {
@@ -198,7 +196,7 @@ class LabelManagePage extends StatelessWidget {
     Log.info("_buildFloatingActionButton");
 
     return FloatingActionButton(
-      backgroundColor: ThemeUtil.getPrimaryColor(),
+      backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Colors.white,
       onPressed: () {
         showDialog(

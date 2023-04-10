@@ -3,7 +3,6 @@ import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/theme_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
@@ -43,18 +42,13 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "常规设置",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text("常规设置"),
       ),
       body: ListView(
         children: [
           ListTile(
               title: Text("偏好",
-                  style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
+                  style: TextStyle(color: Theme.of(context).primaryColor))),
           ListTile(
             title: const Text("选择页面切换动画"),
             onTap: () {
@@ -99,7 +93,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
           const Divider(),
           ListTile(
               title: Text("时间显示",
-                  style: TextStyle(color: ThemeUtil.getPrimaryColor()))),
+                  style: TextStyle(color: Theme.of(context).primaryColor))),
           ListTile(
             title: const Text("精确到时分"),
             subtitle: Text(
@@ -137,7 +131,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
 
   Icon _buildToggle(bool toggleOn) {
     return toggleOn
-        ? Icon(Icons.toggle_on, color: ThemeUtil.getPrimaryIconColor())
+        ? Icon(Icons.toggle_on, color: Theme.of(context).primaryColor)
         : const Icon(Icons.toggle_off);
   }
 }

@@ -129,6 +129,7 @@ class BackupUtil {
       }
       String remoteBackupFilePath;
       if (automatic) {
+        // 即使不存在automatic目录，上传文件到坚果云、TeraCloud时也会成功
         remoteBackupFilePath = "$remoteBackupDirPath/automatic/$zipName";
       } else {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
