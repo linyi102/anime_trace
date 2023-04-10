@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
@@ -109,7 +109,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         // 隐藏自带的返回按钮
         automaticallyImplyLeading: false,
         // 返回按钮
-        leading: MyIconButton(
+        leading: IconButton(
           onPressed: () => _pop(),
           icon: const Icon(Icons.arrow_back_outlined, color: Colors.white),
         ),

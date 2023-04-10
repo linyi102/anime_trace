@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
@@ -64,7 +64,7 @@ class _SourceListPageState extends State<SourceListPage> {
   _buildSwitchButton(ClimbWebsite climbWebsite) {
     if (climbWebsite.discard) return null;
 
-    return MyIconButton(
+    return IconButton(
       onPressed: () {
         _invertSource(climbWebsite);
       },

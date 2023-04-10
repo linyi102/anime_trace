@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_view.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -124,7 +124,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   multiSelected ? "${mapSelected.length}" : "动漫",
                 ),
                 leading: multiSelected
-                    ? MyIconButton(
+                    ? IconButton(
                         onPressed: () {
                           _quitMultiSelectState();
                         },
@@ -202,7 +202,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   List<Widget> _getActions() {
     List<Widget> actions = [];
 
-    actions.add(MyIconButton(
+    actions.add(IconButton(
       onPressed: () {
         showModalBottomSheet(
             context: context,
@@ -214,7 +214,7 @@ class _AnimeListPageState extends State<AnimeListPage>
       icon: const Icon(Icons.filter_list),
       tooltip: "动漫排序",
     ));
-    actions.add(MyIconButton(
+    actions.add(IconButton(
       onPressed: () async {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -620,7 +620,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                 // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: MyIconButton(
+                    child: IconButton(
                       onPressed: () {
                         // i就是当前清单的索引
                         if (mapSelected.length == animesInTag[i].length) {
@@ -638,7 +638,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     ),
                   ),
                   Expanded(
-                    child: MyIconButton(
+                    child: IconButton(
                       onPressed: () {
                         _dialogModifyTag(tags[i]);
                       },
@@ -646,7 +646,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                     ),
                   ),
                   Expanded(
-                    child: MyIconButton(
+                    child: IconButton(
                       onPressed: () {
                         _quitMultiSelectState();
                       },

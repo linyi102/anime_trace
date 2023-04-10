@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
@@ -77,7 +77,7 @@ class _NoteListPageState extends State<NoteListPage>
 
   _buildSearchAppBar() {
     return AppBar(
-      leading: MyIconButton(
+      leading: IconButton(
         onPressed: () {
           setState(() {
             _showSearchField = false;
@@ -180,7 +180,7 @@ class _NoteListPageState extends State<NoteListPage>
     var animeNameController = TextEditingController();
     var noteContentController = TextEditingController();
 
-    // return MyIconButton(
+    // return IconButton(
     //     onPressed: () {
     //       // appbar显示输入框
     //       setState(() {
@@ -189,7 +189,7 @@ class _NoteListPageState extends State<NoteListPage>
     //     },
     //     icon: const Icon(Icons.search));
 
-    return MyIconButton(
+    return IconButton(
         tooltip: "搜索",
         onPressed: () {
           showDialog(
@@ -205,7 +205,7 @@ class _NoteListPageState extends State<NoteListPage>
                             ..text = noteFilter.animeNameKeyword,
                           decoration: InputDecoration(
                               labelText: "动漫关键字",
-                              suffixIcon: MyIconButton(
+                              suffixIcon: IconButton(
                                 onPressed: () {
                                   animeNameController.text = "";
                                 },
@@ -218,7 +218,7 @@ class _NoteListPageState extends State<NoteListPage>
                           decoration: InputDecoration(
                               labelText: "笔记关键字",
                               helperText: "评价页暂不支持查询",
-                              suffixIcon: MyIconButton(
+                              suffixIcon: IconButton(
                                 onPressed: () {
                                   noteContentController.text = "";
                                 },

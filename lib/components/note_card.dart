@@ -1,6 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
@@ -138,7 +138,7 @@ class _NoteCardState extends State<NoteCard> {
       ),
       // trailing: widget.isRateNote
       //     ? null
-      //     : MyIconButton(
+      //     : IconButton(
       //         onPressed: () => _enterNoteEditPage(note),
       //         icon: const Icon(
       //           Icons.edit,
@@ -168,7 +168,7 @@ class _NoteCardState extends State<NoteCard> {
 
     return ListTile(
         title: Text(timeStr, style: Theme.of(context).textTheme.bodySmall),
-        trailing: MyIconButton(
+        trailing: IconButton(
             onPressed: () {
               showDialog(
                   context: context,

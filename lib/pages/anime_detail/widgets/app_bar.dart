@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/components/toggle_list_tile.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -68,7 +68,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               ],
             ),
           ),
-          leading: MyIconButton(
+          leading: IconButton(
             onPressed: () {
               widget.popPage();
             },
@@ -154,7 +154,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   List<Widget> _generateActions() {
     if (!widget.animeController.isCollected) return [];
     return [
-      MyIconButton(
+      IconButton(
           onPressed: () => _showLayoutBottomSheet(),
           icon: const Icon(Icons.filter_list)),
       PopupMenuButton(

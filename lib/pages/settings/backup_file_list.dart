@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
@@ -106,7 +106,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     return ListTile(
       title: Text("${index + 1}. $fileName"),
       subtitle: Text("$createdTime $KBSize $backupWay"),
-      trailing: MyIconButton(
+      trailing: IconButton(
           onPressed: () => _showDeleteDialog(context, file, index),
           icon: const Icon(Icons.delete_outline)),
       onTap: () => _showRestoreDialog(context, file),

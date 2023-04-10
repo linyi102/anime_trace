@@ -1,6 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
@@ -93,7 +93,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                     if (animeController.loadingAnime) {
                       return Scaffold(
                         appBar: AppBar(
-                            leading: MyIconButton(
+                            leading: IconButton(
                                 onPressed: _popPage,
                                 icon: const Icon(Icons.arrow_back))),
                         body: const Center(
@@ -141,7 +141,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: MyIconButton(
+              child: IconButton(
                 onPressed: () {
                   if (animeController.mapSelected.length ==
                       animeController.episodes.length) {
@@ -163,7 +163,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               ),
             ),
             Expanded(
-              child: MyIconButton(
+              child: IconButton(
                 onPressed: () async {
                   await animeController.pickDateForEpisodes(context: context);
                   // 退出多选模式
@@ -174,7 +174,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               ),
             ),
             Expanded(
-              child: MyIconButton(
+              child: IconButton(
                 onPressed: () => animeController.quitMultiSelectionMode(),
                 icon: const Icon(Icons.exit_to_app),
                 tooltip: "退出多选",

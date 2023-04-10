@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
@@ -210,12 +210,13 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   _buildEpisodeTileTrailing() {
     // 如果还在加载笔记，则不显示更多按钮，避免打开后创建笔记
     if (_loadingNote) {
-      return const MyIconButton(
-        icon: CircularProgressIndicator(strokeWidth: 2),
+      return IconButton(
+        icon: const CircularProgressIndicator(strokeWidth: 2),
+        onPressed: () {},
       );
     }
 
-    return MyIconButton(
+    return IconButton(
       icon: const Icon(Icons.more_horiz),
       onPressed: () {
         showDialog(
@@ -292,7 +293,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   }
 
   _buildLeading() {
-    return MyIconButton(
+    return IconButton(
         onPressed: () async {
           if (_episode.isChecked()) {
             _dialogRemoveDate(); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState

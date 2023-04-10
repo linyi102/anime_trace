@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
 
 import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
@@ -71,7 +70,7 @@ class _AboutVersionState extends State<AboutVersion> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            MyIconButton(
+            IconButton(
                 onPressed: () {
                   LaunchUrlUtil.launch(
                       context: context,
@@ -83,7 +82,7 @@ class _AboutVersionState extends State<AboutVersion> {
                       ? Colors.white
                       : Colors.black,
                 )),
-            MyIconButton(
+            IconButton(
               onPressed: () {
                 LaunchUrlUtil.launch(
                     context: context,

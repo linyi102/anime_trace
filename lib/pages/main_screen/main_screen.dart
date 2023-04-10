@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history/history_page.dart';
 import 'package:flutter_test_future/pages/network/network_page.dart';
@@ -161,7 +161,7 @@ class _MainScreenState extends State<MainScreen> {
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
       children: [
-        MyIconButton(
+        IconButton(
           icon: Icon(
             expandSideBar ? EvaIcons.arrowIosBack : EvaIcons.arrowIosForward,
             // 不适合暗色主题

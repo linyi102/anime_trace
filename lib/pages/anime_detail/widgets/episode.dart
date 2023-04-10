@@ -1,7 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/components/my_icon_button.dart';
+
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
@@ -172,7 +172,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              MyIconButton(
+              IconButton(
                 onPressed: _dialogSelectReviewNumber,
                 // 使用自带图标
                 // icon: _showReviewNumberIcon()
@@ -192,7 +192,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   ),
                 ),
               ),
-              MyIconButton(
+              IconButton(
                   onPressed: () {
                     if (hideNoteInAnimeDetail) {
                       // 原先隐藏，则设置为false，表示显示
