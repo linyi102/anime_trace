@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
 /// 动漫详细页点击封面，进入该页面
@@ -88,10 +88,10 @@ class AnimeCoverDetail extends StatelessWidget {
                           Navigator.pop(dialogContext);
                           Anime anime = animeController.anime;
                           if (anime.animeUrl.isEmpty) {
-                            showToast("无来源，无法获取封面");
+                            ToastUtil.showText("无来源，无法获取封面");
                             return;
                           }
-                          showToast("正在获取封面");
+                          ToastUtil.showText("正在获取封面");
 
                           anime =
                               await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
@@ -103,7 +103,7 @@ class AnimeCoverDetail extends StatelessWidget {
                             animeController.updateCoverUrl(anime.animeCoverUrl);
 
                             // 获取失败后会提示连接超时，所以这里不显示
-                            // showToast("更新封面成功！");
+                            // ToastUtil.showText("更新封面成功！");
                           });
                         },
                         child: const Text("确定")),
@@ -320,7 +320,7 @@ class AnimeCoverDetail extends StatelessWidget {
 
   _selectCoverFromLocal(context, howToEditCoverUrlDialogContext) async {
     if (!ImageUtil.hasCoverImageRootDirPath()) {
-      showToast("请先设置封面根目录");
+      ToastUtil.showText("请先设置封面根目录");
       Navigator.pop(howToEditCoverUrlDialogContext);
       Navigator.of(context).push(
         MaterialPageRoute(

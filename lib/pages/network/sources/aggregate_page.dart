@@ -10,7 +10,7 @@ import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.da
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 /// 聚合页
@@ -67,7 +67,7 @@ class _AggregatePageState extends State<AggregatePage> {
 
   void _pingAllWebsites() {
     if (!canClickPingButton) {
-      showToast("测试间隔为10s");
+      ToastUtil.showText("测试间隔为10s");
       return;
     }
 

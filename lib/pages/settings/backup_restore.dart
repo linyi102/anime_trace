@@ -11,7 +11,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 import '../../components/loading_dialog.dart';
 import '../../dao/anime_dao.dart';
@@ -143,12 +143,12 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           subtitle: const Text("单击进行备份，备份目录为 /animetrace"),
           onTap: () async {
             if (!SPUtil.getBool("login")) {
-              showToast("请先配置账号，再进行备份！");
+              ToastUtil.showText("请先配置账号，再进行备份！");
               return;
             }
 
             if (!canManualBackup) {
-              showToast("备份间隔为10s");
+              ToastUtil.showText("备份间隔为10s");
               return;
             }
 
@@ -156,7 +156,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             Future.delayed(const Duration(seconds: 10))
                 .then((value) => canManualBackup = true);
 
-            showToast("正在备份");
+            ToastUtil.showText("正在备份");
             String remoteBackupDirPath = await WebDavUtil.getRemoteDirPath();
             if (remoteBackupDirPath.isNotEmpty) {
               BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);
@@ -172,7 +172,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
           onTap: () async {
             if (!SPUtil.getBool("login")) {
-              showToast("请先配置账号，再进行备份！");
+              ToastUtil.showText("请先配置账号，再进行备份！");
               return;
             }
             if (SPUtil.getBool("auto_backup_webdav")) {
@@ -217,7 +217,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                 setState(() {});
               });
             } else {
-              showToast("配置账号后才可以进行还原");
+              ToastUtil.showText("配置账号后才可以进行还原");
             }
           },
         ),
@@ -252,7 +252,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             // subtitle: Text(getDuration()),
             onTap: () {
               // 注意这里是本地手动备份
-              showToast("正在备份");
+              ToastUtil.showText("正在备份");
               BackupUtil.backup(
                   localBackupDirPath: SPUtil.getString("backup_local_dir",
                       defaultValue: "unset"));
@@ -281,7 +281,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             onTap: () {
               if (SPUtil.getString("backup_local_dir", defaultValue: "unset") ==
                   "unset") {
-                showToast("请先设置本地备份目录，再进行备份！");
+                ToastUtil.showText("请先设置本地备份目录，再进行备份！");
                 return;
               }
               if (SPUtil.getBool("auto_backup_local")) {
@@ -317,7 +317,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               // 所以loadingContext为null，无法关闭后面出现的加载对话框，因此这里适当延时
               await Future.delayed(const Duration(milliseconds: 200));
               if (loadingContext != null) Navigator.pop(loadingContext!);
-              showToast(result.msg);
+              ToastUtil.showText(result.msg);
             }
           },
         ),
@@ -376,20 +376,20 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                   String password = inputPasswordController.text;
                   if (uri.isEmpty || user.isEmpty || password.isEmpty) {
                     // TODO 想要将消息显示在对话框上层，可是为什么指定了dialogContext就不会显示消息了？
-                    // showToast("请将信息填入完整！", context: dialogContext);
-                    showToast("请将信息填入完整！");
+                    // ToastUtil.showText("请将信息填入完整！", context: dialogContext);
+                    ToastUtil.showText("请将信息填入完整！");
                     return;
                   }
                   SPUtil.setString("webdav_uri", uri);
                   SPUtil.setString("webdav_user", user);
                   SPUtil.setString("webdav_password", password);
                   if (await WebDavUtil.initWebDav(uri, user, password)) {
-                    showToast("连接成功");
+                    ToastUtil.showText("连接成功");
                     setState(() {});
                     Navigator.of(dialogContext).pop();
                   } else {
                     // 无法观察到弹出消息，因为对话框遮住了弹出消息，因此需要移动到最下面
-                    showToast("无法连接，请确保输入正确和网络正常！");
+                    ToastUtil.showText("无法连接，请确保输入正确和网络正常！");
                     // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
                     setState(() {});
                   }

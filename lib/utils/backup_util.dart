@@ -8,7 +8,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -107,7 +107,7 @@ class BackupUtil {
           localBackupFilePath = "$localBackupDirPath/$zipName";
         }
         await tempZipFile.copy(localBackupFilePath);
-        if (showToastFlag) showToast("备份成功：$localBackupFilePath");
+        if (showToastFlag) ToastUtil.showText("备份成功：$localBackupFilePath");
         // 如果还要备份到webdav，则先不删除
         if (remoteBackupDirPath.isEmpty) {
           tempZipFile.delete();
@@ -115,7 +115,7 @@ class BackupUtil {
         }
       } else {
         if (showToastFlag) {
-          showToast("请先设置本地备份目录");
+          ToastUtil.showText("请先设置本地备份目录");
           return "";
         }
       }
@@ -123,7 +123,7 @@ class BackupUtil {
     if (remoteBackupDirPath.isNotEmpty) {
       if (!SPUtil.getBool("online")) {
         Log.info("WebDav 备份失败，请检查网络状态");
-        showToast("WebDav 备份失败，请检查网络状态");
+        ToastUtil.showText("WebDav 备份失败，请检查网络状态");
         tempZipFile.delete(); // 备份失败后需要删掉临时备份文件
         return "";
       }
@@ -135,7 +135,8 @@ class BackupUtil {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
       await WebDavUtil.upload(tempZipFile.path, remoteBackupFilePath);
-      if (showToastFlag) showToast("WebDav 备份成功：$remoteBackupFilePath");
+      if (showToastFlag)
+        ToastUtil.showText("WebDav 备份成功：$remoteBackupFilePath");
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
       tempZipFile.delete();
       deleteOldAutoBackupFileFromRemote(
@@ -145,20 +146,20 @@ class BackupUtil {
       // ！无法还原：Unhandled Exception: FormatException: Could not find End of Central Directory Record
       // Uint8List uint8list = File(tempZipFilePath).readAsBytesSync();
       // WebDavUtil.client.write(remoteBackupFilePath, uint8list).then((value) {
-      //   if (showToastFlag) showToast("备份成功：$remoteBackupFilePath");
+      //   if (showToastFlag) ToastUtil.showText("备份成功：$remoteBackupFilePath");
       //   File(tempZipFilePath).delete();
       // });
       // 移动。会导致无法连接，第一次还没有效果
       // WebDavUtil.client
       //     .copy(tempZipFilePath, remoteBackupFilePath, false)
       //     .then((value) {
-      //   showToast("备份成功：$remoteBackupFilePath");
+      //   ToastUtil.showText("备份成功：$remoteBackupFilePath");
       //   File(tempZipFilePath).delete();
       // });
       // 报错
       // WebDavUtil.upload("$dirPath/mydb.db", remoteBackupFilePath)
       //     .then((value) {
-      //   showToast("备份成功：$remoteBackupFilePath");
+      //   ToastUtil.showText("备份成功：$remoteBackupFilePath");
       //   File(tempZipFilePath).delete();
       // });
     }

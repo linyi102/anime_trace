@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 Future<int?> dialogSelectUint(context, String title,
     {int initialValue = 0, int minValue = 0, int maxValue = 1 << 32}) async {
@@ -59,12 +59,12 @@ Future<int?> dialogSelectUint(context, String title,
                     onPressed: () {
                       String content = yearTextEditingController.text;
                       if (content.isEmpty) {
-                        showToast("不能为空！");
+                        ToastUtil.showText("不能为空！");
                         return;
                       }
                       int number = int.parse(content);
                       if (number < minValue || number > maxValue) {
-                        showToast("设置范围：[$minValue, $maxValue]");
+                        ToastUtil.showText("设置范围：[$minValue, $maxValue]");
                         return;
                       }
                       Navigator.pop(context, number);

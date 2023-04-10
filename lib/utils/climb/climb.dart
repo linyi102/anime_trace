@@ -10,7 +10,7 @@ import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class Climb {
   /// 直接使用Climb.baseUrl，不用在意具体子类
@@ -66,7 +66,7 @@ class Climb {
     Log.info("$sourceName：正在获取文档...");
     Result result = await DioPackage.get(url, isMobile: isMobile);
     if (result.code != 200) {
-      showToast("$sourceName：${result.msg}");
+      ToastUtil.showText("$sourceName：${result.msg}");
       return null;
     }
     Response response = result.data;

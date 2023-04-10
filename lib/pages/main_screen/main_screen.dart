@@ -9,7 +9,7 @@ import 'package:flutter_test_future/pages/network/network_page.dart';
 import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/settings_page.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class MainTab {
@@ -79,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
       _clickBackCnt = 0;
       Log.info("点击返回次数重置为0");
     });
-    showToast("再次点击退出应用");
+    ToastUtil.showText("再次点击退出应用");
     return false;
   }
 

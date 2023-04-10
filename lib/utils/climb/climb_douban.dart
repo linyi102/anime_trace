@@ -6,7 +6,7 @@ import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:html/dom.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ClimbDouban extends Climb {
   // 单例
@@ -87,7 +87,7 @@ class ClimbDouban extends Climb {
         }
       }
     }
-    if (showMessage) showToast("更新完毕");
+    if (showMessage) ToastUtil.showText("更新完毕");
 
     return anime;
   }

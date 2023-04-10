@@ -13,7 +13,7 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -56,7 +56,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
     // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
     //   if (value.id == 0) {
     //     Navigator.of(context).pop(widget.note);
-    //     showToast("未找到该笔记");
+    //     ToastUtil.showText("未找到该笔记");
     //   } else {
     //     widget.note.relativeLocalImages = value.relativeLocalImages;
     //     noteContentController.text = widget.note.noteContent;
@@ -72,7 +72,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
         widget.note.id = 0;
         Navigator.of(context).pop(widget.note);
-        showToast("未找到该笔记");
+        ToastUtil.showText("未找到该笔记");
       } else {
         noteContentController.text = widget.note.noteContent;
         _loadOk = true;
@@ -301,7 +301,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   _pickLocalImages() async {
     if (!ImageUtil.hasNoteImageRootDirPath()) {
-      showToast("请先设置图片根目录");
+      ToastUtil.showText("请先设置图片根目录");
       Navigator.of(context).push(
         // MaterialPageRoute(
         //   builder: (BuildContext context) =>

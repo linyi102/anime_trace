@@ -13,7 +13,7 @@ import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -150,9 +150,9 @@ class UpdateRecordPage extends StatelessWidget {
                   // 关闭对话框
                   Navigator.pop(dialogContext);
                   // 提示
-                  showToast("删除成功");
+                  ToastUtil.showText("删除成功");
                 } else {
-                  showToast("删除失败");
+                  ToastUtil.showText("删除失败");
                 }
               },
               child: const Text("删除该更新记录"),

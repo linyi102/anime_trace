@@ -7,7 +7,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 import 'anime_list_in_source.dart';
 
@@ -51,7 +51,7 @@ class _SourceDetailState extends State<SourceDetail> {
                     ),
               onTap: () {
                 if (climbWebstie.discard) {
-                  showToast("很抱歉，该搜索源已经无法使用");
+                  ToastUtil.showText("很抱歉，该搜索源已经无法使用");
                   return;
                 }
                 climbWebstie.enable = !climbWebstie.enable;

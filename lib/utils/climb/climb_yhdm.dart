@@ -3,7 +3,7 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbYhdm extends Climb {
@@ -84,7 +84,7 @@ class ClimbYhdm extends Climb {
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
     Log.info("开始解析集数：${anime.animeName}");
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
-    if (showMessage) showToast("更新完毕");
+    if (showMessage) ToastUtil.showText("更新完毕");
 
     Log.info(anime.toString());
     return anime;

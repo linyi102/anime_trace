@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_icons/simple_icons.dart';
 
@@ -107,7 +107,7 @@ class _AboutVersionState extends State<AboutVersion> {
           // 必须推迟，否则可能会合并setState
           // 然后再渲染有更新对话框的页面
           Future.delayed(const Duration(milliseconds: 200)).then((value) {
-            showToast("正在获取最新版本");
+            ToastUtil.showText("正在获取最新版本");
             checkLatestVersion = true;
             setState(() {});
           });

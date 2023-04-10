@@ -63,7 +63,6 @@ Android 和 Windows 分别对应 apk 和 zip 文件，建议只使用其中一�
 | [path_provider](https://pub.flutter-io.cn/packages/path_provider)                               | BSD-3-Clause |
 | [file_picker](https://pub.flutter-io.cn/packages/file_picker)                                   | MIT          |
 | [webdav_client](https://pub.flutter-io.cn/packages/webdav_client)                               | BSD-3-Clause |
-| [oktoast](https://pub.flutter-io.cn/packages/oktoast)                                           | Apache-2.0   |
 | [dio](https://pub.flutter-io.cn/packages/dio)                                                   | MIT          |
 | [html](https://pub.flutter-io.cn/packages/html)                                                 | unknown      |
 | [cached_network_image](https://pub.flutter-io.cn/packages/cached_network_image)                 | MIT          |

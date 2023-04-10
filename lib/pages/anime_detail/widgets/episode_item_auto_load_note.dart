@@ -18,7 +18,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 /// 集+自动获取笔记
 
@@ -585,7 +585,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                       _episode.note = null;
                     });
                   } else {
-                    showToast("删除失败！");
+                    ToastUtil.showText("删除失败！");
                   }
                 }
               },

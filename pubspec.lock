@@ -22,6 +22,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  bot_toast:
+    dependency: "direct main"
+    description:
+      name: bot_toast
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.3"
   cached_network_image:
     dependency: "direct main"
     description:
@@ -308,13 +315,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
-  oktoast:
-    dependency: "direct main"
-    description:
-      name: oktoast
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.3.1"
   package_info_plus:
     dependency: "direct main"
     description:

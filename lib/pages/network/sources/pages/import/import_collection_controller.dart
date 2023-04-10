@@ -7,8 +7,8 @@ import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ImportCollectionController extends GetxController {
@@ -76,13 +76,13 @@ class ImportCollectionController extends GetxController {
 
   onEditingComplete() async {
     if (quickCollecting) {
-      showToast("收藏中，请稍后再试");
+      ToastUtil.showText("收藏中，请稍后再试");
       return;
     }
 
     userId = inputController.text;
     if (userId.isEmpty) {
-      showToast("用户ID不能为空");
+      ToastUtil.showText("用户ID不能为空");
       return;
     }
 
@@ -100,7 +100,7 @@ class ImportCollectionController extends GetxController {
     bool exist = await climbWebsite.climb.existUser(userId);
 
     if (!exist) {
-      showToast("${climbWebsite.climb.sourceName}中不存在该用户");
+      ToastUtil.showText("${climbWebsite.climb.sourceName}中不存在该用户");
       // 取消加载圈
       for (int collIdx = 0; collIdx < siteCollectionTab.length; ++collIdx) {
         searching[collIdx] = false;
@@ -248,7 +248,7 @@ class ImportCollectionController extends GetxController {
       if (msg.isNotEmpty) msg += "，";
       msg += "$addFail个添加失败";
     }
-    showToast(msg);
+    ToastUtil.showText(msg);
 
     quickCollecting = false;
     update([bottomBarId]);

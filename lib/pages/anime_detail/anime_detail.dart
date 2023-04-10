@@ -12,7 +12,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
 class AnimeDetailPage extends StatefulWidget {
@@ -190,14 +190,14 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   Future<bool> _climbAnimeInfo() async {
     if (_anime.animeUrl.isEmpty) {
-      if (_anime.isCollected()) showToast("无法更新自定义动漫");
+      if (_anime.isCollected()) ToastUtil.showText("无法更新自定义动漫");
       return false;
     }
     if (_climbing) {
-      if (_anime.isCollected()) showToast("正在获取信息");
+      if (_anime.isCollected()) ToastUtil.showText("正在获取信息");
       return false;
     }
-    // if (_anime.isCollected()) showToast("更新中");
+    // if (_anime.isCollected()) ToastUtil.showText("更新中");
     _climbing = true;
     // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员

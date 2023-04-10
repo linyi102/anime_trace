@@ -10,6 +10,9 @@ class AppTheme {
   static const double timePickerDialogRadius = 8.0;
   static const double dialogRadius = 8.0;
 
+  /// 当前是否是夜间模式
+  static bool isDark = false;
+
   /// wrap间距
   static double wrapSacing = 2.0;
   static double wrapRunSpacing = 0.0;

@@ -7,7 +7,7 @@ import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -172,7 +172,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                       });
                   Result result = await BackupUtil.restoreFromWebDav(file);
                   if (loadingContext != null) Navigator.pop(loadingContext!);
-                  showToast(result.msg);
+                  ToastUtil.showText(result.msg);
                 },
                 child: const Text("确定")),
           ],

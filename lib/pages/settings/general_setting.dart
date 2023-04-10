@@ -5,7 +5,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);
@@ -87,7 +87,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
               SPUtil.remove("autoMoveToFinishedTag"); // 总是
               SPUtil.remove("showModifyChecklistDialog"); // 不再提示
               SPUtil.remove("selectedFinishedTag"); // 存放已完成动漫的清单
-              showToast("重置成功");
+              ToastUtil.showText("重置成功");
             },
           ),
           const Divider(),

@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -21,7 +21,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
 
   // 如果已添加，则不能迁移到该动漫
   if (newAnime.isCollected()) {
-    showToast("该动漫已收藏，不能迁移");
+    ToastUtil.showText("该动漫已收藏，不能迁移");
     return;
   }
   // 迁移提示

@@ -5,7 +5,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbAgemys extends Climb {
@@ -137,7 +137,7 @@ class ClimbAgemys extends Climb {
           episodeNumbers.reduce((value, element) => max(value, element));
     }
 
-    if (showMessage) showToast("更新完毕");
+    if (showMessage) ToastUtil.showText("更新完毕");
 
     return anime;
   }

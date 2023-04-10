@@ -6,7 +6,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../../../components/dialog/dialog_select_play_status.dart';
@@ -45,7 +45,7 @@ class AnimePropertiesPage extends StatelessWidget {
             _showDialogAboutEdit(context, title: "编辑名称", property: animeName,
                 confirm: (newName) {
               if (newName.isEmpty) {
-                showToast("动漫名不允许为空");
+                ToastUtil.showText("动漫名不允许为空");
                 return;
               }
               Log.info("更新名称：$newName");

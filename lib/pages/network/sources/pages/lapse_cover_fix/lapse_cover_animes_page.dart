@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 /// 展示网络封面失效的所有动漫
 class LapseCoverAnimesPage extends StatefulWidget {
@@ -119,7 +119,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
           onPressed: () {
             // 恢复中，不允许进入详细页
             if (lapseCoverController.recovering) {
-              showToast("正在恢复中，请稍后进入");
+              ToastUtil.showText("正在恢复中，请稍后进入");
               return;
             }
 
@@ -144,7 +144,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
     // 如果在恢复时再次点击，则直接返回
     if (lapseCoverController.recovering) {
       // 必须放在点击事件内部，否则重绘时就会执行此处
-      showToast("恢复中");
+      ToastUtil.showText("恢复中");
       return;
     }
 
@@ -193,7 +193,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
     }
 
     // 提示恢复完毕，并关闭加载框
-    showToast("封面恢复完毕");
+    ToastUtil.showText("封面恢复完毕");
     lapseCoverController.recovering = false; // 可以进入详情页或再次修复，因为是点击事件中用到，所以不需要重绘
     await Future.delayed(const Duration(milliseconds: 200)); // 避免任务很快结束，没有关闭加载框
     if (mounted) {

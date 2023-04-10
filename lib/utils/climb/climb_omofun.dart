@@ -2,7 +2,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbOmofun extends Climb {
@@ -125,7 +125,7 @@ class ClimbOmofun extends Climb {
 
     Log.info("解析完毕√");
     Log.info(anime.toString());
-    if (showMessage) showToast("更新完毕");
+    if (showMessage) ToastUtil.showText("更新完毕");
 
     return anime;
   }

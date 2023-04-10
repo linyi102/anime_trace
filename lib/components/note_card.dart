@@ -5,7 +5,7 @@ import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
@@ -230,7 +230,7 @@ class _NoteCardState extends State<NoteCard> {
                     widget.removeNote!();
                   }
                 } else {
-                  showToast("删除失败！");
+                  ToastUtil.showText("删除失败！");
                 }
               },
               child: const Text(

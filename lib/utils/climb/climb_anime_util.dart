@@ -9,7 +9,7 @@ import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbAnimeUtil {
@@ -75,11 +75,11 @@ class ClimbAnimeUtil {
   // 获取数据库中所有动漫，然后更新未完结的动漫信息
   static void updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
-      showToast("更新间隔为10s，请稍后再试");
+      ToastUtil.showText("更新间隔为10s，请稍后再试");
       return;
     }
 
-    // showToast("全局更新中");
+    // ToastUtil.showText("全局更新中");
     canUpdateAllAnimesInfo = false;
     Future.delayed(const Duration(seconds: 10))
         .then((value) => canUpdateAllAnimesInfo = true);
@@ -131,6 +131,6 @@ class ClimbAnimeUtil {
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     await Future.wait(futures);
-    showToast("全局更新完毕");
+    ToastUtil.showText("全局更新完毕");
   }
 }

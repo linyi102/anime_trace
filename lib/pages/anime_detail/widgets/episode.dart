@@ -11,7 +11,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
@@ -198,11 +198,11 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                       // 原先隐藏，则设置为false，表示显示
                       SPUtil.setBool("hideNoteInAnimeDetail", false);
                       hideNoteInAnimeDetail = false;
-                      showToast("笔记已展开");
+                      ToastUtil.showText("笔记已展开");
                     } else {
                       SPUtil.setBool("hideNoteInAnimeDetail", true);
                       hideNoteInAnimeDetail = true;
-                      showToast("笔记已隐藏");
+                      ToastUtil.showText("笔记已隐藏");
                     }
                     setState(() {});
                   },

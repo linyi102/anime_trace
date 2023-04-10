@@ -3,7 +3,7 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ClimbQdm extends Climb {
   // 单例
@@ -111,7 +111,7 @@ class ClimbQdm extends Climb {
       anime.playStatus = "";
     }
 
-    if (showMessage) showToast("更新完毕");
+    if (showMessage) ToastUtil.showText("更新完毕");
 
     return anime;
   }

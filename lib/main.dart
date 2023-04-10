@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:flutter_test_future/components/classic_refresh_style.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/utils/log.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
+
+import 'package:flutter_test_future/components/classic_refresh_style.dart';
+import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:flutter_test_future/global.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/main_screen/main_screen.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
@@ -16,11 +18,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
-
-import 'components/update_hint.dart';
 
 void main() {
   Global.init().then((_) => runApp(_getMaterialApp()));
@@ -166,7 +165,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 9,
           tabBarStyle: FlexTabBarStyle.forBackground,
-          tooltipsMatchBackground: true,
           subThemesData: const FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
@@ -200,7 +198,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           background: curDarkThemeColor.appBarColor,
           textTheme: _buildTextTheme(textStyle, context),
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-          tooltipsMatchBackground: true,
           blendLevel: 15,
           tabBarStyle: FlexTabBarStyle.forBackground,
           subThemesData: const FlexSubThemesData(
@@ -222,82 +219,55 @@ class MyAppState extends State<MyApp> with WindowListener {
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
         );
 
-        return OKToast(
-          position: ToastPosition.bottom,
-          animationDuration: const Duration(milliseconds: 200),
-          animationBuilder: (BuildContext context, Widget child,
-              AnimationController controller, double percent) {
-            Animation<double> animation = CurvedAnimation(
-              parent: controller,
-              curve: Curves.ease,
-            );
-
-            return ScaleTransition(
-                alignment: Alignment.bottomCenter,
-                child: child,
-                scale: animation);
-          },
-          // true表示弹出消息时会先关闭前一个消息
-          dismissOtherOnShow: true,
-          radius: 10,
-          textPadding: const EdgeInsets.all(8),
-          backgroundColor: Colors.white,
-          textStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 13,
-              fontWeight: FontWeight.normal,
-              decoration: TextDecoration.none,
-              fontFamilyFallback: themeController.fontFamilyFallback),
-          child: RefreshConfiguration(
-            headerBuilder: () => const MyClassicHeader(),
-            footerBuilder: () => const MyClassicFooter(),
-            hideFooterWhenNotFull: true,
-            child: MaterialApp(
-              themeMode: themeController.getThemeMode(),
-              theme: light.copyWith(
-                scrollbarTheme:
-                    _buildScrollbarThemeData(context, isDark: false),
-                // 使用Theme.of(context).cardTheme会丢失FlexThemeData.light的圆角
-                cardTheme: light.cardTheme.copyWith(
-                  // 不在底部添加margin是为了避免相邻卡片向下间距变大
-                  // 在顶部添加margin是为了保证不紧挨AppBar
-                  margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  elevation: 0,
-                ), // 路由动画
-                pageTransitionsTheme: PageTransitionsTheme(
-                  builders: <TargetPlatform, PageTransitionsBuilder>{
-                    TargetPlatform.android: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                    TargetPlatform.windows: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                  },
-                ),
+        return RefreshConfiguration(
+          headerBuilder: () => const MyClassicHeader(),
+          footerBuilder: () => const MyClassicFooter(),
+          hideFooterWhenNotFull: true,
+          child: MaterialApp(
+            themeMode: themeController.getThemeMode(),
+            theme: light.copyWith(
+              scrollbarTheme: _buildScrollbarThemeData(context, isDark: false),
+              // 使用Theme.of(context).cardTheme会丢失FlexThemeData.light的圆角
+              cardTheme: light.cardTheme.copyWith(
+                // 不在底部添加margin是为了避免相邻卡片向下间距变大
+                // 在顶部添加margin是为了保证不紧挨AppBar
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                elevation: 0,
+              ), // 路由动画
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: <TargetPlatform, PageTransitionsBuilder>{
+                  TargetPlatform.android: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  TargetPlatform.windows: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                },
               ),
-              // darkTheme: AppTheme.dark,
-              darkTheme: dark.copyWith(
-                scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
-                cardTheme: dark.cardTheme.copyWith(
-                  margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  elevation: 0,
-                ), // 路由动画
-                pageTransitionsTheme: PageTransitionsTheme(
-                  builders: <TargetPlatform, PageTransitionsBuilder>{
-                    TargetPlatform.android: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                    TargetPlatform.windows: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                  },
-                ),
-              ),
-
-              home: _buildHome(),
-              // 后台应用显示名称
-              title: '漫迹',
-              // 去除右上角的debug标签
-              debugShowCheckedModeBanner: false,
-              // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-              scrollBehavior: MyCustomScrollBehavior(),
             ),
+            darkTheme: dark.copyWith(
+              scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
+              cardTheme: dark.cardTheme.copyWith(
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                elevation: 0,
+              ),
+              // 路由动画
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: <TargetPlatform, PageTransitionsBuilder>{
+                  TargetPlatform.android: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  TargetPlatform.windows: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                },
+              ),
+            ),
+            builder: BotToastInit(),
+            navigatorObservers: [BotToastNavigatorObserver()],
+            home: _buildHome(),
+            // 后台应用显示名称
+            title: '漫迹',
+            // 去除右上角的debug标签
+            debugShowCheckedModeBanner: false,
+            // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
+            scrollBehavior: MyCustomScrollBehavior(),
           ),
         );
       },

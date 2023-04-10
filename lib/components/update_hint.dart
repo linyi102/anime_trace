@@ -5,7 +5,7 @@ import 'package:flutter_test_future/models/latest_version_info.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/parser.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -109,7 +109,7 @@ class _UpdateHintState extends State<UpdateHint> {
     } else {
       // 在关于版本页面中点击检查更新后，如果版本一致，则进行提示
       if (widget.forceShowUpdateDialog) {
-        showToast("当前已是最新版本");
+        ToastUtil.showText("当前已是最新版本");
       }
     }
   }

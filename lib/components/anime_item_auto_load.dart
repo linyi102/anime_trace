@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
 /// 自动根据动漫详细地址来获取封面和信息
@@ -238,7 +238,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   void _enterDetailPage() {
     // 加载时不允许进入详情页
     if (loading) {
-      showToast("加载中，请稍后进入");
+      ToastUtil.showText("加载中，请稍后进入");
       return;
     }
 

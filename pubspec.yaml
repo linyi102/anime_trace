@@ -34,8 +34,9 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
-  flex_color_scheme: ^6.1.2 #主题
-  timer_count_down: ^2.2.2 #倒计时
+  bot_toast: ^4.0.3 # 消息
+  flex_color_scheme: ^6.1.2 # 主题
+  timer_count_down: ^2.2.2 # 倒计时
   file_saver: ^0.1.1 # 文件保存，用于备份文件
   sliver_tools: ^0.2.9 # sliver工具：渐变过渡
   pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
@@ -66,7 +67,6 @@ dependencies:
   # share_plus: ^3.0.4
   # flutter_share: ^2.0.0
   webdav_client: ^1.1.8
-  oktoast: ^3.3.1
   # download: any
   # search_app_bar_page: ^2.1.2 # 添加上导致出错：
   #   * What went wrong:

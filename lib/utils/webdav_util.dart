@@ -1,6 +1,6 @@
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -68,7 +68,7 @@ class WebDavUtil {
 
   static Future<String> getRemoteDirPath() async {
     if (!SPUtil.getBool("online")) {
-      showToast("请先连接账号，再进行备份");
+      ToastUtil.showText("请先连接账号，再进行备份");
       return "";
     }
     String backupDir = "/animetrace";

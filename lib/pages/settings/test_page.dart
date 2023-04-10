@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
 class TestPage extends StatefulWidget {
@@ -67,10 +67,7 @@ class _TestPageState extends State<TestPage> {
                           ListTile(
                             title: const Text("弹出消息"),
                             onTap: () {
-                              // 背景页面上显示了
-                              showToast("${DateTime.now()}");
-                              // 没有显示
-                              // showToast("${DateTime.now()}", context: context);
+                              ToastUtil.showText("${DateTime.now()}");
                             },
                           ),
                         ],
@@ -80,8 +77,8 @@ class _TestPageState extends State<TestPage> {
           ListTile(
             title: const Text("弹出消息"),
             onTap: () {
-              // showToast("${DateTime.now()}");
-              showToast("正在更新书架");
+              // ToastUtil.showText("${DateTime.now()}");
+              ToastUtil.showText("正在更新书架");
             },
           ),
           ListTile(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LaunchUrlUtil {
@@ -8,7 +8,7 @@ class LaunchUrlUtil {
       required String uriStr,
       bool inApp = false}) async {
     if (uriStr.isEmpty) {
-      showToast("无法访问空链接");
+      ToastUtil.showText("无法访问空链接");
     }
     // else if (inApp && Platform.isAndroid) {
     //   // 只有安卓才允许打开webview界面
@@ -22,7 +22,7 @@ class LaunchUrlUtil {
           mode: inApp
               ? LaunchMode.inAppWebView
               : LaunchMode.externalApplication)) {
-        showToast("无法打开链接：$uriStr");
+        ToastUtil.showText("无法打开链接：$uriStr");
       }
     }
   }

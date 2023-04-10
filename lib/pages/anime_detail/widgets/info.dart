@@ -17,7 +17,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class AnimeDetailInfo extends StatefulWidget {
   const AnimeDetailInfo({required this.animeController, super.key});
@@ -271,7 +271,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   LaunchUrlUtil.launch(
                       context: context, uriStr: _anime.animeUrl);
                 } else {
-                  showToast("无法打开空的链接");
+                  ToastUtil.showText("无法打开空的链接");
                 }
               },
               onLongPress: () {

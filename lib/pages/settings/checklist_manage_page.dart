@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ChecklistManagePage extends StatefulWidget {
   const ChecklistManagePage({Key? key}) : super(key: key);
@@ -79,7 +79,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
 
                           // 重名
                           if (tags.contains(tagName)) {
-                            showToast("重名，无法添加！");
+                            ToastUtil.showText("重名，无法添加！");
                             return;
                           }
                           SqliteUtil.insertTagName(tagName, tags.length);
@@ -146,7 +146,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
 
                           // 重名
                           if (tags.contains(newTagName)) {
-                            showToast("已存在该清单，无法修改！");
+                            ToastUtil.showText("已存在该清单，无法修改！");
                             return;
                           }
                           SqliteUtil.updateTagName(tags[i], newTagName);
@@ -184,7 +184,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
               TextButton(
                   onPressed: () async {
                     if (await SqliteUtil.getAnimesCntBytagName(tagName) > 0) {
-                      showToast("当前清单存在动漫，无法删除");
+                      ToastUtil.showText("当前清单存在动漫，无法删除");
                     } else {
                       SqliteUtil.deleteTagByTagName(tagName);
                       tags.remove(tagName);

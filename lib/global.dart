@@ -16,13 +16,13 @@ class Global {
   // 私有构造器，避免外部错误使用(也就是创建Global对象)
   Global._();
 
-  // 是否 release
+  /// 是否 release
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
 
-  // 修改了笔记图片根路径
+  /// 修改了笔记图片根路径
   static bool modifiedImgRootPath = false;
 
-  // 展开/收缩目录过滤器
+  /// 展开/收缩目录过滤器
   static bool expandDirectoryFilter = true;
 
   static Future<void> init() async {

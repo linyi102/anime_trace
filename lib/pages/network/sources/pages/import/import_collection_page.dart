@@ -14,7 +14,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -162,12 +162,12 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   /// 注意要把curCollIdx作为参数传进来，避免加载更多时切换tab导致加载了其他tab动漫
   _showBottomSelectChecklist(BuildContext context, int collIdx) {
     if (icc.userCollection[curCollIdx].totalCnt == 0) {
-      showToast("没有收藏的动漫");
+      ToastUtil.showText("没有收藏的动漫");
       return;
     }
 
     if (icc.quickCollecting) {
-      showToast("收藏中，请稍后再试");
+      ToastUtil.showText("收藏中，请稍后再试");
       return;
     }
 
