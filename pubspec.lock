@@ -22,20 +22,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
-  bottom_inset_observer:
-    dependency: transitive
-    description:
-      name: bottom_inset_observer
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.0"
-  bottom_sheet:
-    dependency: "direct main"
-    description:
-      name: bottom_sheet
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.2"
   cached_network_image:
     dependency: "direct main"
     description:

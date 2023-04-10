@@ -1,4 +1,3 @@
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_view.dart';
@@ -205,15 +204,12 @@ class _AnimeListPageState extends State<AnimeListPage>
 
     actions.add(MyIconButton(
       onPressed: () {
-        showFlexibleBottomSheet(
-            duration: const Duration(milliseconds: 200),
+        showModalBottomSheet(
             context: context,
-            bottomSheetColor: Colors.transparent,
-            builder: (BuildContext context, ScrollController scrollController,
-                    double bottomSheetOffset) =>
-                AnimesDisplaySetting(
-                    showAppBar: false, sortPage: _buildSortPage(dialog: false)),
-            isExpand: true);
+            builder: (context) => AnimesDisplaySetting(
+                  showAppBar: false,
+                  sortPage: _buildSortPage(dialog: false),
+                ));
       },
       icon: const Icon(Icons.filter_list),
       tooltip: "动漫排序",

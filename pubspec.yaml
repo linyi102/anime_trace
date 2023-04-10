@@ -45,7 +45,6 @@ dependencies:
   webview_flutter: ^3.0.4 #App内网页
   photo_view: ^0.14.0 #缩放、左右切换图片
   flutter_rating_bar: ^4.0.1 #评分栏
-  bottom_sheet: ^3.1.2 # 底部弹出菜单
   window_manager: ^0.2.5 # Windows窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条

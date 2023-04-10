@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
@@ -35,8 +34,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   double sigma = SpProfile.getCoverBgSigmaInAnimeDetailPage();
 
   double coverBgHeightRatio = SpProfile.getCoverBgHeightRatio();
-
-  // Color? appBarIconColor = Colors.white;
 
   bool transparentBottomSheet = false;
 
@@ -241,22 +238,10 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   // 弹出底部弹出菜单，用于外观设置
   _showLayoutBottomSheet() {
-    showFlexibleBottomSheet(
-      initHeight: 0.5,
-      duration: const Duration(milliseconds: 200),
-      bottomSheetColor: Colors.transparent,
+    showModalBottomSheet(
       context: context,
-      // 拖动封面高度时，需要透明底部面板，同时原页面不要变暗
-      // [失效]因为是show，所以重绘时并不会重新弹出底部面板，原页面也就仍然是暗的
-      // isModal: transparentBottomSheet ? false : true,
-      // 解决方法是自己实现在原页面上层实现暗化页面，拖动时则不暗化。但这需要在整个页面而不是只在appbar上添加
-      // isModal: false,
-      builder: (
-        BuildContext context,
-        ScrollController scrollController,
-        double bottomSheetOffset,
-      ) =>
-          StatefulBuilder(
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
         builder: (context, setBottomSheetState) => AnimeDetailUISettingPage(
           sortPage: widget.animeController.buildSortPage(),
           uiPage: _buildUISettingPage(setBottomSheetState),

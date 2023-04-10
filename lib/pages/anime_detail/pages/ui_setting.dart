@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/rounded_sheet.dart';
 
 /// 动漫详情页ui和集排序设置
 class AnimeDetailUISettingPage extends StatefulWidget {
@@ -40,8 +39,8 @@ class _AnimeDetailUISettingPageState extends State<AnimeDetailUISettingPage>
   Widget build(BuildContext context) {
     return Opacity(
       opacity: widget.transparent ? 0.4 : 1,
-      child: RoundedSheet(
-          title: CommonBottomTabBar(
+      child: Scaffold(
+          appBar: CommonBottomTabBar(
               tabController: tabController,
               tabs: tabStr.map((e) => Tab(text: e)).toList()),
           body: TabBarView(controller: tabController, children: [

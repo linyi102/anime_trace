@@ -1,9 +1,7 @@
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/my_icon_button.dart';
-import 'package:flutter_test_future/components/rounded_sheet.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
@@ -128,20 +126,16 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           InkWell(
             onTap: () {
               if (enableEpisodeRangeBottomSheetStyle) {
-                showFlexibleBottomSheet(
-                    context: context,
-                    duration: const Duration(milliseconds: 200),
-                    bottomSheetColor: Colors.transparent,
-                    builder: (
-                      BuildContext context,
-                      ScrollController scrollController,
-                      double bottomSheetOffset,
-                    ) =>
-                        RoundedSheet(
-                          body: _buildEpisodeRangeGridView(),
-                          title: const Text("选择区域"),
-                          centerTitle: true,
-                        ));
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: const Text("选择区域"),
+                      automaticallyImplyLeading: false,
+                    ),
+                    body: _buildEpisodeRangeGridView(),
+                  ),
+                );
               } else {
                 showDialog(
                   context: context,
@@ -239,10 +233,10 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
               startEpisodeNumber;
 
           items.add(Card(
-            child: TextButton(
+            child: InkWell(
               // autofocus仅仅改变的是背景色
               // autofocus: cur ? true : false,
-              onPressed: () {
+              onTap: () {
                 widget.animeController.currentStartEpisodeNumber =
                     startEpisodeNumber;
                 SPUtil.setInt("${_anime.animeId}-currentStartEpisodeNumber",
@@ -251,13 +245,15 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                 // 获取集数据
                 widget.animeController.loadEpisode();
               },
-              child: Text(
-                _getEpisodeRangeStr((startEpisodeNumber)),
-                style: TextStyle(
-                  color: cur
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).unselectedWidgetColor,
-                  fontWeight: FontWeight.normal,
+              child: Center(
+                child: Text(
+                  _getEpisodeRangeStr((startEpisodeNumber)),
+                  style: TextStyle(
+                    color: cur
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).unselectedWidgetColor,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
             ),
