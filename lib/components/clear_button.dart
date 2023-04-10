@@ -13,6 +13,6 @@ class ClearButton extends StatelessWidget {
         child: InkWell(
             borderRadius: BorderRadius.circular(50),
             onTap: onTapClear,
-            child: const Icon(Icons.close, size: 15)));
+            child: const Icon(Icons.close, size: 18)));
   }
 }

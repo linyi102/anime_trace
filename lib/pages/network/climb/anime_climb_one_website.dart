@@ -33,7 +33,6 @@ class AnimeClimbOneWebsite extends StatefulWidget {
 
 class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   var animeNameController = TextEditingController();
-  var endEpisodeController = TextEditingController();
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   late bool ismigrate;
   late ClimbWebsite curWebsite;
@@ -113,6 +112,9 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
         onEditingComplete: () => _onEditingComplete(),
         onChanged: (inputStr) {
           lastInputName = inputStr;
+        },
+        onTapClear: () {
+          animeNameController.clear();
         },
       ),
       body: Column(
