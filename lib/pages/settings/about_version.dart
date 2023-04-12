@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
-
 import 'package:flutter_test_future/components/update_hint.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_icons/simple_icons.dart';

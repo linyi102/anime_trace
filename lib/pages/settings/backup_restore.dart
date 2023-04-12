@@ -4,22 +4,21 @@ import 'dart:io';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/components/operation_button.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/models/params/result.dart';
 
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
+import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-
-import '../../components/loading_dialog.dart';
-import '../../dao/anime_dao.dart';
-import '../../models/params/result.dart';
-import '../../utils/file_util.dart';
-import '../../utils/log.dart';
-import '../../utils/sqlite_util.dart';
 
 class BackupAndRestorePage extends StatefulWidget {
   const BackupAndRestorePage({Key? key}) : super(key: key);
@@ -37,6 +36,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
       SPUtil.getInt("autoBackupLocalNumber", defaultValue: 20);
   bool loadOk = false;
   bool canManualBackup = true;
+  bool connecting = false;
 
   @override
   void initState() {
@@ -332,63 +332,75 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     //   [AutofillHints.password]
     // ];
 
-    List<Widget> listTextFields = [];
-    for (int i = 0; i < keys.length; ++i) {
-      listTextFields.add(TextField(
-        obscureText: labelTexts[i] == "密码"
-            ? true
-            : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
-        controller: controllers[i]
-          ..text = SPUtil.getString(keys[i], defaultValue: defaultContent[i]),
-        decoration: InputDecoration(labelText: labelTexts[i]),
-        // autofillHints: autofillHintsList[i],
-      ));
-    }
     showDialog(
       context: context,
-      builder: (dialogContext) {
+      builder: (context) {
         return AlertDialog(
           title: const Text("账号配置"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: listTextFields,
-            ),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (int i = 0; i < keys.length; ++i)
+                      TextField(
+                        obscureText: labelTexts[i] == "密码"
+                            ? true
+                            : false, // true会隐藏输入内容，没使用主要是因为开启后不能直接粘贴密码了，
+                        controller: controllers[i]
+                          ..text = SPUtil.getString(keys[i],
+                              defaultValue: defaultContent[i]),
+                        decoration: InputDecoration(labelText: labelTexts[i]),
+                        // autofillHints: autofillHintsList[i],
+                      ),
+                    OperationButton(
+                      horizontal: 0,
+                      text: connecting ? '连接中' : '连接',
+                      // 连接时不允许再次点击按钮
+                      active: !connecting,
+                      onTap: () {
+                        setState(() {
+                          connecting = true;
+                        });
+
+                        _connect(context, inputUriController,
+                            inputUserController, inputPasswordController);
+                      },
+                    )
+                  ],
+                ),
+              );
+            },
           ),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-                child: const Text("取消")),
-            TextButton(
-                onPressed: () async {
-                  String uri = inputUriController.text;
-                  String user = inputUserController.text;
-                  String password = inputPasswordController.text;
-                  if (uri.isEmpty || user.isEmpty || password.isEmpty) {
-                    // TODO 想要将消息显示在对话框上层，可是为什么指定了dialogContext就不会显示消息了？
-                    // ToastUtil.showText("请将信息填入完整！", context: dialogContext);
-                    ToastUtil.showText("请将信息填入完整！");
-                    return;
-                  }
-                  SPUtil.setString("webdav_uri", uri);
-                  SPUtil.setString("webdav_user", user);
-                  SPUtil.setString("webdav_password", password);
-                  if (await WebDavUtil.initWebDav(uri, user, password)) {
-                    ToastUtil.showText("连接成功");
-                    setState(() {});
-                    Navigator.of(dialogContext).pop();
-                  } else {
-                    // 无法观察到弹出消息，因为对话框遮住了弹出消息，因此需要移动到最下面
-                    ToastUtil.showText("无法连接，请确保输入正确和网络正常！");
-                    // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
-                    setState(() {});
-                  }
-                },
-                child: const Text("连接"))
-          ],
         );
       },
     );
+  }
+
+  _connect(
+    BuildContext context,
+    TextEditingController inputUriController,
+    TextEditingController inputUserController,
+    TextEditingController inputPasswordController,
+  ) async {
+    String uri = inputUriController.text;
+    String user = inputUserController.text;
+    String password = inputPasswordController.text;
+    if (uri.isEmpty || user.isEmpty || password.isEmpty) {
+      ToastUtil.showText("请将信息填入完整！");
+      return;
+    }
+    SPUtil.setString("webdav_uri", uri);
+    SPUtil.setString("webdav_user", user);
+    SPUtil.setString("webdav_password", password);
+    if (await WebDavUtil.initWebDav(uri, user, password)) {
+      ToastUtil.showText("连接成功");
+      Navigator.pop(context);
+    } else {
+      ToastUtil.showText("无法连接，请确保输入正确和网络正常！");
+    }
+    connecting = false;
+    // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
+    setState(() {});
   }
 }

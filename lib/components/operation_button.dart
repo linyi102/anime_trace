@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 
 class OperationButton extends StatelessWidget {
   const OperationButton(
-      {required this.text, this.onTap, this.active = true, super.key});
+      {required this.text,
+      this.onTap,
+      this.active = true,
+      this.horizontal = 30,
+      super.key});
   final void Function()? onTap;
   final String text;
   final bool active;
+  final double horizontal;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +21,7 @@ class OperationButton extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 6,
         child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 10),
             decoration: BoxDecoration(
               color: active
                   ? Theme.of(context).colorScheme.primary

@@ -8,8 +8,6 @@ import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../loading_dialog.dart';
-
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
   Log.info("迁移动漫$animeId");
   bool updateName =

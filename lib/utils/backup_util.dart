@@ -135,8 +135,9 @@ class BackupUtil {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
       await WebDavUtil.upload(tempZipFile.path, remoteBackupFilePath);
-      if (showToastFlag)
+      if (showToastFlag) {
         ToastUtil.showText("WebDav 备份成功：$remoteBackupFilePath");
+      }
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
       tempZipFile.delete();
       deleteOldAutoBackupFileFromRemote(
