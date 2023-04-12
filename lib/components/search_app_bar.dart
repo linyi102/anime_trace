@@ -66,7 +66,9 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.all(Radius.circular(100)),
               )
-            : null,
+            // 隐藏下划线
+            : const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent)),
         enabledBorder: useModernStyle
             ? const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
