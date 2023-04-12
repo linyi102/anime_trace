@@ -22,7 +22,7 @@ class LoadingDialog extends Dialog {
                 const SizedBox(
                     height: 35, width: 35, child: CircularProgressIndicator()),
                 const SizedBox(height: 20),
-                Text(text)
+                Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)
               ],
             ),
             decoration: ShapeDecoration(

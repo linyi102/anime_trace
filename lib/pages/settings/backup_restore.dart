@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_saver/file_saver.dart';
@@ -298,20 +299,16 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             // 获取备份文件
             String? selectedFilePath = await selectFile();
             if (selectedFilePath != null) {
-              BuildContext? loadingContext;
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    loadingContext = context;
-                    return const LoadingDialog("正在还原数据");
-                  });
-              Result result =
-                  await BackupUtil.restoreFromLocal(selectedFilePath);
-              // 如果选择的是jpg等文件，则很快就会返回，此时还没有弹出对话框
-              // 所以loadingContext为null，无法关闭后面出现的加载对话框，因此这里适当延时
-              await Future.delayed(const Duration(milliseconds: 200));
-              if (loadingContext != null) Navigator.pop(loadingContext!);
-              ToastUtil.showText(result.msg);
+              ToastUtil.showLoading(
+                msg: "还原数据中",
+                task: () {
+                  return BackupUtil.restoreFromLocal(selectedFilePath);
+                },
+                onTaskComplete: (taskValue) {
+                  taskValue as Result;
+                  ToastUtil.showText(taskValue.msg);
+                },
+              );
             }
           },
         ),

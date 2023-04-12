@@ -46,16 +46,16 @@ class _ThemePageState extends State<ThemePage> {
                       themeController.setUseCardStyle(value);
                     },
                   ),
-                  SwitchListTile(
-                    title: const Text("Material3风格"),
-                    value: themeController.useM3.value,
-                    onChanged: (value) {
-                      // TODO，会抛出异常并跳转到首页
-                      // 'package:flutter/src/painting/text_style.dart':
-                      // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
-                      themeController.setM3(value);
-                    },
-                  ),
+                  // SwitchListTile(
+                  //   title: const Text("Material3风格"),
+                  //   value: themeController.useM3.value,
+                  //   onChanged: (value) {
+                  //     // TODO，会抛出异常并跳转到首页
+                  //     // 'package:flutter/src/painting/text_style.dart':
+                  //     // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
+                  //     themeController.setM3(value);
+                  //   },
+                  // ),
                 ],
               );
             },

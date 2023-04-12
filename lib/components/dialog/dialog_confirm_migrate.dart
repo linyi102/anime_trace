@@ -115,35 +115,28 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                   onPressed: () async {
                     // 获取详细信息
                     if (updateInfo) {
-                      BuildContext? loadingContext;
-                      showDialog(
-                          context: context, // 页面context
-                          builder: (context) {
-                            // 对话框context
-                            loadingContext =
-                                context; // 将对话框context赋值给变量，用于任务完成后完毕
-                            return const LoadingDialog("获取详细信息中...");
-                          });
+                      ToastUtil.showLoading(
+                        msg: "获取详细信息中",
+                        task: () async {
+                          // 关闭对话框
+                          Navigator.pop(context);
 
-                      newAnime =
-                          await ClimbAnimeUtil.climbAnimeInfoByUrl(newAnime);
+                          newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(
+                              newAnime);
+                        },
+                        onTaskComplete: (taskValue) async {
+                          SqliteUtil.updateAnime(
+                              await SqliteUtil.getAnimeByAnimeId(animeId),
+                              newAnime,
+                              updateCover: updateCover,
+                              updateInfo: updateInfo,
+                              updateName: updateName);
 
-                      // 关闭加载框
-                      if (loadingContext != null) {
-                        Navigator.pop(loadingContext!);
-                      }
+                          // 退回到详细页
+                          Navigator.pop(parentContext);
+                        },
+                      );
                     }
-
-                    SqliteUtil.updateAnime(
-                        await SqliteUtil.getAnimeByAnimeId(animeId), newAnime,
-                        updateCover: updateCover,
-                        updateInfo: updateInfo,
-                        updateName: updateName);
-
-                    // 关闭对话框
-                    Navigator.pop(context);
-                    // 退回到详细页
-                    Navigator.pop(parentContext);
                   },
                   child: const Text("迁移"))
             ],

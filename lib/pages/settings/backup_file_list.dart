@@ -163,16 +163,16 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                 onPressed: () async {
                   Navigator.pop(context);
 
-                  BuildContext? loadingContext;
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        loadingContext = context;
-                        return const LoadingDialog("还原数据中");
-                      });
-                  Result result = await BackupUtil.restoreFromWebDav(file);
-                  if (loadingContext != null) Navigator.pop(loadingContext!);
-                  ToastUtil.showText(result.msg);
+                  ToastUtil.showLoading(
+                    msg: "还原数据中",
+                    task: () {
+                      return BackupUtil.restoreFromWebDav(file);
+                    },
+                    onTaskComplete: (taskValue) {
+                      taskValue as Result;
+                      ToastUtil.showText(taskValue.msg);
+                    },
+                  );
                 },
                 child: const Text("确定")),
           ],

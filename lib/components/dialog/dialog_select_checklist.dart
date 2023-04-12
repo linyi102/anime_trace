@@ -5,6 +5,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 dialogSelectChecklist(
   setState,
@@ -37,32 +38,22 @@ dialogSelectChecklist(
 
             // 爬取详细页
             if (enableClimbDetailInfo) {
-              // 显示加载框
-              BuildContext? loadingContext;
-              showDialog(
-                context: context,
-                builder: (context) {
-                  loadingContext = context;
-                  return const LoadingDialog("获取详细信息中...");
+              ToastUtil.showLoading(
+                msg: "获取详细信息中",
+                task: () async {
+                  // 爬取详细页
+                  anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
+                      showMessage: false);
+                },
+                onTaskComplete: (taskValue) async {
+                  // 插入数据库
+                  anime.animeId = await SqliteUtil.insertAnime(anime);
+                  // 更新父级页面
+                  setState(() {});
+                  Log.info("收藏成功！");
+                  if (callback != null) callback(anime);
                 },
               );
-
-              // 爬取详细页
-              anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
-                  showMessage: false);
-
-              await Future.delayed(
-                  const Duration(milliseconds: 200)); // 避免任务很快结束，没有关闭加载框
-              if (loadingContext != null) Navigator.pop(loadingContext!);
-            }
-
-            // 插入数据库
-            anime.animeId = await SqliteUtil.insertAnime(anime);
-            // 更新父级页面
-            setState(() {});
-            Log.info("收藏成功！");
-            if (callback != null) {
-              callback(anime);
             }
           } else {
             SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);

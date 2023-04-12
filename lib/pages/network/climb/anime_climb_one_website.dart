@@ -181,10 +181,9 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       itemCount: mixedAnimes.length,
       itemBuilder: (BuildContext context, int index) {
         Anime anime = mixedAnimes[index];
-        return MaterialButton(
-            padding: const EdgeInsets.all(0),
+        return InkWell(
             child: AnimeGridCover(anime),
-            onPressed: () {
+            onTap: () {
               // 迁移动漫
               if (ismigrate) {
                 showDialogOfConfirmMigrate(context, widget.animeId, anime);

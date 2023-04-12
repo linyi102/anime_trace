@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -16,6 +18,7 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   int seconds = 3;
+  Timer? timer;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,32 @@ class _TestPageState extends State<TestPage> {
       body: ListView(
         children: [
           ListTile(
-            title: Countdown(
+            title: const Text("定时器"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      // 保证关闭之前开启的定时器
+                      timer?.cancel();
+
+                      timer =
+                          Timer.periodic(const Duration(seconds: 1), (timer) {
+                        Log.info("timer=${timer.tick}");
+                      });
+                    },
+                    child: const Text("开启")),
+                TextButton(
+                    onPressed: () {
+                      timer?.cancel();
+                    },
+                    child: const Text("关闭"))
+              ],
+            ),
+          ),
+          ListTile(
+            title: const Text("倒计时"),
+            subtitle: Countdown(
               seconds: seconds,
               build: (context, value) => Text(TimeUtil.getReadableDuration(
                   Duration(seconds: value.toInt()))),
@@ -37,6 +65,7 @@ class _TestPageState extends State<TestPage> {
               });
             },
           ),
+
           ListTile(
             title: const Text("测试图片失效"),
             onTap: () async {
@@ -82,7 +111,7 @@ class _TestPageState extends State<TestPage> {
             },
           ),
           ListTile(
-            title: const Text("加载对话框"),
+            title: const Text("加载对话框1"),
             onTap: () async {
               BuildContext? loadingContext;
               showDialog(
@@ -93,6 +122,30 @@ class _TestPageState extends State<TestPage> {
                   });
               await Future.delayed(const Duration(seconds: 2));
               if (loadingContext != null) Navigator.pop(loadingContext!);
+            },
+          ),
+          ListTile(
+            title: const Text("加载对话框2"),
+            onTap: () async {
+              BotToast.showCustomLoading(
+                toastBuilder: (void Function() cancelFunc) {
+                  // 方式1
+                  Future.delayed(const Duration(seconds: 1), () {
+                    cancelFunc.call();
+                  });
+
+                  return const LoadingDialog("正在获取详细信息");
+                },
+                clickClose: true,
+                onClose: () {
+                  Log.info("close");
+                },
+              );
+
+              // 方式2，缺点是没有关闭渐变动画
+              // Future.delayed(const Duration(seconds: 1), () {
+              //   BotToast.closeAllLoading();
+              // });
             },
           ),
 
