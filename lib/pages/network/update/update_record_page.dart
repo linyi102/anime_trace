@@ -138,8 +138,8 @@ class UpdateRecordPage extends StatelessWidget {
       builder: (dialogContext) {
         return SimpleDialog(
           children: [
-            SimpleDialogOption(
-              onPressed: () async {
+            ListTile(
+              onTap: () async {
                 // 删除数据库数据
                 bool deleteOk = await UpdateRecordDao.delete(record.id);
                 if (deleteOk) {
@@ -155,7 +155,7 @@ class UpdateRecordPage extends StatelessWidget {
                   ToastUtil.showText("删除失败");
                 }
               },
-              child: const Text("删除该更新记录"),
+              title: const Text("删除记录"),
             )
           ],
         );

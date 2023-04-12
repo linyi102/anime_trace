@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/common_image.dart';
-
-import 'package:flutter_test_future/components/toggle_list_tile.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -254,10 +252,10 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   _buildUISettingPage(StateSetter setBottomSheetState) {
     return ListView(
       children: [
-        ToggleListTile(
+        SwitchListTile(
           title: const Text("背景模糊"),
-          toggleOn: sigma > 0, // >0说明开启了模糊
-          onTap: () {
+          value: sigma > 0, // >0说明开启了模糊
+          onChanged: (bool value) {
             sigma = sigma > 0 ? 0.0 : 10.0;
             SpProfile.setCoverBgSigmaInAnimeDetailPage(sigma);
             // 重新渲染开关
@@ -266,19 +264,19 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             setState(() {});
           },
         ),
-        ToggleListTile(
+        SwitchListTile(
           title: const Text("背景渐变"),
-          toggleOn: SpProfile.getEnableCoverBgGradient(),
-          onTap: () {
+          value: SpProfile.getEnableCoverBgGradient(),
+          onChanged: (bool value) {
             SpProfile.turnEnableCoverBgGradient();
             setBottomSheetState(() {});
             setState(() {});
           },
         ),
-        ToggleListTile(
+        SwitchListTile(
           title: const Text("显示简介"),
-          toggleOn: widget.animeController.showDescInAnimeDetailPage.value,
-          onTap: () {
+          value: widget.animeController.showDescInAnimeDetailPage.value,
+          onChanged: (bool value) {
             widget.animeController.turnShowDescInAnimeDetailPage();
             setBottomSheetState(() {});
             // 不需要重新渲染AppBar
@@ -287,10 +285,10 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             widget.animeController.updateAnimeInfo();
           },
         ),
-        ToggleListTile(
+        SwitchListTile(
           title: const Text("滚动视差"),
-          toggleOn: SpProfile.getEnableParallaxInAnimeDetailPage(),
-          onTap: () {
+          value: SpProfile.getEnableParallaxInAnimeDetailPage(),
+          onChanged: (bool value) {
             SpProfile.turnEnableParallaxInAnimeDetailPage();
             setBottomSheetState(() {});
             setState(() {});

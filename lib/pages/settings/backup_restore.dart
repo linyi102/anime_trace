@@ -163,14 +163,11 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             }
           },
         ),
-        ListTile(
+        SwitchListTile(
           title: const Text("自动备份"),
           subtitle: const Text("每次进入应用后会自动备份"),
-          trailing: SPUtil.getBool("auto_backup_webdav")
-              ? Icon(Icons.toggle_on,
-                  color: Theme.of(context).primaryColor, size: 32)
-              : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
-          onTap: () async {
+          value: SPUtil.getBool("auto_backup_webdav"),
+          onChanged: (bool value) async {
             if (!SPUtil.getBool("login")) {
               ToastUtil.showText("请先配置账号，再进行备份！");
               return;
@@ -271,14 +268,11 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             },
           ),
         if (Platform.isWindows)
-          ListTile(
+          SwitchListTile(
             title: const Text("自动备份"),
             subtitle: const Text("每次进入应用后会自动备份"),
-            trailing: SPUtil.getBool("auto_backup_local")
-                ? Icon(Icons.toggle_on,
-                    color: Theme.of(context).primaryColor, size: 32)
-                : const Icon(Icons.toggle_off, color: Colors.grey, size: 32),
-            onTap: () {
+            value: SPUtil.getBool("auto_backup_local"),
+            onChanged: (bool value) {
               if (SPUtil.getString("backup_local_dir", defaultValue: "unset") ==
                   "unset") {
                 ToastUtil.showText("请先设置本地备份目录，再进行备份！");

@@ -12,24 +12,33 @@ class CommonTitleTabBar extends StatelessWidget {
     return TabBar(
       tabs: tabs,
       controller: tabController,
-      // true均分，false左对齐
-      // isScrollable: true,
+      // true左对齐，false均分
+      isScrollable: true,
       // 指示器
       indicatorSize: TabBarIndicatorSize.label,
-      indicatorColor: Colors.transparent,
+      indicator: MaterialIndicator(
+        horizontalPadding: 5,
+        color: Theme.of(context).primaryColor,
+        paintingStyle: PaintingStyle.fill,
+      ),
+      // indicatorColor: Colors.transparent,
       // 圆角+取消波纹扩散
       splashBorderRadius: BorderRadius.circular(6),
       splashFactory: NoSplash.splashFactory,
       // 文字
-      labelPadding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+      // labelPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       // labelStyle: Theme.of(context).textTheme.titleLarge,
       // unselectedLabelStyle: Theme.of(context).textTheme.titleSmall,
-      labelStyle: TextStyle(
-          fontSize: 18,
-          fontFamilyFallback: ThemeController.to.fontFamilyFallback),
-      unselectedLabelStyle: TextStyle(
-          fontSize: 14,
-          fontFamilyFallback: ThemeController.to.fontFamilyFallback),
+      labelColor: Theme.of(context).textTheme.titleLarge?.color,
+      unselectedLabelColor: Theme.of(context).textTheme.caption?.color,
+      labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontFamilyFallback: ThemeController.to.fontFamilyFallback,
+            height: 1.1,
+          ),
+      unselectedLabelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontFamilyFallback: ThemeController.to.fontFamilyFallback,
+            height: 1.1,
+          ),
     );
   }
 }

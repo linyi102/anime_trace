@@ -333,7 +333,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   void showDialogmodifyEpisodeCnt() {
-    dialogSelectUint(context, "修改集数",
+    dialogSelectUint(context, "集数",
             initialValue: _anime.animeEpisodeCnt,
             // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
             // initialValue: initialValue,

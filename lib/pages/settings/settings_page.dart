@@ -150,7 +150,7 @@ class _SettingPageState extends State<SettingPage> {
         ListTile(
           iconColor: Theme.of(context).primaryColor,
           leading: const Icon(Icons.color_lens_outlined),
-          title: const Text("主题样式"),
+          title: const Text("外观设置"),
           onTap: () {
             Navigator.push(
                 context,
@@ -285,8 +285,8 @@ class _SettingPageState extends State<SettingPage> {
     Widget? trailing,
     required void Function(void Function()) setDialogState,
   }) {
-    return SimpleDialogOption(
-      onPressed: () {
+    return ListTile(
+      onTap: () {
         // 重绘对话框
         setDialogState(() {
           _selectedImageTypeIdx = imageTypeIdx;
@@ -296,15 +296,12 @@ class _SettingPageState extends State<SettingPage> {
         // 重绘更多页
         setState(() {});
       },
-      child: ListTile(
-        contentPadding: EdgeInsetsDirectional.zero,
-        title: Text(title),
-        leading: _selectedImageTypeIdx == imageTypeIdx
-            ? Icon(Icons.radio_button_checked,
-                color: Theme.of(context).primaryColor)
-            : const Icon(Icons.radio_button_off),
-        trailing: trailing,
-      ),
+      title: Text(title),
+      leading: _selectedImageTypeIdx == imageTypeIdx
+          ? Icon(Icons.radio_button_checked,
+              color: Theme.of(context).primaryColor)
+          : const Icon(Icons.radio_button_off),
+      trailing: trailing,
     );
   }
 

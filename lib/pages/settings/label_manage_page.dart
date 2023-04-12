@@ -136,9 +136,9 @@ class LabelManagePage extends StatelessWidget {
         context: context,
         builder: (context) => SimpleDialog(
               children: [
-                SimpleDialogOption(
-                  child: const Text("重命名"),
-                  onPressed: () {
+                ListTile(
+                  title: const Text("重命名"),
+                  onTap: () {
                     Log.info("重命名标签：$label");
                     Navigator.of(context).pop();
 
@@ -147,9 +147,9 @@ class LabelManagePage extends StatelessWidget {
                     _showDialogModifyLabel(context, index, labelsController);
                   },
                 ),
-                SimpleDialogOption(
-                  child: const Text("删除"),
-                  onPressed: () {
+                ListTile(
+                  title: const Text("删除"),
+                  onTap: () {
                     Log.info("删除标签：$label");
                     Navigator.of(context).pop();
 

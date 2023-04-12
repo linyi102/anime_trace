@@ -9,6 +9,9 @@ class ThemeController extends GetxController {
   static ThemeController get to => Get.find();
 
   Rx<int> themeModeIdx = SPUtil.getInt("darkMode", defaultValue: 0).obs;
+  Rx<bool> useM3 = SPUtil.getBool("useM3", defaultValue: false).obs;
+  Rx<bool> useCardStyle =
+      SPUtil.getBool("useCardStyle", defaultValue: true).obs;
 
   Rx<ThemeColor> lightThemeColor = getSelectedTheme();
   Rx<ThemeColor> darkThemeColor = getSelectedTheme(dark: true);
@@ -16,7 +19,18 @@ class ThemeController extends GetxController {
   Rx<PageSwitchAnimation> pageSwitchAnimation =
       SpProfile.getPageSwitchAnimation().obs;
 
-  // 字体
+  /// 风格
+  setM3(bool enable) {
+    useM3.value = enable;
+    SPUtil.setBool("useM3", enable);
+  }
+
+  setUseCardStyle(bool enable) {
+    useCardStyle.value = enable;
+    SPUtil.setBool("useCardStyle", enable);
+  }
+
+  /// 字体
   RxList<String> fontFamilyFallback = [
     SPUtil.getString("customFontFamily"),
     '苹方-简',
@@ -25,7 +39,7 @@ class ThemeController extends GetxController {
     '微软雅黑'
   ].obs;
 
-  // 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor
+  /// 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor
   static getSelectedTheme({bool dark = false}) {
     String themeColorKey = SPUtil.getString(
       dark ? "darkThemeColor" : "lighThemeColor",
@@ -46,7 +60,7 @@ class ThemeController extends GetxController {
     );
   }
 
-  // 根据key从list中查找主题
+  /// 根据key从list中查找主题
   static ThemeColor getThemeColorByKey(String key, {bool dark = false}) {
     var colors = dark ? AppTheme.darkColors : AppTheme.lightColors;
 
@@ -54,12 +68,12 @@ class ThemeController extends GetxController {
         getDefaultThemeColor();
   }
 
-  // 没有找到时，以第1个作为主题
+  /// 没有找到时，以第1个作为主题
   static ThemeColor getDefaultThemeColor({bool dark = false}) {
     return dark ? AppTheme.darkColors[0] : AppTheme.lightColors[0];
   }
 
-  // 深色模式
+  /// 深色模式
   void setThemeMode(int themeModeIdx) {
     this.themeModeIdx.value = themeModeIdx;
     SPUtil.setInt("darkMode", themeModeIdx);
@@ -69,7 +83,7 @@ class ThemeController extends GetxController {
     return AppTheme.themeModes[themeModeIdx.value];
   }
 
-  // 字体
+  /// 字体
   changeFontFamily(String fontFamily) {
     fontFamilyFallback[0] = fontFamily;
     SPUtil.setString("customFontFamily", fontFamily);

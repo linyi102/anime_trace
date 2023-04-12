@@ -154,7 +154,8 @@ class MyAppState extends State<MyApp> with WindowListener {
         var curLightThemeColor = themeController.lightThemeColor.value;
         var baseScheme = FlexScheme.blue;
         var light = FlexThemeData.light(
-          scheme: baseScheme, useMaterial3: true,
+          scheme: baseScheme,
+          useMaterial3: themeController.useM3.value,
           textTheme: _buildTextTheme(textStyle, context),
           primary: curLightThemeColor.primaryColor,
           appBarBackground: curLightThemeColor.appBarColor,
@@ -165,7 +166,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 9,
           tabBarStyle: FlexTabBarStyle.forBackground,
-          subThemesData: const FlexSubThemesData(
+          subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
             // true会导致文字和按钮颜色受主色影响
@@ -177,7 +178,8 @@ class MyAppState extends State<MyApp> with WindowListener {
             inputDecoratorIsFilled: false,
             inputDecoratorBorderType: FlexInputBorderType.underline,
             bottomSheetRadius: AppTheme.bottomSheetRadius,
-            cardRadius: AppTheme.cardRadius,
+            cardRadius:
+                themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
             chipRadius: AppTheme.chipRadius,
             dialogRadius: AppTheme.dialogRadius,
             timePickerDialogRadius: AppTheme.timePickerDialogRadius,
@@ -187,7 +189,8 @@ class MyAppState extends State<MyApp> with WindowListener {
 
         var curDarkThemeColor = themeController.darkThemeColor.value;
         var dark = FlexThemeData.dark(
-          scheme: baseScheme, useMaterial3: true,
+          scheme: baseScheme,
+          useMaterial3: themeController.useM3.value,
           textTheme: _buildTextTheme(textStyle, context),
           primary: curDarkThemeColor.primaryColor,
           appBarBackground: curDarkThemeColor.appBarColor,
@@ -198,7 +201,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 15,
           tabBarStyle: FlexTabBarStyle.forBackground,
-          subThemesData: const FlexSubThemesData(
+          subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
             // true会导致文字和按钮颜色受主色影响
@@ -209,7 +212,8 @@ class MyAppState extends State<MyApp> with WindowListener {
             inputDecoratorIsFilled: false,
             inputDecoratorBorderType: FlexInputBorderType.underline,
             bottomSheetRadius: AppTheme.bottomSheetRadius,
-            cardRadius: AppTheme.cardRadius,
+            cardRadius:
+                themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
             chipRadius: AppTheme.chipRadius,
             dialogRadius: AppTheme.dialogRadius,
             timePickerDialogRadius: AppTheme.timePickerDialogRadius,
@@ -229,7 +233,9 @@ class MyAppState extends State<MyApp> with WindowListener {
               cardTheme: light.cardTheme.copyWith(
                 // 不在底部添加margin是为了避免相邻卡片向下间距变大
                 // 在顶部添加margin是为了保证不紧挨AppBar
-                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                margin: themeController.useCardStyle.value
+                    ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
+                    : const EdgeInsets.only(top: 10),
                 elevation: 0,
               ),
               // 路由动画
@@ -245,7 +251,9 @@ class MyAppState extends State<MyApp> with WindowListener {
             darkTheme: dark.copyWith(
               scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
               cardTheme: dark.cardTheme.copyWith(
-                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                margin: themeController.useCardStyle.value
+                    ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
+                    : const EdgeInsets.only(top: 10),
                 elevation: 0,
               ),
               // 路由动画
@@ -321,11 +329,39 @@ class MyAppState extends State<MyApp> with WindowListener {
   }
 }
 
-// Enable scrolling with mouse dragging
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  // Enable scrolling with mouse dragging
   @override
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       };
+
+  // @override
+  // ScrollPhysics getScrollPhysics(BuildContext context) {
+  //   // 回弹效果
+  //   // return const BouncingScrollPhysics();
+  //   // 边界停止
+  //   return const ClampingScrollPhysics();
+  // }
+
+  // 滚动到边界时的效果
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    // 拉伸
+    // return StretchingOverscrollIndicator(
+    //   child: child,
+    //   axisDirection: details.direction,
+    // );
+
+    // 发光
+    return GlowingOverscrollIndicator(
+      child: child,
+      showLeading: true,
+      showTrailing: true,
+      axisDirection: details.direction,
+      color: Theme.of(context).colorScheme.secondary,
+    );
+  }
 }

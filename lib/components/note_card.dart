@@ -45,11 +45,8 @@ class _NoteCardState extends State<NoteCard> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Card(
-        elevation: 0,
-        child: MaterialButton(
-          elevation: 0,
-          padding: const EdgeInsets.all(0),
-          onPressed: () => _enterNoteEditPage(note),
+        child: InkWell(
+          onTap: () => _enterNoteEditPage(note),
           child: Column(
             children: [
               if (widget.showAnimeTile) _buildAnimeListTile(note),
@@ -100,16 +97,18 @@ class _NoteCardState extends State<NoteCard> {
       // Row的作用是为了避免title组件占满整行，应该只在文字上点击后才进入详细页
       title: Row(
         children: [
-          GestureDetector(
-            onTap: _enterAnimeDetailPage,
-            child: Container(
-              // color: Colors.red[200],
-              alignment: Alignment.centerLeft,
-              child: Text(
-                note.anime.animeName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: AppTheme.smallScaleFactor,
+          // 使用expanded避免maxlines不生效导致文字溢出
+          Expanded(
+            child: GestureDetector(
+              onTap: _enterAnimeDetailPage,
+              child: Container(
+                // color: Colors.red[200],
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  note.anime.animeName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ),
@@ -131,8 +130,10 @@ class _NoteCardState extends State<NoteCard> {
                       SqliteUtil.updateAnimeRate(
                           note.anime.animeId, note.anime.rate);
                     })
-                : Text("${note.episode.caption} ${note.episode.getDate()}",
-                    textScaleFactor: AppTheme.tinyScaleFactor),
+                : Text(
+                    "${note.episode.caption} ${note.episode.getDate()}",
+                    style: Theme.of(context).textTheme.caption,
+                  ),
           ),
         ],
       ),

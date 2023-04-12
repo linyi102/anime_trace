@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +13,7 @@ class ThemePage extends StatefulWidget {
 
 class _ThemePageState extends State<ThemePage> {
   int themeModeIdx = ThemeController.to.themeModeIdx.value;
+  ThemeController get themeController => ThemeController.to;
 
   @override
   void initState() {
@@ -21,11 +23,43 @@ class _ThemePageState extends State<ThemePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("主题样式")),
+      appBar: AppBar(title: const Text("外观设置")),
       body: ListView(
         children: [
+          ListTile(
+              title: Text("主题",
+                  style: TextStyle(color: Theme.of(context).primaryColor))),
           _buildTileSelectDarkMode(context),
           Obx(() => _buildColorAtlasList()),
+          const Divider(),
+          ListTile(
+              title: Text("其他",
+                  style: TextStyle(color: Theme.of(context).primaryColor))),
+          Obx(
+            () {
+              return Column(
+                children: [
+                  SwitchListTile(
+                    title: const Text("卡片风格"),
+                    value: themeController.useCardStyle.value,
+                    onChanged: (value) {
+                      themeController.setUseCardStyle(value);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const Text("Material3风格"),
+                    value: themeController.useM3.value,
+                    onChanged: (value) {
+                      // TODO，会抛出异常并跳转到首页
+                      // 'package:flutter/src/painting/text_style.dart':
+                      // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
+                      themeController.setM3(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          )
         ],
       ),
     );

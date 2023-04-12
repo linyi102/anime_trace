@@ -59,7 +59,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     List<Widget> list = [];
     list.add(ListTile(
       title: displayList ? const Text("列表样式") : const Text("网格样式"),
-      subtitle: const Text("单击切换列表样式/网格样式"),
+      subtitle: const Text("切换列表/网格样式"),
       onTap: () {
         animeDisplayController.turnDisplayList();
       },
@@ -67,11 +67,10 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
 
     // 如果显示网格，则添加更多修改选项
     if (!displayList) {
-      list.add(ListTile(
+      list.add(SwitchListTile(
         title: const Text("动漫列数自适应"),
-        trailing: showToggleButton(
-            animeDisplayController.enableResponsiveGridColumnCnt.value),
-        onTap: () {
+        value: animeDisplayController.enableResponsiveGridColumnCnt.value,
+        onChanged: (bool value) {
           animeDisplayController.turnEnableResponsiveGridColumnCnt();
         },
       ));
@@ -95,72 +94,64 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
         },
       ));
 
-      list.add(ListTile(
+      list.add(SwitchListTile(
         title: const Text("显示动漫名称"),
-        trailing:
-            showToggleButton(animeDisplayController.showGridAnimeName.value),
-        onTap: () {
+        value: animeDisplayController.showGridAnimeName.value,
+        onChanged: (bool value) {
           animeDisplayController.turnShowGridAnimeName();
         },
       ));
 
-      list.add(ListTile(
+      list.add(SwitchListTile(
         title: const Text("动漫名称显示在内部"),
-        trailing:
-            showToggleButton(animeDisplayController.showNameInCover.value),
-        enabled: animeDisplayController.showGridAnimeName.value, // 确保先开启显示动漫名称
-        onTap: () {
-          animeDisplayController.turnShowNameInCover();
-        },
+        value: animeDisplayController.showNameInCover.value,
+        // 开启显示动漫名称后才能修改是否显示在内部
+        onChanged: animeDisplayController.showGridAnimeName.value
+            ? (bool value) {
+                animeDisplayController.turnShowNameInCover();
+              }
+            : null,
       ));
 
-      list.add(ListTile(
+      list.add(SwitchListTile(
         title: const Text("动漫名称只显示一行(默认两行)"),
-        trailing:
-            showToggleButton(animeDisplayController.nameMaxLines.value == 1),
-        onTap: () {
+        value: animeDisplayController.nameMaxLines.value == 1,
+        onChanged: (bool value) {
           animeDisplayController.turnNameMaxLines();
         },
       ));
 
-      list.add(ListTile(
+      list.add(SwitchListTile(
         title: const Text("显示动漫进度"),
-        trailing: showToggleButton(
-            animeDisplayController.showGridAnimeProgress.value),
-        onTap: () {
+        value: animeDisplayController.showGridAnimeProgress.value,
+        onChanged: (bool value) {
           animeDisplayController.turnShowGridAnimeProgress();
         },
       ));
     }
 
     // 其他公共选项
-    list.add(ListTile(
+    list.add(SwitchListTile(
       title: const Text("显示动漫第几次观看"),
-      trailing: showToggleButton(animeDisplayController.showReviewNumber.value),
-      onTap: () {
+      value: animeDisplayController.showReviewNumber.value,
+      onChanged: (bool value) {
         animeDisplayController.turnShowReviewNumber();
       },
     ));
 
-    list.add(ListTile(
+    list.add(SwitchListTile(
       title: const Text("显示动漫数量"),
-      trailing:
-          showToggleButton(animeDisplayController.showAnimeCntAfterTag.value),
-      onTap: () => animeDisplayController.turnShowAnimeCntAfterTag(),
+      value: animeDisplayController.showAnimeCntAfterTag.value,
+      onChanged: (bool value) =>
+          animeDisplayController.turnShowAnimeCntAfterTag(),
     ));
 
-    list.add(ListTile(
+    list.add(SwitchListTile(
       title: const Text("封面显示原图"),
-      trailing: showToggleButton(animeDisplayController.showOriCover.value),
-      onTap: () => animeDisplayController.turnShowOriCover(),
+      value: animeDisplayController.showOriCover.value,
+      onChanged: (bool value) => animeDisplayController.turnShowOriCover(),
     ));
 
     return list;
-  }
-
-  showToggleButton(bool on) {
-    return on
-        ? Icon(Icons.toggle_on, color: Theme.of(context).primaryColor)
-        : const Icon(Icons.toggle_off_outlined);
   }
 }

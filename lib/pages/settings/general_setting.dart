@@ -58,19 +58,14 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                   builder: (context) {
                     return SimpleDialog(
                       children: PageSwitchAnimation.values
-                          .map((e) => SimpleDialogOption(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(e.title),
-                                    if (e ==
+                          .map((e) => ListTile(
+                                title: Text(e.title),
+                                trailing: e ==
                                         themeController
-                                            .pageSwitchAnimation.value)
-                                      const Icon(Icons.check)
-                                  ],
-                                ),
-                                onPressed: () {
+                                            .pageSwitchAnimation.value
+                                    ? const Icon(Icons.check)
+                                    : null,
+                                onTap: () {
                                   themeController.pageSwitchAnimation.value = e;
                                   SpProfile.savePageSwitchAnimationId(e.id);
                                   Navigator.pop(context);
@@ -94,44 +89,38 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
           ListTile(
               title: Text("时间显示",
                   style: TextStyle(color: Theme.of(context).primaryColor))),
-          ListTile(
+          SwitchListTile(
             title: const Text("精确到时分"),
             subtitle: Text(
                 TimeUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
-            trailing: _buildToggle(TimeUtil.showPreciseTime),
-            onTap: () {
+            value: TimeUtil.showPreciseTime,
+            onChanged: (bool value) {
               TimeUtil.turnShowPreciseTime();
               setState(() {});
             },
           ),
-          ListTile(
+          SwitchListTile(
             title: const Text("显示昨天/今天"),
             subtitle:
                 Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
-            trailing: _buildToggle(TimeUtil.showYesterdayAndToday),
-            onTap: () {
+            value: TimeUtil.showYesterdayAndToday,
+            onChanged: (bool value) {
               TimeUtil.turnShowYesterdayAndToday();
               setState(() {});
             },
           ),
-          ListTile(
+          SwitchListTile(
             title: const Text("今年时间隐藏年份"),
             subtitle:
                 Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
-            trailing: _buildToggle(!TimeUtil.showCurYear),
-            onTap: () {
+            value: TimeUtil.showCurYear,
+            onChanged: (bool value) {
               TimeUtil.turnShowCurYear();
               setState(() {});
             },
-          )
+          ),
         ],
       ),
     );
-  }
-
-  Icon _buildToggle(bool toggleOn) {
-    return toggleOn
-        ? Icon(Icons.toggle_on, color: Theme.of(context).primaryColor)
-        : const Icon(Icons.toggle_off);
   }
 }
