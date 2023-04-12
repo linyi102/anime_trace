@@ -491,74 +491,75 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   void _dialogModifyTag(String defaultTagName) {
-    showDialog(
+    List<Widget> radioList = [];
+    for (int i = 0; i < tags.length; ++i) {
+      radioList.add(
+        ListTile(
+          title: Text(tags[i]),
+          leading: tags[i] == defaultTagName
+              ? Icon(
+                  Icons.radio_button_on_outlined,
+                  color: Theme.of(context).primaryColor,
+                )
+              : const Icon(
+                  Icons.radio_button_off_outlined,
+                ),
+          onTap: () {
+            // 先找到原来清单对应的下标
+            int oldTagindex = tags.indexOf(defaultTagName);
+            int newTagindex = i;
+            String newTagName = tags[newTagindex];
+            // 删除元素后，后面的元素也会向前移动
+            // 注意：map的key不是有序的，所以必须先转为有序的，否则先移动后面，在移动前面的元素就会出错(因为-j了)
+            List<int> list = [];
+            mapSelected.forEach((key, value) {
+              list.add(key);
+            });
+            mergeSort(list); // 排序
+            // for (var item in list) {
+            //   Log.info(item.toString());
+            // }
+
+            int j = 0;
+            for (int m = 0; m < list.length; ++m) {
+              int pos = list[m] - j;
+
+              animesInTag[oldTagindex][pos].tagName = newTagName;
+              SqliteUtil.updateTagByAnimeId(
+                  animesInTag[oldTagindex][pos].animeId, newTagName);
+              Log.info(
+                  "修改${animesInTag[oldTagindex][pos].animeName}的清单为$newTagName");
+              Log.info("$pos: ${animesInTag[oldTagindex][pos]}");
+
+              animesInTag[newTagindex]
+                  .insert(0, animesInTag[oldTagindex][pos]); // 添加到最上面
+              animesInTag[oldTagindex].removeAt(pos); // 第一次是正确位置key，第二次就需要-1了
+              j++;
+            }
+            // 同时修改清单数量
+            int modifiedCnt = mapSelected.length;
+            animeCntPerTag[oldTagindex] -= modifiedCnt;
+            animeCntPerTag[newTagindex] += modifiedCnt;
+            _quitMultiSelectState();
+            Navigator.pop(context);
+          },
+        ),
+      );
+    }
+
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        List<Widget> radioList = [];
-        for (int i = 0; i < tags.length; ++i) {
-          radioList.add(
-            ListTile(
-              title: Text(tags[i]),
-              leading: tags[i] == defaultTagName
-                  ? Icon(
-                      Icons.radio_button_on_outlined,
-                      color: Theme.of(context).primaryColor,
-                    )
-                  : const Icon(
-                      Icons.radio_button_off_outlined,
-                    ),
-              onTap: () {
-                // 先找到原来清单对应的下标
-                int oldTagindex = tags.indexOf(defaultTagName);
-                int newTagindex = i;
-                String newTagName = tags[newTagindex];
-                // 删除元素后，后面的元素也会向前移动
-                // 注意：map的key不是有序的，所以必须先转为有序的，否则先移动后面，在移动前面的元素就会出错(因为-j了)
-                List<int> list = [];
-                mapSelected.forEach((key, value) {
-                  list.add(key);
-                });
-                mergeSort(list); // 排序
-                // for (var item in list) {
-                //   Log.info(item.toString());
-                // }
-
-                int j = 0;
-                for (int m = 0; m < list.length; ++m) {
-                  int pos = list[m] - j;
-
-                  animesInTag[oldTagindex][pos].tagName = newTagName;
-                  SqliteUtil.updateTagByAnimeId(
-                      animesInTag[oldTagindex][pos].animeId, newTagName);
-                  Log.info(
-                      "修改${animesInTag[oldTagindex][pos].animeName}的清单为$newTagName");
-                  Log.info("$pos: ${animesInTag[oldTagindex][pos]}");
-
-                  animesInTag[newTagindex]
-                      .insert(0, animesInTag[oldTagindex][pos]); // 添加到最上面
-                  animesInTag[oldTagindex]
-                      .removeAt(pos); // 第一次是正确位置key，第二次就需要-1了
-                  j++;
-                }
-                // 同时修改清单数量
-                int modifiedCnt = mapSelected.length;
-                animeCntPerTag[oldTagindex] -= modifiedCnt;
-                animeCntPerTag[newTagindex] += modifiedCnt;
-                _quitMultiSelectState();
-                Navigator.pop(context);
-              },
-            ),
-          );
-        }
-        return AlertDialog(
-          title: const Text('选择清单'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: radioList,
-            ),
+      builder: (context) => Scaffold(
+        appBar: AppBar(
+          title: const Text("选择清单"),
+          automaticallyImplyLeading: false,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: radioList,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 

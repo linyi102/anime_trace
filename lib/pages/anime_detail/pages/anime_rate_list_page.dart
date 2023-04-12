@@ -90,7 +90,6 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
       controller: scrollController,
       child: ListView.builder(
           controller: scrollController,
-          padding: const EdgeInsetsDirectional.all(5),
           itemCount: notes.length,
           itemBuilder: (context, index) {
             Log.info("$runtimeType: index=$index");

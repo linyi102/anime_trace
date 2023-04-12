@@ -43,7 +43,7 @@ class ThemeController extends GetxController {
   static getSelectedTheme({bool dark = false}) {
     String themeColorKey = SPUtil.getString(
       dark ? "darkThemeColor" : "lighThemeColor",
-      defaultValue: dark ? "nightPurple" : "white",
+      defaultValue: dark ? "lightBlack" : "white",
     );
     return getThemeColorByKey(themeColorKey, dark: dark).obs;
   }

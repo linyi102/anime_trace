@@ -148,6 +148,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
 
     list.add(SwitchListTile(
       title: const Text("封面显示原图"),
+      subtitle: const Text("开启后可能会导致页面切换时卡顿"),
       value: animeDisplayController.showOriCover.value,
       onChanged: (bool value) => animeDisplayController.turnShowOriCover(),
     ));
