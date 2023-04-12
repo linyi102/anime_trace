@@ -4,6 +4,16 @@ import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 
 class ToastUtil {
+  static showDialog(
+      {required Widget Function(void Function() cancel) builder}) {
+    BotToast.showCustomLoading(
+      animationDuration: const Duration(milliseconds: 200),
+      animationReverseDuration: const Duration(milliseconds: 200),
+      clickClose: true,
+      toastBuilder: builder,
+    );
+  }
+
   static showLoading({
     String msg = "加载中",
     bool clickClose = true,
@@ -26,7 +36,7 @@ class ToastUtil {
           });
         }
 
-        return const LoadingDialog("正在获取详细信息");
+        return LoadingDialog(msg);
       },
       clickClose: clickClose,
     );

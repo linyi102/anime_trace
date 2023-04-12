@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -11,8 +12,7 @@ import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../controllers/update_record_controller.dart';
+import 'package:webdav_client/webdav_client.dart' as dav_client;
 
 class BackupUtil {
   static String backupZipNamePrefix = "backup";
@@ -234,7 +234,7 @@ class BackupUtil {
     }
   }
 
-  static Future<Result> restoreFromWebDav(file) async {
+  static Future<Result> restoreFromWebDav(dav_client.File file) async {
     String localRootDirPath = await getLocalRootDirPath();
 
     if (file.path == null) {
@@ -281,6 +281,39 @@ class BackupUtil {
         Log.info("非文件：$localRootDirPath/$filename");
         Directory("$localRootDirPath/$filename").createSync(recursive: true);
       }
+    }
+  }
+
+  /// 获取远程所有备份文件列表，包括手动和自动
+  static Future<List<dav_client.File>> getAllBackupFiles() async {
+    List<dav_client.File> files = [];
+
+    String backupDir = await WebDavUtil.getRemoteDirPath();
+    if (backupDir.isEmpty) {
+      Log.info("远程备份路径为空");
+      return [];
+    }
+
+    String autoDir = await WebDavUtil.getRemoteAutoDirPath(backupDir);
+    files.addAll(await WebDavUtil.client.readDir(backupDir));
+    files.addAll(await WebDavUtil.client.readDir(autoDir));
+
+    // 去除目录
+    files.removeWhere(
+        (element) => element.isDir ?? element.path?.endsWith("/") ?? false);
+
+    Log.info("获取完毕，共${files.length}个文件");
+    files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
+    return files;
+  }
+
+  /// 获取最新远程备份文件
+  static Future<dav_client.File?> getLatestBackupFile() async {
+    var files = await getAllBackupFiles();
+    if (files.isEmpty) {
+      return null;
+    } else {
+      return files.first;
     }
   }
 }

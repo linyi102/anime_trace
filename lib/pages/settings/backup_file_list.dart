@@ -4,7 +4,6 @@ import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
-import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:webdav_client/webdav_client.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -35,24 +34,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
 
   void _initData() async {
     Log.info("获取备份文件中");
-    String backupDir = await WebDavUtil.getRemoteDirPath();
-    if (backupDir.isEmpty) {
-      Log.info("远程备份路径为空");
-      _loadOk = true;
-      if (mounted) setState(() {});
-      return;
-    }
-
-    String autoDir = await WebDavUtil.getRemoteAutoDirPath(backupDir);
-    files.addAll(await WebDavUtil.client.readDir(backupDir));
-    files.addAll(await WebDavUtil.client.readDir(autoDir));
-
-    // 去除目录
-    files.removeWhere(
-        (element) => element.isDir ?? element.path?.endsWith("/") ?? false);
-
-    Log.info("获取完毕，共${files.length}个文件");
-    files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
+    files = await BackupUtil.getAllBackupFiles();
     _loadOk = true;
     if (mounted) setState(() {});
   }

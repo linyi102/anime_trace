@@ -87,6 +87,32 @@ class _TestPageState extends State<TestPage> {
             },
           ),
           ListTile(
+            title: const Text("不使用context来显示对话框"),
+            onTap: () {
+              ToastUtil.showDialog(
+                builder: (cancel) => AlertDialog(
+                  title: const Text("还原失败"),
+                  actions: [
+                    TextButton(
+                        onPressed: () => cancel(), child: const Text("关闭"))
+                  ],
+                ),
+              );
+              // BotToast.showCustomLoading(
+              //   animationDuration: const Duration(milliseconds: 200),
+              //   animationReverseDuration: const Duration(milliseconds: 200),
+              //   clickClose: true,
+              //   toastBuilder: (cancelFunc) => AlertDialog(
+              //     title: const Text("还原失败"),
+              //     actions: [
+              //       TextButton(
+              //           onPressed: () => cancelFunc(), child: const Text("关闭"))
+              //     ],
+              //   ),
+              // );
+            },
+          ),
+          ListTile(
             title: const Text("对话框中弹出消息"),
             onTap: () {
               showDialog(
@@ -111,7 +137,7 @@ class _TestPageState extends State<TestPage> {
             },
           ),
           ListTile(
-            title: const Text("加载对话框1"),
+            title: const Text("加载框1"),
             onTap: () async {
               BuildContext? loadingContext;
               showDialog(
@@ -125,7 +151,7 @@ class _TestPageState extends State<TestPage> {
             },
           ),
           ListTile(
-            title: const Text("加载对话框2"),
+            title: const Text("加载框1"),
             onTap: () async {
               BotToast.showCustomLoading(
                 toastBuilder: (void Function() cancelFunc) {

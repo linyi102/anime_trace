@@ -5,6 +5,7 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/operation_button.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 
@@ -37,6 +38,8 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   bool loadOk = false;
   bool canManualBackup = true;
   bool connecting = false;
+
+  BackupService get backupService => BackupService.to;
 
   @override
   void initState() {
@@ -164,28 +167,35 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             }
           },
         ),
-        SwitchListTile(
+        ListTile(
           title: const Text("自动备份"),
-          subtitle: const Text("每次进入应用后会自动备份"),
-          value: SPUtil.getBool("auto_backup_webdav"),
-          onChanged: (bool value) async {
-            if (!SPUtil.getBool("login")) {
-              ToastUtil.showText("请先配置账号，再进行备份！");
-              return;
-            }
-            if (SPUtil.getBool("auto_backup_webdav")) {
-              // 如果是开启，点击后则关闭
-              SPUtil.setBool("auto_backup_webdav", false);
-              autoBackupWebDav = "关闭";
-            } else {
-              SPUtil.setBool("auto_backup_webdav", true);
-              // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
-              // WebDavUtil.backupData(true);
-              autoBackupWebDav = "开启";
-            }
-            setState(() {});
+          subtitle: Text(backupService.curRemoteBackupMode.title),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => SimpleDialog(
+                title: const Text("自动备份"),
+                children: [
+                  for (int i = 0; i < BackupMode.values.length; ++i)
+                    RadioListTile(
+                        title: Text(BackupMode.values[i].title),
+                        value: BackupMode.values[i].name,
+                        groupValue: backupService.curRemoteBackupModeName,
+                        onChanged: (String? value) {
+                          if (value == null) return;
+
+                          backupService.setBackupMode(value);
+                          // 关闭对话框
+                          Navigator.pop(context);
+                          // 重绘页面
+                          setState(() {});
+                        }),
+                ],
+              ),
+            );
           },
         ),
+        // _buildOldAutoBackupSwitchTile(),
         ListTile(
           title: const Text("自动备份数量"),
           subtitle: Text("$autoBackupWebDavNumber"),
@@ -199,6 +209,16 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               SPUtil.setInt("autoBackupWebDavNumber", number);
               setState(() {});
             }
+          },
+        ),
+        SwitchListTile(
+          title: const Text("自动还原"),
+          subtitle: const Text("进入应用前还原最新备份"),
+          value: backupService.enableAutoRestoreFromRemote,
+          onChanged: (value) {
+            backupService.setAutoRestoreFromRemote(value);
+            // 重绘页面
+            setState(() {});
           },
         ),
         ListTile(
@@ -220,6 +240,31 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           },
         ),
       ],
+    );
+  }
+
+  SwitchListTile _buildOldAutoBackupSwitchTile() {
+    return SwitchListTile(
+      title: const Text("自动备份"),
+      subtitle: const Text("每次进入应用后会自动备份"),
+      value: SPUtil.getBool("auto_backup_webdav"),
+      onChanged: (bool value) async {
+        if (!SPUtil.getBool("login")) {
+          ToastUtil.showText("请先配置账号，再进行备份！");
+          return;
+        }
+        if (SPUtil.getBool("auto_backup_webdav")) {
+          // 如果是开启，点击后则关闭
+          SPUtil.setBool("auto_backup_webdav", false);
+          autoBackupWebDav = "关闭";
+        } else {
+          SPUtil.setBool("auto_backup_webdav", true);
+          // 开启后先备份一次，防止因为用户没有点击过手动备份，而无法得到上一次备份时间，从而无法求出备份间隔
+          // WebDavUtil.backupData(true);
+          autoBackupWebDav = "开启";
+        }
+        setState(() {});
+      },
     );
   }
 

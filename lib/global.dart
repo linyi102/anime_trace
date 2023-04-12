@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
@@ -52,6 +53,7 @@ class Global {
         () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
+    Get.lazyPut(() => BackupService());
   }
 
   static void _handleWindowsManager() async {

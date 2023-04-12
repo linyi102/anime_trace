@@ -8,6 +8,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
 import 'package:flutter_test_future/components/update_hint.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
@@ -56,7 +57,9 @@ class MyAppState extends State<MyApp> with WindowListener {
     super.initState();
     windowManager.addListener(this);
     _init();
-    _autoBackup();
+
+    // 还原最新备份、开启间隔备份
+    BackupService.to.startService();
   }
 
   @override
@@ -78,67 +81,21 @@ class MyAppState extends State<MyApp> with WindowListener {
   void onWindowClose() async {
     bool _isPreventClose = await windowManager.isPreventClose();
     if (_isPreventClose) {
-      // 关闭窗口前等待记录窗口大小完毕
-      await SpProfile.setWindowSize(await windowManager.getSize());
-      // 退出
-      Navigator.of(context).pop();
-      await windowManager.destroy();
+      // 如果开启了退出app前备份，那么先备份，如果备份成功则退出app
+      // 备份失败则进行提示，让用户决定重试或者退出app
+      BackupService.to.tryBackupBeforeExitApp(exitApp: () async {
+        // 关闭窗口前等待记录窗口大小完毕
+        await SpProfile.setWindowSize(await windowManager.getSize());
+        // 退出
+        Navigator.of(context).pop();
+        await windowManager.destroy();
+      });
     }
   }
 
   @override
   void onWindowMaximize() async {
     Log.info("全屏");
-  }
-
-  _autoBackup() async {
-    // 之前登录过，因为关闭应用会导致连接关闭，所以下次重启应用时需要再次连接
-    if (SPUtil.getBool("login")) {
-      await WebDavUtil.initWebDav(
-        SPUtil.getString("webdav_uri"),
-        SPUtil.getString("webdav_user"),
-        SPUtil.getString("webdav_password"),
-      );
-    }
-    // 如果都设置了自动备份，则只需要压缩一次
-    if (SPUtil.getBool("auto_backup_local") &&
-        SPUtil.getBool("auto_backup_webdav")) {
-      Log.info("准备本地和WebDav自动备份");
-      BackupUtil.backup(
-        localBackupDirPath:
-            SPUtil.getString("backup_local_dir", defaultValue: "unset"),
-        remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
-        showToastFlag: false,
-        automatic: true,
-      );
-    } else if (SPUtil.getBool("auto_backup_local")) {
-      Log.info("准备本地自动备份");
-      BackupUtil.backup(
-        localBackupDirPath:
-            SPUtil.getString("backup_local_dir", defaultValue: "unset"),
-        showToastFlag: false,
-        automatic: true,
-      );
-    } else if (SPUtil.getBool("auto_backup_webdav")) {
-      Log.info("准备WebDav自动备份");
-      BackupUtil.backup(
-        remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
-        showToastFlag: false,
-        automatic: true,
-      );
-      // String lastTimeBackup = SPUtil.getString("last_time_backup");
-      // // 不为空串表示之前备份过
-      // if (lastTimeBackup != "") {
-      //   Log.info("上次备份的时间：$lastTimeBackup");
-      //   DateTime dateTime = DateTime.parse(lastTimeBackup);
-      //   DateTime now = DateTime.now();
-      //   // 距离上次备份超过1天，则进行备份
-      //   // if (now.difference(dateTime).inSeconds >= 10) {
-      //   if (now.difference(dateTime).inDays >= 1) {
-      //     // WebDavUtil.backupData(true);
-      //   }
-      // }
-    }
   }
 
   @override
