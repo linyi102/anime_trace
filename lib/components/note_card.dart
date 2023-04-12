@@ -131,7 +131,7 @@ class _NoteCardState extends State<NoteCard> {
                       SqliteUtil.updateAnimeRate(
                           note.anime.animeId, note.anime.rate);
                     })
-                : Text("第${note.episode.number}集 ${note.episode.getDate()}",
+                : Text("${note.episode.caption} ${note.episode.getDate()}",
                     textScaleFactor: AppTheme.tinyScaleFactor),
           ),
         ],

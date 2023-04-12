@@ -61,7 +61,6 @@ class _AboutVersionState extends State<AboutVersion> {
 
   _showLVC() {
     List<Widget> lvc = [];
-    ThemeController themeController = Get.find();
 
     lvc.add(Column(
       children: [
@@ -78,7 +77,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 },
                 icon: Icon(
                   SimpleIcons.github,
-                  color: themeController.lightThemeColor.value.isDarkMode
+                  color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
                       : Colors.black,
                 )),

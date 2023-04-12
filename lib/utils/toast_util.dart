@@ -12,7 +12,7 @@ class ToastUtil {
         elevation: 10,
         shadowColor: Colors.black.withOpacity(0.6),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 14),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           child: Text(
             msg,
             style: TextStyle(

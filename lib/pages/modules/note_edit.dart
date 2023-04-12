@@ -164,7 +164,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                           widget.note.anime.animeId, widget.note.anime.rate);
                     })
                 : Text(
-                    "第${widget.note.episode.number}集 ${widget.note.episode.getDate()}",
+                    "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
                     textScaleFactor: AppTheme.tinyScaleFactor,
                   ),
           ),

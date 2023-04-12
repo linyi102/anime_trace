@@ -183,6 +183,7 @@ class NoteDao {
       // note.anime.reviewNumber = lm1[0]['review_number'] as int;
       note.relativeLocalImages = await getRelativeLocalImgsByNoteId(noteId);
     }
+
     return note;
   }
 

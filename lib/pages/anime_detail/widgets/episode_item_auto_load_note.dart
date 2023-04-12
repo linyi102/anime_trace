@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -188,7 +189,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
       title: Text(
-        "第${_episode.number}集",
+        // "第${_episode.number}集",
+        _episode.caption,
         style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
       ),
       // 没有完成时不显示subtitle
@@ -221,15 +223,15 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       onPressed: () {
         showDialog(
             context: context,
-            builder: (dialogContext) {
+            builder: (context) {
               return SimpleDialog(
                 children: [
                   ListTile(
-                    title: const Text("设置观看时间"),
+                    title: const Text("选择时间"),
                     leading: const Icon(EvaIcons.clockOutline),
                     onTap: () async {
                       // 退出对话框
-                      Navigator.of(dialogContext).pop();
+                      Navigator.of(context).pop();
 
                       // 如果是多选状态则先退出
                       if (widget.animeController.multiSelected.value) {
@@ -249,11 +251,11 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   ),
                   if (_episode.isChecked())
                     ListTile(
-                      title: const Text("撤销观看时间"),
+                      title: const Text("撤销时间"),
                       leading: const Icon(EvaIcons.undo),
                       onTap: () async {
                         // 退出对话框
-                        Navigator.pop(dialogContext);
+                        Navigator.pop(context);
 
                         // 弹出确定对话框
                         _dialogRemoveDate();
@@ -261,20 +263,30 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     ),
                   const Divider(),
                   ListTile(
+                    title: const Text("编辑标题"),
+                    leading: const Icon(Icons.title),
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      _showDialogDescForm(context);
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
                     title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
                     leading: const Icon(EvaIcons.edit2Outline),
                     onTap: () {
-                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
                       _enterNoteEditPage(needCreate: true);
                     },
                   ),
                   if (_episode.note != null)
                     ListTile(
-                      title: const Text("复制笔记内容"),
+                      title: const Text("复制笔记"),
                       leading: const Icon(EvaIcons.copyOutline),
                       onTap: () {
                         CommonUtil.copyContent(_episode.note!.noteContent);
-                        Navigator.pop(dialogContext);
+                        Navigator.pop(context);
                       },
                     ),
                   if (_episode.note != null)
@@ -289,6 +301,91 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               );
             });
       },
+    );
+  }
+
+  getPreviewCaption(int number, String title, bool hideDefault) {
+    if (hideDefault) {
+      return title;
+    } else {
+      return "第$number集 $title";
+    }
+  }
+
+  _showDialogDescForm(
+    BuildContext context,
+  ) {
+    bool hideDefault = _episode.desc?.hideDefault ?? false;
+    TextEditingController textEditingController =
+        TextEditingController(text: _episode.desc?.title);
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text("标题"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: textEditingController,
+                  autofocus: true,
+                  onChanged: (value) {
+                    // 重绘预览文本
+                    setState(() {});
+                  },
+                ),
+                SwitchListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text("隐藏默认"),
+                  subtitle: Text(
+                      "预览：${getPreviewCaption(_episode.number, textEditingController.text, hideDefault)}"),
+                  value: hideDefault,
+                  onChanged: (value) {
+                    // 重绘对话框
+                    setState(() {
+                      hideDefault = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("取消")),
+            TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+
+                  var title = textEditingController.text;
+                  if (_episode.desc == null) {
+                    _episode.desc = EpisodeDesc(
+                        id: 0,
+                        animeId: _anime.animeId,
+                        number: _episode.number,
+                        title: title,
+                        hideDefault: hideDefault);
+                  } else {
+                    _episode.desc!.title = title;
+                    _episode.desc!.hideDefault = hideDefault;
+                  }
+
+                  if (_episode.desc!.notInsert) {
+                    int newId = await EpisodeDescDao.insert(_episode.desc!);
+                    _episode.desc!.id = newId;
+                  } else {
+                    await EpisodeDescDao.update(_episode.desc!);
+                  }
+                  // 重绘该集Widget
+                  this.setState(() {});
+                },
+                child: const Text("确定")),
+          ],
+        ),
+      ),
     );
   }
 

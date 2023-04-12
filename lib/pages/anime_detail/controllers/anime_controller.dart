@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
+import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
@@ -16,7 +17,8 @@ class AnimeController extends GetxController {
   bool get isCollected => anime.isCollected();
   bool loadingAnime = false;
 
-  List<Episode> episodes = []; // 集
+  /// 集、笔记
+  List<Episode> episodes = [];
   var loadEpisodeOk = false;
 
   // 多选
@@ -191,13 +193,26 @@ class AnimeController extends GetxController {
       }
     }
 
+    // 范围：[start, end]
+    int end = currentStartEpisodeNumber + episodeRangeSize - 1;
+    if (end > anime.animeEpisodeCnt) {
+      end = anime.animeEpisodeCnt;
+    }
     episodes = await SqliteUtil.getEpisodeHistoryByAnimeIdAndRange(
-        anime,
-        currentStartEpisodeNumber,
-        currentStartEpisodeNumber + episodeRangeSize - 1);
+        anime, currentStartEpisodeNumber, end);
 
     _sortEpisodes(SPUtil.getString("episodeSortMethod",
         defaultValue: sortMethods[0])); // 排序，默认升序，兼容旧版本
+
+    List<EpisodeDesc> descs = await EpisodeDescDao.queryAll(anime.animeId);
+
+    for (var desc in descs) {
+      int idx = episodes.indexWhere((element) => element.number == desc.number);
+      if (idx >= 0) {
+        episodes[idx].desc = desc;
+      }
+    }
+
     loadEpisodeOk = true;
     update([episodeId]);
   }

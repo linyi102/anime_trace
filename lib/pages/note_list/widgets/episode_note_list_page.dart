@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
+import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
@@ -47,17 +48,21 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   void _loadEpisodeNoteData() async {
     loadEpisodeNoteOk = false;
     episodeNotePageParams.resetPageIndex();
-    Future(() {
-      Log.info("note_list_page: 开始加载数据");
-      return NoteDao.getAllNotesByTableNoteAndKeyword(
-          0, episodeNotePageParams.pageSize, widget.noteFilter);
-    }).then((value) {
-      episodeNotes = value;
-      loadEpisodeNoteOk = true;
-      Log.info("note_list_page: 数据加载完成");
-      Log.info("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
-      setState(() {});
-    });
+    Log.info("note_list_page: 开始加载数据");
+    // 获取集笔记
+    episodeNotes = await NoteDao.getAllNotesByTableNoteAndKeyword(
+        0, episodeNotePageParams.pageSize, widget.noteFilter);
+
+    // 修正集编号
+    for (var note in episodeNotes) {
+      note.episode.desc =
+          await EpisodeDescDao.query(note.anime.animeId, note.episode.number);
+    }
+
+    loadEpisodeNoteOk = true;
+    Log.info("note_list_page: 数据加载完成");
+    Log.info("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
+    if (mounted) setState(() {});
   }
 
   void _loadMoreEpisodeNoteData(index) {
@@ -72,7 +77,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
         Log.info("请求结束");
         episodeNotes.addAll(value);
         Log.info("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
-        setState(() {});
+        if (mounted) setState(() {});
       });
     }
   }

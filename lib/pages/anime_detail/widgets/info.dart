@@ -83,6 +83,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               overflow: TextOverflow.ellipsis,
               style: textStyle,
               expandWidth: true, // 为false时，若简介每行(换行符分隔)都不足一行，则会居中。则只会true则不会
+              // indicatorIconSize: 20,
+              // indicatorExpandedHint: "展开",
+              // indicatorCollapsedHint: "收缩",
               arrowSize: 20,
               collapsedHint: "展开",
               expandedHint: "收缩",

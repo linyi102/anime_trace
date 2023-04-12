@@ -154,12 +154,12 @@ class MyAppState extends State<MyApp> with WindowListener {
         var curLightThemeColor = themeController.lightThemeColor.value;
         var baseScheme = FlexScheme.blue;
         var light = FlexThemeData.light(
-          scheme: baseScheme,
+          scheme: baseScheme, useMaterial3: true,
+          textTheme: _buildTextTheme(textStyle, context),
           primary: curLightThemeColor.primaryColor,
           appBarBackground: curLightThemeColor.appBarColor,
           scaffoldBackground: curLightThemeColor.bodyColor,
           surface: curLightThemeColor.cardColor,
-          textTheme: _buildTextTheme(textStyle, context),
           // BottomNavigationBar
           background: curLightThemeColor.appBarColor,
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -183,20 +183,18 @@ class MyAppState extends State<MyApp> with WindowListener {
             timePickerDialogRadius: AppTheme.timePickerDialogRadius,
           ),
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
-          // To use the playground font, add GoogleFonts package and uncomment
-          // fontFamily: GoogleFonts.notoSans().fontFamily,
         );
 
         var curDarkThemeColor = themeController.darkThemeColor.value;
         var dark = FlexThemeData.dark(
-          scheme: baseScheme,
+          scheme: baseScheme, useMaterial3: true,
+          textTheme: _buildTextTheme(textStyle, context),
           primary: curDarkThemeColor.primaryColor,
           appBarBackground: curDarkThemeColor.appBarColor,
           scaffoldBackground: curDarkThemeColor.bodyColor,
           surface: curDarkThemeColor.cardColor,
           // BottomNavigationBar
           background: curDarkThemeColor.appBarColor,
-          textTheme: _buildTextTheme(textStyle, context),
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 15,
           tabBarStyle: FlexTabBarStyle.forBackground,
@@ -233,7 +231,8 @@ class MyAppState extends State<MyApp> with WindowListener {
                 // 在顶部添加margin是为了保证不紧挨AppBar
                 margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 elevation: 0,
-              ), // 路由动画
+              ),
+              // 路由动画
               pageTransitionsTheme: PageTransitionsTheme(
                 builders: <TargetPlatform, PageTransitionsBuilder>{
                   TargetPlatform.android: themeController

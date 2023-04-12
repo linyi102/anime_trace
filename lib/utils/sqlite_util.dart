@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
+import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -50,9 +51,10 @@ class SqliteUtil {
     // 为图片表增加顺序列，支持自定义排序
     await SqliteUtil.addColumnOrderIdxToImage();
 
-    // 创建标签表和动漫标签表
+    // 创建标签表、动漫标签表、集描述表
     LabelDao.createTable();
     AnimeLabelDao.createTable();
+    EpisodeDescDao.createTable();
     return true;
   }
 
@@ -692,10 +694,6 @@ class SqliteUtil {
   // 获取该动漫的[startEpisodeNumber, endEpisodeNumber]集信息
   static Future<List<Episode>> getEpisodeHistoryByAnimeIdAndRange(
       Anime anime, int startEpisodeNumber, int endEpisodeNumber) async {
-    if (endEpisodeNumber > anime.animeEpisodeCnt) {
-      endEpisodeNumber = anime.animeEpisodeCnt;
-    }
-
     Log.info(
         "sql: getEpisodeHistoryByAnimeIdAndRange(animeId=${anime.animeId}), range=[$startEpisodeNumber, $endEpisodeNumber]");
 
