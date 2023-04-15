@@ -36,29 +36,32 @@ class _AnimeGridViewState extends State<AnimeGridView>
     super.build(context);
 
     // 这里添加obx是为了当设置标题在封面下时，网格也能变化，否则会造成溢出
-    return Obx(() => GridView.builder(
-        controller: widget.scrollController,
-        // 整体的填充
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-        gridDelegate: getAnimeGridDelegate(context),
-        itemCount: widget.animes.length,
-        itemBuilder: (BuildContext context, int animeIdx) {
-          widget.loadMore(widget.tagIdx, animeIdx);
+    return Obx(
+      () => GridView.builder(
+          controller: widget.scrollController,
+          // 整体的填充
+          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+          gridDelegate: getAnimeGridDelegate(context),
+          itemCount: widget.animes.length,
+          itemBuilder: (BuildContext context, int animeIdx) {
+            widget.loadMore(widget.tagIdx, animeIdx);
 
-          Anime anime = widget.animes[animeIdx];
-          return InkWell(
-            onTap:
-                widget.onClick != null ? () => widget.onClick!(animeIdx) : null,
-            onLongPress: widget.onLongClick != null
-                ? () => widget.onLongClick!(animeIdx)
-                : null,
-            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-            child: AnimeGridCover(anime,
-                isSelected: widget.isSelected == null
-                    ? false
-                    : widget.isSelected!(animeIdx)),
-          );
-        }));
+            Anime anime = widget.animes[animeIdx];
+            return InkWell(
+              onTap: widget.onClick != null
+                  ? () => widget.onClick!(animeIdx)
+                  : null,
+              onLongPress: widget.onLongClick != null
+                  ? () => widget.onLongClick!(animeIdx)
+                  : null,
+              borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+              child: AnimeGridCover(anime,
+                  isSelected: widget.isSelected == null
+                      ? false
+                      : widget.isSelected!(animeIdx)),
+            );
+          }),
+    );
   }
 
   // 保证切换tab回来后仍然处于先前滚动位置

@@ -22,7 +22,11 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
 class BackupAndRestorePage extends StatefulWidget {
-  const BackupAndRestorePage({Key? key}) : super(key: key);
+  const BackupAndRestorePage({
+    Key? key,
+    this.fromHome = false,
+  }) : super(key: key);
+  final bool fromHome;
 
   @override
   _BackupAndRestorePageState createState() => _BackupAndRestorePageState();
@@ -56,16 +60,23 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("备份还原"),
+        automaticallyImplyLeading: widget.fromHome ? false : true,
       ),
-      body: ListView(
-        children: [
-          _buildClearAnimeDescTile(),
-          const Divider(),
-          _buildLocalBackup(),
-          const Divider(),
-          _buildRemoteBackUp(),
-        ],
-      ),
+      body: widget.fromHome
+          ? ListView(
+              children: [
+                _buildRemoteBackUp(),
+              ],
+            )
+          : ListView(
+              children: [
+                _buildClearAnimeDescTile(),
+                const Divider(),
+                _buildLocalBackup(),
+                const Divider(),
+                _buildRemoteBackUp(),
+              ],
+            ),
     );
   }
 
@@ -118,17 +129,18 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   _buildRemoteBackUp() {
     return Column(
       children: [
-        ListTile(
-          title: Text("WebDav备份",
-              style: TextStyle(color: Theme.of(context).primaryColor)),
-          // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
-          subtitle: const Text("点击查看教程"),
-          onTap: () {
-            LaunchUrlUtil.launch(
-                context: context,
-                uriStr: "https://help.jianguoyun.com/?p=2064");
-          },
-        ),
+        if (!widget.fromHome)
+          ListTile(
+            title: Text("WebDav备份",
+                style: TextStyle(color: Theme.of(context).primaryColor)),
+            // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
+            subtitle: const Text("点击查看教程"),
+            onTap: () {
+              LaunchUrlUtil.launch(
+                  context: context,
+                  uriStr: "https://help.jianguoyun.com/?p=2064");
+            },
+          ),
         ListTile(
           title: const Text("账号配置"),
           trailing: Icon(
@@ -167,73 +179,82 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             }
           },
         ),
-        ListTile(
-          title: const Text("自动备份"),
-          subtitle: Text(backupService.curRemoteBackupMode.title),
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => SimpleDialog(
-                title: const Text("自动备份"),
-                children: [
-                  for (int i = 0; i < BackupMode.values.length; ++i)
-                    RadioListTile(
-                        title: Text(BackupMode.values[i].title),
-                        value: BackupMode.values[i].name,
-                        groupValue: backupService.curRemoteBackupModeName,
-                        onChanged: (String? value) {
-                          if (value == null) return;
+        if (!widget.fromHome)
+          ListTile(
+            title: const Text("自动备份"),
+            subtitle: Text(backupService.curRemoteBackupMode.title),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => SimpleDialog(
+                  title: const Text("自动备份"),
+                  children: [
+                    for (int i = 0; i < BackupMode.values.length; ++i)
+                      RadioListTile(
+                          title: Text(BackupMode.values[i].title),
+                          value: BackupMode.values[i].name,
+                          groupValue: backupService.curRemoteBackupModeName,
+                          onChanged: (String? value) {
+                            if (value == null) return;
 
-                          backupService.setBackupMode(value);
-                          // 关闭对话框
-                          Navigator.pop(context);
-                          // 重绘页面
-                          setState(() {});
-                        }),
-                ],
-              ),
-            );
-          },
-        ),
+                            backupService.setBackupMode(value);
+                            // 关闭对话框
+                            Navigator.pop(context);
+                            // 重绘页面
+                            setState(() {});
+                          }),
+                  ],
+                ),
+              );
+            },
+          ),
         // _buildOldAutoBackupSwitchTile(),
-        ListTile(
-          title: const Text("自动备份数量"),
-          subtitle: Text("$autoBackupWebDavNumber"),
-          onTap: () async {
-            int? number = await dialogSelectUint(context, "自动备份数量",
-                initialValue: autoBackupWebDavNumber,
-                minValue: 10,
-                maxValue: 20);
-            if (number != null) {
-              autoBackupWebDavNumber = number;
-              SPUtil.setInt("autoBackupWebDavNumber", number);
+        if (!widget.fromHome)
+          ListTile(
+            title: const Text("自动备份数量"),
+            subtitle: Text("$autoBackupWebDavNumber"),
+            onTap: () async {
+              int? number = await dialogSelectUint(context, "自动备份数量",
+                  initialValue: autoBackupWebDavNumber,
+                  minValue: 10,
+                  maxValue: 20);
+              if (number != null) {
+                autoBackupWebDavNumber = number;
+                SPUtil.setInt("autoBackupWebDavNumber", number);
+                setState(() {});
+              }
+            },
+          ),
+        if (!widget.fromHome)
+          SwitchListTile(
+            title: const Text("自动还原"),
+            subtitle: const Text("进入应用前还原最新备份文件\n若选择打开应用后备份则不会还原"),
+            value: backupService.enableAutoRestoreFromRemote,
+            onChanged: (value) {
+              backupService.setAutoRestoreFromRemote(value);
+              // 重绘页面
               setState(() {});
-            }
-          },
-        ),
-        SwitchListTile(
-          title: const Text("自动还原"),
-          subtitle: const Text("进入应用前还原最新备份"),
-          value: backupService.enableAutoRestoreFromRemote,
-          onChanged: (value) {
-            backupService.setAutoRestoreFromRemote(value);
-            // 重绘页面
-            setState(() {});
-          },
-        ),
+            },
+          ),
         ListTile(
           title: const Text("还原远程备份"),
           subtitle: const Text("点击查看所有备份文件"),
           onTap: () async {
             if (SPUtil.getBool("online")) {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return const BackUpFileListPage();
-                },
-              )).then((value) {
-                // 可能还原了数据，此时需要重新显示文件数据大小
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => const BackUpFileListPage(),
+              ).then((value) {
                 setState(() {});
               });
+              // Navigator.of(context).push(MaterialPageRoute(
+              //   builder: (context) {
+              //     return const BackUpFileListPage();
+              //   },
+              // )).then((value) {
+              //   // 可能还原了数据，此时需要重新显示文件数据大小
+              //   setState(() {});
+              // });
             } else {
               ToastUtil.showText("配置账号后才可以进行还原");
             }

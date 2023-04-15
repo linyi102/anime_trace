@@ -8,6 +8,7 @@ import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_cont
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -85,6 +86,16 @@ class BackupUtil {
     return File(tempZipFilePath);
   }
 
+  static Future<Result> autoBackupRemote() async {
+    await BackupUtil.backup(
+      remoteBackupDirPath: await WebDavUtil.getRemoteDirPath(),
+      showToastFlag: false,
+      automatic: true,
+    );
+
+    return Result.success("", msg: "远程备份成功");
+  }
+
   // 应该返回webdav包中的File，可惜加上后会和io中的File冲突
   static Future<String> backup({
     String localBackupDirPath = "",
@@ -107,7 +118,7 @@ class BackupUtil {
           localBackupFilePath = "$localBackupDirPath/$zipName";
         }
         await tempZipFile.copy(localBackupFilePath);
-        if (showToastFlag) ToastUtil.showText("备份成功：$localBackupFilePath");
+        if (showToastFlag) ToastUtil.showText("本地备份成功");
         // 如果还要备份到webdav，则先不删除
         if (remoteBackupDirPath.isEmpty) {
           tempZipFile.delete();
@@ -122,8 +133,8 @@ class BackupUtil {
     }
     if (remoteBackupDirPath.isNotEmpty) {
       if (!SPUtil.getBool("online")) {
-        Log.info("WebDav 备份失败，请检查网络状态");
-        ToastUtil.showText("WebDav 备份失败，请检查网络状态");
+        Log.info("远程备份失败，请检查网络状态");
+        ToastUtil.showText("远程备份失败，请检查网络状态");
         tempZipFile.delete(); // 备份失败后需要删掉临时备份文件
         return "";
       }
@@ -135,8 +146,9 @@ class BackupUtil {
         remoteBackupFilePath = "$remoteBackupDirPath/$zipName";
       }
       await WebDavUtil.upload(tempZipFile.path, remoteBackupFilePath);
+      SPUtil.setString(latestDavBackupFilePath, remoteBackupFilePath);
       if (showToastFlag) {
-        ToastUtil.showText("WebDav 备份成功：$remoteBackupFilePath");
+        ToastUtil.showText("远程备份成功");
       }
       // 因为之前upload里的上传没有await，导致还没有上传完毕就删除了文件。从而导致上传失败
       tempZipFile.delete();

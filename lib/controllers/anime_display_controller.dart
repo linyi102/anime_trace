@@ -27,9 +27,17 @@ class AnimeDisplayController extends GetxController {
   RxBool showOriCover =
       SPUtil.getBool("showOriCover", defaultValue: false).obs; // 清单后面显示动漫数量
 
-  // Getx运算也是响应是的
+  // Getx运算也是响应式的
   bool get showNameBelowCover =>
       showGridAnimeName.value && !showNameInCover.value;
+
+  RxBool showProgressBar =
+      SPUtil.getBool("showProgressBarBelowGridCover", defaultValue: false).obs;
+
+  turnShowProgressBar() {
+    showProgressBar.value = !showProgressBar.value;
+    SPUtil.setBool("showProgressBarBelowGridCover", showProgressBar.value);
+  }
 
   turnDisplayList() {
     displayList.value = !displayList.value;

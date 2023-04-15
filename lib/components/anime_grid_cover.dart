@@ -37,9 +37,8 @@ class AnimeGridCover extends StatelessWidget {
     final AnimeDisplayController _animeDisplayController = Get.find();
 
     if (onlyShowCover) return _buildCover(context, false);
-    return MaterialButton(
-      padding: const EdgeInsets.all(0),
-      onPressed: onPressed,
+    return InkWell(
+      onTap: onPressed,
       // 监听是否显示进度、观看次数、原图
       child: Obx(() => Column(
             children: [
@@ -61,9 +60,27 @@ class AnimeGridCover extends StatelessWidget {
                       _anime.isCollected() &&
                       _animeDisplayController.showReviewNumber.value &&
                       _anime.reviewNumber > 1)
-                    _buildReviewNumber(context)
+                    _buildReviewNumber(context),
                 ],
               ),
+              if (showProgress &&
+                  _anime.isCollected() &&
+                  _animeDisplayController.showProgressBar.value)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: LinearProgressIndicator(
+                      value: _anime.animeEpisodeCnt == 0
+                          ? 0
+                          : _anime.checkedEpisodeCnt / _anime.animeEpisodeCnt,
+                      backgroundColor: Theme.of(context)
+                          .unselectedWidgetColor
+                          .withOpacity(0.1),
+                    ),
+                  ),
+                ),
               // 名字
               if (_animeDisplayController.showNameBelowCover && showName)
                 _buildNameBelowCover(context),

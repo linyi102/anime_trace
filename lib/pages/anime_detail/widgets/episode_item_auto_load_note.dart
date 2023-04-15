@@ -4,16 +4,15 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
-
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -47,6 +46,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   Episode get _episode => widget.episode;
   Anime get _anime => widget.animeController.anime;
+  List<String> get tags => ChecklistController.to.tags;
 
   late Color checkedColor;
 

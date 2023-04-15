@@ -10,15 +10,16 @@ SliverGridDelegate getAnimeGridDelegate(BuildContext context) {
   int gridColumnCnt = _animeDisplayController.gridColumnCnt.value;
 
   double childAspectRatio;
+  bool showProgressBar = _animeDisplayController.showProgressBar.value;
   // 宽高比，三种情况：名字(2行)在封面下面，名字(1行)在封面下面，名字在封面内底部。高不断缩小
   if (_animeDisplayController.showNameBelowCover) {
     if (_animeDisplayController.nameMaxLines.value == 2) {
-      childAspectRatio = 31 / 56;
+      childAspectRatio = showProgressBar ? 31 / 56 : 31 / 53;
     } else {
-      childAspectRatio = 31 / 50;
+      childAspectRatio = showProgressBar ? 31 / 53 : 31 / 50;
     }
   } else {
-    childAspectRatio = 31 / 43;
+    childAspectRatio = showProgressBar ? 31 / 46 : 31 / 43;
   }
 
   // Size size = MediaQuery.of(context).size;

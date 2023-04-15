@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -33,6 +34,7 @@ class AnimeClimbOneWebsite extends StatefulWidget {
 
 class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   var animeNameController = TextEditingController();
+  List<String> get tags => ChecklistController.to.tags;
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   late bool ismigrate;
   late ClimbWebsite curWebsite;
@@ -41,12 +43,13 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   List<Anime> mixedAnimes = []; // 混合的动漫列表(数据库若已有该动漫，则覆盖爬取的动漫)
   bool searchOk = false;
   bool searching = false;
-  String addDefaultTag = tags[0];
+  late String addDefaultTag;
   String lastInputName = "";
 
   @override
   void initState() {
     super.initState();
+    addDefaultTag = tags[0];
     curWebsite = widget.climbWebStie;
     ismigrate = widget.animeId > 0 ? true : false;
 

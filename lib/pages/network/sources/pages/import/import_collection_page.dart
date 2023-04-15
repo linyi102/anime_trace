@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
@@ -30,6 +31,7 @@ class ImportCollectionPage extends StatefulWidget {
 class _ImportCollectionPagrState extends State<ImportCollectionPage>
     with SingleTickerProviderStateMixin {
   late ImportCollectionController icc;
+  List<String> get tags => ChecklistController.to.tags;
 
   String get getxTag => widget.climbWebsite.name;
   int get curCollIdx => icc.tabController!.index;

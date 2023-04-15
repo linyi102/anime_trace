@@ -41,6 +41,7 @@ class EpisodeDescDao {
 
   // 建表
   static createTable() async {
+    // await db.execute('drop table $table');
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $table (
       $columnId             INTEGER PRIMARY KEY AUTOINCREMENT,

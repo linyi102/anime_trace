@@ -30,6 +30,7 @@ GetMaterialApp _getMaterialApp() {
   return const GetMaterialApp(
     // GetMaterialApp必须放在这里，而不能在MyApp的build返回GetMaterialApp，否则导致Windows端无法关闭
     home: MyApp(),
+    debugShowCheckedModeBanner: false,
     // 中文(必须放在GetMaterialApp)
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,
@@ -79,6 +80,7 @@ class MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowClose() async {
+    // Windows端点击右上角的关闭按钮时会调用此处，Android端不会
     bool _isPreventClose = await windowManager.isPreventClose();
     if (_isPreventClose) {
       // 如果开启了退出app前备份，那么先备份，如果备份成功则退出app

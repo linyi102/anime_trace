@@ -13,9 +13,6 @@ import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 
-List<String> tags = [];
-List<int> animeCntPerTag = []; // 各个标签下的动漫数量
-List<List<Anime>> animesInTag = []; // 各个标签下的动漫列表
 List<Anime> directory = []; // 目录动漫
 AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 

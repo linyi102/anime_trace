@@ -68,7 +68,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   _buildFileItem(BuildContext context, int index) {
-    Log.info("index=$index");
+    // Log.info("index=$index");
     String fileName = "";
     File file = files[index];
     // 获取文件名
@@ -86,10 +86,32 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     return ListTile(
       title: Text("${index + 1}. $fileName"),
       subtitle: Text("$createdTime $KBSize $backupWay"),
-      trailing: IconButton(
-          onPressed: () => _showDeleteDialog(context, file, index),
-          icon: const Icon(Icons.delete_outline)),
       onTap: () => _showRestoreDialog(context, file),
+      onLongPress: () {
+        showDialog(
+          context: context,
+          builder: (context) => SimpleDialog(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.restore),
+                title: const Text("还原"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showRestoreDialog(context, file);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text("删除"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteDialog(context, file, index);
+                },
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 

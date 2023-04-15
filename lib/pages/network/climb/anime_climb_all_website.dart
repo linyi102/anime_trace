@@ -6,6 +6,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -28,7 +29,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
   bool ismigrate = false;
 
-  String addDefaultTag = tags[0];
+  List<String> get tags => ChecklistController.to.tags;
+  late String addDefaultTag;
   String lastInputKeyword = "";
   Map<String, List<Anime>> websiteClimbAnimes = {}; // 爬取的动漫
   Map<String, List<Anime>> mixedAnimes = {}; // 先赋值为爬取的动漫，后如果已收藏，则赋值为数据库动漫
@@ -41,6 +43,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   @override
   void initState() {
     super.initState();
+    addDefaultTag = tags[0];
     ismigrate = widget.animeId > 0 ? true : false;
     lastInputKeyword = widget.keyword;
     inputKeywordController.text = lastInputKeyword;

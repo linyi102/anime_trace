@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -31,6 +32,7 @@ class AnimeDetailInfo extends StatefulWidget {
 class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   Anime get _anime => widget.animeController.anime;
   int rateNoteCount = 0; // 最初的评价数量
+  List<String> get tags => ChecklistController.to.tags;
 
   @override
   void initState() {

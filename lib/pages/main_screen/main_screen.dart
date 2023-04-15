@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history/history_page.dart';
@@ -73,7 +75,12 @@ class _MainScreenState extends State<MainScreen> {
   Future<bool> clickTwiceToExitApp() async {
     _clickBackCnt++;
     if (_clickBackCnt == 2) {
-      return true;
+      // 备份后退出
+      BackupService.to.tryBackupBeforeExitApp(exitApp: () async {
+        SystemNavigator.pop();
+      });
+      // 始终返回false，暂时不退出App，等待备份成功后执行exitApp来退出
+      return false;
     }
     Future.delayed(const Duration(seconds: 2)).then((value) {
       _clickBackCnt = 0;

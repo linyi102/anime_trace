@@ -68,7 +68,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     // 如果显示网格，则添加更多修改选项
     if (!displayList) {
       list.add(SwitchListTile(
-        title: const Text("动漫列数自适应"),
+        title: const Text("列数自适应"),
         value: animeDisplayController.enableResponsiveGridColumnCnt.value,
         onChanged: (bool value) {
           animeDisplayController.turnEnableResponsiveGridColumnCnt();
@@ -76,7 +76,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(ListTile(
-        title: const Text("修改动漫列数"),
+        title: const Text("修改列数"),
         subtitle: Text("${animeDisplayController.gridColumnCnt}"),
         enabled: !animeDisplayController.enableResponsiveGridColumnCnt.value,
         onTap: () {
@@ -95,7 +95,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(SwitchListTile(
-        title: const Text("显示动漫名称"),
+        title: const Text("显示名称"),
         value: animeDisplayController.showGridAnimeName.value,
         onChanged: (bool value) {
           animeDisplayController.turnShowGridAnimeName();
@@ -103,7 +103,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(SwitchListTile(
-        title: const Text("动漫名称显示在内部"),
+        title: const Text("名称显示在内部"),
         value: animeDisplayController.showNameInCover.value,
         // 开启显示动漫名称后才能修改是否显示在内部
         onChanged: animeDisplayController.showGridAnimeName.value
@@ -114,7 +114,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(SwitchListTile(
-        title: const Text("动漫名称只显示一行(默认两行)"),
+        title: const Text("名称只显示一行(默认两行)"),
         value: animeDisplayController.nameMaxLines.value == 1,
         onChanged: (bool value) {
           animeDisplayController.turnNameMaxLines();
@@ -122,7 +122,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(SwitchListTile(
-        title: const Text("显示动漫进度"),
+        title: const Text("显示进度"),
         value: animeDisplayController.showGridAnimeProgress.value,
         onChanged: (bool value) {
           animeDisplayController.turnShowGridAnimeProgress();
@@ -130,9 +130,15 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
     }
 
+    list.add(SwitchListTile(
+      title: const Text("显示进度条"),
+      value: animeDisplayController.showProgressBar.value,
+      onChanged: (bool value) => animeDisplayController.turnShowProgressBar(),
+    ));
+
     // 其他公共选项
     list.add(SwitchListTile(
-      title: const Text("显示动漫第几次观看"),
+      title: const Text("显示第几次观看"),
       value: animeDisplayController.showReviewNumber.value,
       onChanged: (bool value) {
         animeDisplayController.turnShowReviewNumber();
@@ -140,7 +146,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     ));
 
     list.add(SwitchListTile(
-      title: const Text("显示动漫数量"),
+      title: const Text("显示清单数量"),
       value: animeDisplayController.showAnimeCntAfterTag.value,
       onChanged: (bool value) =>
           animeDisplayController.turnShowAnimeCntAfterTag(),

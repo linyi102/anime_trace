@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -18,6 +19,8 @@ dialogSelectChecklist(
   if (!anime.isCollected() && !onlyShowChecklist) {
     items.add(ListTile(title: Text(anime.animeName)));
   }
+  var tags = ChecklistController.to.tags;
+
   for (int i = 0; i < tags.length; ++i) {
     items.add(
       ListTile(

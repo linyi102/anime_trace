@@ -78,11 +78,18 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
       onTap: () {
         Log.info("添加标签");
         // 弹出底部菜单，提供搜索和查询列表
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => LabelManagePage(
-                  enableSelectLabelForAnime: true,
-                  animeController: widget.animeController,
-                )));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) => LabelManagePage(
+        //           enableSelectLabelForAnime: true,
+        //           animeController: widget.animeController,
+        //         )));
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => LabelManagePage(
+            enableSelectLabelForAnime: true,
+            animeController: widget.animeController,
+          ),
+        );
 
         // 不适配主题，且搜索时显示空白
         // Get.bottomSheet(

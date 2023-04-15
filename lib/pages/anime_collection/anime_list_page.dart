@@ -6,10 +6,12 @@ import 'package:flutter_test_future/components/common_tab_bar.dart';
 
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
+import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -26,22 +28,25 @@ class AnimeListPage extends StatefulWidget {
 
 class _AnimeListPageState extends State<AnimeListPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  AnimeSortCond animeSortCond = AnimeSortCond(
-      specSortColumnIdx:
-          SPUtil.getInt("AnimeSortCondSpecSortColumnIdx", defaultValue: 3),
-      desc: SPUtil.getBool("AnimeSortCondDesc", defaultValue: true));
+  final checklistController = ChecklistController.to;
+  List<String> get tags => checklistController.tags;
+  List<int> get animeCntPerTag => checklistController.animeCntPerTag;
+  List<List<Anime>> get animesInTag => checklistController.animesInTag;
+  List<int> get pageIndexList => checklistController.pageIndexList;
+
+  TabController? get _tabController => checklistController.tabController;
+  List<ScrollController> get _scrollControllers =>
+      checklistController.scrollControllers;
+
+  Map<int, bool> get mapSelected => checklistController.mapSelected;
+  bool get multiSelected => checklistController.multiSelected;
+
+  AnimeSortCond get animeSortCond => checklistController.animeSortCond;
 
   // 数据加载
-  bool _loadOk = false;
-  List<int> pageIndexList = List.generate(tags.length, (index) => 1); // 初始页都为1
-  final int _pageSize = 50;
+  bool get loadOk => checklistController.loadOk;
+  int get pageSize => checklistController.pageSize;
 
-  // 多选
-  Map<int, bool> mapSelected = {};
-  bool multiSelected = false;
-
-  final List<ScrollController> _scrollControllers = [];
   final AnimeDisplayController _animeDisplayController = Get.find();
 
   bool useTopTab = true;
@@ -49,159 +54,137 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < tags.length; ++i) {
-      animesInTag.add([]); // 先添加元素List，然后才能用下标访问
-      _scrollControllers.add(ScrollController()); // 为每个清单提供单独的滚动控制器
-    }
-
-    _loadData();
-    // 顶部tab控制器
-    _tabController = TabController(
-      initialIndex:
-          SPUtil.getInt("last_top_tab_index", defaultValue: 0), // 设置初始index
-      length: tags.length,
-      vsync: this,
-    );
-    // 添加监听器，记录最后一次的topTab的index
-    _tabController.addListener(() {
-      if (_tabController.index == _tabController.animation!.value) {
-        // lastTopTabIndex = _tabController.index;
-        SPUtil.setInt("last_top_tab_index", _tabController.index);
-        // 取消多选
-        if (multiSelected) {
-          _quitMultiSelectState();
-        }
-      }
-    });
-  }
-
-  void _loadData() async {
-    // 首次或重新渲染时，重置页号，就能保证之后也能加载更多数据了
-    for (int i = 0; i < pageIndexList.length; ++i) {
-      pageIndexList[i] = 1;
-    }
-
-    Log.info("开始加载数据");
-    Future(() async {
-      animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
-      for (int i = 0; i < tags.length; ++i) {
-        animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(
-            tags[i], 0, _pageSize,
-            animeSortCond: animeSortCond);
-        // Log.info("animesInTag[$i].length=${animesInTag[i].length}");
-      }
-    }).then((value) {
-      Log.info("数据加载完毕");
-      _loadOk = true; // 放这里啊，之前干嘛放外面...
-      if (mounted) {
-        setState(() {});
-      } // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    for (int i = 0; i < tags.length; ++i) {
-      _scrollControllers[i].dispose();
-    }
-
-    super.dispose();
+    checklistController.loadData(this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
-      // 然后再通过_loadData覆盖掉旧数据
-      child: !_loadOk && animeCntPerTag.isEmpty
-          ? _waitDataScaffold()
-          : Scaffold(
-              // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-              appBar: AppBar(
-                title: Text(
-                  multiSelected ? "${mapSelected.length}" : "动漫",
+    return GetBuilder(
+      init: checklistController,
+      builder: (_) => AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+        // 然后再通过_loadData覆盖掉旧数据
+        child: !loadOk && animeCntPerTag.isEmpty
+            ? _waitDataScaffold()
+            : Scaffold(
+                // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+                appBar: AppBar(
+                  title: Text(
+                    multiSelected ? "${mapSelected.length}" : "动漫",
+                  ),
+                  leading: multiSelected
+                      ? IconButton(
+                          onPressed: () {
+                            checklistController.quitMultiSelectState();
+                          },
+                          icon: const Icon(Icons.close))
+                      : null,
+                  actions: multiSelected ? _getActionsOnMulti() : _getActions(),
+                  bottom: useTopTab
+                      ? CommonBottomTabBar(
+                          tabs: _buildTagAndAnimeCnt(),
+                          tabController: _tabController,
+                          isScrollable: true,
+                        )
+                      : null,
                 ),
-                leading: multiSelected
-                    ? IconButton(
-                        onPressed: () {
-                          _quitMultiSelectState();
-                        },
-                        icon: const Icon(Icons.close))
-                    : null,
-                actions: multiSelected ? _getActionsOnMulti() : _getActions(),
-                bottom: useTopTab
-                    ? CommonBottomTabBar(
-                        tabs: _buildTagAndAnimeCnt(),
-                        tabController: _tabController,
-                        isScrollable: true,
+                body: useTopTab
+                    ? TabBarView(
+                        controller: _tabController,
+                        children: _getAnimesPlus(),
                       )
-                    : null,
-              ),
-              body: useTopTab
-                  ? TabBarView(
-                      controller: _tabController,
-                      children: _getAnimesPlus(),
-                    )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 100,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: tags.map((checklist) {
-                                int checklistIdx = tags.indexWhere(
-                                    (element) => element == checklist);
-                                return ListTile(
-                                  selected:
-                                      _tabController.index == checklistIdx,
-                                  title: Obx(
-                                    () => _animeDisplayController
-                                            .showAnimeCntAfterTag.value
-                                        ? Text(
-                                            "${tags[checklistIdx]} (${animeCntPerTag[checklistIdx]})",
-                                            textScaleFactor:
-                                                AppTheme.smallScaleFactor)
-                                        : Text(tags[checklistIdx],
-                                            textScaleFactor:
-                                                AppTheme.smallScaleFactor),
-                                  ),
-                                  onTap: () {
-                                    int checklistIdx = tags.indexWhere(
-                                        (element) => element == checklist);
-                                    _tabController.index = checklistIdx;
-                                    setState(() {});
-                                  },
-                                );
-                              }).toList(),
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 100,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: tags.map((checklist) {
+                                  int checklistIdx = tags.indexWhere(
+                                      (element) => element == checklist);
+                                  return ListTile(
+                                    selected:
+                                        _tabController!.index == checklistIdx,
+                                    title: Obx(
+                                      () => _animeDisplayController
+                                              .showAnimeCntAfterTag.value
+                                          ? Text(
+                                              "${tags[checklistIdx]} (${animeCntPerTag[checklistIdx]})",
+                                              textScaleFactor:
+                                                  AppTheme.smallScaleFactor)
+                                          : Text(tags[checklistIdx],
+                                              textScaleFactor:
+                                                  AppTheme.smallScaleFactor),
+                                    ),
+                                    onTap: () {
+                                      int checklistIdx = tags.indexWhere(
+                                          (element) => element == checklist);
+                                      _tabController!.index = checklistIdx;
+                                      setState(() {});
+                                    },
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Scrollbar(
-                            controller:
-                                _scrollControllers[_tabController.index],
-                            child: Stack(children: [
-                              Obx(() => _animeDisplayController
-                                      .displayList.value
-                                  ? _getAnimeListView(_tabController.index)
-                                  : _getAnimeGridView(_tabController.index)),
-                              // 一定要叠放在ListView上面，否则点击按钮没有反应
-                              _buildBottomButton(_tabController.index),
-                            ]),
-                          ),
-                        )
-                      ],
-                    ),
-            ),
+                          Expanded(
+                            child: Scrollbar(
+                              controller:
+                                  _scrollControllers[_tabController!.index],
+                              child: Stack(children: [
+                                Obx(() => _animeDisplayController
+                                        .displayList.value
+                                    ? _getAnimeListView(_tabController!.index)
+                                    : _getAnimeGridView(_tabController!.index)),
+                                // 一定要叠放在ListView上面，否则点击按钮没有反应
+                                _buildBottomButton(_tabController!.index),
+                              ]),
+                            ),
+                          )
+                        ],
+                      ),
+              ),
+      ),
     );
   }
 
   List<Widget> _getActions() {
     List<Widget> actions = [];
 
+    actions.add(IconButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => const BackupAndRestorePage(fromHome: true),
+          // builder: (context) {
+          //   return Scaffold(
+          //     appBar: AppBar(
+          //       title: const Text("备份和还原"),
+          //       automaticallyImplyLeading: false,
+          //     ),
+          //     body: Column(
+          //       children: [
+          //         ListTile(
+          //           leading: const Icon(Icons.cloud_upload),
+          //           title: const Text("立即备份到远程"),
+          //           onTap: () {},
+          //         ),
+          //         ListTile(
+          //           leading: const Icon(Icons.restore),
+          //           title: const Text("还原最新备份"),
+          //           onTap: () {},
+          //         ),
+          //       ],
+          //     ),
+          //   );
+          // },
+        );
+      },
+      icon: const Icon(Icons.cloud_outlined),
+      tooltip: "备份和还原",
+    ));
     actions.add(IconButton(
       onPressed: () {
         showModalBottomSheet(
@@ -224,7 +207,7 @@ class _AnimeListPageState extends State<AnimeListPage>
           ),
         ).then((value) {
           Log.info("更新在搜索页面里进行的修改");
-          _loadData();
+          checklistController.loadAnimes();
         });
       },
       icon: const Icon(Icons.search),
@@ -251,8 +234,8 @@ class _AnimeListPageState extends State<AnimeListPage>
             SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
             setState(() {}); // 更新对话框里的状态
             // 改变排序时，需要滚动到顶部，否则会加载很多页
-            _scrollControllers[_tabController.index].jumpTo(0);
-            _loadData();
+            _scrollControllers[_tabController!.index].jumpTo(0);
+            checklistController.loadAnimes();
           },
         ));
 
@@ -277,8 +260,8 @@ class _AnimeListPageState extends State<AnimeListPage>
                 SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", i);
                 setState(() {}); // 更新对话框里的状态
                 // 改变排序时，需要滚动到顶部，否则会加载很多页
-                _scrollControllers[_tabController.index].jumpTo(0);
-                _loadData();
+                _scrollControllers[_tabController!.index].jumpTo(0);
+                checklistController.loadAnimes();
               }
             },
           ));
@@ -297,7 +280,9 @@ class _AnimeListPageState extends State<AnimeListPage>
 
   List<Widget> _getAnimesPlus() {
     List<Widget> list = [];
-    for (int checklistIdx = 0; checklistIdx < tags.length; ++checklistIdx) {
+    for (int checklistIdx = 0;
+        checklistIdx < _scrollControllers.length;
+        ++checklistIdx) {
       list.add(
         Scrollbar(
           controller: _scrollControllers[checklistIdx],
@@ -376,13 +361,13 @@ class _AnimeListPageState extends State<AnimeListPage>
     // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
     // 当到达100(50*2)时，会再次请求50个数据
-    if (index + 10 == _pageSize * (pageIndexList[i])) {
+    if (index + 10 == pageSize * (pageIndexList[i])) {
       // +10提前请求
       pageIndexList[i]++;
-      Log.info("再次请求$_pageSize个数据");
+      Log.info("再次请求$pageSize个数据");
       Future(() {
         return SqliteUtil.getAllAnimeBytagName(
-            tags[i], animesInTag[i].length, _pageSize,
+            tags[i], animesInTag[i].length, pageSize,
             animeSortCond: animeSortCond);
       }).then((value) {
         Log.info("请求结束");
@@ -401,7 +386,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         mapSelected.remove(animeIdx); // 选过，再选就会取消
         // 如果取消后一个都没选，就自动退出多选状态
         if (mapSelected.isEmpty) {
-          multiSelected = false;
+          checklistController.multiSelected = false;
         }
       } else {
         Log.info("[多选模式]添加animeIdx=$animeIdx");
@@ -417,7 +402,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   void onLongPress(int animeIdx) {
     // 非多选状态下才需要进入多选状态
     if (multiSelected == false) {
-      multiSelected = true;
+      checklistController.multiSelected = true;
       mapSelected[animeIdx] = true;
       Log.info("[多选模式]添加animeIdx=$animeIdx");
       setState(() {}); // 添加操作按钮
@@ -540,7 +525,7 @@ class _AnimeListPageState extends State<AnimeListPage>
             int modifiedCnt = mapSelected.length;
             animeCntPerTag[oldTagindex] -= modifiedCnt;
             animeCntPerTag[newTagindex] += modifiedCnt;
-            _quitMultiSelectState();
+            checklistController.quitMultiSelectState();
             Navigator.pop(context);
           },
         ),
@@ -561,13 +546,6 @@ class _AnimeListPageState extends State<AnimeListPage>
         ),
       ),
     );
-  }
-
-  void _quitMultiSelectState() {
-    // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    multiSelected = false;
-    mapSelected.clear();
-    setState(() {});
   }
 
   List<Widget> _buildTagAndAnimeCnt() {
@@ -649,7 +627,7 @@ class _AnimeListPageState extends State<AnimeListPage>
                   Expanded(
                     child: IconButton(
                       onPressed: () {
-                        _quitMultiSelectState();
+                        checklistController.quitMultiSelectState();
                       },
                       icon: const Icon(Icons.exit_to_app_outlined),
                     ),

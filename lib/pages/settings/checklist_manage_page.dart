@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ChecklistManagePage extends StatefulWidget {
@@ -16,6 +16,8 @@ class ChecklistManagePage extends StatefulWidget {
 
 // 在全局变量tags拖拽、修改、添加的基础上，改变数据库tag表信息
 class _ChecklistManagePageState extends State<ChecklistManagePage> {
+  List<String> get tags => ChecklistController.to.tags;
+
   // 来自ReorderableListView里的默认proxyDecorator
   Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
     return AnimatedBuilder(

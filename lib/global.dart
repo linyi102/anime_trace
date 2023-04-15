@@ -6,6 +6,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -49,6 +50,7 @@ class Global {
   }
 
   static void _putGetController() {
+    Get.lazyPut(() => ChecklistController());
     Get.lazyPut(
         () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
     Get.lazyPut(() => AnimeDisplayController());
