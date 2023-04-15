@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import 'package:flutter_test_future/models/anime.dart';
@@ -40,7 +41,6 @@ class SqliteUtil {
 
     await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
     await SqliteUtil.addColumnInfoToAnime(); // 为动漫表添加列
-    tags = await SqliteUtil.getAllTags();
 
     // 创建动漫更新表
     await SqliteUtil.createTableUpdateRecord();
@@ -777,20 +777,47 @@ class SqliteUtil {
       {required AnimeSortCond animeSortCond}) async {
     Log.info("sql: getAllAnimeBytagName");
 
-    String orderSql = '''
-    order by ${AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx].columnName}
-    ''';
-    if (animeSortCond.desc) {
-      orderSql += ' desc ';
-    }
+    dynamic list;
+    SortCondItem sortCond =
+        AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx];
+    if (sortCond.columnName == 'first_episode_watch_time') {
+      list = await database.rawQuery('''
+        select anime.*
+        from anime left join history on anime.anime_id = history.anime_id
+            and anime.review_number = history.review_number and history.episode_number = 1
+        where anime.tag_name = '$tagName'
+        order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
+      ''');
+    } else if (sortCond.columnName == 'recent_watch_time') {
+      list = await database.rawQuery('''
+        select anime.*
+        from anime left join history on anime.anime_id = history.anime_id
+            and anime.review_number = history.review_number
+            -- 不能使用date，因为同一个动漫下，最大date可以有多个，会导致查询到多个重复动漫
+            and history.episode_number = (
+                select max(episode_number)
+                from history
+                where anime.anime_id = history.anime_id and anime.review_number = history.review_number
+            )
+        where anime.tag_name = '$tagName'
+        order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
+      ''');
+    } else {
+      String orderSql = '''
+        order by ${AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx].columnName}
+      ''';
+      if (animeSortCond.desc) {
+        orderSql += ' desc ';
+      }
 
-    var list = await database.rawQuery('''
-    select *
-    from anime
-    where tag_name = '$tagName'
-    $orderSql
-    limit $number offset $offset;
-    '''); // 按anime_id倒序，保证最新添加的动漫在最上面
+      list = await database.rawQuery('''
+        select *
+        from anime
+        where tag_name = '$tagName'
+        $orderSql
+        limit $number offset $offset;
+      '''); // 按anime_id倒序，保证最新添加的动漫在最上面
+    }
 
     List<Anime> res = [];
     for (var element in list) {
