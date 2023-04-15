@@ -58,10 +58,12 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("备份还原"),
-        automaticallyImplyLeading: widget.fromHome ? false : true,
-      ),
+      appBar: widget.fromHome
+          ? null
+          : AppBar(
+              title: const Text("备份还原"),
+              automaticallyImplyLeading: widget.fromHome ? false : true,
+            ),
       body: widget.fromHome
           ? ListView(
               children: [
@@ -129,18 +131,17 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   _buildRemoteBackUp() {
     return Column(
       children: [
-        if (!widget.fromHome)
-          ListTile(
-            title: Text("WebDav备份",
-                style: TextStyle(color: Theme.of(context).primaryColor)),
-            // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
-            subtitle: const Text("点击查看教程"),
-            onTap: () {
-              LaunchUrlUtil.launch(
-                  context: context,
-                  uriStr: "https://help.jianguoyun.com/?p=2064");
-            },
-          ),
+        ListTile(
+          title: Text("WebDav备份",
+              style: TextStyle(color: Theme.of(context).primaryColor)),
+          // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
+          subtitle: const Text("点击查看教程"),
+          onTap: () {
+            LaunchUrlUtil.launch(
+                context: context,
+                uriStr: "https://help.jianguoyun.com/?p=2064");
+          },
+        ),
         ListTile(
           title: const Text("账号配置"),
           trailing: Icon(
@@ -228,7 +229,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
         if (!widget.fromHome)
           SwitchListTile(
             title: const Text("自动还原"),
-            subtitle: const Text("进入应用前还原最新备份文件\n若选择打开应用后备份则不会还原"),
+            subtitle: const Text("进入应用前还原最新备份文件\n若选择打开应用后自动备份，则该功能不会生效"),
             value: backupService.enableAutoRestoreFromRemote,
             onChanged: (value) {
               backupService.setAutoRestoreFromRemote(value);
@@ -242,6 +243,8 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           onTap: () async {
             if (SPUtil.getBool("online")) {
               showModalBottomSheet(
+                // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
+                barrierColor: widget.fromHome ? Colors.transparent : null,
                 context: context,
                 builder: (context) => const BackUpFileListPage(),
               ).then((value) {

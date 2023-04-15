@@ -14,7 +14,6 @@ import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -157,33 +156,30 @@ class _AnimeListPageState extends State<AnimeListPage>
       onPressed: () {
         showModalBottomSheet(
           context: context,
-          builder: (context) => const BackupAndRestorePage(fromHome: true),
-          // builder: (context) {
-          //   return Scaffold(
-          //     appBar: AppBar(
-          //       title: const Text("备份和还原"),
-          //       automaticallyImplyLeading: false,
-          //     ),
-          //     body: Column(
-          //       children: [
-          //         ListTile(
-          //           leading: const Icon(Icons.cloud_upload),
-          //           title: const Text("立即备份到远程"),
-          //           onTap: () {},
-          //         ),
-          //         ListTile(
-          //           leading: const Icon(Icons.restore),
-          //           title: const Text("还原最新备份"),
-          //           onTap: () {},
-          //         ),
-          //       ],
-          //     ),
-          //   );
-          // },
+          builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: const Text("云端数据"),
+                automaticallyImplyLeading: false,
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const BackupAndRestorePage()));
+                      },
+                      child: const Text("进入完整页面")),
+                  // IconButton(
+                  //     onPressed: () {}, icon: const Icon(Icons.chevron_right))
+                ],
+              ),
+              body: const BackupAndRestorePage(fromHome: true)),
         );
       },
       icon: const Icon(Icons.cloud_outlined),
-      tooltip: "备份和还原",
+      tooltip: "云端数据",
     ));
     actions.add(IconButton(
       onPressed: () {
