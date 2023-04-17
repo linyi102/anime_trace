@@ -786,7 +786,9 @@ class SqliteUtil {
         from anime left join history on anime.anime_id = history.anime_id
             and anime.review_number = history.review_number and history.episode_number = 1
         where anime.tag_name = '$tagName'
-        order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
+        -- Windows生效，Android不支持nulls last
+        -- order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
+        ${animeSortCond.desc ? 'order by IFNULL(history.date, \'0\') desc' : 'order by IFNULL(history.date, \'9\')'}
       ''');
     } else if (sortCond.columnName == 'recent_watch_time') {
       list = await database.rawQuery('''
@@ -800,7 +802,7 @@ class SqliteUtil {
                 where anime.anime_id = history.anime_id and anime.review_number = history.review_number
             )
         where anime.tag_name = '$tagName'
-        order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
+        ${animeSortCond.desc ? 'order by IFNULL(history.date, \'0\') desc' : 'order by IFNULL(history.date, \'9\')'}
       ''');
     } else {
       String orderSql = '''
