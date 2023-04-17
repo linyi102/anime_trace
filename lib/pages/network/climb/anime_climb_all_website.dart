@@ -205,9 +205,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         }
 
         // 搜索源行+搜索结果
-        return ListView(
-          shrinkWrap: true, //解决无限高度问题
-          physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
+        return Column(
           children: [
             // 搜索源行
             ListTile(

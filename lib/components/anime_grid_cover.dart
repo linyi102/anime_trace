@@ -13,6 +13,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool onlyShowCover; // 动漫详细页只显示封面
   final double coverWidth; // 传入固定宽度，用于水平列表
   final bool showProgress;
+  final bool showProgressBar;
   final bool showReviewNumber;
   final bool showName;
   final bool isSelected;
@@ -24,6 +25,7 @@ class AnimeGridCover extends StatelessWidget {
     Key? key,
     this.onlyShowCover = false,
     this.showProgress = true,
+    this.showProgressBar = false, // 只允许在收藏页显示进度条，聚合搜索页显示会报错
     this.showReviewNumber = true,
     this.showName = true,
     this.isSelected = false,
@@ -63,8 +65,8 @@ class AnimeGridCover extends StatelessWidget {
                     _buildReviewNumber(context),
                 ],
               ),
-              if (showProgress &&
-                  _anime.isCollected() &&
+              if (_anime.isCollected() &&
+                  showProgressBar &&
                   _animeDisplayController.showProgressBar.value)
                 Container(
                   padding:

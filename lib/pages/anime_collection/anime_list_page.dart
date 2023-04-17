@@ -300,6 +300,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     return AnimeGridView(
         animes: animesInTag[checklistIdx],
         tagIdx: checklistIdx,
+        showProgressBar: true,
         loadMore: (int tagIdx, int animeIdx) {
           _loadExtraData(tagIdx, animeIdx);
         },

@@ -11,6 +11,7 @@ class AnimeGridView extends StatefulWidget {
       required this.tagIdx,
       required this.scrollController,
       required this.loadMore,
+      this.showProgressBar = false,
       this.onClick,
       this.onLongClick,
       this.isSelected,
@@ -19,6 +20,7 @@ class AnimeGridView extends StatefulWidget {
 
   final int tagIdx;
   final List<Anime> animes;
+  final bool showProgressBar;
   final void Function(int animeIdx)? onClick;
   final void Function(int animeIdx)? onLongClick;
   final void Function(int tagIdx, int animeIdx) loadMore;
@@ -56,6 +58,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
                   : null,
               borderRadius: BorderRadius.circular(AppTheme.imgRadius),
               child: AnimeGridCover(anime,
+                  showProgressBar: widget.showProgressBar,
                   isSelected: widget.isSelected == null
                       ? false
                       : widget.isSelected!(animeIdx)),

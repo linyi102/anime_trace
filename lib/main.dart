@@ -302,22 +302,23 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // }
 
   // 滚动到边界时的效果
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    // 拉伸
-    // return StretchingOverscrollIndicator(
-    //   child: child,
-    //   axisDirection: details.direction,
-    // );
+  // Windows端和聚合搜索页左右滑动会报错
+  // 'package:flutter/src/widgets/overscroll_indicator.dart': Failed assertion: line 243 pos 14: 'notification.metrics.axis == widget.axis': is not true.
+  // 因此这里注释掉
+  // @override
+  // Widget buildOverscrollIndicator(
+  //     BuildContext context, Widget child, ScrollableDetails details) {
+  //   // 拉伸
+  //   // return StretchingOverscrollIndicator(
+  //   //   child: child,
+  //   //   axisDirection: details.direction,
+  //   // );
 
-    // 发光
-    return GlowingOverscrollIndicator(
-      child: child,
-      showLeading: true,
-      showTrailing: true,
-      axisDirection: details.direction,
-      color: Theme.of(context).colorScheme.secondary,
-    );
-  }
+  //   // 发光
+  //   return GlowingOverscrollIndicator(
+  //     axisDirection: details.direction,
+  //     color: Theme.of(context).colorScheme.secondary,
+  //     child: child,
+  //   );
+  // }
 }
