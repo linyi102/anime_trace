@@ -58,7 +58,7 @@ class SqliteUtil {
     if (Platform.isAndroid) {
       // dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
       dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
-      Log.info("👉android: path=$dbPath");
+      Log.info("👉Android: path=$dbPath");
       // await deleteDatabase(dbPath); // 删除Android数据库
       return await openDatabase(
         dbPath,
@@ -75,7 +75,7 @@ class SqliteUtil {
       dbPath =
           "${(await getApplicationSupportDirectory()).path}/$sqlFileName"; // 使用
       // await deleteDatabase(dbPath); // 删除桌面端数据库，然而并不能删除
-      Log.info("👉windows: path=$dbPath");
+      Log.info("👉Windows: path=$dbPath");
       var databaseFactory = databaseFactoryFfi;
       return await databaseFactory.openDatabase(dbPath,
           // onCreate、version都封装到了options中

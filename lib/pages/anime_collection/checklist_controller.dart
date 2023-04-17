@@ -66,6 +66,12 @@ class ChecklistController extends GetxController {
     loadAnimes();
   }
 
+  /// 恢复数据后重新获取动漫
+  /// TODO：没有获取并显示最新添加的清单，并且还能看见已删除的清单
+  void restore() {
+    loadAnimes();
+  }
+
   void loadAnimes() async {
     // 首次或重新渲染时，重置页号，就能保证之后也能加载更多数据了
     for (int i = 0; i < pageIndexList.length; ++i) {

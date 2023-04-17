@@ -10,6 +10,7 @@ import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
+import 'package:flutter_test_future/pages/settings/pages/bbr_page.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
@@ -73,6 +74,33 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           : ListView(
               children: [
                 _buildClearAnimeDescTile(),
+                ListTile(
+                  title: const Text("撤销还原"),
+                  subtitle: const Text("点击查看还原前的记录"),
+                  onTap: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) => const RBRPage());
+                  },
+                  trailing: IconButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("帮助"),
+                          content: const Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
+                              "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。"),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("我已了解"))
+                          ],
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.help_outline),
+                  ),
+                ),
                 const Divider(),
                 _buildLocalBackup(),
                 const Divider(),

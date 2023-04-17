@@ -37,7 +37,7 @@ class BackupUtil {
   static Future<String> generateZipName() async {
     // 2020-02-22 01:01:01.182096取到秒
     String time = DateTime.now().toString().split(".")[0];
-    // :和空格转为-
+    // :和空格转为-，文件名不能包含英文冒号，否则会提示文件名、目录名或卷标语法不正确
     time = time.replaceAll(":", "-");
     time = time.replaceAll(" ", "-");
 
@@ -56,31 +56,11 @@ class BackupUtil {
   /// 创建临时备份文件
   static Future<File> createTempBackUpFile(String zipName) async {
     var encoder = ZipFileEncoder();
-    String localRootDirPath = await getLocalRootDirPath();
+    String dirPath = (await getTemporaryDirectory()).path;
 
-    String tempZipFilePath = "$localRootDirPath/$zipName";
+    String tempZipFilePath = "$dirPath/$zipName";
     encoder.create(tempZipFilePath);
-    Directory directory = Directory(localRootDirPath);
-    // 其他方法：获取上一级目录，直接压缩
-    await directory.list().forEach((element) {
-      switch (element.statSync().type) {
-        case FileSystemEntityType.directory:
-          encoder.addDirectory(Directory(element.path)); // 添加目录
-          // Log.info("添加目录：${element.path}");
-          break;
-        case FileSystemEntityType.file:
-          if (element.path.endsWith(".zip")) break; // 避免备份压缩包
-          // 只备份my.db
-          if (element.path.endsWith(SqliteUtil.sqlFileName)) {
-            encoder.addFile(File(element.path));
-            Log.info("添加文件：${element.path}");
-          }
-          break;
-        default:
-          // Log.info("非目录和文件，不压缩：${element.path}");
-          break;
-      }
-    });
+    encoder.addFile(File(SqliteUtil.dbPath));
     encoder.close();
 
     return File(tempZipFilePath);
@@ -210,12 +190,29 @@ class BackupUtil {
   //   await for (FileSystemEntity file in files) {}
   // }
 
-  static Future<Result> restoreFromLocal(String localBackupFilePath,
-      {bool delete = false}) async {
+  static Future<Result> restoreFromLocal(
+    String localBackupFilePath, {
+    bool delete = false,
+    bool recordBeforeRestore = true,
+  }) async {
     final UpdateRecordController updateRecordController = Get.find();
     final LabelsController labelsController = Get.find();
     bool restoreOk = false;
 
+    // 1.还原前先备份当前数据库文件
+    if (recordBeforeRestore) {
+      String dirPath = await getRBRPath();
+      // 时间取到秒
+      String time = DateTime.now().toString().split(".")[0];
+      // :和空格转为-，文件名不能包含英文冒号，否则会提示文件名、目录名或卷标语法不正确
+      time = time.replaceAll(":", "-");
+      time = time.replaceAll(" ", "-");
+      String recordFileName = "record-$time.zip";
+      var recordFile = await BackupUtil.createTempBackUpFile(recordFileName);
+      recordFile.rename("$dirPath/$recordFileName");
+    }
+
+    // 2.然后进行还原
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
       // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
@@ -327,5 +324,13 @@ class BackupUtil {
     } else {
       return files.first;
     }
+  }
+
+  /// 获取还原时备份当前数据所应存放的目录路径
+  static Future<String> getRBRPath() async {
+    String dirPath =
+        "${await BackupUtil.getLocalRootDirPath()}/backup_before_restore";
+    Directory(dirPath).createSync();
+    return dirPath;
   }
 }

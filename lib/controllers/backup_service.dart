@@ -143,8 +143,7 @@ class BackupService extends GetxService {
           // 还原成功
           ToastUtil.showText("已还原最新备份");
           // 重绘动漫收藏页，显示最新添加的动漫
-          // 不足：没有获取并显示最新添加的清单，并且还能看见已删除的清单
-          ChecklistController.to.loadAnimes();
+          ChecklistController.to.restore();
         }
       },
     );

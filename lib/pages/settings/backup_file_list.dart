@@ -44,7 +44,8 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("备份 (${files.length})"),
+          title: Text("远程备份 (${files.length})"),
+          automaticallyImplyLeading: false,
         ),
         body: FadeAnimatedSwitcher(
           loadOk: _loadOk,
@@ -149,7 +150,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
         });
   }
 
-  Future<dynamic> _showRestoreDialog(BuildContext context, File file) {
+  _showRestoreDialog(BuildContext context, File file) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -166,6 +167,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                 onPressed: () async {
                   Navigator.pop(context);
 
+                  // 开始还原
                   ToastUtil.showLoading(
                     msg: "还原数据中",
                     task: () {
@@ -175,7 +177,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                       taskValue as Result;
                       ToastUtil.showText(taskValue.msg);
                       // 重新获取动漫
-                      ChecklistController.to.loadAnimes();
+                      ChecklistController.to.restore();
                     },
                   );
                 },
