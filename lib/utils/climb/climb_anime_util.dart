@@ -87,6 +87,7 @@ class ClimbAnimeUtil {
     int skipUpdateCnt = 0, needUpdateCnt = 0;
     final UpdateRecordController updateRecordController = Get.find();
     updateRecordController.resetUpdateOkCnt(); // 重新设置
+    updateRecordController.updating.value = true;
 
     List<Anime> needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
 
@@ -131,6 +132,7 @@ class ClimbAnimeUtil {
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     await Future.wait(futures);
+    updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");
   }
 }

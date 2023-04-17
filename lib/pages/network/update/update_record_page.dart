@@ -177,40 +177,43 @@ class UpdateRecordPage extends StatelessWidget {
     int updateOkCnt = updateRecordController.updateOkCnt.value;
     int needUpdateCnt = updateRecordController.needUpdateCnt.value;
 
-    return GestureDetector(
-      onTap: () {
-        Log.info("进入页面");
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return const NeedUpdateAnimeList();
-        }));
-      },
-      child: Card(
-        child: Container(
-          height: 70,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: Container()),
-                  Text("更新进度：$updateOkCnt/$needUpdateCnt"),
-                  Text("查看未完结动漫", style: Theme.of(context).textTheme.caption),
-                  Expanded(child: Container()),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  ClimbAnimeUtil.updateAllAnimesInfo();
+    return Card(
+      child: Container(
+        height: 70,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Log.info("进入页面");
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const NeedUpdateAnimeList();
+                  }));
                 },
-                child: const Text(
-                  "立即更新",
-                  style: TextStyle(fontSize: 13),
+                child: Container(
+                  color: Colors.transparent,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: Container()),
+                      Text("更新进度：$updateOkCnt/$needUpdateCnt"),
+                      Text("查看未完结动漫",
+                          style: Theme.of(context).textTheme.caption),
+                      Expanded(child: Container()),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            ElevatedButton(
+              onPressed: updateRecordController.updating.value
+                  ? null
+                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+              child: const Text("立即更新"),
+            ),
+          ],
         ),
       ),
     );

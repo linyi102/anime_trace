@@ -15,6 +15,7 @@ class UpdateRecordController extends GetxController {
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
 
   bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
+  var updating = false.obs;
 
   RxList<UpdateRecordVo> updateRecordVos = RxList.empty();
   RxBool loadOk = false.obs;
