@@ -26,18 +26,18 @@ class LabelManagePage extends StatelessWidget {
     // 把不能使用final的数据放在方法里，好处是可以使用const
     // 缺点是要想提取子组件时，需要传递很多参数
     LabelsController labelsController = Get.find();
-    var inputKeywordController = TextEditingController();
-    _renewAllLabels(labelsController);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理"),
+        automaticallyImplyLeading: enableSelectLabelForAnime ? false : true,
       ),
       body: ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
         children: [
-          _buildSearchBar(inputKeywordController, labelsController),
+          _buildSearchBar(
+              labelsController.inputKeywordController, labelsController),
           const SizedBox(height: 20),
           Obx(() => _buildLabelWrap(labelsController, context)),
           // 底部空白，避免加号悬浮按钮遮挡删除按钮
@@ -46,7 +46,7 @@ class LabelManagePage extends StatelessWidget {
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(
-          context, labelsController, inputKeywordController),
+          context, labelsController, labelsController.inputKeywordController),
     );
   }
 
@@ -123,8 +123,12 @@ class LabelManagePage extends StatelessWidget {
           labelsController.kw = kw; // 记录关键字
         });
       },
+      onEditingComplete: () {
+        labelsController.kw = inputKeywordController.text;
+      },
       onTapClear: () async {
         inputKeywordController.clear();
+        labelsController.kw = "";
         labelsController.labels.value = await LabelDao.getAllLabels();
       },
     );

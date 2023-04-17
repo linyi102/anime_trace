@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
@@ -10,8 +9,8 @@ import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.da
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 
 /// 聚合页
 class AggregatePage extends StatefulWidget {
@@ -27,7 +26,8 @@ class _AggregatePageState extends State<AggregatePage> {
 
   final favWebsite = FavWebsite(
       url: "https://bgmlist.com/",
-      icoUrl: "https://bgmlist.com/public/favicons/apple-touch-icon.png",
+      // icoUrl: "https://bgmlist.com/public/favicons/apple-touch-icon.png",
+      icoUrl: "assets/images/website/fzff.png",
       name: "番组放送");
 
   double iconSize = 30.0;
@@ -198,32 +198,32 @@ class _AggregatePageState extends State<AggregatePage> {
             children: [
               IconTextButton(
                 iconSize: iconSize,
-                // icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
-                icon: Container(
-                    decoration: const BoxDecoration(
-                        color: Color.fromRGBO(19, 189, 157, 1),
-                        shape: BoxShape.circle),
-                    child: const Center(
-                        child: Text("番",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16)))),
+                icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+                // icon: Container(
+                //     decoration: const BoxDecoration(
+                //         color: Color.fromRGBO(19, 189, 157, 1),
+                //         shape: BoxShape.circle),
+                //     child: const Center(
+                //         child: Text("番",
+                //             style:
+                //                 TextStyle(color: Colors.white, fontSize: 16)))),
                 text: const Text("番组放送", textScaleFactor: 0.9),
                 onTap: () => LaunchUrlUtil.launch(
                     context: context, uriStr: favWebsite.url),
               ),
-              IconTextButton(
-                  iconSize: iconSize,
-                  icon: Container(
-                      decoration: const BoxDecoration(
-                        // color: Theme.of(context).primaryColor,
-                        color: Color.fromRGBO(55, 197, 254, 1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.auto_fix_high_rounded,
-                          size: 18, color: Colors.white)),
-                  text: const Text("封面修复", textScaleFactor: 0.9),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const LapseCoverAnimesPage()))),
+              // IconTextButton(
+              //     iconSize: iconSize,
+              //     icon: Container(
+              //         decoration: const BoxDecoration(
+              //           // color: Theme.of(context).primaryColor,
+              //           color: Color.fromRGBO(55, 197, 254, 1),
+              //           shape: BoxShape.circle,
+              //         ),
+              //         child: const Icon(Icons.auto_fix_high_rounded,
+              //             size: 18, color: Colors.white)),
+              //     text: const Text("封面修复", textScaleFactor: 0.9),
+              //     onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              //         builder: (context) => const LapseCoverAnimesPage()))),
               IconTextButton(
                   iconSize: iconSize,
                   icon: Container(
@@ -266,6 +266,7 @@ class IconTextButton extends StatelessWidget {
       this.itemWidth = 80,
       this.iconSize = 30,
       super.key});
+
   final Widget icon;
   final Widget text;
   final void Function()? onTap;

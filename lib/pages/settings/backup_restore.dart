@@ -51,7 +51,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     // SPUtil.clear();
     // 获取最新情况，更新SP中的online
     WebDavUtil.pingWebDav().then((pingOk) {
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 
