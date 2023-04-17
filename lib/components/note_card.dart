@@ -102,7 +102,6 @@ class _NoteCardState extends State<NoteCard> {
             child: GestureDetector(
               onTap: _enterAnimeDetailPage,
               child: Container(
-                // color: Colors.red[200],
                 alignment: Alignment.centerLeft,
                 child: Text(
                   note.anime.animeName,
@@ -234,9 +233,9 @@ class _NoteCardState extends State<NoteCard> {
                   ToastUtil.showText("删除失败！");
                 }
               },
-              child: const Text(
+              child: Text(
                 "确定",
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).errorColor),
               ),
             )
           ],

@@ -27,8 +27,8 @@ class ChecklistController extends GetxController {
   final int pageSize = 50;
 
   // 多选
-  Map<int, bool> mapSelected = {};
-  bool multiSelected = false;
+  List<Anime> selectedAnimes = [];
+  bool multi = false;
 
   void loadData(dynamic _animeListPageState) async {
     tags = await SqliteUtil.getAllTags();
@@ -57,8 +57,8 @@ class ChecklistController extends GetxController {
         // lastTopTabIndex = tabController.index;
         SPUtil.setInt("last_top_tab_index", tabController!.index);
         // 取消多选
-        if (multiSelected) {
-          quitMultiSelectState();
+        if (multi) {
+          quitMulti();
         }
       }
     });
@@ -86,10 +86,10 @@ class ChecklistController extends GetxController {
     // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
   }
 
-  void quitMultiSelectState() {
+  void quitMulti() {
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    multiSelected = false;
-    mapSelected.clear();
+    multi = false;
+    selectedAnimes.clear();
     update();
   }
 }

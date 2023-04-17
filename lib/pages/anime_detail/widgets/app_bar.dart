@@ -229,7 +229,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     // 不用退出
                     // widget.animeController.resetAnime();
                   },
-                  child: const Text("确定", style: TextStyle(color: Colors.red))),
+                  child: Text("确定",
+                      style: TextStyle(color: Theme.of(context).errorColor))),
             ],
           );
         });

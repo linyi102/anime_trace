@@ -183,9 +183,10 @@ class LabelManagePage extends StatelessWidget {
                                       }
                                       Navigator.pop(context);
                                     },
-                                    child: const Text(
+                                    child: Text(
                                       "删除",
-                                      style: TextStyle(color: Colors.red),
+                                      style: TextStyle(
+                                          color: Theme.of(context).errorColor),
                                     )),
                               ],
                             ));

@@ -140,9 +140,9 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                     files.removeAt(index);
                     setState(() {});
                   },
-                  child: const Text(
+                  child: Text(
                     "删除",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: Theme.of(context).errorColor),
                   )),
             ],
           );

@@ -194,9 +194,9 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: const Text(
+                  child: Text(
                     "删除",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: Theme.of(context).errorColor),
                   )),
             ],
           );

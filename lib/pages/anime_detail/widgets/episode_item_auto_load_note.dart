@@ -144,7 +144,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               Container(
                 padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                 height: 120, // 设置高度
-                // color: Colors.redAccent,
                 child: _buildHorizontalImages(note),
               )
           ],
@@ -686,7 +685,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   }
                 }
               },
-              child: const Text("删除", style: TextStyle(color: Colors.red)),
+              child: Text("删除",
+                  style: TextStyle(color: Theme.of(context).errorColor)),
             )
           ],
         );

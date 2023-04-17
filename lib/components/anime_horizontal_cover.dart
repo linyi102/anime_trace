@@ -66,7 +66,6 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       height: height, // 设置高度
-      // color: Colors.redAccent,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: widget.animes.length,

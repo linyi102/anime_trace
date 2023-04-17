@@ -21,8 +21,8 @@ class AnimeGridView extends StatefulWidget {
   final int tagIdx;
   final List<Anime> animes;
   final bool showProgressBar;
-  final void Function(int animeIdx)? onClick;
-  final void Function(int animeIdx)? onLongClick;
+  final void Function(Anime anime)? onClick;
+  final void Function(Anime anime)? onLongClick;
   final void Function(int tagIdx, int animeIdx) loadMore;
   final bool Function(int animeIdx)? isSelected;
   final ScrollController scrollController;
@@ -50,11 +50,10 @@ class _AnimeGridViewState extends State<AnimeGridView>
 
             Anime anime = widget.animes[animeIdx];
             return InkWell(
-              onTap: widget.onClick != null
-                  ? () => widget.onClick!(animeIdx)
-                  : null,
+              onTap:
+                  widget.onClick != null ? () => widget.onClick!(anime) : null,
               onLongPress: widget.onLongClick != null
-                  ? () => widget.onLongClick!(animeIdx)
+                  ? () => widget.onLongClick!(anime)
                   : null,
               borderRadius: BorderRadius.circular(AppTheme.imgRadius),
               child: AnimeGridCover(anime,
