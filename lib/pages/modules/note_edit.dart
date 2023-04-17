@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 
 import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
@@ -160,7 +161,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                     onRatingUpdate: (v) {
                       Log.info("评价分数：$v");
                       widget.note.anime.rate = v.toInt();
-                      SqliteUtil.updateAnimeRate(
+                      AnimeDao.updateAnimeRate(
                           widget.note.anime.animeId, widget.note.anime.rate);
                     })
                 : Text(

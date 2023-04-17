@@ -2,19 +2,15 @@ import 'dart:io';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
+import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
+import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-import '../models/params/anime_sort_cond.dart';
-import 'escape_util.dart';
 
 class SqliteUtil {
   // 单例模式
@@ -240,107 +236,6 @@ class SqliteUtil {
           review_number = ${newAnime.reviewNumber}
       where anime_id = ${oldAnime.animeId};
     ''');
-  }
-
-  static void updateAnimeRate(int animeId, int rate) async {
-    Log.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
-    await database.rawUpdate('''
-    update anime
-    set rate = $rate
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateAnimeUrl(int animeId, String animeUrl) async {
-    Log.info("sql: updateAnimeUrl");
-    animeUrl = EscapeUtil.escapeStr(animeUrl);
-    await database.rawUpdate('''
-    update anime
-    set anime_url = '$animeUrl'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static Future<void> updateAnimeCoverUrl(
-      int animeId, String animeCoverUrl) async {
-    Log.info("sql: updateAnimeCoverUrl");
-    animeCoverUrl = EscapeUtil.escapeStr(animeCoverUrl);
-    await database.rawUpdate('''
-    update anime
-    set anime_cover_url = '$animeCoverUrl'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
-    Log.info("sql: updateAnimeNameByAnimeId");
-    newAnimeName = EscapeUtil.escapeStr(newAnimeName);
-    await database.rawUpdate('''
-    update anime
-    set anime_name = '$newAnimeName'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateAnimeNameAnotherByAnimeId(
-      int animeId, String newNameAnother) async {
-    Log.info("sql: updateAnimeNameAnotherByAnimeId");
-    newNameAnother = EscapeUtil.escapeStr(newNameAnother);
-    await database.rawUpdate('''
-    update anime
-    set name_another = '$newNameAnother'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateAnimeDescByAnimeId(int animeId, String newDesc) async {
-    Log.info("sql: updateAnimeDescByAnimeId");
-    newDesc = EscapeUtil.escapeStr(newDesc);
-    await database.rawUpdate('''
-    update anime
-    set anime_desc = '$newDesc'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateAnimePlayStatusByAnimeId(
-      int animeId, String newPlayStatus) async {
-    Log.info("sql: updateAnimePlayStatusByAnimeId");
-    await database.rawUpdate('''
-    update anime
-    set play_status = '$newPlayStatus'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateTagByAnimeId(int animeId, String newTagName) async {
-    Log.info("sql: updateTagNameByAnimeId");
-    // 同时修改最后一次修改标签的时间
-    await database.rawUpdate('''
-    update anime
-    set tag_name = '$newTagName', last_mode_tag_time = '${DateTime.now().toString()}'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static void updateDescByAnimeId(int animeId, String desc) async {
-    Log.info("sql: updateDescByAnimeId");
-    await database.rawUpdate('''
-    update anime
-    set anime_desc = '$desc'
-    where anime_id = $animeId;
-    ''');
-  }
-
-  static Future<bool> updateEpisodeCntByAnimeId(
-      int animeId, int episodeCnt) async {
-    Log.info("sql: updateEpisodeCntByAnimeId");
-
-    return await database.rawUpdate('''
-      update anime
-      set anime_episode_cnt = $episodeCnt
-      where anime_id = $animeId;
-      ''') > 0;
   }
 
   // 转义单引号

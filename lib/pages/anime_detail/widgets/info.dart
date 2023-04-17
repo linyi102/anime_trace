@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -13,10 +14,8 @@ import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_pa
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -107,7 +106,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
           _anime.rate = v.toInt();
-          SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
+          AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
         });
   }
 
@@ -354,7 +353,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         return;
       }
       int episodeCnt = value;
-      SqliteUtil.updateEpisodeCntByAnimeId(_anime.animeId, episodeCnt)
+      AnimeDao.updateEpisodeCntByAnimeId(_anime.animeId, episodeCnt)
           .then((value) {
         // 修改数据
         _anime.animeEpisodeCnt = episodeCnt;
@@ -388,7 +387,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                           ),
                     onTap: () {
                       _anime.tagName = tags[index];
-                      SqliteUtil.updateTagByAnimeId(
+                      AnimeDao.updateTagByAnimeId(
                           _anime.animeId, _anime.tagName);
                       Log.info("修改清单为${_anime.tagName}");
                       setState(() {});

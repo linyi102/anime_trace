@@ -1,5 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 
 /// 笔记卡片
@@ -127,7 +127,7 @@ class _NoteCardState extends State<NoteCard> {
                     onRatingUpdate: (v) {
                       Log.info("评价分数：$v");
                       note.anime.rate = v.toInt();
-                      SqliteUtil.updateAnimeRate(
+                      AnimeDao.updateAnimeRate(
                           note.anime.animeId, note.anime.rate);
                     })
                 : Text(

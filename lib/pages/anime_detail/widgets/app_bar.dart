@@ -13,7 +13,6 @@ import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
@@ -194,6 +193,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   ).then((value) {
                     // 从数据库中获取迁移后的动漫
                     widget.animeController.loadAnime(_anime);
+                    // TODO 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
+                    // widget.animeController.loadEpisode();
                   });
                 },
               ),
@@ -371,7 +372,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
           _anime.rate = v.toInt();
-          SqliteUtil.updateAnimeRate(_anime.animeId, _anime.rate);
+          AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
         });
   }
 

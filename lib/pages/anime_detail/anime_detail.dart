@@ -213,6 +213,23 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
     }
+    // 如果某些信息不为空，则不更新这些信息，避免覆盖用户修改的信息
+    // 不包括名称、播放状态、动漫链接、封面链接
+    if (oldAnime.nameAnother.isNotEmpty) {
+      newAnime.nameAnother = oldAnime.nameAnother;
+    }
+    if (oldAnime.area.isNotEmpty) {
+      newAnime.area = oldAnime.area;
+    }
+    if (oldAnime.category.isNotEmpty) {
+      newAnime.category = oldAnime.category;
+    }
+    if (oldAnime.premiereTime.isNotEmpty) {
+      newAnime.premiereTime = oldAnime.premiereTime;
+    }
+    if (oldAnime.animeDesc.isNotEmpty) {
+      newAnime.animeDesc = oldAnime.animeDesc;
+    }
 
     if (_anime.isCollected()) {
       // 如果收藏了，才去更新

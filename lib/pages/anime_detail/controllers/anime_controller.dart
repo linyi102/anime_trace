@@ -245,7 +245,7 @@ class AnimeController extends GetxController {
       context: context,
       initialDate: defaultDateTime ?? DateTime.now(),
       // 没有给默认时间时，设置为今天
-      firstDate: DateTime(1986),
+      firstDate: DateTime(1970),
       lastDate: DateTime(DateTime.now().year + 2),
     );
     // 如果没有选择日期，则直接返回

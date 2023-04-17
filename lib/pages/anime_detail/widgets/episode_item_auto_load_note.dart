@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -425,7 +426,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   SPUtil.getBool("autoMoveToFinishedTag",
                       defaultValue: false)) {
                 _anime.tagName = selectedFinishedTag;
-                SqliteUtil.updateTagByAnimeId(_anime.animeId, _anime.tagName);
+                AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
                 Log.info("修改清单为${_anime.tagName}");
                 setState(() {});
                 return;
@@ -482,7 +483,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                       _anime.tagName = selectedFinishedTag;
                       SPUtil.setString(
                           "selectedFinishedTag", selectedFinishedTag);
-                      SqliteUtil.updateTagByAnimeId(
+                      AnimeDao.updateTagByAnimeId(
                           _anime.animeId, _anime.tagName);
                       Log.info("修改清单为${_anime.tagName}");
                       // 更新info
@@ -497,8 +498,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     _anime.tagName = selectedFinishedTag;
                     SPUtil.setString(
                         "selectedFinishedTag", selectedFinishedTag);
-                    SqliteUtil.updateTagByAnimeId(
-                        _anime.animeId, _anime.tagName);
+                    AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
                     Log.info("修改清单为${_anime.tagName}");
                     // 更新info
                     widget.animeController

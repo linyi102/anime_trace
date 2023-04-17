@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
@@ -96,7 +96,7 @@ class AnimeCoverDetail extends StatelessWidget {
                           anime =
                               await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
                           // 爬取后，只更新动漫封面
-                          SqliteUtil.updateAnimeCoverUrl(
+                          AnimeDao.updateAnimeCoverUrl(
                                   anime.animeId, anime.animeCoverUrl)
                               .then((value) {
                             // 更新控制器中的动漫封面
@@ -296,7 +296,7 @@ class AnimeCoverDetail extends StatelessWidget {
                           onPressed: () {
                             animeController.updateCoverUrl(textController.text);
 
-                            SqliteUtil.updateAnimeCoverUrl(
+                            AnimeDao.updateAnimeCoverUrl(
                                 animeController.anime.animeId,
                                 animeController.anime.animeCoverUrl);
                             Navigator.pop(dialogContext); // 退出编辑对话框
@@ -342,7 +342,7 @@ class AnimeCoverDetail extends StatelessWidget {
       String relativeImagePath =
           ImageUtil.getRelativeCoverImagePath(absoluteImagePath);
       // 获取到封面的相对地址后，添加到数据库，并更新controller中的动漫封面
-      SqliteUtil.updateAnimeCoverUrl(
+      AnimeDao.updateAnimeCoverUrl(
           animeController.anime.animeId, relativeImagePath);
       animeController.updateCoverUrl(relativeImagePath);
       // 退出选择

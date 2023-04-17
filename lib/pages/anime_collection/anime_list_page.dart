@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -506,7 +507,7 @@ class _AnimeListPageState extends State<AnimeListPage>
               int pos = list[m] - j;
 
               animesInTag[oldTagindex][pos].tagName = newTagName;
-              SqliteUtil.updateTagByAnimeId(
+              AnimeDao.updateTagByAnimeId(
                   animesInTag[oldTagindex][pos].animeId, newTagName);
               Log.info(
                   "修改${animesInTag[oldTagindex][pos].animeName}的清单为$newTagName");

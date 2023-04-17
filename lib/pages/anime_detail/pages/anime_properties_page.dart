@@ -1,15 +1,14 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-
-import '../../../components/dialog/dialog_select_play_status.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimePropertiesPage({required this.animeController, Key? key})
@@ -41,9 +40,8 @@ class AnimePropertiesPage extends StatelessWidget {
         children: [
           _buildPropRow(context, title: "名称", content: anime.animeName,
               onPressed: () {
-            String animeName = anime.animeName;
-            _showDialogAboutEdit(context, title: "编辑名称", property: animeName,
-                confirm: (newName) {
+            _showDialogAboutEdit(context,
+                title: "名称", initialValue: anime.animeName, confirm: (newName) {
               if (newName.isEmpty) {
                 ToastUtil.showText("动漫名不允许为空");
                 return;
@@ -53,26 +51,41 @@ class AnimePropertiesPage extends StatelessWidget {
               animeController.anime.animeName = newName;
               animeController.updateAnimeInfo();
 
-              SqliteUtil.updateAnimeNameByAnimeId(anime.animeId, newName);
+              AnimeDao.updateAnimeNameByAnimeId(anime.animeId, newName);
             });
           }),
           _buildPropRow(context, title: "别名", content: anime.nameAnother,
               onPressed: () {
-            String nameAnother = anime.nameAnother;
-            _showDialogAboutEdit(context, title: "编辑别名", property: nameAnother,
-                confirm: (newNameAnother) {
+            _showDialogAboutEdit(context,
+                title: "别名",
+                initialValue: anime.nameAnother, confirm: (newNameAnother) {
               Log.info("更新别名：$newNameAnother");
 
               animeController.anime.nameAnother = newNameAnother;
               animeController.updateAnimeInfo();
 
-              SqliteUtil.updateAnimeNameAnotherByAnimeId(
+              AnimeDao.updateAnimeNameAnotherByAnimeId(
                   anime.animeId, newNameAnother);
             });
           }),
-          _buildPropRow(context, title: "地区", content: anime.area),
-          _buildPropRow(context, title: "类别", content: anime.category),
-          _buildPropRow(context, title: "首播时间", content: anime.premiereTime),
+          _buildPropRow(
+            context,
+            title: "地区",
+            content: anime.area,
+            onPressed: () => _showDialogEditArea(context),
+          ),
+          _buildPropRow(
+            context,
+            title: "类别",
+            content: anime.category,
+            onPressed: () => _showDialogEditCategory(context),
+          ),
+          _buildPropRow(
+            context,
+            title: "首播时间",
+            content: anime.premiereTime,
+            onPressed: () => _showDialogEditPremiereTime(context),
+          ),
           _buildPropRow(context,
               title: "播放状态",
               content: anime.getPlayStatus().text, onPressed: () {
@@ -83,27 +96,124 @@ class AnimePropertiesPage extends StatelessWidget {
           // _buildPropRow(context, title: "官网", content: anime.officialSite),
           // _buildPropRow(context,
           //     title: "制作公司", content: anime.productionCompany),
-          _buildPropRow(context, title: "动漫链接", content: anime.animeUrl),
-          _buildPropRow(context, title: "封面链接", content: anime.animeCoverUrl),
+          _buildPropRow(
+            context,
+            title: "动漫链接",
+            content: anime.animeUrl,
+            onPressed: () {
+              _showDialogAboutEdit(context,
+                  title: "动漫链接",
+                  initialValue: anime.animeUrl,
+                  helperText: "修改可能导致下拉刷新失效", confirm: (value) {
+                Log.info("更新封面：$value");
+
+                animeController.anime.animeUrl = value;
+                animeController.updateAnimeInfo();
+                AnimeDao.updateAnimeUrl(anime.animeId, value);
+              });
+            },
+          ),
+          _buildPropRow(
+            context,
+            title: "封面链接",
+            content: anime.animeCoverUrl,
+            onPressed: () {
+              _showDialogAboutEdit(context,
+                  title: "封面链接",
+                  initialValue: anime.animeCoverUrl, confirm: (value) {
+                Log.info("更新封面：$value");
+
+                animeController.anime.animeCoverUrl = value;
+                animeController.updateAnimeInfo();
+                animeController.updateCoverUrl(value);
+                AnimeDao.updateAnimeCoverUrl(anime.animeId, value);
+              });
+            },
+          ),
           _buildPropRow(
             context,
             title: "简介",
             content: anime.animeDesc,
             onPressed: () {
-              String animeDesc = anime.animeDesc;
-              _showDialogAboutEdit(context, title: "编辑简介", property: animeDesc,
-                  confirm: (newDesc) {
+              _showDialogAboutEdit(context,
+                  title: "简介",
+                  initialValue: anime.animeDesc, confirm: (newDesc) {
                 Log.info("更新简介：$newDesc");
 
                 animeController.anime.animeDesc = newDesc;
                 animeController.updateAnimeInfo();
 
-                SqliteUtil.updateAnimeDescByAnimeId(anime.animeId, newDesc);
+                AnimeDao.updateAnimeDescByAnimeId(anime.animeId, newDesc);
               });
             },
           ),
           const ListTile()
         ],
+      ),
+    );
+  }
+
+  _showDialogEditPremiereTime(BuildContext context) async {
+    var initialDate = DateTime.tryParse(anime.premiereTime);
+    initialDate ??= DateTime.now();
+    var selectedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1970),
+      lastDate: DateTime(initialDate.year + 10),
+    );
+    if (selectedDate == null) return;
+
+    String value = selectedDate.toString().substring(0, 10);
+    anime.premiereTime = value;
+    animeController.updateAnimeInfo();
+    AnimeDao.updatePremiereTime(anime.animeId, value);
+  }
+
+  _showDialogEditCategory(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text("类别"),
+        children: ['未知', 'TV', 'WEB', '剧场版', 'OVA', "OAD", "BD"]
+            .map((e) => RadioListTile(
+                  title: Text(e),
+                  value: e,
+                  groupValue: anime.category,
+                  onChanged: (value) {
+                    if (value == null) return;
+
+                    Navigator.pop(context);
+                    anime.category = value as String;
+                    animeController.updateAnimeInfo();
+                    AnimeDao.updateCategory(anime.animeId, value);
+                  },
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  _showDialogEditArea(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text("地区"),
+        children: ['未知', '日本', '中国', '欧美']
+            .map((e) => RadioListTile(
+                  title: Text(e),
+                  value: e,
+                  groupValue: anime.area,
+                  onChanged: (value) {
+                    if (value == null) return;
+
+                    Navigator.pop(context);
+                    anime.area = value as String;
+                    animeController.updateAnimeInfo();
+                    AnimeDao.updateArea(anime.animeId, value);
+                  },
+                ))
+            .toList(),
       ),
     );
   }
@@ -118,25 +228,24 @@ class AnimePropertiesPage extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: GestureDetector(
-            onTap: onPressed,
-            child: Row(
-              children: [
-                Text("$title "),
-                if (onPressed != null)
-                  const Icon(EvaIcons.editOutline, size: 18)
-              ],
-            ),
+          onTap: onPressed,
+          title: Row(
+            children: [
+              Text("$title "),
+              if (onPressed != null) const Icon(EvaIcons.editOutline, size: 18)
+            ],
           ),
           subtitle: GestureDetector(
             onTap: onPressed,
-            child: _buildSelectedOrUrlText(
-              context,
-              content,
-              // 如果可以点击，则文字不可选，保证能够触发点击事件
-              select: onPressed == null ? true : false,
-            ),
+            child: Text(content),
           ),
+          trailing: content.startsWith("http")
+              ? IconButton(
+                  onPressed: () {
+                    LaunchUrlUtil.launch(context: context, uriStr: content);
+                  },
+                  icon: const Icon(Icons.open_in_new))
+              : null,
         )
       ],
     );
@@ -144,9 +253,10 @@ class AnimePropertiesPage extends StatelessWidget {
 
   _showDialogAboutEdit(BuildContext context,
       {required String title,
-      required dynamic property,
+      required dynamic initialValue,
       Widget? dialogContent,
-      required Function(String) confirm}) {
+      String? helperText,
+      required Function(String value) confirm}) {
     showDialog(
         context: context,
         builder: (dialogContext) {
@@ -155,10 +265,13 @@ class AnimePropertiesPage extends StatelessWidget {
             // 如果传了dialogContent，就显示传入的，否则默认显示该文本输入框
             content: dialogContent ??
                 TextField(
-                    controller: textController..text = property,
-                    minLines: 1,
-                    maxLines: 10,
-                    maxLength: 999),
+                  controller: textController..text = initialValue,
+                  minLines: 1,
+                  maxLines: 10,
+                  autofocus: true,
+                  maxLength: 999,
+                  decoration: InputDecoration(helperText: helperText),
+                ),
             actions: [
               Row(
                 children: [
@@ -197,21 +310,5 @@ class AnimePropertiesPage extends StatelessWidget {
             ],
           );
         });
-  }
-
-  // 文本http开头提供访问功能，其他则是复制
-  _buildSelectedOrUrlText(BuildContext context, String text,
-      {bool select = true}) {
-    if (text.startsWith("http")) {
-      return GestureDetector(
-        onTap: () => LaunchUrlUtil.launch(context: context, uriStr: text),
-        child: Text(text, style: const TextStyle(color: Colors.blue)),
-      );
-    } else if (select) {
-      // 下滑时有时候没有反应，因为会触发到选中文本
-      return SelectableText(text.isEmpty ? "无" : text);
-    } else {
-      return Text(text.isEmpty ? "无" : text);
-    }
   }
 }

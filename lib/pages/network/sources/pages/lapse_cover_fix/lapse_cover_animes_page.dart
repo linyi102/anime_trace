@@ -11,7 +11,6 @@ import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_package.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -162,7 +161,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
           futures.add(
               ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
                   .then((value) {
-            SqliteUtil.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
+            AnimeDao.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
             if (mounted) {
               setState(() {
                 anime = value;
@@ -254,7 +253,7 @@ class _AnimItemWitheAutoPullCoverState
           recovering = false;
         });
       }
-      SqliteUtil.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
+      AnimeDao.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
     }
   }
 

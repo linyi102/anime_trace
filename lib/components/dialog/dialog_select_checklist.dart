@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -58,7 +58,7 @@ dialogSelectChecklist(
               );
             }
           } else {
-            SqliteUtil.updateTagByAnimeId(anime.animeId, tags[i]);
+            AnimeDao.updateTagByAnimeId(anime.animeId, tags[i]);
             anime.tagName = tags[i];
             Log.info("修改成功！");
             setState(() {});

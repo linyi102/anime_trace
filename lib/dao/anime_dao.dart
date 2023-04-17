@@ -1,4 +1,5 @@
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -198,5 +199,130 @@ class AnimeDao {
     return (await db
             .query("anime", where: "anime_name = ?", whereArgs: [animeName]))
         .isNotEmpty;
+  }
+
+  static void updateArea(int animeId, String value) {
+    db.rawUpdate('''
+    update anime
+    set area = '$value'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateCategory(int animeId, String value) {
+    db.rawUpdate('''
+    update anime
+    set category = '$value'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updatePremiereTime(int animeId, String value) {
+    db.rawUpdate('''
+    update anime
+    set premiere_time = '$value'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeRate(int animeId, int rate) async {
+    Log.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
+    db.rawUpdate('''
+    update anime
+    set rate = $rate
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeUrl(int animeId, String animeUrl) async {
+    Log.info("sql: updateAnimeUrl");
+    animeUrl = EscapeUtil.escapeStr(animeUrl);
+    db.rawUpdate('''
+    update anime
+    set anime_url = '$animeUrl'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static Future<void> updateAnimeCoverUrl(
+      int animeId, String animeCoverUrl) async {
+    Log.info("sql: updateAnimeCoverUrl");
+    animeCoverUrl = EscapeUtil.escapeStr(animeCoverUrl);
+    db.rawUpdate('''
+    update anime
+    set anime_cover_url = '$animeCoverUrl'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
+    Log.info("sql: updateAnimeNameByAnimeId");
+    newAnimeName = EscapeUtil.escapeStr(newAnimeName);
+    db.rawUpdate('''
+    update anime
+    set anime_name = '$newAnimeName'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeNameAnotherByAnimeId(
+      int animeId, String newNameAnother) async {
+    Log.info("sql: updateAnimeNameAnotherByAnimeId");
+    newNameAnother = EscapeUtil.escapeStr(newNameAnother);
+    db.rawUpdate('''
+    update anime
+    set name_another = '$newNameAnother'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimeDescByAnimeId(int animeId, String newDesc) async {
+    Log.info("sql: updateAnimeDescByAnimeId");
+    newDesc = EscapeUtil.escapeStr(newDesc);
+    db.rawUpdate('''
+    update anime
+    set anime_desc = '$newDesc'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateAnimePlayStatusByAnimeId(
+      int animeId, String newPlayStatus) async {
+    Log.info("sql: updateAnimePlayStatusByAnimeId");
+    db.rawUpdate('''
+    update anime
+    set play_status = '$newPlayStatus'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateTagByAnimeId(int animeId, String newTagName) async {
+    Log.info("sql: updateTagNameByAnimeId");
+    // 同时修改最后一次修改标签的时间
+    db.rawUpdate('''
+    update anime
+    set tag_name = '$newTagName', last_mode_tag_time = '${DateTime.now().toString()}'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static void updateDescByAnimeId(int animeId, String desc) async {
+    Log.info("sql: updateDescByAnimeId");
+    db.rawUpdate('''
+    update anime
+    set anime_desc = '$desc'
+    where anime_id = $animeId;
+    ''');
+  }
+
+  static Future<bool> updateEpisodeCntByAnimeId(
+      int animeId, int episodeCnt) async {
+    Log.info("sql: updateEpisodeCntByAnimeId");
+
+    return await db.rawUpdate('''
+      update anime
+      set anime_episode_cnt = $episodeCnt
+      where anime_id = $animeId;
+      ''') > 0;
   }
 }
