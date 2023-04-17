@@ -42,20 +42,23 @@ class Global {
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
     // put常用的getController
-    _putGetController();
+    await _putGetController();
     // 设置Windows窗口
     _handleWindowsManager();
     // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
     HttpOverrides.global = MyHttpOverrides();
   }
 
-  static void _putGetController() {
-    Get.lazyPut(() => ChecklistController());
+  static _putGetController() async {
     Get.lazyPut(
         () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => BackupService());
+
+    final checklistController = ChecklistController();
+    Get.put(checklistController);
+    await checklistController.init();
   }
 
   static void _handleWindowsManager() async {

@@ -6,7 +6,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 
-class ChecklistController extends GetxController {
+class ChecklistController extends GetxController
+    with GetTickerProviderStateMixin {
   static ChecklistController get to => Get.find();
 
   List<String> tags = []; // 清单
@@ -30,10 +31,29 @@ class ChecklistController extends GetxController {
   List<Anime> selectedAnimes = [];
   bool multi = false;
 
-  void loadData(dynamic _animeListPageState) async {
+  init() async {
+    // 不要放在loadData中，因为要保证收藏页在initState中loadData执行完毕
+    // 否则会导致修改清单数量后，和上次的animesInTag和animeCntPerTag不匹配。
     tags = await SqliteUtil.getAllTags();
+  }
+
+  void loadData() {
     pageIndexList = List.generate(tags.length, (index) => 1); // 初始页都为1
-    animesInTag = List.generate(tags.length, (index) => []);
+    // animesInTag = List.generate(tags.length, (index) => []);
+    // 不要清空animes，而是根据清单数量增加[]或移除
+    // 尽管当前可能不匹配(清单排序)，但并不影响，可以先显示出来，后面会再加载
+    while (animesInTag.length > tags.length) {
+      animesInTag.removeLast();
+    }
+    while (animesInTag.length < tags.length) {
+      animesInTag.add([]);
+    }
+    while (animeCntPerTag.length > tags.length) {
+      animeCntPerTag.removeLast();
+    }
+    while (animeCntPerTag.length < tags.length) {
+      animeCntPerTag.add(0);
+    }
 
     for (var sc in scrollControllers) {
       sc.dispose();
@@ -44,32 +64,34 @@ class ChecklistController extends GetxController {
     int tabIdx = SPUtil.getInt("last_top_tab_index", defaultValue: 0);
     if (tabIdx <= 0 || tabIdx >= tags.length) tabIdx = 0;
 
+    tabController?.removeListener(_tabIdxlistener);
     tabController?.dispose();
-    // 顶部tab控制器
     tabController = TabController(
       initialIndex: tabIdx,
       length: tags.length,
-      vsync: _animeListPageState,
+      vsync: this,
     );
     // 添加监听器，记录最后一次的topTab的index
-    tabController!.addListener(() {
-      if (tabController!.index == tabController!.animation!.value) {
-        // lastTopTabIndex = tabController.index;
-        SPUtil.setInt("last_top_tab_index", tabController!.index);
-        // 取消多选
-        if (multi) {
-          quitMulti();
-        }
-      }
-    });
+    tabController!.addListener(_tabIdxlistener);
 
     loadAnimes();
   }
 
-  /// 恢复数据后重新获取动漫
-  /// TODO：没有获取并显示最新添加的清单，并且还能看见已删除的清单
-  void restore() {
-    loadAnimes();
+  _tabIdxlistener() {
+    if (tabController!.index == tabController!.animation!.value) {
+      // lastTopTabIndex = tabController.index;
+      SPUtil.setInt("last_top_tab_index", tabController!.index);
+      // 取消多选
+      if (multi) {
+        quitMulti();
+      }
+    }
+  }
+
+  /// 恢复数据后重新加载
+  void restore() async {
+    tags = await SqliteUtil.getAllTags();
+    loadData();
   }
 
   void loadAnimes() async {

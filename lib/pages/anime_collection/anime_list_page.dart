@@ -26,8 +26,7 @@ class AnimeListPage extends StatefulWidget {
   _AnimeListPageState createState() => _AnimeListPageState();
 }
 
-class _AnimeListPageState extends State<AnimeListPage>
-    with SingleTickerProviderStateMixin {
+class _AnimeListPageState extends State<AnimeListPage> {
   final checklistController = ChecklistController.to;
   List<String> get tags => checklistController.tags;
   List<int> get animeCntPerTag => checklistController.animeCntPerTag;
@@ -52,7 +51,7 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void initState() {
     super.initState();
-    checklistController.loadData(this);
+    checklistController.loadData();
   }
 
   @override
@@ -115,16 +114,18 @@ class _AnimeListPageState extends State<AnimeListPage>
                 title: const Text("云端数据"),
                 automaticallyImplyLeading: false,
                 actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const BackupAndRestorePage()));
-                      },
-                      child: const Text("进入完整页面")),
+                  Center(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BackupAndRestorePage()));
+                        },
+                        child: const Text("进入完整页面")),
+                  ),
                   // IconButton(
                   //     onPressed: () {}, icon: const Icon(Icons.chevron_right))
                 ],
