@@ -1,5 +1,6 @@
 import 'package:flutter_test_future/utils/number_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 
 class TimeUtil {
   /// 根据秒数转为时长字符串
@@ -172,5 +173,14 @@ class TimeUtil {
       res += "${numStrs[i]}${units[i]}";
     }
     return res;
+  }
+
+  /// 和当前时间间隔
+  static String getTimeAgo(DateTime dateTime) {
+    return GetTimeAgo.parse(
+      dateTime,
+      locale: 'zh',
+      pattern: 'yyyy-MM-dd hh:mm:ss',
+    );
   }
 }

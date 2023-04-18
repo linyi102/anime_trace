@@ -34,18 +34,19 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  get_time_ago: ^1.1.6 # 时间差
   bot_toast: ^4.0.3 # 消息
   flex_color_scheme: ^6.1.2 # 主题
   timer_count_down: ^2.2.2 # 倒计时
   file_saver: ^0.1.1 # 文件保存，用于备份文件
   sliver_tools: ^0.2.9 # sliver工具：渐变过渡
   pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
-  eva_icons_flutter: ^3.1.0 #图标
-  simple_icons: ^7.1.0 #github、gitee图标
-  reorderable_grid_view: ^2.2.5 #可拖动排序的网格
-  webview_flutter: ^3.0.4 #App内网页
-  photo_view: ^0.14.0 #缩放、左右切换图片
-  flutter_rating_bar: ^4.0.1 #评分栏
+  eva_icons_flutter: ^3.1.0 # 图标
+  simple_icons: ^7.1.0 # github、gitee图标
+  reorderable_grid_view: ^2.2.5 # 可拖动排序的网格
+  webview_flutter: ^3.0.4 # App内网页
+  photo_view: ^0.14.0 # 缩放、左右切换图片
+  flutter_rating_bar: ^4.0.1 # 评分栏
   window_manager: ^0.2.5 # Windows窗口管理
   flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
   percent_indicator: ^4.2.2 # 进度条

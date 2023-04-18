@@ -5,7 +5,9 @@ import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:webdav_client/webdav_client.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -77,8 +79,6 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     if (file.path != null) {
       fileName = file.path!.split("/").last;
     }
-    // 去除秒后面的.000
-    String createdTime = file.mTime.toString().split(".")[0];
 
     // KB
     // ignore: non_constant_identifier_names
@@ -87,7 +87,9 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
 
     return ListTile(
       title: Text("${index + 1}. $fileName"),
-      subtitle: Text("$createdTime $KBSize $backupWay"),
+      subtitle:
+          Text("${file.mTime == null ? '' : TimeUtil.getTimeAgo(file.mTime!)} "
+              "$KBSize $backupWay"),
       onTap: () => _showRestoreDialog(context, file),
       onLongPress: () {
         showDialog(

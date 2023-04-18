@@ -11,7 +11,9 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:path_provider/path_provider.dart';
 
 class RBRPage extends StatefulWidget {
@@ -66,9 +68,8 @@ class _RBRPageState extends State<RBRPage> {
 
           return ListTile(
             title: Text("${index + 1}. $name"),
-            subtitle: Text("${stat.modified.toString().substring(0, 19)} "
-                "${FileUtil.getFileSizeString(bytes: stat.size)} "
-                "5秒前"),
+            subtitle: Text("${TimeUtil.getTimeAgo(stat.modified)} "
+                "${FileUtil.getFileSizeString(bytes: stat.size)} "),
             onTap: () => _showDialogConfirmRestore(context, file),
             onLongPress: () => _showDialogOperation(context, file),
             trailing: IconButton(
