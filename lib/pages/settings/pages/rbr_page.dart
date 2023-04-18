@@ -1,13 +1,18 @@
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:path_provider/path_provider.dart';
 
 class RBRPage extends StatefulWidget {
   const RBRPage({super.key});
@@ -64,6 +69,9 @@ class _RBRPageState extends State<RBRPage> {
             subtitle: Text(FileUtil.getFileSizeString(bytes: stat.size)),
             onTap: () => _showDialogConfirmRestore(context, file),
             onLongPress: () => _showDialogOperation(context, file),
+            trailing: IconButton(
+                onPressed: () => _showDialogDesc(context, file),
+                icon: const Icon(Icons.description_outlined)),
           );
         },
       ),
@@ -84,6 +92,14 @@ class _RBRPageState extends State<RBRPage> {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.description_outlined),
+            title: const Text("描述"),
+            onTap: () {
+              Navigator.pop(context);
+              _showDialogDesc(context, file);
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.delete_outline),
             title: const Text("删除"),
             onTap: () {
@@ -92,6 +108,45 @@ class _RBRPageState extends State<RBRPage> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  _showDialogDesc(BuildContext context, File file) async {
+    showDialog(
+      context: context,
+      builder: (context) => FutureBuilder(
+        future: () async {
+          final inputStream = InputFileStream(file.path);
+          final archive = ZipDecoder().decodeBuffer(inputStream);
+          var descArchiveFile = archive.files.firstWhere(
+            (element) => element.name == BackupUtil.descFileName,
+            orElse: () => ArchiveFile.string("no", "没有描述。"),
+          );
+
+          // readAsStringSync无法读取utf8编码，因此会出错，导致显示「获取失败」
+          // 所以这里直接返回
+          if (descArchiveFile.name == "no") {
+            return "没有描述。";
+          }
+
+          var tdPath = (await getTemporaryDirectory()).path;
+          var tmpDescFilePath = "$tdPath/tmpDesc";
+          var outputStream = OutputFileStream(tmpDescFilePath);
+          descArchiveFile.writeContent(outputStream);
+          outputStream.close();
+          return File(tmpDescFilePath).readAsStringSync();
+        }(),
+        builder: (context, snapshot) {
+          String desc = "";
+          if (snapshot.hasError) {
+            desc = "获取失败";
+          } else if (snapshot.hasData) {
+            desc = snapshot.data.toString();
+          }
+
+          return AlertDialog(title: const Text("描述"), content: Text(desc));
+        },
       ),
     );
   }

@@ -120,4 +120,14 @@ class ChecklistController extends GetxController
     selectedAnimes.clear();
     update();
   }
+
+  /// 生成描述
+  String get desc {
+    String res = "";
+    for (int i = 0; i < tags.length; ++i) {
+      res += "${tags[i]}(${animeCntPerTag[i]})";
+      if (i + 1 < tags.length) res += " ";
+    }
+    return res;
+  }
 }

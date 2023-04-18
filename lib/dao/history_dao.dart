@@ -68,7 +68,9 @@ class HistoryDao {
         ''');
       for (var reviewNumberElem in reviewNumberList) {
         int reviewNumber = reviewNumberElem['review_number'] as int;
-        AnimeHistoryRecord record = await getRecordByAnimeIdAndReviewNumberAndDate(anime, reviewNumber, date);
+        AnimeHistoryRecord record =
+            await getRecordByAnimeIdAndReviewNumberAndDate(
+                anime, reviewNumber, date);
         records.add(record);
       }
     }
@@ -76,7 +78,8 @@ class HistoryDao {
   }
 
   /// 传入anime而不是animeId是因为要构造record
-  static Future<AnimeHistoryRecord> getRecordByAnimeIdAndReviewNumberAndDate(Anime anime, int reviewNumber, String date) async {
+  static Future<AnimeHistoryRecord> getRecordByAnimeIdAndReviewNumberAndDate(
+      Anime anime, int reviewNumber, String date) async {
     var list = await SqliteUtil.database.rawQuery('''
           select min(episode_number) as start
           from history
@@ -93,5 +96,12 @@ class HistoryDao {
     AnimeHistoryRecord record = AnimeHistoryRecord(
         anime, reviewNumber, startEpisodeNumber, endEpisodeNumber);
     return record;
+  }
+
+  static Future<int> getCount() async {
+    var list = await SqliteUtil.database.rawQuery('''
+    select count(*) cnt from history
+    ''');
+    return list[0]["cnt"] as int;
   }
 }

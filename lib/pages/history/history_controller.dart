@@ -32,6 +32,8 @@ class HistoryView {
 }
 
 class HistoryController extends GetxController {
+  static HistoryController get to => Get.find();
+
   List<HistoryView> views = [
     HistoryView(
         label: HistoryLabel.year,

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -17,6 +19,7 @@ import 'package:webdav_client/webdav_client.dart' as dav_client;
 
 class BackupUtil {
   static String backupZipNamePrefix = "backup";
+  static String descFileName = "desc";
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
@@ -60,9 +63,18 @@ class BackupUtil {
 
     String tempZipFilePath = "$dirPath/$zipName";
     encoder.create(tempZipFilePath);
+    // 添加数据库文件
     encoder.addFile(File(SqliteUtil.dbPath));
-    encoder.close();
+    // 添加描述信息
+    File descFile = File("$dirPath/desc");
+    String desc = "";
+    desc += "清单：${ChecklistController.to.desc}\n";
+    // 因为要打开历史页，才会创建HistoryController，所以此处可能还未创建，因此使用dao
+    desc += "历史：${await HistoryDao.getCount()}条记录";
+    descFile.writeAsStringSync(desc);
+    encoder.addFile(descFile);
 
+    encoder.close();
     return File(tempZipFilePath);
   }
 

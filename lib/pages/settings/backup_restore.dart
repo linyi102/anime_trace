@@ -10,7 +10,7 @@ import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
-import 'package:flutter_test_future/pages/settings/pages/bbr_page.dart';
+import 'package:flutter_test_future/pages/settings/pages/rbr_page.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';

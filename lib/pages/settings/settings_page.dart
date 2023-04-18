@@ -48,15 +48,10 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
+    // Log.build(runtimeType);
 
     return Scaffold(
-      body: _buildBody(),
-    );
-  }
-
-  _buildBody() {
-    return ListView(
+        body: ListView(
       children: [
         _buildBanner(),
         // _buildBannerButton(),
@@ -74,7 +69,7 @@ class _SettingPageState extends State<SettingPage> {
 
         Card(child: _buildOtherGroup()),
       ],
-    );
+    ));
   }
 
   Column _buildOtherGroup() {
