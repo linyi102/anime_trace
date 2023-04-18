@@ -73,7 +73,7 @@ class DedupPage extends StatelessWidget {
                     alignment: Alignment.bottomCenter,
                     child: OperationButton(
                       active: !dedupController.loading,
-                      text: dedupController.loading ? "正在扫描" : "重新扫描",
+                      text: dedupController.loading ? "扫描中" : "重新扫描",
                       onTap: () {
                         dedupController.refreshData(showLoading: true);
                       },

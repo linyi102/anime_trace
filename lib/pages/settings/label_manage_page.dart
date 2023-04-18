@@ -201,8 +201,6 @@ class LabelManagePage extends StatelessWidget {
     Log.info("_buildFloatingActionButton");
 
     return FloatingActionButton(
-      backgroundColor: Theme.of(context).primaryColor,
-      foregroundColor: Colors.white,
       onPressed: () {
         showDialog(
             context: context,

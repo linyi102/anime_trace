@@ -14,6 +14,20 @@ class OperationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return SizedBox(
+    //   height: 60,
+    //   child: AspectRatio(
+    //     aspectRatio: 18,
+    //     child: Container(
+    //       margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 10),
+    //       child: OutlinedButton(
+    //         onPressed: active ? onTap : null,
+    //         child: Text(text),
+    //       ),
+    //     ),
+    //   ),
+    // );
+
     var borderRadius = BorderRadius.circular(50);
 
     return SizedBox(

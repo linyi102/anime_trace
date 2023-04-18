@@ -122,11 +122,13 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 9,
           tabBarStyle: FlexTabBarStyle.forBackground,
+          appBarStyle: FlexAppBarStyle.scaffoldBackground,
           subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
             // true会导致文字和按钮颜色受主色影响
             blendTextTheme: false,
+            chipSchemeColor: SchemeColor.surfaceVariant,
             // 隐藏输入框底部边界
             inputDecoratorUnfocusedHasBorder: false,
             blendOnLevel: 10,
@@ -157,6 +159,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 15,
           tabBarStyle: FlexTabBarStyle.forBackground,
+          appBarStyle: FlexAppBarStyle.scaffoldBackground,
           subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,

@@ -156,6 +156,7 @@ class UpdateRecordPage extends StatelessWidget {
                 }
               },
               title: const Text("删除记录"),
+              leading: const Icon(Icons.delete),
             )
           ],
         );
@@ -207,7 +208,7 @@ class UpdateRecordPage extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
+            OutlinedButton(
               onPressed: updateRecordController.updating.value
                   ? null
                   : () => ClimbAnimeUtil.updateAllAnimesInfo(),

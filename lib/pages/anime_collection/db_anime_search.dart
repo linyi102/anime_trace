@@ -279,8 +279,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           children: labelsController.labels.reversed.map((e) {
             bool checked = selectedLabels.contains(e);
 
-            return GestureDetector(
-              onTap: () async {
+            return FilterChip(
+              pressElevation: 0,
+              selected: checked,
+              label: Text(e.name),
+              onSelected: (value) {
                 // 点击标签后，取消搜索输入框的聚焦
                 _cancelFocus();
 
@@ -301,12 +304,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
                 _searchAnimesByLabels();
               },
-              child: Chip(
-                label: Text(e.name),
-                backgroundColor: checked
-                    ? Theme.of(context).chipTheme.selectedColor
-                    : Theme.of(context).chipTheme.disabledColor,
-              ),
+
+              // backgroundColor:checked ? Theme.of(context).
+              // backgroundColor: checked
+              //     ? Theme.of(context).chipTheme.selectedColor
+              //     : Theme.of(context).chipTheme.disabledColor,
             );
           }).toList(),
         ));

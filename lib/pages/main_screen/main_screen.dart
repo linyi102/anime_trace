@@ -13,6 +13,7 @@ import 'package:flutter_test_future/pages/settings/settings_page.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/theme.dart';
 
 class MainTab {
   String name;
@@ -44,7 +45,6 @@ class _MainScreenState extends State<MainScreen> {
     MainTab(name: "更多", iconData: Icons.more_horiz, page: const SettingPage())
   ];
 
-  bool showBottomBarLabel = true;
   bool expandSideBar = SpProfile.getExpandSideBar();
   double dividerThickness = 1;
 
@@ -52,23 +52,26 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
-      // child: _buildBottomNavigationBar(),
       child: Platform.isAndroid &&
               MediaQuery.of(context).orientation == Orientation.portrait
-          ? _buildBottomNavigationBar() // 手机竖向时显示底部栏
-          : Scaffold(
-              body: SafeArea(
-                child: Row(
-                  children: [
-                    // 侧边栏
-                    _buildSideBar(),
-                    // VerticalDivider(width: dividerThickness),
-                    // 主体
-                    Expanded(child: _mainTabs[_selectedTabIdx].page)
-                  ],
-                ),
-              ),
-            ),
+          ? _buildPortraitScreen()
+          : _buildLandscapeScreen(),
+    );
+  }
+
+  Scaffold _buildLandscapeScreen() {
+    return Scaffold(
+      body: SafeArea(
+        child: Row(
+          children: [
+            // 侧边栏
+            _buildSideBar(),
+            // VerticalDivider(width: dividerThickness),
+            // 主体
+            Expanded(child: _mainTabs[_selectedTabIdx].page)
+          ],
+        ),
+      ),
     );
   }
 
@@ -135,7 +138,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: isSelected ? Theme.of(context).focusColor : null,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(AppTheme.cardRadius),
             ),
             margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
@@ -187,40 +190,20 @@ class _MainScreenState extends State<MainScreen> {
     return widgets;
   }
 
-  Scaffold _buildBottomNavigationBar() {
+  Scaffold _buildPortraitScreen() {
     return Scaffold(
       body: _mainTabs[_selectedTabIdx].page,
-      // 会导致第一次打开App时有点慢
-      // body: IndexedStack(
-      //   // 新方法，可以保持页面状态。注：历史和笔记页面无法同步更新
-      //   index: _currentIndex,
-      //   children: _list,
-      // ),
-      bottomNavigationBar: SizedBox(
-        height: showBottomBarLabel ? null : 45,
-        child: BottomNavigationBar(
-          // 不显示文字方法1
-          selectedFontSize: showBottomBarLabel ? 14.0 : 0,
-          // 不显示文字方法2
-          // selectedFontSize: 12,
-          // showSelectedLabels: false,
-          // showUnselectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          // 当item数量超过3个，则会显示空白，此时需要设置该属性
-          currentIndex: _selectedTabIdx,
-          // elevation: 0,
-          // backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-          onTap: (int index) {
+      bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedTabIdx,
+          onDestinationSelected: (value) {
             setState(() {
-              _selectedTabIdx = index;
+              _selectedTabIdx = value;
             });
           },
-          items: [
+          destinations: [
             for (var tab in _mainTabs)
-              BottomNavigationBarItem(icon: Icon(tab.iconData), label: tab.name)
-          ],
-        ),
-      ),
+              NavigationDestination(icon: Icon(tab.iconData), label: tab.name),
+          ]),
     );
   }
 }
