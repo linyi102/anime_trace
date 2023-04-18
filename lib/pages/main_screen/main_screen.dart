@@ -52,6 +52,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
+      // child: _buildPortraitScreen(),
       child: Platform.isAndroid &&
               MediaQuery.of(context).orientation == Orientation.portrait
           ? _buildPortraitScreen()
@@ -190,20 +191,28 @@ class _MainScreenState extends State<MainScreen> {
     return widgets;
   }
 
-  Scaffold _buildPortraitScreen() {
+  _buildPortraitScreen() {
     return Scaffold(
       body: _mainTabs[_selectedTabIdx].page,
-      bottomNavigationBar: NavigationBar(
-          selectedIndex: _selectedTabIdx,
-          onDestinationSelected: (value) {
-            setState(() {
-              _selectedTabIdx = value;
-            });
-          },
-          destinations: [
-            for (var tab in _mainTabs)
-              NavigationDestination(icon: Icon(tab.iconData), label: tab.name),
-          ]),
+      bottomNavigationBar: Theme(
+        // 在原来主题的基础上，隐藏悬浮和扩散效果
+        data: Theme.of(context).copyWith(
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+        ),
+        child: NavigationBar(
+            selectedIndex: _selectedTabIdx,
+            onDestinationSelected: (value) {
+              setState(() {
+                _selectedTabIdx = value;
+              });
+            },
+            destinations: [
+              for (var tab in _mainTabs)
+                NavigationDestination(
+                    icon: Icon(tab.iconData), label: tab.name),
+            ]),
+      ),
     );
   }
 }
