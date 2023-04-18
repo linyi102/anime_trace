@@ -138,7 +138,7 @@ class AnimeCoverDetail extends StatelessWidget {
                 );
               });
         },
-        icon: const Icon(Icons.error_outline));
+        icon: const Icon(Icons.info_outline));
   }
 
   _buildAnimeCover(String coverUrl, BuildContext context) {

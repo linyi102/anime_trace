@@ -176,7 +176,7 @@ class _NoteCardState extends State<NoteCard> {
                     return SimpleDialog(
                       children: [
                         ListTile(
-                          leading: const Icon(EvaIcons.edit2Outline),
+                          leading: const Icon(Icons.edit),
                           title: const Text("编辑"),
                           onTap: () {
                             Navigator.pop(dialogContext);
@@ -184,7 +184,7 @@ class _NoteCardState extends State<NoteCard> {
                           },
                         ),
                         ListTile(
-                          leading: const Icon(EvaIcons.copyOutline),
+                          leading: const Icon(Icons.copy_rounded),
                           title: const Text("复制内容"),
                           onTap: () {
                             CommonUtil.copyContent(note.noteContent);
@@ -192,7 +192,7 @@ class _NoteCardState extends State<NoteCard> {
                           },
                         ),
                         ListTile(
-                          leading: const Icon(EvaIcons.trash2Outline),
+                          leading: const Icon(Icons.delete_outline),
                           title: const Text("删除笔记"),
                           onTap: () {
                             Navigator.pop(dialogContext);

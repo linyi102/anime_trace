@@ -142,6 +142,7 @@ class LabelManagePage extends StatelessWidget {
               children: [
                 ListTile(
                   title: const Text("重命名"),
+                  leading: const Icon(Icons.edit),
                   onTap: () {
                     Log.info("重命名标签：$label");
                     Navigator.of(context).pop();
@@ -153,6 +154,7 @@ class LabelManagePage extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("删除"),
+                  leading: const Icon(Icons.delete_outline),
                   onTap: () {
                     Log.info("删除标签：$label");
                     Navigator.of(context).pop();
