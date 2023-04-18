@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_view.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
@@ -234,13 +234,20 @@ class _AnimeListPageState extends State<AnimeListPage> {
     for (int checklistIdx = 0;
         checklistIdx < _scrollControllers.length;
         ++checklistIdx) {
+      var animeView = Obx(() => _animeDisplayController.displayList.value
+          ? _buildAnimeListView(checklistIdx)
+          : _buildAnimeGridView(checklistIdx));
+
       list.add(
         Scrollbar(
           controller: _scrollControllers[checklistIdx],
           child: Stack(children: [
-            Obx(() => _animeDisplayController.displayList.value
-                ? _getAnimeListView(checklistIdx)
-                : _getAnimeGridView(checklistIdx)),
+            SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage)
+                ? RefreshIndicator(
+                    onRefresh: () => BackupService.to.tryRestoreRemoteFile(),
+                    child: animeView,
+                  )
+                : animeView,
             // 一定要叠放在ListView上面，否则点击按钮没有反应
             _buildBottomButton(checklistIdx),
           ]),
@@ -250,15 +257,15 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return list;
   }
 
-  _getAnimeGridView(int checklistIdx) {
+  _buildAnimeGridView(int checklistIdx) {
     return AnimeGridView(
+        scrollController: _scrollControllers[checklistIdx],
         animes: animesInTag[checklistIdx],
         tagIdx: checklistIdx,
         showProgressBar: true,
         loadMore: (int tagIdx, int animeIdx) {
           _loadExtraData(tagIdx, animeIdx);
         },
-        scrollController: _scrollControllers[checklistIdx],
         onClick: (Anime anime) {
           onPress(anime);
         },
@@ -270,7 +277,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
         });
   }
 
-  ListView _getAnimeListView(int tagIdx) {
+  ListView _buildAnimeListView(int tagIdx) {
     return ListView.builder(
       controller: _scrollControllers[tagIdx],
       itemCount: animesInTag[tagIdx].length,

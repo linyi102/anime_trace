@@ -84,32 +84,36 @@ class BackupService extends GetxService {
     }
     // 如果设置为打开时还原远程最新数据
     else if (enableAutoRestoreFromRemote) {
-      bool needRestore = false;
-      var latestBackupFile = await BackupUtil.getLatestBackupFile();
-      if (latestBackupFile == null || latestBackupFile.mTime == null) {
-        // 没有最新文件，或最新文件没有时间，或不进行还原
-        ToastUtil.showText("dav中没有找到最新备份");
-      } else if (latestBackupFile.path ==
-          SPUtil.getString(latestDavBackupFilePath)) {
-        // 如果是上次该设备手动/自动备份文件，则不需要还原
-        ToastUtil.showText("已是最新数据，无需还原");
+      tryRestoreRemoteFile();
+    }
+  }
+
+  tryRestoreRemoteFile() async {
+    bool needRestore = false;
+    var latestBackupFile = await BackupUtil.getLatestBackupFile();
+    if (latestBackupFile == null || latestBackupFile.mTime == null) {
+      // 没有最新文件，或最新文件没有时间，或不进行还原
+      ToastUtil.showText("dav中没有找到最新备份");
+    } else if (latestBackupFile.path ==
+        SPUtil.getString(latestDavBackupFilePath)) {
+      // 如果是上次该设备手动/自动备份文件，则不需要还原
+      ToastUtil.showText("已是最新数据，无需还原");
+    } else {
+      // 判断最新远程备份文件和本地数据库文件的修改时间，如果远程大，说明远程比本地新，此时进行还原
+      var latestDT = latestBackupFile.mTime!;
+      var localDT = File(SqliteUtil.dbPath).statSync().modified;
+      Log.info("最新备份的修改时间：$latestDT，本地数据文件的修改时间：$localDT");
+
+      // 如果不进行时间判断，那么如果App在后台被清理导致没有备份，那么重启App是就会进行还原，从而导致数据丢失
+      if (latestDT.compareTo(localDT) > 0) {
+        needRestore = true;
       } else {
-        // 判断最新远程备份文件和本地数据库文件的修改时间，如果远程大，说明远程比本地新，此时进行还原
-        var latestDT = latestBackupFile.mTime!;
-        var localDT = File(SqliteUtil.dbPath).statSync().modified;
-        Log.info("最新备份的修改时间：$latestDT，本地数据文件的修改时间：$localDT");
-
-        // 如果不进行时间判断，那么如果App在后台被清理导致没有备份，那么重启App是就会进行还原，从而导致数据丢失
-        if (latestDT.compareTo(localDT) > 0) {
-          needRestore = true;
-        } else {
-          ToastUtil.showText("已是最新数据，无需还原");
-        }
+        ToastUtil.showText("已是最新数据，无需还原");
       }
+    }
 
-      if (needRestore) {
-        restoreRemoteFile(latestBackupFile);
-      }
+    if (needRestore) {
+      restoreRemoteFile(latestBackupFile);
     }
   }
 

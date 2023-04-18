@@ -1,3 +1,7 @@
+/// 收藏页开启下拉还原最新备份
+const pullDownRestoreLatestBackupInChecklistPage =
+    "pullDownRestoreLatestBackupInChecklistPage";
+
 /// 上次dav备份文件路径
 const latestDavBackupFilePath = "latestDavBackupFilePath";
 

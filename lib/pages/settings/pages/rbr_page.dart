@@ -66,7 +66,9 @@ class _RBRPageState extends State<RBRPage> {
 
           return ListTile(
             title: Text("${index + 1}. $name"),
-            subtitle: Text(FileUtil.getFileSizeString(bytes: stat.size)),
+            subtitle: Text("${stat.modified.toString().substring(0, 19)} "
+                "${FileUtil.getFileSizeString(bytes: stat.size)} "
+                "5秒前"),
             onTap: () => _showDialogConfirmRestore(context, file),
             onLongPress: () => _showDialogOperation(context, file),
             trailing: IconButton(

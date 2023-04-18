@@ -7,6 +7,8 @@ import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
 class TestPage extends StatefulWidget {
@@ -28,6 +30,52 @@ class _TestPageState extends State<TestPage> {
       appBar: AppBar(title: const Text("测试")),
       body: ListView(
         children: [
+          ListTile(
+            title: const Text("测试下拉刷新"),
+            onTap: () {
+              var refreshController = RefreshController();
+              int pageSize = 5;
+              var list = List.generate(pageSize, (index) => index);
+
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return StatefulBuilder(
+                    builder: (context, setState) => Scaffold(
+                      appBar: AppBar(),
+                      body: SmartRefresher(
+                        controller: refreshController,
+                        enablePullDown: true,
+                        enablePullUp: true,
+                        onRefresh: () async {
+                          await Future.delayed(const Duration(seconds: 1));
+                          list = List.generate(pageSize, (index) => index);
+                          refreshController.refreshCompleted();
+                          setState(() {});
+                        },
+                        onLoading: () async {
+                          Log.info("加载更多");
+                          list.addAll(List.generate(
+                              pageSize, (index) => list.length + index));
+                          await Future.delayed(const Duration(seconds: 1));
+                          refreshController.loadComplete();
+                          setState(() {});
+                        },
+                        child: ListView.builder(
+                          itemCount: list.length,
+                          itemBuilder: (context, index) {
+                            Log.info("build $index");
+                            return ListTile(
+                              title: Text("$index"),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ));
+            },
+          ),
           ListTile(
             title: const Text("定时器"),
             trailing: Row(

@@ -8,6 +8,7 @@ import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
+import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
 import 'package:flutter_test_future/pages/settings/pages/rbr_page.dart';
@@ -265,8 +266,21 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               setState(() {});
             },
           ),
+        if (!widget.fromHome)
+          SwitchListTile(
+            title: const Text("下拉还原"),
+            subtitle: const Text("动漫收藏页下拉时，会尝试还原最新备份文件"),
+            value: SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage),
+            onChanged: (value) {
+              SPUtil.setBool(pullDownRestoreLatestBackupInChecklistPage, value);
+              // 重绘页面
+              setState(() {});
+              // 重绘收藏页，以便于允许或取消下拉刷新
+              ChecklistController.to.update();
+            },
+          ),
         ListTile(
-          title: const Text("还原远程备份"),
+          title: const Text("手动还原"),
           subtitle: const Text("点击查看所有备份文件"),
           onTap: () async {
             if (SPUtil.getBool("online")) {
