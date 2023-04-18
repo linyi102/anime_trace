@@ -684,6 +684,7 @@ class SqliteUtil {
         -- Windows生效，Android不支持nulls last
         -- order by history.date ${animeSortCond.desc ? 'desc' : ''} nulls last;
         ${animeSortCond.desc ? 'order by IFNULL(history.date, \'0\') desc' : 'order by IFNULL(history.date, \'9\')'}
+        limit $number offset $offset;
       ''');
     } else if (sortCond.columnName == 'recent_watch_time') {
       list = await database.rawQuery('''
@@ -698,6 +699,7 @@ class SqliteUtil {
             )
         where anime.tag_name = '$tagName'
         ${animeSortCond.desc ? 'order by IFNULL(history.date, \'0\') desc' : 'order by IFNULL(history.date, \'9\')'}
+        limit $number offset $offset;
       ''');
     } else {
       String orderSql = '''
