@@ -75,8 +75,10 @@ class Global {
         fullScreen: false,
         // 需要居中，否则会偏右
         center: true,
-        backgroundColor: Colors.transparent,
+        // 透明会导致新版Win11的标题栏看不到最小化、最大化和关闭按钮
+        // backgroundColor: Colors.transparent,
         skipTaskbar: false,
+        // 隐藏标题栏
         // titleBarStyle: TitleBarStyle.hidden,
       );
 
