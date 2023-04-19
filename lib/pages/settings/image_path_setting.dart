@@ -29,7 +29,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('设置笔记图片所在目录'),
+            title: const Text('本地笔记图片存放目录'),
             subtitle: Text(ImageUtil.noteImageRootDirPath),
             onTap: () async {
               String selectImageRootDirPath = (await selectDirectory()) ?? "";
@@ -41,7 +41,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
             },
           ),
           ListTile(
-            title: const Text('设置封面图片所在目录'),
+            title: const Text('本地封面图片存放目录'),
             subtitle: Text(ImageUtil.coverImageRootDirPath),
             onTap: () async {
               String selectImageRootDirPath = (await selectDirectory()) ?? "";

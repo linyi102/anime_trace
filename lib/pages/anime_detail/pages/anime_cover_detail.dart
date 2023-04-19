@@ -227,7 +227,8 @@ class AnimeCoverDetail extends StatelessWidget {
               ListTile(
                   dense: true,
                   style: ListTileStyle.drawer,
-                  title: const Text("点击前往设置封面根目录"),
+                  leading: SizedBox.shrink(),
+                  title: const Text("前往设置本地封面目录"),
                   onTap: () {
                     Navigator.pop(howToEditCoverUrlDialogContext);
                     Navigator.of(context).push(
@@ -259,7 +260,7 @@ class AnimeCoverDetail extends StatelessWidget {
         context: howToEditCoverUrlDialogContext,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text("封面链接编辑"),
+            title: const Text("链接"),
             content: TextField(
               controller: textController
                 ..text = animeController.anime.animeCoverUrl,
