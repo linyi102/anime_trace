@@ -1,5 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
@@ -169,7 +170,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                   // 退出多选模式
                   animeController.quitMultiSelectionMode();
                 },
-                icon: const Icon(EvaIcons.clockOutline),
+                icon: const Icon(Icons.access_time),
                 tooltip: "设置观看时间",
               ),
             ),
@@ -273,7 +274,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         );
       }
 
-      SqliteUtil.updateAnime(oldAnime, newAnime, updateCover: updateCover)
+      AnimeDao.updateAnime(oldAnime, newAnime, updateCover: updateCover)
           .then((value) {
         // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
         if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {

@@ -3,7 +3,6 @@ import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -38,8 +37,8 @@ dialogSelectChecklist(
             // 不管怕不爬取详细页，都先关闭选择清单框
             Navigator.pop(context);
 
-            // 爬取详细页
             if (enableClimbDetailInfo) {
+              // 爬取详细页后收藏
               ToastUtil.showLoading(
                 msg: "获取详细信息中",
                 task: () async {
@@ -49,13 +48,19 @@ dialogSelectChecklist(
                 },
                 onTaskComplete: (taskValue) async {
                   // 插入数据库
-                  anime.animeId = await SqliteUtil.insertAnime(anime);
+                  anime.animeId = await AnimeDao.insertAnime(anime);
                   // 更新父级页面
                   setState(() {});
                   Log.info("收藏成功！");
                   if (callback != null) callback(anime);
                 },
               );
+            } else {
+              // 直接收藏
+              anime.animeId = await AnimeDao.insertAnime(anime);
+              setState(() {});
+              Log.info("收藏成功！");
+              if (callback != null) callback(anime);
             }
           } else {
             AnimeDao.updateTagByAnimeId(anime.animeId, tags[i]);

@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -337,9 +338,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
       if (value != null) {
         if (_anime.reviewNumber != value) {
           _anime.reviewNumber = value;
-          // SqliteUtil.updateAnimeReviewNumberByAnimeId(
-          //     _anime.animeId, _anime.reviewNumber);
-          SqliteUtil.updateAnime(_anime, _anime);
+          AnimeDao.updateReviewNumber(_anime.animeId, value);
           // 不相等才设置并重新加载数据
           widget.animeController.loadEpisode();
         }

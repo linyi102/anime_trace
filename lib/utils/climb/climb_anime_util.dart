@@ -120,7 +120,7 @@ class ClimbAnimeUtil {
         // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
 
         // 爬取完毕后，更新数据库中的动漫
-        SqliteUtil.updateAnime(oldAnime, anime).then((value) {
+        AnimeDao.updateAnime(oldAnime, anime).then((value) {
           // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
           updateRecordController.incrementUpdateOkCnt();
           int updateOkCnt = updateRecordController.updateOkCnt.value;

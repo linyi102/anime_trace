@@ -3,12 +3,11 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-
-import '../models/anime.dart';
-import '../models/episode.dart';
-import '../models/note_filter.dart';
-import '../models/relative_local_image.dart';
-import '../utils/escape_util.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/episode.dart';
+import 'package:flutter_test_future/models/note_filter.dart';
+import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:flutter_test_future/utils/escape_util.dart';
 
 class NoteDao {
   static var database = SqliteUtil.database;

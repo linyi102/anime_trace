@@ -200,7 +200,7 @@ class ImportCollectionController extends GetxController {
         } else {
           // 如果数据库不存在，则指定清单，然后添加到数据库
           anime.tagName = tag;
-          anime.animeId = await SqliteUtil.insertAnime(anime);
+          anime.animeId = await AnimeDao.insertAnime(anime);
           // 逐个添加到数据库
           if (anime.animeId > 0) {
             addOk++;

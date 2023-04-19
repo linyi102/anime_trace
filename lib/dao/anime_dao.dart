@@ -201,6 +201,166 @@ class AnimeDao {
         .isNotEmpty;
   }
 
+  /// 添加动漫
+  static Future<int> insertAnime(Anime anime) async {
+    Log.info("sql: insertAnime(anime:$anime)");
+
+    String datetime = DateTime.now().toString();
+    return db.insert('anime', {
+      'anime_name': anime.animeName,
+      'anime_episode_cnt': anime.animeEpisodeCnt,
+      'anime_desc': anime.animeDesc,
+      'tag_name': anime.tagName,
+      'last_mode_tag_time': datetime,
+      'anime_cover_url': anime.animeCoverUrl,
+      'premiere_time': anime.premiereTime,
+      'name_another': anime.nameAnother,
+      'name_ori': anime.nameOri,
+      'author_ori': anime.authorOri,
+      'area': anime.area,
+      'play_status': anime.playStatus,
+      'production_company': anime.productionCompany,
+      'official_site': anime.officialSite,
+      'category': anime.category,
+      'anime_url': anime.animeUrl,
+      'review_number': anime.reviewNumber,
+    });
+  }
+
+  /// 搜索动漫
+  static Future<List<Anime>> getAnimesBySearch(String keyword) async {
+    Log.info("sql: getAnimesBySearch");
+    keyword = EscapeUtil.escapeStr(keyword);
+
+    var list = await db.rawQuery('''
+      select * from anime
+      where anime_name like '%$keyword%' or name_another like '%$keyword%';
+      ''');
+
+    List<Anime> res = [];
+    for (var element in list) {
+      int animeId = element['anime_id'] as int;
+      int reviewNumber = element['review_number'] as int;
+      int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
+          animeId,
+          reviewNumber: reviewNumber);
+      Anime anime = Anime(
+        animeId: animeId,
+        // 进入详细页面后需要该id
+        animeName: element['anime_name'] as String? ?? "",
+        nameAnother: element['name_another'] as String? ?? "",
+        animeEpisodeCnt: element['anime_episode_cnt'] as int? ?? 0,
+        checkedEpisodeCnt: checkedEpisodeCnt,
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        reviewNumber: reviewNumber,
+      );
+      res.add(anime);
+    }
+    return res;
+  }
+
+  /// 迁移动漫、全局更新动漫
+  static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
+      {bool updateCover = false,
+      bool updateName = true,
+      bool updateInfo = true}) async {
+    Log.info("sql: updateAnime");
+    String datetime = DateTime.now().toString();
+    Log.info("oldAnime=$oldAnime, newAnime=$newAnime");
+
+    // 如果标签不一样，需要更新最后修改标签的时间
+    if (newAnime.tagName.isNotEmpty && oldAnime.tagName != newAnime.tagName) {
+      await db.rawUpdate('''
+        update anime
+        set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
+        where anime_id = ${oldAnime.animeId};
+      ''');
+      Log.info("last_mode_tag_time: $datetime");
+    }
+    // 改基础信息
+    // 如果爬取的集数量大于旧数量，则改变，否则不变(旧的大集数赋值上去)
+    if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
+      newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
+    }
+
+    if (!updateName) {
+      newAnime.animeName = oldAnime.animeName;
+    }
+
+    // 如果新动漫某些属性为空字符串，则把旧的赋值上去
+    if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
+    if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
+
+    // 如果没有新封面，或者不迁移封面，就使用旧的
+    if (newAnime.animeCoverUrl.isEmpty || !updateCover) {
+      newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
+    }
+    // 如果新信息为空，或者不迁移信息，就使用旧的
+    if (newAnime.premiereTime.isEmpty | !updateInfo) {
+      newAnime.premiereTime = oldAnime.premiereTime;
+    }
+    if (newAnime.nameAnother.isEmpty | !updateInfo) {
+      newAnime.nameAnother = oldAnime.nameAnother;
+    }
+    if (newAnime.nameOri.isEmpty | !updateInfo) {
+      newAnime.nameOri = oldAnime.nameOri;
+    }
+    if (newAnime.authorOri.isEmpty | !updateInfo) {
+      newAnime.authorOri = oldAnime.authorOri;
+    }
+    if (newAnime.area.isEmpty | !updateInfo) newAnime.area = oldAnime.area;
+    if (newAnime.playStatus.isEmpty | !updateInfo) {
+      newAnime.playStatus = oldAnime.playStatus;
+    }
+    if (newAnime.productionCompany.isEmpty | !updateInfo) {
+      newAnime.productionCompany = oldAnime.productionCompany;
+    }
+    if (newAnime.officialSite.isEmpty | !updateInfo) {
+      newAnime.officialSite = oldAnime.officialSite;
+    }
+    if (newAnime.category.isEmpty | !updateInfo) {
+      newAnime.category = oldAnime.category;
+    }
+
+    if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
+
+    if (newAnime.reviewNumber == 0) {
+      if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
+      newAnime.reviewNumber = oldAnime.reviewNumber;
+    }
+
+    return db.update(
+        'anime',
+        {
+          'anime_name': newAnime.animeName,
+          'anime_desc': newAnime.animeDesc,
+          'tag_name': newAnime.tagName,
+          'anime_cover_url': newAnime.animeCoverUrl,
+          'anime_episode_cnt': newAnime.animeEpisodeCnt,
+          'premiere_time': newAnime.premiereTime,
+          'name_another': newAnime.nameAnother,
+          'name_ori': newAnime.nameOri,
+          'author_ori': newAnime.authorOri,
+          'area': newAnime.area,
+          'play_status': newAnime.playStatus,
+          'production_company': newAnime.productionCompany,
+          'official_site': newAnime.officialSite,
+          'category': newAnime.category,
+          'anime_url': newAnime.animeUrl,
+          'review_number': newAnime.reviewNumber
+        },
+        where: 'anime_id = ?',
+        whereArgs: [oldAnime.animeId]);
+  }
+
+  static void updateReviewNumber(int animeId, int value) {
+    db.rawUpdate('''
+    update anime
+    set review_number = $value
+    where anime_id = $animeId;
+    ''');
+  }
+
   static void updateArea(int animeId, String value) {
     db.rawUpdate('''
     update anime

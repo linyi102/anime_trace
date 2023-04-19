@@ -145,110 +145,6 @@ class SqliteUtil {
     ''');
   }
 
-  // 迁移动漫、全局更新动漫
-  static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
-      {bool updateCover = false,
-      bool updateName = true,
-      bool updateInfo = true}) async {
-    Log.info("sql: updateAnime");
-    String datetime = DateTime.now().toString();
-    Log.info("oldAnime=$oldAnime, newAnime=$newAnime");
-
-    // 如果标签不一样，需要更新最后修改标签的时间
-    if (newAnime.tagName.isNotEmpty && oldAnime.tagName != newAnime.tagName) {
-      await database.rawUpdate('''
-        update anime
-        set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
-        where anime_id = ${oldAnime.animeId};
-      ''');
-      Log.info("last_mode_tag_time: $datetime");
-    }
-    // 改基础信息
-    newAnime = escapeAnime(newAnime);
-    // 如果爬取的集数量大于旧数量，则改变，否则不变(旧的大集数赋值上去)
-    if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
-      newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
-    }
-
-    if (!updateName) {
-      newAnime.animeName = oldAnime.animeName;
-    }
-
-    // 如果新动漫某些属性为空字符串，则把旧的赋值上去
-    if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
-    if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
-
-    // 如果没有新封面，或者不迁移封面，就使用旧的
-    if (newAnime.animeCoverUrl.isEmpty || !updateCover) {
-      newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
-    }
-    // 如果新信息为空，或者不迁移信息，就使用旧的
-    if (newAnime.premiereTime.isEmpty | !updateInfo) {
-      newAnime.premiereTime = oldAnime.premiereTime;
-    }
-    if (newAnime.nameAnother.isEmpty | !updateInfo) {
-      newAnime.nameAnother = oldAnime.nameAnother;
-    }
-    if (newAnime.nameOri.isEmpty | !updateInfo) {
-      newAnime.nameOri = oldAnime.nameOri;
-    }
-    if (newAnime.authorOri.isEmpty | !updateInfo) {
-      newAnime.authorOri = oldAnime.authorOri;
-    }
-    if (newAnime.area.isEmpty | !updateInfo) newAnime.area = oldAnime.area;
-    if (newAnime.playStatus.isEmpty | !updateInfo) {
-      newAnime.playStatus = oldAnime.playStatus;
-    }
-    if (newAnime.productionCompany.isEmpty | !updateInfo) {
-      newAnime.productionCompany = oldAnime.productionCompany;
-    }
-    if (newAnime.officialSite.isEmpty | !updateInfo) {
-      newAnime.officialSite = oldAnime.officialSite;
-    }
-    if (newAnime.category.isEmpty | !updateInfo) {
-      newAnime.category = oldAnime.category;
-    }
-
-    if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
-
-    if (newAnime.reviewNumber == 0) {
-      if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
-      newAnime.reviewNumber = oldAnime.reviewNumber;
-    }
-    // DOUBT 为什么newAnime的有些属性为空字符串，却无法更新为空字符串？不过这样也好
-    return await database.rawUpdate('''
-      update anime
-      set anime_name = '${newAnime.animeName}',
-          anime_desc = '${newAnime.animeDesc}',
-          tag_name = '${newAnime.tagName}',
-          anime_cover_url = '${newAnime.animeCoverUrl}',
-          anime_episode_cnt = ${newAnime.animeEpisodeCnt},
-          premiere_time = '${newAnime.premiereTime}',
-          name_another = '${newAnime.nameAnother}',
-          name_ori = '${newAnime.nameOri}',
-          author_ori = '${newAnime.authorOri}',
-          area = '${newAnime.area}',
-          play_status = '${newAnime.playStatus}',
-          production_company = '${newAnime.productionCompany}',
-          official_site = '${newAnime.officialSite}',
-          category = '${newAnime.category}',
-          anime_url = '${newAnime.animeUrl}',
-          review_number = ${newAnime.reviewNumber}
-      where anime_id = ${oldAnime.animeId};
-    ''');
-  }
-
-  // 转义单引号
-  static Anime escapeAnime(Anime anime) {
-    anime.animeName = EscapeUtil.escapeStr(anime.animeName);
-    anime.animeDesc = EscapeUtil.escapeStr(anime.animeDesc);
-    anime.tagName = EscapeUtil.escapeStr(anime.tagName);
-    anime.nameAnother = EscapeUtil.escapeStr(anime.nameAnother);
-    anime.nameOri = EscapeUtil.escapeStr(anime.nameOri);
-    anime.authorOri = EscapeUtil.escapeStr(anime.nameOri);
-    return anime;
-  }
-
   // 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复
   static Anime restoreEscapeAnime(Anime anime) {
     anime.animeName = EscapeUtil.restoreEscapeStr(anime.animeName);
@@ -257,18 +153,6 @@ class SqliteUtil {
     anime.nameAnother = EscapeUtil.restoreEscapeStr(anime.nameAnother);
     anime.nameOri = EscapeUtil.restoreEscapeStr(anime.nameOri);
     return anime;
-  }
-
-  static Future<int> insertAnime(Anime anime) async {
-    anime = escapeAnime(anime);
-    Log.info("sql: insertAnime(anime:$anime)");
-
-    anime = escapeAnime(anime);
-    String datetime = DateTime.now().toString();
-    return await database.rawInsert('''
-      insert into anime(anime_name, anime_episode_cnt, anime_desc, tag_name, last_mode_tag_time, anime_cover_url, premiere_time, name_another, name_ori, author_ori, area, play_status, production_company, official_site, category, anime_url, review_number)
-      values('${anime.animeName}', '${anime.animeEpisodeCnt}', '${anime.animeDesc}', '${anime.tagName}', '$datetime', '${anime.animeCoverUrl}', '${anime.premiereTime}', '${anime.nameAnother}', '${anime.nameOri}', '${anime.authorOri}', '${anime.area}', '${anime.playStatus}', '${anime.productionCompany}', '${anime.officialSite}', '${anime.category}', '${anime.animeUrl}', 1);
-    ''');
   }
 
   static Future<void> addColumnInfoToAnime() async {
@@ -622,37 +506,6 @@ class SqliteUtil {
       where anime.tag_name = '$tagName';
       ''');
     return list[0]["cnt"] as int;
-  }
-
-  static Future<List<Anime>> getAnimesBySearch(String keyword) async {
-    Log.info("sql: getAnimesBySearch");
-    keyword = EscapeUtil.escapeStr(keyword);
-
-    var list = await database.rawQuery('''
-      select * from anime
-      where anime_name like '%$keyword%' or name_another like '%$keyword%';
-      ''');
-
-    List<Anime> res = [];
-    for (var element in list) {
-      int animeId = element['anime_id'] as int;
-      int reviewNumber = element['review_number'] as int;
-      int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
-          animeId,
-          reviewNumber: reviewNumber);
-      Anime anime = Anime(
-        animeId: animeId,
-        // 进入详细页面后需要该id
-        animeName: element['anime_name'] as String? ?? "",
-        nameAnother: element['name_another'] as String? ?? "",
-        animeEpisodeCnt: element['anime_episode_cnt'] as int? ?? 0,
-        checkedEpisodeCnt: checkedEpisodeCnt,
-        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
-        reviewNumber: reviewNumber,
-      );
-      res.add(restoreEscapeAnime(anime));
-    }
-    return res;
   }
 
   static Future<int> getCheckedEpisodeCntByAnimeId(int animeId,

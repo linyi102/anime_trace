@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -123,7 +124,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                               newAnime);
                         },
                         onTaskComplete: (taskValue) async {
-                          SqliteUtil.updateAnime(
+                          AnimeDao.updateAnime(
                               await SqliteUtil.getAnimeByAnimeId(animeId),
                               newAnime,
                               updateCover: updateCover,

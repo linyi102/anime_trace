@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/label.dart';
@@ -250,7 +251,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     _lastInputText = text;
     Future(() {
       Log.info("search: $text");
-      return SqliteUtil.getAnimesBySearch(text);
+      return AnimeDao.getAnimesBySearch(text);
     }).then((value) {
       _animes = value;
       searchOk = true;

@@ -228,7 +228,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 children: [
                   ListTile(
                     title: const Text("选择时间"),
-                    leading: const Icon(EvaIcons.clockOutline),
+                    leading: const Icon(Icons.access_time),
                     onTap: () async {
                       // 退出对话框
                       Navigator.of(context).pop();
@@ -252,7 +252,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   if (_episode.isChecked())
                     ListTile(
                       title: const Text("撤销时间"),
-                      leading: const Icon(EvaIcons.undo),
+                      leading: const Icon(Icons.close),
                       onTap: () async {
                         // 退出对话框
                         Navigator.pop(context);
@@ -274,7 +274,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   const Divider(),
                   ListTile(
                     title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
-                    leading: const Icon(EvaIcons.edit2Outline),
+                    leading: const Icon(Icons.edit),
                     onTap: () {
                       Navigator.pop(context);
                       _enterNoteEditPage(needCreate: true);
@@ -283,7 +283,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   if (_episode.note != null)
                     ListTile(
                       title: const Text("复制笔记"),
-                      leading: const Icon(EvaIcons.copyOutline),
+                      leading: const Icon(Icons.copy_rounded),
                       onTap: () {
                         CommonUtil.copyContent(_episode.note!.noteContent);
                         Navigator.pop(context);
@@ -292,7 +292,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   if (_episode.note != null)
                     ListTile(
                       title: const Text("删除笔记"),
-                      leading: const Icon(EvaIcons.trash2Outline),
+                      leading: const Icon(Icons.delete_outline),
                       onTap: () {
                         _dialogDeleteConfirm();
                       },
