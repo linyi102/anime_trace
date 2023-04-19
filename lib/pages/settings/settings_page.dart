@@ -13,6 +13,7 @@ import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/sp_key.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/theme.dart';
 
 import 'general_setting.dart';
 import 'test_page.dart';
@@ -219,13 +220,7 @@ class _SettingPageState extends State<SettingPage> {
 
     return SizedBox(
       height: MediaQuery.of(context).size.height / 4,
-      width: MediaQuery.of(context).size.width,
       child: Card(
-        // 圆角
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8))),
-        // 设置抗锯齿，实现圆角背景
-        clipBehavior: Clip.antiAlias,
         child: InkWell(
           // 点击事件
           onTap: () => _showDialogBanner(),

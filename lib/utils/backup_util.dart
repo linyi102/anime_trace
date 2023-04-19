@@ -20,6 +20,7 @@ import 'package:webdav_client/webdav_client.dart' as dav_client;
 class BackupUtil {
   static String backupZipNamePrefix = "backup";
   static String descFileName = "desc";
+  static int rbrMaxCnt = 20;
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
@@ -221,7 +222,19 @@ class BackupUtil {
       time = time.replaceAll(" ", "-");
       String recordFileName = "record-$time.zip";
       var recordFile = await BackupUtil.createTempBackUpFile(recordFileName);
-      recordFile.rename("$dirPath/$recordFileName");
+      recordFile.rename("$dirPath/$recordFileName").then((value) async {
+        // 如果超出了最大限制数量，则删除旧的
+        var stream = Directory(dirPath).list();
+        List<File> files = [];
+        await for (var fse in stream) {
+          files.add(File(fse.path));
+        }
+        if (files.length > rbrMaxCnt) {
+          // 按名字排序，日期最小的是第1个
+          files.sort((a, b) => a.path.compareTo(b.path));
+        }
+        files.first.delete();
+      });
     }
 
     // 2.然后进行还原

@@ -89,8 +89,9 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text("帮助"),
-                          content: const Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
-                              "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。"),
+                          content: Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
+                              "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。\n"
+                              "注：最多可存放${BackupUtil.rbrMaxCnt}份，超出时会删除旧的。"),
                           actions: [
                             TextButton(
                                 onPressed: () => Navigator.pop(context),

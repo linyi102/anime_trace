@@ -1,19 +1,15 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:path_provider/path_provider.dart';
 
 class RBRPage extends StatefulWidget {

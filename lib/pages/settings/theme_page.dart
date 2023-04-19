@@ -30,35 +30,36 @@ class _ThemePageState extends State<ThemePage> {
                   style: TextStyle(color: Theme.of(context).primaryColor))),
           _buildTileSelectDarkMode(context),
           Obx(() => _buildColorAtlasList()),
-          const Divider(),
-          ListTile(
-              title: Text("其他",
-                  style: TextStyle(color: Theme.of(context).primaryColor))),
-          Obx(
-            () {
-              return Column(
-                children: [
-                  SwitchListTile(
-                    title: const Text("卡片风格"),
-                    value: themeController.useCardStyle.value,
-                    onChanged: (value) {
-                      themeController.setUseCardStyle(value);
-                    },
-                  ),
-                  // SwitchListTile(
-                  //   title: const Text("Material3风格"),
-                  //   value: themeController.useM3.value,
-                  //   onChanged: (value) {
-                  //     // TODO，会抛出异常并跳转到首页
-                  //     // 'package:flutter/src/painting/text_style.dart':
-                  //     // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
-                  //     themeController.setM3(value);
-                  //   },
-                  // ),
-                ],
-              );
-            },
-          )
+          // const Divider(),
+          // ListTile(
+          //     title: Text("其他",
+          //         style: TextStyle(color: Theme.of(context).primaryColor))),
+          // Obx(
+          //   () {
+          //     return Column(
+          //       children: [
+          //         // 卡片风格会导致toast圆角丢失
+          //         SwitchListTile(
+          //           title: const Text("卡片风格"),
+          //           value: themeController.useCardStyle.value,
+          //           onChanged: (value) {
+          //             themeController.setUseCardStyle(value);
+          //           },
+          //         ),
+          //         // SwitchListTile(
+          //         //   title: const Text("Material3风格"),
+          //         //   value: themeController.useM3.value,
+          //         //   onChanged: (value) {
+          //         //     // TODO，会抛出异常并跳转到首页
+          //         //     // 'package:flutter/src/painting/text_style.dart':
+          //         //     // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
+          //         //     themeController.setM3(value);
+          //         //   },
+          //         // ),
+          //       ],
+          //     );
+          //   },
+          // )
         ],
       ),
     );

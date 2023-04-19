@@ -110,7 +110,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
             },
           ),
           SwitchListTile(
-            title: const Text("今年时间隐藏年份"),
+            title: const Text("今年时间显示年份"),
             subtitle:
                 Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
             value: TimeUtil.showCurYear,

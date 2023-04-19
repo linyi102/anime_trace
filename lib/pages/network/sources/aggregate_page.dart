@@ -198,15 +198,15 @@ class _AggregatePageState extends State<AggregatePage> {
             children: [
               IconTextButton(
                 iconSize: iconSize,
-                icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
-                // icon: Container(
-                //     decoration: const BoxDecoration(
-                //         color: Color.fromRGBO(19, 189, 157, 1),
-                //         shape: BoxShape.circle),
-                //     child: const Center(
-                //         child: Text("番",
-                //             style:
-                //                 TextStyle(color: Colors.white, fontSize: 16)))),
+                // icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+                icon: Container(
+                    decoration: const BoxDecoration(
+                        color: Color.fromRGBO(19, 189, 157, 1),
+                        shape: BoxShape.circle),
+                    child: const Center(
+                        child: Text("番",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16)))),
                 text: const Text("番组放送", textScaleFactor: 0.9),
                 onTap: () => LaunchUrlUtil.launch(
                     context: context, uriStr: favWebsite.url),
