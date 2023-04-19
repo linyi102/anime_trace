@@ -14,9 +14,10 @@ class ClimbAgemys extends Climb {
   factory ClimbAgemys() => _instance;
   ClimbAgemys._();
 
-  // String baseUrl = "https://www.agemys.cc";
   @override
-  String get baseUrl => "https://www.agemys.net"; // 2022.10.27
+  // String baseUrl = "https://www.agemys.cc";
+  // String get baseUrl => "https://www.agemys.net"; // 2022.10.27
+  String get baseUrl => "https://www.agemys.vip"; // 2023.04.19
 
   @override
   String get sourceName => "AGE动漫";
@@ -59,24 +60,16 @@ class ClimbAgemys extends Climb {
 
       // 注意是document，而上面的element只是用于获取图片，以及得知查询的动漫数量
       climbAnime.category =
-          document.getElementsByClassName("cell_imform_value")[0].innerHtml;
+          document.getElementsByClassName("cell_imform_kv")[0].innerHtml;
       climbAnime.nameOri =
-          document.getElementsByClassName("cell_imform_value")[1].innerHtml;
+          document.getElementsByClassName("cell_imform_kv")[1].innerHtml;
       climbAnime.nameAnother =
-          document.getElementsByClassName("cell_imform_value")[2].innerHtml;
+          document.getElementsByClassName("cell_imform_kv")[2].innerHtml;
       if (climbAnime.nameAnother == "暂无") climbAnime.nameAnother = "";
       climbAnime.premiereTime =
-          document.getElementsByClassName("cell_imform_value")[3].innerHtml;
+          document.getElementsByClassName("cell_imform_kv")[3].innerHtml;
       climbAnime.playStatus =
-          document.getElementsByClassName("cell_imform_value")[4].innerHtml;
-      // climbAnime.authorOri =
-      //     document.getElementsByClassName("cell_imform_value")[5].innerHtml;
-      // 6：剧情类型
-      // climbAnime.productionCompany =
-      //     document.getElementsByClassName("cell_imform_value")[7].innerHtml;
-      // climbAnime.animeDesc =
-      //     document.getElementsByClassName("cell_imform_desc")[0].innerHtml;
-
+          document.getElementsByClassName("cell_imform_kv")[4].innerHtml;
       climbAnimes.add(climbAnime);
     }
     Log.info("解析完毕√");

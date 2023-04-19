@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_checklist.da
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -73,6 +74,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
             Anime anime = widget.animes[animeIndex];
 
             return InkWell(
+              borderRadius: BorderRadius.circular(AppTheme.imgRadius),
               onTap: () async {
                 // 迁移动漫
                 if (ismigrate) {
