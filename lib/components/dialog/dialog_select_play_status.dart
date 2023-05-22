@@ -10,7 +10,6 @@ showDialogSelectPlayStatus(
       builder: (context) {
         return SimpleDialog(
           title: const Text("播放状态"),
-          contentPadding: const EdgeInsets.all(8),
           children: PlayStatus.values
               .map((playStatus) => ListTile(
                     leading: playStatus == animeController.anime.getPlayStatus()

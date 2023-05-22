@@ -223,7 +223,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       onPressed: () {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (dialogContext) {
               return SimpleDialog(
                 children: [
                   ListTile(
@@ -231,7 +231,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     leading: const Icon(Icons.access_time),
                     onTap: () async {
                       // 退出对话框
-                      Navigator.of(context).pop();
+                      Navigator.of(dialogContext).pop();
 
                       // 如果是多选状态则先退出
                       if (widget.animeController.multiSelected.value) {
@@ -255,7 +255,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                       leading: const Icon(Icons.close),
                       onTap: () async {
                         // 退出对话框
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
 
                         // 弹出确定对话框
                         _dialogRemoveDate();
@@ -266,9 +266,9 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     title: const Text("编辑标题"),
                     leading: const Icon(Icons.title),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(dialogContext);
 
-                      _showDialogDescForm(context);
+                      _showDialogDescForm(dialogContext);
                     },
                   ),
                   const Divider(),
@@ -276,7 +276,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
                     leading: const Icon(Icons.edit),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(dialogContext);
                       _enterNoteEditPage(needCreate: true);
                     },
                   ),
@@ -286,7 +286,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                       leading: const Icon(Icons.copy_rounded),
                       onTap: () {
                         CommonUtil.copyContent(_episode.note!.noteContent);
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                       },
                     ),
                   if (_episode.note != null)

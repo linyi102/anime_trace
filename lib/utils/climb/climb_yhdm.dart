@@ -13,8 +13,7 @@ class ClimbYhdm extends Climb {
   ClimbYhdm._();
 
   @override
-  // String get baseUrl => "https://www.yhdmp.cc";
-  String get baseUrl => "https://www.yhpdm.net";
+  String get baseUrl => "https://www.yhdmz.org";
 
   @override
   String get sourceName => "樱花动漫";
