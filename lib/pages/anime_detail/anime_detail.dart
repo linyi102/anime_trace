@@ -240,7 +240,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            content: const Text("检测到新封面，是否更新"),
+            title: const Text("发现新封面"),
+            content: const Text("检测到新封面，是否更新？"),
             actions: [
               TextButton(
                 onPressed: () {
@@ -253,7 +254,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                           onTapDown: (_, __, ___) =>
                               Navigator.of(context).pop())));
                 },
-                child: const Text("查看"),
+                child: const Text("预览"),
               ),
               TextButton(
                 onPressed: () {
