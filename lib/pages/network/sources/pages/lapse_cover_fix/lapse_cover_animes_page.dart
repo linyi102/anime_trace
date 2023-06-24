@@ -9,7 +9,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -202,8 +202,7 @@ Future<List<Anime>> getAllLapseCoverAnimes(List<Anime> animes) async {
     if (anime.animeCoverUrl.startsWith("http")) {
       // 添加到future中，并使用then
       // 如果在for里使用await，只能等返回结果后，才会执行下一次循环
-      futures
-          .add(DioPackage.urlResponseOk(anime.animeCoverUrl).then((responseOk) {
+      futures.add(DioUtil.urlResponseOk(anime.animeCoverUrl).then((responseOk) {
         if (!responseOk) {
           Log.info("添加失效封面动漫：${anime.animeName}");
           lapseCoverAnimes.add(anime);

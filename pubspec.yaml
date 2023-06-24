@@ -34,6 +34,8 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  app_installer: ^1.1.0
+  flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6 # 时间差
   bot_toast: ^4.0.3 # 消息
   flex_color_scheme: ^6.1.2 # 主题

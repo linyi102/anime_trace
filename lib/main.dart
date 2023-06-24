@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
-
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
-import 'package:flutter_test_future/components/update_hint.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -227,7 +225,7 @@ class MyAppState extends State<MyApp> with WindowListener {
             ),
             builder: BotToastInit(),
             navigatorObservers: [BotToastNavigatorObserver()],
-            home: _buildHome(),
+            home: const MainScreen(),
             // 后台应用显示名称
             title: '漫迹',
             // 去除右上角的debug标签
@@ -237,15 +235,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           ),
         );
       },
-    );
-  }
-
-  Stack _buildHome() {
-    return Stack(
-      children: const [
-        MainScreen(),
-        UpdateHint(checkLatestVersion: true),
-      ],
     );
   }
 

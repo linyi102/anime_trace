@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -39,6 +41,8 @@ class Global {
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化
     sqfliteFfiInit();
+    // 网络
+    DioUtil.init();
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
     // put常用的getController
@@ -55,6 +59,7 @@ class Global {
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => BackupService());
+    Get.put(AppUpgradeController());
 
     final checklistController = ChecklistController();
     Get.put(checklistController);
@@ -87,6 +92,12 @@ class Global {
         await windowManager.focus();
       });
     }
+  }
+
+  static exitApp() {
+    SystemNavigator.pop();
+    // 不推荐
+    // exit(0);
   }
 }
 

@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:html/dom.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -153,7 +153,7 @@ class ClimbDouban extends Climb {
   Future<bool> existUser(String userId) async {
     String url = "$userCollBaseUrl/$userId";
 
-    return DioPackage.urlResponseOk(url);
+    return DioUtil.urlResponseOk(url);
   }
 
   Future<int> climbUserCollectionCnt(Document document) async {

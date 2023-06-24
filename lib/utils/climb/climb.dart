@@ -6,7 +6,7 @@ import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -64,7 +64,7 @@ class Climb {
     String sourceName = foreignSourceName ?? this.sourceName;
 
     Log.info("$sourceName：正在获取文档...");
-    Result result = await DioPackage.get(url, isMobile: isMobile);
+    Result result = await DioUtil.get(url, isMobile: isMobile);
     if (result.code != 200) {
       ToastUtil.showText("$sourceName：${result.msg}");
       return null;

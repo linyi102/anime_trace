@@ -4,13 +4,31 @@ import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 
 class ToastUtil {
-  static showDialog(
-      {required Widget Function(void Function() cancel) builder}) {
+  /// 对话框
+  /// 优点：
+  ///   不用context
+  ///   样式会跟着主题变化
+  /// 缺点：
+  ///   没有返回值
+  static showDialog({
+    required Widget Function(void Function() close) builder,
+    bool clickClose = true,
+  }) {
     BotToast.showCustomLoading(
       animationDuration: const Duration(milliseconds: 200),
       animationReverseDuration: const Duration(milliseconds: 200),
-      clickClose: true,
-      toastBuilder: builder,
+      clickClose: clickClose,
+      toastBuilder: (cancelFunc) {
+        return WillPopScope(
+          child: builder(cancelFunc),
+          onWillPop: () async {
+            // 如果允许点击对话框外区域，或点击虚拟返回键关闭对话框，则执行关闭
+            if (clickClose) cancelFunc();
+            // 始终返回false，避免退出页面
+            return false;
+          },
+        );
+      },
     );
   }
 

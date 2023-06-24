@@ -9,6 +9,7 @@ class ErrorFormatUtil {
    */
   static String formatError(e) {
     String msg = "";
+    Log.error(e);
     if (e is DioError) {
       if (e.type == DioErrorType.connectTimeout) {
         // It occurs when url is opened timeout.

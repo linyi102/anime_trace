@@ -6,7 +6,7 @@ import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
-import 'package:flutter_test_future/utils/dio_package.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -84,7 +84,7 @@ class _AggregatePageState extends State<AggregatePage> {
     setState(() {});
     for (var website in climbWebsites) {
       if (!website.discard && website.pingStatus.needPing) {
-        DioPackage.ping(website.climb.baseUrl).then((value) {
+        DioUtil.ping(website.climb.baseUrl).then((value) {
           website.pingStatus = value;
           if (mounted) {
             setState(() {});

@@ -8,6 +8,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -21,6 +22,16 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   int seconds = 3;
   Timer? timer;
+  double percent = 0.2;
+
+  @override
+  void initState() {
+    1.seconds.delay(() {
+      percent = 0.5;
+      if (mounted) setState(() {});
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +41,15 @@ class _TestPageState extends State<TestPage> {
       appBar: AppBar(title: const Text("测试")),
       body: ListView(
         children: [
+          LinearPercentIndicator(
+            lineHeight: 12,
+            animation: true,
+            animateFromLastPercent: true,
+            percent: percent,
+            progressColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).disabledColor,
+            barRadius: const Radius.circular(24),
+          ),
           ListTile(
             title: const Text("测试下拉刷新"),
             onTap: () {
