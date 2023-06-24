@@ -39,6 +39,7 @@ class AppUpgradeController extends GetxController {
   int count = 0;
   int total = 0;
   double get downloadPercent => total == 0 ? 0 : count / total;
+  String get downloadPercnetStr => "${(downloadPercent * 100).toInt()}%";
   CancelToken? releaseCancelToken;
 
   String get curVersion => packageInfo.version;
@@ -56,6 +57,9 @@ class AppUpgradeController extends GetxController {
 
   @override
   void onInit() async {
+    if (Platform.isWindows) {
+      Log.info("Windows exe path: ${Platform.resolvedExecutable}");
+    }
     packageInfo = await PackageInfo.fromPlatform();
     getLatestVersion(autoCheck: true);
     super.onInit();
@@ -211,7 +215,7 @@ class AppUpgradeController extends GetxController {
         builder: (close) => AlertDialog(
           title: const Text('提示'),
           content: Text(
-              '检测到已下载了最新版本，${Platform.isAndroid ? "是否直接安装？" : "是否退出应用，然后手动安装？"} '),
+              '检测到已下载最新版本，${Platform.isAndroid ? "是否立即安装？" : "是否退出应用，然后手动安装？"} '),
           actions: [
             TextButton(
                 onPressed: () {
@@ -247,8 +251,29 @@ class AppUpgradeController extends GetxController {
       savePath: savePath,
       onComplete: () async {
         if (Platform.isAndroid) {
+          // 关闭下载进度框
+          closeProgressDialog?.call();
+
           // Android自动安装
           AppInstaller.installApk(savePath);
+
+          // 提示下载完毕
+          ToastUtil.showDialog(
+            clickClose: false,
+            builder: (close) => AlertDialog(
+              title: const Text('下载成功'),
+              content: const Text('下载成功后会自动安装，如果没有反应，请点击安装按钮'),
+              actions: [
+                TextButton(onPressed: () => close(), child: const Text('稍后')),
+                TextButton(
+                    onPressed: () {
+                      close();
+                      AppInstaller.installApk(savePath);
+                    },
+                    child: const Text('安装')),
+              ],
+            ),
+          );
         } else {
           // 关闭下载进度框
           closeProgressDialog?.call();
@@ -257,11 +282,15 @@ class AppUpgradeController extends GetxController {
             clickClose: false,
             builder: (close) => AlertDialog(
               title: const Text('下载完毕'),
-              content: const Text('是否立即退出应用，进行手动安装'),
+              content: const Text('是否退出应用，进行手动安装？'),
               actions: [
                 TextButton(onPressed: () => close(), child: const Text('稍后')),
                 TextButton(
-                    onPressed: () => Global.exitApp(), child: const Text('退出')),
+                    onPressed: () {
+                      close();
+                      Global.exitApp();
+                    },
+                    child: const Text('退出')),
               ],
             ),
           );
@@ -367,7 +396,7 @@ class AppUpgradeController extends GetxController {
       onReceiveProgress: (count, total) {
         this.count = count;
         this.total = total;
-        Log.info('下载进度：$count/$total');
+        // Log.info('下载进度：$count/$total');
         update();
         if (count == total) {
           downloading = false;
@@ -410,18 +439,20 @@ class AppDownloadProgressBar extends StatelessWidget {
     return GetBuilder<AppUpgradeController>(
       init: AppUpgradeController.to,
       initState: (_) {},
-      builder: (_) {
+      builder: (controller) {
+        const textStyle = TextStyle(fontSize: 14);
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: PercentBar(AppUpgradeController.to.downloadPercent),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: PercentBar(controller.downloadPercent),
             ),
             Text(
-              "${FileUtil.getReadableFileSize(AppUpgradeController.to.count)}/${FileUtil.getReadableFileSize(AppUpgradeController.to.total)}",
-              style: const TextStyle(fontSize: 14),
-            )
+              "${FileUtil.getReadableFileSize(controller.count)}/${FileUtil.getReadableFileSize(controller.total)}",
+              style: textStyle,
+            ),
           ],
         );
       },
