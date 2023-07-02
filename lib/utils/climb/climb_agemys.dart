@@ -17,7 +17,8 @@ class ClimbAgemys extends Climb {
   @override
   // String baseUrl = "https://www.agemys.cc";
   // String get baseUrl => "https://www.agemys.net"; // 2022.10.27
-  String get baseUrl => "https://www.agemys.vip"; // 2023.04.19
+  // String get baseUrl => "https://www.agemys.vip"; // 2023.04.19
+  String get baseUrl => "https://www.agedm.tv"; // 2023.07.02
 
   @override
   String get sourceName => "AGE动漫";

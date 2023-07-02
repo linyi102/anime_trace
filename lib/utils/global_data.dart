@@ -31,8 +31,8 @@ List<ClimbWebsite> climbWebsites = [
   ClimbWebsite(
       name: "AGE动漫",
       iconUrl: "assets/images/website/agemys.jpg",
-      keyword: "%agemys%",
-      regexp: "agemys",
+      keyword: "%age%",
+      regexp: "age",
       spkey: "enableWebSiteAgemys",
       enable: SPUtil.getBool("enableWebSiteAgemys", defaultValue: true),
       pingStatus: PingStatus(),
