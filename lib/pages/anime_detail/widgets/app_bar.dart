@@ -65,16 +65,43 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               ],
             ),
           ),
-          leading: IconButton(
-            onPressed: () {
-              widget.popPage();
-            },
-            // icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
-            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          leading: _buildAppBarIconButton(
+            context: context,
+            onTap: () => widget.popPage(),
+            icon: const Icon(Icons.chevron_left),
           ),
           actions: _generateActions(),
         );
       },
+    );
+  }
+
+  _buildAppBarIconButton({
+    required BuildContext context,
+    required Widget icon,
+    void Function()? onTap,
+  }) {
+    // return IconButton(onPressed: onTap, icon: icon);
+
+    return Container(
+      margin: const EdgeInsets.all(6.0),
+      child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        onTap: onTap,
+        // icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
+        child: Center(
+          child: Container(
+              height: 36,
+              width: 36,
+              decoration: BoxDecoration(
+                color: Theme.of(context).appBarTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: icon),
+        ),
+      ),
     );
   }
 
@@ -151,57 +178,65 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   List<Widget> _generateActions() {
     if (!widget.animeController.isCollected) return [];
     return [
-      IconButton(
-          onPressed: () => _showLayoutBottomSheet(),
-          icon: const Icon(Icons.filter_list)),
-      PopupMenuButton(
-        position: PopupMenuPosition.under,
-        icon: const Icon(Icons.more_vert),
-        itemBuilder: (BuildContext context) {
-          return [
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text("取消收藏"),
-                onTap: () {
-                  // 关闭下拉菜单
-                  Navigator.pop(context);
+      _buildAppBarIconButton(
+        context: context,
+        onTap: () => _showLayoutBottomSheet(),
+        // icon: const Icon(Icons.filter_list),
+        icon: const Icon(Icons.layers_outlined),
+      ),
+      _buildAppBarIconButton(
+          context: context,
+          icon: Center(
+            child: PopupMenuButton(
+              padding: EdgeInsets.zero,
+              position: PopupMenuPosition.under,
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    padding: const EdgeInsets.all(0),
+                    child: ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: const Text("取消收藏"),
+                      onTap: () {
+                        // 关闭下拉菜单
+                        Navigator.pop(context);
 
-                  _dialogDeleteAnime();
-                },
-              ),
-            ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                leading: const Icon(EvaIcons.car),
-                title: const Text("迁移动漫"),
-                onTap: () {
-                  // 关闭下拉菜单
-                  Navigator.pop(context);
-
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AnimeClimbAllWebsite(
-                          animeId: _anime.animeId,
-                          keyword: _anime.animeName,
-                        );
+                        _dialogDeleteAnime();
                       },
                     ),
-                  ).then((value) {
-                    // 从数据库中获取迁移后的动漫
-                    widget.animeController.loadAnime(_anime);
-                    // TODO 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
-                    // widget.animeController.loadEpisode();
-                  });
-                },
-              ),
+                  ),
+                  PopupMenuItem(
+                    padding: const EdgeInsets.all(0),
+                    child: ListTile(
+                      leading: const Icon(EvaIcons.car),
+                      title: const Text("迁移动漫"),
+                      onTap: () {
+                        // 关闭下拉菜单
+                        Navigator.pop(context);
+
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return AnimeClimbAllWebsite(
+                                animeId: _anime.animeId,
+                                keyword: _anime.animeName,
+                              );
+                            },
+                          ),
+                        ).then((value) {
+                          // 从数据库中获取迁移后的动漫
+                          widget.animeController.loadAnime(_anime);
+                          // TODO 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
+                          // widget.animeController.loadEpisode();
+                        });
+                      },
+                    ),
+                  ),
+                ];
+              },
             ),
-          ];
-        },
-      ),
+          ))
     ];
   }
 
