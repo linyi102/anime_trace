@@ -223,7 +223,23 @@ class MyAppState extends State<MyApp> with WindowListener {
                 },
               ),
             ),
-            builder: BotToastInit(),
+            builder: (context, child) {
+              child = BotToastInit()(context, child);
+              // 全局点击空白处隐藏软键盘
+              child = Scaffold(
+                body: GestureDetector(
+                  onTap: () {
+                    FocusScopeNode currentFocus = FocusScope.of(context);
+                    if (!currentFocus.hasPrimaryFocus &&
+                        currentFocus.focusedChild != null) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    }
+                  },
+                  child: child,
+                ),
+              );
+              return child;
+            },
             navigatorObservers: [BotToastNavigatorObserver()],
             home: const MainScreen(),
             // 后台应用显示名称
