@@ -55,8 +55,9 @@ class AnimeGridCover extends StatelessWidget {
                           !_animeDisplayController.showOriCover.value),
                   if (showProgress &&
                       _anime.isCollected() &&
-                      _animeDisplayController.showGridAnimeProgress.value &&
-                      _anime.animeEpisodeCnt > 0)
+                      _animeDisplayController.showGridAnimeProgress.value)
+                    // _anime.animeEpisodeCnt > 0
+                    // 不要在集数为0时隐藏，避免搜索时因集数为0，不显示进度导致认为没有收藏
                     _buildEpisodeState(context),
                   if (showReviewNumber &&
                       _anime.isCollected() &&

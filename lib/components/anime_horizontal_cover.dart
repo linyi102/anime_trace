@@ -10,8 +10,6 @@ import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-typedef Callback = Future<bool> Function();
-
 // 水平排列动漫封面
 // 使用：聚合搜索页
 // ignore: must_be_immutable
@@ -20,7 +18,7 @@ class AnimeHorizontalCover extends StatefulWidget {
   int animeId;
 
   // Future<bool> Function callback;
-  Callback callback;
+  Future<bool> Function() callback;
 
   AnimeHorizontalCover(
       {Key? key,
@@ -93,6 +91,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     // widget.animes[animeIndex] =
                     //     await SqliteUtil.getAnimeByAnimeId(anime.animeId);
                     // setState(() {});
+                    widget.animes[animeIndex] = value;
                     widget.callback().then((value) {
                       Log.info("callback.then");
                       setState(() {});

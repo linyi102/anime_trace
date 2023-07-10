@@ -555,9 +555,10 @@ class SqliteUtil {
         limit $number offset $offset;
       ''');
     } else {
+      // COLLATE NOCASE 忽略大小写
       String orderSql = '''
-        order by ${AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx].columnName}
-      ''';
+        order by ${AnimeSortCond.sortConds[animeSortCond.specSortColumnIdx].columnName} COLLATE NOCASE
+        ''';
       if (animeSortCond.desc) {
         orderSql += ' desc ';
       }

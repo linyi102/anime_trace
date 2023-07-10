@@ -13,6 +13,8 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
+import '../../../dao/anime_dao.dart';
+
 class AnimeClimbAllWebsite extends StatefulWidget {
   final int animeId; // 需要迁移的动漫id
   final String keyword; // 搜索关键字
@@ -36,9 +38,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Map<String, List<Anime>> mixedAnimes = {}; // 先赋值为爬取的动漫，后如果已收藏，则赋值为数据库动漫
   Map<String, bool> websiteClimbSearchOk = {}; // true时显示搜索结果
   Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
+  List<Anime> localAnimes = []; // 本地动漫
   List<Anime> customAnimes = []; // 自定义动漫
-  bool customSearchOK = false;
-  bool customSearching = false;
 
   @override
   void initState() {
@@ -70,7 +71,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       websiteClimbSearching[climbWebsite.name] = false;
     }
 
-    _generateCustomAnimes();
+    // _generateCustomAnimes();
 
     Log.info("开始爬取动漫封面");
     // 遍历所有搜索源
@@ -105,8 +106,6 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     if (!ismigrate) {
       // 先重置数据
       customAnimes.clear();
-      customSearchOK = false;
-      customSearching = true;
       setState(() {});
       // 添加以关键字为名字的自定义动漫
       // 从数据库中找同名的没有动漫地址的动漫，并赋值给该动漫(可能之前添加过以关键字为名字的自定义动漫)
@@ -117,9 +116,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       customAnimes.addAll(await SqliteUtil.getCustomAnimesIfContainAnimeName(
           customAnime.animeName));
 
-      customSearchOK = true;
-      customSearching = false;
-      setState(() {});
+      if (mounted) setState(() {});
     }
   }
 
@@ -175,6 +172,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         },
         child: ListView(
           children: [
+            _buildLocalAnimes(),
             // 自定义动漫
             _buildCustomItem(),
             // 所有搜索源
@@ -187,12 +185,27 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     );
   }
 
+  _buildLocalAnimes() {
+    if (ismigrate) return const SizedBox.shrink();
+    return Column(
+      children: [
+        const ListTile(title: Text("已收藏")),
+        if (localAnimes.isNotEmpty)
+          AnimeHorizontalCover(
+            animes: localAnimes,
+            callback: () async {
+              return true;
+            },
+          )
+      ],
+    );
+  }
+
   ListView _buildAllSource() {
     bool isFirstEnableSource = false;
     return ListView.builder(
       shrinkWrap: true, //解决无限高度问题
       physics: const NeverScrollableScrollPhysics(), //禁用滑动事件
-
       itemCount: climbWebsites
           .length, // 应该始终显示这么多个，即使关闭了(要返回Container())，也要统计在内，因为要判断所有搜索源
       itemBuilder: (context, index) {
@@ -273,33 +286,59 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         lastInputKeyword = text; // 更新上一次输入的名字
         _climbAnime(keyword: text);
       },
-      onChanged: (inputStr) {
-        lastInputKeyword = inputStr;
+      onChanged: (inputStr) async {
+        // 如果使用输入法，回车后该方法会执行两次，导致已收藏和自定义出现重复，因此判断如果和上一个关键一样，则直接返回
+        if (lastInputKeyword == inputStr) {
+          return;
+        }
+
         // 避免输入好后切换搜索源后，清空了输入的内容
+        lastInputKeyword = inputStr;
+        // 输入时就查询本地和自定义
+        if (inputStr.isNotEmpty) {
+          localAnimes = await AnimeDao.getAnimesBySearch(inputStr);
+          _generateCustomAnimes();
+          if (mounted) setState(() {});
+        } else {
+          // 清空
+          customAnimes.clear();
+          localAnimes.clear();
+          if (mounted) setState(() {});
+        }
       },
     );
   }
 
   _buildCustomItem() {
+    // 迁移时不显示自定义
+    if (ismigrate) return const SizedBox.shrink();
     return Column(
       children: [
         // 自定义添加的动漫
-        ismigrate
-            ? Container() // 迁移时不显示自定义
-            : const ListTile(
-                title: Text("自定义"),
-              ),
-        ismigrate
-            ? Container()
-            : customSearchOK // 搜索完毕后显示动漫
-                ? AnimeHorizontalCover(
-                    animes: customAnimes,
-                    animeId: widget.animeId,
-                    callback: _generateMixedAnimesAllWebsite,
-                  )
-                : customSearching // 正在搜索时显示加载圈
-                    ? _buildLoadingWidget()
-                    : Container(),
+        ListTile(
+            title: Row(
+          children: [
+            const Text("自定义"),
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const AlertDialog(
+                    title: Text('帮助'),
+                    content: Text('如果在搜索源中没有找到想要的动漫，可以在此处添加自定义动漫'),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.help_outline, size: 16),
+            )
+          ],
+        )),
+        if (customAnimes.isNotEmpty)
+          AnimeHorizontalCover(
+            animes: customAnimes,
+            animeId: widget.animeId,
+            callback: _generateMixedAnimesAllWebsite,
+          )
       ],
     );
   }
