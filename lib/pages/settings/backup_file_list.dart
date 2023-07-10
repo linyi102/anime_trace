@@ -7,7 +7,6 @@ import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:webdav_client/webdav_client.dart';
 import 'package:flutter_test_future/utils/log.dart';
 

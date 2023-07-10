@@ -310,6 +310,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     );
   }
 
+  // ignore: unused_element
   SwitchListTile _buildOldAutoBackupSwitchTile() {
     return SwitchListTile(
       title: const Text("自动备份"),
