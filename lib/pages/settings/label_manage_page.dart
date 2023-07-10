@@ -357,6 +357,7 @@ class LabelManagePage extends StatelessWidget {
     );
   }
 
+  // ignore: unused_element
   void _renewAllLabels(LabelsController labelsController) async {
     if (labelsController.kw.isNotEmpty) {
       // 之前搜索了关键字后，退出了该页面，那么重新进入该页面时，需要重新获取所有标签

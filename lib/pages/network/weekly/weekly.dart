@@ -152,6 +152,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
     );
   }
 
+  // ignore: unused_element
   GridView _buildAnimeGrid(int pageIndex) {
     return GridView.builder(
       controller: scrollController,

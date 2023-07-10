@@ -75,6 +75,7 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
+  // ignore: unused_element
   _buildSearchAppBar() {
     return AppBar(
       leading: IconButton(

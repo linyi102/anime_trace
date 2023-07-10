@@ -12,8 +12,6 @@ import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/sp_key.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/theme.dart';
 
 import 'general_setting.dart';
 import 'test_page.dart';

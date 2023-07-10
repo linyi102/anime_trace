@@ -11,7 +11,6 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:get/get.dart';

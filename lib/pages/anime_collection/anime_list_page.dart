@@ -145,7 +145,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
                   sortPage: _buildSortPage(dialog: false),
                 ));
       },
-      icon: const Icon(Icons.filter_list),
+      icon: const Icon(
+        // Icons.filter_list,
+        Icons.layers_outlined,
+      ),
       tooltip: "动漫排序",
     ));
     actions.add(IconButton(

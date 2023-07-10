@@ -220,6 +220,7 @@ class UpdateRecordPage extends StatelessWidget {
     );
   }
 
+  // ignore: unused_element
   double _getUpdatePercent(int updateOkCnt, int needUpdateCnt) {
     if (needUpdateCnt == 0) {
       return 0;

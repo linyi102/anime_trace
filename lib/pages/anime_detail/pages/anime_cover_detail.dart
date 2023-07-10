@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
@@ -16,6 +15,8 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
+
+import '../../../global.dart';
 
 /// 动漫详细页点击封面，进入该页面
 /// 提供缩放、修改封面、重新根据动漫网址获取封面的功能
@@ -149,9 +150,15 @@ class AnimeCoverDetail extends StatelessWidget {
     ImageProvider imageProvider;
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      imageProvider = CachedNetworkImageProvider(coverUrl, errorListener: () {
-        Log.error("缓存网络图片错误：$coverUrl");
-      });
+      imageProvider = CachedNetworkImageProvider(
+        coverUrl,
+        headers: coverUrl.contains("douban")
+            ? Global.getHeadersToGetDoubanPic()
+            : null,
+        errorListener: () {
+          Log.error("缓存网络图片错误：$coverUrl");
+        },
+      );
     } else {
       imageProvider =
           FileImage(File(ImageUtil.getAbsoluteCoverImagePath(coverUrl)));
@@ -227,7 +234,7 @@ class AnimeCoverDetail extends StatelessWidget {
               ListTile(
                   dense: true,
                   style: ListTileStyle.drawer,
-                  leading: SizedBox.shrink(),
+                  leading: const SizedBox.shrink(),
                   title: const Text("前往设置本地封面目录"),
                   onTap: () {
                     Navigator.pop(howToEditCoverUrlDialogContext);

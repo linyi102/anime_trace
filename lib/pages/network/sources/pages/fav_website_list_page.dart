@@ -51,6 +51,7 @@ class FavWebsiteListPage extends StatelessWidget {
         });
   }
 
+  // ignore: unused_element
   GridView _buildGridView() {
     return GridView.builder(
         // 解决报错问题
@@ -83,6 +84,7 @@ class FavWebsiteListPage extends StatelessWidget {
         });
   }
 
+  // ignore: unused_element
   _buildSettingButton(BuildContext context) {
     return IconButton(
         onPressed: () {

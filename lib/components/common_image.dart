@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CommonImage extends StatelessWidget {
@@ -35,6 +36,8 @@ class CommonImage extends StatelessWidget {
     if (url.startsWith("http")) {
       // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
       return CachedNetworkImage(
+        httpHeaders:
+            url.contains("douban") ? Global.getHeadersToGetDoubanPic() : null,
         memCacheWidth: reduceMemCache ? memCacheWidth : null,
         imageUrl: url,
         errorWidget: (_, __, ___) => errorImageWidget(),

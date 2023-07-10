@@ -9,7 +9,6 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto_load_note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';

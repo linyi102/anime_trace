@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 
@@ -11,7 +10,6 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';

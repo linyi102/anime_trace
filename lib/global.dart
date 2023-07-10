@@ -16,6 +16,8 @@ import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'values/values.dart';
+
 class Global {
   // 私有构造器，避免外部错误使用(也就是创建Global对象)
   Global._();
@@ -98,6 +100,14 @@ class Global {
     SystemNavigator.pop();
     // 不推荐
     // exit(0);
+  }
+
+  /// 获取用于访问豆瓣图片的header，避免403
+  static Map<String, String> getHeadersToGetDoubanPic() {
+    return {
+      "Referer": "douban.com",
+      "User-Agent": bingUserAgent,
+    };
   }
 }
 
