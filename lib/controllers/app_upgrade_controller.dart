@@ -65,7 +65,7 @@ class AppUpgradeController extends GetxController {
     super.onInit();
   }
 
-  getLatestVersion({bool showDialog = false, bool autoCheck = false}) async {
+  getLatestVersion({bool showToast = false, bool autoCheck = false}) async {
     if (downloading) {
       _showDownloadDialog();
       return;
@@ -75,7 +75,7 @@ class AppUpgradeController extends GetxController {
     status = LoadStatus.loading;
     update();
 
-    if (showDialog) ToastUtil.showText('正在检查···');
+    if (showToast) ToastUtil.showText('正在检查···');
     var result = await DioUtil.get(
         'https://api.github.com/repos/linyi102/anime_trace/releases/latest');
     if (result.isSuccess) {
@@ -88,8 +88,18 @@ class AppUpgradeController extends GetxController {
       }
       status = LoadStatus.success;
       Log.info('最新版本：${latestRelease?.tagName}');
+      // if (kDebugMode) latestRelease?.tagName = "v1.8.2";
 
-      if (curVersion == latestVersion) {
+      if (_checkNewVersion(curVersion, latestVersion)) {
+        // 检测到新版本
+        if (autoCheck && SPUtil.getBool(ignoreVersionKey)) {
+          // 自动检查时若忽略了该新版本，则不提示
+          Log.info('忽略了新版本：$latestVersion');
+        } else {
+          _showDialogUpgrade(autoCheck);
+        }
+      } else {
+        if (showToast) ToastUtil.showText('已是最新版本');
         // 如果是Android，若是最新版本，则删除上次下载的apk
         // Windows则不要删，因为是用户手动选择的目录
         if (autoCheck && Platform.isAndroid) {
@@ -101,23 +111,48 @@ class AppUpgradeController extends GetxController {
             if (file.existsSync()) file.delete();
           }
         }
-        if (showDialog) ToastUtil.showText('已是最新版本');
-        if (kDebugMode) _showDialogUpgrade(autoCheck);
-      } else if (autoCheck && SPUtil.getBool(ignoreVersionKey)) {
-        // 只有在自动检查时，忽略才有效
-        Log.info('忽略了版本：$latestVersion');
-      } else {
-        _showDialogUpgrade(autoCheck);
       }
     } else {
       status = LoadStatus.fail;
       Log.info('获取最新版本失败');
     }
 
-    if (status == LoadStatus.fail && showDialog) {
+    if (status == LoadStatus.fail && showToast) {
       ToastUtil.showText('检查更新失败！');
     }
     update();
+  }
+
+  bool _checkNewVersion(String curVersion, String newVersion) {
+    Log.info('当前版本：$curVersion，新版本：$newVersion');
+
+    var reg = RegExp('[0-9]+(\\.[0-9]+)+');
+    curVersion = reg.firstMatch(curVersion)?[0] ?? "";
+    newVersion = reg.firstMatch(newVersion)?[0] ?? "";
+    if (curVersion.isEmpty || newVersion.isEmpty) return false;
+    Log.info('正则匹配版本：当前版本=$curVersion, 新版本=$newVersion');
+
+    var list1 = curVersion.split(".");
+    var list2 = newVersion.split(".");
+    Log.info("小数点分割成数组：list1=$list1, list2=$list2");
+    int len1 = list1.length, len2 = list2.length;
+    if (len1 > len2) {
+      list2.addAll(List.generate(len1 - len2, (index) => '0'));
+    } else if (len1 < len2) {
+      list1.addAll(List.generate(len2 - len1, (index) => '0'));
+    }
+    Log.info("尾部填充0使之长度相同：list1=$list1, list2=$list2");
+
+    int len = list1.length;
+    for (int i = 0; i < len; ++i) {
+      int? n1 = int.tryParse(list1[i]), n2 = int.tryParse(list2[i]);
+      if (n1 != null && n2 != null && n2 > n1) {
+        Log.info('✅ 发现新版本：$newVersion($n2 > $n1)');
+        return true;
+      }
+    }
+    Log.info('❌ 不是新版本：$newVersion');
+    return false;
   }
 
   _showDialogUpgrade(bool autoCheck) {
@@ -160,7 +195,7 @@ class AppUpgradeController extends GetxController {
             TextButton(
                 onPressed: () {
                   close();
-                  _onTapDownload();
+                  _onSelectDownloadWay();
                 },
                 child: const Text('下载')),
           ],
@@ -173,7 +208,64 @@ class AppUpgradeController extends GetxController {
     return (await getExternalCacheDirectories())?.first.path;
   }
 
-  _onTapDownload() async {
+  _onSelectDownloadWay() async {
+    // 选择下载方式
+    ToastUtil.showDialog(
+      builder: (close) => SimpleDialog(
+        title: const Text('下载方式'),
+        children: [
+          ListTile(
+            title: const Text('线路1：github'),
+            onTap: () {
+              close();
+              _prepareDownload();
+            },
+          ),
+          ListTile(
+            title: const Text('线路2：kgithub'),
+            onTap: () {
+              close();
+              _prepareDownload(
+                speedUrl: (url) =>
+                    url.replaceFirst('github.com', 'kgithub.com'),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('线路3：download.nuaa.cf'),
+            onTap: () {
+              close();
+              _prepareDownload(
+                speedUrl: (url) =>
+                    url.replaceFirst('github.com', 'download.nuaa.cf'),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('线路4：git.xfj0.cn'),
+            onTap: () {
+              close();
+              _prepareDownload(
+                speedUrl: (url) => "https://git.xfj0.cn/$url",
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('前往gitee手动下载'),
+            onTap: () {
+              close();
+              LaunchUrlUtil.launch(
+                  context: Get.context!,
+                  uriStr: "https://gitee.com/linyi517/anime_trace",
+                  inApp: false);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  _prepareDownload({String Function(String url)? speedUrl}) async {
     String? downloadDir;
     if (Platform.isWindows) {
       // Windows指定下载目录
@@ -203,6 +295,10 @@ class AppUpgradeController extends GetxController {
 
     total = destAsset.size;
     String savePath = _getDownloadPath(downloadDir, destAsset.name);
+    String url = destAsset.browserDownloadUrl;
+    if (speedUrl != null) {
+      url = speedUrl(url);
+    }
 
     // 若之前下载过，且大小一致
     //  - 对于Andorid，提示直接安装，还是重新下载
@@ -220,7 +316,7 @@ class AppUpgradeController extends GetxController {
             TextButton(
                 onPressed: () {
                   close();
-                  _onDownload(destAsset!.browserDownloadUrl, savePath);
+                  _onDownload(url, savePath);
                 },
                 child: const Text('重新下载')),
             TextButton(
@@ -237,7 +333,7 @@ class AppUpgradeController extends GetxController {
         ),
       );
     } else {
-      _onDownload(destAsset.browserDownloadUrl, savePath);
+      _onDownload(url, savePath);
     }
   }
 
@@ -245,6 +341,7 @@ class AppUpgradeController extends GetxController {
     // 显示进度下载框
     _showDownloadDialog();
 
+    Log.info('下载链接：$url');
     // 开始下载
     _download(
       urlPath: url,
@@ -332,7 +429,7 @@ class AppUpgradeController extends GetxController {
       clickClose: false,
       builder: (close) => AlertDialog(
         title: const Text('下载失败'),
-        content: Text('原因：$failMsg\n请前往蓝奏云下载，密码：eocv'),
+        content: Text('原因：$failMsg'),
         actions: [
           TextButton(
             onPressed: () => close(),
@@ -341,14 +438,9 @@ class AppUpgradeController extends GetxController {
           TextButton(
             onPressed: () {
               close();
-
-              if (Get.context == null) return;
-              LaunchUrlUtil.launch(
-                  context: Get.context!,
-                  uriStr: 'https://wwc.lanzouw.com/b01uyqcrg?password=eocv',
-                  inApp: false);
+              _onSelectDownloadWay();
             },
-            child: const Text('打开蓝奏云'),
+            child: const Text('重新选择'),
           )
         ],
       ),
@@ -364,6 +456,15 @@ class AppUpgradeController extends GetxController {
             title: const Text('下载进度'),
             content: const AppDownloadProgressBar(),
             actions: [
+              TextButton(
+                  onPressed: () {
+                    close();
+                    releaseCancelToken?.cancel();
+                    releaseCancelToken = null;
+                    downloading = false;
+                    _onSelectDownloadWay();
+                  },
+                  child: const Text('重新选择')),
               TextButton(
                   onPressed: () {
                     close();
@@ -415,18 +516,7 @@ class AppUpgradeController extends GetxController {
       }
 
       // 超时dio会提示：DioError [DioErrorType.other]: HttpException: 信号灯超时时间已到
-      // 此时将下载链接中的github改为kgithub重试
-      if (!urlPath.contains('kgithub.com')) {
-        urlPath = urlPath.replaceFirst('github.com', 'kgithub.com');
-        _download(
-          urlPath: urlPath,
-          savePath: savePath,
-          onComplete: onComplete,
-          onFail: onFail,
-        );
-      } else {
-        onFail?.call(result.msg);
-      }
+      onFail?.call(result.msg);
     }
   }
 }

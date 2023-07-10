@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
+import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
 import 'package:simple_icons/simple_icons.dart';
@@ -36,8 +37,14 @@ class _AboutVersionState extends State<AboutVersion> {
                 builder: (appUpgradeLogic) {
                   return ListTile(
                     onTap: () =>
-                        appUpgradeLogic.getLatestVersion(showDialog: true),
+                        appUpgradeLogic.getLatestVersion(showToast: true),
                     title: const Text("检查更新"),
+                    trailing: appUpgradeLogic.status == LoadStatus.loading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(strokeWidth: 3))
+                        : null,
                   );
                 },
               ),
