@@ -539,4 +539,44 @@ class AnimeDao {
     ''');
     return cols.first['total'] as int;
   }
+
+  /// 前n年今天开播的动漫
+  static Future<List<Anime>> getAnimesNYearAgoToday() async {
+    Log.info('sql: getAnimesNYearAgoToday');
+
+    var now = DateTime.now();
+    var month = now.toString().substring(5, 7);
+    var day = now.toString().substring(8, 10);
+    var rows = await db.rawQuery('''
+      select * from anime where premiere_time like '%-$month-$day';
+    ''');
+    List<Anime> animes = [];
+    for (var row in rows) {
+      animes.add(_row2Bean(row));
+    }
+    return animes;
+  }
+
+  static Anime _row2Bean(Map<String, Object?> row) {
+    return Anime(
+      animeId: row['anime_id'] as int,
+      animeName: row['anime_name'] as String,
+      animeEpisodeCnt: row['anime_episode_cnt'] as int,
+      animeDesc: row['anime_desc'] as String? ?? "",
+      animeCoverUrl: row['anime_cover_url'] as String? ?? "",
+      tagName: row['tag_name'] as String,
+      reviewNumber: row['review_number'] as int? ?? 0,
+      premiereTime: row['premiere_time'] as String? ?? "",
+      nameOri: row['name_ori'] as String? ?? "",
+      nameAnother: row['name_another'] as String? ?? "",
+      authorOri: row['author_ori'] as String? ?? "",
+      area: row['area'] as String? ?? "",
+      playStatus: row['play_status'] as String? ?? "",
+      productionCompany: row['production_company'] as String? ?? "",
+      officialSite: row['official_site'] as String? ?? "",
+      category: row['category'] as String? ?? "",
+      animeUrl: row['anime_url'] as String? ?? "",
+      rate: row['rate'] as int? ?? 0,
+    );
+  }
 }

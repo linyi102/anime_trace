@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/fav_website.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/network/sources/logic.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
@@ -12,6 +15,11 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/values/theme.dart';
+import 'package:get/get.dart';
+
+import '../../../components/anime_list_cover.dart';
+import '../../../models/anime.dart';
 
 /// 聚合页
 class AggregatePage extends StatefulWidget {
@@ -36,6 +44,8 @@ class _AggregatePageState extends State<AggregatePage> {
   double get itemWidth => 120.0;
 
   List<ClimbWebsite> usableWebsites = [];
+
+  AggregateLogic logic = Get.put(AggregateLogic());
 
   @override
   void initState() {
@@ -62,8 +72,9 @@ class _AggregatePageState extends State<AggregatePage> {
     for (var website in climbWebsites) {
       website.pingStatus.needPing = true;
     }
-
     _pingAllWebsites();
+
+    logic.loadAnimesNYearsAgoTodayBroadcast();
   }
 
   void _pingAllWebsites() {
@@ -108,17 +119,107 @@ class _AggregatePageState extends State<AggregatePage> {
           children: [
             _buildClimbWebsiteGridCard(),
             // _buildClimbWebsiteListViewCard(),
-            _buildTools()
+            _buildTools(),
             // FavWebsiteListPage()
+            _buildAnimesList()
           ],
         ),
       ),
     );
   }
 
+  _buildAnimesList() {
+    return GetBuilder(
+      init: logic,
+      builder: (_) => Card(
+        child: Column(
+          children: [
+            _buildCardTitle('今日开播'),
+            // if (logic.animesNYearsAgoTodayBroadcast.isEmpty) const Text('暂无。'),
+            _buildAnimesColumn(),
+            // _buildAnimesRow()
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container _buildAnimesRow() {
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: logic.animesNYearsAgoTodayBroadcast
+            .map((anime) => Container(
+                  width: MediaQuery.of(context).size.width / 3.5,
+                  margin: const EdgeInsets.only(right: 10),
+                  child: InkWell(
+                    onTap: () {},
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 3.5,
+                          child: ClipRRect(
+                              borderRadius:
+                                  BorderRadius.circular(AppTheme.imgRadius),
+                              child: CommonImage(anime.animeCoverUrl)),
+                        ),
+                        Text(anime.animeName,
+                            style: const TextStyle(fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                        Text(
+                          _getDiffYear(anime),
+                          style: TextStyle(
+                              fontSize: 12, color: Theme.of(context).hintColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  _buildAnimesColumn() {
+    return Column(
+      children: [
+        for (var anime in logic.animesNYearsAgoTodayBroadcast)
+          ListTile(
+            title: Text(anime.animeName, overflow: TextOverflow.ellipsis),
+            subtitle: Text(_getDiffYear(anime)),
+            leading: AnimeListCover(anime, showReviewNumber: false),
+            onTap: () async {
+              Anime value = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AnimeDetailPage(anime),
+                  ));
+              anime.animeName = value.animeName;
+              anime.animeCoverUrl = value.animeCoverUrl;
+              logic.update();
+            },
+          ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  String _getDiffYear(Anime anime) {
+    var year = DateTime.parse(anime.premiereTime).year;
+    var diff = DateTime.now().year - year;
+    String text = '';
+    if (diff == 0) text = '今天';
+    text = diff == 0 ? '今天' : '$diff年前的今天';
+    return text;
+  }
+
   _buildCardTitle(String title, {Widget? trailing}) {
     return ListTile(
-      title: Text(title),
+      dense: true,
+      title: Text(title, style: const TextStyle(fontSize: 16)),
       trailing: trailing,
     );
   }
