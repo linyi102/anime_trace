@@ -343,4 +343,24 @@ class NoteDao {
     Log.info("删除了$num条笔记(id=$noteId)");
     return true;
   }
+
+  /// 笔记数量
+  static Future<int> getEpisodeNoteTotal() async {
+    Log.info('sql: getEpisodeNoteTotal');
+
+    var cols = await database.rawQuery('''
+      select count(note_id) total from episode_note where episode_number > 0;
+    ''');
+    return cols.first['total'] as int;
+  }
+
+  /// 评价数量
+  static Future<int> getRateNoteTotal() async {
+    Log.info('sql: getRateNoteTotal');
+
+    var cols = await database.rawQuery('''
+      select count(note_id) total from episode_note where episode_number == 0;
+    ''');
+    return cols.first['total'] as int;
+  }
 }

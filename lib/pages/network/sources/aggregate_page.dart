@@ -5,6 +5,7 @@ import 'package:flutter_test_future/models/fav_website.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/trace/view.dart';
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
@@ -30,9 +31,9 @@ class _AggregatePageState extends State<AggregatePage> {
       icoUrl: "assets/images/website/fzff.png",
       name: "番组放送");
 
-  double iconSize = 30.0;
-  double itemHeight = 100.0;
-  double itemWidth = 120.0;
+  double get iconSize => 40.0;
+  double get itemHeight => 100.0;
+  double get itemWidth => 120.0;
 
   List<ClimbWebsite> usableWebsites = [];
 
@@ -188,71 +189,112 @@ class _AggregatePageState extends State<AggregatePage> {
       child: Column(
         children: [
           _buildCardTitle("工具"),
-          GridView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: 80, // 格子高度
-              maxCrossAxisExtent: itemWidth, // 格子最大宽度
-            ),
-            children: [
-              IconTextButton(
-                iconSize: iconSize,
-                // icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
-                icon: Container(
-                    decoration: const BoxDecoration(
-                        color: Color.fromRGBO(19, 189, 157, 1),
-                        shape: BoxShape.circle),
-                    child: const Center(
-                        child: Text("番",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16)))),
-                text: const Text("番组放送", textScaleFactor: 0.9),
-                onTap: () => LaunchUrlUtil.launch(
-                    context: context, uriStr: favWebsite.url),
-              ),
-              // IconTextButton(
-              //     iconSize: iconSize,
-              //     icon: Container(
-              //         decoration: const BoxDecoration(
-              //           // color: Theme.of(context).primaryColor,
-              //           color: Color.fromRGBO(55, 197, 254, 1),
-              //           shape: BoxShape.circle,
-              //         ),
-              //         child: const Icon(Icons.auto_fix_high_rounded,
-              //             size: 18, color: Colors.white)),
-              //     text: const Text("封面修复", textScaleFactor: 0.9),
-              //     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              //         builder: (context) => const LapseCoverAnimesPage()))),
-              IconTextButton(
-                  iconSize: iconSize,
-                  icon: Container(
-                      decoration: const BoxDecoration(
-                        // color: Theme.of(context).primaryColor,
-                        color: Color.fromRGBO(255, 199, 87, 1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.filter_alt,
-                          size: 18, color: Colors.white)),
-                  text: const Text("动漫去重", textScaleFactor: 0.9),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const DedupPage()))),
-              // IconTextButton(
-              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-              //     text: const Text("更新", textScaleFactor: 0.9),
-              //     onTap: () => null),
-              // IconTextButton(
-              //     icon: Icon(Icons.date_range_rounded, size: iconSize),
-              //     text: const Text("时间表", textScaleFactor: 0.9),
-              //     onTap: () => null),
-              // IconTextButton(
-              //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-              //     text: const Text("目录", textScaleFactor: 0.9),
-              //     onTap: () => null),
-            ],
+          // _buildToolsListView(),
+          _buildToolsGridView(),
+        ],
+      ),
+    );
+  }
+
+  SingleChildScrollView _buildToolsListView() {
+    return SingleChildScrollView(
+      child: Column(
+        children: const [
+          ListTile(
+            // leading: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+            leading: Icon(Icons.calendar_month),
+            title: Text('番组放送'),
+          ),
+          ListTile(
+            leading: Icon(Icons.filter_alt),
+            title: Text('动漫去重'),
+          ),
+          ListTile(
+            leading: Icon(Icons.timeline),
+            title: Text('历史回顾'),
           ),
         ],
       ),
+    );
+  }
+
+  GridView _buildToolsGridView() {
+    return GridView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        mainAxisExtent: 90, // 格子高度
+        maxCrossAxisExtent: itemWidth, // 格子最大宽度
+      ),
+      children: [
+        IconTextButton(
+          iconSize: iconSize,
+          icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+          // icon: Container(
+          //     decoration: const BoxDecoration(
+          //         color: Color.fromRGBO(19, 189, 157, 1),
+          //         shape: BoxShape.circle),
+          //     child: const Center(
+          //         child: Text("番",
+          //             style: TextStyle(color: Colors.white, fontSize: 20)))),
+          text: const Text("番组放送", textScaleFactor: 0.9),
+          onTap: () =>
+              LaunchUrlUtil.launch(context: context, uriStr: favWebsite.url),
+        ),
+        // IconTextButton(
+        //     iconSize: iconSize,
+        //     icon: Container(
+        //         decoration: const BoxDecoration(
+        //           // color: Theme.of(context).primaryColor,
+        //           color: Color.fromRGBO(55, 197, 254, 1),
+        //           shape: BoxShape.circle,
+        //         ),
+        //         child: const Icon(Icons.auto_fix_high_rounded,
+        //             size: 18, color: Colors.white)),
+        //     text: const Text("封面修复", textScaleFactor: 0.9),
+        //     onTap: () => Navigator.of(context).push(MaterialPageRoute(
+        //         builder: (context) => const LapseCoverAnimesPage()))),
+        IconTextButton(
+            iconSize: iconSize,
+            // icon: const Icon(Icons.filter_alt),
+            icon: Container(
+                decoration: const BoxDecoration(
+                  // color: Theme.of(context).primaryColor,
+                  color: Color.fromRGBO(255, 199, 87, 1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.filter_alt,
+                    size: 24, color: Colors.white)),
+            text: const Text("动漫去重", textScaleFactor: 0.9),
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const DedupPage()))),
+        IconTextButton(
+            iconSize: iconSize,
+            // icon: const Icon(Icons.timeline),
+            icon: Container(
+                decoration: const BoxDecoration(
+                  // color: Theme.of(context).primaryColor,
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
+                ),
+                child:
+                    const Icon(Icons.history, size: 24, color: Colors.white)),
+            text: const Text("历史回顾", textScaleFactor: 0.9),
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const TracePage()))),
+        // IconTextButton(
+        //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+        //     text: const Text("更新", textScaleFactor: 0.9),
+        //     onTap: () => null),
+        // IconTextButton(
+        //     icon: Icon(Icons.date_range_rounded, size: iconSize),
+        //     text: const Text("时间表", textScaleFactor: 0.9),
+        //     onTap: () => null),
+        // IconTextButton(
+        //     icon: Icon(Icons.auto_fix_high, size: iconSize),
+        //     text: const Text("目录", textScaleFactor: 0.9),
+        //     onTap: () => null),
+      ],
     );
   }
 }

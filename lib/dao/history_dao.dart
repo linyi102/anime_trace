@@ -104,4 +104,22 @@ class HistoryDao {
     ''');
     return list[0]["cnt"] as int;
   }
+
+  /// 第一条观看的历史记录
+  static Future<Map<String, dynamic>?> getFirstHistory() async {
+    Log.info('sql: getFirstHistory');
+
+    var cols = await SqliteUtil.database.rawQuery('''
+      select date, anime_id from history
+      order by date limit 1;
+    ''');
+    if (cols.isEmpty) return null;
+
+    var col = cols.first;
+    var anime = await SqliteUtil.getAnimeByAnimeId(col['anime_id'] as int);
+    return {
+      'anime': anime,
+      'date': col['date'],
+    };
+  }
 }

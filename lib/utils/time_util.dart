@@ -164,6 +164,14 @@ class TimeUtil {
   /// 传入格式：2023、2023-02、2023-02-13
   /// 输出格式：2023年、2023年02月、2023年02月13日
   static String getChineseDate(String date) {
+    if (date.isEmpty) return '';
+
+    // 传入2021-12-24 23:40:02.344074时，过滤掉空格以及后面的信息
+    int space = date.indexOf(' ');
+    if (space >= 0) {
+      date = date.substring(0, space);
+    }
+
     String res = "";
     List<String> numStrs = date.split("-");
     List<String> units = ["年", "月", "日"];

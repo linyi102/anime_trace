@@ -8,6 +8,8 @@ import '../models/anime.dart';
 class AnimeDao {
   static final db = SqliteUtil.database;
 
+  static const String table = 'anime';
+
   static Future<List<Anime>> getAllAnimes() async {
     Log.info("sql: getAllAnimes");
 
@@ -484,5 +486,57 @@ class AnimeDao {
       set anime_episode_cnt = $episodeCnt
       where anime_id = $animeId;
       ''') > 0;
+  }
+
+  /// 最早收藏动漫
+  static Future<Anime?> getFirstCollectedAnime() async {
+    Log.info("sql: getFirstCollectedAnime");
+
+    var cols = await db.rawQuery('''
+      select anime_id from anime order by anime_id limit 1;
+    ''');
+    // 还没有动漫
+    if (cols.isEmpty) return null;
+
+    int id = cols.first['anime_id'] as int;
+    return SqliteUtil.getAnimeByAnimeId(id);
+  }
+
+  /// 最早开播动漫
+  static Future<Anime?> getFirstPremieredAnime() async {
+    Log.info("sql: getFirstPremieredAnime");
+
+    var cols = await db.rawQuery('''
+      select * from anime order by case when length(premiere_time) = 0 then '9' else premiere_time end limit 1;
+    ''');
+    if (cols.isEmpty) return null;
+    return SqliteUtil.getAnimeByAnimeId(cols.first['anime_id'] as int);
+  }
+
+  /// 历史表中回顾数最大的动漫
+  static Future<Map<String, dynamic>?> getMaxReviewCntAnime() async {
+    Log.info("sql: getMaxReviewCntAnime");
+
+    var cols = await db.rawQuery('''
+      select anime_id, review_number from history order by review_number desc limit 1;
+    ''');
+    if (cols.isEmpty) return null;
+
+    var col = cols.first;
+    var anime = await SqliteUtil.getAnimeByAnimeId(col['anime_id'] as int);
+    return {
+      'anime': anime,
+      'maxReviewCnt': col['review_number'],
+    };
+  }
+
+  /// 收藏的动漫数量
+  static Future<int> getTotal() async {
+    Log.info('sql: anime getTotal');
+
+    var cols = await db.rawQuery('''
+      select count(anime_id) total from anime;
+    ''');
+    return cols.first['total'] as int;
   }
 }
