@@ -42,7 +42,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
       () => GridView.builder(
           controller: widget.scrollController,
           // 整体的填充
-          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           gridDelegate: getAnimeGridDelegate(context),
           itemCount: widget.animes.length,
           itemBuilder: (BuildContext context, int animeIdx) {

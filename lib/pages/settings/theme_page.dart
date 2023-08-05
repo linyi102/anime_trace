@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 
 class ThemePage extends StatefulWidget {
@@ -23,78 +26,33 @@ class _ThemePageState extends State<ThemePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("外观设置")),
-      body: ListView(
+      body: DividerScaffoldBody(
+          child: ListView(
         children: [
-          ListTile(
-              title: Text("主题",
-                  style: TextStyle(color: Theme.of(context).primaryColor))),
-          _buildTileSelectDarkMode(context),
+          const SettingTitle(title: '夜间模式'),
+          // _buildTileSelectDarkMode(context),
+          for (int i = 0; i < AppTheme.darkModes.length; ++i)
+            RadioListTile(
+              title: Text(AppTheme.darkModes[i]),
+              controlAffinity: ListTileControlAffinity.trailing,
+              value: i,
+              groupValue: themeModeIdx,
+              onChanged: (value) {
+                if (value == null) return;
+
+                setState(() {
+                  themeModeIdx = value;
+                });
+
+                ThemeController.to.setThemeMode(i);
+              },
+            ),
+          const CommonDivider(),
+          const SettingTitle(title: '夜间主题'),
+
           Obx(() => _buildColorAtlasList()),
-          // const Divider(),
-          // ListTile(
-          //     title: Text("其他",
-          //         style: TextStyle(color: Theme.of(context).primaryColor))),
-          // Obx(
-          //   () {
-          //     return Column(
-          //       children: [
-          //         // 卡片风格会导致toast圆角丢失
-          //         SwitchListTile(
-          //           title: const Text("卡片风格"),
-          //           value: themeController.useCardStyle.value,
-          //           onChanged: (value) {
-          //             themeController.setUseCardStyle(value);
-          //           },
-          //         ),
-          //         // SwitchListTile(
-          //         //   title: const Text("Material3风格"),
-          //         //   value: themeController.useM3.value,
-          //         //   onChanged: (value) {
-          //         //     // TODO，会抛出异常并跳转到首页
-          //         //     // 'package:flutter/src/painting/text_style.dart':
-          //         //     // Failed assertion: line 1076 pos 12: 'a == null || b == null || a.inherit == b.inherit': is not true.
-          //         //     themeController.setM3(value);
-          //         //   },
-          //         // ),
-          //       ],
-          //     );
-          //   },
-          // )
         ],
-      ),
-    );
-  }
-
-  ListTile _buildTileSelectDarkMode(BuildContext context) {
-    return ListTile(
-      title: const Text("深色模式"),
-      subtitle: Text(AppTheme.darkModes[themeModeIdx]),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => SimpleDialog(
-            title: const Text("深色模式"),
-            children: [
-              for (int i = 0; i < AppTheme.darkModes.length; ++i)
-                RadioListTile(
-                  title: Text(AppTheme.darkModes[i]),
-                  value: i,
-                  groupValue: themeModeIdx,
-                  onChanged: (value) {
-                    if (value == null) return;
-
-                    Navigator.pop(context);
-                    setState(() {
-                      themeModeIdx = value as int;
-                    });
-
-                    ThemeController.to.setThemeMode(i);
-                  },
-                )
-            ],
-          ),
-        );
-      },
+      )),
     );
   }
 
@@ -116,19 +74,14 @@ class _ThemePageState extends State<ThemePage> {
         ? ThemeController.to.darkThemeColor.value
         : ThemeController.to.lightThemeColor.value;
 
-    return ListTile(
-      trailing: curThemeColor == themeColor ? const Icon(Icons.check) : null,
-      leading: Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: themeColor.representativeColor,
-            // border: Border.all(width: 2, color: Colors.red.shade200),
-          )),
+    return RadioListTile(
       title: Text(themeColor.name),
-      onTap: () {
-        ThemeController.to.changeTheme(themeColor.key, dark: dark);
+      controlAffinity: ListTileControlAffinity.trailing,
+      value: themeColor,
+      groupValue: curThemeColor,
+      onChanged: (value) {
+        if (value == null) return;
+        ThemeController.to.changeTheme(value.key, dark: dark);
       },
     );
   }

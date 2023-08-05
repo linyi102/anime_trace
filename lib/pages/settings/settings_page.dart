@@ -12,6 +12,8 @@ import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/sp_key.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'general_setting.dart';
 import 'test_page.dart';
@@ -24,10 +26,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  // style
-  final bool _addDivider = false;
-  static const _thickness = 0.5;
-
   // banner
   String _localImageFilePath = SPUtil.getString(bannerFileImagePath);
   String _networkImageUrl = SPUtil.getString(bannerNetworkImageUrl);
@@ -47,28 +45,19 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Log.build(runtimeType);
-
     return Scaffold(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         body: ListView(
-      children: [
-        _buildBanner(),
-        // _buildBannerButton(),
-        // const Logo(),
-
-        if (_addDivider) const Divider(thickness: _thickness),
-
-        Card(child: _buildFunctionGroup()),
-
-        if (_addDivider) const Divider(thickness: _thickness),
-
-        Card(child: _buildSettingGroup()),
-
-        if (_addDivider) const Divider(thickness: _thickness),
-
-        Card(child: _buildOtherGroup()),
-      ],
-    ));
+          children: [
+            _buildBanner(),
+            const CommonDivider(),
+            _buildFunctionGroup(),
+            const CommonDivider(),
+            _buildSettingGroup(),
+            const CommonDivider(),
+            _buildOtherGroup(),
+          ],
+        ));
   }
 
   Column _buildOtherGroup() {
@@ -76,7 +65,10 @@ class _SettingPageState extends State<SettingPage> {
       children: [
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.info_outlined),
+          leading: const Icon(
+            // Icons.info_outlined,
+            MingCuteIcons.mgc_information_line,
+          ),
           title: const Text("关于版本"),
           onTap: () {
             Navigator.of(context).push(
@@ -112,7 +104,10 @@ class _SettingPageState extends State<SettingPage> {
       children: [
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.settings),
+          leading: const Icon(
+            // Icons.settings,
+            MingCuteIcons.mgc_settings_3_line,
+          ),
           title: const Text("常规设置"),
           onTap: () {
             Navigator.of(context).push(
@@ -128,7 +123,9 @@ class _SettingPageState extends State<SettingPage> {
           iconColor: Theme.of(context).primaryColor,
           leading: const Icon(
             // Icons.photo_size_select_actual_outlined,
-            Icons.image_outlined,
+            // Icons.image_outlined,
+            // MingCuteIcons.mgc_pic_2_line,
+            MingCuteIcons.mgc_photo_album_line,
           ),
           title: const Text("图片设置"),
           onTap: () {
@@ -143,7 +140,10 @@ class _SettingPageState extends State<SettingPage> {
         ),
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.color_lens_outlined),
+          leading: const Icon(
+            // Icons.color_lens_outlined,
+            MingCuteIcons.mgc_palette_line,
+          ),
           title: const Text("外观设置"),
           onTap: () {
             Navigator.push(
@@ -176,7 +176,10 @@ class _SettingPageState extends State<SettingPage> {
         ),
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.checklist_rounded),
+          leading: const Icon(
+            Icons.checklist_rounded,
+            // MingCuteIcons.mgc_check_line,
+          ),
           title: const Text("清单管理"),
           onTap: () {
             Navigator.of(context).push(
@@ -190,7 +193,10 @@ class _SettingPageState extends State<SettingPage> {
         ),
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.label_outline),
+          leading: const Icon(
+            // Icons.label_outline,
+            MingCuteIcons.mgc_tag_2_line,
+          ),
           title: const Text("标签管理"),
           onTap: () {
             Navigator.of(context).push(
@@ -218,19 +224,17 @@ class _SettingPageState extends State<SettingPage> {
 
     return SizedBox(
       height: MediaQuery.of(context).size.height / 4,
-      child: Card(
-        child: InkWell(
-          // 点击事件
-          onTap: () => _showDialogBanner(),
-          // 图片
-          child: _selectedImageTypeIdx == 0
-              ? Center(
-                  child: Image.asset(
-                  "assets/images/logo.png",
-                  width: MediaQuery.of(context).size.height / 8,
-                ))
-              : CommonImage(url, reduceMemCache: false),
-        ),
+      child: InkWell(
+        // 点击事件
+        onTap: () => _showDialogBanner(),
+        // 图片
+        child: _selectedImageTypeIdx == 0
+            ? Center(
+                child: Image.asset(
+                "assets/images/logo.png",
+                width: MediaQuery.of(context).size.height / 8,
+              ))
+            : CommonImage(url, reduceMemCache: false),
       ),
     );
   }

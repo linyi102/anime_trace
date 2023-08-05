@@ -9,6 +9,7 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -65,12 +66,14 @@ class _NoteListPageState extends State<NoteListPage>
               ],
               // bottom: _buildTabBar(),
             ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          EpisodeNoteListPage(noteFilter: noteFilter),
-          RateNoteListPage(noteFilter: noteFilter)
-        ],
+      body: DividerScaffoldBody(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            EpisodeNoteListPage(noteFilter: noteFilter),
+            RateNoteListPage(noteFilter: noteFilter)
+          ],
+        ),
       ),
     );
   }

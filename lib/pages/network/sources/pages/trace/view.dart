@@ -7,6 +7,7 @@ import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class TracePage extends StatefulWidget {
   const TracePage({super.key});
@@ -87,24 +88,24 @@ class _TracePageState extends State<TracePage> {
           _buildCountItem(
             title: '已收藏',
             subtitle: '$animeTotal',
-            icon: Icon(Icons.favorite_border, color: iconColor),
+            icon: Icon(MingCuteIcons.mgc_heart_line, color: iconColor),
             // icon: const Icon(Icons.favorite, color: Colors.red),
           ),
           _buildVerticalDivider(),
           _buildCountItem(
               title: '已观看',
               subtitle: '$recordTotal集',
-              icon: Icon(Icons.history, color: iconColor)),
+              icon: Icon(MingCuteIcons.mgc_history_2_line, color: iconColor)),
           _buildVerticalDivider(),
           _buildCountItem(
               title: '笔记数',
               subtitle: '$noteTotal',
-              icon: Icon(Icons.edit, color: iconColor)),
+              icon: Icon(MingCuteIcons.mgc_quill_pen_line, color: iconColor)),
           _buildVerticalDivider(),
           _buildCountItem(
               title: '评价数',
               subtitle: '$rateTotal',
-              icon: Icon(EvaIcons.messageCircleOutline, color: iconColor)),
+              icon: Icon(MingCuteIcons.mgc_chat_2_line, color: iconColor)),
         ],
       ),
     );

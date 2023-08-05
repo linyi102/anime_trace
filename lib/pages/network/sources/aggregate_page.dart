@@ -16,7 +16,9 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:get/get.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../components/anime_list_cover.dart';
 import '../../../models/anime.dart';
@@ -39,7 +41,7 @@ class _AggregatePageState extends State<AggregatePage> {
       icoUrl: "assets/images/website/fzff.png",
       name: "番组放送");
 
-  double get iconSize => 40.0;
+  double get buttonSize => 40.0;
   double get itemHeight => 100.0;
   double get itemWidth => 120.0;
 
@@ -110,20 +112,20 @@ class _AggregatePageState extends State<AggregatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _refresh();
-        },
-        child: ListView(
-          children: [
-            _buildClimbWebsiteGridCard(),
-            // _buildClimbWebsiteListViewCard(),
-            _buildTools(),
-            // FavWebsiteListPage()
-            _buildAnimesList()
-          ],
-        ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        _refresh();
+      },
+      child: ListView(
+        children: [
+          _buildClimbWebsiteGridCard(),
+          const CommonDivider(),
+          // _buildClimbWebsiteListViewCard(),
+          _buildTools(),
+          const CommonDivider(),
+          // FavWebsiteListPage()
+          _buildAnimesList()
+        ],
       ),
     );
   }
@@ -131,15 +133,13 @@ class _AggregatePageState extends State<AggregatePage> {
   _buildAnimesList() {
     return GetBuilder(
       init: logic,
-      builder: (_) => Card(
-        child: Column(
-          children: [
-            _buildCardTitle('今日开播'),
-            // if (logic.animesNYearsAgoTodayBroadcast.isEmpty) const Text('暂无。'),
-            _buildAnimesColumn(),
-            // _buildAnimesRow()
-          ],
-        ),
+      builder: (_) => Column(
+        children: [
+          _buildCardTitle('今日开播'),
+          // if (logic.animesNYearsAgoTodayBroadcast.isEmpty) const Text('暂无。'),
+          _buildAnimesColumn(),
+          // _buildAnimesRow()
+        ],
       ),
     );
   }
@@ -225,57 +225,69 @@ class _AggregatePageState extends State<AggregatePage> {
   }
 
   _buildClimbWebsiteGridCard() {
-    return Card(
-      child: Column(
-        children: [
-          _buildCardTitle("搜索源",
-              trailing: InkWell(
-                  borderRadius: BorderRadius.circular(6),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const SourceListPage()));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      "查看全部",
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                  ))),
-          GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisExtent: itemHeight, // 格子高度
-                maxCrossAxisExtent: itemWidth, // 格子最大宽度
-              ),
-              itemCount: usableWebsites.length,
-              itemBuilder: (context, index) {
-                ClimbWebsite climbWebsite = usableWebsites[index];
+    return Column(
+      children: [
+        _buildCardTitle("搜索源",
+            trailing: InkWell(
+                borderRadius: BorderRadius.circular(6),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SourceListPage()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "更多",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(height: 1),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 10,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
+                      )
+                    ],
+                  ),
+                ))),
+        GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: itemHeight, // 格子高度
+              maxCrossAxisExtent: itemWidth, // 格子最大宽度
+            ),
+            itemCount: usableWebsites.length,
+            itemBuilder: (context, index) {
+              ClimbWebsite climbWebsite = usableWebsites[index];
 
-                return IconTextButton(
-                    iconSize: 40,
-                    itemHeight: itemHeight,
-                    itemWidth: itemWidth,
-                    onTap: () => _enterSourceDetail(climbWebsite),
-                    icon:
-                        WebSiteLogo(url: climbWebsite.iconUrl, size: iconSize),
-                    text: Column(
-                      children: [
-                        Text(
-                          climbWebsite.name,
-                          overflow: TextOverflow.ellipsis,
-                          textScaleFactor: 0.9,
-                          style: const TextStyle(height: 1.1),
-                        ),
-                        const SizedBox(height: 5),
-                        buildPingStatusRow(context, climbWebsite,
-                            gridStyle: true),
-                      ],
-                    ));
-              }),
-        ],
-      ),
+              return IconTextButton(
+                  iconSize: 40,
+                  itemHeight: itemHeight,
+                  itemWidth: itemWidth,
+                  onTap: () => _enterSourceDetail(climbWebsite),
+                  icon:
+                      WebSiteLogo(url: climbWebsite.iconUrl, size: buttonSize),
+                  text: Column(
+                    children: [
+                      Text(
+                        climbWebsite.name,
+                        overflow: TextOverflow.ellipsis,
+                        textScaleFactor: 0.9,
+                        style: const TextStyle(height: 1.1),
+                      ),
+                      const SizedBox(height: 5),
+                      buildPingStatusRow(context, climbWebsite,
+                          gridStyle: true),
+                    ],
+                  ));
+            }),
+      ],
     );
   }
 
@@ -286,21 +298,19 @@ class _AggregatePageState extends State<AggregatePage> {
   }
 
   _buildTools() {
-    return Card(
-      child: Column(
-        children: [
-          _buildCardTitle("工具"),
-          // _buildToolsListView(),
-          _buildToolsGridView(),
-        ],
-      ),
+    return Column(
+      children: [
+        _buildCardTitle("工具"),
+        // _buildToolsListView(),
+        _buildToolsGridView(),
+      ],
     );
   }
 
   SingleChildScrollView _buildToolsListView() {
-    return SingleChildScrollView(
+    return const SingleChildScrollView(
       child: Column(
-        children: const [
+        children: [
           ListTile(
             // leading: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
             leading: Icon(Icons.calendar_month),
@@ -320,6 +330,7 @@ class _AggregatePageState extends State<AggregatePage> {
   }
 
   GridView _buildToolsGridView() {
+    var iconSize = 20.0;
     return GridView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -329,8 +340,8 @@ class _AggregatePageState extends State<AggregatePage> {
       ),
       children: [
         IconTextButton(
-          iconSize: iconSize,
-          icon: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
+          iconSize: buttonSize,
+          icon: WebSiteLogo(url: favWebsite.icoUrl, size: buttonSize),
           // icon: Container(
           //     decoration: const BoxDecoration(
           //         color: Color.fromRGBO(19, 189, 157, 1),
@@ -356,7 +367,7 @@ class _AggregatePageState extends State<AggregatePage> {
         //     onTap: () => Navigator.of(context).push(MaterialPageRoute(
         //         builder: (context) => const LapseCoverAnimesPage()))),
         IconTextButton(
-            iconSize: iconSize,
+            iconSize: buttonSize,
             // icon: const Icon(Icons.filter_alt),
             icon: Container(
                 decoration: const BoxDecoration(
@@ -364,13 +375,13 @@ class _AggregatePageState extends State<AggregatePage> {
                   color: Color.fromRGBO(255, 199, 87, 1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.filter_alt,
-                    size: 24, color: Colors.white)),
+                child: Icon(Icons.filter_alt,
+                    size: iconSize, color: Colors.white)),
             text: const Text("动漫去重", textScaleFactor: 0.9),
             onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const DedupPage()))),
         IconTextButton(
-            iconSize: iconSize,
+            iconSize: buttonSize,
             // icon: const Icon(Icons.timeline),
             icon: Container(
                 decoration: const BoxDecoration(
@@ -378,8 +389,8 @@ class _AggregatePageState extends State<AggregatePage> {
                   color: Colors.redAccent,
                   shape: BoxShape.circle,
                 ),
-                child:
-                    const Icon(Icons.history, size: 24, color: Colors.white)),
+                child: Icon(MingCuteIcons.mgc_road_line,
+                    size: iconSize, color: Colors.white)),
             text: const Text("历史回顾", textScaleFactor: 0.9),
             onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const TracePage()))),

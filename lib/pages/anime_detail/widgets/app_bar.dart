@@ -15,6 +15,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeDetailAppBar extends StatefulWidget {
   const AnimeDetailAppBar(
@@ -81,8 +82,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
     required Widget icon,
     void Function()? onTap,
   }) {
-    // return IconButton(onPressed: onTap, icon: icon);
-
     return Container(
       margin: const EdgeInsets.all(6.0),
       child: InkWell(
@@ -90,7 +89,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         highlightColor: Colors.transparent,
         hoverColor: Colors.transparent,
         onTap: onTap,
-        // icon: Icon(EvaIcons.arrowIosBack, color: appBarIconColor),
         child: Center(
           child: Container(
               height: 36,
@@ -182,7 +180,11 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         context: context,
         onTap: () => _showLayoutBottomSheet(),
         // icon: const Icon(Icons.filter_list),
-        icon: const Icon(Icons.layers_outlined),
+        icon: const Icon(
+          // Icons.filter_list,
+          Icons.layers_outlined,
+          // MingCuteIcons.mgc_layout_line,
+        ),
       ),
       _buildAppBarIconButton(
           context: context,
@@ -190,13 +192,16 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             child: PopupMenuButton(
               padding: EdgeInsets.zero,
               position: PopupMenuPosition.under,
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(
+                // MingCuteIcons.mgc_more_2_line,
+                Icons.more_vert,
+              ),
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
                     padding: const EdgeInsets.all(0),
                     child: ListTile(
-                      leading: const Icon(Icons.delete),
+                      leading: const Icon(Icons.delete_outline),
                       title: const Text("取消收藏"),
                       onTap: () {
                         // 关闭下拉菜单
@@ -209,7 +214,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   PopupMenuItem(
                     padding: const EdgeInsets.all(0),
                     child: ListTile(
-                      leading: const Icon(EvaIcons.car),
+                      leading: const Icon(MingCuteIcons.mgc_transfer_line),
                       title: const Text("迁移动漫"),
                       onTap: () {
                         // 关闭下拉菜单
@@ -265,7 +270,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     // widget.animeController.resetAnime();
                   },
                   child: Text("确定",
-                      style: TextStyle(color: Theme.of(context).errorColor))),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.error))),
             ],
           );
         });
@@ -489,7 +495,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               nameAnother,
               style: const TextStyle(height: 1.1),
               maxLines: 1,
-              textScaleFactor: AppTheme.smallScaleFactor,
             ),
           );
   }
@@ -504,7 +509,6 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               animeInfo,
               style: const TextStyle(height: 1.1),
               maxLines: 1,
-              textScaleFactor: AppTheme.smallScaleFactor,
             ),
           );
   }

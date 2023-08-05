@@ -16,8 +16,10 @@ import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -92,9 +94,11 @@ class _AnimeListPageState extends State<AnimeListPage> {
                       isScrollable: true,
                     ),
                   ),
-                  body: TabBarView(
-                    controller: _tabController,
-                    children: _getAnimesPlus(),
+                  body: DividerScaffoldBody(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: _getAnimesPlus(),
+                    ),
                   ),
                 ),
         ),
@@ -133,7 +137,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
               body: const BackupAndRestorePage(fromHome: true)),
         );
       },
-      icon: const Icon(Icons.cloud_outlined),
+      icon: const Icon(
+        Icons.cloud_outlined,
+        // MingCuteIcons.mgc_cloud_line,
+      ),
       tooltip: "云端数据",
     ));
     actions.add(IconButton(
@@ -148,8 +155,9 @@ class _AnimeListPageState extends State<AnimeListPage> {
       icon: const Icon(
         // Icons.filter_list,
         Icons.layers_outlined,
+        // MingCuteIcons.mgc_layout_line,
       ),
-      tooltip: "动漫排序",
+      tooltip: "外观设置",
     ));
     actions.add(IconButton(
       onPressed: () async {
@@ -164,7 +172,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
           checklistController.loadAnimes();
         });
       },
-      icon: const Icon(Icons.search),
+      icon: const Icon(
+        Icons.search,
+        // MingCuteIcons.mgc_search_line,
+      ),
       tooltip: "搜索动漫",
     ));
     return actions;
@@ -304,8 +315,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     _animeDisplayController.showReviewNumber.value,
                 reviewNumber: anime.reviewNumber,
               )),
-          trailing: Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-              textScaleFactor: 0.95),
+          trailing: Text(
+            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           onTap: () => onPress(anime),
           onLongPress: () => onLongPress(anime),
         );
@@ -422,7 +435,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
     });
   }
 
-  Scaffold _waitDataScaffold() {
+  _waitDataScaffold() {
     return Scaffold(
         key: UniqueKey(), // 保证被AnimatedSwitcher视为不同的控件
         appBar: AppBar(
@@ -513,7 +526,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                   ),
                 )),
               ]))
-            : Text(tags[i], textScaleFactor: AppTheme.smallScaleFactor),
+            : Text(tags[i], style: Theme.of(context).textTheme.bodyMedium),
       )));
     }
     return list;

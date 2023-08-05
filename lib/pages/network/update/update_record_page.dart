@@ -10,7 +10,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -23,23 +23,27 @@ class UpdateRecordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final UpdateRecordController updateRecordController = Get.find();
 
-    return Obx(
-      () => RefreshIndicator(
-        onRefresh: () async {
-          ClimbAnimeUtil.updateAllAnimesInfo();
-        },
-        // ListView嵌套ListView，那么内部LV会需要加上shrinkWrap: true，但这样会导致懒加载实现
-        // 所以改用Column
-        child: Column(
-          children: [
-            _buildUpdateProgress(context),
-            Expanded(
-                child: FadeAnimatedSwitcher(
-                    loadOk: updateRecordController.loadOk.value,
-                    destWidget: updateRecordController.updateRecordVos.isEmpty
-                        ? _buildEmptyDataPage()
-                        : _buildUpdateRecordList(updateRecordController))),
-          ],
+    return Scaffold(
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+      body: Obx(
+        () => RefreshIndicator(
+          onRefresh: () async {
+            ClimbAnimeUtil.updateAllAnimesInfo();
+          },
+          // ListView嵌套ListView，那么内部LV会需要加上shrinkWrap: true，但这样会导致懒加载实现
+          // 所以改用Column
+          child: Column(
+            children: [
+              _buildUpdateProgress(context),
+              const CommonDivider(),
+              Expanded(
+                  child: FadeAnimatedSwitcher(
+                      loadOk: updateRecordController.loadOk.value,
+                      destWidget: updateRecordController.updateRecordVos.isEmpty
+                          ? _buildEmptyDataPage()
+                          : _buildUpdateRecordList(updateRecordController))),
+            ],
+          ),
         ),
       ),
     );
@@ -60,7 +64,8 @@ class UpdateRecordPage extends StatelessWidget {
 
     return Scrollbar(
       controller: scrollController,
-      child: ListView.builder(
+      child: ListView.separated(
+          separatorBuilder: (context, index) => const CommonDivider(),
           controller: scrollController,
           // 避免没有占满时无法下拉刷新
           physics: const AlwaysScrollableScrollPhysics(),
@@ -73,29 +78,27 @@ class UpdateRecordPage extends StatelessWidget {
               updateRecordController.loadMore();
             }
 
-            return Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      TimeUtil.getHumanReadableDateTimeStr(
-                        date,
-                        showTime: false,
-                        showDayOfWeek: true,
-                        chineseDelimiter: true,
-                      ),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+            return Column(
+              children: [
+                ListTile(
+                  title: Text(
+                    TimeUtil.getHumanReadableDateTimeStr(
+                      date,
+                      showTime: false,
+                      showDayOfWeek: true,
+                      chineseDelimiter: true,
                     ),
-                    trailing: Text(
-                      "${map[date]!.length}个动漫",
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  Column(children: _buildRecords(context, map[date]!)),
-                  // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
-                  const SizedBox(height: 5)
-                ],
-              ),
+                  // trailing: Text(
+                  //   "${map[date]!.length}个动漫",
+                  //   style: Theme.of(context).textTheme.bodySmall,
+                  // ),
+                ),
+                Column(children: _buildRecords(context, map[date]!)),
+                // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+                const SizedBox(height: 5),
+              ],
             );
           }),
     );
@@ -106,8 +109,10 @@ class UpdateRecordPage extends StatelessWidget {
     for (var record in records) {
       recordsWidget.add(ListTile(
         leading: AnimeListCover(record.anime),
-        subtitle: Text("更新至${record.newEpisodeCnt}集",
-            textScaleFactor: AppTheme.tinyScaleFactor),
+        subtitle: Text(
+          "更新至${record.newEpisodeCnt}集",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         title: Text(
           record.anime.animeName,
           // textScaleFactor: AppTheme.smallScaleFactor,
@@ -178,44 +183,48 @@ class UpdateRecordPage extends StatelessWidget {
     int updateOkCnt = updateRecordController.updateOkCnt.value;
     int needUpdateCnt = updateRecordController.needUpdateCnt.value;
 
-    return Card(
-      child: Container(
-        height: 70,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  Log.info("进入页面");
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return const NeedUpdateAnimeList();
-                  }));
-                },
-                child: Container(
-                  color: Colors.transparent,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: Container()),
-                      Text("更新进度：$updateOkCnt/$needUpdateCnt"),
-                      Text("查看未完结动漫",
-                          style: Theme.of(context).textTheme.caption),
-                      Expanded(child: Container()),
-                    ],
-                  ),
+    return Container(
+      height: 70,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                Log.info("进入页面");
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const NeedUpdateAnimeList();
+                }));
+              },
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: Container()),
+                    Text("更新进度：$updateOkCnt/$needUpdateCnt"),
+                    Text("查看未完结动漫",
+                        style: Theme.of(context).textTheme.bodySmall),
+                    Expanded(child: Container()),
+                  ],
                 ),
               ),
             ),
-            OutlinedButton(
-              onPressed: updateRecordController.updating.value
-                  ? null
-                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-              child: const Text("立即更新"),
+          ),
+          OutlinedButton(
+            onPressed: updateRecordController.updating.value
+                ? null
+                : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+            child: const Text(
+              "更新",
+              style: TextStyle(letterSpacing: 5),
             ),
-          ],
-        ),
+            // label: const Text("更新"),
+            // icon: const Icon(MingCuteIcons.mgc_refresh_2_line, size: 16),
+          ),
+        ],
       ),
     );
   }

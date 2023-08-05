@@ -109,6 +109,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                         ),
                         // 构建动漫信息(名字、评分、其他信息)
                         AnimeDetailInfo(animeController: animeController),
+                        // const SliverToBoxAdapter(child: CommonDivider()),
                         // 构建主体(集信息页)
                         AnimeDetailEpisodeInfo(animeController: animeController)
                       ],

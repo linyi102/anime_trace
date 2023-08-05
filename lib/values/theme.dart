@@ -17,10 +17,6 @@ class AppTheme {
   static double wrapSacing = 2.0;
   static double wrapRunSpacing = 0.0;
 
-  /// 字体缩放比
-  static const double smallScaleFactor = 0.95;
-  static const double tinyScaleFactor = 0.85;
-
   /// 笔记字体样式：动漫详细页里的笔记、评价，以及笔记列表中的笔记，以及笔记编辑页
   static TextStyle noteStyle =
       const TextStyle(height: 1.5, fontSize: 15, fontWeight: FontWeight.normal);
@@ -40,6 +36,8 @@ class AppTheme {
   ];
   static List<String> darkModes = ["跟随系统", "关闭", "开启"];
 
+  static Color blue = Colors.blue;
+
   /// 亮色主题
   static List<ThemeColor> lightColors = [
     ThemeColor(
@@ -47,7 +45,7 @@ class AppTheme {
         key: "white",
         name: "白色",
         representativeColor: const Color.fromRGBO(248, 248, 248, 1),
-        primaryColor: Colors.blue,
+        primaryColor: blue,
         appBarColor: Colors.white,
         bodyColor: const Color.fromRGBO(248, 248, 252, 1),
         cardColor: Colors.white),
@@ -59,7 +57,7 @@ class AppTheme {
       isDarkMode: true,
       key: "lightBlack",
       name: "浅黑",
-      primaryColor: Colors.blue,
+      primaryColor: blue,
       representativeColor: const Color.fromRGBO(30, 30, 30, 1),
       appBarColor: const Color.fromRGBO(32, 32, 32, 1),
       bodyColor: const Color.fromRGBO(18, 18, 18, 1),
@@ -69,7 +67,7 @@ class AppTheme {
         isDarkMode: true,
         key: "pureBlack",
         name: "纯黑",
-        primaryColor: Colors.blue,
+        primaryColor: blue,
         representativeColor: Colors.black,
         appBarColor: const Color.fromRGBO(15, 15, 15, 1),
         bodyColor: const Color.fromRGBO(0, 0, 0, 1),

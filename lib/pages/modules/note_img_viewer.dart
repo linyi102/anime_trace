@@ -262,28 +262,22 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                 children: [
                   ListTile(
                       contentPadding: EdgeInsetsDirectional.zero,
-                      dense: true,
                       title: const Text("完全路径"),
                       subtitle: SelectableText(
                         imageLocalPaths[currentIndex],
-                        textScaleFactor: 0.9,
                       )),
                   ListTile(
                       contentPadding: EdgeInsetsDirectional.zero,
-                      dense: true,
                       title: const Text("相对路径"),
                       subtitle: SelectableText(
                         widget.relativeLocalImages[currentIndex].path,
-                        textScaleFactor: 0.9,
                       )),
                   if (file.existsSync())
                     ListTile(
                         contentPadding: EdgeInsetsDirectional.zero,
-                        dense: true,
                         title: const Text("图片大小"),
                         subtitle: Text(
                           FileUtil.getReadableFileSize(file.lengthSync()),
-                          textScaleFactor: 0.9,
                         )),
                 ],
               ),

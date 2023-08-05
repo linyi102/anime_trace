@@ -96,20 +96,22 @@ class _WeeklyPageState extends State<WeeklyPage> {
   Widget build(BuildContext context) {
     Log.build(runtimeType);
 
-    return Column(
-      children: [
-        Card(
-          child: Column(
-            children: [
-              _buildSourceTile(),
-              // 选择周几。放在最下面时，悬浮按钮会遮挡住，所以放到上面
-              _buildWeeklyBar(),
-            ],
+    return Scaffold(
+      body: Column(
+        children: [
+          Card(
+            child: Column(
+              children: [
+                _buildSourceTile(),
+                // 选择周几。放在最下面时，悬浮按钮会遮挡住，所以放到上面
+                _buildWeeklyBar(),
+              ],
+            ),
           ),
-        ),
-        // 更新表
-        _buildPageView(),
-      ],
+          // 更新表
+          _buildPageView(),
+        ],
+      ),
     );
   }
 

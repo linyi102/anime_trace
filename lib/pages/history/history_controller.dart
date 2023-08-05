@@ -8,14 +8,16 @@ import 'package:flutter_test_future/models/history_plus.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 enum HistoryLabel {
-  year("年"),
-  month("月"),
-  day("日");
+  year("年", MingCuteIcons.mgc_calendar_line),
+  month("月", MingCuteIcons.mgc_calendar_line),
+  day("日", MingCuteIcons.mgc_calendar_line);
 
   final String title;
-  const HistoryLabel(this.title);
+  final IconData iconData;
+  const HistoryLabel(this.title, this.iconData);
 }
 
 class HistoryView {

@@ -8,7 +8,9 @@ import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class LabelManagePage extends StatelessWidget {
   const LabelManagePage(
@@ -33,7 +35,8 @@ class LabelManagePage extends StatelessWidget {
         title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理"),
         automaticallyImplyLeading: enableSelectLabelForAnime ? false : true,
       ),
-      body: ListView(
+      body: DividerScaffoldBody(
+          child: ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
         children: [
           _buildSearchBar(
@@ -44,7 +47,7 @@ class LabelManagePage extends StatelessWidget {
           const ListTile(),
           const ListTile(),
         ],
-      ),
+      )),
       floatingActionButton: _buildFloatingActionButton(
           context, labelsController, labelsController.inputKeywordController),
     );
@@ -272,7 +275,7 @@ class LabelManagePage extends StatelessWidget {
               );
             });
       },
-      child: const Icon(Icons.add),
+      child: const Icon(MingCuteIcons.mgc_add_line),
     );
   }
 

@@ -10,6 +10,8 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/history/history_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -39,27 +41,74 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("历史"),
-        actions: [_buildCupertinoViewSwitch()],
+        actions: [
+          // _buildCupertinoViewSwitch(),
+          _buildMaterialViewSwitch(),
+        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => await historyController.refreshData(),
-        child: GetBuilder<HistoryController>(
-          init: historyController,
-          builder: (_) => FadeAnimatedSwitcher(
-            loadOk: historyController.loadOk,
-            destWidget: Column(
-              children: [
-                // _buildViewSwitch(),
-                views[selectedViewIndex].historyRecords.isEmpty
-                    ? Expanded(child: emptyDataHint(msg: "没有历史。"))
-                    : Expanded(
-                        // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
-                        child: _buildHistoryPage(),
-                      ),
-              ],
+      body: DividerScaffoldBody(
+        child: RefreshIndicator(
+          onRefresh: () async => await historyController.refreshData(),
+          child: GetBuilder<HistoryController>(
+            init: historyController,
+            builder: (_) => FadeAnimatedSwitcher(
+              loadOk: historyController.loadOk,
+              destWidget: Column(
+                children: [
+                  // _buildViewSwitch(),
+                  views[selectedViewIndex].historyRecords.isEmpty
+                      ? Expanded(child: emptyDataHint(msg: "没有历史。"))
+                      : Expanded(
+                          // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
+                          child: _buildHistoryPage(),
+                        ),
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  _buildMaterialViewSwitch() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SegmentedButton(
+            showSelectedIcon: false,
+            style: ButtonStyle(
+                visualDensity: const VisualDensity(
+                  horizontal: VisualDensity.minimumDensity,
+                  vertical: VisualDensity.minimumDensity,
+                ),
+                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(99)))),
+            segments: historyController.views
+                .map((e) => ButtonSegment(
+                      value: e.label,
+                      label: Text(e.label.title),
+                      // icon: Icon(e.label.iconData),
+                    ))
+                .toList(),
+            selected: {historyController.selectedHistoryLabel},
+            onSelectionChanged: (newSelection) {
+              setState(() {
+                // 先重绘进度圈和开关
+                historyController.loadOk = false;
+                historyController.selectedHistoryLabel = newSelection.first;
+              });
+              historyController.selectedViewIndex = views
+                  .indexWhere((element) => element.label == newSelection.first);
+              SPUtil.setInt(
+                  "selectedViewIndexInHistoryPage", selectedViewIndex);
+              // 重置页号刷新数据，避免页号不是从0开始导致加载直接加载后面的数据
+              historyController.refreshData();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -99,7 +148,8 @@ class _HistoryPageState extends State<HistoryPage> {
   Scrollbar _buildHistoryPage() {
     return Scrollbar(
       controller: views[selectedViewIndex].scrollController,
-      child: ListView.builder(
+      child: ListView.separated(
+        separatorBuilder: (context, index) => const CommonDivider(),
         // 保留滚动位置，注意：如果滚动位置在加载更多的数据中，那么重新打开当前页面若重新加载数据，则恢复滚动位置不合适，故不采用
         // key: PageStorageKey("history-page-view-$selectedViewIndex"),
         // 指定key后，才能保证切换回历史页时，update()后显示最新数据
@@ -119,47 +169,44 @@ class _HistoryPageState extends State<HistoryPage> {
 
           String date = views[selectedViewIndex].historyRecords[index].date;
 
-          return Card(
-            elevation: 0,
-            child: Column(
-              children: [
-                // 卡片标题
-                ListTile(
-                  minLeadingWidth: 0,
-                  title: Text(
-                    date.replaceAll("-", "/"),
-                    // textScaleFactor: AppTheme.smallScaleFactor,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  trailing: Text(
-                    "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+          return Column(
+            children: [
+              // 卡片标题
+              ListTile(
+                minLeadingWidth: 0,
+                title: Text(
+                  date.replaceAll("-", "/"),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                // 卡片主体
-                Column(
-                    children: views[selectedViewIndex]
-                        .historyRecords[index]
-                        .records
-                        .map(
-                          // 测试发现必须为RecordItem添加UniqueKey才能保证切换回历史页后显示出新数据
-                          // 应该和StatefulWidget的状态有关
-                          // (record) => ListTile(
-                          //   title: Text(record.anime.animeName),
-                          //   subtitle: Text(
-                          //       "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
-                          // ),
-                          (record) => RecordItem(
-                            record: record,
-                            date: date,
-                            key: UniqueKey(),
-                          ),
-                        )
-                        .toList()),
-                // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
-                const SizedBox(height: 5)
-              ],
-            ),
+                // trailing: Text(
+                //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
+                //   style: Theme.of(context).textTheme.bodySmall,
+                // ),
+              ),
+              // 卡片主体
+              Column(
+                  children: views[selectedViewIndex]
+                      .historyRecords[index]
+                      .records
+                      .map(
+                        // 测试发现必须为RecordItem添加UniqueKey才能保证切换回历史页后显示出新数据
+                        // 应该和StatefulWidget的状态有关
+                        // (record) => ListTile(
+                        //   title: Text(record.anime.animeName),
+                        //   subtitle: Text(
+                        //       "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
+                        // ),
+                        (record) => RecordItem(
+                          record: record,
+                          date: date,
+                          key: UniqueKey(),
+                        ),
+                      )
+                      .toList()),
+              // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+              const SizedBox(height: 5)
+            ],
           );
         },
       ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tab_indicator_styler/flutter_tab_indicator_styler.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 class CommonTitleTabBar extends StatelessWidget {
   const CommonTitleTabBar({required this.tabs, this.tabController, super.key});
   final List<Widget> tabs;
   final TabController? tabController;
+  double get radius => 99;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +19,13 @@ class CommonTitleTabBar extends StatelessWidget {
       indicatorSize: TabBarIndicatorSize.label,
       indicator: MaterialIndicator(
         horizontalPadding: 5,
+        height: 3,
         color: Theme.of(context).primaryColor,
         paintingStyle: PaintingStyle.fill,
+        // bottomLeftRadius: radius,
+        // bottomRightRadius: radius,
+        topLeftRadius: radius,
+        topRightRadius: radius,
       ),
       // indicatorColor: Colors.transparent,
       // 圆角+取消波纹扩散
@@ -30,7 +36,7 @@ class CommonTitleTabBar extends StatelessWidget {
       // labelStyle: Theme.of(context).textTheme.titleLarge,
       // unselectedLabelStyle: Theme.of(context).textTheme.titleSmall,
       labelColor: Theme.of(context).textTheme.titleLarge?.color,
-      unselectedLabelColor: Theme.of(context).textTheme.caption?.color,
+      unselectedLabelColor: Theme.of(context).textTheme.bodySmall?.color,
       labelStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontFamilyFallback: ThemeController.to.fontFamilyFallback,
             height: 1.1,
@@ -49,6 +55,7 @@ class CommonBottomTabBar extends StatelessWidget
   final TabController? tabController;
   final bool isScrollable;
   final Color? bgColor;
+  double get radius => 99;
 
   const CommonBottomTabBar(
       {required this.tabs,
@@ -81,7 +88,14 @@ class CommonBottomTabBar extends StatelessWidget
           horizontalPadding: 5,
           color: Theme.of(context).primaryColor,
           paintingStyle: PaintingStyle.fill,
+          bottomLeftRadius: radius,
+          bottomRightRadius: radius,
+          topLeftRadius: radius,
+          topRightRadius: radius,
         ),
+        labelColor: Theme.of(context).textTheme.titleLarge?.color,
+        unselectedLabelColor: Theme.of(context).textTheme.bodySmall?.color,
+        labelStyle: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
   }

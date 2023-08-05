@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/note_img_grid.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 笔记卡片
 /// 使用：所有笔记页、所有评价页、动漫详细评价页
@@ -41,25 +40,18 @@ class _NoteCardState extends State<NoteCard> {
     Log.build(runtimeType);
     Note note = widget.note;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Card(
-        child: InkWell(
-          onTap: () => _enterNoteEditPage(note),
-          child: Column(
-            children: [
-              if (widget.showAnimeTile) _buildAnimeListTile(note),
-              // 笔记内容
-              _buildNoteContent(note),
-              // 笔记图片
-              NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-              // if (widget.isRateNote)
-              // 创建时间和操作按钮
-              _buildCreateTimeAndMoreAction(note),
-              // const Divider(),
-            ],
-          ),
-        ),
+    return InkWell(
+      onTap: () => _enterNoteEditPage(note),
+      child: Column(
+        children: [
+          if (widget.showAnimeTile) _buildAnimeListTile(note),
+          // 笔记内容
+          _buildNoteContent(note),
+          // 笔记图片
+          NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
+          if (note.relativeLocalImages.isEmpty) const SizedBox(height: 10),
+          const CommonDivider()
+        ],
       ),
     );
   }
@@ -83,6 +75,9 @@ class _NoteCardState extends State<NoteCard> {
   }
 
   _buildAnimeListTile(Note note) {
+    String rateTimeStr = TimeUtil.getHumanReadableDateTimeStr(note.createTime);
+    rateTimeStr = rateTimeStr.isEmpty ? "" : rateTimeStr;
+
     return ListTile(
       leading: GestureDetector(
         onTap: _enterAnimeDetailPage,
@@ -93,6 +88,7 @@ class _NoteCardState extends State<NoteCard> {
           circular: false,
         ),
       ),
+      trailing: _buildMoreButton(note),
       // Row的作用是为了避免title组件占满整行，应该只在文字上点击后才进入详细页
       title: Row(
         children: [
@@ -116,33 +112,15 @@ class _NoteCardState extends State<NoteCard> {
         children: [
           GestureDetector(
             onTap: _enterAnimeDetailPage,
-            child: widget.isRateNote
-                ? AnimeRatingBar(
-                    rate: note.anime.rate,
-                    iconSize: 12,
-                    spacing: 2,
-                    enableRate: false,
-                    onRatingUpdate: (v) {
-                      Log.info("评价分数：$v");
-                      note.anime.rate = v.toInt();
-                      AnimeDao.updateAnimeRate(
-                          note.anime.animeId, note.anime.rate);
-                    })
-                : Text(
-                    "${note.episode.caption} ${note.episode.getDate()}",
-                    style: Theme.of(context).textTheme.caption,
-                  ),
+            child: Text(
+              widget.isRateNote
+                  ? rateTimeStr
+                  : "${note.episode.caption} ${note.episode.getDate()}",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
         ],
       ),
-      // trailing: widget.isRateNote
-      //     ? null
-      //     : IconButton(
-      //         onPressed: () => _enterNoteEditPage(note),
-      //         icon: const Icon(
-      //           Icons.edit,
-      //           size: 16,
-      //         )),
     );
   }
 
@@ -151,7 +129,7 @@ class _NoteCardState extends State<NoteCard> {
     return Container(
       alignment: Alignment.centerLeft,
       // 左填充15，这样就和图片对齐了
-      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 10),
       child: Text(
         note.noteContent,
         maxLines: 10,
@@ -161,49 +139,51 @@ class _NoteCardState extends State<NoteCard> {
     );
   }
 
-  _buildCreateTimeAndMoreAction(Note note) {
-    String timeStr = TimeUtil.getHumanReadableDateTimeStr(note.createTime);
-    timeStr = timeStr.isEmpty ? "" : "创建于$timeStr";
+  _buildMoreButton(Note note) {
+    return IconButton(
+      visualDensity: VisualDensity.compact,
+      splashRadius: 24,
+      icon: const Icon(
+        // MingCuteIcons.mgc_more_1_line,
+        Icons.more_horiz,
+        size: 18,
+      ),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (dialogContext) {
+              return SimpleDialog(
+                children: [
+                  ListTile(
+                    leading: const Icon(MingCuteIcons.mgc_edit_line),
+                    title: const Text("编辑"),
+                    onTap: () {
+                      Navigator.pop(dialogContext);
+                      _enterNoteEditPage(note);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(MingCuteIcons.mgc_copy_fill),
+                    title: const Text("复制内容"),
+                    onTap: () {
+                      CommonUtil.copyContent(note.noteContent);
+                      Navigator.pop(dialogContext);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(MingCuteIcons.mgc_delete_2_fill),
+                    title: const Text("删除笔记"),
+                    onTap: () {
+                      Navigator.pop(dialogContext);
 
-    return ListTile(
-        title: Text(timeStr, style: Theme.of(context).textTheme.bodySmall),
-        trailing: IconButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (dialogContext) {
-                    return SimpleDialog(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.edit),
-                          title: const Text("编辑"),
-                          onTap: () {
-                            Navigator.pop(dialogContext);
-                            _enterNoteEditPage(note);
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.copy_rounded),
-                          title: const Text("复制内容"),
-                          onTap: () {
-                            CommonUtil.copyContent(note.noteContent);
-                            Navigator.pop(dialogContext);
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.delete_outline),
-                          title: const Text("删除笔记"),
-                          onTap: () {
-                            Navigator.pop(dialogContext);
-
-                            _dialogDeleteConfirm(note);
-                          },
-                        )
-                      ],
-                    );
-                  });
-            },
-            icon: const Icon(Icons.more_horiz)));
+                      _dialogDeleteConfirm(note);
+                    },
+                  )
+                ],
+              );
+            });
+      },
+    );
   }
 
   _dialogDeleteConfirm(Note note) async {
@@ -234,7 +214,7 @@ class _NoteCardState extends State<NoteCard> {
               },
               child: Text(
                 "确定",
-                style: TextStyle(color: Theme.of(context).errorColor),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             )
           ],

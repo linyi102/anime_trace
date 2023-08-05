@@ -19,9 +19,7 @@ version: 1.8.3
 # 格式用+号分割，这个的含义在 Android 中的意思为 versionName+versionCode。IOS 的话暂时不知道，不过应该差不多
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  # 2.17增强枚举
-  # sdk: ">=2.12.0 <2.15.1"
+  sdk: ">=3.0.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,11 +32,13 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  animations: ^2.0.7
+  ming_cute_icons: ^0.0.1
   app_installer: ^1.1.0
   flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6 # 时间差
   bot_toast: ^4.0.3 # 消息
-  flex_color_scheme: ^6.1.2 # 主题
+  flex_color_scheme: ^7.2.0 # 主题
   timer_count_down: ^2.2.2 # 倒计时
   file_saver: ^0.1.1 # 文件保存，用于备份文件
   sliver_tools: ^0.2.9 # sliver工具：渐变过渡
@@ -50,49 +50,23 @@ dependencies:
   photo_view: ^0.14.0 # 缩放、左右切换图片
   flutter_rating_bar: ^4.0.1 # 评分栏
   window_manager: ^0.2.5 # Windows窗口管理
-  flutter_tab_indicator_styler: ^2.0.0 # tabView的指示器样式
+  tab_indicator_styler: ^2.0.0
   percent_indicator: ^4.2.2 # 进度条
   dart_ping: ^6.1.2
-  expand_widget: ^2.1.0 #可展开的widget
-  get: ^4.6.5 #状态管理
-  # animations: ^2.0.3
+  expand_widget: ^3.1.1 # 可展开的widget
+  get: ^4.6.5 # 状态管理
   shared_preferences: ^2.0.9
-  sqflite: ^2.0.1 # 不支持windows，可使用sqflite_common_ffi
+  sqflite: ^2.0.1
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
-  # file: ^6.1.2
-  file_picker: ^4.2.8
-  # image_picker: ^0.8.4+4 # 不是从图库中选择
-  # images_picker: ^1.2.10 # 要求minSdkVersion 21，但不行
-  # multi_image_picker2: ^5.0.2 # 自己生成的图库，很不好找
-  # permission_handler: ^8.3.0 # 不支持windows
-  # share: ^2.0.4
-  # share_plus: ^3.0.4
-  # flutter_share: ^2.0.0
+  file_picker: ^5.3.3
   webdav_client: ^1.1.8
-  # download: any
-  # search_app_bar_page: ^2.1.2 # 添加上导致出错：
-  #   * What went wrong:
-  # Execution failed for task ':connectivity:compileDebugJavaWithJavac'.
-  # > Compilation failed; see the compiler error output for details.
-  # flutter_search_bar: ^2.1.0
-  # search_page: ^2.0.0+1
-  # salomon_bottom_bar: ^3.2.0
-  # animations: ^2.0.2
-  # proste_route_animation: ^2.0.2 # 路由过渡动画
-  # scroll_bottom_navigation_bar: ^4.0.0
-  # scroll_app_bar: ^2.0.0
-  # multiselect_scope: ^0.2.0 # 切换顶部栏时会出错
-  # flutter_keyboard_visibility: ^5.1.0
-  # keyboard_utils: ^1.3.3
   dio: ^4.0.4
   html: ^0.15.0
   cached_network_image: ^3.2.3 # 缓存图片
   archive: ^3.1.8
-  # flutter_screenutil: ^5.0.2
-  # flutter_autosize_screen: ^1.0.1 # get不了
   path: ^1.8.0
-  package_info_plus: ^1.4.2
+  package_info_plus: ^4.0.2
   url_launcher: ^6.1.0
   transparent_image: ^2.0.0
 

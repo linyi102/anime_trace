@@ -45,7 +45,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 自动弹出键盘
       autofocus: autofocus,
       controller: inputController,
-      decoration: _generateInputDecoration(),
+      decoration: _generateInputDecoration(context),
       onEditingComplete: () {
         if (onEditingComplete != null) {
           onEditingComplete!();
@@ -56,7 +56,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  InputDecoration _generateInputDecoration() {
+  _generateInputDecoration(BuildContext context) {
     return InputDecoration(
         prefixIcon: useModernStyle ? const Icon(Icons.search) : null,
         contentPadding: useModernStyle ? const EdgeInsets.all(0) : null,
@@ -71,7 +71,10 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                 borderSide: BorderSide(color: Colors.transparent)),
         enabledBorder: useModernStyle
             ? const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
+                borderSide: BorderSide(
+                  color: Colors.transparent,
+                  // color: Theme.of(context).dividerColor,
+                ),
                 borderRadius: BorderRadius.all(Radius.circular(100)),
               )
             : null,

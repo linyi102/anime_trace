@@ -4,8 +4,12 @@ import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+
+import '../../widgets/common_divider.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);
@@ -44,83 +48,82 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
       appBar: AppBar(
         title: const Text("常规设置"),
       ),
-      body: ListView(
-        children: [
-          ListTile(
-              title: Text("偏好",
-                  style: TextStyle(color: Theme.of(context).primaryColor))),
-          ListTile(
-            title: const Text("选择页面切换动画"),
-            onTap: () {
-              ThemeController themeController = Get.find();
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return SimpleDialog(
-                      children: PageSwitchAnimation.values
-                          .map((e) => ListTile(
-                                title: Text(e.title),
-                                trailing: e ==
-                                        themeController
-                                            .pageSwitchAnimation.value
-                                    ? const Icon(Icons.check)
-                                    : null,
-                                onTap: () {
-                                  themeController.pageSwitchAnimation.value = e;
-                                  SpProfile.savePageSwitchAnimationId(e.id);
-                                  Navigator.pop(context);
-                                },
-                              ))
-                          .toList(),
-                    );
-                  });
-            },
-          ),
-          ListTile(
-            title: const Text("重置完成最后一集时提示移动清单的对话框"),
-            onTap: () {
-              SPUtil.remove("autoMoveToFinishedTag"); // 总是
-              SPUtil.remove("showModifyChecklistDialog"); // 不再提示
-              SPUtil.remove("selectedFinishedTag"); // 存放已完成动漫的清单
-              ToastUtil.showText("重置成功");
-            },
-          ),
-          const Divider(),
-          ListTile(
-              title: Text("时间显示",
-                  style: TextStyle(color: Theme.of(context).primaryColor))),
-          SwitchListTile(
-            title: const Text("精确到时分"),
-            subtitle: Text(
-                TimeUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
-            value: TimeUtil.showPreciseTime,
-            onChanged: (bool value) {
-              TimeUtil.turnShowPreciseTime();
-              setState(() {});
-            },
-          ),
-          SwitchListTile(
-            title: const Text("显示昨天/今天"),
-            subtitle:
-                Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
-            value: TimeUtil.showYesterdayAndToday,
-            onChanged: (bool value) {
-              TimeUtil.turnShowYesterdayAndToday();
-              setState(() {});
-            },
-          ),
-          SwitchListTile(
-            title: const Text("今年时间显示年份"),
-            subtitle:
-                Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
-            value: TimeUtil.showCurYear,
-            onChanged: (bool value) {
-              TimeUtil.turnShowCurYear();
-              setState(() {});
-            },
-          ),
-        ],
-      ),
+      body: DividerScaffoldBody(child: _buildBody(context)),
+    );
+  }
+
+  ListView _buildBody(BuildContext context) {
+    return ListView(
+      children: [
+        const SettingTitle(title: '偏好'),
+        ListTile(
+          title: const Text("选择页面切换动画"),
+          onTap: () {
+            ThemeController themeController = Get.find();
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    children: PageSwitchAnimation.values
+                        .map((e) => ListTile(
+                              title: Text(e.title),
+                              trailing:
+                                  e == themeController.pageSwitchAnimation.value
+                                      ? const Icon(Icons.check)
+                                      : null,
+                              onTap: () {
+                                themeController.pageSwitchAnimation.value = e;
+                                SpProfile.savePageSwitchAnimationId(e.id);
+                                Navigator.pop(context);
+                              },
+                            ))
+                        .toList(),
+                  );
+                });
+          },
+        ),
+        ListTile(
+          title: const Text("重置完成最后一集时提示移动清单的对话框"),
+          onTap: () {
+            SPUtil.remove("autoMoveToFinishedTag"); // 总是
+            SPUtil.remove("showModifyChecklistDialog"); // 不再提示
+            SPUtil.remove("selectedFinishedTag"); // 存放已完成动漫的清单
+            ToastUtil.showText("重置成功");
+          },
+        ),
+        const CommonDivider(),
+        const SettingTitle(title: '时间显示'),
+        SwitchListTile(
+          title: const Text("精确到时分"),
+          subtitle: Text(
+              TimeUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
+          value: TimeUtil.showPreciseTime,
+          onChanged: (bool value) {
+            TimeUtil.turnShowPreciseTime();
+            setState(() {});
+          },
+        ),
+        SwitchListTile(
+          title: const Text("显示昨天/今天"),
+          subtitle:
+              Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
+          value: TimeUtil.showYesterdayAndToday,
+          onChanged: (bool value) {
+            TimeUtil.turnShowYesterdayAndToday();
+            setState(() {});
+          },
+        ),
+        SwitchListTile(
+          title: const Text("今年时间显示年份"),
+          subtitle:
+              Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
+          value: TimeUtil.showCurYear,
+          onChanged: (bool value) {
+            TimeUtil.turnShowCurYear();
+            setState(() {});
+          },
+        ),
+      ],
     );
   }
 }

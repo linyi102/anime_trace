@@ -1,17 +1,15 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto_load_note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
@@ -114,7 +112,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     );
   }
 
-  bool enableEpisodeRangeBottomSheetStyle = true;
   // 动漫信息下面的操作栏
   _buildButtonsAboutEpisode() {
     if (!_anime.isCollected()) return Container();
@@ -125,34 +122,16 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         children: [
           InkWell(
             onTap: () {
-              if (enableEpisodeRangeBottomSheetStyle) {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: const Text("选择区域"),
-                      automaticallyImplyLeading: false,
-                    ),
-                    body: _buildEpisodeRangeGridView(),
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => Scaffold(
+                  appBar: AppBar(
+                    title: const Text("选择区域"),
+                    automaticallyImplyLeading: false,
                   ),
-                );
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (dialogContext) {
-                    return AlertDialog(
-                      title: const Text("选择区域"),
-                      content: SingleChildScrollView(
-                        child: Wrap(
-                          spacing: AppTheme.wrapSacing,
-                          runSpacing: AppTheme.wrapRunSpacing,
-                          children: _buildEpisodeRangeChips(dialogContext),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }
+                  body: _buildEpisodeRangeGridView(),
+                ),
+              );
             },
             borderRadius: BorderRadius.circular(6),
             child: Container(
@@ -208,10 +187,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   },
                   tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                   icon: hideNoteInAnimeDetail
-                      ? const Icon(EvaIcons.expandOutline)
-                      : const Icon(EvaIcons.collapseOutline)),
-              // ? const Icon(Icons.unfold_more)
-              // : const Icon(Icons.unfold_less)),
+                      ? const Icon(MingCuteIcons.mgc_list_expansion_line)
+                      : const Icon(MingCuteIcons.mgc_list_collapse_line)),
             ],
           ),
         ],
@@ -245,14 +222,15 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                 // 获取集数据
                 widget.animeController.loadEpisode();
               },
-              child: Center(
-                child: Text(
-                  _getEpisodeRangeStr((startEpisodeNumber)),
-                  style: TextStyle(
-                    color: cur
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(context).unselectedWidgetColor,
-                    fontWeight: FontWeight.normal,
+              child: Container(
+                color: cur ? Theme.of(context).primaryColor : null,
+                child: Center(
+                  child: Text(
+                    _getEpisodeRangeStr((startEpisodeNumber)),
+                    style: TextStyle(
+                      color: cur ? Colors.white : null,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
@@ -305,12 +283,14 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           widget.animeController.loadEpisode();
         },
         child: Chip(
-          label: Text(_getEpisodeRangeStr((startEpisodeNumber)),
-              textScaleFactor: AppTheme.tinyScaleFactor),
-          backgroundColor: widget.animeController.currentStartEpisodeNumber ==
-                  startEpisodeNumber
-              ? Colors.grey
-              : null,
+          label: Text(
+            _getEpisodeRangeStr((startEpisodeNumber)),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          // backgroundColor: widget.animeController.currentStartEpisodeNumber ==
+          //         startEpisodeNumber
+          //     ? Colors.grey
+          //     : null,
         ),
       ));
     }

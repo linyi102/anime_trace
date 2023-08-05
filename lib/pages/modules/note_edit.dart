@@ -15,11 +15,14 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
+
+import '../../utils/time_util.dart';
 
 class NoteEditPage extends StatefulWidget {
   final Note note;
@@ -132,7 +135,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
         ),
-        body: _loadOk ? _buildBody() : Container(),
+        body: DividerScaffoldBody(child: _loadOk ? _buildBody() : Container()),
       ),
     );
   }
@@ -150,24 +153,13 @@ class _NoteEditPageState extends State<NoteEditPage> {
               widget.note.anime.animeName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: AppTheme.smallScaleFactor,
             ),
-            subtitle: widget.note.episode.number == 0
-                ? AnimeRatingBar(
-                    rate: widget.note.anime.rate,
-                    iconSize: 12,
-                    spacing: 2,
-                    enableRate: false,
-                    onRatingUpdate: (v) {
-                      Log.info("评价分数：$v");
-                      widget.note.anime.rate = v.toInt();
-                      AnimeDao.updateAnimeRate(
-                          widget.note.anime.animeId, widget.note.anime.rate);
-                    })
-                : Text(
-                    "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
-                    textScaleFactor: AppTheme.tinyScaleFactor,
-                  ),
+            subtitle: Text(
+              widget.note.episode.number == 0
+                  ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
+                  : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
           _showNoteContent(),
           Responsive(
@@ -265,14 +257,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        color: Theme.of(context).hoverColor,
+        // border: Border.all(
+        //   style: BorderStyle.solid,
+        //   color: Theme.of(context).hintColor,
+        // ),
       ),
       child: InkWell(
         onTap: () => _pickLocalImages(),
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).primaryColor,
-        ),
+        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        child: Icon(Icons.add, color: Theme.of(context).hintColor),
       ),
     );
   }
@@ -286,16 +280,17 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ),
         // 删除按钮
         Positioned(
-          right: 0,
-          top: 0,
+          right: 2,
+          top: 2,
           child: GestureDetector(
             onTap: () => _dialogRemoveImage(imageIndex),
             child: Container(
+              padding: const EdgeInsets.all(4.0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: const Color.fromRGBO(255, 255, 255, 0.1),
+                borderRadius: BorderRadius.circular(99),
+                color: Colors.black54,
               ),
-              child: const Icon(Icons.close, color: Colors.white70, size: 20),
+              child: const Icon(Icons.close, color: Colors.white, size: 12),
             ),
           ),
         )
@@ -370,7 +365,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
                 },
               ),
               TextButton(
-                child: const Text("确定"),
+                child: const Text("移除"),
                 onPressed: () {
                   RelativeLocalImage relativeLocalImage =
                       widget.note.relativeLocalImages[index];

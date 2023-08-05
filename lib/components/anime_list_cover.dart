@@ -33,8 +33,9 @@ class AnimeListCover extends StatelessWidget {
                     child: CommonImage(_anime.getCommonCoverUrl()),
                   ),
                 )
-              : AspectRatio(
-                  aspectRatio: 1 / 1, // 正方形
+              : SizedBox(
+                  height: 40,
+                  width: 40,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(AppTheme.imgRadius),
                       child: CommonImage(_anime.getCommonCoverUrl())),

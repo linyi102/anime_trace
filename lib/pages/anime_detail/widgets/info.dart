@@ -18,6 +18,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeDetailInfo extends StatefulWidget {
   const AnimeDetailInfo({required this.animeController, super.key});
@@ -87,9 +88,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               // indicatorIconSize: 20,
               // indicatorExpandedHint: "展开",
               // indicatorCollapsedHint: "收缩",
-              arrowSize: 20,
-              collapsedHint: "展开",
-              expandedHint: "收缩",
+              indicatorIconSize: 20,
+              indicatorCollapsedHint: "展开",
+              indicatorExpandedHint: "收缩",
             )
           // 如果没有收藏，这不折叠简介
           : Text(desc, style: textStyle);
@@ -113,7 +114,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   // 显示信息按钮，点击后进入动漫属性信息页
   _buildInfoIcon() {
     return IconTextButton(
-      iconData: EvaIcons.infoOutline,
+      iconData: MingCuteIcons.mgc_information_line,
       title: "信息",
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -131,7 +132,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       initState: (_) {},
       builder: (_) {
         return IconTextButton(
-          iconData: EvaIcons.messageCircleOutline,
+          iconData: MingCuteIcons.mgc_chat_1_line,
           title: "${widget.animeController.rateNoteCount}条评价",
           onTap: () {
             Navigator.of(context)
@@ -150,7 +151,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   // 显示收藏按钮，点击后可以修改清单
   _buildCollectIcon() {
     return IconTextButton(
-      iconData: _anime.isCollected() ? EvaIcons.heart : EvaIcons.heartOutline,
+      iconData: _anime.isCollected()
+          ? MingCuteIcons.mgc_heart_fill
+          : MingCuteIcons.mgc_heart_line,
       iconColor: _anime.isCollected() ? Colors.red : null,
       title: _anime.isCollected() ? _anime.tagName : "收藏",
       onTap: () {
@@ -192,7 +195,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
 
   _buildSearchBtn() {
     return IconTextButton(
-      iconData: EvaIcons.search,
+      iconData: MingCuteIcons.mgc_search_line,
       title: "搜索",
       onTap: () {
         // Navigator.push(
@@ -321,7 +324,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               child: Row(
                 children: [
                   Text("${_anime.animeEpisodeCnt}集"),
-                  const Icon(EvaIcons.editOutline, size: smallIconSize),
+                  const Icon(MingCuteIcons.mgc_edit_3_line,
+                      size: smallIconSize),
                 ],
               ),
             )),

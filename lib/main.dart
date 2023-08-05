@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -112,7 +113,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           useMaterial3: themeController.useM3.value,
           textTheme: _buildTextTheme(textStyle, context),
           primary: curLightThemeColor.primaryColor,
-          appBarBackground: curLightThemeColor.appBarColor,
           scaffoldBackground: curLightThemeColor.bodyColor,
           surface: curLightThemeColor.cardColor,
           // BottomNavigationBar
@@ -120,13 +120,16 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 9,
           tabBarStyle: FlexTabBarStyle.forBackground,
+          // 亮色模式下不管设置哪个，都会导致看不见手机状态栏(暗色模式正常)
+          // 解决方式：该代码文件中搜索202308052321
+          appBarBackground: curLightThemeColor.appBarColor,
           appBarStyle: FlexAppBarStyle.scaffoldBackground,
+          tooltipsMatchBackground: true,
           subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
             // true会导致文字和按钮颜色受主色影响
             blendTextTheme: false,
-            chipSchemeColor: SchemeColor.surfaceVariant,
             // 隐藏输入框底部边界
             inputDecoratorUnfocusedHasBorder: false,
             blendOnLevel: 10,
@@ -139,6 +142,8 @@ class MyAppState extends State<MyApp> with WindowListener {
             chipRadius: AppTheme.chipRadius,
             dialogRadius: AppTheme.dialogRadius,
             timePickerDialogRadius: AppTheme.timePickerDialogRadius,
+            popupMenuRadius: 8.0,
+            splashType: FlexSplashType.inkRipple,
           ),
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
         );
@@ -149,7 +154,6 @@ class MyAppState extends State<MyApp> with WindowListener {
           useMaterial3: themeController.useM3.value,
           textTheme: _buildTextTheme(textStyle, context),
           primary: curDarkThemeColor.primaryColor,
-          appBarBackground: curDarkThemeColor.appBarColor,
           scaffoldBackground: curDarkThemeColor.bodyColor,
           surface: curDarkThemeColor.cardColor,
           // BottomNavigationBar
@@ -157,7 +161,9 @@ class MyAppState extends State<MyApp> with WindowListener {
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 15,
           tabBarStyle: FlexTabBarStyle.forBackground,
+          appBarBackground: curDarkThemeColor.appBarColor,
           appBarStyle: FlexAppBarStyle.scaffoldBackground,
+          tooltipsMatchBackground: true,
           subThemesData: FlexSubThemesData(
             // true会导致AppBar的title字体有些大
             useTextTheme: false,
@@ -174,6 +180,8 @@ class MyAppState extends State<MyApp> with WindowListener {
             chipRadius: AppTheme.chipRadius,
             dialogRadius: AppTheme.dialogRadius,
             timePickerDialogRadius: AppTheme.timePickerDialogRadius,
+            popupMenuRadius: 8.0,
+            splashType: FlexSplashType.defaultSplash,
           ),
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
         );
@@ -184,6 +192,27 @@ class MyAppState extends State<MyApp> with WindowListener {
           hideFooterWhenNotFull: true,
           child: MaterialApp(
             themeMode: themeController.getThemeMode(),
+            // theme: ThemeData.light().copyWith(
+            //   dialogTheme: DialogTheme(
+            //       shape: RoundedRectangleBorder(
+            //           borderRadius:
+            //               BorderRadius.circular(AppTheme.dialogRadius))),
+            //   appBarTheme: AppBarTheme(
+            //     backgroundColor: curLightThemeColor.appBarColor,
+            //     foregroundColor: Colors.black,
+            //     elevation: 0,
+            //   ),
+            //   cardTheme: CardTheme(
+            //     elevation: 0,
+            //     shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
+            //   ),
+            //   outlinedButtonTheme: OutlinedButtonThemeData(
+            //     style: ButtonStyle(
+            //         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(99)))),
+            //   ),
+            // ),
             theme: light.copyWith(
               scrollbarTheme: _buildScrollbarThemeData(context, isDark: false),
               // 使用Theme.of(context).cardTheme会丢失FlexThemeData.light的圆角
@@ -204,29 +233,54 @@ class MyAppState extends State<MyApp> with WindowListener {
                       .pageSwitchAnimation.value.pageTransitionsBuilder,
                 },
               ),
+              floatingActionButtonTheme: FloatingActionButtonThemeData(
+                backgroundColor: light.primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              listTileTheme: ListTileThemeData(
+                // iconColor: light.iconTheme.color?.withOpacity(0.6),
+                iconColor: light.hintColor,
+                titleTextStyle: light.textTheme.bodyMedium,
+                subtitleTextStyle: light.textTheme.bodySmall,
+              ),
+              // 202308052321
+              appBarTheme: light.appBarTheme.copyWith(
+                systemOverlayStyle: const SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.dark,
+                ),
+              ),
             ),
             darkTheme: dark.copyWith(
-              scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
-              cardTheme: dark.cardTheme.copyWith(
-                margin: themeController.useCardStyle.value
-                    ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
-                    : const EdgeInsets.only(top: 10),
-                elevation: 0,
-              ),
-              // 路由动画
-              pageTransitionsTheme: PageTransitionsTheme(
-                builders: <TargetPlatform, PageTransitionsBuilder>{
-                  TargetPlatform.android: themeController
-                      .pageSwitchAnimation.value.pageTransitionsBuilder,
-                  TargetPlatform.windows: themeController
-                      .pageSwitchAnimation.value.pageTransitionsBuilder,
-                },
-              ),
-            ),
+                scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
+                cardTheme: dark.cardTheme.copyWith(
+                  margin: themeController.useCardStyle.value
+                      ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
+                      : const EdgeInsets.only(top: 10),
+                  elevation: 0,
+                ),
+                // 路由动画
+                pageTransitionsTheme: PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                    TargetPlatform.windows: themeController
+                        .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  },
+                ),
+                floatingActionButtonTheme: FloatingActionButtonThemeData(
+                  backgroundColor: dark.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                listTileTheme: ListTileThemeData(
+                  // iconColor: dark.iconTheme.color?.withOpacity(0.6),
+                  iconColor: dark.hintColor,
+                )),
             builder: (context, child) {
               child = BotToastInit()(context, child);
               // 全局点击空白处隐藏软键盘
               child = Scaffold(
+                resizeToAvoidBottomInset: false,
                 body: GestureDetector(
                   onTap: () {
                     FocusScopeNode currentFocus = FocusScope.of(context);
@@ -270,25 +324,25 @@ class MyAppState extends State<MyApp> with WindowListener {
   TextTheme _buildTextTheme(TextStyle textStyle, BuildContext context) {
     return TextTheme(
       // ListTile标题
-      subtitle1: textStyle.copyWith(
-          fontSize: Theme.of(context).textTheme.subtitle2?.fontSize),
+      // titleMedium: textStyle.copyWith(
+      //     fontSize: Theme.of(context).textTheme.titleSmall?.fontSize),
       // 按钮里的文字
-      button: textStyle,
+      labelLarge: textStyle,
       // 底部tab，ListTile副标题
-      bodyText2: textStyle,
+      bodyMedium: textStyle,
       // Text
-      bodyText1: textStyle,
+      bodyLarge: textStyle,
       // AppBar里的title
-      headline6: textStyle,
+      titleLarge: textStyle,
       // 未知
-      subtitle2: textStyle,
-      overline: textStyle,
-      caption: textStyle,
-      headline1: textStyle,
-      headline2: textStyle,
-      headline3: textStyle,
-      headline4: textStyle,
-      headline5: textStyle,
+      titleSmall: textStyle,
+      labelSmall: textStyle,
+      bodySmall: textStyle,
+      displayLarge: textStyle,
+      displayMedium: textStyle,
+      displaySmall: textStyle,
+      headlineMedium: textStyle,
+      headlineSmall: textStyle,
     );
   }
 }

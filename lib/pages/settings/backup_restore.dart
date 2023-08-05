@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
@@ -22,6 +23,9 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 
 class BackupAndRestorePage extends StatefulWidget {
   const BackupAndRestorePage({
@@ -66,49 +70,50 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               title: const Text("备份还原"),
               automaticallyImplyLeading: widget.fromHome ? false : true,
             ),
-      body: widget.fromHome
-          ? ListView(
-              children: [
-                _buildRemoteBackUp(),
-              ],
-            )
-          : ListView(
-              children: [
-                _buildClearAnimeDescTile(),
-                ListTile(
-                  title: const Text("撤销还原"),
-                  subtitle: const Text("点击查看还原前的记录"),
-                  onTap: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) => const RBRPage());
-                  },
-                  trailing: IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("帮助"),
-                          content: Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
-                              "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。\n"
-                              "注：最多会存放${BackupUtil.rbrMaxCnt}份，超出时会删除旧的。"),
-                          actions: [
-                            TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text("我已了解"))
-                          ],
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.help_outline),
-                  ),
-                ),
-                const Divider(),
-                _buildLocalBackup(),
-                const Divider(),
-                _buildRemoteBackUp(),
-              ],
-            ),
+      body: DividerScaffoldBody(
+          child: widget.fromHome
+              ? ListView(
+                  children: [
+                    _buildRemoteBackUp(),
+                  ],
+                )
+              : ListView(
+                  children: [
+                    _buildClearAnimeDescTile(),
+                    ListTile(
+                      title: const Text("撤销还原"),
+                      subtitle: const Text("点击查看还原前的记录"),
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) => const RBRPage());
+                      },
+                      trailing: IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("帮助"),
+                              content: Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
+                                  "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。\n"
+                                  "注：最多会存放${BackupUtil.rbrMaxCnt}份，超出时会删除旧的。"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("我已了解"))
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.help_outline),
+                      ),
+                    ),
+                    const CommonDivider(),
+                    _buildLocalBackup(),
+                    const CommonDivider(),
+                    _buildRemoteBackUp(),
+                  ],
+                )),
     );
   }
 
@@ -161,11 +166,10 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   _buildRemoteBackUp() {
     return Column(
       children: [
+        const SettingTitle(title: 'WebDav备份'),
         ListTile(
-          title: Text("WebDav备份",
-              style: TextStyle(color: Theme.of(context).primaryColor)),
-          // trailing: IconButton(onPressed: () {}, icon: Icon(Icons.)),
-          subtitle: const Text("点击查看教程"),
+          title: const Text("查看教程"),
+          trailing: const Icon(EvaIcons.externalLink),
           onTap: () {
             LaunchUrlUtil.launch(
                 context: context,
@@ -339,12 +343,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
   _buildLocalBackup() {
     return Column(
       children: [
-        ListTile(
-          title: Text(
-            "本地备份",
-            style: TextStyle(color: Theme.of(context).primaryColor),
-          ),
-        ),
+        const SettingTitle(title: '本地备份'),
         if (Platform.isAndroid)
           ListTile(
             title: const Text("立即备份"),

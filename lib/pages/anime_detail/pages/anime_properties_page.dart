@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimePropertiesPage({required this.animeController, Key? key})
@@ -184,7 +184,7 @@ class AnimePropertiesPage extends StatelessWidget {
                     if (value == null) return;
 
                     Navigator.pop(context);
-                    anime.category = value as String;
+                    anime.category = value;
                     animeController.updateAnimeInfo();
                     AnimeDao.updateCategory(anime.animeId, value);
                   },
@@ -208,7 +208,7 @@ class AnimePropertiesPage extends StatelessWidget {
                     if (value == null) return;
 
                     Navigator.pop(context);
-                    anime.area = value as String;
+                    anime.area = value;
                     animeController.updateAnimeInfo();
                     AnimeDao.updateArea(anime.animeId, value);
                   },
@@ -232,7 +232,8 @@ class AnimePropertiesPage extends StatelessWidget {
           title: Row(
             children: [
               Text("$title "),
-              if (onPressed != null) const Icon(EvaIcons.editOutline, size: 18)
+              if (onPressed != null)
+                const Icon(MingCuteIcons.mgc_edit_3_line, size: 14)
             ],
           ),
           subtitle: GestureDetector(
@@ -244,7 +245,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   onPressed: () {
                     LaunchUrlUtil.launch(context: context, uriStr: content);
                   },
-                  icon: const Icon(Icons.open_in_new))
+                  icon: const Icon(MingCuteIcons.mgc_external_link_line))
               : null,
         )
       ],

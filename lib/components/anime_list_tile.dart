@@ -30,18 +30,19 @@ class AnimeListTile extends StatelessWidget {
       isThreeLine: isThreeLine,
       title: Text(
         anime.animeName,
-        maxLines: 2,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: () {
-        double textScaleFactor = AppTheme.tinyScaleFactor;
         switch (animeTileSubTitle) {
           case AnimeTileSubTitle.nameAnother:
             return anime.nameAnother.isNotEmpty
-                ? Text(anime.nameAnother,
-                    textScaleFactor: textScaleFactor,
+                ? Text(
+                    anime.nameAnother,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis)
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  )
                 : null;
           case AnimeTileSubTitle.twoLinesOfInfo:
             return Column(
@@ -49,11 +50,11 @@ class AnimeListTile extends StatelessWidget {
               children: [
                 Text(
                   anime.getAnimeInfoFirstLine(),
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Text(
                   anime.getAnimeInfoSecondLine(),
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 )
               ],
             );
@@ -72,8 +73,10 @@ class AnimeListTile extends StatelessWidget {
               onlyShowCover: true,
             ),
       trailing: showTrailingProgress
-          ? Text("${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-              textScaleFactor: 0.9)
+          ? Text(
+              "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+              style: Theme.of(context).textTheme.bodySmall,
+            )
           : null,
       onTap: () {
         if (onTap != null) {
