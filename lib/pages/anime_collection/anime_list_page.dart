@@ -21,6 +21,8 @@ import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
+import '../../widgets/empty_default_page.dart';
+
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
 
@@ -249,32 +251,15 @@ class _AnimeListPageState extends State<AnimeListPage> {
         checklistIdx < _scrollControllers.length;
         ++checklistIdx) {
       if (animeCntPerTag[checklistIdx] == 0) {
-        list.add(Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                '这个清单还没有动漫',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '快来添加你的第一个动漫吧！',
-                style:
-                    TextStyle(fontSize: 16, color: Theme.of(context).hintColor),
-              ),
-              const SizedBox(height: 15),
-              OutlinedButton(
-                  onPressed: () {
-                    // 跳转到探索页，而不是直接打开聚合搜索页，否则添加后，返回到清单页没有实时变化
-                    // MainScreenLogic.to.openSearchPage(context);
-                    MainScreenLogic.to.toSearchTabPage();
-                  },
-                  child: const Text('搜索')),
-            ],
-          ),
+        list.add(EmptyDefaultPage(
+          title: '这个清单还没有动漫',
+          subtitle: '快来添加你的第一个动漫吧！',
+          buttonText: '搜索',
+          onPressed: () {
+            // 跳转到探索页，而不是直接打开聚合搜索页，否则添加后，返回到清单页没有实时变化
+            // MainScreenLogic.to.openSearchPage(context);
+            MainScreenLogic.to.toSearchTabPage();
+          },
         ));
         continue;
       }

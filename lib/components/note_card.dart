@@ -125,13 +125,20 @@ class _NoteCardState extends State<NoteCard> {
   }
 
   _buildNoteContent(Note note) {
-    if (note.noteContent.isEmpty) return Container();
+    // 笔记内容为空，但有图片，则不显示笔记内容
+    if (note.noteContent.isEmpty && note.relativeLocalImages.isNotEmpty) {
+      return Container();
+    }
+
     return Container(
       alignment: Alignment.centerLeft,
       // 左填充15，这样就和图片对齐了
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 10),
       child: Text(
-        note.noteContent,
+        // 笔记内容为空，而且没有图片，那么提示空笔记
+        note.noteContent.isEmpty && note.relativeLocalImages.isEmpty
+            ? '什么都没有写'
+            : note.noteContent,
         maxLines: 10,
         overflow: TextOverflow.ellipsis,
         style: AppTheme.noteStyle,
@@ -191,8 +198,8 @@ class _NoteCardState extends State<NoteCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("删除"),
-          content: const Text("确定删除笔记吗？"),
+          title: const Text("确定要删除吗？"),
+          content: const Text("删除的笔记将无法找回"),
           actions: [
             TextButton(
               onPressed: () {
@@ -213,7 +220,7 @@ class _NoteCardState extends State<NoteCard> {
                 }
               },
               child: Text(
-                "确定",
+                "删除",
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             )

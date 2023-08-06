@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -7,6 +6,9 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/empty_default_page.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {
@@ -56,16 +58,23 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("动漫评价")),
-      body: noteOk
-          ? notes.isNotEmpty
-              ? _buildRateNoteList()
-              : emptyDataHint(msg: "没有评价。")
-          : loadingWidget(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _createRateNote(),
-        backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(Icons.edit, color: Colors.white),
-      ),
+      body: DividerScaffoldBody(
+          child: noteOk
+              ? notes.isNotEmpty
+                  ? _buildRateNoteList()
+                  : EmptyDefaultPage(
+                      title: '你还没有评价过',
+                      buttonText: '写一条评价',
+                      onPressed: () => _createRateNote())
+              : loadingWidget(context)),
+      floatingActionButton: notes.isNotEmpty
+          ? FloatingActionButton(
+              onPressed: () => _createRateNote(),
+              backgroundColor: Theme.of(context).primaryColor,
+              child:
+                  const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
+            )
+          : null,
     );
   }
 
@@ -104,6 +113,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
                 });
               },
               isRateNote: true,
+              showAnimeTile: true,
             );
           }),
     );
