@@ -10,7 +10,7 @@ class CommonImage extends StatelessWidget {
   const CommonImage(this.url,
       {this.showIconWhenUrlIsEmptyOrError = true,
       this.reduceMemCache = true,
-      this.memCacheWidth = 400,
+      this.memCacheWidth = 600,
       Key? key})
       : super(key: key);
   final String url;

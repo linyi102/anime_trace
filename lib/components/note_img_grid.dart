@@ -13,6 +13,12 @@ class NoteImgGrid extends StatelessWidget {
   const NoteImgGrid({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
+  get crossAxisSpacing => 2.0;
+  get mainAxisSpacing => 2.0;
+  get enableTwitterStyle => false;
+  // 是否开启显示所有图片配置
+  get enableShowAllNoteGridImage => false;
+
   @override
   Widget build(BuildContext context) {
     // 没有图片则直接返回
@@ -22,20 +28,89 @@ class NoteImgGrid extends StatelessWidget {
 
     // 构建网格图片
     return Responsive(
-        mobile: _buildGridView(columnCnt: 3, maxDisplayCount: 9),
-        tablet: _buildGridView(columnCnt: 5, maxDisplayCount: 10),
-        desktop: _buildGridView(columnCnt: 6, maxDisplayCount: 12));
+        mobile: _buildView(columnCnt: 3, maxDisplayCount: 9),
+        tablet: _buildView(columnCnt: 5, maxDisplayCount: 10),
+        desktop: _buildView(columnCnt: 6, maxDisplayCount: 12));
   }
 
-  GridView _buildGridView({int columnCnt = 3, int maxDisplayCount = 9}) {
-    double crossAxisSpacing = 4;
-    double mainAxisSpacing = 4;
-    double childAspectRatio = 1;
+  _buildView({int columnCnt = 3, int maxDisplayCount = 9}) {
+    late Widget twitterGrid;
+    if (enableTwitterStyle) {
+      double childAspectRatio = 4 / 3;
 
+      if (relativeLocalImages.length <= 2) {
+        columnCnt = relativeLocalImages.length;
+      }
+
+      if (relativeLocalImages.length >= 4) {
+        columnCnt = 2;
+        maxDisplayCount = 4;
+      }
+
+      twitterGrid = _buildCommonGrid(
+        columnCnt: columnCnt,
+        maxDisplayCount: maxDisplayCount,
+        childAspectRatio: childAspectRatio,
+      );
+
+      if (relativeLocalImages.length == 3) {
+        // 左边上下两张，右边一张
+        twitterGrid = Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  NoteImgItem(
+                    twitterStyle: true,
+                    aspectRatio: childAspectRatio,
+                    relativeLocalImages: relativeLocalImages,
+                    initialIndex: 0,
+                  ),
+                  SizedBox(height: mainAxisSpacing),
+                  NoteImgItem(
+                    twitterStyle: true,
+                    aspectRatio: childAspectRatio,
+                    relativeLocalImages: relativeLocalImages,
+                    initialIndex: 1,
+                  )
+                ],
+              ),
+            ),
+            SizedBox(width: crossAxisSpacing),
+            Expanded(
+                child: NoteImgItem(
+              twitterStyle: true,
+              aspectRatio: 4 / (3 * 2),
+              relativeLocalImages: relativeLocalImages,
+              initialIndex: 2,
+            ))
+          ],
+        );
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
+      child: ClipRRect(
+        borderRadius:
+            enableTwitterStyle ? BorderRadius.circular(12) : BorderRadius.zero,
+        child: enableTwitterStyle
+            ? twitterGrid
+            : _buildCommonGrid(
+                columnCnt: columnCnt, maxDisplayCount: maxDisplayCount),
+      ),
+    );
+  }
+
+  _buildCommonGrid({
+    required int columnCnt,
+    required int maxDisplayCount,
+    double childAspectRatio = 1,
+  }) {
     bool showAllNoteGridImage = SpProfile.getShowAllNoteGridImage();
+    if (!enableShowAllNoteGridImage) showAllNoteGridImage = false;
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
       // ListView嵌套GridView
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -52,6 +127,8 @@ class NoteImgGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         // Log.info("$runtimeType: index=$index");
         return NoteImgItem(
+            twitterStyle: enableTwitterStyle,
+            aspectRatio: childAspectRatio,
             relativeLocalImages: relativeLocalImages,
             initialIndex: index,
             imageRemainCount: showAllNoteGridImage

@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/values/theme.dart';
 
 // 网格的单个笔记图片构建
 // 使用：笔记列表页
@@ -12,10 +13,14 @@ class NoteImgItem extends StatelessWidget {
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
+  final bool twitterStyle;
+  final double aspectRatio;
   const NoteImgItem(
       {required this.relativeLocalImages,
       this.initialIndex = 0,
       this.imageRemainCount = 0,
+      this.aspectRatio = 4 / 3,
+      this.twitterStyle = false,
       Key? key})
       : super(key: key);
 
@@ -23,9 +28,10 @@ class NoteImgItem extends StatelessWidget {
   Widget build(BuildContext context) {
     String relativeImagePath = relativeLocalImages[initialIndex].path;
 
-    return MaterialButton(
-      padding: const EdgeInsets.all(0),
-      onPressed: () {
+    return InkWell(
+      // 避免穿透到卡片笔记长按效果
+      onLongPress: () {},
+      onTap: () {
         Navigator.push(context, MaterialPageRoute(
             // transitionDuration: Duration.zero,
             // reverseTransitionDuration: Duration.zero,
@@ -44,15 +50,10 @@ class NoteImgItem extends StatelessWidget {
         });
       },
       child: Stack(children: [
-        // 正方形
         AspectRatio(
-          aspectRatio: 1,
+          aspectRatio: twitterStyle ? aspectRatio : 1,
           // 圆角
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: CommonImage(
-                ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
-          ),
+          child: _buildImage(relativeImagePath),
         ),
         imageRemainCount > 0
             ? Container(
@@ -66,6 +67,15 @@ class NoteImgItem extends StatelessWidget {
               )
             : Container()
       ]),
+    );
+  }
+
+  _buildImage(String relativeImagePath) {
+    return ClipRRect(
+      borderRadius: twitterStyle
+          ? BorderRadius.zero
+          : BorderRadius.circular(AppTheme.imgRadius),
+      child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
     );
   }
 }
