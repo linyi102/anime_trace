@@ -58,29 +58,31 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   _generateInputDecoration(BuildContext context) {
     return InputDecoration(
-        prefixIcon: useModernStyle ? const Icon(Icons.search) : null,
-        contentPadding: useModernStyle ? const EdgeInsets.all(0) : null,
-        filled: useModernStyle ? true : false,
-        focusedBorder: useModernStyle
-            ? const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-              )
-            // 隐藏下划线
-            : const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-        enabledBorder: useModernStyle
-            ? const OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.transparent,
-                  // color: Theme.of(context).dividerColor,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-              )
-            : null,
-        hintText: hintText,
-        border: InputBorder.none,
-        suffixIcon: ClearButton(onTapClear: onTapClear));
+      prefixIcon: useModernStyle ? const Icon(Icons.search) : null,
+      contentPadding: useModernStyle ? const EdgeInsets.all(0) : null,
+      filled: useModernStyle ? true : false,
+      focusedBorder: useModernStyle
+          ? const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.transparent),
+              borderRadius: BorderRadius.all(Radius.circular(100)),
+            )
+          // 隐藏下划线
+          : const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.transparent)),
+      enabledBorder: useModernStyle
+          ? const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.transparent,
+                // color: Theme.of(context).dividerColor,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(100)),
+            )
+          : null,
+      hintText: hintText,
+      border: InputBorder.none,
+      suffixIcon: ClearButton(onTapClear: onTapClear),
+      suffixIconColor: Theme.of(context).hintColor,
+    );
   }
 
   _buildCancelButton(BuildContext context) {

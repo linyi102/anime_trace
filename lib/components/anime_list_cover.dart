@@ -45,17 +45,22 @@ class AnimeListCover extends StatelessWidget {
                   right: 0,
                   top: 0,
                   child: Container(
+                    height: circular ? 15 : null,
+                    width: circular ? 15 : null,
                     padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppTheme.stateRadius),
+                      borderRadius: BorderRadius.circular(
+                          circular ? 99 : AppTheme.stateRadius),
                       color: AppTheme.reviewNumberBg,
                     ),
-                    child: Text(
-                      "$reviewNumber",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppTheme.reviewNumberFg),
+                    child: Center(
+                      child: Text(
+                        "$reviewNumber",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: AppTheme.reviewNumberFg),
+                      ),
                     ),
                   ),
                 )

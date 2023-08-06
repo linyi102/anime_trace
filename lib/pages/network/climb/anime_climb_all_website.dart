@@ -12,6 +12,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 
 import '../../../dao/anime_dao.dart';
 
@@ -64,6 +65,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   }
 
   _climbAnime({String keyword = ""}) async {
+    if (keyword.isEmpty) return;
     FocusScope.of(context).requestFocus(blankFocusNode);
     // 先全部清除数据
     for (var climbWebsite in climbWebsites) {
@@ -166,7 +168,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildSearchAppBar(),
-      body: RefreshIndicator(
+      body: DividerScaffoldBody(
+          child: RefreshIndicator(
         onRefresh: () async {
           _climbAnime(keyword: lastInputKeyword);
         },
@@ -181,7 +184,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
             const SizedBox(height: 50)
           ],
         ),
-      ),
+      )),
     );
   }
 
@@ -196,7 +199,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
             callback: () async {
               return true;
             },
-          )
+          ),
       ],
     );
   }
@@ -220,6 +223,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         // 搜索源行+搜索结果
         return Column(
           children: [
+            // const CommonDivider(),
             // 搜索源行
             ListTile(
               title: Text(webstie.name),

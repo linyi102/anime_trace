@@ -4,8 +4,10 @@ class SettingTitle extends StatelessWidget {
   const SettingTitle({
     super.key,
     required this.title,
+    this.trailing,
   });
   final String title;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,7 @@ class SettingTitle extends StatelessWidget {
 
     return ListTile(
       title: Text(title, style: titleStyle),
+      trailing: trailing,
     );
   }
 }

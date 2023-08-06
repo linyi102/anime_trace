@@ -17,6 +17,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -217,11 +218,14 @@ class _AggregatePageState extends State<AggregatePage> {
   }
 
   _buildCardTitle(String title, {Widget? trailing}) {
-    return ListTile(
-      dense: true,
-      title: Text(title, style: const TextStyle(fontSize: 16)),
+    return SettingTitle(
+      title: title,
       trailing: trailing,
     );
+    // return ListTile(
+    //   title: Text(title, style: const TextStyle(fontSize: 16)),
+    //   trailing: trailing,
+    // );
   }
 
   _buildClimbWebsiteGridCard() {

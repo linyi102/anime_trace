@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
 
 /// 搜索已添加的动漫
@@ -91,7 +92,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
     return Scaffold(
       appBar: showSearchBar ? _buildSearchBar(inputController) : AppBar(),
-      body: CustomScrollView(
+      body: DividerScaffoldBody(
+          child: CustomScrollView(
         controller: _scrollController,
         slivers: [
           if (showLabelPage)
@@ -122,7 +124,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
               child: _buildNetworkSearchHint(context),
             )
         ],
-      ),
+      )),
     );
   }
 

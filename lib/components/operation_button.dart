@@ -6,11 +6,13 @@ class OperationButton extends StatelessWidget {
       this.onTap,
       this.active = true,
       this.horizontal = 30,
+      this.height = 60,
       super.key});
   final void Function()? onTap;
   final String text;
   final bool active;
   final double horizontal;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class OperationButton extends StatelessWidget {
     var borderRadius = BorderRadius.circular(50);
 
     return SizedBox(
-      height: 60,
+      height: height,
       child: AspectRatio(
         aspectRatio: 6,
         child: Container(

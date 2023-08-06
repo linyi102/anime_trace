@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
+import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/update_record_dao.dart';
@@ -11,18 +12,20 @@ import 'package:flutter_test_future/pages/network/update/need_update_anime_list.
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
+import '../../../components/anime_item_auto_load.dart';
+
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
   final scrollController = ScrollController();
+  UpdateRecordController get updateRecordController => Get.find();
 
   @override
   Widget build(BuildContext context) {
-    final UpdateRecordController updateRecordController = Get.find();
-
     return Scaffold(
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: Obx(
@@ -80,21 +83,14 @@ class UpdateRecordPage extends StatelessWidget {
 
             return Column(
               children: [
-                ListTile(
-                  title: Text(
-                    TimeUtil.getHumanReadableDateTimeStr(
-                      date,
-                      showTime: false,
-                      showDayOfWeek: true,
-                      chineseDelimiter: true,
-                    ),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  // trailing: Text(
-                  //   "${map[date]!.length}个动漫",
-                  //   style: Theme.of(context).textTheme.bodySmall,
-                  // ),
-                ),
+                SettingTitle(
+                    title: TimeUtil.getHumanReadableDateTimeStr(
+                  date,
+                  showTime: false,
+                  showDayOfWeek: true,
+                  chineseDelimiter: true,
+                  removeLeadingZero: true,
+                )),
                 Column(children: _buildRecords(context, map[date]!)),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5),
@@ -106,32 +102,47 @@ class UpdateRecordPage extends StatelessWidget {
 
   _buildRecords(context, List<UpdateRecordVo> records) {
     List<Widget> recordsWidget = [];
-    for (var record in records) {
-      recordsWidget.add(ListTile(
-        leading: AnimeListCover(record.anime),
-        subtitle: Text(
+    for (var i = 0; i < records.length; ++i) {
+      var record = records[i];
+      recordsWidget.add(AnimeItemAutoLoad(
+        anime: record.anime,
+        style: AnimeItemStyle.list,
+        subtitles: [
           "更新至${record.newEpisodeCnt}集",
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        title: Text(
-          record.anime.animeName,
-          // textScaleFactor: AppTheme.smallScaleFactor,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) {
-              return AnimeDetailPage(record.anime);
-            },
-          ));
+        ],
+        onChanged: (newAnime) {
+          records[i].anime = newAnime;
+          updateRecordController.update();
         },
         onLongPress: () {
-          // 提供删除操作
           _showDialogAboutRecordItem(context, record, records);
         },
       ));
+      // recordsWidget.add(ListTile(
+      //   leading: AnimeListCover(record.anime),
+      //   subtitle: Text(
+      //     "更新至${record.newEpisodeCnt}集",
+      //     style: Theme.of(context).textTheme.bodySmall,
+      //   ),
+      //   title: Text(
+      //     record.anime.animeName,
+      //     // textScaleFactor: AppTheme.smallScaleFactor,
+      //     maxLines: 1,
+      //     overflow: TextOverflow.ellipsis,
+      //   ),
+      //   // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
+      //   onTap: () {
+      //     Navigator.of(context).push(MaterialPageRoute(
+      //       builder: (context) {
+      //         return AnimeDetailPage(record.anime);
+      //       },
+      //     ));
+      //   },
+      //   onLongPress: () {
+      //     // 提供删除操作
+      //     _showDialogAboutRecordItem(context, record, records);
+      //   },
+      // ));
     }
     return recordsWidget;
   }
@@ -191,7 +202,6 @@ class UpdateRecordPage extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                Log.info("进入页面");
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return const NeedUpdateAnimeList();
@@ -199,14 +209,17 @@ class UpdateRecordPage extends StatelessWidget {
               },
               child: Container(
                 color: Colors.transparent,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(child: Container()),
-                    Text("更新进度：$updateOkCnt/$needUpdateCnt"),
-                    Text("查看未完结动漫",
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      "更新进度 $updateOkCnt/$needUpdateCnt",
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
                     Expanded(child: Container()),
                   ],
                 ),

@@ -45,7 +45,12 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
   @override
   Widget build(BuildContext context) {
     if (widget.animes.isEmpty) {
-      return const Center(child: Text("没有找到。"));
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: const Row(
+          children: [Text("没有找到。")],
+        ),
+      );
     }
     final AnimeDisplayController animeDisplayController = Get.find();
     double height = _coverHeight;
@@ -64,7 +69,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-      height: height, // 设置高度
+      height: height + 10, // 设置高度
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: widget.animes.length,

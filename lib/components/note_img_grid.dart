@@ -35,7 +35,7 @@ class NoteImgGrid extends StatelessWidget {
     bool showAllNoteGridImage = SpProfile.getShowAllNoteGridImage();
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
       // ListView嵌套GridView
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

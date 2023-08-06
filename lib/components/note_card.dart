@@ -35,6 +35,8 @@ class NoteCard extends StatefulWidget {
 }
 
 class _NoteCardState extends State<NoteCard> {
+  get enableLeftGap => false;
+
   @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
@@ -42,14 +44,23 @@ class _NoteCardState extends State<NoteCard> {
 
     return InkWell(
       onTap: () => _enterNoteEditPage(note),
+      onLongPress: () => _showMoreDialog(note),
       child: Column(
         children: [
           if (widget.showAnimeTile) _buildAnimeListTile(note),
-          // 笔记内容
-          _buildNoteContent(note),
-          // 笔记图片
-          NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-          if (note.relativeLocalImages.isEmpty) const SizedBox(height: 10),
+          Container(
+            padding: enableLeftGap ? const EdgeInsets.only(left: 55) : null,
+            child: Column(
+              children: [
+                // 笔记内容
+                _buildNoteContent(note),
+                // 笔记图片
+                NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
+                if (note.relativeLocalImages.isEmpty)
+                  const SizedBox(height: 10),
+              ],
+            ),
+          ),
           const CommonDivider()
         ],
       ),
@@ -79,12 +90,14 @@ class _NoteCardState extends State<NoteCard> {
     rateTimeStr = rateTimeStr.isEmpty ? "" : rateTimeStr;
 
     return ListTile(
+      minLeadingWidth: 0,
       leading: GestureDetector(
         onTap: _enterAnimeDetailPage,
         child: AnimeListCover(
           note.anime,
           showReviewNumber: true,
           reviewNumber: note.episode.reviewNumber,
+          // 圆形和观看次数不合适
           circular: false,
         ),
       ),
@@ -133,7 +146,7 @@ class _NoteCardState extends State<NoteCard> {
     return Container(
       alignment: Alignment.centerLeft,
       // 左填充15，这样就和图片对齐了
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 10),
+      padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
       child: Text(
         // 笔记内容为空，而且没有图片，那么提示空笔记
         note.noteContent.isEmpty && note.relativeLocalImages.isEmpty
@@ -155,42 +168,44 @@ class _NoteCardState extends State<NoteCard> {
         Icons.more_horiz,
         size: 18,
       ),
-      onPressed: () {
-        showDialog(
-            context: context,
-            builder: (dialogContext) {
-              return SimpleDialog(
-                children: [
-                  ListTile(
-                    leading: const Icon(MingCuteIcons.mgc_edit_line),
-                    title: const Text("编辑"),
-                    onTap: () {
-                      Navigator.pop(dialogContext);
-                      _enterNoteEditPage(note);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(MingCuteIcons.mgc_copy_fill),
-                    title: const Text("复制内容"),
-                    onTap: () {
-                      CommonUtil.copyContent(note.noteContent);
-                      Navigator.pop(dialogContext);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(MingCuteIcons.mgc_delete_2_fill),
-                    title: const Text("删除笔记"),
-                    onTap: () {
-                      Navigator.pop(dialogContext);
-
-                      _dialogDeleteConfirm(note);
-                    },
-                  )
-                ],
-              );
-            });
-      },
+      onPressed: () => _showMoreDialog(note),
     );
+  }
+
+  Future<dynamic> _showMoreDialog(Note note) {
+    return showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return SimpleDialog(
+            children: [
+              ListTile(
+                leading: const Icon(MingCuteIcons.mgc_edit_line),
+                title: const Text("编辑"),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _enterNoteEditPage(note);
+                },
+              ),
+              ListTile(
+                leading: const Icon(MingCuteIcons.mgc_copy_fill),
+                title: const Text("复制内容"),
+                onTap: () {
+                  CommonUtil.copyContent(note.noteContent);
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              ListTile(
+                leading: const Icon(MingCuteIcons.mgc_delete_2_fill),
+                title: const Text("删除笔记"),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+
+                  _dialogDeleteConfirm(note);
+                },
+              )
+            ],
+          );
+        });
   }
 
   _dialogDeleteConfirm(Note note) async {

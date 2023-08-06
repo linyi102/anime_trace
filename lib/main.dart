@@ -238,7 +238,6 @@ class MyAppState extends State<MyApp> with WindowListener {
                 foregroundColor: Colors.white,
               ),
               listTileTheme: ListTileThemeData(
-                // iconColor: light.iconTheme.color?.withOpacity(0.6),
                 iconColor: light.hintColor,
                 titleTextStyle: light.textTheme.bodyMedium,
                 subtitleTextStyle: light.textTheme.bodySmall,
@@ -252,30 +251,32 @@ class MyAppState extends State<MyApp> with WindowListener {
               ),
             ),
             darkTheme: dark.copyWith(
-                scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
-                cardTheme: dark.cardTheme.copyWith(
-                  margin: themeController.useCardStyle.value
-                      ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
-                      : const EdgeInsets.only(top: 10),
-                  elevation: 0,
-                ),
-                // 路由动画
-                pageTransitionsTheme: PageTransitionsTheme(
-                  builders: <TargetPlatform, PageTransitionsBuilder>{
-                    TargetPlatform.android: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                    TargetPlatform.windows: themeController
-                        .pageSwitchAnimation.value.pageTransitionsBuilder,
-                  },
-                ),
-                floatingActionButtonTheme: FloatingActionButtonThemeData(
-                  backgroundColor: dark.primaryColor,
-                  foregroundColor: Colors.white,
-                ),
-                listTileTheme: ListTileThemeData(
-                  // iconColor: dark.iconTheme.color?.withOpacity(0.6),
-                  iconColor: dark.hintColor,
-                )),
+              scrollbarTheme: _buildScrollbarThemeData(context, isDark: true),
+              cardTheme: dark.cardTheme.copyWith(
+                margin: themeController.useCardStyle.value
+                    ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
+                    : const EdgeInsets.only(top: 10),
+                elevation: 0,
+              ),
+              // 路由动画
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: <TargetPlatform, PageTransitionsBuilder>{
+                  TargetPlatform.android: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                  TargetPlatform.windows: themeController
+                      .pageSwitchAnimation.value.pageTransitionsBuilder,
+                },
+              ),
+              floatingActionButtonTheme: FloatingActionButtonThemeData(
+                backgroundColor: dark.primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              listTileTheme: ListTileThemeData(
+                iconColor: dark.hintColor,
+                titleTextStyle: dark.textTheme.bodyMedium,
+                subtitleTextStyle: dark.textTheme.bodySmall,
+              ),
+            ),
             builder: (context, child) {
               child = BotToastInit()(context, child);
               // 全局点击空白处隐藏软键盘
@@ -312,20 +313,22 @@ class MyAppState extends State<MyApp> with WindowListener {
       {bool isDark = false}) {
     return ScrollbarThemeData(
       trackVisibility: MaterialStateProperty.all(true),
+      // 粗细
       thickness: MaterialStateProperty.all(5),
       interactive: true,
       radius: const Radius.circular(10),
+      // 避免紧挨屏幕边缘
+      crossAxisMargin: 4,
       thumbColor: MaterialStateProperty.all(
-        isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4),
+        isDark
+            ? Colors.white.withOpacity(0.4)
+            : const Color.fromRGBO(147, 147, 147, 1),
       ),
     );
   }
 
   TextTheme _buildTextTheme(TextStyle textStyle, BuildContext context) {
     return TextTheme(
-      // ListTile标题
-      // titleMedium: textStyle.copyWith(
-      //     fontSize: Theme.of(context).textTheme.titleSmall?.fontSize),
       // 按钮里的文字
       labelLarge: textStyle,
       // 底部tab，ListTile副标题

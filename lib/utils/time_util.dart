@@ -50,6 +50,7 @@ class TimeUtil {
     bool showDayOfWeek = false,
     String delimiter = "-",
     bool chineseDelimiter = false, // 如果为true，优先采用xxxx年xx月xx日，否则使用delimiter
+    bool removeLeadingZero = false,
   }) {
     if (time.isEmpty) return "";
 
@@ -63,6 +64,14 @@ class TimeUtil {
     String monthStr = dateTimeStr.substring(5, 7);
     String dayStr = dateTimeStr.substring(8, 10);
     String hourAndMinuteStr = dateTimeStr.substring(11, 16);
+
+    if (removeLeadingZero && monthStr.startsWith("0")) {
+      monthStr = monthStr.substring(1, monthStr.length);
+    }
+    if (removeLeadingZero && dayStr.startsWith("0")) {
+      dayStr = dayStr.substring(1, dayStr.length);
+    }
+
     if (chineseDelimiter) {
       delimiter = "";
       yearStr += "年";

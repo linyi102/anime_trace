@@ -15,6 +15,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
@@ -120,7 +121,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           animeNameController.clear();
         },
       ),
-      body: Column(
+      body: DividerScaffoldBody(
+          child: Column(
         children: [
           ListTile(
             title: Text(curWebsite.name),
@@ -146,7 +148,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                       child: Center(child: CircularProgressIndicator()))
                   : Container(),
         ],
-      ),
+      )),
     );
   }
 

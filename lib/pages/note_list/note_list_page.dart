@@ -62,7 +62,7 @@ class _NoteListPageState extends State<NoteListPage>
               title: _buildTabBar(),
               actions: [
                 _buildSearchIconButton(),
-                _buildImageSettingIconButton(),
+                // _buildImageSettingIconButton(),
               ],
               // bottom: _buildTabBar(),
             ),

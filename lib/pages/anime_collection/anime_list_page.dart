@@ -120,17 +120,20 @@ class _AnimeListPageState extends State<AnimeListPage> {
                 title: const Text("云端数据"),
                 automaticallyImplyLeading: false,
                 actions: [
-                  Center(
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const BackupAndRestorePage()));
-                        },
-                        child: const Text("进入完整页面")),
+                  Container(
+                    padding: const EdgeInsets.only(right: 5),
+                    child: Center(
+                      child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BackupAndRestorePage()));
+                          },
+                          child: const Text("显示全部")),
+                    ),
                   ),
                   // IconButton(
                   //     onPressed: () {}, icon: const Icon(Icons.chevron_right))

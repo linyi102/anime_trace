@@ -8,6 +8,8 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);
@@ -78,21 +80,23 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       appBar: AppBar(
         title: Text("未完结 ($cnt)"),
       ),
-      body: Scrollbar(
+      body: DividerScaffoldBody(
+          child: Scrollbar(
         controller: scrollController,
         child: FadeAnimatedSwitcher(
           destWidget:
               useCard ? _buildAnimeCardListView() : _buildAnimeTileListView(),
           loadOk: loadOk,
         ),
-      ),
+      )),
     );
   }
 
   ListView _buildAnimeCardListView() {
-    return ListView.builder(
+    return ListView.separated(
       controller: scrollController,
       itemCount: animes.length,
+      separatorBuilder: (context, index) => const CommonDivider(thinkness: 0),
       itemBuilder: (context, index) => AnimeItemAutoLoad(
         anime: animes[index],
         showProgress: false,

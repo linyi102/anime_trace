@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -92,6 +93,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       children: [
         if (!icc.showTip) _buildTabBar(),
         Expanded(child: _buildTabBarView(context)),
+        const CommonDivider(),
         _buildBottomBar(context)
       ],
     );
@@ -200,7 +202,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                       ),
                     ),
                   ),
-                  const Divider(),
+                  const CommonDivider(),
                   StatefulBuilder(
                     builder: (context, setState) => SwitchListTile(
                       title: const Text("若已收藏同名动漫，则跳过"),
@@ -272,7 +274,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                         : TextButton(
                             onPressed: () => icc.cancelQuickCollect(context),
                             child: const Text("取消"))
-                    : TextButton(
+                    : OutlinedButton(
                         onPressed: () =>
                             _showBottomSelectChecklist(context, curCollIdx),
                         child: const Text("收藏")),

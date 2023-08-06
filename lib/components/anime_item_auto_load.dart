@@ -20,6 +20,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
       this.showAnimeInfo = false,
       this.mixDb = true,
       this.climbDetail = true,
+      this.onLongPress,
       super.key});
   final Anime anime;
   final void Function(Anime newAnime) onChanged;
@@ -30,6 +31,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
   final bool showAnimeInfo; // 显示与动漫相关的两行信息
   final bool mixDb; // 如果数据库已收藏，则混入
   final bool climbDetail; // 爬取详细信息
+  final void Function()? onLongPress;
 
   @override
   State<AnimeItemAutoLoad> createState() => _AnimeItemAutoLoadState();
@@ -39,8 +41,8 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   late Anime anime;
   bool loading = true;
 
-  var itemHeight = 120.0;
-  var coverWidth = 80.0;
+  get itemHeight => 110.0;
+  get coverWidth => 70.0;
 
   @override
   void initState() {
@@ -108,6 +110,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
         height: itemHeight,
         child: InkWell(
           onTap: _enterDetailPage,
+          onLongPress: widget.onLongPress,
           child: Row(
             children: [
               // 封面
@@ -168,10 +171,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
       padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
       child: Text(
         name,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
@@ -183,13 +183,11 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
         ? Container()
         : Container(
             alignment: Alignment.topLeft,
-            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
             child: Text(
               info,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    height: 1.1,
-                    fontSize: 13,
-                  ),
+              style:
+                  TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
               overflow: TextOverflow.ellipsis,
               // textScaleFactor: AppTheme.smallScaleFactor,
             ),

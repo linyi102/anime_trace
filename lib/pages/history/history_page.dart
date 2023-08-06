@@ -12,6 +12,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -172,13 +173,8 @@ class _HistoryPageState extends State<HistoryPage> {
           return Column(
             children: [
               // 卡片标题
-              ListTile(
-                minLeadingWidth: 0,
-                title: Text(
-                  date.replaceAll("-", "/"),
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
+              SettingTitle(
+                title: date.replaceAll("-", "/"),
                 // trailing: Text(
                 //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
                 //   style: Theme.of(context).textTheme.bodySmall,

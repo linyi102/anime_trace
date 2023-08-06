@@ -99,9 +99,13 @@ class DedupPage extends StatelessWidget {
 
   _buildBottomBar(BuildContext context) {
     // 保留的含义不明确，如果有的同名动漫一个都没选，不应该都删除。因此只提供删除按钮
-    return OperationButton(
-      text: "删除选中动漫",
-      onTap: () => _showDialogDeleteSelectedAnimes(context),
+    return Container(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: OperationButton(
+        height: 70,
+        text: "删除选中动漫",
+        onTap: () => _showDialogDeleteSelectedAnimes(context),
+      ),
     );
   }
 
