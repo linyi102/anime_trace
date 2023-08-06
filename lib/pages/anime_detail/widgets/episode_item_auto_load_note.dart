@@ -695,7 +695,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 }
               },
               child: Text("删除",
-                  style: TextStyle(color: Theme.of(context).errorColor)),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
             )
           ],
         );

@@ -8,14 +8,21 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 
 import '../../../../components/website_logo.dart';
 
-class FavWebsiteListPage extends StatelessWidget {
-  FavWebsiteListPage({Key? key}) : super(key: key);
+class FavWebsiteListPage extends StatefulWidget {
+  const FavWebsiteListPage({Key? key}) : super(key: key);
+
+  @override
+  State<FavWebsiteListPage> createState() => _FavWebsiteListPageState();
+}
+
+class _FavWebsiteListPageState extends State<FavWebsiteListPage> {
   final List<FavWebsite> defaultList = [
     FavWebsite(
         url: "https://bgmlist.com/",
         icoUrl: "https://bgmlist.com/public/favicons/apple-touch-icon.png",
         name: "番组放送"),
   ];
+
   bool openWebInApp = SPUtil.getBool("openWebInApp", defaultValue: true);
 
   @override

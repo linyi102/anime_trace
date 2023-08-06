@@ -166,8 +166,8 @@ class _RBRPageState extends State<RBRPage> {
                 setState(() {});
               },
               child: Text(
-                "确定",
-                style: TextStyle(color: Theme.of(context).errorColor),
+                "删除",
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               )),
         ],
       ),

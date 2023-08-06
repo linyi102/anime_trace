@@ -144,7 +144,8 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                   },
                   child: Text(
                     "删除",
-                    style: TextStyle(color: Theme.of(context).errorColor),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
                   )),
             ],
           );

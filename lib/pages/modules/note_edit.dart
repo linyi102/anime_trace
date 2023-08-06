@@ -4,9 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
-
 import 'package:flutter_test_future/components/note_img_item.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
@@ -20,7 +18,6 @@ import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/responsive.dart';
-import 'package:flutter_test_future/components/anime_rating_bar.dart';
 
 import '../../utils/time_util.dart';
 

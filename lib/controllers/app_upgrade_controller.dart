@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_installer/app_installer.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/percent_bar.dart';
 import 'package:flutter_test_future/global.dart';

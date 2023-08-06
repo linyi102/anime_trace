@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/ping_result.dart';
 
 buildPingStatusRow(BuildContext context, ClimbWebsite climbWebsite,
     {bool gridStyle = false}) {
-  var textStyle = Theme.of(context).textTheme.caption?.copyWith(height: 1.1);
+  var textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.1);
   return Row(
     mainAxisAlignment:
         gridStyle ? MainAxisAlignment.center : MainAxisAlignment.start,

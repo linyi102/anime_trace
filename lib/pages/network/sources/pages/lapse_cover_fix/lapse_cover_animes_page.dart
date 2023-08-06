@@ -62,10 +62,10 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
         ),
       ),
       body: !lapseCoverController.loadOk
-          ? Center(
+          ? const Center(
               child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 10),
                 Text("正在寻找失效封面")

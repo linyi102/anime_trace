@@ -266,7 +266,7 @@ class AnimeGridCover extends StatelessWidget {
   _buildNameText(BuildContext context, {required bool nameBelowCover}) {
     Color? color;
     if (nameBelowCover) {
-      color = Theme.of(context).textTheme.bodyText2?.color;
+      color = Theme.of(context).textTheme.bodyMedium?.color;
     } else {
       color = Colors.white;
     }

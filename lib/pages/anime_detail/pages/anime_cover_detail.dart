@@ -193,11 +193,11 @@ class AnimeCoverDetail extends StatelessWidget {
               showDialog(
                   context: context,
                   builder: (dialogContext) {
-                    return AlertDialog(
-                      title: const Text("失效可能的原因"),
+                    return const AlertDialog(
+                      title: Text("失效可能的原因"),
                       content: SingleChildScrollView(
                         child: Column(
-                          children: const [
+                          children: [
                             ListTile(
                               title: Text("网络图片"),
                               subtitle: Text("1. 链接失效\n2. 网络不可用"),

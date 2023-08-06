@@ -11,7 +11,7 @@ import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/pages/main_screen/main_screen.dart';
+import 'package:flutter_test_future/pages/main_screen/view.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
