@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
+import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeListPage extends StatefulWidget {
   const AnimeListPage({Key? key}) : super(key: key);
@@ -248,6 +248,37 @@ class _AnimeListPageState extends State<AnimeListPage> {
     for (int checklistIdx = 0;
         checklistIdx < _scrollControllers.length;
         ++checklistIdx) {
+      if (animeCntPerTag[checklistIdx] == 0) {
+        list.add(Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '这个清单还没有动漫',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                '快来添加你的第一个动漫吧！',
+                style:
+                    TextStyle(fontSize: 16, color: Theme.of(context).hintColor),
+              ),
+              const SizedBox(height: 15),
+              OutlinedButton(
+                  onPressed: () {
+                    // 跳转到探索页，而不是直接打开聚合搜索页，否则添加后，返回到清单页没有实时变化
+                    // MainScreenLogic.to.openSearchPage(context);
+                    MainScreenLogic.to.toSearchTabPage();
+                  },
+                  child: const Text('搜索')),
+            ],
+          ),
+        ));
+        continue;
+      }
+
       var animeView = Obx(() => _animeDisplayController.displayList.value
           ? _buildAnimeListView(checklistIdx)
           : _buildAnimeGridView(checklistIdx));
@@ -592,7 +623,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
               },
               child: Text(
                 "确定",
-                style: TextStyle(color: Theme.of(context).errorColor),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ))
         ],
       ),

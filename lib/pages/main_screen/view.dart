@@ -4,32 +4,15 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
-import 'package:flutter_test_future/pages/history/history_page.dart';
-import 'package:flutter_test_future/pages/network/network_page.dart';
-import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
-import 'package:flutter_test_future/pages/settings/settings_page.dart';
+import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/theme.dart';
+import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../widgets/common_divider.dart';
-import '../network/climb/anime_climb_all_website.dart';
-
-class MainTab {
-  String name;
-  IconData iconData;
-  IconData? selectedIconData;
-  Widget page;
-
-  MainTab(
-      {required this.name,
-      required this.iconData,
-      this.selectedIconData,
-      required this.page});
-}
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -39,39 +22,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedTabIdx = 0;
+  final logic = Get.put(MainScreenLogic());
   int _clickBackCnt = 0;
-  int get searchIdx => 1;
   bool get enableAnimation => false;
   bool get alwaysPortrait => false;
-
-  final List<MainTab> _mainTabs = [
-    MainTab(
-        name: "动漫",
-        iconData: MingCuteIcons.mgc_home_4_line,
-        selectedIconData: MingCuteIcons.mgc_home_4_fill,
-        page: const AnimeListPage()),
-    MainTab(
-        name: "探索",
-        iconData: MingCuteIcons.mgc_search_line,
-        selectedIconData: MingCuteIcons.mgc_search_3_fill,
-        page: const NetWorkPage()),
-    MainTab(
-        name: "历史",
-        iconData: MingCuteIcons.mgc_time_line,
-        selectedIconData: MingCuteIcons.mgc_time_fill,
-        page: const HistoryPage()),
-    MainTab(
-        name: "笔记",
-        iconData: MingCuteIcons.mgc_quill_pen_line,
-        selectedIconData: MingCuteIcons.mgc_quill_pen_fill,
-        page: const NoteListPage()),
-    MainTab(
-        name: "更多",
-        iconData: MingCuteIcons.mgc_more_3_line,
-        selectedIconData: MingCuteIcons.mgc_more_3_fill,
-        page: const SettingPage())
-  ];
 
   bool expandSideBar = SpProfile.getExpandSideBar();
   double get dividerThickness => 0.5;
@@ -80,12 +34,15 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
-      child: alwaysPortrait
-          ? _buildPortraitScreen()
-          : Platform.isAndroid &&
-                  MediaQuery.of(context).orientation == Orientation.portrait
-              ? _buildPortraitScreen()
-              : _buildLandscapeScreen(),
+      child: GetBuilder(
+        init: logic,
+        builder: (_) => alwaysPortrait
+            ? _buildPortraitScreen()
+            : Platform.isAndroid &&
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                ? _buildPortraitScreen()
+                : _buildLandscapeScreen(),
+      ),
     );
   }
 
@@ -161,10 +118,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
     ));
 
-    for (int i = 0; i < _mainTabs.length; ++i) {
-      var mainTab = _mainTabs[i];
+    for (int i = 0; i < logic.tabs.length; ++i) {
+      var mainTab = logic.tabs[i];
 
-      bool isSelected = _selectedTabIdx == i;
+      bool isSelected = logic.selectedTabIdx == i;
       widgets.add(
         Container(
           decoration: BoxDecoration(
@@ -173,17 +130,11 @@ class _MainScreenState extends State<MainScreen> {
           child: InkWell(
             borderRadius: BorderRadius.circular(AppTheme.cardRadius),
             onTap: () {
-              if (searchIdx == i && _selectedTabIdx == i) {
+              if (logic.searchTabIdx == i && logic.selectedTabIdx == i) {
                 // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) {
-                    return const AnimeClimbAllWebsite();
-                  },
-                ));
+                logic.openSearchPage(context);
               } else {
-                setState(() {
-                  _selectedTabIdx = i;
-                });
+                logic.toTabPage(i);
               }
             },
             child: Container(
@@ -255,26 +206,21 @@ class _MainScreenState extends State<MainScreen> {
           NavigationBar(
               height: 60,
               elevation: 0,
-              selectedIndex: _selectedTabIdx,
+              selectedIndex: logic.selectedTabIdx,
               labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               indicatorColor: Colors.transparent,
               backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               onDestinationSelected: (value) {
-                if (searchIdx == value && _selectedTabIdx == value) {
+                if (logic.searchTabIdx == value &&
+                    logic.selectedTabIdx == value) {
                   // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) {
-                      return const AnimeClimbAllWebsite();
-                    },
-                  ));
+                  logic.openSearchPage(context);
                 } else {
-                  setState(() {
-                    _selectedTabIdx = value;
-                  });
+                  logic.toTabPage(value);
                 }
               },
               destinations: [
-                for (var tab in _mainTabs)
+                for (var tab in logic.tabs)
                   NavigationDestination(
                     icon: Icon(tab.iconData),
                     selectedIcon: Icon(tab.selectedIconData ?? tab.iconData),
@@ -287,7 +233,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _buildMainPage() {
-    if (!enableAnimation) return _mainTabs[_selectedTabIdx].page;
+    if (!enableAnimation) return logic.tabs[logic.selectedTabIdx].page;
 
     return PageTransitionSwitcher(
         transitionBuilder: (
@@ -301,6 +247,6 @@ class _MainScreenState extends State<MainScreen> {
             child: child,
           );
         },
-        child: _mainTabs[_selectedTabIdx].page);
+        child: logic.tabs[logic.selectedTabIdx].page);
   }
 }
