@@ -320,7 +320,7 @@ class AnimeGridCover extends StatelessWidget {
       displayName,
       maxLines: AnimeDisplayController.to.nameMaxLines.value,
       overflow: TextOverflow.ellipsis,
-      style: style?.copyWith(fontWeight: FontWeight.normal),
+      style: style?.copyWith(fontWeight: FontWeight.normal, fontSize: 14),
     );
   }
 }

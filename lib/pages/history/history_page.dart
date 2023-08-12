@@ -43,8 +43,8 @@ class _HistoryPageState extends State<HistoryPage> {
       appBar: AppBar(
         title: const Text("历史"),
         actions: [
-          // _buildCupertinoViewSwitch(),
-          _buildMaterialViewSwitch(),
+          _buildCupertinoViewSwitch(),
+          // _buildMaterialViewSwitch(),
         ],
       ),
       body: DividerScaffoldBody(

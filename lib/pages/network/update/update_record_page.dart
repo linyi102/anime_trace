@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/update_record_dao.dart';
@@ -16,8 +15,6 @@ import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-
-import '../../../components/anime_item_auto_load.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -104,45 +101,30 @@ class UpdateRecordPage extends StatelessWidget {
     List<Widget> recordsWidget = [];
     for (var i = 0; i < records.length; ++i) {
       var record = records[i];
-      recordsWidget.add(AnimeItemAutoLoad(
-        anime: record.anime,
-        style: AnimeItemStyle.list,
-        subtitles: [
+      recordsWidget.add(ListTile(
+        leading: AnimeListCover(record.anime),
+        subtitle: Text(
           "更新至${record.newEpisodeCnt}集",
-        ],
-        onChanged: (newAnime) {
-          records[i].anime = newAnime;
-          updateRecordController.update();
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        title: Text(
+          record.anime.animeName,
+          // textScaleFactor: AppTheme.smallScaleFactor,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return AnimeDetailPage(record.anime);
+            },
+          ));
         },
         onLongPress: () {
+          // 提供删除操作
           _showDialogAboutRecordItem(context, record, records);
         },
       ));
-      // recordsWidget.add(ListTile(
-      //   leading: AnimeListCover(record.anime),
-      //   subtitle: Text(
-      //     "更新至${record.newEpisodeCnt}集",
-      //     style: Theme.of(context).textTheme.bodySmall,
-      //   ),
-      //   title: Text(
-      //     record.anime.animeName,
-      //     // textScaleFactor: AppTheme.smallScaleFactor,
-      //     maxLines: 1,
-      //     overflow: TextOverflow.ellipsis,
-      //   ),
-      //   // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
-      //   onTap: () {
-      //     Navigator.of(context).push(MaterialPageRoute(
-      //       builder: (context) {
-      //         return AnimeDetailPage(record.anime);
-      //       },
-      //     ));
-      //   },
-      //   onLongPress: () {
-      //     // 提供删除操作
-      //     _showDialogAboutRecordItem(context, record, records);
-      //   },
-      // ));
     }
     return recordsWidget;
   }
@@ -230,12 +212,7 @@ class UpdateRecordPage extends StatelessWidget {
             onPressed: updateRecordController.updating.value
                 ? null
                 : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-            child: const Text(
-              "更新",
-              style: TextStyle(letterSpacing: 5),
-            ),
-            // label: const Text("更新"),
-            // icon: const Icon(MingCuteIcons.mgc_refresh_2_line, size: 16),
+            child: const Text("更新"),
           ),
         ],
       ),

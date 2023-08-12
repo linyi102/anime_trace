@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
 import 'package:flutter_test_future/pages/history/history_page.dart';
-import 'package:flutter_test_future/pages/network/network_page.dart';
+import 'package:flutter_test_future/pages/network/explore_page.dart';
 import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
 import 'package:flutter_test_future/pages/settings/settings_page.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -26,7 +26,7 @@ class MainScreenLogic extends GetxController {
         name: "探索",
         iconData: MingCuteIcons.mgc_search_line,
         selectedIconData: MingCuteIcons.mgc_search_3_fill,
-        page: const NetWorkPage()),
+        page: const ExplorePage()),
     MainTab(
         name: "历史",
         iconData: MingCuteIcons.mgc_time_line,

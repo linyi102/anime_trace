@@ -4,6 +4,8 @@ import '../../../dao/anime_dao.dart';
 import '../../../models/anime.dart';
 
 class AggregateLogic extends GetxController {
+  static AggregateLogic get to => Get.find();
+
   // 去年今天开播的动漫
   List<Anime> animesNYearsAgoTodayBroadcast = [];
 

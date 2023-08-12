@@ -174,7 +174,7 @@ class MyAppState extends State<MyApp> {
       pageTransitionsTheme: _getPageTransitionsTheme(),
       floatingActionButtonTheme: _getFABTheme(light),
       listTileTheme: _getListTileTheme(light),
-      // 避免亮色主题导致系统状态栏不看见文字
+      // 202308052321
       appBarTheme: light.appBarTheme.copyWith(
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
@@ -238,6 +238,11 @@ class MyAppState extends State<MyApp> {
       appBarStyle: FlexAppBarStyle.scaffoldBackground,
       tooltipsMatchBackground: true,
       subThemesData: FlexSubThemesData(
+        // chip颜色
+        chipSchemeColor: SchemeColor.surfaceVariant,
+        chipSelectedSchemeColor: SchemeColor.surfaceVariant,
+        // 悬浮、按压等颜色不受主颜色影响
+        interactionEffects: false,
         // true会导致AppBar的title字体有些大
         useTextTheme: false,
         // true会导致文字和按钮颜色受主色影响
@@ -279,6 +284,11 @@ class MyAppState extends State<MyApp> {
       appBarStyle: FlexAppBarStyle.scaffoldBackground,
       tooltipsMatchBackground: true,
       subThemesData: FlexSubThemesData(
+        // chip颜色
+        chipSchemeColor: SchemeColor.surfaceVariant,
+        chipSelectedSchemeColor: SchemeColor.surfaceVariant,
+        // 悬浮、按压等颜色不受主颜色影响
+        interactionEffects: false,
         // true会导致AppBar的title字体有些大
         useTextTheme: false,
         // true会导致文字和按钮颜色受主色影响

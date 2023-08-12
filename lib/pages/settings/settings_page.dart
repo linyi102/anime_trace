@@ -222,19 +222,22 @@ class _SettingPageState extends State<SettingPage> {
       url = _networkImageUrl;
     }
 
-    return SizedBox(
+    return Container(
       height: MediaQuery.of(context).size.height / 4,
-      child: InkWell(
-        // 点击事件
-        onTap: () => _showDialogBanner(),
-        // 图片
-        child: _selectedImageTypeIdx == 0
-            ? Center(
-                child: Image.asset(
-                "assets/images/logo.png",
-                width: MediaQuery.of(context).size.height / 8,
-              ))
-            : CommonImage(url, reduceMemCache: false),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Card(
+        child: InkWell(
+          // 点击事件
+          onTap: () => _showDialogBanner(),
+          // 图片
+          child: _selectedImageTypeIdx == 0
+              ? Center(
+                  child: Image.asset(
+                  "assets/images/logo.png",
+                  width: MediaQuery.of(context).size.height / 8,
+                ))
+              : CommonImage(url, reduceMemCache: false),
+        ),
       ),
     );
   }

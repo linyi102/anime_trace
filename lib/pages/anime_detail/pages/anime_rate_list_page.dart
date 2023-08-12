@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/note_card.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/empty_default_page.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 // 动漫详细页的评价列表页
@@ -62,19 +62,13 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
           child: noteOk
               ? notes.isNotEmpty
                   ? _buildRateNoteList()
-                  : EmptyDefaultPage(
-                      title: '你还没有评价过',
-                      buttonText: '写一条评价',
-                      onPressed: () => _createRateNote())
+                  : emptyDataHint(msg: '还没有评价过。')
               : loadingWidget(context)),
-      floatingActionButton: notes.isNotEmpty
-          ? FloatingActionButton(
-              onPressed: () => _createRateNote(),
-              backgroundColor: Theme.of(context).primaryColor,
-              child:
-                  const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _createRateNote(),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
+      ),
     );
   }
 

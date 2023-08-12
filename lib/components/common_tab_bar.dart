@@ -28,9 +28,8 @@ class CommonTitleTabBar extends StatelessWidget {
         topRightRadius: radius,
       ),
       // indicatorColor: Colors.transparent,
-      // 圆角+取消波纹扩散
+      // 圆角
       splashBorderRadius: BorderRadius.circular(6),
-      splashFactory: NoSplash.splashFactory,
       // 文字
       // labelPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       // labelStyle: Theme.of(context).textTheme.titleLarge,
@@ -80,9 +79,8 @@ class CommonBottomTabBar extends StatelessWidget
         isScrollable: isScrollable,
         labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         indicatorSize: TabBarIndicatorSize.label,
-        // 圆角+取消波纹扩散
-        splashBorderRadius: BorderRadius.circular(5),
-        splashFactory: NoSplash.splashFactory,
+        // 圆角
+        splashBorderRadius: BorderRadius.circular(6),
         // 第三方指示器样式
         indicator: MaterialIndicator(
           horizontalPadding: 5,

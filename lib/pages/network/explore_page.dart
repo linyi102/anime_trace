@@ -9,15 +9,15 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
-/// 与网络相关的页面
-class NetWorkPage extends StatefulWidget {
-  const NetWorkPage({Key? key}) : super(key: key);
+/// 探索页
+class ExplorePage extends StatefulWidget {
+  const ExplorePage({Key? key}) : super(key: key);
 
   @override
-  State<NetWorkPage> createState() => _NetWorkPageState();
+  State<ExplorePage> createState() => _ExplorePageState();
 }
 
-class _NetWorkPageState extends State<NetWorkPage>
+class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
   final List<String> navs = ["聚合", "更新", "时间表", "目录"];
@@ -45,7 +45,7 @@ class _NetWorkPageState extends State<NetWorkPage>
 
   @override
   void dispose() {
-    _tabController.dispose(); // 销毁
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -54,13 +54,7 @@ class _NetWorkPageState extends State<NetWorkPage>
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Row(
-          children: [
-            // const Text('探索'),
-            // const SizedBox(width: 15),
-            Expanded(child: _buildSearchBar())
-          ],
-        ),
+        title: _buildSearchBar(),
         bottom: CommonBottomTabBar(
           tabs: navs
               .map((e) => Padding(
@@ -112,19 +106,9 @@ class _NetWorkPageState extends State<NetWorkPage>
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        MingCuteIcons.mgc_search_line,
-                        size: 16,
-                        color: fg,
-                      ),
+                      Icon(MingCuteIcons.mgc_search_line, size: 16, color: fg),
                       const SizedBox(width: 10),
-                      Text(
-                        '搜索动漫',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: fg,
-                        ),
-                      ),
+                      Text('搜索动漫', style: TextStyle(fontSize: 14, color: fg)),
                     ],
                   ),
                 ],
@@ -133,16 +117,6 @@ class _NetWorkPageState extends State<NetWorkPage>
           ),
         ),
       ),
-    );
-  }
-
-  FloatingActionButton _buildFAB() {
-    return FloatingActionButton(
-      child: const Icon(
-        Icons.search,
-        // MingCuteIcons.mgc_search_line,
-      ),
-      onPressed: _enterAnimeClimbAllWebsitePage,
     );
   }
 

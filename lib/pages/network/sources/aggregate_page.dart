@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/fav_website.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/sources/logic.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_page.dart';
+import 'package:flutter_test_future/pages/network/sources/modules/today_anime_list.dart';
+import 'package:flutter_test_future/pages/network/sources/modules/tools.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/trace/view.dart';
-import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
-import '../../../components/anime_list_cover.dart';
-import '../../../models/anime.dart';
+import '../../../models/ping_result.dart';
+import '../../../widgets/icon_text_button.dart';
 
 /// 聚合页
 class AggregatePage extends StatefulWidget {
@@ -35,12 +28,6 @@ class AggregatePage extends StatefulWidget {
 class _AggregatePageState extends State<AggregatePage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
-
-  final favWebsite = FavWebsite(
-      url: "https://bgmlist.com/",
-      // icoUrl: "https://bgmlist.com/public/favicons/apple-touch-icon.png",
-      icoUrl: "assets/images/website/fzff.png",
-      name: "番组放送");
 
   double get buttonSize => 40.0;
   double get itemHeight => 100.0;
@@ -121,100 +108,70 @@ class _AggregatePageState extends State<AggregatePage> {
         children: [
           _buildClimbWebsiteGridCard(),
           const CommonDivider(),
-          // _buildClimbWebsiteListViewCard(),
           _buildTools(),
           const CommonDivider(),
-          // FavWebsiteListPage()
           _buildAnimesList()
         ],
       ),
     );
   }
 
-  _buildAnimesList() {
-    return GetBuilder(
-      init: logic,
-      builder: (_) => Column(
-        children: [
-          _buildCardTitle('今日开播'),
-          // if (logic.animesNYearsAgoTodayBroadcast.isEmpty) const Text('暂无。'),
-          _buildAnimesColumn(),
-          // _buildAnimesRow()
-        ],
-      ),
-    );
-  }
-
-  Container _buildAnimesRow() {
-    return Container(
-      height: 200,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: logic.animesNYearsAgoTodayBroadcast
-            .map((anime) => Container(
-                  width: MediaQuery.of(context).size.width / 3.5,
-                  margin: const EdgeInsets.only(right: 10),
-                  child: InkWell(
-                    onTap: () {},
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3.5,
-                          child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(AppTheme.imgRadius),
-                              child: CommonImage(anime.animeCoverUrl)),
-                        ),
-                        Text(anime.animeName,
-                            style: const TextStyle(fontSize: 13),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                        Text(
-                          _getDiffYear(anime),
-                          style: TextStyle(
-                              fontSize: 12, color: Theme.of(context).hintColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  _buildAnimesColumn() {
+  _buildTools() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var anime in logic.animesNYearsAgoTodayBroadcast)
-          ListTile(
-            title: Text(anime.animeName, overflow: TextOverflow.ellipsis),
-            subtitle: Text(_getDiffYear(anime)),
-            leading: AnimeListCover(anime, showReviewNumber: false),
-            onTap: () async {
-              Anime value = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AnimeDetailPage(anime),
-                  ));
-              anime.animeName = value.animeName;
-              anime.animeCoverUrl = value.animeCoverUrl;
-              logic.update();
-            },
-          ),
-        const SizedBox(height: 10),
+        _buildCardTitle("工具"),
+        const ToolsPage(),
       ],
     );
   }
 
-  String _getDiffYear(Anime anime) {
-    var year = DateTime.parse(anime.premiereTime).year;
-    var diff = DateTime.now().year - year;
-    String text = '';
-    if (diff == 0) text = '今天';
-    text = diff == 0 ? '今天' : '$diff年前的今天';
-    return text;
+  _buildAnimesList() {
+    return Column(
+      children: [
+        _buildCardTitle('今日开播'),
+        // if (logic.animesNYearsAgoTodayBroadcast.isEmpty) const Text('暂无。'),
+        const TodayAnimeListPage(),
+        // _buildAnimesRow()
+      ],
+    );
+  }
+
+  _buildClimbWebsiteGridCard() {
+    return Column(
+      children: [
+        _buildCardTitle("搜索源", trailing: _buldMoreSourceButton()),
+        GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: itemHeight, // 格子高度
+              maxCrossAxisExtent: itemWidth, // 格子最大宽度
+            ),
+            itemCount: usableWebsites.length,
+            itemBuilder: (context, index) {
+              ClimbWebsite climbWebsite = usableWebsites[index];
+
+              return IconTextButton(
+                  iconSize: 45,
+                  height: itemHeight,
+                  width: itemWidth,
+                  onTap: () => _enterSourceDetail(climbWebsite),
+                  icon: Stack(
+                    children: [
+                      WebSiteLogo(url: climbWebsite.iconUrl, size: buttonSize),
+                      _buildPingStatus(climbWebsite.pingStatus)
+                    ],
+                  ),
+                  text: Text(
+                    climbWebsite.name,
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: 0.9,
+                    style: const TextStyle(height: 1.1),
+                  ));
+            }),
+      ],
+    );
   }
 
   _buildCardTitle(String title, {Widget? trailing}) {
@@ -228,227 +185,55 @@ class _AggregatePageState extends State<AggregatePage> {
     // );
   }
 
-  _buildClimbWebsiteGridCard() {
-    return Column(
-      children: [
-        _buildCardTitle("搜索源",
-            trailing: InkWell(
-                borderRadius: BorderRadius.circular(6),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const SourceListPage()));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "更多",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(height: 1),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 10,
-                        color: Theme.of(context).textTheme.bodySmall?.color,
-                      )
-                    ],
-                  ),
-                ))),
-        GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: itemHeight, // 格子高度
-              maxCrossAxisExtent: itemWidth, // 格子最大宽度
-            ),
-            itemCount: usableWebsites.length,
-            itemBuilder: (context, index) {
-              ClimbWebsite climbWebsite = usableWebsites[index];
-
-              return IconTextButton(
-                  iconSize: 40,
-                  itemHeight: itemHeight,
-                  itemWidth: itemWidth,
-                  onTap: () => _enterSourceDetail(climbWebsite),
-                  icon:
-                      WebSiteLogo(url: climbWebsite.iconUrl, size: buttonSize),
-                  text: Column(
-                    children: [
-                      Text(
-                        climbWebsite.name,
-                        overflow: TextOverflow.ellipsis,
-                        textScaleFactor: 0.9,
-                        style: const TextStyle(height: 1.1),
-                      ),
-                      const SizedBox(height: 5),
-                      buildPingStatusRow(context, climbWebsite,
-                          gridStyle: true),
-                    ],
-                  ));
-            }),
-      ],
+  Positioned _buildPingStatus(PingStatus pingStatus) {
+    return Positioned(
+      right: 0,
+      bottom: 0,
+      child: Container(
+        height: 16,
+        width: 16,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Theme.of(context).appBarTheme.backgroundColor,
+        ),
+        child: Icon(Icons.circle, size: 12, color: pingStatus.color),
+      ),
     );
+  }
+
+  InkWell _buldMoreSourceButton() {
+    return InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const SourceListPage()));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "更多",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(height: 1.2),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 10,
+                color: Theme.of(context).textTheme.bodySmall?.color,
+              )
+            ],
+          ),
+        ));
   }
 
   _enterSourceDetail(ClimbWebsite climbWebsite) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return SourceDetail(climbWebsite);
     }));
-  }
-
-  _buildTools() {
-    return Column(
-      children: [
-        _buildCardTitle("工具"),
-        // _buildToolsListView(),
-        _buildToolsGridView(),
-      ],
-    );
-  }
-
-  SingleChildScrollView _buildToolsListView() {
-    return const SingleChildScrollView(
-      child: Column(
-        children: [
-          ListTile(
-            // leading: WebSiteLogo(url: favWebsite.icoUrl, size: iconSize),
-            leading: Icon(Icons.calendar_month),
-            title: Text('番组放送'),
-          ),
-          ListTile(
-            leading: Icon(Icons.filter_alt),
-            title: Text('动漫去重'),
-          ),
-          ListTile(
-            leading: Icon(Icons.timeline),
-            title: Text('历史回顾'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  GridView _buildToolsGridView() {
-    var iconSize = 20.0;
-    return GridView(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        mainAxisExtent: 90, // 格子高度
-        maxCrossAxisExtent: itemWidth, // 格子最大宽度
-      ),
-      children: [
-        IconTextButton(
-          iconSize: buttonSize,
-          icon: WebSiteLogo(url: favWebsite.icoUrl, size: buttonSize),
-          // icon: Container(
-          //     decoration: const BoxDecoration(
-          //         color: Color.fromRGBO(19, 189, 157, 1),
-          //         shape: BoxShape.circle),
-          //     child: const Center(
-          //         child: Text("番",
-          //             style: TextStyle(color: Colors.white, fontSize: 20)))),
-          text: const Text("番组放送", textScaleFactor: 0.9),
-          onTap: () =>
-              LaunchUrlUtil.launch(context: context, uriStr: favWebsite.url),
-        ),
-        // IconTextButton(
-        //     iconSize: iconSize,
-        //     icon: Container(
-        //         decoration: const BoxDecoration(
-        //           // color: Theme.of(context).primaryColor,
-        //           color: Color.fromRGBO(55, 197, 254, 1),
-        //           shape: BoxShape.circle,
-        //         ),
-        //         child: const Icon(Icons.auto_fix_high_rounded,
-        //             size: 18, color: Colors.white)),
-        //     text: const Text("封面修复", textScaleFactor: 0.9),
-        //     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        //         builder: (context) => const LapseCoverAnimesPage()))),
-        IconTextButton(
-            iconSize: buttonSize,
-            // icon: const Icon(Icons.filter_alt),
-            icon: Container(
-                decoration: const BoxDecoration(
-                  // color: Theme.of(context).primaryColor,
-                  color: Color.fromRGBO(255, 199, 87, 1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.filter_alt,
-                    size: iconSize, color: Colors.white)),
-            text: const Text("动漫去重", textScaleFactor: 0.9),
-            onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const DedupPage()))),
-        IconTextButton(
-            iconSize: buttonSize,
-            // icon: const Icon(Icons.timeline),
-            icon: Container(
-                decoration: const BoxDecoration(
-                  // color: Theme.of(context).primaryColor,
-                  color: Colors.redAccent,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(MingCuteIcons.mgc_road_line,
-                    size: iconSize, color: Colors.white)),
-            text: const Text("历史回顾", textScaleFactor: 0.9),
-            onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const TracePage()))),
-        // IconTextButton(
-        //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-        //     text: const Text("更新", textScaleFactor: 0.9),
-        //     onTap: () => null),
-        // IconTextButton(
-        //     icon: Icon(Icons.date_range_rounded, size: iconSize),
-        //     text: const Text("时间表", textScaleFactor: 0.9),
-        //     onTap: () => null),
-        // IconTextButton(
-        //     icon: Icon(Icons.auto_fix_high, size: iconSize),
-        //     text: const Text("目录", textScaleFactor: 0.9),
-        //     onTap: () => null),
-      ],
-    );
-  }
-}
-
-class IconTextButton extends StatelessWidget {
-  const IconTextButton(
-      {required this.icon,
-      required this.text,
-      this.onTap,
-      this.itemHeight = 80,
-      this.itemWidth = 80,
-      this.iconSize = 30,
-      super.key});
-
-  final Widget icon;
-  final Widget text;
-  final void Function()? onTap;
-  final double itemHeight;
-  final double itemWidth;
-  final double iconSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(6),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
-        width: itemWidth,
-        height: itemHeight,
-        child: Column(
-          children: [
-            SizedBox(height: iconSize, width: iconSize, child: icon),
-            const SizedBox(height: 5),
-            text
-          ],
-        ),
-      ),
-    );
   }
 }

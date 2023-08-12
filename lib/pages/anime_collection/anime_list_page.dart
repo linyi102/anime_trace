@@ -530,11 +530,9 @@ class _AnimeListPageState extends State<AnimeListPage> {
             // 样式2：清单名紧跟缩小的数量
             ? Text.rich(TextSpan(children: [
                 WidgetSpan(
-                    child: Text(
-                  tags[i],
-                  // textScaleFactor: AppTheme.smallScaleFactor,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                )),
+                    child: Text(tags[i],
+                        // textScaleFactor: AppTheme.smallScaleFactor,
+                        style: Theme.of(context).textTheme.bodyMedium)),
                 WidgetSpan(
                     child: Opacity(
                   opacity: 1.0, // 候选：0.8
