@@ -58,6 +58,15 @@ class _TestPageState extends State<TestPage> {
           barRadius: const Radius.circular(24),
         ),
         ListTile(
+          // 保证主题放在GetMaterialApp而不是MaterialApp上即可
+          title: const Text('测试Get.to对主题的影响'),
+          onTap: () {
+            // 不会用到设置的pageTransitionsTheme，需要自己指定路由动画
+            Get.to(() => Scaffold(appBar: AppBar()),
+                transition: Transition.fadeIn);
+          },
+        ),
+        ListTile(
           title: const Text("测试下拉刷新"),
           onTap: () {
             var refreshController = RefreshController();
