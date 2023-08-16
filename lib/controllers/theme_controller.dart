@@ -65,7 +65,7 @@ class ThemeController extends GetxController {
     var colors = dark ? AppTheme.darkColors : AppTheme.lightColors;
 
     return colors.firstWhereOrNull((themeColor) => themeColor.key == key) ??
-        getDefaultThemeColor();
+        getDefaultThemeColor(dark: dark);
   }
 
   /// 没有找到时，以第1个作为主题
