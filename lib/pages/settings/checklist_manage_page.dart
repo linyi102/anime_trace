@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class ChecklistManagePage extends StatefulWidget {
@@ -40,7 +40,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("清单管理")),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
           child: ReorderableListView(
         proxyDecorator: _proxyDecorator,
         children: _getTagListWidget(),

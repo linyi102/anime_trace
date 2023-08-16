@@ -12,7 +12,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 
 import '../../../dao/anime_dao.dart';
 
@@ -168,7 +168,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildSearchAppBar(),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
           child: RefreshIndicator(
         onRefresh: () async {
           _climbAnime(keyword: lastInputKeyword);

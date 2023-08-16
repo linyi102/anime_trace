@@ -28,7 +28,6 @@ class _MainScreenState extends State<MainScreen> {
   bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
-  double get dividerThickness => 0.5;
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +52,6 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             // 侧边栏
             _buildSideBar(),
-            CommonDivider(
-              thinkness: dividerThickness,
-              direction: Axis.vertical,
-            ),
             // 主体
             Expanded(child: _buildMainPage())
           ],
@@ -168,7 +163,9 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     widgets.add(const Spacer());
-    widgets.add(Divider(thickness: dividerThickness));
+    widgets.add(const CommonDivider(
+      padding: EdgeInsets.symmetric(vertical: 5),
+    ));
     widgets.add(Row(
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,

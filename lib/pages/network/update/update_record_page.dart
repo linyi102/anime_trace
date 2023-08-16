@@ -24,7 +24,6 @@ class UpdateRecordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: Obx(
         () => RefreshIndicator(
           onRefresh: () async {
@@ -35,7 +34,6 @@ class UpdateRecordPage extends StatelessWidget {
           child: Column(
             children: [
               _buildUpdateProgress(context),
-              const CommonDivider(),
               Expanded(
                   child: FadeAnimatedSwitcher(
                       loadOk: updateRecordController.loadOk.value,
@@ -65,7 +63,8 @@ class UpdateRecordPage extends StatelessWidget {
     return Scrollbar(
       controller: scrollController,
       child: ListView.separated(
-          separatorBuilder: (context, index) => const CommonDivider(),
+          separatorBuilder: (context, index) =>
+              const CommonDivider(thinkness: 0),
           controller: scrollController,
           // 避免没有占满时无法下拉刷新
           physics: const AlwaysScrollableScrollPhysics(),
@@ -78,20 +77,22 @@ class UpdateRecordPage extends StatelessWidget {
               updateRecordController.loadMore();
             }
 
-            return Column(
-              children: [
-                SettingTitle(
-                    title: TimeUtil.getHumanReadableDateTimeStr(
-                  date,
-                  showTime: false,
-                  showDayOfWeek: true,
-                  chineseDelimiter: true,
-                  removeLeadingZero: true,
-                )),
-                Column(children: _buildRecords(context, map[date]!)),
-                // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
-                const SizedBox(height: 5),
-              ],
+            return Card(
+              child: Column(
+                children: [
+                  SettingTitle(
+                      title: TimeUtil.getHumanReadableDateTimeStr(
+                    date,
+                    showTime: false,
+                    showDayOfWeek: true,
+                    chineseDelimiter: true,
+                    removeLeadingZero: true,
+                  )),
+                  Column(children: _buildRecords(context, map[date]!)),
+                  // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
+                  const SizedBox(height: 5),
+                ],
+              ),
             );
           }),
     );
@@ -176,45 +177,47 @@ class UpdateRecordPage extends StatelessWidget {
     int updateOkCnt = updateRecordController.updateOkCnt.value;
     int needUpdateCnt = updateRecordController.needUpdateCnt.value;
 
-    return Container(
-      height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return const NeedUpdateAnimeList();
-                }));
-              },
-              child: Container(
-                color: Colors.transparent,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: Container()),
-                    Text(
-                      "更新进度 $updateOkCnt/$needUpdateCnt",
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                    // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
-                    Expanded(child: Container()),
-                  ],
+    return Card(
+      child: Container(
+        height: 70,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const NeedUpdateAnimeList();
+                  }));
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: Container()),
+                      Text(
+                        "更新进度 $updateOkCnt/$needUpdateCnt",
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
+                      Expanded(child: Container()),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          OutlinedButton(
-            onPressed: updateRecordController.updating.value
-                ? null
-                : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-            child: const Text("更新"),
-          ),
-        ],
+            OutlinedButton(
+              onPressed: updateRecordController.updating.value
+                  ? null
+                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+              child: const Text("更新"),
+            ),
+          ],
+        ),
       ),
     );
   }

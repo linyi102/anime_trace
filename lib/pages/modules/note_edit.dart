@@ -13,7 +13,7 @@ import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -132,7 +132,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               tooltip: "返回上一级",
               icon: const Icon(Icons.arrow_back_rounded)),
         ),
-        body: DividerScaffoldBody(child: _loadOk ? _buildBody() : Container()),
+        body: CommonScaffoldBody(child: _loadOk ? _buildBody() : Container()),
       ),
     );
   }

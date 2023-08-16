@@ -6,7 +6,7 @@ import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 探索页
@@ -66,7 +66,7 @@ class _ExplorePageState extends State<ExplorePage>
         ),
         actions: actions,
       ),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
         child: TabBarView(
             controller: _tabController, // 指定tab控制器
             children: [

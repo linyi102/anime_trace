@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/page_switch_animation.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -48,7 +48,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
       appBar: AppBar(
         title: const Text("常规设置"),
       ),
-      body: DividerScaffoldBody(child: _buildBody(context)),
+      body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
 

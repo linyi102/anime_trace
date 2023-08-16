@@ -9,7 +9,7 @@ import 'package:flutter_test_future/pages/network/sources/pages/import/import_co
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'anime_list_in_source.dart';
@@ -33,7 +33,7 @@ class _SourceDetailState extends State<SourceDetail> {
       appBar: AppBar(
         title: Text(climbWebstie.name),
       ),
-      body: DividerScaffoldBody(child: _buildBody(context)),
+      body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
 

@@ -9,7 +9,7 @@ import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);
@@ -80,7 +80,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       appBar: AppBar(
         title: Text("未完结 ($cnt)"),
       ),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
           child: Scrollbar(
         controller: scrollController,
         child: FadeAnimatedSwitcher(

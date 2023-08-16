@@ -6,7 +6,7 @@ import 'package:flutter_test_future/pages/network/sources/pages/source_detail_pa
 import 'package:flutter_test_future/pages/network/sources/widgets/ping_status.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 
 class SourceListPage extends StatefulWidget {
   const SourceListPage({super.key});
@@ -30,7 +30,7 @@ class _SourceListPageState extends State<SourceListPage> {
       appBar: AppBar(
         title: const Text("搜索源"),
       ),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
         child: Scrollbar(
           controller: scrollController,
           child: ListView.builder(

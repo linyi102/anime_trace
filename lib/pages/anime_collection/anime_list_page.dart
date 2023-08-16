@@ -17,7 +17,7 @@ import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -96,7 +96,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                       isScrollable: true,
                     ),
                   ),
-                  body: DividerScaffoldBody(
+                  body: CommonScaffoldBody(
                     child: TabBarView(
                       controller: _tabController,
                       children: _getAnimesPlus(),
@@ -255,8 +255,9 @@ class _AnimeListPageState extends State<AnimeListPage> {
         ++checklistIdx) {
       if (animeCntPerTag[checklistIdx] == 0) {
         list.add(EmptyDefaultPage(
-          title: '这个清单还没有动漫',
-          subtitle: '快来添加你的第一个动漫吧！',
+          title: '没有收藏',
+          // title: '这个清单还没有动漫',
+          // subtitle: '快来添加你的第一个动漫吧！',
           buttonText: '搜索',
           onPressed: () {
             // 跳转到探索页，而不是直接打开聚合搜索页，否则添加后，返回到清单页没有实时变化

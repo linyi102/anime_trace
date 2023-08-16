@@ -41,8 +41,8 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   late Anime anime;
   bool loading = true;
 
-  get itemHeight => 110.0;
-  get coverWidth => 70.0;
+  get itemHeight => 120.0;
+  get coverWidth => 80.0;
 
   @override
   void initState() {

@@ -7,7 +7,7 @@ import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -40,7 +40,7 @@ class _TestPageState extends State<TestPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("测试")),
-      body: DividerScaffoldBody(child: _buildBody(context)),
+      body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
 

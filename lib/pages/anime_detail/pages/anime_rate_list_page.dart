@@ -7,7 +7,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 // 动漫详细页的评价列表页
@@ -58,7 +58,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("动漫评价")),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
           child: noteOk
               ? notes.isNotEmpty
                   ? _buildRateNoteList()

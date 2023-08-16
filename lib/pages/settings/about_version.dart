@@ -4,7 +4,7 @@ import 'package:flutter_test_future/components/logo.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:simple_icons/simple_icons.dart';
 
@@ -22,7 +22,7 @@ class _AboutVersionState extends State<AboutVersion> {
       appBar: AppBar(
         title: const Text("关于版本"),
       ),
-      body: DividerScaffoldBody(child: _buildBody(context)),
+      body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
 

@@ -12,7 +12,7 @@ class SettingTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Theme.of(context).textTheme.titleLarge
-    var titleStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
+    var titleStyle = const TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 
     return ListTile(
       title: Text(title, style: titleStyle),

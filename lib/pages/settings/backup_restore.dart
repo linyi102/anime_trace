@@ -24,7 +24,7 @@ import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 
 class BackupAndRestorePage extends StatefulWidget {
@@ -70,7 +70,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
               title: const Text("备份还原"),
               automaticallyImplyLeading: widget.fromHome ? false : true,
             ),
-      body: DividerScaffoldBody(
+      body: CommonScaffoldBody(
           child: widget.fromHome
               ? ListView(
                   children: [

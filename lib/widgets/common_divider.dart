@@ -23,7 +23,7 @@ class CommonDivider extends StatelessWidget {
     }
     return Container(
       height: thinkness,
-      padding: padding,
+      margin: padding,
       color: color ?? defaultColor,
     );
   }

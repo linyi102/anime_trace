@@ -42,27 +42,29 @@ class _NoteCardState extends State<NoteCard> {
     Log.build(runtimeType);
     Note note = widget.note;
 
-    return InkWell(
-      onTap: () => _enterNoteEditPage(note),
-      onLongPress: () => _showMoreDialog(note),
-      child: Column(
-        children: [
-          if (widget.showAnimeTile) _buildAnimeListTile(note),
-          Container(
-            padding: enableLeftGap ? const EdgeInsets.only(left: 55) : null,
-            child: Column(
-              children: [
-                // 笔记内容
-                _buildNoteContent(note),
-                // 笔记图片
-                NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
-                if (note.relativeLocalImages.isEmpty)
-                  const SizedBox(height: 10),
-              ],
+    return Card(
+      child: InkWell(
+        onTap: () => _enterNoteEditPage(note),
+        onLongPress: () => _showMoreDialog(note),
+        child: Column(
+          children: [
+            if (widget.showAnimeTile) _buildAnimeListTile(note),
+            Container(
+              padding: enableLeftGap ? const EdgeInsets.only(left: 55) : null,
+              child: Column(
+                children: [
+                  // 笔记内容
+                  _buildNoteContent(note),
+                  // 笔记图片
+                  NoteImgGrid(relativeLocalImages: note.relativeLocalImages),
+                  if (note.relativeLocalImages.isEmpty)
+                    const SizedBox(height: 10),
+                ],
+              ),
             ),
-          ),
-          const CommonDivider()
-        ],
+            const CommonDivider(thinkness: 0)
+          ],
+        ),
       ),
     );
   }
@@ -166,7 +168,7 @@ class _NoteCardState extends State<NoteCard> {
       icon: const Icon(
         // MingCuteIcons.mgc_more_1_line,
         Icons.more_horiz,
-        size: 18,
+        // size: 18,
       ),
       onPressed: () => _showMoreDialog(note),
     );

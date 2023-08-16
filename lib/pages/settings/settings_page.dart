@@ -31,6 +31,7 @@ class _SettingPageState extends State<SettingPage> {
   String _networkImageUrl = SPUtil.getString(bannerNetworkImageUrl);
   final String _defaultImageUrl = "";
   late int _selectedImageTypeIdx; // 记录选择的哪种图片
+  bool get enableDivider => false;
 
   @override
   void initState() {
@@ -46,18 +47,17 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         body: ListView(
-          children: [
-            _buildBanner(),
-            const CommonDivider(),
-            _buildFunctionGroup(),
-            const CommonDivider(),
-            _buildSettingGroup(),
-            const CommonDivider(),
-            _buildOtherGroup(),
-          ],
-        ));
+      children: [
+        _buildBanner(),
+        if (enableDivider) const CommonDivider(),
+        Card(child: _buildFunctionGroup()),
+        if (enableDivider) const CommonDivider(),
+        Card(child: _buildSettingGroup()),
+        if (enableDivider) const CommonDivider(),
+        Card(child: _buildOtherGroup()),
+      ],
+    ));
   }
 
   Column _buildOtherGroup() {
@@ -222,14 +222,11 @@ class _SettingPageState extends State<SettingPage> {
       url = _networkImageUrl;
     }
 
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 4,
-      margin: const EdgeInsets.symmetric(vertical: 10),
       child: Card(
         child: InkWell(
-          // 点击事件
           onTap: () => _showDialogBanner(),
-          // 图片
           child: _selectedImageTypeIdx == 0
               ? Center(
                   child: Image.asset(

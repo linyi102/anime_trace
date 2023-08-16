@@ -28,6 +28,7 @@ class ToolsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 20),
       child: Wrap(
+        spacing: 4,
         children: [
           GestureDetector(
               onTap: () => _openFanZuFangSong(context),

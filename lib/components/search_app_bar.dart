@@ -79,6 +79,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       hintText: hintText,
+      hintStyle: const TextStyle(fontSize: 14),
       border: InputBorder.none,
       suffixIcon: ClearButton(onTapClear: onTapClear),
       suffixIconColor: Theme.of(context).hintColor,

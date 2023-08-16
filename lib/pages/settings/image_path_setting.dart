@@ -5,7 +5,7 @@ import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/divider_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 
 class ImagePathSetting extends StatefulWidget {
   const ImagePathSetting({Key? key}) : super(key: key);
@@ -29,7 +29,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("图片设置")),
-      body: DividerScaffoldBody(child: _buildBody(context)),
+      body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
 
