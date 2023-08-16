@@ -150,6 +150,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
               widget.note.anime.animeName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               widget.note.episode.number == 0

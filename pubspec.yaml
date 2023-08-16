@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  flutter_svg: ^2.0.7
   animations: ^2.0.7
   ming_cute_icons: ^0.0.1
   app_installer: ^1.1.0
@@ -131,3 +132,8 @@ flutter:
   #        - asset: assets/fonts/Alibaba-PuHuiTi-Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_assets:
+  assets_path: assets/
+  output_path: lib/values/
+  filename: assets.dart
+  field_prefix:

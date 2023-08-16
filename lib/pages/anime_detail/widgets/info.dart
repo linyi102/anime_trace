@@ -131,6 +131,28 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
+        // return InkWell(
+        //   onTap: () {
+        //     Navigator.of(context)
+        //         .push(MaterialPageRoute(
+        //             builder: (context) => AnimeRateListPage(_anime)))
+        //         .then((value) async {
+        //       // 更新评价数量
+        //       widget.animeController.loadRateNoteCount();
+        //     });
+        //   },
+        //   borderRadius: BorderRadius.circular(6),
+        //   child: Container(
+        //     padding: const EdgeInsets.all(5),
+        //     child: Column(
+        //       children: [
+        //         const SvgAssetIcon(assetPath: Assets.iconsChat4Line, size: 18),
+        //         Text("${widget.animeController.rateNoteCount}条评价",
+        //             style: const TextStyle(fontSize: 12))
+        //       ],
+        //     ),
+        //   ),
+        // );
         return IconTextButton(
           iconData: MingCuteIcons.mgc_chat_1_line,
           title: "${widget.animeController.rateNoteCount}条评价",

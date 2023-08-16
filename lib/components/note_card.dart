@@ -92,14 +92,12 @@ class _NoteCardState extends State<NoteCard> {
     rateTimeStr = rateTimeStr.isEmpty ? "" : rateTimeStr;
 
     return ListTile(
-      minLeadingWidth: 0,
       leading: GestureDetector(
         onTap: _enterAnimeDetailPage,
         child: AnimeListCover(
           note.anime,
           showReviewNumber: true,
           reviewNumber: note.episode.reviewNumber,
-          // 圆形和观看次数不合适
           circular: false,
         ),
       ),
@@ -117,6 +115,7 @@ class _NoteCardState extends State<NoteCard> {
                   note.anime.animeName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -165,10 +164,11 @@ class _NoteCardState extends State<NoteCard> {
     return IconButton(
       visualDensity: VisualDensity.compact,
       splashRadius: 24,
-      icon: const Icon(
+      icon: Icon(
         // MingCuteIcons.mgc_more_1_line,
         Icons.more_horiz,
         // size: 18,
+        color: Theme.of(context).textTheme.bodySmall?.color,
       ),
       onPressed: () => _showMoreDialog(note),
     );

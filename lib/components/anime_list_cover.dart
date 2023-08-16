@@ -37,7 +37,8 @@ class AnimeListCover extends StatelessWidget {
                   height: 40,
                   width: 40,
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+                      borderRadius: BorderRadius.circular(
+                          circular ? 99 : AppTheme.imgRadius),
                       child: CommonImage(_anime.getCommonCoverUrl())),
                 ),
           showReviewNumber && reviewNumber > 1
@@ -56,10 +57,10 @@ class AnimeListCover extends StatelessWidget {
                     child: Center(
                       child: Text(
                         "$reviewNumber",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: AppTheme.reviewNumberFg),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppTheme.reviewNumberFg,
+                        ),
                       ),
                     ),
                   ),

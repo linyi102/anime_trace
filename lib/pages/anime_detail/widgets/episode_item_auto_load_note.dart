@@ -226,7 +226,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         splashRadius: 24,
         icon: const Icon(
           Icons.more_horiz,
-          size: 18,
+          // size: 20,
         ),
         onPressed: () {
           showDialog(
