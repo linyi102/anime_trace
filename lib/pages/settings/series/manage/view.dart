@@ -13,33 +13,60 @@ import '../../../../widgets/common_scaffold_body.dart';
 import '../detail/view.dart';
 import 'logic.dart';
 
-class SeriesManagePage extends StatelessWidget {
+class SeriesManagePage extends StatefulWidget {
   const SeriesManagePage({this.enableSelectSeriesForAnime = false, Key? key})
       : super(key: key);
   final bool enableSelectSeriesForAnime;
 
-  double get maxItemWidth => 240;
+  @override
+  State<SeriesManagePage> createState() => _SeriesManagePageState();
+}
+
+class _SeriesManagePageState extends State<SeriesManagePage> {
   SeriesManageLogic get logic => Get.put(SeriesManageLogic());
+  double get itemHeight => 230;
+  double get maxItemWidth => 260;
+  double get coverHeight => 160;
+
+  bool searchAction = false;
+
+  @override
+  void dispose() {
+    // 离开页面时销毁该logic，避免恢复数据时看到旧数据
+    Get.delete<SeriesManageLogic>();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(enableSelectSeriesForAnime ? "选择系列" : "系列管理"),
-        automaticallyImplyLeading: enableSelectSeriesForAnime ? false : true,
-      ),
+      appBar: searchAction
+          ? _buildSearchBar()
+          : AppBar(
+              title: Text(widget.enableSelectSeriesForAnime ? "选择系列" : "系列管理"),
+              automaticallyImplyLeading:
+                  widget.enableSelectSeriesForAnime ? false : true,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        searchAction = !searchAction;
+                      });
+                    },
+                    icon: const Icon(Icons.search))
+              ],
+            ),
       body: GetBuilder(
         init: logic,
         builder: (_) => CommonScaffoldBody(
             child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: _buildSearchBar(),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(8),
+            //   child: _buildSearchBar(),
+            // ),
             Expanded(
               child: RefreshIndicator(
                 child: _buildSeriesListView(context),
@@ -57,10 +84,12 @@ class SeriesManagePage extends StatelessWidget {
 
   _buildSeriesListView(BuildContext context) {
     return GridView.builder(
+      padding: const EdgeInsets.only(bottom: 100),
       itemCount: logic.seriesList.length,
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        mainAxisExtent: 165,
+        mainAxisExtent: itemHeight,
         maxCrossAxisExtent: maxItemWidth,
+        // maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
       ),
       itemBuilder: (context, index) {
         var series = logic.seriesList[index];
@@ -87,12 +116,7 @@ class SeriesManagePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildOverlayCover(series),
-                Row(
-                  children: [
-                    _buildInfo(series, context),
-                    _buildMoreButton(context, series),
-                  ],
-                )
+                _buildInfo(series, context),
               ],
             ),
           ),
@@ -103,26 +127,22 @@ class SeriesManagePage extends StatelessWidget {
 
   _buildMoreButton(BuildContext context, Series series) {
     var borderRadius = BorderRadius.circular(99);
-    return Column(
-      children: [
-        InkWell(
-            borderRadius: borderRadius,
-            onTap: () {
-              _showOpMenuDialog(context, series);
-            },
-            child: SizedBox(
-              height: 30,
-              width: 30,
-              child: Center(
-                child: Icon(
-                  Icons.more_horiz,
-                  size: 20,
-                  color: Theme.of(context).hintColor.withOpacity(0.4),
-                ),
-              ),
-            )),
-      ],
-    );
+    return InkWell(
+        borderRadius: borderRadius,
+        onTap: () {
+          _showOpMenuDialog(context, series);
+        },
+        child: SizedBox(
+          height: 30,
+          width: 30,
+          child: Center(
+            child: Icon(
+              Icons.more_horiz,
+              size: 20,
+              color: Theme.of(context).hintColor.withOpacity(0.4),
+            ),
+          ),
+        ));
   }
 
   _buildInfo(Series series, BuildContext context) {
@@ -137,17 +157,23 @@ class SeriesManagePage extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                overflow: TextOverflow.ellipsis,
+                // overflow: TextOverflow.ellipsis,
               ),
               maxLines: 1,
             ),
-            Text(
-              '${series.animes.length}',
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).hintColor,
-              ),
-            ),
+            Row(
+              children: [
+                Text(
+                  '${series.animes.length}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).hintColor,
+                  ),
+                ),
+                const Spacer(),
+                _buildMoreButton(context, series),
+              ],
+            )
           ],
         ),
       ),
@@ -160,7 +186,7 @@ class SeriesManagePage extends StatelessWidget {
         series.animes.length;
 
     return SizedBox(
-      height: 100,
+      height: coverHeight,
       child: ListView.builder(
         itemCount: imgCnt,
         scrollDirection: Axis.horizontal,
@@ -174,8 +200,10 @@ class SeriesManagePage extends StatelessWidget {
 
   _buildSearchBar() {
     return SearchAppBar(
-      isAppBar: false,
-      autofocus: false,
+      isAppBar: true,
+      autofocus: true,
+      useModernStyle: false,
+      showCancelButton: true,
       inputController: logic.inputKeywordController,
       hintText: "搜索系列",
       onChanged: (kw) async {
@@ -193,7 +221,16 @@ class SeriesManagePage extends StatelessWidget {
       onTapClear: () async {
         logic.inputKeywordController.clear();
         logic.kw = "";
-        logic.seriesList = await SeriesDao.getAllSeries();
+        logic.getAllSeries();
+      },
+      onTapCancelButton: () {
+        logic.inputKeywordController.clear();
+        logic.kw = "";
+        // 重新搜索所有系列
+        logic.getAllSeries();
+        setState(() {
+          searchAction = false;
+        });
       },
     );
   }

@@ -9,18 +9,24 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.autofocus = true,
       this.hintText = "搜索",
       this.onTapClear,
+      this.showCancelButton = false,
+      this.onTapCancelButton,
       this.useModernStyle = true,
       this.isAppBar = true,
+      this.automaticallyImplyLeading = true,
       this.bottom,
       super.key});
   final void Function()? onEditingComplete;
   final void Function(String)? onChanged;
+  final void Function()? onTapCancelButton;
   final bool autofocus;
   final TextEditingController? inputController;
   final void Function()? onTapClear;
   final String hintText;
 
   final bool useModernStyle;
+  final bool automaticallyImplyLeading;
+  final bool showCancelButton;
   final bool isAppBar;
 
   /// isAppBar为true时才会有bottom
@@ -30,8 +36,8 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     if (isAppBar) {
       return AppBar(
-        automaticallyImplyLeading: useModernStyle ? false : true,
-        actions: useModernStyle ? [_buildCancelButton(context)] : null,
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        actions: showCancelButton ? [_buildCancelButton(context)] : null,
         title: _buildSearchField(context),
         bottom: bottom,
       );
@@ -89,9 +95,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   _buildCancelButton(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(6),
-      onTap: () {
-        Navigator.pop(context);
-      },
+      onTap: onTapCancelButton,
       child: Container(
           padding: const EdgeInsets.only(left: 10, right: 10),
           child: const Center(child: Text("取消"))),

@@ -12,7 +12,7 @@ import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
-class LabelManagePage extends StatelessWidget {
+class LabelManagePage extends StatefulWidget {
   const LabelManagePage(
       {this.enableSelectLabelForAnime = false, this.animeController, Key? key})
       : super(key: key);
@@ -22,26 +22,44 @@ class LabelManagePage extends StatelessWidget {
   static const int labelMaxLength = 30;
 
   @override
+  State<LabelManagePage> createState() => _LabelManagePageState();
+}
+
+class _LabelManagePageState extends State<LabelManagePage> {
+  bool searchAction = false;
+
+  @override
   Widget build(BuildContext context) {
     Log.build(runtimeType);
 
     // 把不能使用final的数据放在方法里，好处是可以使用const
     // 缺点是要想提取子组件时，需要传递很多参数
     LabelsController labelsController = Get.find();
+    if (labelsController.kw.isNotEmpty) _renewAllLabels(labelsController);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text(enableSelectLabelForAnime ? "选择标签" : "标签管理"),
-        automaticallyImplyLeading: enableSelectLabelForAnime ? false : true,
-      ),
+      appBar: searchAction
+          ? _buildSearchBar(
+              labelsController.inputKeywordController, labelsController)
+          : AppBar(
+              title: Text(widget.enableSelectLabelForAnime ? "选择标签" : "标签管理"),
+              automaticallyImplyLeading:
+                  widget.enableSelectLabelForAnime ? false : true,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        searchAction = !searchAction;
+                      });
+                    },
+                    icon: const Icon(Icons.search))
+              ],
+            ),
       body: CommonScaffoldBody(
           child: ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
         children: [
-          _buildSearchBar(
-              labelsController.inputKeywordController, labelsController),
-          const SizedBox(height: 20),
           Obx(() => _buildLabelWrap(labelsController, context)),
           // 底部空白，避免加号悬浮按钮遮挡删除按钮
           const ListTile(),
@@ -59,8 +77,8 @@ class LabelManagePage extends StatelessWidget {
         runSpacing: AppTheme.wrapRunSpacing,
         children: labelsController.labels.reversed.map((label) {
           bool selected = false;
-          if (animeController != null) {
-            selected = animeController!.labels
+          if (widget.animeController != null) {
+            selected = widget.animeController!.labels
                     .indexWhere((element) => element.id == label.id) >
                 -1;
           }
@@ -68,20 +86,20 @@ class LabelManagePage extends StatelessWidget {
           return GestureDetector(
             child: Chip(
               label: Text(label.name),
-              backgroundColor: enableSelectLabelForAnime && selected
+              backgroundColor: widget.enableSelectLabelForAnime && selected
                   ? Theme.of(context).chipTheme.selectedColor
                   : Theme.of(context).chipTheme.disabledColor,
             ),
             onTap: () async {
-              if (enableSelectLabelForAnime) {
+              if (widget.enableSelectLabelForAnime) {
                 if (selected) {
                   // 为这个动漫移除该标签
                   if (await AnimeLabelDao.deleteAnimeLabel(
-                      animeController!.anime.animeId, label.id)) {
+                      widget.animeController!.anime.animeId, label.id)) {
                     Log.info(
-                        "移除动漫标签记录成功(animeId=${animeController!.anime.animeId}, labelId=${label.id})");
+                        "移除动漫标签记录成功(animeId=${widget.animeController!.anime.animeId}, labelId=${label.id})");
                     // 从controller中移除
-                    animeController!.labels
+                    widget.animeController!.labels
                         .removeWhere((element) => element.id == label.id);
                   } else {
                     Log.info("移除动漫标签记录失败");
@@ -89,11 +107,11 @@ class LabelManagePage extends StatelessWidget {
                 } else {
                   // 为这个动漫添加该标签
                   int newId = await AnimeLabelDao.insertAnimeLabel(
-                      animeController!.anime.animeId, label.id);
+                      widget.animeController!.anime.animeId, label.id);
                   if (newId > 0) {
                     Log.info("添加新动漫标签纪录成功：$newId");
                     // 添加到controller
-                    animeController!.labels.add(label);
+                    widget.animeController!.labels.add(label);
                   } else {
                     Log.info("添加新动漫标签纪录失败");
                   }
@@ -114,9 +132,13 @@ class LabelManagePage extends StatelessWidget {
   _buildSearchBar(TextEditingController inputKeywordController,
       LabelsController labelsController) {
     return SearchAppBar(
-      isAppBar: false,
-      autofocus: false,
+      isAppBar: true,
+      autofocus: true,
+      useModernStyle: false,
+      showCancelButton: true,
       inputController: inputKeywordController,
+      automaticallyImplyLeading:
+          widget.enableSelectLabelForAnime ? false : true,
       hintText: "搜索标签",
       onChanged: (kw) async {
         Log.info("搜索标签关键字：$kw");
@@ -132,7 +154,15 @@ class LabelManagePage extends StatelessWidget {
       onTapClear: () async {
         inputKeywordController.clear();
         labelsController.kw = "";
-        labelsController.labels.value = await LabelDao.getAllLabels();
+        labelsController.getAllLabels();
+      },
+      onTapCancelButton: () {
+        inputKeywordController.clear();
+        labelsController.kw = "";
+        labelsController.getAllLabels();
+        setState(() {
+          searchAction = false;
+        });
       },
     );
   }
@@ -181,9 +211,9 @@ class LabelManagePage extends StatelessWidget {
                                       LabelDao.delete(label.id);
                                       labelsController.labels.removeAt(index);
                                       // 如果在动漫详细页打开的标签管理页中删除了标签，那么也需要移除下面的标签
-                                      if (enableSelectLabelForAnime) {
-                                        animeController!.labels.removeWhere(
-                                            (element) =>
+                                      if (widget.enableSelectLabelForAnime) {
+                                        widget.animeController!.labels
+                                            .removeWhere((element) =>
                                                 element.id == label.id);
                                       }
                                       Navigator.pop(context);
@@ -225,7 +255,7 @@ class LabelManagePage extends StatelessWidget {
                       labelText: "标签名称",
                       helperText: helperText,
                     ),
-                    maxLength: labelMaxLength,
+                    maxLength: LabelManagePage.labelMaxLength,
                   ),
                   actions: [
                     TextButton(
@@ -298,7 +328,7 @@ class LabelManagePage extends StatelessWidget {
             content: TextField(
               controller: inputLabelNameController..text,
               autofocus: true,
-              maxLength: labelMaxLength,
+              maxLength: LabelManagePage.labelMaxLength,
               decoration: InputDecoration(
                 labelText: "标签名称",
                 helperText: helperText,
@@ -341,12 +371,12 @@ class LabelManagePage extends StatelessWidget {
                       // labelsController.labels[index].name = newLabelName; // 无效
                       label.name = newLabelName;
                       labelsController.labels[index] = label; // 必须要重新赋值，才能看到变化
-                      if (enableSelectLabelForAnime) {
-                        int index = animeController!.labels
+                      if (widget.enableSelectLabelForAnime) {
+                        int index = widget.animeController!.labels
                             .indexWhere((element) => element.id == label.id);
                         // 如果动漫添加了该标签，则更新动漫里的这个标签
                         if (index >= 0) {
-                          animeController!.labels[index] = label;
+                          widget.animeController!.labels[index] = label;
                         }
                       }
                       Navigator.of(context).pop();
@@ -362,12 +392,12 @@ class LabelManagePage extends StatelessWidget {
     );
   }
 
-  // ignore: unused_element
   void _renewAllLabels(LabelsController labelsController) async {
     if (labelsController.kw.isNotEmpty) {
       // 之前搜索了关键字后，退出了该页面，那么重新进入该页面时，需要重新获取所有标签
+      labelsController.inputKeywordController.clear();
       labelsController.kw = "";
-      labelsController.labels.value = await LabelDao.getAllLabels();
+      labelsController.getAllLabels();
     }
   }
 }

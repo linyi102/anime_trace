@@ -266,7 +266,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       } else {
         // 可能进入详细搜索页后修改了数据库动漫，因此也需要重新搜索数据库(只搜索该搜索源下爬取的动漫网址)
         // 小问题：进入动漫详细页后，迁移到了其他搜索源的动漫，animeUrl发生变化，此时该函数会通过animeUrl从数据库找到相应的动漫，并赋值，因此会出现原搜索源下面出现了一个其它搜索源的动漫
-        // 2022.05.01无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜素源
+        // 2022.05.01无法修复，因为迁移到其他搜索源后，animeUrl发生了变化，不再是原搜索源
         // _generateMixedAnimes(climbWebsites[index])
         //     .then((value) => setState(() {}));
 
