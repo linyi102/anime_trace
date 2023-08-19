@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
+import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
+import 'package:flutter_test_future/dao/series_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -48,9 +50,12 @@ class SqliteUtil {
     await SqliteUtil.addColumnOrderIdxToImage();
 
     // 创建标签表、动漫标签表、集描述表
-    LabelDao.createTable();
-    AnimeLabelDao.createTable();
-    EpisodeDescDao.createTable();
+    await LabelDao.createTable();
+    await AnimeLabelDao.createTable();
+    await EpisodeDescDao.createTable();
+    // 创建系列表、动漫系列表
+    await SeriesDao.createTable();
+    await AnimeSeriesDao.createTable();
     return true;
   }
 

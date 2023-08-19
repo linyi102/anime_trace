@@ -19,9 +19,16 @@ import 'package:get/get.dart';
 
 /// 搜索已添加的动漫
 class DbAnimeSearchPage extends StatefulWidget {
-  const DbAnimeSearchPage({this.incomingLabelId, this.kw, Key? key})
+  const DbAnimeSearchPage(
+      {this.incomingLabelId,
+      this.kw,
+      this.onSelectOk,
+      this.hasSelectedAnimeIds = const [],
+      Key? key})
       : super(key: key);
   final int? incomingLabelId;
+  final List<int> hasSelectedAnimeIds;
+  final void Function(List<int> selectedAnimeIds)? onSelectOk;
   final String? kw;
 
   @override
@@ -42,6 +49,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   List<Label> selectedLabels = [];
 
   bool autofocus = true;
+
+  bool get selectAction => widget.onSelectOk != null;
+  List<int> selectedAnimeIds = [];
 
   @override
   void initState() {
@@ -92,6 +102,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
     return Scaffold(
       appBar: showSearchBar ? _buildSearchBar(inputController) : AppBar(),
+      floatingActionButton: _buildFAB(),
       body: CommonScaffoldBody(
           child: CustomScrollView(
         controller: _scrollController,
@@ -104,27 +115,70 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  Log.info("$runtimeType: index=$index");
-                  return AnimeListTile(
-                    anime: _animes[index],
-                    animeTileSubTitle: AnimeTileSubTitle.nameAnother,
-                    showReviewNumber: true,
-                    showTrailingProgress: true,
-                    onTap: () {
-                      _enterAnimeDetail(index);
-                    },
-                  );
+                  // Log.info("$runtimeType: index=$index");
+                  var anime = _animes[index];
+                  return _buildAnimeTile(anime, context, index);
                 },
                 childCount: _animes.length,
               ),
             ),
           // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
-          if (searchOk && inputController.text.isNotEmpty)
+          if (searchOk && inputController.text.isNotEmpty && !selectAction)
             SliverToBoxAdapter(
               child: _buildNetworkSearchHint(context),
-            )
+            ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 60),
+          )
         ],
       )),
+    );
+  }
+
+  FloatingActionButton? _buildFAB() {
+    return selectAction
+        ? FloatingActionButton(
+            onPressed: () {
+              widget.onSelectOk?.call(selectedAnimeIds);
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.check),
+          )
+        : null;
+  }
+
+  AnimeListTile _buildAnimeTile(Anime anime, BuildContext context, int index) {
+    // 已添加，不允许修改为未选择状态(避免用户误认为可以从系列中删除)
+    bool hasSelected = widget.hasSelectedAnimeIds.contains(anime.animeId);
+    // 本次添加动作中新选择的
+    bool selected = selectedAnimeIds.contains(anime.animeId);
+    return AnimeListTile(
+      anime: anime,
+      animeTileSubTitle: AnimeTileSubTitle.nameAnother,
+      showReviewNumber: true,
+      showTrailingProgress: selectAction ? false : true,
+      trailing: selectAction
+          ? hasSelected
+              ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+              : Icon(
+                  selected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  color: selected ? Theme.of(context).primaryColor : null,
+                )
+          : null,
+      onTap: () {
+        if (selectAction) {
+          if (selected) {
+            selectedAnimeIds.remove(anime.animeId);
+          } else {
+            selectedAnimeIds.add(anime.animeId);
+          }
+          setState(() {});
+          return;
+        }
+        _enterAnimeDetail(index);
+      },
     );
   }
 

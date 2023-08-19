@@ -13,6 +13,7 @@ class AnimeListTile extends StatelessWidget {
     this.animeTileSubTitle,
     this.showReviewNumber = false,
     this.showTrailingProgress = false,
+    this.trailing,
     this.onTap,
   }) : super(key: key);
 
@@ -21,6 +22,7 @@ class AnimeListTile extends StatelessWidget {
   final AnimeTileSubTitle? animeTileSubTitle;
   final bool showReviewNumber;
   final bool showTrailingProgress;
+  final Widget? trailing;
   final void Function()? onTap;
 
   @override
@@ -76,7 +78,7 @@ class AnimeListTile extends StatelessWidget {
               "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
               style: Theme.of(context).textTheme.bodySmall,
             )
-          : null,
+          : trailing,
       onTap: () {
         if (onTap != null) {
           onTap!();

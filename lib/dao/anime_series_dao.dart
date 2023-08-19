@@ -1,0 +1,94 @@
+import '../models/anime.dart';
+import '../models/series.dart';
+import '../utils/log.dart';
+import '../utils/sqlite_util.dart';
+import 'series_dao.dart';
+
+class AnimeSeriesDao {
+  static final db = SqliteUtil.database;
+  static const table = "anime_series";
+  static const columnId = "id";
+  static const columnAnimeId = "anime_id";
+  static const columnSeriesId = "series_id";
+
+  // 建表
+  static createTable() async {
+    Log.info('sql:create table $table');
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS $table (
+      $columnId         INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columnAnimeId    INTEGER NOT NULL,
+      $columnSeriesId   INTEGER NOT NULL
+    );
+    ''');
+  }
+
+  // 查询某个动漫下的所有系列
+  static Future<List<Series>> getSeriesByAnimeId(int animeId) async {
+    Log.info("sql:getSeriesByAnimeId(animeId=$animeId)");
+    // 先获取该动漫的所有系列id
+    List<Map<String, Object?>> maps = await db.query(table,
+        columns: [columnSeriesId],
+        where: "$columnAnimeId = ?",
+        whereArgs: [animeId]);
+    // 再根据系列id查询完整系列信息
+    List<Series> seriess = [];
+    for (var map in maps) {
+      int seriesId = map[columnSeriesId] as int;
+      Series series = await SeriesDao.getSeriesById(seriesId);
+      if (series.isValid) {
+        seriess.add(series);
+      }
+    }
+
+    return seriess;
+  }
+
+  // 查询含有指定多个系列的所有动漫
+  static Future<List<Anime>> getAnimesBySeriesIds(List<int> seriesIds) async {
+    Log.info("sql:getAnimesBySeriesId(seriesIds=$seriesIds)");
+    // 先获取该系列下的所有动漫id
+    List<Map<String, Object?>> maps = await db.rawQuery('''
+    SELECT anime_id
+    FROM anime_series
+    WHERE series_id in (${seriesIds.join(",")})
+    GROUP BY anime_id
+    HAVING COUNT(*) = ${seriesIds.length};
+    ''');
+    // 在根据动漫id查询完整动漫信息
+    List<Anime> animes = [];
+    for (var map in maps) {
+      int animeId = map[columnAnimeId] as int;
+      Anime anime = await SqliteUtil.getAnimeByAnimeId(animeId);
+      // 如果没有找到动漫，则不添加(可能是因为之前删除了动漫，但没有删除系列列表里的添加记录)
+      if (anime.isCollected()) {
+        animes.add(anime);
+      }
+    }
+
+    return animes;
+  }
+
+  // 某个动漫添加系列，返回新插入记录的id(id用不上)
+  static Future<int> insertAnimeSeries(int animeId, int seriesId) async {
+    Log.info("sql:insertAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
+    return await db.insert(table, {
+      columnAnimeId: animeId,
+      columnSeriesId: seriesId,
+    });
+  }
+
+  static Future<bool> deleteAnimeSeries(int animeId, int seriesId) async {
+    Log.info("sql:deleteAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
+    return (await db.delete(table,
+            where: "$columnAnimeId = ? and $columnSeriesId = ?",
+            whereArgs: [animeId, seriesId])) >
+        0;
+  }
+
+  // 删除系列时，需要这里的相关信息，也可能还没有和任意一个动漫关联，所以不返回删除行数
+  static Future<void> deleteBySeriesId(int seriesId) async {
+    Log.info("sql:deleteBySeriesId(seriesId=$seriesId)");
+    await db.delete(table, where: "$columnSeriesId = ?", whereArgs: [seriesId]);
+  }
+}

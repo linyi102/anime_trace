@@ -9,10 +9,13 @@ import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/sp_key.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'general_setting.dart';
@@ -203,6 +206,22 @@ class _SettingPageState extends State<SettingPage> {
               MaterialPageRoute(
                 builder: (context) {
                   return const LabelManagePage();
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          leading: SvgAssetIcon(
+            assetPath: Assets.iconsCollections24Regular,
+            color: Theme.of(context).primaryColor,
+          ),
+          title: const Text("系列管理"),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return const SeriesManagePage();
                 },
               ),
             );
