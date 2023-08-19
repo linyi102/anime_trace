@@ -4,7 +4,7 @@ import 'package:flutter_test_future/models/series.dart';
 import 'package:get/get.dart';
 
 class SeriesManageLogic extends GetxController {
-  // 所有标签
+  // 所有系列
   List<Series> seriesList = [];
 
   // 文本输入控制器，放在这里是为了避免重绘时丢失

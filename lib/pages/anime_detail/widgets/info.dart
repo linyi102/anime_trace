@@ -13,6 +13,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -165,9 +166,19 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       if (widget.animeController.isCollected) _buildRateIcon(),
       if (widget.animeController.isCollected) _buildInfoIcon(),
       _buildSearchBtn(),
-      // if (widget.animeController.isCollected)
-      //   _buildIconTextButton(
-      //       iconData: Icons.checklist, text: '系列', onTap: () {})
+      if (widget.animeController.isCollected)
+        _buildIconTextButton(
+            iconData: Icons.checklist,
+            text: '系列',
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SeriesManagePage(
+                      animeId: widget.animeController.anime.animeId,
+                    ),
+                  ));
+            })
     ];
   }
 

@@ -41,11 +41,19 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
     animeController = Get.put(
       AnimeController(),
-      // tag: widget.anime.animeId.toString(), // 用id作为tag，当重复进入相同id的动漫时信息仍相同
-      // tag: UniqueKey().toString(),
+      // 用id作为tag，当重复进入相同id的动漫时信息仍相同。但是对于没有收藏的动漫，会因为id相同从而当作一样的动漫
+      // 也不能用动漫链接，因为有些是自定义动漫
+      // tag: widget.anime.animeId.toString(),
+      // tag: DateTime.now().millisecondsSinceEpoch.toString(),
     );
 
     animeController.loadAnime(widget.anime);
+  }
+
+  @override
+  void dispose() {
+    Get.delete<AnimeController>();
+    super.dispose();
   }
 
   // 用于传回到动漫列表页

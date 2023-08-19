@@ -24,7 +24,7 @@ class AnimeSeriesDao {
   }
 
   // 查询某个动漫下的所有系列
-  static Future<List<Series>> getSeriesByAnimeId(int animeId) async {
+  static Future<List<Series>> getSeriesListByAnimeId(int animeId) async {
     Log.info("sql:getSeriesByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有系列id
     List<Map<String, Object?>> maps = await db.query(table,
@@ -32,16 +32,16 @@ class AnimeSeriesDao {
         where: "$columnAnimeId = ?",
         whereArgs: [animeId]);
     // 再根据系列id查询完整系列信息
-    List<Series> seriess = [];
+    List<Series> seriesList = [];
     for (var map in maps) {
       int seriesId = map[columnSeriesId] as int;
       Series series = await SeriesDao.getSeriesById(seriesId);
       if (series.isValid) {
-        seriess.add(series);
+        seriesList.add(series);
       }
     }
 
-    return seriess;
+    return seriesList;
   }
 
   // 查询含有指定多个系列的所有动漫

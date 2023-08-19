@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -14,9 +16,8 @@ import '../detail/view.dart';
 import 'logic.dart';
 
 class SeriesManagePage extends StatefulWidget {
-  const SeriesManagePage({this.enableSelectSeriesForAnime = false, Key? key})
-      : super(key: key);
-  final bool enableSelectSeriesForAnime;
+  const SeriesManagePage({this.animeId = -1, Key? key}) : super(key: key);
+  final int animeId;
 
   @override
   State<SeriesManagePage> createState() => _SeriesManagePageState();
@@ -27,8 +28,31 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   double get itemHeight => 230;
   double get maxItemWidth => 260;
   double get coverHeight => 160;
+  bool get enableSelectSeriesForAnime => widget.animeId > 0;
 
   bool searchAction = false;
+
+  // 该动漫已加入的系列
+  List<Series> get addedSeriesList {
+    if (!enableSelectSeriesForAnime) return [];
+
+    List<Series> list = [];
+    // 遍历所有系列
+    for (var series in logic.seriesList) {
+      // 如果系列中存在该动漫则添加
+      if (series.animes
+              .indexWhere((anime) => anime.animeId == widget.animeId) >=
+          0) {
+        list.add(series);
+      }
+    }
+    return list;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -45,9 +69,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       appBar: searchAction
           ? _buildSearchBar()
           : AppBar(
-              title: Text(widget.enableSelectSeriesForAnime ? "选择系列" : "系列管理"),
-              automaticallyImplyLeading:
-                  widget.enableSelectSeriesForAnime ? false : true,
+              title: Text(enableSelectSeriesForAnime ? "系列" : "系列管理"),
+              automaticallyImplyLeading: true,
               actions: [
                 IconButton(
                     onPressed: () {
@@ -61,67 +84,79 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       body: GetBuilder(
         init: logic,
         builder: (_) => CommonScaffoldBody(
-            child: Column(
-          children: [
-            // Container(
-            //   padding: const EdgeInsets.all(8),
-            //   child: _buildSearchBar(),
-            // ),
-            Expanded(
-              child: RefreshIndicator(
-                child: _buildSeriesListView(context),
-                onRefresh: () async {
-                  await logic.getAllSeries();
-                },
-              ),
-            )
-          ],
-        )),
+          child: RefreshIndicator(
+            child: _buildSeriesBody(context),
+            onRefresh: () async {
+              await logic.getAllSeries();
+            },
+          ),
+        ),
       ),
       floatingActionButton: _buildFloatingActionButton(context),
     );
   }
 
-  _buildSeriesListView(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.only(bottom: 100),
-      itemCount: logic.seriesList.length,
+  _buildSeriesBody(BuildContext context) {
+    if (enableSelectSeriesForAnime) {
+      return CustomScrollView(
+        slivers: [
+          const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
+          _buildSeriesGridView(addedSeriesList),
+          const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
+          _buildSeriesGridView(logic.seriesList),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
+      );
+    }
+    return CustomScrollView(
+      slivers: [
+        _buildSeriesGridView(logic.seriesList),
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
+      ],
+    );
+  }
+
+  _buildSeriesGridView(List<Series> seriesList) {
+    return SliverGrid.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         mainAxisExtent: itemHeight,
         maxCrossAxisExtent: maxItemWidth,
-        // maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
+        // maxCrossAxisExtent: MediaQuery.of(context).size.width / 1,
       ),
+      itemCount: seriesList.length,
       itemBuilder: (context, index) {
-        var series = logic.seriesList[index];
-        return Card(
-          child: InkWell(
-            onTap: () {
-              // 进入系列详情页
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SeriesDetailPage(series),
-                  )).then((value) async {
-                // 更新该系列
-                logic.seriesList[index] =
-                    await SeriesDao.getSeriesById(series.id);
-                logic.update();
-              });
-            },
-            onLongPress: () {
-              // 长按时也要弹出操作菜单，这样为动漫选择系列时也能重命名和删除了
-              _showOpMenuDialog(context, series);
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOverlayCover(series),
-                _buildInfo(series, context),
-              ],
-            ),
-          ),
-        );
+        return _buildSeriesItem(context, seriesList, index);
       },
+    );
+  }
+
+  _buildSeriesItem(BuildContext context, List<Series> seriesList, int index) {
+    var series = seriesList[index];
+    return Card(
+      child: InkWell(
+        onTap: () {
+          // 进入系列详情页
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SeriesDetailPage(series),
+              )).then((value) async {
+            // 更新该系列
+            seriesList[index] = await SeriesDao.getSeriesById(series.id);
+            logic.update();
+          });
+        },
+        onLongPress: () {
+          _showOpMenuDialog(context, series);
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildOverlayCover(series),
+            _buildInfo(series, context),
+          ],
+        ),
+      ),
     );
   }
 
@@ -171,10 +206,57 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   ),
                 ),
                 const Spacer(),
-                _buildMoreButton(context, series),
+                enableSelectSeriesForAnime
+                    ? Container(
+                        margin: const EdgeInsets.only(right: 5),
+                        child: _buildJoinButton(context, series),
+                      )
+                    : _buildMoreButton(context, series),
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  InkWell _buildJoinButton(BuildContext context, Series series) {
+    bool added =
+        addedSeriesList.indexWhere((element) => element.id == series.id) >= 0;
+    var color = added
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).primaryColor;
+    return InkWell(
+      borderRadius: BorderRadius.circular(99),
+      onTap: () async {
+        if (added) {
+          series.animes
+              .removeWhere((element) => element.animeId == widget.animeId);
+          AnimeSeriesDao.deleteAnimeSeries(widget.animeId, series.id);
+        } else {
+          series.animes.clear();
+          await AnimeSeriesDao.insertAnimeSeries(widget.animeId, series.id);
+          // 重新获取该系列的所有动漫，也可以直接添加，但顺序不一样
+          series.animes =
+              await AnimeSeriesDao.getAnimesBySeriesIds([series.id]);
+        }
+        logic.update();
+      },
+      onLongPress: () {
+        // 避免触发背景卡片长按弹出对话框
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          // color:color,
+          border: Border.all(color: color),
+          borderRadius: BorderRadius.circular(99),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        child: Text(
+          added ? '退出' : '加入',
+          style: TextStyle(
+              color: color, fontSize: 12, fontWeight: FontWeight.w600),
+          // style: TextStyle(color: Colors.white, fontSize: 12),
         ),
       ),
     );
