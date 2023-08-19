@@ -28,7 +28,6 @@ class _AggregatePageState extends State<AggregatePage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
 
-  double get buttonSize => 40.0;
   double get itemHeight => 90.0;
   double get itemWidth => 100.0;
 
@@ -164,23 +163,20 @@ class _AggregatePageState extends State<AggregatePage> {
                 ClimbWebsite climbWebsite = usableWebsites[index];
 
                 return IconTextButton(
-                    iconSize: 45,
                     padding:
                         const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-                    margin: const EdgeInsets.all(6),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
                     onTap: () => _enterSourceDetail(climbWebsite),
                     icon: Stack(
                       children: [
-                        WebSiteLogo(
-                            url: climbWebsite.iconUrl, size: buttonSize),
+                        WebSiteLogo(url: climbWebsite.iconUrl, size: 40),
                         _buildPingStatus(climbWebsite.pingStatus)
                       ],
                     ),
                     text: Text(
                       climbWebsite.name,
                       overflow: TextOverflow.ellipsis,
-                      textScaleFactor: 0.9,
-                      style: const TextStyle(height: 1.1),
+                      style: const TextStyle(height: 1.1, fontSize: 13),
                     ));
               }),
         ],
@@ -204,13 +200,13 @@ class _AggregatePageState extends State<AggregatePage> {
       right: 0,
       bottom: 0,
       child: Container(
-        height: 16,
-        width: 16,
+        height: 12,
+        width: 12,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Theme.of(context).appBarTheme.backgroundColor,
         ),
-        child: Icon(Icons.circle, size: 12, color: pingStatus.color),
+        child: Icon(Icons.circle, size: 10, color: pingStatus.color),
       ),
     );
   }

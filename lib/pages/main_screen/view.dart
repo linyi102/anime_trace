@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -115,15 +114,18 @@ class _MainScreenState extends State<MainScreen> {
 
     for (int i = 0; i < logic.tabs.length; ++i) {
       var mainTab = logic.tabs[i];
+      double radius = 99;
 
       bool isSelected = logic.selectedTabIdx == i;
       widgets.add(
         Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppTheme.cardRadius)),
+            borderRadius: BorderRadius.circular(radius),
+            // color: isSelected ? Theme.of(context).hoverColor : null,
+          ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
           child: InkWell(
-            borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+            borderRadius: BorderRadius.circular(radius),
             onTap: () {
               if (logic.searchTabIdx == i && logic.selectedTabIdx == i) {
                 // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
