@@ -17,6 +17,9 @@ class AnimeController extends GetxController {
   bool get isCollected => anime.isCollected();
   bool loadingAnime = false;
 
+  String tag;
+  AnimeController(this.tag);
+
   /// 集、笔记
   List<Episode> episodes = [];
   var loadEpisodeOk = false;
@@ -83,6 +86,13 @@ class AnimeController extends GetxController {
 
     // 重绘appbar(隐藏更多按钮)、重绘信息行(右侧显示收藏按钮)、重绘集(不显示集信息)
     update([appbarId, infoId, episodeId]);
+  }
+
+  reloadAnime(Anime anime) {
+    // 可能在搜索内部添加该动漫了，因此需要重新获取动漫信息
+    loadAnime(anime);
+    // 还有重新获取集信息
+    loadEpisode();
   }
 
   void loadAnime(Anime newAnime) async {

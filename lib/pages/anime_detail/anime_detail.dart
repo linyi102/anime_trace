@@ -31,6 +31,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   final LabelsController labelsController = Get.find(); // 动漫详细页的标签
 
   Anime get _anime => animeController.anime;
+  String tag = DateTime.now().millisecondsSinceEpoch.toString();
 
   @override
   void initState() {
@@ -40,11 +41,11 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     // 如果传入的动漫id>0，或者传入的动漫id>0，但在数据库中找不到
 
     animeController = Get.put(
-      AnimeController(),
+      AnimeController(tag),
       // 用id作为tag，当重复进入相同id的动漫时信息仍相同。但是对于没有收藏的动漫，会因为id相同从而当作一样的动漫
       // 也不能用动漫链接，因为有些是自定义动漫
       // tag: widget.anime.animeId.toString(),
-      // tag: DateTime.now().millisecondsSinceEpoch.toString(),
+      tag: tag,
     );
 
     animeController.loadAnime(widget.anime);
@@ -92,6 +93,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               child: Stack(children: [
                 GetBuilder<AnimeController>(
                   id: animeController.detailPageId,
+                  tag: tag,
                   init: animeController,
                   initState: (_) {},
                   builder: (_) {

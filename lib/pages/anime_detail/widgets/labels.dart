@@ -46,22 +46,14 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
             .map((label) => GestureDetector(
                   onTap: () async {
                     Log.info("点按标签：$label");
-                    // 关闭当前详细页并打开本地动漫搜索页(因为如果不关闭当前详细页，则当前的animeController里的动漫会被后来打开的动漫所覆盖)
-                    // 使用pushReplacement而非先pop再push，这样不就会显示关闭详细页的路由动画了
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DbAnimeSearchPage(incomingLabelId: label.id)),
-                        result: _anime);
-
-                    // 进入某些动漫无法显示集信息，很奇怪，也不是ids的问题
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           SearchDbAnime(incomingLabelId: label.id)),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              DbAnimeSearchPage(incomingLabelId: label.id)),
+                    ).then((value) {
+                      widget.animeController.reloadAnime(_anime);
+                    });
                   },
                   onLongPress: () {
                     Log.info("长按标签：$label");

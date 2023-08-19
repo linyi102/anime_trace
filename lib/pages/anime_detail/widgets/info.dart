@@ -47,6 +47,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   Widget build(BuildContext context) {
     return GetBuilder<AnimeController>(
       id: widget.animeController.infoId,
+      tag: widget.animeController.tag,
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
@@ -140,6 +141,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   _buildRateIcon() {
     return GetBuilder<AnimeController>(
       id: widget.animeController.rateNoteCountId,
+      tag: widget.animeController.tag,
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
@@ -177,7 +179,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                     builder: (context) => SeriesManagePage(
                       animeId: widget.animeController.anime.animeId,
                     ),
-                  ));
+                  )).then((value) {
+                widget.animeController.reloadAnime(_anime);
+              });
             })
     ];
   }
@@ -230,53 +234,16 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       iconData: MingCuteIcons.mgc_search_line,
       text: '搜索',
       onTap: () {
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => SearchDbAnime(
-        //         kw: _anime.animeName,
-        //       ),
-        //     )).then((value) {
-        //   // 可能在搜索内部添加该动漫了，因此需要重新获取动漫信息
-        //   // 当前仍存在问题，所以改用pushreplacement
-        //   // widget.animeController.loadAnime(_anime);
-        // });
-
-        Navigator.pushReplacement(
+        Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DbAnimeSearchPage(kw: _anime.animeName)),
-            result: _anime);
+              builder: (context) => DbAnimeSearchPage(kw: _anime.animeName),
+            )).then((value) {
+          widget.animeController.reloadAnime(_anime);
+        });
       },
     );
   }
-
-  // SizedBox _buildAddBtn() {
-  //   return SizedBox(
-  //     height: 40,
-  //     width: 80,
-  //     child: MaterialButton(
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(50),
-  //         ),
-  //         onPressed: () {
-  //           dialogSelectChecklist(setState, context, _anime,
-  //               onlyShowChecklist: true,
-  //               enableClimbDetailInfo: false, callback: (newAnime) {
-  //             widget.animeController.updateAnime(newAnime);
-  //             widget.animeController.loadEpisode();
-  //           });
-  //         },
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: const [
-  //             Icon(Icons.favorite_border, size: 18),
-  //             SizedBox(width: 5),
-  //             Text("收藏"),
-  //           ],
-  //         )),
-  //   );
-  // }
 
   _buildInfo() {
     const double smallIconSize = 14;

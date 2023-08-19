@@ -42,6 +42,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
     return GetBuilder<AnimeController>(
       id: widget.animeController.appbarId,
+      tag: widget.animeController.tag,
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
@@ -158,6 +159,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         ),
         child: GetBuilder<AnimeController>(
           id: widget.animeController.coverId,
+          tag: widget.animeController.tag,
           init: widget.animeController,
           builder: (controller) {
             return CommonImage(

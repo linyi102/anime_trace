@@ -53,6 +53,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
       padding: const EdgeInsets.all(0),
       sliver: GetBuilder<AnimeController>(
         id: widget.animeController.episodeId,
+        tag: widget.animeController.tag,
         init: widget.animeController,
         initState: (_) {},
         builder: (_) {
