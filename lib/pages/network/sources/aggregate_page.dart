@@ -165,8 +165,9 @@ class _AggregatePageState extends State<AggregatePage> {
 
                 return IconTextButton(
                     iconSize: 45,
-                    height: itemHeight,
-                    width: itemWidth,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                    margin: const EdgeInsets.all(6),
                     onTap: () => _enterSourceDetail(climbWebsite),
                     icon: Stack(
                       children: [

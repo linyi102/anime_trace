@@ -199,7 +199,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CommonDivider(),
+          // const CommonDivider(),
           NavigationBar(
               height: 60,
               elevation: 0,
