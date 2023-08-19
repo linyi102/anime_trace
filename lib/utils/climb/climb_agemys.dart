@@ -15,10 +15,11 @@ class ClimbAgemys extends Climb {
   ClimbAgemys._();
 
   @override
-  // String baseUrl = "https://www.agemys.cc";
-  // String get baseUrl => "https://www.agemys.net"; // 2022.10.27
-  // String get baseUrl => "https://www.agemys.vip"; // 2023.04.19
-  String get baseUrl => "https://www.agedm.tv"; // 2023.07.02
+  String get baseUrl =>
+      // "https://www.agemys.cc";
+      // "https://www.agemys.net"; // 2022.10.27
+      // "https://www.agemys.vip"; // 2023.04.19
+      "https://age.tv"; // 2023.07.02
 
   @override
   String get sourceName => "AGE动漫";
@@ -34,16 +35,17 @@ class ClimbAgemys extends Climb {
     }
 
     List<Anime> climbAnimes = [];
-    var elements = document.getElementsByClassName("cell_poster");
+    var elements = document.getElementsByClassName("cata_video_item");
 
     for (var element in elements) {
       String? coverUrl =
-          element.getElementsByTagName("img")[0].attributes["src"];
+          element.getElementsByTagName("img")[0].attributes["data-original"];
       String? animeName =
           element.getElementsByTagName("img")[0].attributes["alt"];
-      String? animeUrl = element.attributes["href"];
+      String? animeUrl =
+          element.getElementsByTagName("a")[0].attributes["href"];
       String? episodeCntStr =
-          element.getElementsByClassName("newname")[0].innerHtml;
+          element.getElementsByClassName("video_play_status")[0].innerHtml;
       int episodeCnt = ClimbYhdm.parseEpisodeCntOfyhdm(
           episodeCntStr); // AGE动漫的集表示和樱花动漫的一致，因此也使用这个解析
       if (coverUrl != null) {
@@ -54,23 +56,10 @@ class ClimbAgemys extends Climb {
         animeName: animeName ?? "",
         animeEpisodeCnt: episodeCnt,
         animeCoverUrl: coverUrl ?? "",
-        animeUrl: animeUrl == null ? "" : (baseUrl + animeUrl),
+        animeUrl: animeUrl ?? "",
       );
       Log.info("爬取封面：$coverUrl");
       Log.info("爬取动漫网址：${climbAnime.animeUrl}");
-
-      // 注意是document，而上面的element只是用于获取图片，以及得知查询的动漫数量
-      climbAnime.category =
-          document.getElementsByClassName("cell_imform_kv")[0].innerHtml;
-      climbAnime.nameOri =
-          document.getElementsByClassName("cell_imform_kv")[1].innerHtml;
-      climbAnime.nameAnother =
-          document.getElementsByClassName("cell_imform_kv")[2].innerHtml;
-      if (climbAnime.nameAnother == "暂无") climbAnime.nameAnother = "";
-      climbAnime.premiereTime =
-          document.getElementsByClassName("cell_imform_kv")[3].innerHtml;
-      climbAnime.playStatus =
-          document.getElementsByClassName("cell_imform_kv")[4].innerHtml;
       climbAnimes.add(climbAnime);
     }
     Log.info("解析完毕√");
@@ -95,22 +84,22 @@ class ClimbAgemys extends Climb {
     anime.premiereTime = detailImformValues[6].innerHtml;
     anime.playStatus = detailImformValues[7].innerHtml;
 
-    String desc = document
-        .getElementsByClassName("detail_imform_desc_pre")[0]
-        .getElementsByTagName("p")[0]
-        .innerHtml;
+    String desc =
+        document.getElementsByClassName("video_detail_desc")[0].innerHtml;
     anime.animeDesc = desc.replaceAll("<br>", "\n");
-    anime.animeCoverUrl =
-        document.getElementsByClassName("poster")[0].attributes["src"]!;
+    anime.animeCoverUrl = document
+        .getElementsByClassName("video_detail_cover")[0]
+        .getElementsByTagName("img")[0]
+        .attributes["data-original"]!;
 
     // 集数：从所有播放列表中选择最大的
     // 如果播放列表中有PV，直接跳过看下一个播放列表
     // 如果有全集，直接返回1
     // 然后获取播放列表的长度
     List<int> episodeNumbers = [];
-    var movUrls = document.getElementsByClassName("movurl");
-    for (var movUrl in movUrls) {
-      var lis = movUrl.getElementsByTagName("li");
+    var uls = document.getElementsByClassName("video_detail_episode");
+    for (var ul in uls) {
+      var lis = ul.getElementsByTagName("li");
       if (lis.isNotEmpty) {
         String first = lis[0].getElementsByTagName("a")[0].innerHtml;
         if (first.contains("PV")) {
@@ -120,7 +109,7 @@ class ClimbAgemys extends Climb {
           break;
         } else {
           // 最后一话可能是OVA3或OAD，而不是第xx集，所以获取长度而非OVA
-          episodeNumbers.add(movUrl.getElementsByTagName("li").length);
+          episodeNumbers.add(ul.getElementsByTagName("li").length);
         }
       } else {
         // 播放列表是空的，此时不添加到episodeNumbers
