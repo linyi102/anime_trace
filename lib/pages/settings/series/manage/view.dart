@@ -400,7 +400,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => Container(
                       padding: const EdgeInsets.only(right: 2),
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       child: CommonImage(series.animes[index].animeCoverUrl)),
                 ),
     );

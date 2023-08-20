@@ -1,3 +1,4 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
@@ -176,8 +176,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   },
                   tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                   icon: hideNoteInAnimeDetail
-                      ? const Icon(MingCuteIcons.mgc_list_expansion_line)
-                      : const Icon(MingCuteIcons.mgc_list_collapse_line)),
+                      ? const Icon(EvaIcons.expandOutline)
+                      : const Icon(EvaIcons.collapseOutline)),
             ],
           ),
         ],

@@ -199,6 +199,9 @@ class MyAppState extends State<MyApp> {
           ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
           : const EdgeInsets.only(top: 10),
       elevation: 0,
+      color: themeData.brightness == Brightness.dark
+          ? curDarkThemeColor.cardColor
+          : curLightThemeColor.cardColor,
     );
   }
 
@@ -227,7 +230,7 @@ class MyAppState extends State<MyApp> {
       textTheme: _getTextTheme(textStyle, context),
       primary: curDarkThemeColor.primaryColor,
       scaffoldBackground: curDarkThemeColor.bodyColor,
-      surface: curDarkThemeColor.cardColor,
+      // surface: curDarkThemeColor.cardColor,
       // BottomNavigationBar
       background: curDarkThemeColor.appBarColor,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -238,8 +241,8 @@ class MyAppState extends State<MyApp> {
       tooltipsMatchBackground: true,
       subThemesData: FlexSubThemesData(
         // chip颜色
-        chipSchemeColor: SchemeColor.surfaceVariant,
-        chipSelectedSchemeColor: SchemeColor.surfaceVariant,
+        chipSchemeColor: SchemeColor.outlineVariant,
+        chipSelectedSchemeColor: SchemeColor.inversePrimary,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
         // true会导致AppBar的title字体有些大
@@ -266,13 +269,26 @@ class MyAppState extends State<MyApp> {
   }
 
   ThemeData _getFlexThemeDataLight() {
+    // return FlexThemeData.light(
+    //   scheme: FlexScheme.materialBaseline,
+    //   surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+    //   blendLevel: 7,
+    //   subThemesData: const FlexSubThemesData(
+    //     blendOnLevel: 10,
+    //     blendOnColors: false,
+    //     chipSchemeColor: SchemeColor.outlineVariant,
+    //     chipSelectedSchemeColor: SchemeColor.inversePrimary,
+    //     chipRadius: 18.0,
+    //   ),
+    //   visualDensity: FlexColorScheme.comfortablePlatformDensity,
+    // );
     return FlexThemeData.light(
       scheme: baseScheme,
       useMaterial3: themeController.useM3.value,
       textTheme: _getTextTheme(textStyle, context),
       primary: curLightThemeColor.primaryColor,
       scaffoldBackground: curLightThemeColor.bodyColor,
-      surface: curLightThemeColor.cardColor,
+      // surface: curLightThemeColor.cardColor,
       // BottomNavigationBar
       background: curLightThemeColor.appBarColor,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -285,8 +301,8 @@ class MyAppState extends State<MyApp> {
       tooltipsMatchBackground: true,
       subThemesData: FlexSubThemesData(
         // chip颜色
-        chipSchemeColor: SchemeColor.surfaceVariant,
-        chipSelectedSchemeColor: SchemeColor.surfaceVariant,
+        chipSchemeColor: SchemeColor.outlineVariant,
+        chipSelectedSchemeColor: SchemeColor.inversePrimary,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
         // true会导致AppBar的title字体有些大

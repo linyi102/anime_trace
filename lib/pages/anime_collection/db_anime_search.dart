@@ -336,6 +336,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
             bool checked = selectedLabels.contains(e);
 
             return FilterChip(
+              showCheckmark: false,
               pressElevation: 0,
               selected: checked,
               label: Text(e.name),

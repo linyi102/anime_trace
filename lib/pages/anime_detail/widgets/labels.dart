@@ -58,11 +58,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                   onLongPress: () {
                     Log.info("长按标签：$label");
                   },
-                  child: Chip(
-                    label: Text(label.name),
-                    backgroundColor:
-                        Theme.of(context).chipTheme.backgroundColor,
-                  ),
+                  child: Chip(label: Text(label.name)),
                 ))
             .toList();
 

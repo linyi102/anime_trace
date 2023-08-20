@@ -88,7 +88,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
               label: Text(label.name),
               backgroundColor: widget.enableSelectLabelForAnime && selected
                   ? Theme.of(context).chipTheme.selectedColor
-                  : Theme.of(context).chipTheme.disabledColor,
+                  : null,
             ),
             onTap: () async {
               if (widget.enableSelectLabelForAnime) {
