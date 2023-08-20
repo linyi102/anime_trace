@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -11,6 +13,7 @@ import '../../../../dao/series_dao.dart';
 import '../../../../models/series.dart';
 import '../../../../utils/delay_util.dart';
 import '../../../../utils/log.dart';
+import '../../../../values/values.dart';
 import '../../../../widgets/common_scaffold_body.dart';
 import '../detail/view.dart';
 import 'logic.dart';
@@ -24,13 +27,15 @@ class SeriesManagePage extends StatefulWidget {
 }
 
 class _SeriesManagePageState extends State<SeriesManagePage> {
-  SeriesManageLogic get logic => Get.put(SeriesManageLogic());
+  late SeriesManageLogic logic;
   double get itemHeight => 230;
   double get maxItemWidth => 260;
   double get coverHeight => 160;
-  bool get enableSelectSeriesForAnime => widget.animeId > 0;
+  bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
 
   bool searchAction = false;
+  bool showRecommendedSeries =
+      SPUtil.getBool(SPKey.showRecommendedSeries, defaultValue: true);
 
   // 该动漫已加入的系列
   List<Series> get addedSeriesList {
@@ -52,6 +57,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   @override
   void initState() {
     super.initState();
+    logic = Get.put(SeriesManageLogic(widget.animeId));
   }
 
   @override
@@ -97,26 +103,65 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   }
 
   _buildSeriesBody(BuildContext context) {
-    if (enableSelectSeriesForAnime) {
-      return CustomScrollView(
-        slivers: [
-          const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
-          _buildSeriesGridView(addedSeriesList),
-          const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
-          _buildSeriesGridView(logic.seriesList),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
-      );
-    }
     return CustomScrollView(
       slivers: [
+        if (enableSelectSeriesForAnime)
+          const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
+        if (enableSelectSeriesForAnime) _buildSeriesGridView(addedSeriesList),
+        //
+        if (enableSelectSeriesForAnime)
+          SliverToBoxAdapter(child: _buildRecommendTitle(context)),
+        if (enableSelectSeriesForAnime && showRecommendedSeries)
+          _buildSeriesGridView(logic.recommendSeriesList),
+        //
+        const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
         _buildSeriesGridView(logic.seriesList),
+        //
+        if (!enableSelectSeriesForAnime)
+          SliverToBoxAdapter(child: _buildRecommendTitle(context)),
+        if (!enableSelectSeriesForAnime && showRecommendedSeries)
+          _buildSeriesGridView(logic.recommendSeriesList),
+        //
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }
 
+  _buildRecommendTitle(BuildContext context) {
+    return SettingTitle(
+      title: '推荐',
+      trailing: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () {
+          setState(() {
+            showRecommendedSeries = !showRecommendedSeries;
+          });
+          SPUtil.setBool(SPKey.showRecommendedSeries, showRecommendedSeries);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            showRecommendedSeries ? '隐藏' : '显示',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+      ),
+    );
+  }
+
   _buildSeriesGridView(List<Series> seriesList) {
+    // if (seriesList.isEmpty) {
+    //   return const SliverToBoxAdapter(
+    //     child: Padding(
+    //       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+    //       child: Text('什么都没有~'),
+    //     ),
+    //   );
+    // }
+
     return SliverGrid.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         mainAxisExtent: itemHeight,
@@ -134,21 +179,12 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     var series = seriesList[index];
     return Card(
       child: InkWell(
-        onTap: () {
-          // 进入系列详情页
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SeriesDetailPage(series),
-              )).then((value) async {
-            // 更新该系列
-            seriesList[index] = await SeriesDao.getSeriesById(series.id);
-            logic.update();
-          });
-        },
-        onLongPress: () {
-          _showOpMenuDialog(context, series);
-        },
+        onTap: series.id == logic.recommendSeriesId
+            ? null
+            : () => _toSeriesDetailPage(context, series, seriesList, index),
+        onLongPress: series.id == logic.recommendSeriesId
+            ? null
+            : () => _showOpMenuDialog(context, series),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -158,6 +194,19 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ),
       ),
     );
+  }
+
+  void _toSeriesDetailPage(
+      BuildContext context, Series series, List<Series> seriesList, int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SeriesDetailPage(series),
+        )).then((value) async {
+      // 更新该系列
+      seriesList[index] = await SeriesDao.getSeriesById(series.id);
+      logic.update();
+    });
   }
 
   _buildMoreButton(BuildContext context, Series series) {
@@ -183,7 +232,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   _buildInfo(Series series, BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.only(left: 8, top: 8),
+        padding: const EdgeInsets.only(left: 8, top: 8, right: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -198,20 +247,16 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             ),
             Row(
               children: [
-                Text(
-                  '${series.animes.length}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).hintColor,
+                if (series.id != logic.recommendSeriesId)
+                  Text(
+                    '${series.animes.length}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                ),
                 const Spacer(),
-                enableSelectSeriesForAnime
-                    ? Container(
-                        margin: const EdgeInsets.only(right: 5),
-                        child: _buildJoinButton(context, series),
-                      )
-                    : _buildMoreButton(context, series),
+                _buildActionButton(context, series),
               ],
             )
           ],
@@ -220,26 +265,51 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
-  InkWell _buildJoinButton(BuildContext context, Series series) {
-    bool added =
-        addedSeriesList.indexWhere((element) => element.id == series.id) >= 0;
-    var color = added
+  InkWell _buildActionButton(BuildContext context, Series series) {
+    var isAdded = 'isAdded', // 动漫已加入该系列
+        isCreated = 'isCreated', // 已创建该系列
+        isNotCreated = 'isNotCreated'; // 为创建该系列
+    String status;
+
+    if (series.id == logic.recommendSeriesId) {
+      status = isNotCreated;
+    } else if (addedSeriesList
+            .indexWhere((element) => element.id == series.id) >=
+        0) {
+      status = isAdded;
+    } else {
+      status = isCreated;
+    }
+
+    var color = status == isAdded
         ? Theme.of(context).colorScheme.error
         : Theme.of(context).primaryColor;
+
+    // 进入系列管理页时：推荐的系列显示创建按钮，已创建的系列显示更多按钮
+    // 从动漫详情页中进入该页时：推荐的系列显示创建按钮，已创建的系列显示加入按钮，已加入的系列显示退出按钮
+    if (!enableSelectSeriesForAnime && status == isCreated) {
+      return _buildMoreButton(context, series);
+    }
+
     return InkWell(
       borderRadius: BorderRadius.circular(99),
       onTap: () async {
-        if (added) {
-          series.animes
-              .removeWhere((element) => element.animeId == widget.animeId);
-          AnimeSeriesDao.deleteAnimeSeries(widget.animeId, series.id);
-        } else {
-          series.animes.clear();
+        if (status == isNotCreated) {
+          // 创建该系列
+          int newId = await SeriesDao.insert(series);
+          if (enableSelectSeriesForAnime && newId > 0) {
+            // 加入该系列
+            await AnimeSeriesDao.insertAnimeSeries(widget.animeId, newId);
+          }
+        } else if (status == isAdded) {
+          // 退出该系列
+          await AnimeSeriesDao.deleteAnimeSeries(widget.animeId, series.id);
+        } else if (status == isCreated) {
+          // 加入该系列
           await AnimeSeriesDao.insertAnimeSeries(widget.animeId, series.id);
-          // 重新获取该系列的所有动漫，也可以直接添加，但顺序不一样
-          series.animes =
-              await AnimeSeriesDao.getAnimesBySeriesIds([series.id]);
         }
+
+        logic.getAllSeries();
         logic.update();
       },
       onLongPress: () {
@@ -253,7 +323,13 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         child: Text(
-          added ? '退出' : '加入',
+          status == isNotCreated && enableSelectSeriesForAnime
+              ? '创建并加入'
+              : status == isNotCreated
+                  ? '创建'
+                  : status == isAdded
+                      ? '退出'
+                      : '加入',
           style: TextStyle(
               color: color, fontSize: 12, fontWeight: FontWeight.w600),
           // style: TextStyle(color: Colors.white, fontSize: 12),
@@ -269,14 +345,26 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
     return SizedBox(
       height: coverHeight,
-      child: ListView.builder(
-        itemCount: imgCnt,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => Container(
-            padding: const EdgeInsets.only(right: 2),
-            color: Colors.white,
-            child: CommonImage(series.animes[index].animeCoverUrl)),
-      ),
+      child: imgCnt == 0
+          ? Center(
+              child: SvgAssetIcon(
+                assetPath: Assets.iconsCollections24Regular,
+                size: coverHeight / 3,
+                color: Theme.of(context).hintColor.withOpacity(0.2),
+              ),
+            )
+          : imgCnt == 1
+              ? SizedBox(
+                  width: maxItemWidth,
+                  child: CommonImage(series.animes.first.animeCoverUrl))
+              : ListView.builder(
+                  itemCount: imgCnt,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => Container(
+                      padding: const EdgeInsets.only(right: 2),
+                      color: Colors.white,
+                      child: CommonImage(series.animes[index].animeCoverUrl)),
+                ),
     );
   }
 
@@ -363,10 +451,10 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                     },
                     child: const Text("取消")),
                 TextButton(
-                    onPressed: () {
-                      SeriesDao.delete(series.id);
-                      logic.seriesList.remove(series);
+                    onPressed: () async {
                       Navigator.pop(context);
+                      await SeriesDao.delete(series.id);
+                      logic.getAllSeries();
                     },
                     child: Text(
                       "删除",

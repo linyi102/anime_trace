@@ -22,3 +22,8 @@ const bannerNetworkImageUrl = "bannerNetworkImageUrl";
 
 /// banner类型下标
 const bannerSelectedImageTypeIdx = "bannerSelectedImageTypeIdx";
+
+class SPKey {
+  /// 显示推荐系列
+  static get showRecommendedSeries => "showRecommendedSeries";
+}
