@@ -204,7 +204,6 @@ class MyAppState extends State<MyApp> {
 
   ListTileThemeData _getListTileTheme(ThemeData themeData) {
     return ListTileThemeData(
-      iconColor: themeData.hintColor,
       titleTextStyle: themeData.textTheme.bodyMedium,
       subtitleTextStyle: themeData.textTheme.bodySmall,
     );

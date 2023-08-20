@@ -211,10 +211,16 @@ class UpdateRecordPage extends StatelessWidget {
               ),
             ),
             OutlinedButton(
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(const Size(60, 36)),
+              ),
               onPressed: updateRecordController.updating.value
                   ? null
                   : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-              child: const Text("更新"),
+              child: const Text(
+                "更新",
+                style: TextStyle(fontSize: 12),
+              ),
             ),
           ],
         ),

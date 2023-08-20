@@ -10,7 +10,6 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 笔记卡片
 /// 使用：所有笔记页、所有评价页、动漫详细评价页
@@ -164,12 +163,7 @@ class _NoteCardState extends State<NoteCard> {
     return IconButton(
       visualDensity: VisualDensity.compact,
       splashRadius: 24,
-      icon: Icon(
-        // MingCuteIcons.mgc_more_1_line,
-        Icons.more_horiz,
-        // size: 18,
-        color: Theme.of(context).textTheme.bodySmall?.color,
-      ),
+      icon: const Icon(Icons.more_horiz),
       onPressed: () => _showMoreDialog(note),
     );
   }
@@ -181,7 +175,7 @@ class _NoteCardState extends State<NoteCard> {
           return SimpleDialog(
             children: [
               ListTile(
-                leading: const Icon(MingCuteIcons.mgc_edit_line),
+                leading: const Icon(Icons.edit),
                 title: const Text("编辑"),
                 onTap: () {
                   Navigator.pop(dialogContext);
@@ -189,7 +183,7 @@ class _NoteCardState extends State<NoteCard> {
                 },
               ),
               ListTile(
-                leading: const Icon(MingCuteIcons.mgc_copy_fill),
+                leading: const Icon(Icons.copy_rounded),
                 title: const Text("复制内容"),
                 onTap: () {
                   CommonUtil.copyContent(note.noteContent);
@@ -197,7 +191,7 @@ class _NoteCardState extends State<NoteCard> {
                 },
               ),
               ListTile(
-                leading: const Icon(MingCuteIcons.mgc_delete_2_fill),
+                leading: const Icon(Icons.delete_outline),
                 title: const Text("删除笔记"),
                 onTap: () {
                   Navigator.pop(dialogContext);

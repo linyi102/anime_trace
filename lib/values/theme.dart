@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -15,8 +17,8 @@ class AppTheme {
   static bool isDark = false;
 
   /// wrap间距
-  static double wrapSacing = 2.0;
-  static double wrapRunSpacing = 0.0;
+  static double get wrapSacing => Platform.isWindows ? 8.0 : 4.0;
+  static double get wrapRunSpacing => Platform.isWindows ? 8.0 : 0.0;
 
   /// 笔记字体样式：动漫详细页里的笔记、评价，以及笔记列表中的笔记，以及笔记编辑页
   static TextStyle noteStyle =

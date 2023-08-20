@@ -53,25 +53,13 @@ class _SeriesFormPageState extends State<SeriesFormPage> {
                 decoration: const InputDecoration(
                   labelText: '名称',
                 ),
+                autofocus: true,
                 maxLength: 30,
               ),
               TextFormField(
                 controller: descController,
                 decoration: const InputDecoration(
                   labelText: '描述',
-                  border: OutlineInputBorder(
-                    ///设置边框四个角的弧度
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-
-                    ///用来配置边框的样式
-                    borderSide: BorderSide(
-                      ///设置边框的颜色
-                      color: Colors.red,
-
-                      ///设置边框的粗细
-                      width: 2.0,
-                    ),
-                  ),
                 ),
                 maxLength: 300,
               ),
