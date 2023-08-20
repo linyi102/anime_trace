@@ -19,7 +19,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
-  Global.init().then((_) => runApp(const WindowWrapper(child: MyApp())));
+  Global.init().then((_) => runApp(const MyApp()));
 }
 
 class WindowWrapper extends StatefulWidget {
@@ -107,7 +107,7 @@ class MyAppState extends State<MyApp> {
       hideFooterWhenNotFull: true,
       child: Obx(() {
         return GetMaterialApp(
-          home: const MainScreen(),
+          home: const WindowWrapper(child: MainScreen()),
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
