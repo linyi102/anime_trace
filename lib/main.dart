@@ -269,19 +269,6 @@ class MyAppState extends State<MyApp> {
   }
 
   ThemeData _getFlexThemeDataLight() {
-    // return FlexThemeData.light(
-    //   scheme: FlexScheme.materialBaseline,
-    //   surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-    //   blendLevel: 7,
-    //   subThemesData: const FlexSubThemesData(
-    //     blendOnLevel: 10,
-    //     blendOnColors: false,
-    //     chipSchemeColor: SchemeColor.outlineVariant,
-    //     chipSelectedSchemeColor: SchemeColor.inversePrimary,
-    //     chipRadius: 18.0,
-    //   ),
-    //   visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    // );
     return FlexThemeData.light(
       scheme: baseScheme,
       useMaterial3: themeController.useM3.value,

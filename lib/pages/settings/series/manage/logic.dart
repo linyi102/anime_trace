@@ -19,7 +19,6 @@ class SeriesManageLogic extends GetxController {
   int get recommendSeriesId => -1;
   int animeId;
   bool get enableSelectSeriesForAnime => animeId > 0;
-
   SeriesManageLogic(this.animeId);
 
   @override
@@ -40,7 +39,9 @@ class SeriesManageLogic extends GetxController {
   Future<void> getAllSeries() async {
     seriesList = await SeriesDao.getAllSeries();
     loadingSeriesList = false;
-    update();
+    // 动漫详情页进入系列页后，推荐还没生成，此时显示全部，推荐生成后会导致突然下移(闪烁)，所以此处不进行重绘
+    // 而是等推荐系列生成完毕后一起显示
+    // update();
 
     // 获取所有系列后，再根据所有系列生成推荐系列
     await getRecommendSeries();
@@ -108,7 +109,7 @@ class SeriesManageLogic extends GetxController {
   /// 根据动漫名推出系列名
   String _getRecommendSeriesName(String name) {
     RegExp regExp =
-        RegExp("(第.*(部|季|期)|ova|Ⅱ|oad|2 |剧场版)", caseSensitive: false);
+        RegExp("(第.*(部|季|期)|ova|Ⅱ|oad|[1-9] |剧场版)", caseSensitive: false);
     var match = regExp.firstMatch(name);
     if (match == null || match[0] == null) return '';
     String seasonText = match[0]!;

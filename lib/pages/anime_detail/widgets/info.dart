@@ -69,18 +69,19 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildInfo(),
-                    _buildDesc(),
-                    Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: AnimeDetailLabels(
-                            animeController: widget.animeController)),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: _genIcons,
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 10),
+                    _buildDesc(),
+                    Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: AnimeDetailLabels(
+                            animeController: widget.animeController)),
                   ],
                 ),
               ]),
@@ -208,7 +209,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       onTap: onTap,
       radius: 99,
       iconSize: iconSize,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       margin: EdgeInsets.zero,
     );
   }

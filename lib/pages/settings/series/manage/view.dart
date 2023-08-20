@@ -33,7 +33,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   double get itemHeight => 230;
   double get maxItemWidth => 260;
   double get coverHeight => 160;
-  bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
+  bool get enableSelectSeriesForAnime => widget.animeId > 0;
 
   bool searchAction = false;
   bool showRecommendedSeries =
@@ -111,7 +111,12 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       slivers: [
         if (enableSelectSeriesForAnime)
           const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
-        if (enableSelectSeriesForAnime) _buildSeriesGridView(addedSeriesList),
+        if (enableSelectSeriesForAnime)
+          _buildSeriesGridView(
+            addedSeriesList,
+            // 已加入是从全部系列中获取的，所以加载圈和加载全部共用一个
+            loading: logic.loadingSeriesList,
+          ),
         // 动漫详情页进入的系列页，推荐放在全部上方
         if (enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildAnimeRecommendTitle(context)),
@@ -355,6 +360,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     return InkWell(
       borderRadius: BorderRadius.circular(99),
       onTap: () async {
+        var cancel = ToastUtil.showLoading();
         if (status == isNotCreated) {
           // 创建该系列
           int newId = await SeriesDao.insert(series);
@@ -369,8 +375,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           // 加入该系列
           await AnimeSeriesDao.insertAnimeSeries(widget.animeId, series.id);
         }
-
-        logic.getAllSeries();
+        await logic.getAllSeries();
+        cancel();
       },
       onLongPress: () {
         // 避免触发背景卡片长按弹出对话框
