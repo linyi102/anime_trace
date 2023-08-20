@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -50,28 +51,34 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           slivers: [
             _buildSeriesAnimesGridView(context),
             SliverToBoxAdapter(child: _buildRecommendTitle(context)),
-            if (showRecommend) _buildRecommendedAnimes(),
             if (showRecommend && recommendAnimes.isNotEmpty)
-              SliverToBoxAdapter(
-                child: ListTile(
-                  title: Text(
-                    '全部添加',
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                  ),
-                  onTap: () async {
-                    for (var anime in recommendAnimes) {
-                      await AnimeSeriesDao.insertAnimeSeries(
-                          anime.animeId, widget.series.id);
-                    }
-                    getAnimes();
-                  },
-                ),
-              ),
+              SliverToBoxAdapter(child: _buildAddAllButton(context)),
+            if (showRecommend) _buildRecommendedAnimes(),
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       )),
       floatingActionButton: _buildFAB(context),
+    );
+  }
+
+  ListTile _buildAddAllButton(BuildContext context) {
+    return ListTile(
+      title: Text(
+        '添加全部',
+        style: TextStyle(color: Theme.of(context).primaryColor),
+      ),
+      onTap: () async {
+        ToastUtil.showLoading(
+            msg: '添加中',
+            task: () async {
+              for (var anime in recommendAnimes) {
+                await AnimeSeriesDao.insertAnimeSeries(
+                    anime.animeId, widget.series.id);
+              }
+              getAnimes();
+            });
+      },
     );
   }
 

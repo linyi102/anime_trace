@@ -40,24 +40,38 @@ class ToastUtil {
   }) {
     BotToast.showCustomLoading(
       toastBuilder: (void Function() cancelFunc) {
-        if (task == null) {
-          // 没有任务的话，等待1s后结束
-          Future.delayed(const Duration(seconds: 1), () {
-            cancelFunc.call();
-          });
-        } else {
-          task().then((value) {
-            // 关闭加载框
-            cancelFunc.call();
-            // 回调
-            if (onTaskComplete != null) onTaskComplete(value);
-          });
-        }
-
+        doTask(
+          task: task,
+          onTaskComplete: onTaskComplete,
+          cancelFunc: cancelFunc,
+        );
         return LoadingDialog(msg);
       },
       clickClose: clickClose,
     );
+  }
+
+  static doTask({
+    Future<dynamic> Function()? task,
+    Function(dynamic taskValue)? onTaskComplete,
+    required void Function() cancelFunc,
+  }) async {
+    if (task == null) {
+      // 没有任务的话，等待1s后结束
+      await Future.delayed(const Duration(seconds: 1));
+      cancelFunc();
+    } else {
+      var start = DateTime.now();
+      var taskValue = await task();
+      var end = DateTime.now();
+      if (end.difference(start).inMilliseconds < 300) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+      // 关闭加载框
+      cancelFunc();
+      // 回调
+      if (onTaskComplete != null) onTaskComplete(taskValue);
+    }
   }
 
   static showText(String msg) {

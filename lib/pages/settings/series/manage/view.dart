@@ -3,6 +3,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
@@ -108,7 +109,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (enableSelectSeriesForAnime)
           const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
         if (enableSelectSeriesForAnime) _buildSeriesGridView(addedSeriesList),
-        //
+        // 动漫详情页进入的系列页，推荐放在全部上方
         if (enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildRecommendTitle(context)),
         if (enableSelectSeriesForAnime && showRecommendedSeries)
@@ -116,14 +117,38 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         //
         const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
         _buildSeriesGridView(logic.seriesList),
-        //
+        // 所有推荐放在全部下方
         if (!enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildRecommendTitle(context)),
+        if (!enableSelectSeriesForAnime &&
+            showRecommendedSeries &&
+            logic.recommendSeriesList.isNotEmpty)
+          SliverToBoxAdapter(child: _buildCreateAllButton(context)),
         if (!enableSelectSeriesForAnime && showRecommendedSeries)
           _buildSeriesGridView(logic.recommendSeriesList),
+
         //
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
+    );
+  }
+
+  ListTile _buildCreateAllButton(BuildContext context) {
+    return ListTile(
+      title: Text(
+        '创建全部',
+        style: TextStyle(color: Theme.of(context).primaryColor),
+      ),
+      onTap: () async {
+        ToastUtil.showLoading(
+            msg: '创建中',
+            task: () async {
+              for (var series in logic.recommendSeriesList) {
+                await SeriesDao.insert(series);
+              }
+              logic.getAllSeries();
+            });
+      },
     );
   }
 
