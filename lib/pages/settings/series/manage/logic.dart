@@ -19,7 +19,8 @@ class SeriesManageLogic extends GetxController {
   int get recommendSeriesId => -1;
   int animeId;
   bool get enableSelectSeriesForAnime => animeId > 0;
-  SeriesManageLogic(this.animeId);
+  String tag;
+  SeriesManageLogic({required this.tag, required this.animeId});
 
   @override
   void onInit() {

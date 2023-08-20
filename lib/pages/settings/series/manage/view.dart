@@ -33,7 +33,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   double get itemHeight => 230;
   double get maxItemWidth => 260;
   double get coverHeight => 160;
-  bool get enableSelectSeriesForAnime => widget.animeId > 0;
+  bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
 
   bool searchAction = false;
   bool showRecommendedSeries =
@@ -59,7 +59,11 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   @override
   void initState() {
     super.initState();
-    logic = Get.put(SeriesManageLogic(widget.animeId));
+    // 使用tag，避免系列管理页->->系列详细页->动漫详细页->系列页，因为已经创建过logic了，所以传入的animeId仍然是最初的-1
+    // 很奇怪的是返回再进入系列页就正常了。更奇怪的是退出系列页时会删除logic，而返回到系列管理页时，logic仍能正常运行
+    var tag = DateTime.now().toString();
+    logic =
+        Get.put(SeriesManageLogic(tag: tag, animeId: widget.animeId), tag: tag);
   }
 
   @override
@@ -77,6 +81,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       appBar: searchAction ? _buildSearchBar() : _buildCommonAppBar(),
       body: GetBuilder(
         init: logic,
+        tag: logic.tag,
         builder: (_) => CommonScaffoldBody(
           child: RefreshIndicator(
             child: _buildSeriesBody(context),
@@ -191,6 +196,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             MaterialPageRoute(
               builder: (context) => GetBuilder(
                   init: logic,
+                  tag: logic.tag,
                   builder: (_) => Scaffold(
                       appBar: AppBar(title: const Text('推荐')),
                       body: CommonScaffoldBody(
