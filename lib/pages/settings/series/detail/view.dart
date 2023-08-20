@@ -69,17 +69,22 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       onTap: () async {
-        ToastUtil.showLoading(
-            msg: '添加中',
-            task: () async {
-              for (var anime in recommendAnimes) {
-                await AnimeSeriesDao.insertAnimeSeries(
-                    anime.animeId, widget.series.id);
-              }
-              getAnimes();
-            });
+        _allAllRecommendAnimes();
+        // 最多只有几条数据，不需要加载圈，影响体验
+        // ToastUtil.showLoading(
+        //     msg: '添加中',
+        //     task: () async {
+        //       await _allAllRecommendAnimes();
+        //     });
       },
     );
+  }
+
+  Future<void> _allAllRecommendAnimes() async {
+    for (var anime in recommendAnimes) {
+      await AnimeSeriesDao.insertAnimeSeries(anime.animeId, widget.series.id);
+    }
+    getAnimes();
   }
 
   SliverList _buildRecommendedAnimes() {

@@ -114,26 +114,20 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (enableSelectSeriesForAnime) _buildSeriesGridView(addedSeriesList),
         // 动漫详情页进入的系列页，推荐放在全部上方
         if (enableSelectSeriesForAnime)
-          SliverToBoxAdapter(child: _buildRecommendTitle(context)),
+          SliverToBoxAdapter(child: _buildAnimeRecommendTitle(context)),
         if (enableSelectSeriesForAnime && showRecommendedSeries)
           _buildSeriesGridView(logic.recommendSeriesList,
               loading: logic.loadingRecommendSeriesList),
-        //
-        const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
+        // 所有推荐不直接展示，通过点击后弹出底部面板
+        // 从而避免点击推荐里的创建时，因全部GridView行数增多时，滚动位置变化
+        if (!enableSelectSeriesForAnime && logic.recommendSeriesList.isNotEmpty)
+          SliverToBoxAdapter(child: _buildAllRecommendTitle(context)),
+        // 显示全部已创建的系列
+        SliverToBoxAdapter(
+            child: SettingTitle(title: '全部 (${logic.seriesList.length})')),
         _buildSeriesGridView(logic.seriesList,
             loading: logic.loadingSeriesList),
-        // 所有推荐放在全部下方
-        if (!enableSelectSeriesForAnime)
-          SliverToBoxAdapter(child: _buildRecommendTitle(context)),
-        if (!enableSelectSeriesForAnime &&
-            showRecommendedSeries &&
-            logic.recommendSeriesList.isNotEmpty)
-          SliverToBoxAdapter(child: _buildCreateAllButton(context)),
-        if (!enableSelectSeriesForAnime && showRecommendedSeries)
-          _buildSeriesGridView(logic.recommendSeriesList,
-              loading: logic.loadingRecommendSeriesList),
-
-        //
+        // 避免紧挨底部
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
@@ -153,12 +147,13 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                 await SeriesDao.insert(series);
               }
               logic.getAllSeries();
+              ToastUtil.showText('全部创建完毕');
             });
       },
     );
   }
 
-  _buildRecommendTitle(BuildContext context) {
+  _buildAnimeRecommendTitle(BuildContext context) {
     return SettingTitle(
       title: '推荐',
       trailing: InkWell(
@@ -179,6 +174,34 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
+      ),
+    );
+  }
+
+  _buildAllRecommendTitle(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GetBuilder(
+                  init: logic,
+                  builder: (_) => Scaffold(
+                      appBar: AppBar(title: const Text('推荐')),
+                      body: CommonScaffoldBody(
+                          child: CustomScrollView(
+                        slivers: [
+                          if (logic.recommendSeriesList.isNotEmpty)
+                            SliverToBoxAdapter(
+                                child: _buildCreateAllButton(context)),
+                          _buildSeriesGridView(logic.recommendSeriesList),
+                        ],
+                      )))),
+            ));
+      },
+      child: SettingTitle(
+        title: '推荐 (${logic.recommendSeriesList.length})',
+        trailing: const Icon(Icons.chevron_right),
       ),
     );
   }

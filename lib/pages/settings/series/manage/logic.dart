@@ -26,7 +26,7 @@ class SeriesManageLogic extends GetxController {
   void onInit() {
     super.onInit();
     // 避免路由动画时查询数据库导致动画卡顿
-    Future.delayed(const Duration(milliseconds: 300))
+    Future.delayed(const Duration(milliseconds: 100))
         .then((value) => getAllSeries());
   }
 
@@ -49,7 +49,10 @@ class SeriesManageLogic extends GetxController {
   }
 
   Future<void> getRecommendSeries() async {
-    recommendSeriesList.clear();
+    // 不要用clear，然后直接添加到recommendSeriesList
+    // 因为在获取已创建的全部系列后会进行重绘，如果再重绘前清空了recommendSeriesList，会丢失滚动位置
+    // 因此先存放到list，最终统一赋值给recommendSeriesList
+    List<Series> list = [];
 
     if (enableSelectSeriesForAnime) {
       // 如果是动漫详情页进入的，则根据当前动漫生成推荐系列(只会生成1个)
@@ -71,11 +74,11 @@ class SeriesManageLogic extends GetxController {
           // 该系列创建了，且已加入，那么什么都不做
         } else {
           // 该系列创建了，但没有加入，放到推荐中
-          recommendSeriesList.add(seriesList[index]);
+          list.add(seriesList[index]);
         }
       } else {
         // 没有创建该系列，放到推荐中
-        recommendSeriesList.add(Series(recommendSeriesId, recommendSeriesName));
+        list.add(Series(recommendSeriesId, recommendSeriesName));
       }
     } else {
       // 否则根据收藏的所有动漫生成推荐系列
@@ -83,19 +86,20 @@ class SeriesManageLogic extends GetxController {
       for (var anime in animes) {
         String recommendSeriesName = _getRecommendSeriesName(anime.animeName);
         if (recommendSeriesName.isNotEmpty &&
-            _isNotRecommended(recommendSeriesName)) {
-          recommendSeriesList
-              .add(Series(recommendSeriesId, recommendSeriesName));
+            _isNotRecommended(recommendSeriesName, list)) {
+          list.add(Series(recommendSeriesId, recommendSeriesName));
         }
       }
     }
 
+    recommendSeriesList = list;
     update();
   }
 
   /// 还没推荐过(推荐系列中和所有系列中都没有)
-  bool _isNotRecommended(String seriesName) {
-    return recommendSeriesList
+  bool _isNotRecommended(
+      String seriesName, List<Series> currentRecommentSeriesList) {
+    return currentRecommentSeriesList
                 .indexWhere((element) => element.name == seriesName) <
             0 &&
         seriesList.indexWhere((element) => element.name == seriesName) < 0;
