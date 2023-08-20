@@ -299,8 +299,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
   }
 
-  void _searchDbAnimesByKeyword(String text) {
-    if (_lastInputText == text) {
+  void _searchDbAnimesByKeyword(String text, {bool forceSearch = false}) {
+    if (!forceSearch && _lastInputText == text) {
       Log.info("相同内容，不进行搜索");
       return;
     }
@@ -382,27 +382,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         },
       ),
     ).then((value) async {
-      Anime newAnime = value;
-      if (!newAnime.isCollected()) {
-        // 取消收藏
-        int findIndex =
-            _animes.indexWhere((element) => element.animeId == anime.animeId);
-        _animes.removeAt(findIndex);
-        setState(() {});
-        return;
-      }
-      // anime = value; // 无效，因为不是数据成员
-      int findIndex =
-          _animes.indexWhere((element) => element.animeId == newAnime.animeId);
-      if (findIndex != -1) {
-        // _resAnimes[findIndex] = value;
-        // 直接从数据库中得到最新信息
-        _animes[findIndex] =
-            await SqliteUtil.getAnimeByAnimeId(_animes[findIndex].animeId);
-        setState(() {});
-      } else {
-        Log.info("未找到动漫：$value");
-      }
+      _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
     });
   }
 }
