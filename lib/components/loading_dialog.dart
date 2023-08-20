@@ -1,36 +1,50 @@
 import 'package:flutter/material.dart';
 
 /// 加载对话框
-/// 来源：https://blog.csdn.net/johnWcheung/article/details/89634582
 class LoadingDialog extends Dialog {
-  const LoadingDialog(this.text, {Key? key}) : super(key: key);
-  final String text;
+  const LoadingDialog(
+    this.msg, {
+    Key? key,
+    this.simple = false,
+    this.direction = Axis.vertical,
+  }) : super(key: key);
+  final bool simple;
+  final String msg;
+  final Axis direction;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: Center(
-        child: SizedBox(
-          height: 110,
-          width: 140,
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                    height: 35, width: 35, child: CircularProgressIndicator()),
-                const SizedBox(height: 20),
-                Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)
-              ],
-            ),
-            decoration: ShapeDecoration(
-                color: Theme.of(context).cardColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8))),
+    var bg = Theme.of(context).dialogBackgroundColor;
+    Color? fg;
+
+    return Container(
+      // 避免消息长度过长时紧挨屏幕边界
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      // 大小由消息长度决定
+      padding:
+          EdgeInsets.symmetric(horizontal: 30, vertical: msg.isEmpty ? 24 : 16),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Flex(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        direction: direction,
+        children: [
+          CircularProgressIndicator(
+            color: fg,
+            strokeWidth: 4,
           ),
-        ),
+          if (msg.isNotEmpty)
+            SizedBox(
+              height: direction == Axis.horizontal ? 0 : 12,
+              width: direction == Axis.horizontal ? 20 : 0,
+            ),
+          // 若采用Expanded，可以避免横向布局时文字过长溢出，但会导致背景拉长
+          if (msg.isNotEmpty)
+            Text(msg, style: TextStyle(color: fg, fontSize: 14)),
+        ],
       ),
     );
   }

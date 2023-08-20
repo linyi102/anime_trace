@@ -366,7 +366,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     return InkWell(
       borderRadius: BorderRadius.circular(99),
       onTap: () async {
-        var cancel = ToastUtil.showLoading();
+        var cancel = ToastUtil.showLoading(msg: "");
         if (status == isNotCreated) {
           // 创建该系列
           int newId = await SeriesDao.insert(series);

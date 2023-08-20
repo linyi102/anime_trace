@@ -40,7 +40,7 @@ dialogSelectChecklist(
             if (enableClimbDetailInfo) {
               // 爬取详细页后收藏
               ToastUtil.showLoading(
-                msg: "获取详细信息中",
+                msg: "获取中",
                 task: () async {
                   // 爬取详细页
                   anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
