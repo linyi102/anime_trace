@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -41,6 +42,8 @@ class _DirectoryPageState extends State<DirectoryPage>
 
   late final RefreshController _refreshController;
 
+  bool loading = true;
+
   @override
   void initState() {
     super.initState();
@@ -56,15 +59,8 @@ class _DirectoryPageState extends State<DirectoryPage>
       curWebsite = climbWebsites[websiteIdx];
     }
 
-    if (directory.isEmpty) {
-      // 如果目录为空，则设置刷新控制器需要首次刷新
-      _refreshController = RefreshController(initialRefresh: true);
-      // 而不再手动加载数据
-      // _loadData();
-    } else {
-      _refreshController = RefreshController(initialRefresh: false);
-      // 如果已有数据，则直接显示
-    }
+    _refreshController = RefreshController(initialRefresh: false);
+    _loadData();
   }
 
   @override
@@ -75,7 +71,13 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   // 不要手动调用，而是通过_refreshController.requestRefresh()，这样可以有刷新效果
-  void _loadData() async {
+  void _loadData({bool showLoading = true}) async {
+    if (showLoading) {
+      setState(() {
+        loading = true;
+      });
+    }
+
     pageParams.resetPageIndex(); // 更改条件后，需要重置页号
     directory = await curWebsite.climb.climbDirectory(filter, pageParams);
     Log.info("目录页：数据获取完毕");
@@ -88,6 +90,8 @@ class _DirectoryPageState extends State<DirectoryPage>
     for (int i = 0; i < directory.length; ++i) {
       directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
     }
+
+    loading = false;
     if (mounted) {
       setState(() {});
     }
@@ -130,12 +134,9 @@ class _DirectoryPageState extends State<DirectoryPage>
           controller: _refreshController,
           enablePullDown: true,
           enablePullUp: true,
-          onRefresh: _loadData,
+          // 下拉刷新只显示下拉加载圈，不显示内容加载圈
+          onRefresh: () => _loadData(showLoading: false),
           onLoading: _loadMoreData,
-          // header: MaterialClassicHeader(
-          //   color: Theme.of(context).primaryColor,
-          //   backgroundColor: ThemeUtil.getCardColor(),
-          // ),
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
@@ -189,7 +190,7 @@ class _DirectoryPageState extends State<DirectoryPage>
                   SPUtil.setInt(selectedDirectorySourceIdx,
                       climbWebsites.indexWhere((element) => element == e));
 
-                  _refreshController.requestRefresh();
+                  refresh();
                   Navigator.pop(context);
                 },
               );
@@ -204,6 +205,9 @@ class _DirectoryPageState extends State<DirectoryPage>
     // if (directory.isEmpty) {
     //   return SliverToBoxAdapter(child: emptyDataHint());
     // }
+    if (loading) {
+      return const SliverToBoxAdapter(child: LoadingWidget(center: true));
+    }
 
     return SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
@@ -269,7 +273,7 @@ class _DirectoryPageState extends State<DirectoryPage>
       }
       Log.info("选择了$value");
       filter.year = value.toString();
-      _refreshController.requestRefresh();
+      refresh();
     });
   }
 
@@ -351,7 +355,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               onChanged: (value) {
                 filter.year = value.toString();
                 // Log.info(filter.year);
-                _refreshController.requestRefresh();
+                refresh();
               }),
           Text(i == 0 ? "全部" : (i == years.length - 1 ? "2000以前" : years[i]))
         ],
@@ -373,7 +377,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               onChanged: (value) {
                 filter.season = value.toString();
                 // Log.info(filter.season);
-                _refreshController.requestRefresh();
+                refresh();
               }),
           Text(i == 0 ? "全部" : "${seasons[i]} 月")
         ],
@@ -394,7 +398,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.region,
               onChanged: (value) {
                 filter.region = value.toString();
-                _refreshController.requestRefresh();
+                refresh();
               }),
           Text(i == 0 ? "全部" : regions[i])
         ],
@@ -415,7 +419,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.status,
               onChanged: (value) {
                 filter.status = value.toString();
-                _refreshController.requestRefresh();
+                refresh();
               }),
           Text(i == 0 ? "全部" : statuss[i])
         ],
@@ -436,12 +440,17 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.category,
               onChanged: (value) {
                 filter.category = value.toString();
-                _refreshController.requestRefresh();
+                refresh();
               }),
           Text(i == 0 ? "全部" : categorys[i])
         ],
       ));
     }
     return children;
+  }
+
+  void refresh() {
+    _loadData();
+    // _refreshController.requestRefresh();
   }
 }

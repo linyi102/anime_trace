@@ -42,23 +42,8 @@ class CommonImage extends StatelessWidget {
         imageUrl: url,
         errorWidget: (_, __, ___) => errorImageWidget(),
         fadeInDuration: fadeInDuration,
-        // placeholder: reduceMemCache
-        //     ? null
-        //     // 如果不压缩，则在加载原图时先显示压缩后的图片
-        //     // 会闪烁，效果不好
-        //     : (context, url) => CachedNetworkImage(
-        //           memCacheWidth: memCacheWidth,
-        //           fadeInDuration: fadeInDuration,
-        //           fadeOutDuration: Duration.zero,
-        //           imageUrl: url,
-        //           fit: BoxFit.cover,
-        //         ),
-
         // 未加载完图片时显示进度圈
-        // placeholder: (_, __) => const Center(child: SizedBox(
-        //     height: 20,
-        //     width: 20,
-        //     child: CircularProgressIndicator())),
+        // placeholder: (_, __) => const LoadingWidget(center: true),
         fit: BoxFit.cover,
       );
     }

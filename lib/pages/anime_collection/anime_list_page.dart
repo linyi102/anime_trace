@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_view.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
@@ -97,10 +98,12 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     ),
                   ),
                   body: CommonScaffoldBody(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: _getAnimesPlus(),
-                    ),
+                    child: loadOk
+                        ? TabBarView(
+                            controller: _tabController,
+                            children: _getAnimesPlus(),
+                          )
+                        : const LoadingWidget(center: true),
                   ),
                 ),
         ),

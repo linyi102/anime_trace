@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -110,12 +111,7 @@ class AnimeGridCover extends StatelessWidget {
                 FadeAnimatedSwitcher(
                   loadOk: !loading,
                   duration: const Duration(milliseconds: 400),
-                  specifiedLoadingWidget: const Center(
-                    child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2)),
-                  ),
+                  specifiedLoadingWidget: const LoadingWidget(center: true),
                   destWidget: SizedBox(
                     // 确保图片填充
                     width: mqSize.width,

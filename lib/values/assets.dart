@@ -17,6 +17,10 @@ class Assets {
   /// assets/icons/failed_picture.png
   static const String iconsFailedPicture = "assets/icons/failed_picture.png";
 
+  /// Assets for iconsLoadingTwotoneLoop
+  /// assets/icons/loading-twotone-loop.svg
+  static const String iconsLoadingTwotoneLoop = "assets/icons/loading-twotone-loop.svg";
+
   /// Assets for imagesDefaultAnimeCover
   /// assets/images/defaultAnimeCover.png
   static const String imagesDefaultAnimeCover = "assets/images/defaultAnimeCover.png";

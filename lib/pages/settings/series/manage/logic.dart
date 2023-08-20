@@ -8,8 +8,10 @@ import 'package:get/get.dart';
 class SeriesManageLogic extends GetxController {
   // 所有系列
   List<Series> seriesList = [];
+  bool loadingSeriesList = true;
   // 推荐创建的系列
   List<Series> recommendSeriesList = [];
+  bool loadingRecommendSeriesList = true;
 
   var inputKeywordController = TextEditingController();
   String kw = "";
@@ -23,7 +25,9 @@ class SeriesManageLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllSeries();
+    // 避免路由动画时查询数据库导致动画卡顿
+    Future.delayed(const Duration(milliseconds: 300))
+        .then((value) => getAllSeries());
   }
 
   @override
@@ -35,8 +39,12 @@ class SeriesManageLogic extends GetxController {
   // 还原数据后，需要重新获取所有系列
   Future<void> getAllSeries() async {
     seriesList = await SeriesDao.getAllSeries();
+    loadingSeriesList = false;
+    update();
+
     // 获取所有系列后，再根据所有系列生成推荐系列
     await getRecommendSeries();
+    loadingRecommendSeriesList = false;
     update();
   }
 

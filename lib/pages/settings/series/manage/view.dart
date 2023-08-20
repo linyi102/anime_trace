@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -73,21 +74,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     Log.build(runtimeType);
 
     return Scaffold(
-      appBar: searchAction
-          ? _buildSearchBar()
-          : AppBar(
-              title: Text(enableSelectSeriesForAnime ? "系列" : "系列管理"),
-              automaticallyImplyLeading: true,
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        searchAction = !searchAction;
-                      });
-                    },
-                    icon: const Icon(Icons.search))
-              ],
-            ),
+      appBar: searchAction ? _buildSearchBar() : _buildCommonAppBar(),
       body: GetBuilder(
         init: logic,
         builder: (_) => CommonScaffoldBody(
@@ -103,6 +90,22 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
+  AppBar _buildCommonAppBar() {
+    return AppBar(
+      title: Text(enableSelectSeriesForAnime ? "系列" : "系列管理"),
+      automaticallyImplyLeading: true,
+      actions: [
+        IconButton(
+            onPressed: () {
+              setState(() {
+                searchAction = !searchAction;
+              });
+            },
+            icon: const Icon(Icons.search))
+      ],
+    );
+  }
+
   _buildSeriesBody(BuildContext context) {
     return CustomScrollView(
       slivers: [
@@ -113,10 +116,12 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildRecommendTitle(context)),
         if (enableSelectSeriesForAnime && showRecommendedSeries)
-          _buildSeriesGridView(logic.recommendSeriesList),
+          _buildSeriesGridView(logic.recommendSeriesList,
+              loading: logic.loadingRecommendSeriesList),
         //
         const SliverToBoxAdapter(child: SettingTitle(title: '全部')),
-        _buildSeriesGridView(logic.seriesList),
+        _buildSeriesGridView(logic.seriesList,
+            loading: logic.loadingSeriesList),
         // 所有推荐放在全部下方
         if (!enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildRecommendTitle(context)),
@@ -125,7 +130,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             logic.recommendSeriesList.isNotEmpty)
           SliverToBoxAdapter(child: _buildCreateAllButton(context)),
         if (!enableSelectSeriesForAnime && showRecommendedSeries)
-          _buildSeriesGridView(logic.recommendSeriesList),
+          _buildSeriesGridView(logic.recommendSeriesList,
+              loading: logic.loadingRecommendSeriesList),
 
         //
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -177,7 +183,14 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
-  _buildSeriesGridView(List<Series> seriesList) {
+  _buildSeriesGridView(
+    List<Series> seriesList, {
+    bool loading = false,
+  }) {
+    if (loading) {
+      return const SliverToBoxAdapter(child: LoadingWidget());
+    }
+
     // if (seriesList.isEmpty) {
     //   return const SliverToBoxAdapter(
     //     child: Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyClassicHeader extends StatelessWidget {
@@ -25,7 +26,9 @@ class MyClassicFooter extends StatelessWidget {
     return const ClassicFooter(
       idleText: "上拉加载更多",
       canLoadingText: "释放加载更多",
-      loadingText: "加载更多数据中...",
+      loadingIcon: LoadingWidget(),
+      loadingText: "",
+      // loadingText: "加载更多数据中...",
       noDataText: "已经到底了",
       failedText: "加载失败！点击重试！",
     );

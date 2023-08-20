@@ -25,7 +25,8 @@ class ChecklistController extends GetxController
 
   // 数据加载
   bool loadOk = false;
-  final int pageSize = 50;
+  bool firstLoading = true;
+  int get pageSize => 50;
 
   // 多选
   List<Anime> selectedAnimes = [];
@@ -38,6 +39,9 @@ class ChecklistController extends GetxController
   }
 
   void loadData() {
+    if (firstLoading) {
+      firstLoading = false;
+    }
     pageIndexList = List.generate(tags.length, (index) => 1); // 初始页都为1
     // animesInTag = List.generate(tags.length, (index) => []);
     // 不要清空animes，而是根据清单数量增加[]或移除

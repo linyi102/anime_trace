@@ -8,6 +8,7 @@ class AggregateLogic extends GetxController {
 
   // 去年今天开播的动漫
   List<Anime> animesNYearsAgoTodayBroadcast = [];
+  bool loadingAnimesNYearsAgoTodayBroadcast = true;
 
   @override
   void onInit() {
@@ -16,6 +17,9 @@ class AggregateLogic extends GetxController {
   }
 
   loadAnimesNYearsAgoTodayBroadcast() async {
+    loadingAnimesNYearsAgoTodayBroadcast = true;
+    update();
+
     animesNYearsAgoTodayBroadcast.clear();
     animesNYearsAgoTodayBroadcast = await AnimeDao.getAnimesNYearAgoToday();
     // 时间早的在最后
@@ -23,6 +27,7 @@ class AggregateLogic extends GetxController {
       (a, b) => -a.premiereTime.compareTo(b.premiereTime),
     );
 
+    loadingAnimesNYearsAgoTodayBroadcast = false;
     update();
   }
 }

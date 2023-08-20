@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -347,7 +348,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     );
   }
 
-  SizedBox _buildLoadingWidget() {
+  _buildLoadingWidget() {
     final AnimeDisplayController adc = AnimeDisplayController.to;
     double height = 137.0;
     bool nameBelowCover = false; // 名字在封面下面，就增加高度
@@ -362,15 +363,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       }
     }
 
-    return SizedBox(
-      // 每个搜索结果的显示高度(封面+名字高度)
+    return LoadingWidget(
       height: height,
-      child: const Center(
-        // 固定宽高的指示器
-        child: SizedBox(
-          child: CircularProgressIndicator(),
-        ),
-      ),
     );
   }
 }

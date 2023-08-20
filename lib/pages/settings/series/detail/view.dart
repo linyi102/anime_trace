@@ -152,6 +152,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         itemBuilder: (context, index) {
           var anime = widget.series.animes[index];
           return InkWell(
+            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
             onTap: () {
               _toAnimeDetailPage(context, widget.series.animes, index);
             },

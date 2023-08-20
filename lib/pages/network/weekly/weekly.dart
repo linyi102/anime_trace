@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/week_record.dart';
@@ -139,7 +140,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
           Log.info("pageIndex=$pageIndex");
 
           if (loading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingWidget(center: true);
           }
           return Scrollbar(
             controller: scrollController,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/pages/network/sources/logic.dart';
@@ -129,18 +130,18 @@ class _AggregatePageState extends State<AggregatePage> {
       child: Column(
         children: [
           _buildCardTitle('今日开播'),
-          if (logic.animesNYearsAgoTodayBroadcast.isEmpty)
-            // const ListTile(title: Text('无。')),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 15, bottom: 10),
-                  child: const Text('无。'),
-                )
-              ],
-            ),
-          const TodayAnimeListPage(),
-          // _buildAnimesRow()
+          logic.loadingAnimesNYearsAgoTodayBroadcast
+              ? const LoadingWidget()
+              : logic.animesNYearsAgoTodayBroadcast.isEmpty
+                  ? Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(left: 15, bottom: 10),
+                          child: const Text('暂无'),
+                        )
+                      ],
+                    )
+                  : const TodayAnimeListPage(),
         ],
       ),
     );

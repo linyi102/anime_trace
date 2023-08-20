@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -68,7 +69,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
           return SliverAnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: !widget.animeController.loadEpisodeOk
-                ? _buildSliverLoadingWidget()
+                ? const SliverToBoxAdapter(child: LoadingWidget(height: 100))
                 : SliverList(
                     delegate:
                         SliverChildBuilderDelegate((context, episodeIndex) {
@@ -96,19 +97,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   ),
           );
         },
-      ),
-    );
-  }
-
-  SliverToBoxAdapter _buildSliverLoadingWidget() {
-    return SliverToBoxAdapter(
-      child: Center(
-        child: Container(
-          margin: const EdgeInsets.only(top: 20),
-          width: 20, // 可外套SizeBox指定大小，也可不指定
-          height: 20,
-          child: const CircularProgressIndicator(strokeWidth: 2),
-        ),
       ),
     );
   }
