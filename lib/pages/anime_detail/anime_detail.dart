@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -105,9 +106,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                             leading: IconButton(
                                 onPressed: _popPage,
                                 icon: const Icon(Icons.arrow_back))),
-                        body: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        body: const LoadingWidget(center: true),
                       );
                     }
                     return CustomScrollView(

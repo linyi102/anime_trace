@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
@@ -51,8 +52,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
         body: FadeAnimatedSwitcher(
           loadOk: _loadOk,
           destWidget: _buildFileList(),
-          specifiedLoadingWidget:
-              const Center(child: CircularProgressIndicator()),
+          specifiedLoadingWidget: const LoadingWidget(center: true),
         ));
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dar
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
@@ -144,8 +145,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
-                  ? const Expanded(
-                      child: Center(child: CircularProgressIndicator()))
+                  ? const Expanded(child: LoadingWidget(center: true))
                   : Container(),
         ],
       )),
@@ -180,42 +180,47 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   _displayClimbAnime() {
     if (mixedAnimes.isEmpty) return emptyDataHint();
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-      gridDelegate: getAnimeGridDelegate(context),
-      itemCount: mixedAnimes.length,
-      itemBuilder: (BuildContext context, int index) {
-        Anime anime = mixedAnimes[index];
-        return InkWell(
-            child: AnimeGridCover(anime),
-            onTap: () {
-              // 迁移动漫
-              if (ismigrate) {
-                showDialogOfConfirmMigrate(context, widget.animeId, anime);
-              } else if (anime.isCollected()) {
-                Log.info("进入动漫详细页面${anime.animeId}");
-                // 不为0，说明已添加，点击进入动漫详细页面
-                Navigator.of(context).push(
-                  // MaterialPageRoute(
-                  //   builder: (context) =>
-                  //       AnimeDetailPlus(anime.animeId),
-                  // ),
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return AnimeDetailPage(anime);
-                    },
-                  ),
-                ).then((value) {
-                  // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
-                  _generateMixedAnimes().then((value) {
-                    setState(() {});
-                  });
-                });
-              } else {
-                dialogSelectChecklist(setState, context, anime);
-              }
-            });
+    return RefreshIndicator(
+      onRefresh: () async {
+        _onEditingComplete();
       },
+      child: GridView.builder(
+        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
+        gridDelegate: getAnimeGridDelegate(context),
+        itemCount: mixedAnimes.length,
+        itemBuilder: (BuildContext context, int index) {
+          Anime anime = mixedAnimes[index];
+          return InkWell(
+              child: AnimeGridCover(anime),
+              onTap: () {
+                // 迁移动漫
+                if (ismigrate) {
+                  showDialogOfConfirmMigrate(context, widget.animeId, anime);
+                } else if (anime.isCollected()) {
+                  Log.info("进入动漫详细页面${anime.animeId}");
+                  // 不为0，说明已添加，点击进入动漫详细页面
+                  Navigator.of(context).push(
+                    // MaterialPageRoute(
+                    //   builder: (context) =>
+                    //       AnimeDetailPlus(anime.animeId),
+                    // ),
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return AnimeDetailPage(anime);
+                      },
+                    ),
+                  ).then((value) {
+                    // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
+                    _generateMixedAnimes().then((value) {
+                      setState(() {});
+                    });
+                  });
+                } else {
+                  dialogSelectChecklist(setState, context, anime);
+                }
+              });
+        },
+      ),
     );
   }
 
