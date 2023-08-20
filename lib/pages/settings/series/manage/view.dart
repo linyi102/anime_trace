@@ -526,7 +526,16 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                     onPressed: () async {
                       Navigator.pop(context);
                       await SeriesDao.delete(series.id);
-                      logic.getAllSeries();
+
+                      if (searchAction) {
+                        // 重新搜索
+                        logic.seriesList = await SeriesDao.searchSeries(
+                            logic.inputKeywordController.text);
+                        logic.update();
+                      } else {
+                        // 重新获取，是为了方便重新生成推荐，例如详情页退出某个系列后，在推荐里能继续看到
+                        logic.getAllSeries();
+                      }
                     },
                     child: Text(
                       "删除",
