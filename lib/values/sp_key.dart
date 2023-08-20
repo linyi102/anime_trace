@@ -24,6 +24,10 @@ const bannerNetworkImageUrl = "bannerNetworkImageUrl";
 const bannerSelectedImageTypeIdx = "bannerSelectedImageTypeIdx";
 
 class SPKey {
-  /// 显示推荐系列
+  // 显示推荐系列
   static get showRecommendedSeries => "showRecommendedSeries";
+
+  // 系列详情页中显示推荐动漫
+  static get showRecommendedAnimesInSeriesPage =>
+      "showRecommendedAnimesInSeriesPage";
 }

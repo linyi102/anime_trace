@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/anime_list_tile.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/anime_grid_cover.dart';
 import '../../../../components/get_anime_grid_delegate.dart';
+import '../../../../dao/anime_dao.dart';
 import '../../../../dao/anime_series_dao.dart';
 import '../../../../models/anime.dart';
 import '../../../../models/series.dart';
@@ -19,6 +24,12 @@ class SeriesDetailPage extends StatefulWidget {
 }
 
 class _SeriesDetailPageState extends State<SeriesDetailPage> {
+  List<Anime> recommendAnimes = [];
+  bool showRecommend = SPUtil.getBool(
+    SPKey.showRecommendedAnimesInSeriesPage,
+    defaultValue: true,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -35,89 +46,201 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           // child: _buildListView(),
           child: RefreshIndicator(
         onRefresh: () async => await getAnimes(),
-        child: GridView.builder(
-          padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-          gridDelegate: getAnimeGridDelegate(context),
-          itemCount: widget.series.animes.length,
-          itemBuilder: (context, index) {
-            var anime = widget.series.animes[index];
-            return InkWell(
-              onTap: () {
-                _toAnimeDetailPage(context, anime, index);
-              },
-              onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => SimpleDialog(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.delete),
-                        title: const Text('从系列中移除'),
-                        onTap: () {
-                          Navigator.pop(context);
-                          AnimeSeriesDao.deleteAnimeSeries(
-                              anime.animeId, widget.series.id);
-
-                          setState(() {
-                            widget.series.animes.removeWhere(
-                                (element) => element.animeId == anime.animeId);
-                          });
-                        },
-                      )
-                    ],
+        child: CustomScrollView(
+          slivers: [
+            _buildSeriesAnimesGridView(context),
+            SliverToBoxAdapter(child: _buildRecommendTitle(context)),
+            if (showRecommend) _buildRecommendedAnimes(),
+            if (showRecommend && recommendAnimes.isNotEmpty)
+              SliverToBoxAdapter(
+                child: ListTile(
+                  title: Text(
+                    '全部添加',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
-                );
-              },
-              child: AnimeGridCover(anime),
-            );
-          },
-        ),
-      )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var animeIds = widget.series.animes.map((e) => e.animeId).toList();
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DbAnimeSearchPage(
-                  kw: widget.series.name,
-                  hasSelectedAnimeIds: animeIds,
-                  onSelectOk: (selectedAnimeIds) async {
-                    // 遍历新选择的ids
-                    for (var animeId in selectedAnimeIds) {
-                      // 当前系列中没有时，再进行添加，避免重复添加
-                      if (!animeIds.contains(animeId)) {
-                        await AnimeSeriesDao.insertAnimeSeries(
-                            animeId, widget.series.id);
-                      }
+                  onTap: () async {
+                    for (var anime in recommendAnimes) {
+                      await AnimeSeriesDao.insertAnimeSeries(
+                          anime.animeId, widget.series.id);
                     }
-
-                    // 全部添加完毕后，重新获取该系列中的所有动漫
                     getAnimes();
                   },
                 ),
-              ));
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
+      )),
+      floatingActionButton: _buildFAB(context),
+    );
+  }
+
+  SliverList _buildRecommendedAnimes() {
+    return SliverList.builder(
+      itemCount: recommendAnimes.length,
+      itemBuilder: (context, index) {
+        var color = Theme.of(context).primaryColor;
+
+        return AnimeListTile(
+          anime: recommendAnimes[index],
+          onTap: () => _toAnimeDetailPage(context, recommendAnimes, index),
+          trailing: InkWell(
+            borderRadius: BorderRadius.circular(99),
+            onTap: () async {
+              await AnimeSeriesDao.insertAnimeSeries(
+                  recommendAnimes[index].animeId, widget.series.id);
+              getAnimes();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                // color:color,
+                border: Border.all(color: color),
+                borderRadius: BorderRadius.circular(99),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+              child: Text(
+                '添加',
+                style: TextStyle(
+                    color: color, fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  SettingTitle _buildRecommendTitle(BuildContext context) {
+    return SettingTitle(
+      title: '推荐',
+      trailing: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () {
+          setState(() {
+            showRecommend = !showRecommend;
+          });
+          SPUtil.setBool(
+              SPKey.showRecommendedAnimesInSeriesPage, showRecommend);
         },
-        child: const Icon(MingCuteIcons.mgc_add_line),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            showRecommend ? '隐藏' : '显示',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
       ),
     );
   }
 
-  void _toAnimeDetailPage(BuildContext context, Anime anime, int index) {
+  _buildSeriesAnimesGridView(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
+      sliver: SliverGrid.builder(
+        gridDelegate: getAnimeGridDelegate(context),
+        itemCount: widget.series.animes.length,
+        itemBuilder: (context, index) {
+          var anime = widget.series.animes[index];
+          return InkWell(
+            onTap: () {
+              _toAnimeDetailPage(context, widget.series.animes, index);
+            },
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (context) => SimpleDialog(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: const Text('从系列中移除'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        AnimeSeriesDao.deleteAnimeSeries(
+                            anime.animeId, widget.series.id);
+
+                        setState(() {
+                          widget.series.animes.removeWhere(
+                              (element) => element.animeId == anime.animeId);
+                        });
+                        // 重新获取推荐动漫
+                        getRecommendedAnimes();
+                      },
+                    )
+                  ],
+                ),
+              );
+            },
+            child: AnimeGridCover(anime),
+          );
+        },
+      ),
+    );
+  }
+
+  _buildFAB(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        var animeIds = widget.series.animes.map((e) => e.animeId).toList();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DbAnimeSearchPage(
+                kw: widget.series.name,
+                hasSelectedAnimeIds: animeIds,
+                onSelectOk: (selectedAnimeIds) async {
+                  // 遍历新选择的ids
+                  for (var animeId in selectedAnimeIds) {
+                    // 当前系列中没有时，再进行添加，避免重复添加
+                    if (!animeIds.contains(animeId)) {
+                      await AnimeSeriesDao.insertAnimeSeries(
+                          animeId, widget.series.id);
+                    }
+                  }
+
+                  // 全部添加完毕后，重新获取该系列中的所有动漫
+                  getAnimes();
+                },
+              ),
+            ));
+      },
+      child: const Icon(MingCuteIcons.mgc_add_line),
+    );
+  }
+
+  void _toAnimeDetailPage(BuildContext context, List<Anime> animes, int index) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AnimeDetailPage(anime),
+          builder: (context) => AnimeDetailPage(animes[index]),
         )).then((value) {
-      setState(() {
-        widget.series.animes[index] = value;
-      });
+      getAnimes();
+      // 不能简单替换动漫，因为可能会在里面进入系列修改数据了
+      // setState(() {
+      //   animes[index] = value;
+      // });
     });
   }
 
   getAnimes() async {
     widget.series.animes =
         await AnimeSeriesDao.getAnimesBySeriesIds([widget.series.id]);
-    setState(() {});
+    getRecommendedAnimes();
+    if (mounted) setState(() {});
+  }
+
+  getRecommendedAnimes() async {
+    recommendAnimes = await AnimeDao.getAnimesBySearch(widget.series.name);
+    // 移除系列中已添加的动漫
+    for (var anime in widget.series.animes) {
+      int index = recommendAnimes
+          .indexWhere((element) => element.animeId == anime.animeId);
+      if (index >= 0) {
+        recommendAnimes.removeAt(index);
+      }
+    }
+    if (mounted) setState(() {});
   }
 }

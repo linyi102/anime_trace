@@ -11,7 +11,6 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
