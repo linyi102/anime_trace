@@ -371,7 +371,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         }
 
         logic.getAllSeries();
-        logic.update();
       },
       onLongPress: () {
         // 避免触发背景卡片长按弹出对话框

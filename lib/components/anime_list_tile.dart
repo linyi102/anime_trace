@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/models/anime.dart';
 
@@ -63,16 +62,11 @@ class AnimeListTile extends StatelessWidget {
             return null;
         }
       }(),
-      leading: showReviewNumber
-          ? AnimeListCover(
-              anime,
-              showReviewNumber: showReviewNumber,
-              reviewNumber: anime.reviewNumber,
-            )
-          : AnimeGridCover(
-              anime,
-              onlyShowCover: true,
-            ),
+      leading: AnimeListCover(
+        anime,
+        showReviewNumber: showReviewNumber,
+        reviewNumber: anime.reviewNumber,
+      ),
       trailing: showTrailingProgress
           ? Text(
               "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",

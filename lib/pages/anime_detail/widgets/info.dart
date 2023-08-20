@@ -17,6 +17,8 @@ import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -33,9 +35,11 @@ class AnimeDetailInfo extends StatefulWidget {
 }
 
 class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
-  Anime get _anime => widget.animeController.anime;
   int rateNoteCount = 0; // 最初的评价数量
+
+  Anime get _anime => widget.animeController.anime;
   List<String> get tags => ChecklistController.to.tags;
+  get iconSize => 20.0;
 
   @override
   void initState() {
@@ -170,7 +174,10 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       _buildSearchBtn(),
       if (widget.animeController.isCollected)
         _buildIconTextButton(
-            iconData: Icons.checklist,
+            icon: SvgAssetIcon(
+              assetPath: Assets.iconsCollections24Regular,
+              size: iconSize,
+            ),
             text: '系列',
             onTap: () {
               Navigator.push(
@@ -187,8 +194,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   _buildIconTextButton({
-    required IconData iconData,
+    IconData? iconData,
     Color? iconColor,
+    Widget? icon,
     required String text,
     required void Function() onTap,
   }) {
@@ -196,9 +204,10 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       text: Text(text, style: const TextStyle(fontSize: 12)),
       iconData: iconData,
       iconColor: iconColor,
+      icon: icon,
       onTap: onTap,
       radius: 99,
-      iconSize: 20,
+      iconSize: iconSize,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       margin: EdgeInsets.zero,
     );
