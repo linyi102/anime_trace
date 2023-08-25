@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
@@ -12,6 +14,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/search_app_bar.dart';
 import '../../../../dao/series_dao.dart';
+import '../../../../models/anime.dart';
 import '../../../../models/series.dart';
 import '../../../../utils/delay_util.dart';
 import '../../../../utils/log.dart';
@@ -30,7 +33,7 @@ class SeriesManagePage extends StatefulWidget {
 
 class _SeriesManagePageState extends State<SeriesManagePage> {
   late SeriesManageLogic logic;
-  double get itemHeight => 230;
+  double get itemHeight => 240;
   double get maxItemWidth => 260;
   double get coverHeight => 160;
   bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
@@ -38,6 +41,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   bool searchAction = false;
   bool showRecommendedSeries =
       SPUtil.getBool(SPKey.showRecommendedSeries, defaultValue: true);
+
+  SeriesStyle seriesStyle = SeriesStyle();
 
   // 该动漫已加入的系列
   List<Series> get addedSeriesList {
@@ -102,6 +107,11 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       actions: [
         IconButton(
             onPressed: () {
+              _showLayoutBottomSheet();
+            },
+            icon: const Icon(Icons.layers_outlined)),
+        IconButton(
+            onPressed: () {
               setState(() {
                 searchAction = !searchAction;
               });
@@ -111,13 +121,39 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
+  _showLayoutBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ListTile(
+                onTap: () {
+                  if (seriesStyle.useList) {
+                    seriesStyle.enableGrid();
+                  } else {
+                    seriesStyle.enableList();
+                  }
+                  setState(() {});
+                },
+                title: Text("${seriesStyle.useList ? '列表' : '网格'}样式"),
+                subtitle: const Text('切换列表/网格样式'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   _buildSeriesBody(BuildContext context) {
     return CustomScrollView(
       slivers: [
         if (enableSelectSeriesForAnime)
           const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
         if (enableSelectSeriesForAnime)
-          _buildSeriesGridView(
+          _buildSeriesView(
             addedSeriesList,
             // 已加入是从全部系列中获取的，所以加载圈和加载全部共用一个
             loading: logic.loadingSeriesList,
@@ -126,7 +162,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (enableSelectSeriesForAnime)
           SliverToBoxAdapter(child: _buildAnimeRecommendTitle(context)),
         if (enableSelectSeriesForAnime && showRecommendedSeries)
-          _buildSeriesGridView(logic.recommendSeriesList,
+          _buildSeriesView(logic.recommendSeriesList,
               loading: logic.loadingRecommendSeriesList),
         // 所有推荐不直接展示，通过点击后弹出底部面板
         // 从而避免点击推荐里的创建时，因全部GridView行数增多时，滚动位置变化
@@ -135,8 +171,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         // 显示全部已创建的系列
         SliverToBoxAdapter(
             child: SettingTitle(title: '全部 (${logic.seriesList.length})')),
-        _buildSeriesGridView(logic.seriesList,
-            loading: logic.loadingSeriesList),
+        _buildSeriesView(logic.seriesList, loading: logic.loadingSeriesList),
         // 避免紧挨底部
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
@@ -205,7 +240,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                           if (logic.recommendSeriesList.isNotEmpty)
                             SliverToBoxAdapter(
                                 child: _buildCreateAllButton(context)),
-                          _buildSeriesGridView(logic.recommendSeriesList),
+                          _buildSeriesView(logic.recommendSeriesList),
                         ],
                       )))),
             ));
@@ -217,7 +252,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
-  _buildSeriesGridView(
+  _buildSeriesView(
     List<Series> seriesList, {
     bool loading = false,
   }) {
@@ -225,38 +260,72 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       return const SliverToBoxAdapter(child: LoadingWidget());
     }
 
-    // if (seriesList.isEmpty) {
-    //   return const SliverToBoxAdapter(
-    //     child: Padding(
-    //       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-    //       child: Text('什么都没有~'),
-    //     ),
-    //   );
-    // }
+    if (seriesList.isEmpty) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Text('无'),
+        ),
+      );
+    }
+
+    if (seriesStyle.useList) {
+      return SliverList.builder(
+        itemCount: seriesList.length,
+        itemBuilder: (context, index) {
+          var series = seriesList[index];
+          Anime? firstHasCoverAnime;
+          for (var anime in series.animes) {
+            if (anime.animeCoverUrl.isNotEmpty) {
+              firstHasCoverAnime = anime;
+              break;
+            }
+          }
+          return ListTile(
+            leading: firstHasCoverAnime == null
+                ? const SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: Center(
+                      child: SvgAssetIcon(
+                          assetPath: Assets.iconsCollections24Regular),
+                    ),
+                  )
+                : AnimeListCover(
+                    firstHasCoverAnime,
+                    showReviewNumber: false,
+                  ),
+            title:
+                Text(series.name, overflow: TextOverflow.ellipsis, maxLines: 1),
+            subtitle: Text('${series.animes.length}'),
+            trailing: _buildActionButton(context, series),
+            onTap: () =>
+                _toSeriesDetailPage(context, series, seriesList, index),
+            onLongPress: () => _showOpMenuDialog(context, series),
+          );
+        },
+      );
+    }
 
     return SliverGrid.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         mainAxisExtent: itemHeight,
         maxCrossAxisExtent: maxItemWidth,
-        // maxCrossAxisExtent: MediaQuery.of(context).size.width / 1,
       ),
       itemCount: seriesList.length,
       itemBuilder: (context, index) {
-        return _buildSeriesItem(context, seriesList, index);
+        return _buildSeriesGridItem(context, seriesList, index);
       },
     );
   }
 
-  _buildSeriesItem(BuildContext context, List<Series> seriesList, int index) {
+  _buildSeriesGridItem(
+      BuildContext context, List<Series> seriesList, int index) {
     var series = seriesList[index];
     return Card(
       child: InkWell(
-        onTap: series.id == logic.recommendSeriesId
-            ? null
-            : () => _toSeriesDetailPage(context, series, seriesList, index),
-        onLongPress: series.id == logic.recommendSeriesId
-            ? null
-            : () => _showOpMenuDialog(context, series),
+        onTap: () => _toSeriesDetailPage(context, series, seriesList, index),
+        onLongPress: () => _showOpMenuDialog(context, series),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -270,6 +339,10 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
   void _toSeriesDetailPage(
       BuildContext context, Series series, List<Series> seriesList, int index) {
+    if (series.id == logic.recommendSeriesId) {
+      return;
+    }
+
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -317,20 +390,22 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
               ),
               maxLines: 1,
             ),
-            Row(
-              children: [
-                if (series.id != logic.recommendSeriesId)
-                  Text(
-                    '${series.animes.length}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).hintColor,
+            Expanded(
+              child: Row(
+                children: [
+                  if (series.id != logic.recommendSeriesId)
+                    Text(
+                      '${series.animes.length}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).hintColor,
+                      ),
                     ),
-                  ),
-                const Spacer(),
-                _buildActionButton(context, series),
-              ],
-            )
+                  const Spacer(),
+                  _buildActionButton(context, series),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -481,7 +556,11 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     BuildContext context,
     Series series,
   ) {
-    return showDialog(
+    if (series.id == logic.recommendSeriesId) {
+      return;
+    }
+
+    showDialog(
         context: context,
         builder: (context) => SimpleDialog(
               children: [

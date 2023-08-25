@@ -12,7 +12,6 @@ import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/values/sp_key.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';

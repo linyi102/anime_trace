@@ -14,6 +14,7 @@ class AnimeListTile extends StatelessWidget {
     this.showTrailingProgress = false,
     this.trailing,
     this.onTap,
+    this.onLongPress,
   }) : super(key: key);
 
   final bool isThreeLine;
@@ -23,6 +24,7 @@ class AnimeListTile extends StatelessWidget {
   final bool showTrailingProgress;
   final Widget? trailing;
   final void Function()? onTap;
+  final void Function()? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +75,8 @@ class AnimeListTile extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
             )
           : trailing,
-      onTap: () {
-        if (onTap != null) {
-          onTap!();
-        }
-      },
+      onTap: onTap,
+      onLongPress: onLongPress,
     );
   }
 }

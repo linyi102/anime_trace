@@ -7,6 +7,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/anime_grid_cover.dart';
 import '../../../../components/get_anime_grid_delegate.dart';
+import '../../../../controllers/anime_display_controller.dart';
 import '../../../../dao/anime_dao.dart';
 import '../../../../dao/anime_series_dao.dart';
 import '../../../../models/anime.dart';
@@ -48,7 +49,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         onRefresh: () async => await getAnimes(),
         child: CustomScrollView(
           slivers: [
-            _buildSeriesAnimesGridView(context),
+            _buildSeriesAnimesView(context),
             if (recommendAnimes.isNotEmpty)
               SliverToBoxAdapter(child: _buildRecommendTitle(context)),
             if (showRecommend && recommendAnimes.isNotEmpty)
@@ -148,7 +149,26 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
     );
   }
 
-  _buildSeriesAnimesGridView(BuildContext context) {
+  _buildSeriesAnimesView(BuildContext context) {
+    if (AnimeDisplayController.to.displayList.value) {
+      return SliverList.builder(
+        itemCount: widget.series.animes.length,
+        itemBuilder: (context, index) {
+          var anime = widget.series.animes[index];
+          return AnimeListTile(
+            anime: anime,
+            onTap: () {
+              _toAnimeDetailPage(context, widget.series.animes, index);
+            },
+            onLongPress: () {
+              _showMoreOpDialog(context, anime);
+            },
+            showTrailingProgress: true,
+          );
+        },
+      );
+    }
+
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
       sliver: SliverGrid.builder(
@@ -162,33 +182,36 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
               _toAnimeDetailPage(context, widget.series.animes, index);
             },
             onLongPress: () {
-              showDialog(
-                context: context,
-                builder: (context) => SimpleDialog(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.delete),
-                      title: const Text('从系列中移除'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        AnimeSeriesDao.deleteAnimeSeries(
-                            anime.animeId, widget.series.id);
-
-                        setState(() {
-                          widget.series.animes.removeWhere(
-                              (element) => element.animeId == anime.animeId);
-                        });
-                        // 重新获取推荐动漫
-                        getRecommendedAnimes();
-                      },
-                    )
-                  ],
-                ),
-              );
+              _showMoreOpDialog(context, anime);
             },
             child: AnimeGridCover(anime),
           );
         },
+      ),
+    );
+  }
+
+  Future<dynamic> _showMoreOpDialog(BuildContext context, Anime anime) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text('从系列中移除'),
+            onTap: () {
+              Navigator.pop(context);
+              AnimeSeriesDao.deleteAnimeSeries(anime.animeId, widget.series.id);
+
+              setState(() {
+                widget.series.animes
+                    .removeWhere((element) => element.animeId == anime.animeId);
+              });
+              // 重新获取推荐动漫
+              getRecommendedAnimes();
+            },
+          )
+        ],
       ),
     );
   }
