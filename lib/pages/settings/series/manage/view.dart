@@ -5,8 +5,8 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
@@ -39,9 +39,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
 
   bool searchAction = false;
-  bool showRecommendedSeries =
-      SPUtil.getBool(SPKey.showRecommendedSeries, defaultValue: true);
-
   SeriesStyle seriesStyle = SeriesStyle();
 
   // 该动漫已加入的系列
@@ -159,14 +156,18 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             // 已加入是从全部系列中获取的，所以加载圈和加载全部共用一个
             loading: logic.loadingSeriesList,
           ),
+        if (enableSelectSeriesForAnime)
+          const SliverToBoxAdapter(child: CommonDivider()),
+
         // 推荐
-        SliverToBoxAdapter(child: _buildRecommendTitle(context)),
-        if (enableSelectSeriesForAnime && showRecommendedSeries)
+        const SliverToBoxAdapter(child: SettingTitle(title: '推荐')),
+        if (enableSelectSeriesForAnime)
           _buildSeriesView(logic.animeRecommendSeriesList,
               loading: logic.loadingRecommendSeriesList),
         // 所有推荐不直接展示，而是放到二级页面，避免推荐太多要下拉才能看到已创建的
-        if (showRecommendedSeries)
-          SliverToBoxAdapter(child: _buildAllRecommendTile(context)),
+        SliverToBoxAdapter(child: _buildAllRecommendTile(context)),
+        const SliverToBoxAdapter(child: CommonDivider()),
+
         // 全部(显示全部已创建的系列)
         SliverToBoxAdapter(
             child: SettingTitle(title: '全部 ${logic.seriesList.length}')),
@@ -194,31 +195,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
               ToastUtil.showText('全部创建完毕');
             });
       },
-    );
-  }
-
-  _buildRecommendTitle(BuildContext context) {
-    return SettingTitle(
-      title: '推荐',
-      trailing: InkWell(
-        borderRadius: BorderRadius.circular(6),
-        onTap: () {
-          setState(() {
-            showRecommendedSeries = !showRecommendedSeries;
-          });
-          SPUtil.setBool(SPKey.showRecommendedSeries, showRecommendedSeries);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            showRecommendedSeries ? '隐藏' : '显示',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ),
-      ),
     );
   }
 
@@ -276,52 +252,66 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     }
 
     if (seriesStyle.useList) {
-      return SliverList.builder(
-        itemCount: seriesList.length,
-        itemBuilder: (context, index) {
-          var series = seriesList[index];
-          Anime? firstHasCoverAnime;
-          for (var anime in series.animes) {
-            if (anime.animeCoverUrl.isNotEmpty) {
-              firstHasCoverAnime = anime;
-              break;
-            }
-          }
-          return ListTile(
-            leading: firstHasCoverAnime == null
-                ? const SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: Center(
-                      child: SvgAssetIcon(
-                          assetPath: Assets.iconsCollections24Regular),
-                    ),
-                  )
-                : AnimeListCover(
-                    firstHasCoverAnime,
-                    showReviewNumber: false,
-                  ),
-            title:
-                Text(series.name, overflow: TextOverflow.ellipsis, maxLines: 1),
-            subtitle: Text('${series.animes.length}'),
-            trailing: _buildActionButton(context, series),
-            onTap: () =>
-                _toSeriesDetailPage(context, series, seriesList, index),
-            onLongPress: () => _showOpMenuDialog(context, series),
-          );
-        },
-      );
+      return _buildSeriesListView(seriesList);
     }
 
-    return SliverGrid.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        mainAxisExtent: itemHeight,
-        maxCrossAxisExtent: maxItemWidth,
+    return _buildSeriesGridView(seriesList);
+  }
+
+  _buildSeriesGridView(List<Series> seriesList) {
+    return SliverPadding(
+      padding: const EdgeInsets.only(bottom: 20),
+      sliver: SliverGrid.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          mainAxisExtent: itemHeight,
+          maxCrossAxisExtent: maxItemWidth,
+        ),
+        itemCount: seriesList.length,
+        itemBuilder: (context, index) {
+          return _buildSeriesGridItem(context, seriesList, index);
+        },
       ),
+    );
+  }
+
+  _buildSeriesListView(List<Series> seriesList) {
+    return SliverList.builder(
       itemCount: seriesList.length,
       itemBuilder: (context, index) {
-        return _buildSeriesGridItem(context, seriesList, index);
+        return _buildSeriesListItem(seriesList, index);
       },
+    );
+  }
+
+  _buildSeriesListItem(List<Series> seriesList, int index) {
+    var series = seriesList[index];
+    Anime? firstHasCoverAnime;
+    for (var anime in series.animes) {
+      if (anime.animeCoverUrl.isNotEmpty) {
+        firstHasCoverAnime = anime;
+        break;
+      }
+    }
+
+    return ListTile(
+      leading: firstHasCoverAnime == null
+          ? const SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(
+                child:
+                    SvgAssetIcon(assetPath: Assets.iconsCollections24Regular),
+              ),
+            )
+          : AnimeListCover(
+              firstHasCoverAnime,
+              showReviewNumber: false,
+            ),
+      title: Text(series.name, overflow: TextOverflow.ellipsis, maxLines: 1),
+      subtitle: Text('${series.animes.length}'),
+      trailing: _buildActionButton(context, series),
+      onTap: () => _toSeriesDetailPage(context, series, seriesList, index),
+      onLongPress: () => _showOpMenuDialog(context, series),
     );
   }
 
