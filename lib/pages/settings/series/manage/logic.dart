@@ -10,7 +10,8 @@ class SeriesManageLogic extends GetxController {
   List<Series> seriesList = [];
   bool loadingSeriesList = true;
   // 推荐创建的系列
-  List<Series> recommendSeriesList = [];
+  List<Series> allRecommendSeriesList = []; // 所有推荐
+  List<Series> animeRecommendSeriesList = []; // 当前动漫推荐
   bool loadingRecommendSeriesList = true;
 
   var inputKeywordController = TextEditingController();
@@ -45,15 +46,15 @@ class SeriesManageLogic extends GetxController {
     // update();
 
     // 获取所有系列后，再根据所有系列生成推荐系列
+    await getAnimeRecommendSeries();
     await getRecommendSeries();
     loadingRecommendSeriesList = false;
     update();
   }
 
-  Future<void> getRecommendSeries() async {
-    // 不要用clear，然后直接添加到recommendSeriesList
-    // 因为在获取已创建的全部系列后会进行重绘，如果再重绘前清空了recommendSeriesList，会丢失滚动位置
-    // 因此先存放到list，最终统一赋值给recommendSeriesList
+  Future<void> getAnimeRecommendSeries() async {
+    if (!enableSelectSeriesForAnime) return;
+
     List<Series> list = [];
 
     if (enableSelectSeriesForAnime) {
@@ -82,19 +83,33 @@ class SeriesManageLogic extends GetxController {
         // 没有创建该系列，放到推荐中
         list.add(Series(recommendSeriesId, recommendSeriesName));
       }
-    } else {
-      // 否则根据收藏的所有动漫生成推荐系列
-      var animes = await AnimeDao.getAllAnimes();
-      for (var anime in animes) {
-        String recommendSeriesName = _getRecommendSeriesName(anime.animeName);
-        if (recommendSeriesName.isNotEmpty &&
-            _isNotRecommended(recommendSeriesName, list)) {
-          list.add(Series(recommendSeriesId, recommendSeriesName));
-        }
+    }
+
+    animeRecommendSeriesList = list;
+    update();
+  }
+
+  Future<void> getRecommendSeries() async {
+    // 不要用clear，然后直接添加到recommendSeriesList
+    // 因为在获取已创建的全部系列后会进行重绘，如果再重绘前清空了recommendSeriesList，会丢失滚动位置
+    // 因此先存放到list，最终统一赋值给recommendSeriesList
+    List<Series> list = [];
+
+    // 否则根据收藏的所有动漫生成推荐系列
+    var animes = await AnimeDao.getAllAnimes();
+    for (var anime in animes) {
+      String recommendSeriesName = _getRecommendSeriesName(anime.animeName);
+      if (recommendSeriesName.isNotEmpty &&
+          _isNotRecommended(recommendSeriesName, list) &&
+          // 为该动漫推荐了，则不在全部里展示
+          animeRecommendSeriesList.indexWhere(
+                  (element) => element.name == recommendSeriesName) <
+              0) {
+        list.add(Series(recommendSeriesId, recommendSeriesName));
       }
     }
 
-    recommendSeriesList = list;
+    allRecommendSeriesList = list;
     update();
   }
 
@@ -109,8 +124,8 @@ class SeriesManageLogic extends GetxController {
 
   /// 根据动漫名推出系列名
   String _getRecommendSeriesName(String name) {
-    RegExp regExp =
-        RegExp("(第.*(部|季|期)|ova|Ⅱ|oad|[1-9] |剧场版)", caseSensitive: false);
+    RegExp regExp = RegExp("(第.*(部|季|期)|ova|oad|剧场版|[1-9] |Ⅰ|Ⅱ|Ⅲ|Ⅳ|Ⅴ)",
+        caseSensitive: false);
     var match = regExp.firstMatch(name);
     if (match == null || match[0] == null) return '';
     String seasonText = match[0]!;

@@ -19,7 +19,7 @@ class CommonTitleTabBar extends StatelessWidget {
       indicatorSize: TabBarIndicatorSize.label,
       indicator: MaterialIndicator(
         horizontalPadding: 5,
-        height: 3,
+        height: 4,
         color: Theme.of(context).primaryColor,
         paintingStyle: PaintingStyle.fill,
         bottomLeftRadius: radius,
@@ -84,6 +84,7 @@ class CommonBottomTabBar extends StatelessWidget
         // 第三方指示器样式
         indicator: MaterialIndicator(
           horizontalPadding: 5,
+          height: 4,
           color: Theme.of(context).primaryColor,
           paintingStyle: PaintingStyle.fill,
           bottomLeftRadius: radius,

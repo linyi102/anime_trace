@@ -150,6 +150,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   _buildSeriesBody(BuildContext context) {
     return CustomScrollView(
       slivers: [
+        // 已加入
         if (enableSelectSeriesForAnime)
           const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
         if (enableSelectSeriesForAnime)
@@ -158,19 +159,17 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             // 已加入是从全部系列中获取的，所以加载圈和加载全部共用一个
             loading: logic.loadingSeriesList,
           ),
-        // 动漫详情页进入的系列页，推荐放在全部上方
-        if (enableSelectSeriesForAnime)
-          SliverToBoxAdapter(child: _buildAnimeRecommendTitle(context)),
+        // 推荐
+        SliverToBoxAdapter(child: _buildRecommendTitle(context)),
         if (enableSelectSeriesForAnime && showRecommendedSeries)
-          _buildSeriesView(logic.recommendSeriesList,
+          _buildSeriesView(logic.animeRecommendSeriesList,
               loading: logic.loadingRecommendSeriesList),
-        // 所有推荐不直接展示，通过点击后弹出底部面板
-        // 从而避免点击推荐里的创建时，因全部GridView行数增多时，滚动位置变化
-        if (!enableSelectSeriesForAnime && logic.recommendSeriesList.isNotEmpty)
-          SliverToBoxAdapter(child: _buildAllRecommendTitle(context)),
-        // 显示全部已创建的系列
+        // 所有推荐不直接展示，而是放到二级页面，避免推荐太多要下拉才能看到已创建的
+        if (showRecommendedSeries)
+          SliverToBoxAdapter(child: _buildAllRecommendTile(context)),
+        // 全部(显示全部已创建的系列)
         SliverToBoxAdapter(
-            child: SettingTitle(title: '全部 (${logic.seriesList.length})')),
+            child: SettingTitle(title: '全部 ${logic.seriesList.length}')),
         _buildSeriesView(logic.seriesList, loading: logic.loadingSeriesList),
         // 避免紧挨底部
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -188,7 +187,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ToastUtil.showLoading(
             msg: '创建中',
             task: () async {
-              for (var series in logic.recommendSeriesList) {
+              for (var series in logic.allRecommendSeriesList) {
                 await SeriesDao.insert(series);
               }
               logic.getAllSeries();
@@ -198,7 +197,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
-  _buildAnimeRecommendTitle(BuildContext context) {
+  _buildRecommendTitle(BuildContext context) {
     return SettingTitle(
       title: '推荐',
       trailing: InkWell(
@@ -223,8 +222,19 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     );
   }
 
-  _buildAllRecommendTitle(BuildContext context) {
-    return InkWell(
+  _buildAllRecommendTile(BuildContext context) {
+    if (logic.allRecommendSeriesList.isEmpty) return const SizedBox();
+
+    late String text;
+    if (enableSelectSeriesForAnime) {
+      text = '找到了${logic.allRecommendSeriesList.length}个其他推荐';
+    } else {
+      text = '找到了${logic.allRecommendSeriesList.length}个推荐系列';
+    }
+
+    return ListTile(
+      title: Text(text),
+      textColor: Theme.of(context).primaryColor,
       onTap: () {
         Navigator.push(
             context,
@@ -237,18 +247,14 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                       body: CommonScaffoldBody(
                           child: CustomScrollView(
                         slivers: [
-                          if (logic.recommendSeriesList.isNotEmpty)
+                          if (logic.allRecommendSeriesList.isNotEmpty)
                             SliverToBoxAdapter(
                                 child: _buildCreateAllButton(context)),
-                          _buildSeriesView(logic.recommendSeriesList),
+                          _buildSeriesView(logic.allRecommendSeriesList),
                         ],
                       )))),
             ));
       },
-      child: SettingTitle(
-        title: '推荐 (${logic.recommendSeriesList.length})',
-        trailing: const Icon(Icons.chevron_right),
-      ),
     );
   }
 
@@ -445,10 +451,10 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (status == isNotCreated) {
           // 创建该系列
           int newId = await SeriesDao.insert(series);
-          if (enableSelectSeriesForAnime && newId > 0) {
-            // 加入该系列
-            await AnimeSeriesDao.insertAnimeSeries(widget.animeId, newId);
+          if (newId <= 0) {
+            ToastUtil.showText('创建系列失败');
           }
+          // 不再自动加入，方便全部推荐页面中显示创建，而不是创建并加入
         } else if (status == isAdded) {
           // 退出该系列
           await AnimeSeriesDao.deleteAnimeSeries(widget.animeId, series.id);
@@ -470,13 +476,11 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         child: Text(
-          status == isNotCreated && enableSelectSeriesForAnime
-              ? '创建并加入'
-              : status == isNotCreated
-                  ? '创建'
-                  : status == isAdded
-                      ? '退出'
-                      : '加入',
+          status == isNotCreated
+              ? '创建'
+              : status == isAdded
+                  ? '退出'
+                  : '加入',
           style: TextStyle(
               color: color, fontSize: 12, fontWeight: FontWeight.w600),
           // style: TextStyle(color: Colors.white, fontSize: 12),
