@@ -192,6 +192,11 @@ class AnimeDao {
       delete from anime_label
       where anime_id = $animeId;
       ''');
+    // 从系列中删除
+    db.rawDelete('''
+      delete from anime_series
+      where anime_id = $animeId;
+      ''');
 
     return true;
   }

@@ -299,6 +299,10 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   }
 
   void _searchDbAnimesByKeyword(String text, {bool forceSearch = false}) {
+    if (text.isEmpty) {
+      Log.info('输入内容为空，不进行搜索');
+      return;
+    }
     if (!forceSearch && _lastInputText == text) {
       Log.info("相同内容，不进行搜索");
       return;
@@ -382,7 +386,12 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         },
       ),
     ).then((value) async {
-      _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
+      // 选择的标签不为空时，说明是点击标签后进入的动漫详情页，返回后要重新根据标签查询动漫
+      if (selectedLabels.isNotEmpty) {
+        _searchAnimesByLabels();
+      } else {
+        _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
+      }
     });
   }
 }

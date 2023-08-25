@@ -132,15 +132,8 @@ class _AggregatePageState extends State<AggregatePage> {
           _buildCardTitle('今日开播'),
           logic.loadingAnimesNYearsAgoTodayBroadcast
               ? const LoadingWidget()
-              : logic.animesNYearsAgoTodayBroadcast.isEmpty
-                  ? Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(left: 15, bottom: 10),
-                          child: const Text('暂无'),
-                        )
-                      ],
-                    )
+              : logic.animesNYearsAgoTodayBroadcast.isNotEmpty
+                  ? const ListTile(title: Text('无'))
                   : const TodayAnimeListPage(),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
@@ -174,7 +175,7 @@ class AnimeCoverDetail extends StatelessWidget {
         PhotoView PhotoView:file:///D:/MC/code_big/flutter/anime_trace/lib/pages/anime_detail/anime_cover_detail.dart:142:12
      */
     return PhotoView(
-      // loadingBuilder: (_, __) => const CircularProgressIndicator(),
+      loadingBuilder: (_, __) => const LoadingWidget(center: true),
       errorBuilder: (context, url, error) => _buildErrorInfo(context),
       imageProvider: imageProvider,
       backgroundDecoration:
