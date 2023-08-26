@@ -306,7 +306,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildOverlayCover(series),
-            _buildInfo(series, context),
+            _buildGridItemInfo(series, context),
           ],
         ),
       ),
@@ -350,7 +350,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ));
   }
 
-  _buildInfo(Series series, BuildContext context) {
+  _buildGridItemInfo(Series series, BuildContext context) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.only(left: 8, top: 8, right: 5),
@@ -389,6 +389,9 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   }
 
   InkWell _buildActionButton(BuildContext context, Series series) {
+    // 如果动漫推荐系列中有该系列，则可以创建并加入
+    bool canAddAfterCreate = logic.animeRecommendSeriesList.contains(series);
+
     var isAdded = 'isAdded', // 动漫已加入该系列
         isCreated = 'isCreated', // 已创建该系列
         isNotCreated = 'isNotCreated'; // 为创建该系列
@@ -421,8 +424,9 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         if (status == isNotCreated) {
           // 创建该系列
           int newId = await SeriesDao.insert(series);
-          if (newId <= 0) {
-            ToastUtil.showText('创建系列失败');
+          if (enableSelectSeriesForAnime && newId > 0 && canAddAfterCreate) {
+            // 加入该系列
+            await AnimeSeriesDao.insertAnimeSeries(widget.animeId, newId);
           }
           // 不再自动加入，方便全部推荐页面中显示创建，而不是创建并加入
         } else if (status == isAdded) {
@@ -446,11 +450,15 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         ),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         child: Text(
-          status == isNotCreated
-              ? '创建'
-              : status == isAdded
-                  ? '退出'
-                  : '加入',
+          status == isNotCreated &&
+                  enableSelectSeriesForAnime &&
+                  canAddAfterCreate
+              ? '创建并加入'
+              : status == isNotCreated
+                  ? '创建'
+                  : status == isAdded
+                      ? '退出'
+                      : '加入',
           style: TextStyle(
               color: color, fontSize: 12, fontWeight: FontWeight.w600),
           // style: TextStyle(color: Colors.white, fontSize: 12),

@@ -156,9 +156,15 @@ class SeriesManageLogic extends GetxController {
         break;
       case SeriesListSortCond.animeCnt:
         seriesList.sort(
-          (a, b) => rule.desc
-              ? -a.animes.length.compareTo(b.animes.length)
-              : a.animes.length.compareTo(b.animes.length),
+          (a, b) {
+            var alen = a.animes.length, blen = b.animes.length;
+            // 动漫数量一致时，按照id排序，避免删除时，仍然按数量排序时，相同数量的系列的顺序变化
+            if (alen == blen) {
+              return a.id.compareTo(b.id);
+            }
+
+            return rule.desc ? -alen.compareTo(blen) : alen.compareTo(blen);
+          },
         );
         break;
       default:
