@@ -4,7 +4,6 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
@@ -22,6 +21,8 @@ import '../../../../values/values.dart';
 import '../../../../widgets/common_scaffold_body.dart';
 import '../detail/view.dart';
 import 'logic.dart';
+import 'style.dart';
+import 'widgets/layout.dart';
 
 class SeriesManagePage extends StatefulWidget {
   const SeriesManagePage({this.animeId = -1, Key? key}) : super(key: key);
@@ -39,7 +40,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
 
   bool searchAction = false;
-  SeriesStyle seriesStyle = SeriesStyle();
 
   // 该动漫已加入的系列
   List<Series> get addedSeriesList {
@@ -47,7 +47,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
     List<Series> list = [];
     // 遍历所有系列
-    for (var series in logic.seriesList) {
+    for (var series in logic.allSeriesList) {
       // 如果系列中存在该动漫则添加
       if (series.animes
               .indexWhere((anime) => anime.animeId == widget.animeId) >=
@@ -120,28 +120,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
   _showLayoutBottomSheet() {
     showModalBottomSheet(
-      context: context,
-      builder: (context) => Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
-                onTap: () {
-                  if (seriesStyle.useList) {
-                    seriesStyle.enableGrid();
-                  } else {
-                    seriesStyle.enableList();
-                  }
-                  setState(() {});
-                },
-                title: Text("${seriesStyle.useList ? '列表' : '网格'}样式"),
-                subtitle: const Text('切换列表/网格样式'),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+        context: context,
+        builder: (context) => SeriesManageLayoutSettingPage(logic: logic));
   }
 
   _buildSeriesBody(BuildContext context) {
@@ -170,8 +150,8 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
         // 全部(显示全部已创建的系列)
         SliverToBoxAdapter(
-            child: SettingTitle(title: '全部 ${logic.seriesList.length}')),
-        _buildSeriesView(logic.seriesList, loading: logic.loadingSeriesList),
+            child: SettingTitle(title: '全部 ${logic.allSeriesList.length}')),
+        _buildSeriesView(logic.allSeriesList, loading: logic.loadingSeriesList),
         // 避免紧挨底部
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
@@ -251,7 +231,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       );
     }
 
-    if (seriesStyle.useList) {
+    if (SeriesStyle.useList) {
       return _buildSeriesListView(seriesList);
     }
 
@@ -521,7 +501,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         Log.info("搜索系列关键字：$kw");
         // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
         DelayUtil.delaySearch(() async {
-          logic.seriesList = await SeriesDao.searchSeries(kw);
+          logic.allSeriesList = await SeriesDao.searchSeries(kw);
           logic.kw = kw; // 记录关键字
           logic.update();
         });
@@ -565,7 +545,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                     Log.info("编辑系列：$series");
                     Navigator.of(context).pop();
 
-                    int index = logic.seriesList
+                    int index = logic.allSeriesList
                         .indexWhere((element) => element == series);
                     _toModifySeriesFormPage(context, index);
                   },
@@ -602,7 +582,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
                       if (searchAction) {
                         // 重新搜索
-                        logic.seriesList = await SeriesDao.searchSeries(
+                        logic.allSeriesList = await SeriesDao.searchSeries(
                             logic.inputKeywordController.text);
                         logic.update();
                       } else {
@@ -637,7 +617,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   }
 
   _toModifySeriesFormPage(BuildContext context, int index) {
-    Series series = logic.seriesList[index];
+    Series series = logic.allSeriesList[index];
     Navigator.push(
         context,
         MaterialPageRoute(

@@ -2,26 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/series_dao.dart';
 import 'package:flutter_test_future/models/series.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 
 class SeriesManageLogic extends GetxController {
+  String tag;
+  SeriesManageLogic({required this.tag, required this.animeId});
+
   // 所有系列
-  List<Series> seriesList = [];
+  List<Series> allSeriesList = [];
   bool loadingSeriesList = true;
+
   // 推荐创建的系列
   List<Series> allRecommendSeriesList = []; // 所有推荐
   List<Series> animeRecommendSeriesList = []; // 当前动漫推荐
+
+  // 加载状态
   bool loadingRecommendSeriesList = true;
 
+  // 搜索
   var inputKeywordController = TextEditingController();
   String kw = "";
 
+  // 推荐系列，因为可能还没有创建，此时指定id为-1
   int get recommendSeriesId => -1;
-  int animeId;
-  bool get enableSelectSeriesForAnime => animeId > 0;
-  String tag;
-  SeriesManageLogic({required this.tag, required this.animeId});
+
+  int animeId; // 动漫详情页传来的动漫id
+  bool get enableSelectSeriesForAnime => animeId > 0; // 表明动漫详情页进入的系列页
 
   @override
   void onInit() {
@@ -39,7 +47,9 @@ class SeriesManageLogic extends GetxController {
 
   // 还原数据后，需要重新获取所有系列
   Future<void> getAllSeries() async {
-    seriesList = await SeriesDao.getAllSeries();
+    allSeriesList = await SeriesDao.getAllSeries();
+    // 排序
+    _sort(allSeriesList, SeriesStyle.sortRule);
     loadingSeriesList = false;
     // 动漫详情页进入系列页后，推荐还没生成，此时显示全部，推荐生成后会导致突然下移(闪烁)，所以此处不进行重绘
     // 而是等推荐系列生成完毕后一起显示
@@ -65,19 +75,19 @@ class SeriesManageLogic extends GetxController {
         // 如果不是系列，则推荐根据动漫名字创建系列
         recommendSeriesName = anime.animeName;
       }
-      int index = seriesList
+      int index = allSeriesList
           .indexWhere((_series) => _series.name == recommendSeriesName);
       // 先看所有系列中是否有，若有，但没有加入该系列，则显示加入，如还没有创建，则显示创建并加入
 
       if (index >= 0) {
-        if (seriesList[index]
+        if (allSeriesList[index]
                 .animes
                 .indexWhere((_anime) => _anime.animeId == animeId) >=
             0) {
           // 该系列创建了，且已加入，那么什么都不做
         } else {
           // 该系列创建了，但没有加入，放到推荐中
-          list.add(seriesList[index]);
+          list.add(allSeriesList[index]);
         }
       } else {
         // 没有创建该系列，放到推荐中
@@ -119,7 +129,7 @@ class SeriesManageLogic extends GetxController {
     return currentRecommentSeriesList
                 .indexWhere((element) => element.name == seriesName) <
             0 &&
-        seriesList.indexWhere((element) => element.name == seriesName) < 0;
+        allSeriesList.indexWhere((element) => element.name == seriesName) < 0;
   }
 
   /// 根据动漫名推出系列名
@@ -130,5 +140,28 @@ class SeriesManageLogic extends GetxController {
     if (match == null || match[0] == null) return '';
     String seasonText = match[0]!;
     return name.substring(0, name.indexOf(seasonText)).trim();
+  }
+
+  sort() {
+    _sort(allSeriesList, SeriesStyle.sortRule);
+    update();
+  }
+
+  void _sort(List<Series> seriesList, SeriesListSortRule rule) {
+    switch (rule.cond) {
+      case SeriesListSortCond.createTime:
+        seriesList.sort(
+          (a, b) => rule.desc ? -a.id.compareTo(b.id) : a.id.compareTo(b.id),
+        );
+        break;
+      case SeriesListSortCond.animeCnt:
+        seriesList.sort(
+          (a, b) => rule.desc
+              ? -a.animes.length.compareTo(b.animes.length)
+              : a.animes.length.compareTo(b.animes.length),
+        );
+        break;
+      default:
+    }
   }
 }

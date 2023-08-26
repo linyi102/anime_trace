@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   /// 圆角
-  static const double cardRadius = 8.0;
-  static const double imgRadius = 6.0;
-  static const double stateRadius = 4.0; // 集数、观看次数
-  static const double bottomSheetRadius = 16.0;
-  static const double chipRadius = 40.0;
-  static const double timePickerDialogRadius = 16.0;
-  static const double dialogRadius = 16.0;
-  static const double textButtonRadius = 16.0;
+  static double get cardRadius => 8.0;
+  static double get imgRadius => 6.0;
+  static double get stateRadius => 4.0; // 集数、观看次数
+  static double get bottomSheetRadius => 16.0;
+  static double get chipRadius => 40.0;
+  static double get timePickerDialogRadius => 16.0;
+  static double get dialogRadius => 16.0;
+  static double get textButtonRadius => 16.0;
 
   /// 当前是否是夜间模式
   static bool isDark = false;
