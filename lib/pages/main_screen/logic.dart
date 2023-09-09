@@ -16,33 +16,46 @@ class MainScreenLogic extends GetxController {
   int selectedTabIdx = 0;
   int get searchTabIdx => 1;
 
-  final List<MainTab> tabs = [
-    MainTab(
-        name: "动漫",
-        iconData: MingCuteIcons.mgc_home_4_line,
-        selectedIconData: MingCuteIcons.mgc_home_4_fill,
-        page: const AnimeListPage()),
-    MainTab(
-        name: "探索",
-        iconData: MingCuteIcons.mgc_search_line,
-        selectedIconData: MingCuteIcons.mgc_search_3_fill,
-        page: const ExplorePage()),
-    MainTab(
-        name: "历史",
-        iconData: MingCuteIcons.mgc_time_line,
-        selectedIconData: MingCuteIcons.mgc_time_fill,
-        page: const HistoryPage()),
-    MainTab(
-        name: "笔记",
-        iconData: MingCuteIcons.mgc_quill_pen_line,
-        selectedIconData: MingCuteIcons.mgc_quill_pen_fill,
-        page: const NoteListPage()),
-    MainTab(
-        name: "更多",
-        iconData: MingCuteIcons.mgc_more_3_line,
-        selectedIconData: MingCuteIcons.mgc_more_3_fill,
-        page: const SettingPage())
-  ];
+  List<MainTab> tabs = [];
+  List<MainTab> candidateTabs = [];
+
+  var homeTab = MainTab(
+      name: "动漫",
+      iconData: MingCuteIcons.mgc_home_4_line,
+      selectedIconData: MingCuteIcons.mgc_home_4_fill,
+      page: const AnimeListPage());
+  var exploreTab = MainTab(
+      name: "探索",
+      iconData: MingCuteIcons.mgc_search_line,
+      selectedIconData: MingCuteIcons.mgc_search_3_fill,
+      page: const ExplorePage());
+  var historyTab = MainTab(
+      name: "历史",
+      iconData: MingCuteIcons.mgc_time_line,
+      selectedIconData: MingCuteIcons.mgc_time_fill,
+      page: const HistoryPage());
+  var noteTab = MainTab(
+      name: "笔记",
+      iconData: MingCuteIcons.mgc_quill_pen_line,
+      selectedIconData: MingCuteIcons.mgc_quill_pen_fill,
+      page: const NoteListPage());
+  var moreTab = MainTab(
+      name: "更多",
+      iconData: MingCuteIcons.mgc_more_3_line,
+      selectedIconData: MingCuteIcons.mgc_more_3_fill,
+      page: const SettingPage());
+
+  @override
+  void onInit() {
+    super.onInit();
+    tabs = [
+      homeTab,
+      exploreTab,
+      historyTab,
+      noteTab,
+      moreTab,
+    ];
+  }
 
   toTabPage(int idx) {
     selectedTabIdx = idx;
