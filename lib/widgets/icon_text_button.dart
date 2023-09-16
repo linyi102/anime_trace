@@ -14,6 +14,7 @@ class IconTextButton extends StatelessWidget {
     this.padding = const EdgeInsets.all(8.0),
     this.margin = const EdgeInsets.all(4.0),
     this.radius = 6,
+    this.space = 5,
     Key? key,
   }) : super(key: key);
 
@@ -27,6 +28,7 @@ class IconTextButton extends StatelessWidget {
   final double radius;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
+  final double space; // 图标和文字之间的间隔
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class IconTextButton extends StatelessWidget {
           child: Column(
             children: [
               _buildIcon(),
-              const SizedBox(height: 5),
+              SizedBox(height: space),
               text,
             ],
           ),
@@ -68,7 +70,7 @@ class IconTextButton extends StatelessWidget {
           child: Row(
             children: [
               _buildIcon(),
-              const SizedBox(width: 5),
+              SizedBox(height: space),
               text,
             ],
           ),

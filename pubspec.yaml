@@ -61,14 +61,15 @@ dependencies:
   sqflite: ^2.0.1
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
-  file_picker: ^5.3.3
+  file_picker:
+    path: E:/Code/Flutter/module/flutter_file_picker_no_cache
   webdav_client: ^1.1.8
   dio: ^4.0.4
   html: ^0.15.0
   cached_network_image: ^3.2.3 # 缓存图片
   archive: ^3.1.8
   path: ^1.8.0
-  package_info_plus: ^4.0.2
+  package_info_plus: ^3.1.2
   url_launcher: ^6.1.0
   transparent_image: ^2.0.0
 
