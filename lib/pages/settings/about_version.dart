@@ -4,9 +4,10 @@ import 'package:flutter_test_future/components/logo.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:flutter_test_future/values/assets.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
-import 'package:simple_icons/simple_icons.dart';
 
 class AboutVersion extends StatefulWidget {
   const AboutVersion({Key? key}) : super(key: key);
@@ -95,17 +96,18 @@ class _AboutVersionState extends State<AboutVersion> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-            onPressed: () {
-              LaunchUrlUtil.launch(
-                  context: context,
-                  uriStr: "https://github.com/linyi102/anime_trace");
-            },
-            icon: Icon(
-              SimpleIcons.github,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-            )),
+          onPressed: () {
+            LaunchUrlUtil.launch(
+                context: context,
+                uriStr: "https://github.com/linyi102/anime_trace");
+          },
+          icon: SvgAssetIcon(
+            assetPath: Assets.iconsGithub,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
         IconButton(
           onPressed: () {
             LaunchUrlUtil.launch(
@@ -113,8 +115,8 @@ class _AboutVersionState extends State<AboutVersion> {
                 uriStr: "https://gitee.com/linyi517/anime_trace",
                 inApp: false);
           },
-          icon: const Icon(
-            SimpleIcons.gitee,
+          icon: const SvgAssetIcon(
+            assetPath: Assets.iconsGitee,
             color: Color.fromRGBO(187, 33, 36, 1),
           ),
         )

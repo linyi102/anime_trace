@@ -35,8 +35,6 @@ dependencies:
   flutter_screenutil: ^5.8.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
-  fluentui_system_icons: ^1.1.215
-  ming_cute_icons: ^0.0.1
   app_installer: ^1.1.0
   flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6 # 时间差
@@ -46,8 +44,9 @@ dependencies:
   file_saver: ^0.1.1 # 文件保存，用于备份文件
   sliver_tools: ^0.2.9 # sliver工具：渐变过渡
   pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
+  fluentui_system_icons: ^1.1.215
+  ming_cute_icons: ^0.0.1
   eva_icons_flutter: ^3.1.0 # 图标
-  simple_icons: ^7.1.0 # github、gitee图标
   reorderable_grid_view: ^2.2.5 # 可拖动排序的网格
   webview_flutter: ^3.0.4 # App内网页
   photo_view: ^0.14.0 # 缩放、左右切换图片

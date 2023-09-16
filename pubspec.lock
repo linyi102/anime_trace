@@ -661,14 +661,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.0"
-  simple_icons:
-    dependency: "direct main"
-    description:
-      name: simple_icons
-      sha256: "8aa6832dc7a263a3213e40ecbf1328a392308c809d534a3b860693625890483b"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "7.10.0"
   sky_engine:
     dependency: transitive
     description: flutter

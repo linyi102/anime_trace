@@ -21,6 +21,14 @@ class Assets {
   /// assets/icons/failed_picture.png
   static const String iconsFailedPicture = "assets/icons/failed_picture.png";
 
+  /// Assets for iconsGitee
+  /// assets/icons/gitee.svg
+  static const String iconsGitee = "assets/icons/gitee.svg";
+
+  /// Assets for iconsGithub
+  /// assets/icons/github.svg
+  static const String iconsGithub = "assets/icons/github.svg";
+
   /// Assets for imagesDefaultAnimeCover
   /// assets/images/defaultAnimeCover.png
   static const String imagesDefaultAnimeCover = "assets/images/defaultAnimeCover.png";
