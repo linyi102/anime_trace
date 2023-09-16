@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -26,10 +25,6 @@ class SeriesDetailPage extends StatefulWidget {
 
 class _SeriesDetailPageState extends State<SeriesDetailPage> {
   List<Anime> recommendAnimes = [];
-  bool showRecommend = SPUtil.getBool(
-    SPKey.showRecommendedAnimesInSeriesPage,
-    defaultValue: true,
-  );
 
   @override
   void initState() {
@@ -52,32 +47,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
             _buildSeriesAnimesView(context),
             if (recommendAnimes.isNotEmpty)
               SliverToBoxAdapter(child: _buildRecommendTitle(context)),
-            if (showRecommend && recommendAnimes.isNotEmpty)
-              SliverToBoxAdapter(child: _buildAddAllButton(context)),
-            if (showRecommend) _buildRecommendedAnimes(),
+            _buildRecommendedAnimes(),
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       )),
       floatingActionButton: _buildFAB(context),
-    );
-  }
-
-  ListTile _buildAddAllButton(BuildContext context) {
-    return ListTile(
-      title: Text(
-        '添加全部',
-        style: TextStyle(color: Theme.of(context).primaryColor),
-      ),
-      onTap: () async {
-        _allAllRecommendAnimes();
-        // 最多只有几条数据，不需要加载圈，影响体验
-        // ToastUtil.showLoading(
-        //     msg: '添加中',
-        //     task: () async {
-        //       await _allAllRecommendAnimes();
-        //     });
-      },
     );
   }
 
@@ -126,23 +101,33 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   SettingTitle _buildRecommendTitle(BuildContext context) {
     return SettingTitle(
       title: '推荐',
-      trailing: InkWell(
-        borderRadius: BorderRadius.circular(6),
-        onTap: () {
-          setState(() {
-            showRecommend = !showRecommend;
-          });
-          SPUtil.setBool(
-              SPKey.showRecommendedAnimesInSeriesPage, showRecommend);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            showRecommend ? '隐藏' : '显示',
-            style: Theme.of(context).textTheme.bodySmall,
+      trailing: _buildAddAllButton(),
+    );
+  }
+
+  Widget? _buildAddAllButton() {
+    if (recommendAnimes.isEmpty || recommendAnimes.length == 1) {
+      return null;
+    }
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(99),
+      onTap: () {
+        _allAllRecommendAnimes();
+        // 最多只有几条数据，不需要加载圈，影响体验
+        // ToastUtil.showLoading(
+        //     msg: '添加中',
+        //     task: () async {
+        //       await _allAllRecommendAnimes();
+        //     });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        child: Text(
+          '添加全部',
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontSize: 14,
           ),
         ),
       ),

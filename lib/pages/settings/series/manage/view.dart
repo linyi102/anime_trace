@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -129,6 +130,9 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   _buildSeriesBody(BuildContext context) {
     return CustomScrollView(
       slivers: [
+        // 所有推荐不直接展示，而是放到二级页面，避免推荐太多要下拉才能看到已创建的
+        SliverToBoxAdapter(child: _buildAllRecommendTile(context)),
+
         // 已加入
         if (enableSelectSeriesForAnime)
           const SliverToBoxAdapter(child: SettingTitle(title: '已加入')),
@@ -142,17 +146,18 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           const SliverToBoxAdapter(child: CommonDivider()),
 
         // 推荐
-        const SliverToBoxAdapter(child: SettingTitle(title: '推荐')),
+        if (enableSelectSeriesForAnime)
+          const SliverToBoxAdapter(child: SettingTitle(title: '推荐')),
         if (enableSelectSeriesForAnime)
           _buildSeriesView(logic.animeRecommendSeriesList,
               loading: logic.loadingRecommendSeriesList),
-        // 所有推荐不直接展示，而是放到二级页面，避免推荐太多要下拉才能看到已创建的
-        SliverToBoxAdapter(child: _buildAllRecommendTile(context)),
-        const SliverToBoxAdapter(child: CommonDivider()),
+        if (enableSelectSeriesForAnime)
+          const SliverToBoxAdapter(child: CommonDivider()),
 
         // 全部(显示全部已创建的系列)
-        SliverToBoxAdapter(
-            child: SettingTitle(title: '全部 ${logic.allSeriesList.length}')),
+        if (enableSelectSeriesForAnime)
+          SliverToBoxAdapter(
+              child: SettingTitle(title: '全部 ${logic.allSeriesList.length}')),
         _buildSeriesView(logic.allSeriesList, loading: logic.loadingSeriesList),
 
         _buildBottomGap(),
@@ -164,60 +169,75 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   SliverToBoxAdapter _buildBottomGap() =>
       const SliverToBoxAdapter(child: SizedBox(height: 100));
 
-  ListTile _buildCreateAllButton(BuildContext context) {
-    return ListTile(
-      title: Text(
-        '创建全部',
-        style: TextStyle(color: Theme.of(context).primaryColor),
-      ),
-      onTap: () async {
-        ToastUtil.showLoading(
-            msg: '创建中',
-            task: () async {
-              for (var series in logic.allRecommendSeriesList) {
-                await SeriesDao.insert(series);
-              }
-              logic.getAllSeries();
-              ToastUtil.showText('全部创建完毕');
-            });
-      },
-    );
-  }
-
   _buildAllRecommendTile(BuildContext context) {
     if (logic.allRecommendSeriesList.isEmpty) return const SizedBox();
 
-    late String text;
-    if (enableSelectSeriesForAnime) {
-      text = '找到了${logic.allRecommendSeriesList.length}个其他推荐';
-    } else {
-      text = '找到了${logic.allRecommendSeriesList.length}个推荐系列';
-    }
-
-    return ListTile(
-      title: Text(text),
-      textColor: Theme.of(context).primaryColor,
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GetBuilder(
-                  init: logic,
-                  tag: logic.tag,
-                  builder: (_) => Scaffold(
-                      appBar: AppBar(title: const Text('推荐')),
-                      body: CommonScaffoldBody(
-                          child: CustomScrollView(
-                        slivers: [
-                          if (logic.allRecommendSeriesList.isNotEmpty)
-                            SliverToBoxAdapter(
-                                child: _buildCreateAllButton(context)),
-                          _buildSeriesView(logic.allRecommendSeriesList),
-                        ],
-                      )))),
-            ));
-      },
+    return Card(
+      child: InkWell(
+        onTap: () => _toAllRecommendSeriesPage(context),
+        child: Container(
+          color: Theme.of(context).primaryColor.withOpacity(0.15),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+          child: Row(
+            children: [
+              const Text('🥰 ', style: TextStyle(fontSize: 20)),
+              Expanded(
+                child: Text(
+                  '为你找到了 ${logic.allRecommendSeriesList.length} 个可能需要添加的系列',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+  void _toAllRecommendSeriesPage(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GetBuilder(
+            init: logic,
+            tag: logic.tag,
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: const Text('推荐')),
+              body: Stack(
+                children: [
+                  CommonScaffoldBody(
+                      child: CustomScrollView(
+                    slivers: [
+                      _buildSeriesView(logic.allRecommendSeriesList),
+                    ],
+                  )),
+                  if (logic.allRecommendSeriesList.isNotEmpty)
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: OperationButton(
+                        text: '创建全部',
+                        onTap: () {
+                          ToastUtil.showLoading(
+                              msg: '创建中',
+                              task: () async {
+                                for (var series
+                                    in logic.allRecommendSeriesList) {
+                                  await SeriesDao.insert(series);
+                                }
+                                logic.getAllSeries();
+                                ToastUtil.showText('全部创建完毕');
+                              });
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 
   _buildSeriesView(
