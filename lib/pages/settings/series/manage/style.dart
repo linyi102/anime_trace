@@ -1,32 +1,48 @@
 import 'package:flutter_test_future/utils/sp_util.dart';
 
 class SeriesStyle {
-  static String get keySuffix => 'InSeriesPage';
-  static String get useGridKey => 'useGrid$keySuffix';
-  static String get showRecommendKey => 'showRecommend$keySuffix';
-  static String get sortCondNameKey => 'sortCondName$keySuffix';
-  static String get sortDescKey => 'sortDesc$keySuffix';
+  static String get _keySuffix => 'InSeriesPage';
+  static String get _useGridKey => 'useGrid$_keySuffix';
+  static String get _sortCondNameKey => 'sortCondName$_keySuffix';
+  static String get _sortDescKey => 'sortDesc$_keySuffix';
+  static String get _useSingleCoverKey => 'useSingleCover$_keySuffix';
+  static String get _itemCoverHeight => 'itemCoverHeight$_keySuffix';
 
   static SeriesListSortRule sortRule = SeriesStyle.getSortRule();
 
   static bool get useGrid => SPUtil.getBool(
-        useGridKey,
+        _useGridKey,
         defaultValue: true,
       );
 
   static bool get useList => !useGrid;
 
+  static bool get useSingleCover =>
+      SPUtil.getBool(_useSingleCoverKey, defaultValue: true);
+
   static void enableGrid() {
-    SPUtil.setBool(useGridKey, true);
+    SPUtil.setBool(_useGridKey, true);
   }
 
   static void enableList() {
-    SPUtil.setBool(useGridKey, false);
+    SPUtil.setBool(_useGridKey, false);
+  }
+
+  static void toggleUseSingleCover() {
+    SPUtil.setBool(_useSingleCoverKey, !useSingleCover);
+  }
+
+  static double getItemCoverHeight() {
+    return SPUtil.getDouble(_itemCoverHeight, defaultValue: 100);
+  }
+
+  static void setItemCoverHeight(double height) {
+    SPUtil.setDouble(_itemCoverHeight, height);
   }
 
   static SeriesListSortRule getSortRule() {
-    bool sortDesc = SPUtil.getBool(sortDescKey, defaultValue: false);
-    String sortCondName = SPUtil.getString(sortCondNameKey);
+    bool sortDesc = SPUtil.getBool(_sortDescKey, defaultValue: false);
+    String sortCondName = SPUtil.getString(_sortCondNameKey);
     for (var cond in SeriesListSortCond.values) {
       if (cond.name == sortCondName) {
         return SeriesListSortRule(cond: cond, desc: sortDesc);
@@ -38,17 +54,17 @@ class SeriesStyle {
 
   static void setSortCond(SeriesListSortCond cond) {
     sortRule.cond = cond;
-    SPUtil.setString(sortCondNameKey, sortRule.cond.name);
+    SPUtil.setString(_sortCondNameKey, sortRule.cond.name);
   }
 
   static void toggleSortDesc() {
     sortRule.desc = !sortRule.desc;
-    SPUtil.setBool(sortDescKey, sortRule.desc);
+    SPUtil.setBool(_sortDescKey, sortRule.desc);
   }
 
   static void resetSortDesc() {
     sortRule.desc = false;
-    SPUtil.setBool(sortDescKey, sortRule.desc);
+    SPUtil.setBool(_sortDescKey, sortRule.desc);
   }
 }
 

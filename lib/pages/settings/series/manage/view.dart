@@ -37,10 +37,11 @@ class SeriesManagePage extends StatefulWidget {
 
 class _SeriesManagePageState extends State<SeriesManagePage> {
   late SeriesManageLogic logic;
-  double get itemHeight => 240;
   double get maxItemWidth => 260;
-  double get coverHeight => 160;
+  double get coverHeight => SeriesStyle.getItemCoverHeight();
+  double get itemHeight => coverHeight + 80;
   bool get enableSelectSeriesForAnime => logic.enableSelectSeriesForAnime;
+  bool get singleCoverInSeries => SeriesStyle.useSingleCover;
 
   bool searchAction = false;
 
@@ -508,18 +509,36 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                 color: Theme.of(context).hintColor.withOpacity(0.2),
               ),
             )
-          : imgCnt == 1
+          : singleCoverInSeries || imgCnt == 1
               ? SizedBox(
                   width: maxItemWidth,
                   child: CommonImage(series.animes.first.animeCoverUrl))
-              : ListView.builder(
-                  itemCount: imgCnt,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) => Container(
-                      padding: const EdgeInsets.only(right: 2),
-                      color: Theme.of(context).cardColor,
-                      child: CommonImage(series.animes[index].animeCoverUrl)),
-                ),
+              : imgCnt == 2
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: maxItemWidth / 2,
+                              child: CommonImage(
+                                  series.animes.first.animeCoverUrl)),
+                          const SizedBox(width: 2),
+                          SizedBox(
+                              width: maxItemWidth / 2,
+                              child:
+                                  CommonImage(series.animes[1].animeCoverUrl))
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: imgCnt,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => Container(
+                          padding: const EdgeInsets.only(right: 2),
+                          color: Theme.of(context).cardColor,
+                          child:
+                              CommonImage(series.animes[index].animeCoverUrl)),
+                    ),
     );
   }
 
