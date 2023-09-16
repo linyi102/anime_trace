@@ -154,11 +154,15 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
         SliverToBoxAdapter(
             child: SettingTitle(title: '全部 ${logic.allSeriesList.length}')),
         _buildSeriesView(logic.allSeriesList, loading: logic.loadingSeriesList),
-        // 避免紧挨底部
-        const SliverToBoxAdapter(child: SizedBox(height: 100)),
+
+        _buildBottomGap(),
       ],
     );
   }
+
+  // 避免紧挨底部
+  SliverToBoxAdapter _buildBottomGap() =>
+      const SliverToBoxAdapter(child: SizedBox(height: 100));
 
   ListTile _buildCreateAllButton(BuildContext context) {
     return ListTile(

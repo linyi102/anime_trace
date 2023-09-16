@@ -35,6 +35,7 @@ dependencies:
   flutter_screenutil: ^5.8.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
+  fluentui_system_icons: ^1.1.215
   ming_cute_icons: ^0.0.1
   app_installer: ^1.1.0
   flutter_markdown: ^0.6.15

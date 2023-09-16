@@ -1,8 +1,7 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/main_screen/style.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
-import 'package:flutter_test_future/values/assets.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
@@ -51,13 +50,8 @@ class MainScreenLogic extends GetxController {
   );
   var seriesTab = MainTab(
     name: "系列",
-    icon: const SvgAssetIcon(
-        assetPath: Assets.iconsCollections24Regular,
-        useUnselectedItemColor: true),
-    selectedIcon: const SvgAssetIcon(
-      assetPath: Assets.iconsCollections24Filled,
-      useSelectedItemColor: true,
-    ),
+    icon: const Icon(FluentIcons.collections_24_regular),
+    selectedIcon: const Icon(FluentIcons.collections_24_filled),
     page: const SeriesManagePage(isHome: true),
     show: MainScreenStyle.showSeriesTabInMainScreen(),
     turnShow: () => MainScreenStyle.turnShowSeriesTabInMainScreen(),
