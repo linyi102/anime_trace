@@ -4,9 +4,11 @@ class SettingTitle extends StatelessWidget {
   const SettingTitle({
     super.key,
     required this.title,
+    this.subtitle = '',
     this.trailing,
   });
   final String title;
+  final String subtitle;
   final Widget? trailing;
 
   @override
@@ -16,6 +18,7 @@ class SettingTitle extends StatelessWidget {
 
     return ListTile(
       title: Text(title, style: titleStyle),
+      subtitle: subtitle.isEmpty ? null : Text(subtitle),
       trailing: trailing,
     );
   }

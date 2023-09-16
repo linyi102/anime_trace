@@ -141,9 +141,9 @@ class _MainScreenState extends State<MainScreen> {
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.center,
                   children: [
-                    Icon(isSelected
-                        ? mainTab.selectedIconData ?? mainTab.iconData
-                        : mainTab.iconData),
+                    isSelected
+                        ? mainTab.selectedIcon ?? mainTab.icon
+                        : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
                     if (expandSideBar) const Spacer(flex: 2),
                     if (expandSideBar)
@@ -221,8 +221,8 @@ class _MainScreenState extends State<MainScreen> {
               destinations: [
                 for (var tab in logic.tabs)
                   NavigationDestination(
-                    icon: Icon(tab.iconData),
-                    selectedIcon: Icon(tab.selectedIconData ?? tab.iconData),
+                    icon: tab.icon,
+                    selectedIcon: tab.selectedIcon ?? tab.icon,
                     label: tab.name,
                   ),
               ]),

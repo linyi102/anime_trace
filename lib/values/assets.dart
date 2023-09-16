@@ -5,6 +5,10 @@ class Assets {
   /// assets/icons/chat_4_line.svg
   static const String iconsChat4Line = "assets/icons/chat_4_line.svg";
 
+  /// Assets for iconsCollections24Filled
+  /// assets/icons/collections-24-filled.svg
+  static const String iconsCollections24Filled = "assets/icons/collections-24-filled.svg";
+
   /// Assets for iconsCollections24Regular
   /// assets/icons/collections-24-regular.svg
   static const String iconsCollections24Regular = "assets/icons/collections-24-regular.svg";

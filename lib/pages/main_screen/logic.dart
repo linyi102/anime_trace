@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/pages/main_screen/style.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
+import 'package:flutter_test_future/values/assets.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
@@ -16,45 +20,73 @@ class MainScreenLogic extends GetxController {
   int selectedTabIdx = 0;
   int get searchTabIdx => 1;
 
+  List<MainTab> allTabs = [];
   List<MainTab> tabs = [];
-  List<MainTab> candidateTabs = [];
-
   var homeTab = MainTab(
-      name: "动漫",
-      iconData: MingCuteIcons.mgc_home_4_line,
-      selectedIconData: MingCuteIcons.mgc_home_4_fill,
-      page: const AnimeListPage());
+    name: "动漫",
+    icon: const Icon(MingCuteIcons.mgc_home_4_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_home_4_fill),
+    page: const AnimeListPage(),
+  );
   var exploreTab = MainTab(
-      name: "探索",
-      iconData: MingCuteIcons.mgc_search_line,
-      selectedIconData: MingCuteIcons.mgc_search_3_fill,
-      page: const ExplorePage());
+    name: "探索",
+    icon: const Icon(MingCuteIcons.mgc_search_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_search_3_fill),
+    page: const ExplorePage(),
+  );
   var historyTab = MainTab(
-      name: "历史",
-      iconData: MingCuteIcons.mgc_time_line,
-      selectedIconData: MingCuteIcons.mgc_time_fill,
-      page: const HistoryPage());
+    name: "历史",
+    icon: const Icon(MingCuteIcons.mgc_time_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_time_fill),
+    page: const HistoryPage(),
+  );
   var noteTab = MainTab(
-      name: "笔记",
-      iconData: MingCuteIcons.mgc_quill_pen_line,
-      selectedIconData: MingCuteIcons.mgc_quill_pen_fill,
-      page: const NoteListPage());
+    name: "笔记",
+    icon: const Icon(MingCuteIcons.mgc_quill_pen_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_quill_pen_fill),
+    page: const NoteListPage(),
+    show: MainScreenStyle.showNoteTabInMainScreen(),
+    turnShow: () => MainScreenStyle.turnShowNoteTabInMainScreen(),
+    canHide: true,
+  );
+  var seriesTab = MainTab(
+    name: "系列",
+    icon: const SvgAssetIcon(
+        assetPath: Assets.iconsCollections24Regular,
+        useUnselectedItemColor: true),
+    selectedIcon: const SvgAssetIcon(
+      assetPath: Assets.iconsCollections24Filled,
+      useSelectedItemColor: true,
+    ),
+    page: const SeriesManagePage(isHome: true),
+    show: MainScreenStyle.showSeriesTabInMainScreen(),
+    turnShow: () => MainScreenStyle.turnShowSeriesTabInMainScreen(),
+    canHide: true,
+  );
   var moreTab = MainTab(
-      name: "更多",
-      iconData: MingCuteIcons.mgc_more_3_line,
-      selectedIconData: MingCuteIcons.mgc_more_3_fill,
-      page: const SettingPage());
+    name: "更多",
+    icon: const Icon(MingCuteIcons.mgc_more_3_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_more_3_fill),
+    page: const SettingPage(),
+  );
 
   @override
   void onInit() {
     super.onInit();
-    tabs = [
-      homeTab,
-      exploreTab,
-      historyTab,
-      noteTab,
-      moreTab,
-    ];
+    allTabs = [homeTab, exploreTab, historyTab, noteTab, seriesTab, moreTab];
+    loadTabs(first: true);
+  }
+
+  loadTabs({bool first = false}) {
+    tabs.clear();
+    for (var tab in allTabs) {
+      if (tab.show) {
+        tabs.add(tab);
+      }
+    }
+    // 调整后，始终保证当前打开的tab是最后一个
+    if (!first) selectedTabIdx = tabs.length - 1;
+    update();
   }
 
   toTabPage(int idx) {
@@ -78,13 +110,20 @@ class MainScreenLogic extends GetxController {
 
 class MainTab {
   String name;
-  IconData iconData;
-  IconData? selectedIconData;
+  Widget icon;
+  Widget? selectedIcon;
   Widget page;
+  bool canHide;
+  bool show;
+  bool Function()? turnShow;
 
-  MainTab(
-      {required this.name,
-      required this.iconData,
-      this.selectedIconData,
-      required this.page});
+  MainTab({
+    required this.name,
+    required this.icon,
+    this.selectedIcon,
+    required this.page,
+    this.canHide = false,
+    this.show = true,
+    this.turnShow,
+  });
 }

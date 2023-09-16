@@ -25,8 +25,10 @@ import 'style.dart';
 import 'widgets/layout.dart';
 
 class SeriesManagePage extends StatefulWidget {
-  const SeriesManagePage({this.animeId = -1, Key? key}) : super(key: key);
+  const SeriesManagePage({this.animeId = -1, this.isHome = false, Key? key})
+      : super(key: key);
   final int animeId;
+  final bool isHome;
 
   @override
   State<SeriesManagePage> createState() => _SeriesManagePageState();
@@ -99,7 +101,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
   AppBar _buildCommonAppBar() {
     return AppBar(
-      title: Text(enableSelectSeriesForAnime ? "系列" : "系列管理"),
+      title: Text(widget.isHome || enableSelectSeriesForAnime ? "系列" : "系列管理"),
       automaticallyImplyLeading: true,
       actions: [
         IconButton(

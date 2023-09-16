@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
@@ -29,6 +30,15 @@ class _ThemePageState extends State<ThemePage> {
       body: CommonScaffoldBody(
           child: ListView(
         children: [
+          ListTile(
+            title: const Text('调整选项卡'),
+            subtitle: const Text('启用或禁用选项卡'),
+            onTap: () {
+              _showDialogConfigureMainTab();
+            },
+          ),
+          const CommonDivider(),
+
           const SettingTitle(title: '夜间模式'),
           // _buildTileSelectDarkMode(context),
           for (int i = 0; i < AppTheme.darkModes.length; ++i)
@@ -53,6 +63,16 @@ class _ThemePageState extends State<ThemePage> {
           Obx(() => _buildColorAtlasList()),
         ],
       )),
+    );
+  }
+
+  _showDialogConfigureMainTab() {
+    showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text('调整选项卡'),
+        content: MainTabLayoutSettingPage(),
+      ),
     );
   }
 
@@ -83,6 +103,59 @@ class _ThemePageState extends State<ThemePage> {
         if (value == null) return;
         ThemeController.to.changeTheme(value.key, dark: dark);
       },
+    );
+  }
+}
+
+class MainTabLayoutSettingPage extends StatefulWidget {
+  const MainTabLayoutSettingPage({super.key});
+
+  @override
+  State<MainTabLayoutSettingPage> createState() =>
+      _MainTabLayoutSettingPageState();
+}
+
+class _MainTabLayoutSettingPageState extends State<MainTabLayoutSettingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: MainScreenLogic.to.allTabs
+            .map((tab) => ListTile(
+                  iconColor: Theme.of(context).iconTheme.color,
+                  leading: tab.icon,
+                  title: _buildTitle(tab, context),
+                  dense: true,
+                  trailing: tab.canHide ? _buildTurnShowIcon(tab) : null,
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  IconButton _buildTurnShowIcon(MainTab tab) {
+    return IconButton(
+      icon: Icon(tab.show ? Icons.remove : Icons.add_circle_outline),
+      onPressed: () async {
+        bool? show = tab.turnShow?.call();
+        if (show == null) return;
+
+        tab.show = show;
+        MainScreenLogic.to.loadTabs();
+        setState(() {});
+      },
+    );
+  }
+
+  Text _buildTitle(MainTab tab, BuildContext context) {
+    return Text(
+      tab.name,
+      style: tab.show
+          ? null
+          : TextStyle(
+              decoration: TextDecoration.lineThrough,
+              color: Theme.of(context).hintColor,
+            ),
     );
   }
 }
