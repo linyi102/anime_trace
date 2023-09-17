@@ -1,3 +1,5 @@
+export HOME=/c/Users/11580
+
 # 获取版本
 androidVersion=$(grep 'version:' pubspec.yaml | awk '{print $2}')
 androidVersion="v$androidVersion"
