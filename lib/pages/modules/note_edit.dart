@@ -250,7 +250,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   Container _buildAddButton() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
         color: Theme.of(context).hoverColor,
         // border: Border.all(
         //   style: BorderStyle.solid,
@@ -259,7 +259,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       ),
       child: InkWell(
         onTap: () => _pickLocalImages(),
-        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
         child: Icon(Icons.add, color: Theme.of(context).hintColor),
       ),
     );

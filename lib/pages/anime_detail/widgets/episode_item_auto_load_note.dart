@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -142,51 +140,53 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
               // 没有图片时不显示，否则有固定高度
               if (note.relativeLocalImages.isNotEmpty)
-                // 图片横向排列
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                  height: 120, // 设置高度
-                  child: _buildHorizontalImages(note),
-                ),
+                _buildHorizontalImages(note),
             ],
           ),
         ),
-        const Divider(),
+        const CommonDivider(),
       ],
     );
   }
 
-  ListView _buildHorizontalImages(Note note) {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: note.relativeLocalImages.length,
-        itemBuilder: (context, imgIdx) {
-          // Log.info("横向图片imgIdx=$imgIdx");
-          return Center(
-            child: Container(
-              padding: const EdgeInsets.all(1),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    // 点击图片进入图片浏览页面
-                    return ImageViewerPage(
-                      relativeLocalImages: note.relativeLocalImages,
-                      initialIndex: imgIdx,
-                    );
-                  }));
-                },
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-                    child: SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
-                          note.relativeLocalImages[imgIdx].path)),
-                    )),
+  /// 图片横向排列
+  _buildHorizontalImages(Note note) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+      height: 140, // 设置高度
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: note.relativeLocalImages.length,
+          itemBuilder: (context, imgIdx) {
+            // Log.info("横向图片imgIdx=$imgIdx");
+            return Center(
+              child: Container(
+                padding: const EdgeInsets.all(1),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      // 点击图片进入图片浏览页面
+                      return ImageViewerPage(
+                        relativeLocalImages: note.relativeLocalImages,
+                        initialIndex: imgIdx,
+                      );
+                    }));
+                  },
+                  child: ClipRRect(
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.noteImgRadius),
+                      child: SizedBox(
+                        height: 80,
+                        width: 120,
+                        child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
+                            note.relativeLocalImages[imgIdx].path)),
+                      )),
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 
   ListTile _buildEpisodeTile() {
