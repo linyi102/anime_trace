@@ -35,6 +35,8 @@ class AnimeGridCover extends StatelessWidget {
     this.loading = false,
   }) : super(key: key);
 
+  double get spacing => 8;
+
   @override
   Widget build(BuildContext context) {
     final AnimeDisplayController _animeDisplayController = Get.find();
@@ -138,46 +140,40 @@ class AnimeGridCover extends StatelessWidget {
         ));
   }
 
+  double get statusSize => 12;
   _buildEpisodeState(BuildContext context) {
     return Positioned(
-        left: 5,
-        top: 5,
+        left: spacing,
+        top: spacing,
         child: Container(
-          // height: 20,
-          padding: const EdgeInsets.fromLTRB(3, 2, 3, 2),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppTheme.stateRadius),
             color: Theme.of(context).colorScheme.primary,
           ),
           child: Text(
             "${_anime.checkedEpisodeCnt}/${_anime.animeEpisodeCnt}",
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+            style: TextStyle(
+                fontSize: statusSize,
+                color: Theme.of(context).colorScheme.onPrimary),
           ),
         ));
   }
 
   _buildReviewNumber(BuildContext context) {
     return Positioned(
-        right: 5,
-        top: 5,
+        right: spacing,
+        top: spacing,
         child: Container(
-            padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppTheme.stateRadius),
               color: AppTheme.reviewNumberBg,
             ),
             child: Text(
               "${_anime.reviewNumber}",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppTheme.reviewNumberFg),
-              // textScaleFactor: 0.8,
-              // style: TextStyle(
-              //     color: Theme.of(context).colorScheme.onSecondaryContainer),
+              style: TextStyle(
+                  fontSize: statusSize, color: AppTheme.reviewNumberFg),
             )));
   }
 

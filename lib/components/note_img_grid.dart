@@ -3,6 +3,7 @@ import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/responsive.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
+import 'package:flutter_test_future/values/values.dart';
 
 // 用于显示笔记图片网格
 // 使用：笔记列表页
@@ -13,11 +14,9 @@ class NoteImgGrid extends StatelessWidget {
   const NoteImgGrid({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
-  get crossAxisSpacing => 2.0;
-  get mainAxisSpacing => 2.0;
-  get enableTwitterStyle => false;
+  bool get enableTwitterStyle => false;
   // 是否开启显示所有图片配置
-  get enableShowAllNoteGridImage => false;
+  bool get enableShowAllNoteGridImage => false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +65,7 @@ class NoteImgGrid extends StatelessWidget {
                     relativeLocalImages: relativeLocalImages,
                     initialIndex: 0,
                   ),
-                  SizedBox(height: mainAxisSpacing),
+                  SizedBox(height: AppTheme.noteImageSpacing),
                   NoteImgItem(
                     twitterStyle: true,
                     aspectRatio: childAspectRatio,
@@ -76,7 +75,7 @@ class NoteImgGrid extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: crossAxisSpacing),
+            SizedBox(width: AppTheme.noteImageSpacing),
             Expanded(
                 child: NoteImgItem(
               twitterStyle: true,
@@ -117,8 +116,8 @@ class NoteImgGrid extends StatelessWidget {
       // WithMaxCrossAxisExtent无法获取列数，所以无法得知应该只显示多少图片。因此需要委托给WithFixedCrossAxisCount指定列数
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columnCnt, // 横轴数量
-        crossAxisSpacing: crossAxisSpacing, // 横轴距离
-        mainAxisSpacing: mainAxisSpacing, // 竖轴距离
+        crossAxisSpacing: AppTheme.noteImageSpacing, // 横轴距离
+        mainAxisSpacing: AppTheme.noteImageSpacing, // 竖轴距离
         childAspectRatio: childAspectRatio, // 网格比例
       ),
       itemCount: showAllNoteGridImage

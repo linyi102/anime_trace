@@ -58,7 +58,10 @@ class NoteImgItem extends StatelessWidget {
         ),
         imageRemainCount > 0
             ? Container(
-                color: const Color.fromRGBO(0, 0, 0, 0.5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
+                  color: const Color.fromRGBO(0, 0, 0, 0.5),
+                ),
                 child: Center(
                   child: Text("+$imageRemainCount",
                       textScaleFactor: 2,
@@ -75,7 +78,7 @@ class NoteImgItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: twitterStyle
           ? BorderRadius.zero
-          : BorderRadius.circular(AppTheme.imgRadius),
+          : BorderRadius.circular(AppTheme.noteImgRadius),
       child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
     );
   }

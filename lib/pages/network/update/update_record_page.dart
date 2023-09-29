@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/network/update/need_update_anime_list.
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -210,17 +211,11 @@ class UpdateRecordPage extends StatelessWidget {
                 ),
               ),
             ),
-            OutlinedButton(
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(const Size(60, 36)),
-              ),
-              onPressed: updateRecordController.updating.value
+            CommonOutlinedButton(
+              text: '更新',
+              onTap: updateRecordController.updating.value
                   ? null
                   : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-              child: const Text(
-                "更新",
-                style: TextStyle(fontSize: 12),
-              ),
             ),
           ],
         ),

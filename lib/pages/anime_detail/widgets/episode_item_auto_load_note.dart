@@ -110,46 +110,49 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     Note note = _episode.note!;
     // return NoteCard(note);
 
-    return Card(
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return NoteEditPage(note);
-              },
-            ),
-          ).then((value) {
-            setState(() {
-              note = value; // 更新修改
-            });
-          });
-        },
-        child: Column(
-          children: [
-            // 笔记内容
-            if (note.noteContent.isNotEmpty)
-              ListTile(
-                title: Text(
-                  note.noteContent,
-                  maxLines: 10,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.noteStyle,
-                ),
-                style: ListTileStyle.drawer,
+    return Column(
+      children: [
+        InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return NoteEditPage(note);
+                },
               ),
+            ).then((value) {
+              setState(() {
+                note = value; // 更新修改
+              });
+            });
+          },
+          child: Column(
+            children: [
+              // 笔记内容
+              if (note.noteContent.isNotEmpty)
+                ListTile(
+                  title: Text(
+                    note.noteContent,
+                    maxLines: 10,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.noteStyle,
+                  ),
+                  style: ListTileStyle.drawer,
+                ),
 
-            // 没有图片时不显示，否则有固定高度
-            if (note.relativeLocalImages.isNotEmpty)
-              // 图片横向排列
-              Container(
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                height: 120, // 设置高度
-                child: _buildHorizontalImages(note),
-              )
-          ],
+              // 没有图片时不显示，否则有固定高度
+              if (note.relativeLocalImages.isNotEmpty)
+                // 图片横向排列
+                Container(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  height: 120, // 设置高度
+                  child: _buildHorizontalImages(note),
+                ),
+            ],
+          ),
         ),
-      ),
+        const Divider(),
+      ],
     );
   }
 
@@ -159,27 +162,29 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         itemCount: note.relativeLocalImages.length,
         itemBuilder: (context, imgIdx) {
           // Log.info("横向图片imgIdx=$imgIdx");
-          return MaterialButton(
-            padding: Platform.isAndroid
-                ? const EdgeInsets.fromLTRB(5, 5, 5, 5)
-                : const EdgeInsets.fromLTRB(15, 5, 15, 5),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                // 点击图片进入图片浏览页面
-                return ImageViewerPage(
-                  relativeLocalImages: note.relativeLocalImages,
-                  initialIndex: imgIdx,
-                );
-              }));
-            },
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
-                      note.relativeLocalImages[imgIdx].path)),
-                )),
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(1),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    // 点击图片进入图片浏览页面
+                    return ImageViewerPage(
+                      relativeLocalImages: note.relativeLocalImages,
+                      initialIndex: imgIdx,
+                    );
+                  }));
+                },
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
+                          note.relativeLocalImages[imgIdx].path)),
+                    )),
+              ),
+            ),
           );
         });
   }

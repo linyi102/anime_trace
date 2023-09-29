@@ -6,6 +6,8 @@ class AppTheme {
   /// 圆角
   static double get cardRadius => 8.0;
   static double get imgRadius => 6.0;
+  static double get noteImgRadius => 0; // 笔记图片
+  static double get noteImageSpacing => 2.0; // 笔记图片间隔
   static double get stateRadius => 4.0; // 集数、观看次数
   static double get bottomSheetRadius => 16.0;
   static double get chipRadius => 40.0;

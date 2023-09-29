@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
@@ -199,9 +198,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
       crossAxisCount: crossAxisCount,
       // 横轴距离
-      crossAxisSpacing: 4,
+      crossAxisSpacing: AppTheme.noteImageSpacing,
       // 竖轴距离
-      mainAxisSpacing: 4,
+      mainAxisSpacing: AppTheme.noteImageSpacing,
       // 网格比例
       childAspectRatio: 1,
       // 解决报错问题
@@ -231,20 +230,17 @@ class _NoteEditPageState extends State<NoteEditPage> {
         changeOrderIdx = true;
         Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
-      // 表示长按多久可以拖拽
-      // dragStartDelay: const Duration(milliseconds: 500),
       // 拖拽时的组件
-      dragWidgetBuilder: (int index, Widget child) => Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), // 边框的圆角
-            border:
-                Border.all(color: Theme.of(context).primaryColor, width: 4)),
-        // 切割图片为圆角
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-          child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
-              widget.note.relativeLocalImages[index].path)),
-        ),
+      dragWidgetBuilder: (int index, Widget child) => Stack(
+        children: [
+          _buildNoteItem(index, showDelButton: false),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
+                border: Border.all(
+                    color: Theme.of(context).primaryColor, width: 4)),
+          ),
+        ],
       ),
       // 添加图片按钮
       footer: [_buildAddButton()],
@@ -269,7 +265,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
     );
   }
 
-  Stack _buildNoteItem(int imageIndex) {
+  Stack _buildNoteItem(int imageIndex, {bool showDelButton = true}) {
     return Stack(
       children: [
         NoteImgItem(
@@ -277,21 +273,22 @@ class _NoteEditPageState extends State<NoteEditPage> {
           initialIndex: imageIndex,
         ),
         // 删除按钮
-        Positioned(
-          right: 2,
-          top: 2,
-          child: GestureDetector(
-            onTap: () => _dialogRemoveImage(imageIndex),
-            child: Container(
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(99),
-                color: Colors.black54,
+        if (showDelButton)
+          Positioned(
+            right: 2,
+            top: 2,
+            child: GestureDetector(
+              onTap: () => _dialogRemoveImage(imageIndex),
+              child: Container(
+                padding: const EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(99),
+                  color: Colors.black54,
+                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 12),
               ),
-              child: const Icon(Icons.close, color: Colors.white, size: 12),
             ),
-          ),
-        )
+          )
       ],
     );
   }
