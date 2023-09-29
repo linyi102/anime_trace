@@ -131,6 +131,8 @@ class NoteImgGrid extends StatelessWidget {
             aspectRatio: childAspectRatio,
             relativeLocalImages: relativeLocalImages,
             initialIndex: index,
+            // 避免穿透到卡片笔记长按效果
+            onLongPress: () {},
             imageRemainCount: showAllNoteGridImage
                 ? 0 // 如果设置的是显示所有图片，则不处理剩余图片数量
                 : index == maxDisplayCount - 1

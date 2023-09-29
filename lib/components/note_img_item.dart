@@ -15,12 +15,14 @@ class NoteImgItem extends StatelessWidget {
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
   final bool twitterStyle;
   final double aspectRatio;
+  final void Function()? onLongPress;
   const NoteImgItem(
       {required this.relativeLocalImages,
       this.initialIndex = 0,
       this.imageRemainCount = 0,
       this.aspectRatio = 4 / 3,
       this.twitterStyle = false,
+      this.onLongPress,
       Key? key})
       : super(key: key);
 
@@ -29,8 +31,7 @@ class NoteImgItem extends StatelessWidget {
     String relativeImagePath = relativeLocalImages[initialIndex].path;
 
     return InkWell(
-      // 避免穿透到卡片笔记长按效果
-      onLongPress: () {},
+      onLongPress: onLongPress,
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
             // transitionDuration: Duration.zero,

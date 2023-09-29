@@ -584,10 +584,10 @@ packages:
     dependency: "direct main"
     description:
       name: reorderable_grid_view
-      sha256: "7ac7058e5388276cbc37aa169547cc93522a2f1c669fac6903a143f2082e3ffc"
+      sha256: "26b22f3bc075719989758be1bdce605e530bde5be6c80f6e50be6afb55f04a4d"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.2.6"
+    version: "2.2.7"
   rxdart:
     dependency: transitive
     description:
