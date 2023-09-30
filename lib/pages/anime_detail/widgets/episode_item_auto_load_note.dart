@@ -149,11 +149,10 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     );
   }
 
-  /// 图片横向排列
   _buildHorizontalImages(Note note) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-      height: 140, // 设置高度
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      height: 120,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: note.relativeLocalImages.length,
@@ -161,7 +160,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             // Log.info("横向图片imgIdx=$imgIdx");
             return Center(
               child: Container(
-                padding: const EdgeInsets.all(1),
+                padding: EdgeInsets.all(AppTheme.noteImageSpacing / 2),
                 child: InkWell(
                   onTap: () {
                     Navigator.push(context,

@@ -6,8 +6,8 @@ class AppTheme {
   /// 圆角
   static double get cardRadius => 8.0;
   static double get imgRadius => 6.0;
-  static double get noteImgRadius => 0; // 笔记图片
-  static double get noteImageSpacing => 2.0; // 笔记图片间隔
+  static double get noteImgRadius => 6.0; // 笔记图片
+  static double get noteImageSpacing => 6.0; // 笔记图片间隔
   static double get stateRadius => 4.0; // 集数、观看次数
   static double get bottomSheetRadius => 16.0;
   static double get chipRadius => 40.0;
@@ -41,7 +41,10 @@ class AppTheme {
   ];
   static List<String> darkModes = ["跟随系统", "关闭", "开启"];
 
-  static Color blue = Colors.blue;
+  static Color get blueInLight => Colors.blue;
+
+  // 可选：70, 133, 243 | 61, 129, 228
+  static Color get blueInDark => const Color.fromRGBO(70, 133, 243, 1);
 
   /// 亮色主题
   static List<ThemeColor> lightColors = [
@@ -50,7 +53,7 @@ class AppTheme {
         key: "white",
         name: "白色",
         representativeColor: const Color.fromRGBO(248, 248, 248, 1),
-        primaryColor: blue,
+        primaryColor: blueInLight,
         appBarColor: Colors.white,
         bodyColor: const Color.fromRGBO(248, 248, 252, 1),
         cardColor: Colors.white),
@@ -62,7 +65,7 @@ class AppTheme {
       isDarkMode: true,
       key: "lightBlack",
       name: "浅黑",
-      primaryColor: blue,
+      primaryColor: blueInDark,
       representativeColor: const Color.fromRGBO(30, 30, 30, 1),
       appBarColor: const Color.fromRGBO(32, 32, 32, 1),
       bodyColor: const Color.fromRGBO(18, 18, 18, 1),
@@ -72,7 +75,7 @@ class AppTheme {
         isDarkMode: true,
         key: "pureBlack",
         name: "纯黑",
-        primaryColor: blue,
+        primaryColor: blueInDark,
         representativeColor: Colors.black,
         appBarColor: const Color.fromRGBO(15, 15, 15, 1),
         bodyColor: const Color.fromRGBO(0, 0, 0, 1),

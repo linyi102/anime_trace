@@ -226,14 +226,14 @@ class _TestPageState extends State<TestPage> {
                 context: context,
                 builder: (context) {
                   loadingContext = context;
-                  return const LoadingDialog("正在获取详细信息");
+                  return const LoadingDialog("获取信息中...");
                 });
             await Future.delayed(const Duration(seconds: 2));
             if (loadingContext != null) Navigator.pop(loadingContext!);
           },
         ),
         ListTile(
-          title: const Text("加载框1"),
+          title: const Text("加载框2"),
           onTap: () async {
             BotToast.showCustomLoading(
               toastBuilder: (void Function() cancelFunc) {
@@ -242,7 +242,7 @@ class _TestPageState extends State<TestPage> {
                   cancelFunc.call();
                 });
 
-                return const LoadingDialog("正在获取详细信息");
+                return const LoadingDialog("获取信息中...");
               },
               clickClose: true,
               onClose: () {
@@ -256,7 +256,16 @@ class _TestPageState extends State<TestPage> {
             // });
           },
         ),
-
+        ListTile(
+          title: const Text("加载框3"),
+          onTap: () async {
+            ToastUtil.showLoading(
+                msg: "获取信息中...",
+                task: () async {
+                  await Future.delayed(const Duration(milliseconds: 200));
+                });
+          },
+        ),
         // 不管用
         ListTile(
           title: const Text("清除缓存"),

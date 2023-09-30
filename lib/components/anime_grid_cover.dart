@@ -36,6 +36,8 @@ class AnimeGridCover extends StatelessWidget {
   }) : super(key: key);
 
   double get spacing => 8;
+  double get statusSize => 12;
+  double get nameSize => 14;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +142,6 @@ class AnimeGridCover extends StatelessWidget {
         ));
   }
 
-  double get statusSize => 12;
   _buildEpisodeState(BuildContext context) {
     return Positioned(
         left: spacing,
@@ -312,7 +313,7 @@ class AnimeGridCover extends StatelessWidget {
       displayName,
       maxLines: AnimeDisplayController.to.nameMaxLines.value,
       overflow: TextOverflow.ellipsis,
-      style: style?.copyWith(fontWeight: FontWeight.normal, fontSize: 14),
+      style: style?.copyWith(fontWeight: FontWeight.normal, fontSize: nameSize),
     );
   }
 }

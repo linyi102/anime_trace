@@ -231,17 +231,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
         Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 拖拽时的组件
-      dragWidgetBuilder: (int index, Widget child) => Stack(
-        children: [
-          _buildNoteItem(index, showDelButton: false),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-                border: Border.all(
-                    color: Theme.of(context).primaryColor, width: 4)),
-          ),
-        ],
-      ),
+      dragWidgetBuilder: (int index, Widget child) => Material(
+          elevation: 12, child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
       footer: [_buildAddButton()],
     );
