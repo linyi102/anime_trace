@@ -107,19 +107,19 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
               TextButton(
                 child: const Text("取消"),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
               ),
               TextButton(
                   onPressed: () async {
+                    // 关闭对话框
+                    Navigator.pop(context);
+
                     // 获取详细信息
                     if (updateInfo) {
                       ToastUtil.showLoading(
-                        msg: "获取详细信息中",
+                        msg: "获取信息中...",
                         task: () async {
-                          // 关闭对话框
-                          Navigator.pop(context);
-
                           newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(
                               newAnime);
                         },
