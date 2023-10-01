@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
@@ -37,7 +39,7 @@ class AnimeGridCover extends StatelessWidget {
 
   double get spacing => 8;
   double get statusSize => 12;
-  double get nameSize => 14;
+  double get nameSize => Platform.isAndroid ? 13 : 14;
 
   @override
   Widget build(BuildContext context) {

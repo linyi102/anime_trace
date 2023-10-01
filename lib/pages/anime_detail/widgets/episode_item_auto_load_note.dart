@@ -1,6 +1,5 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
@@ -9,10 +8,9 @@ import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:flutter_test_future/pages/anime_detail/widgets/note_image_list.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
-import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -140,51 +138,12 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
               // 没有图片时不显示，否则有固定高度
               if (note.relativeLocalImages.isNotEmpty)
-                _buildHorizontalImages(note),
+                NoteImageHorizontalListView(note: note),
             ],
           ),
         ),
         const CommonDivider(),
       ],
-    );
-  }
-
-  _buildHorizontalImages(Note note) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      height: 120,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: note.relativeLocalImages.length,
-          itemBuilder: (context, imgIdx) {
-            // Log.info("横向图片imgIdx=$imgIdx");
-            return Center(
-              child: Container(
-                padding: EdgeInsets.all(AppTheme.noteImageSpacing / 2),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      // 点击图片进入图片浏览页面
-                      return ImageViewerPage(
-                        relativeLocalImages: note.relativeLocalImages,
-                        initialIndex: imgIdx,
-                      );
-                    }));
-                  },
-                  child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(AppTheme.noteImgRadius),
-                      child: SizedBox(
-                        height: 80,
-                        width: 120,
-                        child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(
-                            note.relativeLocalImages[imgIdx].path)),
-                      )),
-                ),
-              ),
-            );
-          }),
     );
   }
 
