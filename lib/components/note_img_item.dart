@@ -32,6 +32,7 @@ class NoteImgItem extends StatelessWidget {
 
     return InkWell(
       onLongPress: onLongPress,
+      borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
             // transitionDuration: Duration.zero,

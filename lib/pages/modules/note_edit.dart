@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
 import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
@@ -136,35 +138,72 @@ class _NoteEditPageState extends State<NoteEditPage> {
     );
   }
 
+  bool _dragging = false;
+
+  _buildImageDroppable({required Widget child}) {
+    return DropTarget(
+      onDragDone: (detail) async {
+        for (var file in detail.files) {
+          await _addImage(file.path);
+        }
+        if (mounted) setState(() {});
+      },
+      onDragEntered: (detail) {
+        setState(() {
+          _dragging = true;
+        });
+      },
+      onDragExited: (detail) {
+        setState(() {
+          _dragging = false;
+        });
+      },
+      child: Container(
+        color: _dragging
+            ? ThemeController.to.isDark(context)
+                ? Colors.white10
+                : Colors.black.withOpacity(0.08)
+            : Colors.transparent,
+        child: child,
+      ),
+    );
+  }
+
   _buildBody() {
-    return Scrollbar(
-      controller: scrollController,
-      child: ListView(
+    return _buildImageDroppable(
+      child: Scrollbar(
         controller: scrollController,
-        children: [
-          ListTile(
-            style: ListTileStyle.drawer,
-            leading: AnimeListCover(widget.note.anime),
-            title: Text(
-              widget.note.anime.animeName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              widget.note.episode.number == 0
-                  ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
-                  : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-          _showNoteContent(),
-          Responsive(
-              mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
-              tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
-              desktop: _buildReorderNoteImgGridView(crossAxisCount: 7)),
-          const ListTile(),
-        ],
+        child: ListView(
+          controller: scrollController,
+          children: [
+            _buildAnimeInfo(),
+            _showNoteContent(),
+            Responsive(
+                mobile: _buildReorderNoteImgGridView(crossAxisCount: 3),
+                tablet: _buildReorderNoteImgGridView(crossAxisCount: 5),
+                desktop: _buildReorderNoteImgGridView(crossAxisCount: 7)),
+            const SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ListTile _buildAnimeInfo() {
+    return ListTile(
+      style: ListTileStyle.drawer,
+      leading: AnimeListCover(widget.note.anime),
+      title: Text(
+        widget.note.anime.animeName,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(
+        widget.note.episode.number == 0
+            ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
+            : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }
@@ -215,6 +254,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
           child: _buildNoteItem(index),
         ),
       ),
+      dragStartDelay: const Duration(milliseconds: 200),
       onReorder: (oldIndex, newIndex) {
         // 下标没变直接返回
         Log.info("oldIndex=$oldIndex, newIndex=$newIndex");
@@ -310,28 +350,30 @@ class _NoteEditPageState extends State<NoteEditPage> {
       List<PlatformFile> platformFiles = result.files;
       for (var platformFile in platformFiles) {
         String absoluteImagePath = platformFile.path ?? "";
-        if (absoluteImagePath.isEmpty) continue;
-
-        String relativeImagePath =
-            ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
-        int imageId = await SqliteUtil.insertNoteIdAndImageLocalPath(
-            widget.note.id,
-            relativeImagePath,
-            widget.note.relativeLocalImages.length);
-        widget.note.relativeLocalImages
-            .add(RelativeLocalImage(imageId, relativeImagePath));
-        // 排序结果：null,0,1,2,3...
-        // 1.如果添加新图片时没有为新图片设置下标，
-        //   1.如果其他图片都为null，该图片会被排序到最后面，正常。
-        //   2.如果其他图片都有下标，那么该图片就会排序到最前面，错误。需要重新修改所有，也就是标记changeOrderIdx为true
-        // 2.如果添加新图片时为新图片设置下标，
-        //   1.其他图片都为都为null，那么会排序到最后面，正常
-        //   2.如果其他图片都有下标，正常
+        await _addImage(absoluteImagePath);
       }
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
     setState(() {});
+  }
+
+  Future<void> _addImage(String absoluteImagePath) async {
+    if (absoluteImagePath.isEmpty) return;
+
+    String relativeImagePath =
+        ImageUtil.getRelativeNoteImagePath(absoluteImagePath);
+    int imageId = await SqliteUtil.insertNoteIdAndImageLocalPath(widget.note.id,
+        relativeImagePath, widget.note.relativeLocalImages.length);
+    widget.note.relativeLocalImages
+        .add(RelativeLocalImage(imageId, relativeImagePath));
+    // 排序结果：null,0,1,2,3...
+    // 1.如果添加新图片时没有为新图片设置下标，
+    //   1.如果其他图片都为null，该图片会被排序到最后面，正常。
+    //   2.如果其他图片都有下标，那么该图片就会排序到最前面，错误。需要重新修改所有，也就是标记changeOrderIdx为true
+    // 2.如果添加新图片时为新图片设置下标，
+    //   1.其他图片都为都为null，那么会排序到最后面，正常
+    //   2.如果其他图片都有下标，正常
   }
 
   _dialogRemoveImage(int index) {

@@ -19,6 +19,8 @@ class ThemeController extends GetxController {
   Rx<PageSwitchAnimation> pageSwitchAnimation =
       SpProfile.getPageSwitchAnimation().obs;
 
+  bool isDark(context) => Theme.of(context).brightness == Brightness.dark;
+
   /// 风格
   setM3(bool enable) {
     useM3.value = enable;
