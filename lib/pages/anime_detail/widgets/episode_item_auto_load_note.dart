@@ -177,7 +177,10 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     // 如果还在加载笔记，则不显示更多按钮，避免打开后创建笔记
     if (_loadingNote) {
       return IconButton(
-        icon: const CircularProgressIndicator(strokeWidth: 2),
+        icon: const SizedBox(
+            height: 16,
+            width: 16,
+            child: CircularProgressIndicator(strokeWidth: 2)),
         onPressed: () {},
       );
     }
@@ -187,93 +190,94 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       onLongPress: () {},
       child: IconButton(
         splashRadius: 24,
-        icon: const Icon(
-          Icons.more_horiz,
-          // size: 20,
-        ),
+        icon: const Icon(Icons.more_horiz),
         onPressed: () {
-          showDialog(
-              context: context,
-              builder: (dialogContext) {
-                return SimpleDialog(
-                  children: [
-                    ListTile(
-                      title: const Text("选择时间"),
-                      leading: const Icon(Icons.access_time),
-                      onTap: () async {
-                        // 退出对话框
-                        Navigator.of(dialogContext).pop();
-
-                        // 如果是多选状态则先退出
-                        if (widget.animeController.multiSelected.value) {
-                          widget.animeController.quitMultiSelectionMode();
-                        }
-                        // 添加到多选中，保证只有这一个
-                        widget.animeController
-                            .mapSelected[widget.episodeIndex] = true;
-                        // 选择时间
-                        await widget.animeController
-                            .pickDateForEpisodes(context: context);
-                        // 清空多选
-                        widget.animeController.mapSelected.clear();
-                        // 更新设置的时间
-                        setState(() {});
-                      },
-                    ),
-                    if (_episode.isChecked())
-                      ListTile(
-                        title: const Text("撤销时间"),
-                        leading: const Icon(Icons.close),
-                        onTap: () async {
-                          // 退出对话框
-                          Navigator.pop(dialogContext);
-
-                          // 弹出确定对话框
-                          _dialogRemoveDate();
-                        },
-                      ),
-                    const CommonDivider(),
-                    ListTile(
-                      title: const Text("编辑标题"),
-                      leading: const Icon(Icons.title),
-                      onTap: () {
-                        Navigator.pop(dialogContext);
-
-                        _showDialogDescForm(dialogContext);
-                      },
-                    ),
-                    const CommonDivider(),
-                    ListTile(
-                      title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
-                      leading: const Icon(Icons.edit),
-                      onTap: () {
-                        Navigator.pop(dialogContext);
-                        _enterNoteEditPage(needCreate: true);
-                      },
-                    ),
-                    if (_episode.note != null)
-                      ListTile(
-                        title: const Text("复制笔记"),
-                        leading: const Icon(Icons.copy_rounded),
-                        onTap: () {
-                          CommonUtil.copyContent(_episode.note!.noteContent);
-                          Navigator.pop(dialogContext);
-                        },
-                      ),
-                    if (_episode.note != null)
-                      ListTile(
-                        title: const Text("删除笔记"),
-                        leading: const Icon(Icons.delete_outline),
-                        onTap: () {
-                          _dialogDeleteConfirm();
-                        },
-                      )
-                  ],
-                );
-              });
+          _showLongPressDialog();
         },
       ),
     );
+  }
+
+  _showLongPressDialog() {
+    showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return SimpleDialog(
+            children: [
+              ListTile(
+                title: const Text("选择时间"),
+                leading: const Icon(Icons.access_time),
+                onTap: () async {
+                  // 退出对话框
+                  Navigator.of(dialogContext).pop();
+
+                  // 如果是多选状态则先退出
+                  if (widget.animeController.multiSelected.value) {
+                    widget.animeController.quitMultiSelectionMode();
+                  }
+                  // 添加到多选中，保证只有这一个
+                  widget.animeController.mapSelected[widget.episodeIndex] =
+                      true;
+                  // 选择时间
+                  await widget.animeController
+                      .pickDateForEpisodes(context: context);
+                  // 清空多选
+                  widget.animeController.mapSelected.clear();
+                  // 更新设置的时间
+                  setState(() {});
+                },
+              ),
+              if (_episode.isChecked())
+                ListTile(
+                  title: const Text("撤销时间"),
+                  leading: const Icon(Icons.close),
+                  onTap: () async {
+                    // 退出对话框
+                    Navigator.pop(dialogContext);
+
+                    // 弹出确定对话框
+                    _dialogRemoveDate();
+                  },
+                ),
+              const CommonDivider(),
+              ListTile(
+                title: const Text("编辑标题"),
+                leading: const Icon(Icons.title),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+
+                  _showDialogDescForm(dialogContext);
+                },
+              ),
+              const CommonDivider(),
+              ListTile(
+                title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
+                leading: const Icon(Icons.edit),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _enterNoteEditPage(needCreate: true);
+                },
+              ),
+              if (_episode.note != null)
+                ListTile(
+                  title: const Text("复制笔记"),
+                  leading: const Icon(Icons.copy_rounded),
+                  onTap: () {
+                    CommonUtil.copyContent(_episode.note!.noteContent);
+                    Navigator.pop(dialogContext);
+                  },
+                ),
+              if (_episode.note != null)
+                ListTile(
+                  title: const Text("删除笔记"),
+                  leading: const Icon(Icons.delete_outline),
+                  onTap: () {
+                    _dialogDeleteConfirm();
+                  },
+                )
+            ],
+          );
+        });
   }
 
   getPreviewCaption(int number, String title, bool hideDefault) {

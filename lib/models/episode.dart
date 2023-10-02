@@ -45,7 +45,7 @@ class Episode {
 
   /// 根据number和desc生成标题
   String get caption {
-    String defaultTitle = "第$number集";
+    String defaultTitle = "第 $number 集";
     if (desc == null) return defaultTitle;
 
     if (desc!.hideDefault) {

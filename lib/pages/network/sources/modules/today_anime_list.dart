@@ -43,7 +43,7 @@ class TodayAnimeListPage extends StatelessWidget {
     var diff = DateTime.now().year - year;
     String text = '';
     if (diff == 0) text = '今天';
-    text = diff == 0 ? '今天' : '$diff年前的今天';
+    text = diff == 0 ? '今天' : '$diff 年前的今天';
     return text;
   }
 }

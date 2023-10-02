@@ -106,7 +106,7 @@ class UpdateRecordPage extends StatelessWidget {
       recordsWidget.add(ListTile(
         leading: AnimeListCover(record.anime),
         subtitle: Text(
-          "更新至${record.newEpisodeCnt}集",
+          "更新至 ${record.newEpisodeCnt} 集",
           style: Theme.of(context).textTheme.bodySmall,
         ),
         title: Text(

@@ -56,6 +56,7 @@ class _NoteImageHorizontalListViewState
       child: Container(
         padding: EdgeInsets.all(AppTheme.noteImageSpacing / 2),
         child: InkWell(
+          borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               // 点击图片进入图片浏览页面
@@ -80,7 +81,7 @@ class _NoteImageHorizontalListViewState
 
   Positioned _buildControlButton() {
     return Positioned(
-      left: 0,
+      right: 0,
       bottom: 15,
       child: GestureDetector(
         onTap: () {
@@ -89,7 +90,8 @@ class _NoteImageHorizontalListViewState
             playing = !playing;
           });
         },
-        child: Padding(
+        child: Container(
+          color: Colors.transparent,
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           child: Container(
             padding: const EdgeInsets.all(2),

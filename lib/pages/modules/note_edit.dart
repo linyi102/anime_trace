@@ -272,7 +272,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       },
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Material(
-          elevation: 12, child: _buildNoteItem(index, showDelButton: false)),
+          color: Colors.transparent,
+          elevation: 12,
+          child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
       footer: [_buildAddButton()],
     );
