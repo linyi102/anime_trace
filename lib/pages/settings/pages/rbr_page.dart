@@ -12,6 +12,8 @@ import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Revoke Backup Restore
+/// 撤销备份还原
 class RBRPage extends StatefulWidget {
   const RBRPage({super.key});
 

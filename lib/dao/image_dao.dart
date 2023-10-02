@@ -1,10 +1,12 @@
+import 'package:flutter_test_future/utils/image_util.dart';
+
 import '../utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ImageDao {
   static var database = SqliteUtil.database;
 
-  // 编辑好笔记后，退出时更新图片的顺序
+  /// 编辑好笔记后，退出时更新图片的顺序
   static updateImageOrderIdxById(int imageId, int newOrderIdx) {
     Log.info(
         "updateImageOrderIdxById(imageId=$imageId, newOrderIdx=$newOrderIdx)");
@@ -16,5 +18,21 @@ class ImageDao {
     set order_idx = $newOrderIdx
     where image_id = $imageId
     ''');
+  }
+
+  /// 获取所有图片
+  static Future<List<String>> getAllImages() async {
+    Log.info('sql: getAllImages');
+
+    List<String> images = [];
+    List<Map> rows =
+        await database.rawQuery('select image_local_path from image');
+    for (var row in rows) {
+      String relativePath = row['image_local_path'];
+      String path = ImageUtil.getAbsoluteNoteImagePath(relativePath);
+      images.add(path);
+    }
+
+    return images;
   }
 }
