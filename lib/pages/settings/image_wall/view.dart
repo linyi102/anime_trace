@@ -7,6 +7,7 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
+import 'package:flutter_test_future/pages/settings/image_wall/style.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 
@@ -19,7 +20,9 @@ class ImageWallPage extends StatefulWidget {
 }
 
 class _ImageWallPageState extends State<ImageWallPage> {
-  int get groupCnt => 3;
+  int groupCnt = NoteImageWallStyle.getGroupCnt();
+  int get maxGroupCnt => 6;
+
   List<List<String>> groups = [];
   List<ScrollController> scrollControllers = [];
   List<Timer> timers = [];
@@ -34,32 +37,38 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   double get groupSpacing => 5;
   double get imageSpacing => 4;
-  double get imageWidth => 180;
-  double get imageHeight => 100;
+  late double imageHeight;
+  double get imageWidth => imageHeight * 1.77;
   double get imageExtent => imageWidth + imageSpacing;
 
   bool get enableBlur => false;
+  bool get autoToLandscape => false;
 
   @override
   void initState() {
     super.initState();
-    Global.hideSystemUIOverlays();
+    // Global.hideSystemUIOverlays();
+    _loadGroup();
 
-    for (var i = 0; i < groupCnt; ++i) {
-      groups.add([]);
-      scrollControllers.add(ScrollController());
+    // 切换为横屏
+    // 由于会在切换前就准备好自动滚动，因此滚动速度会快一些，定时器触发后，才会根据横屏自动滚动，所以下次定时触发后会恢复正常速度
+    // 解决方法是在切换完毕后再滚动
+    if (autoToLandscape) {
+      Global.toLandscape().then((value) {
+        // 避免刚进入就滚动，来不及查看刚开始的图片
+        // await Future.delayed(const Duration(seconds: 1));
+        _play();
+        // 若不进行重绘，不会触发PostFrameCallback导致不会自动滚动
+        setState(() {});
+      });
+    } else {
+      _play();
     }
-    for (var i = 0; i < widget.imageUrls.length; ++i) {
-      groups[i % groupCnt].add(widget.imageUrls[i]);
-    }
-    _play();
   }
 
   @override
   void dispose() {
-    for (var i = 0; i < groupCnt; ++i) {
-      scrollControllers[i].dispose();
-    }
+    _disposeGroup();
 
     Global.autoRotate();
     Global.restoreSystemUIOverlays();
@@ -68,22 +77,28 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   @override
   Widget build(BuildContext context) {
+    imageHeight = (MediaQuery.of(context).size.height -
+            (Global.isPortrait(context) ? 200 : 100)) /
+        (groupCnt + 1);
+
     return Theme(
       data: ThemeData.dark(useMaterial3: true)
           .copyWith(scaffoldBackgroundColor: Colors.black),
       child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: Stack(
           children: [
-            _buildAppBar(),
-            Expanded(child: _buildGallary()),
+            _buildGallery(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildAppBar(),
+            ),
           ],
         ),
       ),
     );
   }
 
-  _buildGallary() {
+  _buildGallery() {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -93,6 +108,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   _buildAppBar() {
     return Container(
+      height: 60,
       padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
       child: Row(
         children: [
@@ -101,11 +117,46 @@ class _ImageWallPageState extends State<ImageWallPage> {
             icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
           ),
           const Spacer(),
-          _buildSpeedControlButton(),
           _buildPlayControlButton(),
+          _buildSpeedControlButton(),
+          _buildGroupCntButton(),
           _buildShuffleButton(),
           if (Platform.isAndroid) _buildRotateScreenButton(),
         ],
+      ),
+    );
+  }
+
+  IconButton _buildGroupCntButton() {
+    return IconButton(
+      onPressed: () {
+        showSelectGroupCntDialog();
+      },
+      icon: const Icon(Icons.table_rows, size: 20),
+      // icon: Text('${groupCnt}r',
+      //     style: const TextStyle(fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Future<dynamic> showSelectGroupCntDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: const Center(child: Text('选择行数')),
+        content: SelectNumberPage(
+            initialNumber: groupCnt,
+            maxNumber: maxGroupCnt,
+            onSelectedNumber: (number) {
+              Navigator.pop(context);
+
+              groupCnt = number;
+              NoteImageWallStyle.setGroupCnt(number);
+              // 取消定时器，避免旧的定时器仍然生效
+              _pause();
+              _loadGroup();
+              _play();
+            }),
       ),
     );
   }
@@ -235,6 +286,27 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
+  void _loadGroup() {
+    _disposeGroup();
+
+    for (var i = 0; i < groupCnt; ++i) {
+      groups.add([]);
+      scrollControllers.add(ScrollController());
+    }
+    for (var i = 0; i < widget.imageUrls.length; ++i) {
+      groups[i % groupCnt].add(widget.imageUrls[i]);
+    }
+    setState(() {});
+  }
+
+  void _disposeGroup() {
+    for (var i = 0; i < scrollControllers.length; ++i) {
+      scrollControllers[i].dispose();
+    }
+    scrollControllers.clear();
+    groups.clear();
+  }
+
   void _toImageViewerPage(String imageUrl) async {
     await Navigator.push(
         context,
@@ -257,22 +329,22 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  _playOrPause() {
+  void _playOrPause() {
     playing ? _pause() : _play();
   }
 
-  _pauseAndPlay() {
+  void _pauseAndPlay() {
     if (playing) {
       _pause();
       _play();
     }
   }
 
-  _play() {
+  void _play() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       timers.clear();
 
-      for (var i = 0; i < groupCnt; ++i) {
+      for (var i = 0; i < scrollControllers.length; ++i) {
         var scrollController = scrollControllers[i];
 
         // 立即执行
@@ -291,8 +363,8 @@ class _ImageWallPageState extends State<ImageWallPage> {
     });
   }
 
-  _pause() {
-    for (var i = 0; i < groupCnt; ++i) {
+  void _pause() {
+    for (var i = 0; i < scrollControllers.length; ++i) {
       var scrollController = scrollControllers[i];
       // 立即暂停
       scrollController.animateTo(scrollController.offset,
@@ -305,5 +377,61 @@ class _ImageWallPageState extends State<ImageWallPage> {
         playing = false;
       });
     }
+  }
+}
+
+class SelectNumberPage extends StatelessWidget {
+  const SelectNumberPage({
+    super.key,
+    this.initialNumber = 1,
+    required this.maxNumber,
+    this.onSelectedNumber,
+  });
+
+  final int initialNumber;
+  final int maxNumber;
+  final void Function(int number)? onSelectedNumber;
+
+  get radius => BorderRadius.circular(8);
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(maxNumber, (index) {
+              var number = index + 1;
+              var isCur = initialNumber == number;
+
+              return Container(
+                margin: const EdgeInsets.all(4),
+                child: InkWell(
+                  borderRadius: radius,
+                  onTap: () => onSelectedNumber?.call(number),
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .primaryColor
+                          .withOpacity(isCur ? 1 : 0.2),
+                      borderRadius: radius,
+                    ),
+                    child: Center(
+                        child: Text(
+                      '$number',
+                      style:
+                          isCur ? const TextStyle(color: Colors.white) : null,
+                    )),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
   }
 }

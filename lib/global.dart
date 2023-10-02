@@ -116,8 +116,8 @@ class Global {
   }
 
   /// 切换为横屏
-  static void toLandscape() {
-    SystemChrome.setPreferredOrientations([
+  static Future<void> toLandscape() {
+    return SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeLeft,
     ]);
