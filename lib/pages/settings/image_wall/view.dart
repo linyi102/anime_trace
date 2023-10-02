@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -21,13 +22,21 @@ class _ImageWallPageState extends State<ImageWallPage> {
   List<ScrollController> scrollControllers = [];
   List<Timer> timers = [];
 
+  bool playing = false;
   int speed = 1; // 当前速度
+
   int get maxSpeed => 3; // 最大速度
   int get standardSpaceMs => 3000; // 标准间隔为3s
   int get spaceMs => standardSpaceMs ~/ speed; // 当前间隔
   Duration get interval => Duration(milliseconds: spaceMs);
-  bool playing = false;
-  double get imageExtent => 160;
+
+  double get groupSpacing => 5;
+  double get imageSpacing => 4;
+  double get imageWidth => 180;
+  double get imageHeight => 100;
+  double get imageExtent => imageWidth + imageSpacing;
+
+  bool get enableBlur => false;
 
   @override
   void initState() {
@@ -101,37 +110,44 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAppBar(),
-          Expanded(
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < groups.length; ++i) _buildGroup(i)
-              ],
-            ),
-          ),
-        ],
+    return Theme(
+      data: ThemeData.dark(useMaterial3: true)
+          .copyWith(scaffoldBackgroundColor: Colors.black),
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAppBar(),
+            Expanded(child: _buildGallary()),
+          ],
+        ),
       ),
     );
   }
 
+  Column _buildGallary() {
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [for (var i = 0; i < groups.length; ++i) _buildGroup(i)],
+    );
+  }
+
   _buildAppBar() {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-        ),
-        const Spacer(),
-        _buildSpeedControlButton(),
-        _buildPlayControlButton(),
-        _buildShuffleButton(),
-      ],
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+          ),
+          const Spacer(),
+          _buildSpeedControlButton(),
+          _buildPlayControlButton(),
+          _buildShuffleButton(),
+        ],
+      ),
     );
   }
 
@@ -143,7 +159,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
         }
         setState(() {});
       },
-      icon: const Icon(Icons.shuffle_rounded),
+      icon: const Icon(Icons.shuffle_rounded, size: 20),
     );
   }
 
@@ -162,16 +178,21 @@ class _ImageWallPageState extends State<ImageWallPage> {
           // 需要重新创建定时器
           _play();
         },
-        icon: Text('${speed}x'));
+        icon: Text(
+          '${speed}x',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ));
   }
 
   _buildGroup(int groupIndex) {
     var group = groups[groupIndex];
     if (group.isEmpty) return const SizedBox();
 
+    bool showDropShadow = groupIndex == groups.length - 1;
+
     return Container(
-      height: 100,
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      height: showDropShadow ? imageHeight * 2 + 20 : imageHeight,
+      margin: EdgeInsets.symmetric(vertical: groupSpacing),
       child: ListView.builder(
         controller: scrollControllers[groupIndex],
         reverse: groupIndex % 2 == 1,
@@ -180,20 +201,67 @@ class _ImageWallPageState extends State<ImageWallPage> {
         itemBuilder: (context, index) {
           var imageUrl = group[index % group.length];
 
-          return GestureDetector(
-            onTap: () {
-              _toImageViewerPage(imageUrl);
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              // color: Colors.red,
-              // child: Text(imageUrl),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-                  child: CommonImage(imageUrl)),
+          var image = Container(
+            height: imageHeight,
+            width: imageWidth,
+            margin: EdgeInsets.symmetric(horizontal: imageSpacing),
+            // color: Colors.red,
+            // child: Text(imageUrl),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
+                child: CommonImage(imageUrl)),
+          );
+
+          return Scrollbar(
+            thumbVisibility: false,
+            trackVisibility: false,
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () => _toImageViewerPage(imageUrl),
+                    child: image,
+                  ),
+                  if (showDropShadow) _buildDropShadowImage(image),
+                ],
+              ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  _buildDropShadowImage(Container image) {
+    return Container(
+      padding: EdgeInsets.only(top: groupSpacing * 2),
+      // 翻转
+      child: Transform.flip(
+        flipY: true,
+        // 渐变
+        child: ShaderMask(
+          shaderCallback: (rect) => const LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Colors.black26, Colors.transparent])
+              .createShader(Rect.fromLTRB(0, 0, rect.width, rect.height)),
+          blendMode: BlendMode.dstIn,
+          child: Stack(
+            children: [
+              image,
+              // 模糊
+              if (enableBlur)
+                ClipRect(
+                  child: BackdropFilter(
+                    blendMode: BlendMode.srcIn,
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: SizedBox(height: imageHeight, width: imageWidth),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
