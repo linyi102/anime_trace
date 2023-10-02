@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
@@ -26,8 +28,8 @@ class _ImageWallPageState extends State<ImageWallPage> {
   int speed = 1; // 当前速度
 
   int get maxSpeed => 3; // 最大速度
-  int get standardSpaceMs => 3000; // 标准间隔为3s
-  int get spaceMs => standardSpaceMs ~/ speed; // 当前间隔
+  int get defaultSpaceMs => 6000; // 默认间隔
+  int get spaceMs => defaultSpaceMs ~/ speed; // 当前间隔
   Duration get interval => Duration(milliseconds: spaceMs);
 
   double get groupSpacing => 5;
@@ -41,6 +43,8 @@ class _ImageWallPageState extends State<ImageWallPage> {
   @override
   void initState() {
     super.initState();
+    Global.hideSystemUIOverlays();
+
     for (var i = 0; i < groupCnt; ++i) {
       groups.add([]);
       scrollControllers.add(ScrollController());
@@ -56,6 +60,9 @@ class _ImageWallPageState extends State<ImageWallPage> {
     for (var i = 0; i < groupCnt; ++i) {
       scrollControllers[i].dispose();
     }
+
+    Global.autoRotate();
+    Global.restoreSystemUIOverlays();
     super.dispose();
   }
 
@@ -146,8 +153,16 @@ class _ImageWallPageState extends State<ImageWallPage> {
           _buildSpeedControlButton(),
           _buildPlayControlButton(),
           _buildShuffleButton(),
+          if (Platform.isAndroid) _buildRotateScreenButton(),
         ],
       ),
+    );
+  }
+
+  IconButton _buildRotateScreenButton() {
+    return IconButton(
+      onPressed: () => Global.switchDeviceOrientation(context),
+      icon: const Icon(Icons.screen_rotation, size: 20),
     );
   }
 
@@ -159,7 +174,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
         }
         setState(() {});
       },
-      icon: const Icon(Icons.shuffle_rounded, size: 20),
+      icon: const Icon(Icons.shuffle_rounded, size: 22),
     );
   }
 

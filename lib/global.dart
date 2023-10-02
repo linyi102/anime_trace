@@ -109,6 +109,46 @@ class Global {
       "User-Agent": bingUserAgent,
     };
   }
+
+  /// 切换横竖屏
+  static void switchDeviceOrientation(BuildContext context) {
+    isPortrait(context) ? toLandscape() : toPortrait();
+  }
+
+  /// 切换为横屏
+  static void toLandscape() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
+
+  /// 切换为竖屏
+  static void toPortrait() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
+  /// 恢复为手机旋转时自动切换横竖屏。避免退出视频页后无法切换为横屏
+  static void autoRotate() {
+    SystemChrome.setPreferredOrientations([]);
+  }
+
+  /// 是否为竖屏
+  static bool isPortrait(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.portrait;
+  }
+
+  /// 恢复系统顶部栏和底部栏，用于退出全屏
+  static Future<void> restoreSystemUIOverlays() async {
+    return SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+  }
+
+  /// 隐藏系统顶部栏和底部栏，用于进入全屏
+  static Future<void> hideSystemUIOverlays() async {
+    return SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: []);
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {
