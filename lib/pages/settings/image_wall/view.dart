@@ -66,55 +66,6 @@ class _ImageWallPageState extends State<ImageWallPage> {
     super.dispose();
   }
 
-  _play() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      timers.clear();
-
-      for (var i = 0; i < groupCnt; ++i) {
-        var scrollController = scrollControllers[i];
-
-        // 立即执行
-        _scrollOnceImage(scrollController);
-        // 再定时
-        var timer = Timer.periodic(interval, (timer) {
-          _scrollOnceImage(scrollController);
-        });
-        timers.add(timer);
-      }
-      if (mounted) {
-        setState(() {
-          playing = true;
-        });
-      }
-    });
-  }
-
-  void _scrollOnceImage(ScrollController scrollController) {
-    if (!scrollController.hasClients) return;
-
-    scrollController.animateTo(
-      scrollController.offset + imageExtent,
-      duration: interval,
-      curve: Curves.linear,
-    );
-  }
-
-  _pause() {
-    for (var i = 0; i < groupCnt; ++i) {
-      var scrollController = scrollControllers[i];
-      // 立即暂停
-      scrollController.animateTo(scrollController.offset,
-          duration: const Duration(milliseconds: 200), curve: Curves.linear);
-      // 取消定时器
-      timers[i].cancel();
-    }
-    if (mounted) {
-      setState(() {
-        playing = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -132,7 +83,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  Column _buildGallary() {
+  _buildGallary() {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -180,18 +131,19 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   IconButton _buildPlayControlButton() {
     return IconButton(
-      onPressed: () => playing ? _pause() : _play(),
-      icon: Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
+      onPressed: _playOrPause,
+      icon: Icon(playing
+          ? Icons.pause_circle_outline_outlined
+          : Icons.play_arrow_rounded),
     );
   }
 
   IconButton _buildSpeedControlButton() {
     return IconButton(
         onPressed: () {
-          _pause();
           speed = speed % maxSpeed + 1;
           // 需要重新创建定时器
-          _play();
+          _pauseAndPlay();
         },
         icon: Text(
           '${speed}x',
@@ -209,6 +161,8 @@ class _ImageWallPageState extends State<ImageWallPage> {
       height: showDropShadow ? imageHeight * 2 + 20 : imageHeight,
       margin: EdgeInsets.symmetric(vertical: groupSpacing),
       child: ListView.builder(
+        // 播放时不允许手动滚动，暂停后支持滚动，并且可以查看图片
+        // physics: playing ? const NeverScrollableScrollPhysics() : null,
         controller: scrollControllers[groupIndex],
         reverse: groupIndex % 2 == 1,
         scrollDirection: Axis.horizontal,
@@ -259,7 +213,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
           shaderCallback: (rect) => const LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black26, Colors.transparent])
+                  colors: [Colors.black38, Colors.transparent])
               .createShader(Rect.fromLTRB(0, 0, rect.width, rect.height)),
           blendMode: BlendMode.dstIn,
           child: Stack(
@@ -281,13 +235,75 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  void _toImageViewerPage(String imageUrl) {
-    Navigator.push(
+  void _toImageViewerPage(String imageUrl) async {
+    await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ImageViewerPage(relativeLocalImages: [
             RelativeLocalImage(0, ImageUtil.getRelativeNoteImagePath(imageUrl))
           ]),
         ));
+    // 返回后如果是播放状态，重新播放，避免过一会定时器触发后才继续自动播放
+    _pauseAndPlay();
+  }
+
+  void _scrollOnceImage(ScrollController scrollController) {
+    if (!scrollController.hasClients) return;
+
+    scrollController.animateTo(
+      scrollController.offset + imageExtent,
+      duration: interval,
+      curve: Curves.linear,
+    );
+  }
+
+  _playOrPause() {
+    playing ? _pause() : _play();
+  }
+
+  _pauseAndPlay() {
+    if (playing) {
+      _pause();
+      _play();
+    }
+  }
+
+  _play() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      timers.clear();
+
+      for (var i = 0; i < groupCnt; ++i) {
+        var scrollController = scrollControllers[i];
+
+        // 立即执行
+        _scrollOnceImage(scrollController);
+        // 再定时
+        var timer = Timer.periodic(interval, (timer) {
+          _scrollOnceImage(scrollController);
+        });
+        timers.add(timer);
+      }
+      if (mounted) {
+        setState(() {
+          playing = true;
+        });
+      }
+    });
+  }
+
+  _pause() {
+    for (var i = 0; i < groupCnt; ++i) {
+      var scrollController = scrollControllers[i];
+      // 立即暂停
+      scrollController.animateTo(scrollController.offset,
+          duration: const Duration(milliseconds: 200), curve: Curves.linear);
+      // 取消定时器
+      timers[i].cancel();
+    }
+    if (mounted) {
+      setState(() {
+        playing = false;
+      });
+    }
   }
 }
