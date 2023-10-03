@@ -143,7 +143,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: const Center(child: Text('选择行数')),
+        title: const Text('选择行数'),
         content: SelectNumberPage(
             initialNumber: groupCnt,
             maxNumber: maxGroupCnt,
@@ -163,7 +163,11 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   IconButton _buildRotateScreenButton() {
     return IconButton(
-      onPressed: () => Global.switchDeviceOrientation(context),
+      onPressed: () async {
+        await Global.switchDeviceOrientation(context);
+        // 切换横竖屏后，重新滚动，避免仍然是切换前的速度
+        _pauseAndPlay();
+      },
       icon: const Icon(Icons.screen_rotation, size: 20),
     );
   }
@@ -333,10 +337,12 @@ class _ImageWallPageState extends State<ImageWallPage> {
     playing ? _pause() : _play();
   }
 
-  void _pauseAndPlay() {
+  void _pauseAndPlay() async {
     if (playing) {
       _pause();
+      await Future.delayed(const Duration(milliseconds: 200));
       _play();
+      if (mounted) setState(() {});
     }
   }
 
@@ -392,7 +398,7 @@ class SelectNumberPage extends StatelessWidget {
   final int maxNumber;
   final void Function(int number)? onSelectedNumber;
 
-  get radius => BorderRadius.circular(8);
+  get radius => BorderRadius.circular(6);
 
   @override
   Widget build(BuildContext context) {
@@ -414,16 +420,22 @@ class SelectNumberPage extends StatelessWidget {
                     height: 30,
                     width: 30,
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .primaryColor
-                          .withOpacity(isCur ? 1 : 0.2),
+                      color: isCur
+                          ? Theme.of(context).primaryColor.withOpacity(0.2)
+                          : null,
+                      border: Border.all(
+                          width: 0.6,
+                          color: isCur
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).hintColor.withOpacity(0.1)),
                       borderRadius: radius,
                     ),
                     child: Center(
                         child: Text(
                       '$number',
-                      style:
-                          isCur ? const TextStyle(color: Colors.white) : null,
+                      style: isCur
+                          ? TextStyle(color: Theme.of(context).primaryColor)
+                          : null,
                     )),
                   ),
                 ),

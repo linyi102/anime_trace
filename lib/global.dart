@@ -111,8 +111,8 @@ class Global {
   }
 
   /// 切换横竖屏
-  static void switchDeviceOrientation(BuildContext context) {
-    isPortrait(context) ? toLandscape() : toPortrait();
+  static Future<void> switchDeviceOrientation(BuildContext context) async {
+    return isPortrait(context) ? toLandscape() : toPortrait();
   }
 
   /// 切换为横屏
@@ -124,13 +124,14 @@ class Global {
   }
 
   /// 切换为竖屏
-  static void toPortrait() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  static Future<void> toPortrait() {
+    return SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp]);
   }
 
   /// 恢复为手机旋转时自动切换横竖屏。避免退出视频页后无法切换为横屏
-  static void autoRotate() {
-    SystemChrome.setPreferredOrientations([]);
+  static Future<void> autoRotate() {
+    return SystemChrome.setPreferredOrientations([]);
   }
 
   /// 是否为竖屏
