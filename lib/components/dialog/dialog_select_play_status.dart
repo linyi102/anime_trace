@@ -11,14 +11,11 @@ showDialogSelectPlayStatus(
         return SimpleDialog(
           title: const Text("播放状态"),
           children: PlayStatus.values
-              .map((playStatus) => ListTile(
-                    leading: playStatus == animeController.anime.getPlayStatus()
-                        ? Icon(Icons.radio_button_on,
-                            color: Theme.of(context).primaryColor)
-                        : const Icon(Icons.radio_button_off),
+              .map((playStatus) => RadioListTile(
                     title: Text(playStatus.text),
-                    trailing: Icon(playStatus.iconData),
-                    onTap: () {
+                    value: animeController.anime.getPlayStatus(),
+                    groupValue: playStatus,
+                    onChanged: (PlayStatus? value) {
                       animeController.anime.playStatus = playStatus.text;
                       animeController.updateAnimeInfo();
                       AnimeDao.updateAnimePlayStatusByAnimeId(
