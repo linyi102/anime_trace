@@ -47,7 +47,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
   @override
   void initState() {
     super.initState();
-    // Global.hideSystemUIOverlays();
+    Global.hideSystemUIOverlays();
     _loadGroup();
 
     // 切换为横屏
@@ -69,9 +69,6 @@ class _ImageWallPageState extends State<ImageWallPage> {
   @override
   void dispose() {
     _disposeGroup();
-
-    Global.autoRotate();
-    Global.restoreSystemUIOverlays();
     super.dispose();
   }
 
@@ -81,18 +78,24 @@ class _ImageWallPageState extends State<ImageWallPage> {
             (Global.isPortrait(context) ? 200 : 100)) /
         (groupCnt + 1);
 
-    return Theme(
-      data: ThemeData.dark(useMaterial3: true)
-          .copyWith(scaffoldBackgroundColor: Colors.black),
-      child: Scaffold(
-        body: Stack(
-          children: [
-            _buildGallery(),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _buildAppBar(),
-            ),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        await _restoreDeviceUI();
+        return true;
+      },
+      child: Theme(
+        data: ThemeData.dark(useMaterial3: true)
+            .copyWith(scaffoldBackgroundColor: Colors.black),
+        child: Scaffold(
+          body: Stack(
+            children: [
+              _buildGallery(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _buildAppBar(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -113,7 +116,10 @@ class _ImageWallPageState extends State<ImageWallPage> {
       child: Row(
         children: [
           IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              await _restoreDeviceUI();
+              Navigator.pop(context);
+            },
             icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
           ),
           const Spacer(),
@@ -383,6 +389,12 @@ class _ImageWallPageState extends State<ImageWallPage> {
         playing = false;
       });
     }
+  }
+
+  /// 恢复屏幕方向和状态栏后再退出页面，避免退出时恢复突兀
+  Future<void> _restoreDeviceUI() async {
+    await Global.autoRotate();
+    await Global.restoreSystemUIOverlays();
   }
 }
 
