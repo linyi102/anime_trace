@@ -102,6 +102,9 @@ class _ImageWallPageState extends State<ImageWallPage> {
   }
 
   _buildGallery() {
+    if (widget.imageUrls.isEmpty) {
+      return const Center(child: Text('为笔记添加图片后再来试试吧~'));
+    }
     return Column(
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -296,8 +299,18 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  void _loadGroup() {
+  void _loadGroup() async {
     _disposeGroup();
+
+    if (widget.imageUrls.isEmpty) {
+      return;
+    }
+
+    // 图片过少不足以为每一行分配图片时，生成重复图片
+    while (widget.imageUrls.length < groupCnt) {
+      // 指数级增加
+      widget.imageUrls.addAll(widget.imageUrls.toList());
+    }
 
     for (var i = 0; i < groupCnt; ++i) {
       groups.add([]);

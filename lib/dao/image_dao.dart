@@ -35,4 +35,23 @@ class ImageDao {
 
     return images;
   }
+
+  /// 获取某个动漫的所有图片
+  static Future<List<String>> getImages(int animeId) async {
+    Log.info('sql: getImages(animeId=$animeId)');
+
+    List<String> images = [];
+    List<Map> rows = await database.rawQuery('''
+      select image_local_path
+      from image left join episode_note on episode_note.note_id = image.note_id
+      where anime_id = $animeId;
+      ''');
+    for (var row in rows) {
+      String relativePath = row['image_local_path'];
+      String path = ImageUtil.getAbsoluteNoteImagePath(relativePath);
+      images.add(path);
+    }
+
+    return images;
+  }
 }

@@ -4,7 +4,8 @@ import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/view.dart';
 
 class NoteImageWallPage extends StatefulWidget {
-  const NoteImageWallPage({super.key});
+  const NoteImageWallPage({super.key, this.animeId});
+  final int? animeId;
 
   @override
   State<NoteImageWallPage> createState() => _NoteImageWallPageState();
@@ -31,7 +32,12 @@ class _NoteImageWallPageState extends State<NoteImageWallPage> {
   }
 
   void _loadData() async {
-    noteImagePaths = await ImageDao.getAllImages();
+    if (widget.animeId != null) {
+      noteImagePaths = await ImageDao.getImages(widget.animeId!);
+    } else {
+      noteImagePaths = await ImageDao.getAllImages();
+    }
+
     setState(() {
       loadok = true;
     });

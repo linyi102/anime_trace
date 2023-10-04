@@ -10,6 +10,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
+import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:get/get.dart';
@@ -68,7 +69,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
           leading: _buildAppBarIconButton(
             context: context,
             onTap: () => widget.popPage(),
-            icon: const Icon(Icons.chevron_left),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
           ),
           actions: _generateActions(),
         );
@@ -235,6 +236,25 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                           // TODO 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
                           // widget.animeController.loadEpisode();
                         });
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    padding: const EdgeInsets.all(0),
+                    child: ListTile(
+                      leading: const Icon(Icons.panorama_horizontal_rounded),
+                      title: const Text("照片墙"),
+                      onTap: () {
+                        // 关闭下拉菜单
+                        Navigator.pop(context);
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NoteImageWallPage(
+                                animeId: _anime.animeId,
+                              ),
+                            ));
                       },
                     ),
                   ),
