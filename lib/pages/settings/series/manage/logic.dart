@@ -17,8 +17,6 @@ class SeriesManageLogic extends GetxController {
   // 推荐创建的系列
   List<Series> allRecommendSeriesList = []; // 所有推荐
   List<Series> animeRecommendSeriesList = []; // 当前动漫推荐
-
-  // 加载状态
   bool loadingRecommendSeriesList = true;
 
   // 搜索

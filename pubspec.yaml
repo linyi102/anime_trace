@@ -45,7 +45,7 @@ dependencies:
   file_saver: ^0.1.1 # 文件保存，用于备份文件
   sliver_tools: ^0.2.9 # sliver工具：渐变过渡
   pull_to_refresh: ^2.0.0 # 下拉刷新、加载更多
-  ming_cute_icons: ^0.0.1
+  ming_cute_icons: ^0.0.2
   eva_icons_flutter: ^3.1.0 # 图标
   reorderable_grid_view: ^2.2.7 # 可拖动排序的网格
   webview_flutter: ^3.0.4 # App内网页

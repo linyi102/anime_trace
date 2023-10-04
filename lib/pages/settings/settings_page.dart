@@ -233,6 +233,7 @@ class _SettingPageState extends State<SettingPage> {
           leading: const Icon(
             // Icons.panorama_horizontal_rounded,
             MingCuteIcons.mgc_film_line,
+            // Icons.movie_filter_outlined,
           ),
           title: const Text("照片墙"),
           onTap: () {

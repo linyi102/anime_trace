@@ -8,7 +8,6 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimePropertiesPage({required this.animeController, Key? key})
@@ -232,8 +231,8 @@ class AnimePropertiesPage extends StatelessWidget {
           title: Row(
             children: [
               Text("$title "),
-              if (onPressed != null)
-                const Icon(MingCuteIcons.mgc_edit_3_line, size: 14)
+              // if (onPressed != null)
+              //   const Icon(MingCuteIcons.mgc_edit_3_line, size: 14)
             ],
           ),
           subtitle: GestureDetector(
@@ -245,7 +244,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   onPressed: () {
                     LaunchUrlUtil.launch(context: context, uriStr: content);
                   },
-                  icon: const Icon(MingCuteIcons.mgc_external_link_line))
+                  icon: const Icon(Icons.open_in_new_rounded, size: 18))
               : null,
         )
       ],
