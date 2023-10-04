@@ -16,8 +16,6 @@ import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -176,10 +174,11 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       _buildSearchBtn(),
       if (widget.animeController.isCollected)
         _buildIconTextButton(
-            icon: SvgAssetIcon(
-              assetPath: Assets.iconsCollections24Regular,
-              size: iconSize,
-            ),
+            iconData: MingCuteIcons.mgc_book_3_line,
+            // icon: SvgAssetIcon(
+            //   assetPath: Assets.iconsCollections24Regular,
+            //   size: iconSize,
+            // ),
             text: '系列',
             onTap: () {
               Navigator.push(

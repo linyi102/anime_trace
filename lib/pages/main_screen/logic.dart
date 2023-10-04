@@ -1,4 +1,3 @@
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/main_screen/style.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
@@ -50,8 +49,8 @@ class MainScreenLogic extends GetxController {
   );
   var seriesTab = MainTab(
     name: "系列",
-    icon: const Icon(FluentIcons.collections_24_regular),
-    selectedIcon: const Icon(FluentIcons.collections_24_filled),
+    icon: const Icon(MingCuteIcons.mgc_book_3_line),
+    selectedIcon: const Icon(MingCuteIcons.mgc_book_3_fill),
     page: const SeriesManagePage(isHome: true),
     show: MainScreenStyle.showSeriesTabInMainScreen(),
     turnShow: () => MainScreenStyle.turnShowSeriesTabInMainScreen(),

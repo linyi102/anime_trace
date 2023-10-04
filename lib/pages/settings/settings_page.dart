@@ -15,7 +15,6 @@ import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'general_setting.dart';
@@ -109,7 +108,7 @@ class _SettingPageState extends State<SettingPage> {
           iconColor: Theme.of(context).primaryColor,
           leading: const Icon(
             // Icons.settings,
-            MingCuteIcons.mgc_settings_3_line,
+            MingCuteIcons.mgc_settings_1_line,
           ),
           title: const Text("常规设置"),
           onTap: () {
@@ -127,8 +126,8 @@ class _SettingPageState extends State<SettingPage> {
           leading: const Icon(
             // Icons.photo_size_select_actual_outlined,
             // Icons.image_outlined,
-            // MingCuteIcons.mgc_pic_2_line,
-            MingCuteIcons.mgc_photo_album_line,
+            MingCuteIcons.mgc_pic_2_line,
+            // MingCuteIcons.mgc_photo_album_line,
           ),
           title: const Text("图片设置"),
           onTap: () {
@@ -165,7 +164,7 @@ class _SettingPageState extends State<SettingPage> {
       children: [
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.settings_backup_restore_outlined),
+          leading: const Icon(Icons.settings_backup_restore_rounded),
           title: const Text("备份还原"),
           onTap: () {
             Navigator.of(context).push(
@@ -198,7 +197,7 @@ class _SettingPageState extends State<SettingPage> {
           iconColor: Theme.of(context).primaryColor,
           leading: const Icon(
             // Icons.label_outline,
-            MingCuteIcons.mgc_tag_2_line,
+            MingCuteIcons.mgc_tag_line,
           ),
           title: const Text("标签管理"),
           onTap: () {
@@ -212,10 +211,12 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          leading: SvgAssetIcon(
-            assetPath: Assets.iconsCollections24Regular,
-            color: Theme.of(context).primaryColor,
-          ),
+          iconColor: Theme.of(context).primaryColor,
+          leading: const Icon(MingCuteIcons.mgc_book_3_line),
+          // leading: SvgAssetIcon(
+          //   assetPath: Assets.iconsCollections24Regular,
+          //   color: Theme.of(context).primaryColor,
+          // ),
           title: const Text("系列管理"),
           onTap: () {
             Navigator.of(context).push(
@@ -229,7 +230,10 @@ class _SettingPageState extends State<SettingPage> {
         ),
         ListTile(
           iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(Icons.panorama_horizontal_rounded),
+          leading: const Icon(
+            // Icons.panorama_horizontal_rounded,
+            MingCuteIcons.mgc_film_line,
+          ),
           title: const Text("照片墙"),
           onTap: () {
             Navigator.of(context).push(

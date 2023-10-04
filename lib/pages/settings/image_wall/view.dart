@@ -90,6 +90,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
           body: Stack(
             children: [
               _buildGallery(),
+              // _buildSelectGroupCntContext(),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _buildAppBar(),
@@ -99,6 +100,49 @@ class _ImageWallPageState extends State<ImageWallPage> {
         ),
       ),
     );
+  }
+
+  // TODO 需要处理选择后、或点击其他区域后隐藏
+  _buildSelectGroupCntContext() {
+    return Positioned(
+        right: 40,
+        bottom: 60,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              color: Colors.white12, borderRadius: BorderRadius.circular(10)),
+          child: Row(
+            children: List.generate(6, (index) {
+              int number = index + 1;
+              bool isSelected = groupCnt == number;
+              return GestureDetector(
+                onTap: () {
+                  _setGroupCnt(number);
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Text('$number',
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.grey,
+                            fontSize: 12,
+                          )),
+                      if (isSelected)
+                        const Positioned(
+                          bottom: 5,
+                          child: Icon(Icons.circle, size: 4),
+                        )
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ));
   }
 
   _buildGallery() {
@@ -136,7 +180,24 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  IconButton _buildGroupCntButton() {
+  _buildGroupCntButton() {
+    // return ContextMenuRegion(
+    //   child: const Icon(Icons.table_rows, size: 20),
+    //   contextMenuBuilder: (context, offset) =>
+    //       AdaptiveTextSelectionToolbar.buttonItems(
+    //           anchors: TextSelectionToolbarAnchors(
+    //             primaryAnchor: offset,
+    //           ),
+    //           buttonItems: ['保存图片', '分享图片', '编辑图片']
+    //               .map((label) => ContextMenuButtonItem(
+    //                     onPressed: () {
+    //                       ContextMenuController.removeAny();
+    //                     },
+    //                     label: label,
+    //                   ))
+    //               .toList()),
+    // );
+
     return IconButton(
       onPressed: () {
         showSelectGroupCntDialog();
@@ -159,15 +220,19 @@ class _ImageWallPageState extends State<ImageWallPage> {
             onSelectedNumber: (number) {
               Navigator.pop(context);
 
-              groupCnt = number;
-              NoteImageWallStyle.setGroupCnt(number);
-              // 取消定时器，避免旧的定时器仍然生效
-              _pause();
-              _loadGroup();
-              _play();
+              _setGroupCnt(number);
             }),
       ),
     );
+  }
+
+  void _setGroupCnt(int number) {
+    groupCnt = number;
+    NoteImageWallStyle.setGroupCnt(number);
+    // 取消定时器，避免旧的定时器仍然生效
+    _pause();
+    _loadGroup();
+    _play();
   }
 
   IconButton _buildRotateScreenButton() {

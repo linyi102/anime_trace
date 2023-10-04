@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -18,7 +17,6 @@ import '../../../../models/anime.dart';
 import '../../../../models/series.dart';
 import '../../../../utils/delay_util.dart';
 import '../../../../utils/log.dart';
-import '../../../../values/values.dart';
 import '../../../../widgets/common_scaffold_body.dart';
 import '../detail/view.dart';
 import 'logic.dart';
@@ -305,10 +303,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           ? const SizedBox(
               height: 40,
               width: 40,
-              child: Center(
-                child:
-                    SvgAssetIcon(assetPath: Assets.iconsCollections24Regular),
-              ),
+              child: Center(child: Icon(MingCuteIcons.mgc_book_3_line)),
             )
           : AnimeListCover(
               firstHasCoverAnime,
@@ -503,9 +498,9 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       height: coverHeight,
       child: imgCnt == 0
           ? Center(
-              child: SvgAssetIcon(
-                assetPath: Assets.iconsCollections24Regular,
-                size: coverHeight / 3,
+              child: Icon(
+                MingCuteIcons.mgc_book_3_line,
+                size: coverHeight / 2,
                 color: Theme.of(context).hintColor.withOpacity(0.2),
               ),
             )
