@@ -58,11 +58,19 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                   onLongPress: () {
                     Log.info("长按标签：$label");
                   },
-                  child: Chip(label: Text(label.name)),
+                  child: Chip(
+                      visualDensity: VisualDensity.compact,
+                      labelStyle: const TextStyle(fontSize: 12),
+                      label: Text(label.name)),
                 ))
             .toList();
 
     chips.add(GestureDetector(
+      child: const Chip(
+        visualDensity: VisualDensity.compact,
+        labelStyle: TextStyle(fontSize: 12),
+        label: Text("  +  "),
+      ),
       onTap: () {
         Log.info("添加标签");
         // 弹出底部菜单，提供搜索和查询列表
@@ -105,10 +113,6 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
         //         const LabelManagePage(enableSelectLabelForAnime: true),
         //     );
       },
-      child: Chip(
-        label: const Text("  +  "),
-        backgroundColor: Theme.of(context).chipTheme.backgroundColor,
-      ),
     ));
 
     return chips;

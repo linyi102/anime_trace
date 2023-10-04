@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
@@ -152,7 +151,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       builder: (_) {
         return _buildIconTextButton(
           iconData: MingCuteIcons.mgc_chat_1_line,
-          text: "${widget.animeController.rateNoteCount}条评价",
+          text: widget.animeController.rateNoteCount == 0
+              ? "评价"
+              : "${widget.animeController.rateNoteCount}条评价",
           onTap: () {
             Navigator.of(context)
                 .push(MaterialPageRoute(
@@ -301,12 +302,13 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   child: Row(
                     children: [
                       Text(_anime.getAnimeSource()),
-                      const Icon(EvaIcons.externalLink, size: smallIconSize),
+                      _buildDot()
+                      // const Icon(EvaIcons.externalLink, size: smallIconSize),
                     ],
                   ),
                 )),
                 // const WidgetSpan(child: Text(" • ")),
-                const WidgetSpan(child: Text(" ")),
+                // const WidgetSpan(child: Text(" ")),
                 WidgetSpan(
                     child: GestureDetector(
                   onTap: () {
@@ -319,14 +321,20 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   child: Row(
                     children: [
                       Text(widget.animeController.anime.getPlayStatus().text),
-                      Icon(
-                          widget.animeController.anime.getPlayStatus().iconData,
-                          size: smallIconSize),
+                      // _buildDot(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Icon(
+                            widget.animeController.anime
+                                .getPlayStatus()
+                                .iconData,
+                            size: smallIconSize),
+                      ),
                     ],
                   ),
                 )),
                 // const WidgetSpan(child: Text(" • ")),
-                const WidgetSpan(child: Text(" ")),
+                // const WidgetSpan(child: Text(" ")),
                 WidgetSpan(
                     child: GestureDetector(
                   onTap: () {
@@ -336,9 +344,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                   },
                   child: Row(
                     children: [
-                      Text("${_anime.animeEpisodeCnt}集"),
-                      const Icon(MingCuteIcons.mgc_edit_3_line,
-                          size: smallIconSize),
+                      Text("${_anime.animeEpisodeCnt} 集"),
+                      // const Icon(MingCuteIcons.mgc_edit_3_line,
+                      //     size: smallIconSize),
                     ],
                   ),
                 )),
@@ -349,6 +357,13 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
           ],
         ),
       ],
+    );
+  }
+
+  Padding _buildDot() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      child: Icon(Icons.circle, size: 4),
     );
   }
 
