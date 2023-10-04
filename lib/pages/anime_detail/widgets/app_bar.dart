@@ -242,7 +242,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   PopupMenuItem(
                     padding: const EdgeInsets.all(0),
                     child: ListTile(
-                      leading: const Icon(Icons.panorama_horizontal_rounded),
+                      leading: const Icon(MingCuteIcons.mgc_film_line),
                       title: const Text("照片墙"),
                       onTap: () {
                         // 关闭下拉菜单

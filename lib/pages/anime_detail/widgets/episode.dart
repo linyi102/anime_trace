@@ -124,10 +124,14 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             },
             borderRadius: BorderRadius.circular(6),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 3, 8, 3),
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              // decoration: BoxDecoration(
+              //   border: Border.all(),
+              //   borderRadius: BorderRadius.circular(4),
+              // ),
               child: Row(
                 children: [
-                  const Icon(Icons.arrow_right_rounded),
+                  const Icon(Icons.arrow_right_rounded, size: 26),
                   Text(_getEpisodeRangeStr(
                       widget.animeController.currentStartEpisodeNumber)),
                 ],

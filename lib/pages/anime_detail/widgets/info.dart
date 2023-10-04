@@ -36,7 +36,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
 
   Anime get _anime => widget.animeController.anime;
   List<String> get tags => ChecklistController.to.tags;
-  get iconSize => 20.0;
 
   @override
   void initState() {
@@ -202,7 +201,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         icon: icon,
         onTap: onTap,
         radius: 99,
-        iconSize: iconSize,
+        iconSize: 20,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         margin: EdgeInsets.zero,
       ),
@@ -251,7 +250,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   _buildInfo() {
-    const double smallIconSize = 14;
+    // const double smallIconSize = 14;
 
     // 迁移后信息会变化，所以使用obx监听
     return Column(
@@ -291,11 +290,11 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               child: Row(
                 children: [
                   Text(_anime.getAnimeSource()),
-                  // _buildDot(),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2),
-                    child: Icon(Icons.open_in_new_rounded, size: smallIconSize),
-                  ),
+                  _buildDot(),
+                  // const Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 2),
+                  //   child: Icon(Icons.open_in_new_rounded, size: smallIconSize),
+                  // ),
                 ],
               ),
               // 短按打开网址，长按复制到剪切板
@@ -319,13 +318,13 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               child: Row(
                 children: [
                   Text(widget.animeController.anime.getPlayStatus().text),
-                  // _buildDot(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Icon(
-                        widget.animeController.anime.getPlayStatus().iconData,
-                        size: smallIconSize),
-                  ),
+                  _buildDot(),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 2),
+                  //   child: Icon(
+                  //       widget.animeController.anime.getPlayStatus().iconData,
+                  //       size: smallIconSize),
+                  // ),
                 ],
               ),
               onTap: () {
@@ -338,11 +337,11 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               child: Row(
                 children: [
                   Text("${_anime.animeEpisodeCnt} 集"),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2),
-                    child: Icon(MingCuteIcons.mgc_edit_2_line,
-                        size: smallIconSize),
-                  ),
+                  // const Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 2),
+                  //   child: Icon(MingCuteIcons.mgc_edit_2_line,
+                  //       size: smallIconSize),
+                  // ),
                 ],
               ),
               onTap: () {
