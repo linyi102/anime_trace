@@ -127,6 +127,10 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   }
 
   _buildSeriesBody(BuildContext context) {
+    if (logic.loadingSeriesList || logic.loadingRecommendSeriesList) {
+      return const LoadingWidget();
+    }
+
     return CustomScrollView(
       slivers: [
         // 所有推荐不直接展示，而是放到二级页面，避免推荐太多要下拉才能看到已创建的
