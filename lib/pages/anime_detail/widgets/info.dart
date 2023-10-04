@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_rating_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
@@ -345,9 +344,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 ],
               ),
               onTap: () {
-                if (widget.animeController.isCollected) {
-                  showDialogmodifyEpisodeCnt();
-                }
+                widget.animeController.showDialogmodifyEpisodeCnt(context);
               },
             )
           ],
@@ -370,37 +367,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       padding: EdgeInsets.symmetric(horizontal: 4),
       child: Icon(Icons.circle, size: 4),
     );
-  }
-
-  void showDialogmodifyEpisodeCnt() {
-    dialogSelectUint(context, "集数",
-            initialValue: _anime.animeEpisodeCnt,
-            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-            // initialValue: initialValue,
-            // 添加选择集范围后，就不能传入已有的集长度了。
-            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-            minValue: 0,
-            maxValue: 2000)
-        .then((value) {
-      if (value == null) {
-        Log.info("未选择，直接返回");
-        return;
-      }
-      // if (value == _episodes.length) {
-      if (value == _anime.animeEpisodeCnt) {
-        Log.info("设置的集数等于初始值${_anime.animeEpisodeCnt}，直接返回");
-        return;
-      }
-      int episodeCnt = value;
-      AnimeDao.updateEpisodeCntByAnimeId(_anime.animeId, episodeCnt)
-          .then((value) {
-        // 修改数据
-        _anime.animeEpisodeCnt = episodeCnt;
-        // 重绘
-        widget.animeController.updateAnimeInfo(); // 重绘信息行中显示的集数
-        widget.animeController.loadEpisode(); // 重绘集信息
-      });
-    });
   }
 
   void _dialogSelectTag() {

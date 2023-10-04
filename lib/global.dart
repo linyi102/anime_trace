@@ -134,6 +134,11 @@ class Global {
     return SystemChrome.setPreferredOrientations([]);
   }
 
+  /// 是否为横屏
+  static bool isLandscape(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+
   /// 是否为竖屏
   static bool isPortrait(BuildContext context) {
     return MediaQuery.of(context).orientation == Orientation.portrait;

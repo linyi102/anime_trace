@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/global.dart';
 
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:photo_view/photo_view.dart';
 
 class AnimeDetailPage extends StatefulWidget {
   final Anime anime;
@@ -86,30 +82,30 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       child: Scaffold(
         body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child: RefreshIndicator(
-              onRefresh: () async {
-                // 使用await后，只有当获取信息完成后，加载圈才会消失
-                await _climbAnimeInfo();
-              },
-              child: Stack(children: [
-                GetBuilder<AnimeController>(
-                  id: animeController.detailPageId,
-                  tag: tag,
-                  init: animeController,
-                  initState: (_) {},
-                  builder: (_) {
-                    Log.info("build ${animeController.detailPageId}");
+            child: Stack(children: [
+              GetBuilder<AnimeController>(
+                id: animeController.detailPageId,
+                tag: tag,
+                init: animeController,
+                initState: (_) {},
+                builder: (_) {
+                  Log.info("build ${animeController.detailPageId}");
 
-                    if (animeController.loadingAnime) {
-                      return Scaffold(
-                        appBar: AppBar(
-                            leading: IconButton(
-                                onPressed: _popPage,
-                                icon: const Icon(Icons.arrow_back))),
-                        body: const LoadingWidget(center: true),
-                      );
-                    }
-                    return CustomScrollView(
+                  if (animeController.loadingAnime) {
+                    return Scaffold(
+                      appBar: AppBar(
+                          leading: IconButton(
+                              onPressed: _popPage,
+                              icon: const Icon(Icons.arrow_back))),
+                      body: const LoadingWidget(center: true),
+                    );
+                  }
+                  if (Global.isLandscape(context)) {
+                    return _buildLandscapeView();
+                  }
+
+                  return _buildRefreshAnimeIndicator(
+                    child: CustomScrollView(
                       slivers: [
                         // 构建顶部栏
                         AnimeDetailAppBar(
@@ -122,13 +118,51 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                         // 构建主体(集信息页)
                         AnimeDetailEpisodeInfo(animeController: animeController)
                       ],
-                    );
-                  },
-                ),
-                Obx(() => _buildButtonsBarAboutEpisodeMulti())
-              ]),
-            )),
+                    ),
+                  );
+                },
+              ),
+              Obx(() => _buildButtonsBarAboutEpisodeMulti())
+            ])),
       ),
+    );
+  }
+
+  _buildRefreshAnimeIndicator({required Widget child}) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        // 使用await后，只有当获取信息完成后，加载圈才会消失
+        await animeController.climbAnimeInfo(context);
+      },
+      child: child,
+    );
+  }
+
+  Row _buildLandscapeView() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildRefreshAnimeIndicator(
+            child: CustomScrollView(
+              slivers: [
+                AnimeDetailAppBar(
+                  animeController: animeController,
+                  popPage: _popPage,
+                ),
+                AnimeDetailInfo(animeController: animeController),
+              ],
+            ),
+          ),
+        ),
+        if (_anime.isCollected())
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                AnimeDetailEpisodeInfo(animeController: animeController)
+              ],
+            ),
+          )
+      ],
     );
   }
 
@@ -193,111 +227,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         ),
       ),
     );
-  }
-
-  bool _climbing = false;
-
-  Future<bool> _climbAnimeInfo() async {
-    if (_anime.animeUrl.isEmpty) {
-      if (_anime.isCollected()) ToastUtil.showText("无法更新自定义动漫");
-      return false;
-    }
-    if (_climbing) {
-      if (_anime.isCollected()) ToastUtil.showText("正在获取信息");
-      return false;
-    }
-    // if (_anime.isCollected()) ToastUtil.showText("更新中");
-    _climbing = true;
-    // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
-    // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
-    Anime oldAnime = _anime.copyWith();
-    // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
-    Log.info("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
-    Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(_anime);
-    // 如果更新后动漫集数比原来的集数小，则不更新集数
-    // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
-    // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
-    // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
-    Log.info("_anime.animeEpisodeCnt = ${_anime.animeEpisodeCnt}");
-    if (newAnime.animeEpisodeCnt < _anime.animeEpisodeCnt) {
-      newAnime.animeEpisodeCnt = _anime.animeEpisodeCnt;
-    }
-    // 如果某些信息不为空，则不更新这些信息，避免覆盖用户修改的信息
-    // 不包括名称、播放状态、动漫链接、封面链接
-    if (oldAnime.nameAnother.isNotEmpty) {
-      newAnime.nameAnother = oldAnime.nameAnother;
-    }
-    if (oldAnime.area.isNotEmpty) {
-      newAnime.area = oldAnime.area;
-    }
-    if (oldAnime.category.isNotEmpty) {
-      newAnime.category = oldAnime.category;
-    }
-    if (oldAnime.premiereTime.isNotEmpty) {
-      newAnime.premiereTime = oldAnime.premiereTime;
-    }
-    if (oldAnime.animeDesc.isNotEmpty) {
-      newAnime.animeDesc = oldAnime.animeDesc;
-    }
-
-    if (_anime.isCollected()) {
-      // 如果收藏了，才去更新
-      bool updateCover = false;
-      // 提示是否更新封面
-      if (oldAnime.animeCoverUrl != newAnime.animeCoverUrl) {
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("发现新封面"),
-            content: const Text("检测到新封面，是否更新？"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  final imageProvider =
-                      Image.network(newAnime.animeCoverUrl).image;
-
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PhotoView(
-                          imageProvider: imageProvider,
-                          onTapDown: (_, __, ___) =>
-                              Navigator.of(context).pop())));
-                },
-                child: const Text("预览"),
-              ),
-              TextButton(
-                onPressed: () {
-                  updateCover = false;
-                  Navigator.pop(context);
-                },
-                child: const Text("跳过"),
-              ),
-              TextButton(
-                onPressed: () {
-                  updateCover = true;
-                  Navigator.pop(context);
-                },
-                child: const Text("更新"),
-              )
-            ],
-          ),
-        );
-      }
-
-      AnimeDao.updateAnime(oldAnime, newAnime, updateCover: updateCover)
-          .then((value) {
-        // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
-        if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
-          animeController.loadEpisode();
-          // animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
-          // 调用控制器，添加更新记录到数据库并更新内存数据
-          final UpdateRecordController updateRecordController = Get.find();
-          updateRecordController.updateSingleAnimeData(oldAnime, newAnime);
-        }
-      });
-    }
-    _climbing = false;
-    animeController.updateAnime(newAnime);
-    return true;
   }
 
   // _showReviewNumberIcon() {

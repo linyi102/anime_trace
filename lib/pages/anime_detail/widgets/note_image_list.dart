@@ -23,6 +23,7 @@ class _NoteImageHorizontalListViewState
   double get wholeHorizontalPadding => 10.0;
   double get imageWidth => 120;
   bool get enableControlDarkBg => false;
+  late double wholeWidth;
 
   @override
   void dispose() {
@@ -32,22 +33,29 @@ class _NoteImageHorizontalListViewState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: wholeHorizontalPadding),
-      height: 120,
-      child: Stack(
-        children: [
-          ListView.builder(
-              controller: noteImageScrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.note.relativeLocalImages.length,
-              itemBuilder: (context, imgIdx) {
-                // Log.info("横向图片imgIdx=$imgIdx");
-                return _buildImageItem(context, imgIdx);
-              }),
-          if (widget.note.relativeLocalImages.length > 2) _buildControlButton()
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        wholeWidth = constraints.maxWidth;
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: wholeHorizontalPadding),
+          height: 120,
+          child: Stack(
+            children: [
+              ListView.builder(
+                  controller: noteImageScrollController,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.note.relativeLocalImages.length,
+                  itemBuilder: (context, imgIdx) {
+                    // Log.info("横向图片imgIdx=$imgIdx");
+                    return _buildImageItem(context, imgIdx);
+                  }),
+              if (widget.note.relativeLocalImages.length > 2)
+                _buildControlButton()
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -125,8 +133,7 @@ class _NoteImageHorizontalListViewState
     var leftImageCount = noteImageScrollController.offset / realImageWidth;
     // 正在展示的图片数量
     var middleImageCount =
-        (MediaQuery.of(context).size.width - wholeHorizontalPadding * 2) /
-            realImageWidth;
+        (wholeWidth - wholeHorizontalPadding * 2) / realImageWidth;
     // 右侧未显示的图片数量
     var rightImageCount = allImageCount - leftImageCount - middleImageCount;
     // 每秒图片1张，注意如果剩余数量小于1，直接使用秒数转int可能会得到0，会导致抛出异常

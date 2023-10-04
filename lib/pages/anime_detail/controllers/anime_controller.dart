@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
+import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/label.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
+import 'package:photo_view/photo_view.dart';
 
 class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
@@ -224,7 +230,8 @@ class AnimeController extends GetxController {
     }
 
     loadEpisodeOk = true;
-    update([episodeId]);
+    // 收藏动漫后，需要显示集信息，因此还要更新detailPageId
+    update([episodeId, detailPageId]);
   }
 
   // 多选后，选择日期，并更新数据库
@@ -364,5 +371,147 @@ class AnimeController extends GetxController {
         return ac.compareTo(bc);
       }
     });
+  }
+
+  void showDialogmodifyEpisodeCnt(BuildContext context) {
+    if (!isCollected) return;
+
+    dialogSelectUint(context, "集数",
+            initialValue: anime.animeEpisodeCnt,
+            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
+            // initialValue: initialValue,
+            // 添加选择集范围后，就不能传入已有的集长度了。
+            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
+            minValue: 0,
+            maxValue: 2000)
+        .then((value) {
+      if (value == null) {
+        Log.info("未选择，直接返回");
+        return;
+      }
+      // if (value == _episodes.length) {
+      if (value == anime.animeEpisodeCnt) {
+        Log.info("设置的集数等于初始值${anime.animeEpisodeCnt}，直接返回");
+        return;
+      }
+      int episodeCnt = value;
+      AnimeDao.updateEpisodeCntByAnimeId(anime.animeId, episodeCnt)
+          .then((value) {
+        // 修改数据
+        anime.animeEpisodeCnt = episodeCnt;
+        // 重绘
+        updateAnimeInfo(); // 重绘信息行中显示的集数
+        loadEpisode(); // 重绘集信息
+      });
+    });
+  }
+
+  bool climbing = false;
+
+  Future<bool> climbAnimeInfo(BuildContext context) async {
+    if (anime.animeUrl.isEmpty) {
+      if (anime.isCollected()) ToastUtil.showText("无法更新自定义动漫");
+      return false;
+    }
+    if (climbing) {
+      if (anime.isCollected()) ToastUtil.showText("正在获取信息");
+      return false;
+    }
+    // if (_anime.isCollected()) ToastUtil.showText("更新中");
+    climbing = true;
+    update([episodeId]);
+
+    // oldAnime、newAnime、_anime引用的是同一个对象，修改后无法比较，因此需要先让oldAnime引用深拷贝的_anime
+    // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
+    Anime oldAnime = anime.copyWith();
+    // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
+    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
+    // 如果更新后动漫集数比原来的集数小，则不更新集数
+    // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
+    // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
+    // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
+    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    if (newAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
+      newAnime.animeEpisodeCnt = anime.animeEpisodeCnt;
+    }
+    // 如果某些信息不为空，则不更新这些信息，避免覆盖用户修改的信息
+    // 不包括名称、播放状态、动漫链接、封面链接
+    if (oldAnime.nameAnother.isNotEmpty) {
+      newAnime.nameAnother = oldAnime.nameAnother;
+    }
+    if (oldAnime.area.isNotEmpty) {
+      newAnime.area = oldAnime.area;
+    }
+    if (oldAnime.category.isNotEmpty) {
+      newAnime.category = oldAnime.category;
+    }
+    if (oldAnime.premiereTime.isNotEmpty) {
+      newAnime.premiereTime = oldAnime.premiereTime;
+    }
+    if (oldAnime.animeDesc.isNotEmpty) {
+      newAnime.animeDesc = oldAnime.animeDesc;
+    }
+
+    if (anime.isCollected()) {
+      // 如果收藏了，才去更新
+      bool updateCover = false;
+      // 提示是否更新封面
+      if (oldAnime.animeCoverUrl != newAnime.animeCoverUrl) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("发现新封面"),
+            content: const Text("检测到新封面，是否更新？"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  final imageProvider =
+                      Image.network(newAnime.animeCoverUrl).image;
+
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PhotoView(
+                          imageProvider: imageProvider,
+                          onTapDown: (_, __, ___) =>
+                              Navigator.of(context).pop())));
+                },
+                child: const Text("预览"),
+              ),
+              TextButton(
+                onPressed: () {
+                  updateCover = false;
+                  Navigator.pop(context);
+                },
+                child: const Text("跳过"),
+              ),
+              TextButton(
+                onPressed: () {
+                  updateCover = true;
+                  Navigator.pop(context);
+                },
+                child: const Text("更新"),
+              )
+            ],
+          ),
+        );
+      }
+
+      AnimeDao.updateAnime(oldAnime, newAnime, updateCover: updateCover)
+          .then((value) {
+        // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
+        if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
+          loadEpisode();
+          // animeController.updateAnimeEpisodeCnt(newAnime.animeEpisodeCnt);
+          // 调用控制器，添加更新记录到数据库并更新内存数据
+          final UpdateRecordController updateRecordController = Get.find();
+          updateRecordController.updateSingleAnimeData(oldAnime, newAnime);
+        }
+      });
+    }
+    climbing = false;
+    updateAnime(newAnime);
+    update([episodeId]);
+
+    return true;
   }
 }

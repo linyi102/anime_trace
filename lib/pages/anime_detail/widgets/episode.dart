@@ -66,6 +66,56 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             return SliverToBoxAdapter(child: Container());
           }
 
+          if (widget.animeController.isCollected &&
+              widget.animeController.anime.animeEpisodeCnt == 0) {
+            return SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.only(top: 40),
+                child: Column(
+                  children: [
+                    OutlinedButton(
+                        child: const Text('设置集数'),
+                        onPressed: () {
+                          widget.animeController
+                              .showDialogmodifyEpisodeCnt(context);
+                        }),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 1,
+                            width: 10,
+                            color: Theme.of(context).hintColor,
+                          ),
+                          Text(
+                            ' 或 ',
+                            style: TextStyle(
+                              color: Theme.of(context).hintColor,
+                            ),
+                          ),
+                          Container(
+                            height: 1,
+                            width: 10,
+                            color: Theme.of(context).hintColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                    OutlinedButton(
+                        child: const Text('更新'),
+                        onPressed: widget.animeController.climbing
+                            ? null
+                            : () {
+                                widget.animeController.climbAnimeInfo(context);
+                              }),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return SliverAnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: !widget.animeController.loadEpisodeOk
