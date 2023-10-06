@@ -131,16 +131,14 @@ class _TracePageState extends State<TracePage> {
           icon,
           const SizedBox(height: 5),
           Text(
-            subtitle,
-            style: const TextStyle(fontSize: 16, height: 1.2),
-          ),
-          const SizedBox(height: 2),
-          Text(
             title,
             style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
           ),
-          // const SizedBox(height: 5),
-          // icon,
+          const SizedBox(height: 5),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 16, height: 1.2),
+          ),
         ],
       ),
     );
