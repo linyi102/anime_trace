@@ -28,10 +28,10 @@ class ClimbCycdm extends Climb {
       return anime;
     }
 
-    anime.animeEpisodeCnt = document
-        .getElementsByClassName("anthology-list-box")[0]
-        .getElementsByTagName("li")
-        .length;
+    var episodeBox = document.getElementsByClassName("anthology-list-box");
+    if (episodeBox.isNotEmpty) {
+      anime.animeEpisodeCnt = episodeBox[0].getElementsByTagName("li").length;
+    }
 
     anime.animeCoverUrl = document
             .getElementsByClassName("detail-pic lazy mask-0")[0]
@@ -48,6 +48,7 @@ class ClimbCycdm extends Climb {
     anime.animeDesc = document
         .getElementsByClassName("check text selected cor3")[0]
         .innerHtml;
+    if (anime.animeDesc == '暂无简介') anime.animeDesc = '';
 
     var lis = document
         .getElementsByClassName("drawer-scroll-list")[0]
