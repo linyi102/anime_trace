@@ -29,6 +29,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   Anime get _anime => animeController.anime;
   String tag = DateTime.now().millisecondsSinceEpoch.toString();
+  bool get enableSplitScreenInLandscape => false;
 
   @override
   void initState() {
@@ -100,7 +101,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                       body: const LoadingWidget(center: true),
                     );
                   }
-                  if (Global.isLandscape(context)) {
+                  if (enableSplitScreenInLandscape &&
+                      Global.isLandscape(context)) {
                     return _buildLandscapeView();
                   }
 

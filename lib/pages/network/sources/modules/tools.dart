@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/website_logo.dart';
@@ -42,11 +43,21 @@ class ToolsPage extends StatelessWidget {
                   avatar: Icon(Icons.filter_alt), label: Text('动漫去重'))),
           GestureDetector(
               onTap: () => _toTracePage(context),
+              child:
+                  const Chip(avatar: Icon(Icons.timeline), label: Text('总览'))),
+          GestureDetector(
+              onTap: () => _toNoteImageWallPage(context),
               child: const Chip(
-                  avatar: Icon(Icons.timeline), label: Text('历史回顾'))),
+                  avatar: Icon(MingCuteIcons.mgc_film_line),
+                  label: Text('照片墙'))),
         ],
       ),
     );
+  }
+
+  void _toNoteImageWallPage(BuildContext context) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const NoteImageWallPage()));
   }
 
   _buildToolsListView() {

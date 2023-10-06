@@ -8,6 +8,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
+/// 总览
 class TracePage extends StatefulWidget {
   const TracePage({super.key});
 
@@ -41,7 +42,7 @@ class _TracePageState extends State<TracePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('历史回顾')),
+      appBar: AppBar(title: const Text('总览')),
       body: _buildBody(),
     );
   }
@@ -93,8 +94,8 @@ class _TracePageState extends State<TracePage> {
           _buildVerticalDivider(),
           _buildCountItem(
               title: '已观看',
-              subtitle: '$recordTotal集',
-              icon: Icon(MingCuteIcons.mgc_history_2_line, color: iconColor)),
+              subtitle: '$recordTotal 集',
+              icon: Icon(MingCuteIcons.mgc_history_line, color: iconColor)),
           _buildVerticalDivider(),
           _buildCountItem(
               title: '笔记数',
@@ -104,7 +105,7 @@ class _TracePageState extends State<TracePage> {
           _buildCountItem(
               title: '评价数',
               subtitle: '$rateTotal',
-              icon: Icon(MingCuteIcons.mgc_chat_2_line, color: iconColor)),
+              icon: Icon(MingCuteIcons.mgc_chat_4_line, color: iconColor)),
         ],
       ),
     );

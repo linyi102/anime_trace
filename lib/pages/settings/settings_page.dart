@@ -8,7 +8,6 @@ import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
-import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
@@ -223,24 +222,6 @@ class _SettingPageState extends State<SettingPage> {
               MaterialPageRoute(
                 builder: (context) {
                   return const SeriesManagePage();
-                },
-              ),
-            );
-          },
-        ),
-        ListTile(
-          iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(
-            // Icons.panorama_horizontal_rounded,
-            MingCuteIcons.mgc_film_line,
-            // Icons.movie_filter_outlined,
-          ),
-          title: const Text("照片墙"),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const NoteImageWallPage();
                 },
               ),
             );
