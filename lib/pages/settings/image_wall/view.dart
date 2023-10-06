@@ -276,7 +276,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
         },
         icon: Text(
           '${speed}x',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ));
   }
 

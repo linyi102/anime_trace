@@ -71,47 +71,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             return SliverToBoxAdapter(
               child: Container(
                 padding: const EdgeInsets.only(top: 40),
-                child: Column(
-                  children: [
-                    OutlinedButton(
-                        child: const Text('设置集数'),
-                        onPressed: () {
-                          widget.animeController
-                              .showDialogmodifyEpisodeCnt(context);
-                        }),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            height: 1,
-                            width: 10,
-                            color: Theme.of(context).hintColor,
-                          ),
-                          Text(
-                            ' 或 ',
-                            style: TextStyle(
-                              color: Theme.of(context).hintColor,
-                            ),
-                          ),
-                          Container(
-                            height: 1,
-                            width: 10,
-                            color: Theme.of(context).hintColor,
-                          ),
-                        ],
-                      ),
-                    ),
-                    OutlinedButton(
-                        child: const Text('更新'),
-                        onPressed: widget.animeController.climbing
-                            ? null
-                            : () {
-                                widget.animeController.climbAnimeInfo(context);
-                              }),
-                  ],
-                ),
+                // child: _buildEmptyEpisodeHintButton(),
+                child: _buildEmptyEpisodeHintText(),
               ),
             );
           }
@@ -147,6 +108,77 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyEpisodeHintText() {
+    return widget.animeController.climbing
+        ? const LoadingWidget(height: 40)
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('没有集数？尝试'),
+              // const Text('下拉刷新'),
+              GestureDetector(
+                  onTap: () => widget.animeController.climbAnimeInfo(context),
+                  child: Text(' 更新 ',
+                      style: TextStyle(color: Theme.of(context).primaryColor))),
+              const Text('或'),
+              GestureDetector(
+                  onTap: () => widget.animeController
+                      .showDialogmodifyEpisodeCnt(context),
+                  child: Text(
+                    ' 手动修改',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  )),
+            ],
+          );
+  }
+
+  Column _buildEmptyEpisodeHintButton() {
+    return Column(
+      children: [
+        OutlinedButton(
+            child: const Text('更新'),
+            onPressed: widget.animeController.climbing
+                ? null
+                : () {
+                    widget.animeController.climbAnimeInfo(context);
+                  }),
+        _buildOrDivider(),
+        OutlinedButton(
+            child: const Text('设置集数'),
+            onPressed: () {
+              widget.animeController.showDialogmodifyEpisodeCnt(context);
+            }),
+      ],
+    );
+  }
+
+  Container _buildOrDivider() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 1,
+            width: 10,
+            color: Theme.of(context).hintColor,
+          ),
+          Text(
+            ' 或 ',
+            style: TextStyle(
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+          Container(
+            height: 1,
+            width: 10,
+            color: Theme.of(context).hintColor,
+          ),
+        ],
       ),
     );
   }
