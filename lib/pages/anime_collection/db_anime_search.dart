@@ -52,10 +52,13 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   bool get selectAction => widget.onSelectOk != null;
   List<int> selectedAnimeIds = [];
 
+  late TextEditingController _inputController;
+
   @override
   void initState() {
     super.initState();
     Log.info("$runtimeType: initState");
+    _inputController = TextEditingController(text: widget.kw ?? '');
 
     // 动漫详细页点击某个标签后，会进入该搜索页，此时不需要显示顶部搜索框，还需要把传入的标签添加进来
     if (widget.incomingLabelId != null) {
@@ -83,6 +86,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+    _inputController.dispose();
   }
 
   @override
@@ -91,16 +95,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     bool showSearchBar = widget.incomingLabelId == null;
 
     Log.build(runtimeType);
-    var inputController = TextEditingController.fromValue(TextEditingValue(
-        // 设置内容
-        text: _lastInputText,
-        // 保持光标在最后
-        selection: TextSelection.fromPosition(TextPosition(
-            affinity: TextAffinity.downstream,
-            offset: _lastInputText.length))));
 
     return Scaffold(
-      appBar: showSearchBar ? _buildSearchBar(inputController) : AppBar(),
+      appBar: showSearchBar ? _buildSearchBar() : AppBar(),
       floatingActionButton: _buildFAB(),
       body: CommonScaffoldBody(
           child: CustomScrollView(
@@ -122,7 +119,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
               ),
             ),
           // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
-          if (searchOk && inputController.text.isNotEmpty && !selectAction)
+          if (searchOk && _inputController.text.isNotEmpty && !selectAction)
             SliverToBoxAdapter(
               child: _buildNetworkSearchHint(context),
             ),
@@ -181,14 +178,14 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     );
   }
 
-  _buildSearchBar(TextEditingController inputController) {
+  _buildSearchBar() {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
       useModernStyle: false,
       autofocus: autofocus,
-      inputController: inputController,
+      inputController: _inputController,
       onTapClear: () {
-        inputController.clear();
+        _inputController.clear();
         _lastInputText = "";
         // 清空搜索的动漫，并显示标签页
         _animes.clear();
@@ -196,7 +193,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         setState(() {});
       },
       onEditingComplete: () {
-        String text = inputController.text;
+        String text = _inputController.text;
         if (text.isEmpty) return;
 
         _searchDbAnimesByKeyword(text);
