@@ -7,12 +7,14 @@ class OperationButton extends StatelessWidget {
       this.active = true,
       this.horizontal = 30,
       this.height = 60,
+      this.fontSize,
       super.key});
   final void Function()? onTap;
   final String text;
   final bool active;
   final double horizontal;
   final double height;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -38,22 +40,23 @@ class OperationButton extends StatelessWidget {
         aspectRatio: 6,
         child: Container(
             margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 10),
-            decoration: BoxDecoration(
+            child: Material(
+              borderRadius: borderRadius,
               color: active
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).disabledColor,
-              borderRadius: borderRadius,
-            ),
-            child: InkWell(
-                borderRadius: borderRadius,
-                onTap: onTap,
-                child: Center(
-                    child: Text(text,
-                        style: TextStyle(
-                          color: active
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : null,
-                        ))))),
+              child: InkWell(
+                  borderRadius: borderRadius,
+                  onTap: onTap,
+                  child: Center(
+                      child: Text(text,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                            color: active
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : null,
+                          )))),
+            )),
       ),
     );
   }

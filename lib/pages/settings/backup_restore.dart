@@ -468,6 +468,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                     OperationButton(
                       horizontal: 0,
                       text: connecting ? '连接中' : '连接',
+                      fontSize: 14,
                       // 连接时不允许再次点击按钮
                       active: !connecting,
                       onTap: () {
@@ -500,17 +501,18 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
     String password = inputPasswordController.text;
     if (uri.isEmpty || user.isEmpty || password.isEmpty) {
       ToastUtil.showText("请将信息填入完整！");
-      return;
-    }
-    SPUtil.setString("webdav_uri", uri);
-    SPUtil.setString("webdav_user", user);
-    SPUtil.setString("webdav_password", password);
-    if (await WebDavUtil.initWebDav(uri, user, password)) {
-      ToastUtil.showText("连接成功");
-      Navigator.pop(context);
     } else {
-      ToastUtil.showText("无法连接，请确保输入正确和网络正常！");
+      SPUtil.setString("webdav_uri", uri);
+      SPUtil.setString("webdav_user", user);
+      SPUtil.setString("webdav_password", password);
+      if (await WebDavUtil.initWebDav(uri, user, password)) {
+        ToastUtil.showText("连接成功");
+        Navigator.pop(context);
+      } else {
+        ToastUtil.showText("无法连接，请确保输入正确和网络正常！");
+      }
     }
+
     connecting = false;
     // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
     setState(() {});
