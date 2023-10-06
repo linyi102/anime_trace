@@ -35,7 +35,9 @@ class _LabelManagePageState extends State<LabelManagePage> {
     // 把不能使用final的数据放在方法里，好处是可以使用const
     // 缺点是要想提取子组件时，需要传递很多参数
     LabelsController labelsController = Get.find();
-    if (labelsController.kw.isNotEmpty) _renewAllLabels(labelsController);
+    if (labelsController.kw.isNotEmpty) {
+      _enterSearchModeIfHasKeyword(labelsController);
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -141,15 +143,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
           widget.enableSelectLabelForAnime ? false : true,
       hintText: "搜索标签",
       onChanged: (kw) async {
-        Log.info("搜索标签关键字：$kw");
-        // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
-        DelayUtil.delaySearch(() async {
-          labelsController.labels.value = await LabelDao.searchLabel(kw);
-          labelsController.kw = kw; // 记录关键字
-        });
-      },
-      onEditingComplete: () {
-        labelsController.kw = inputKeywordController.text;
+        _search(labelsController, kw);
       },
       onTapClear: () async {
         inputKeywordController.clear();
@@ -165,6 +159,16 @@ class _LabelManagePageState extends State<LabelManagePage> {
         });
       },
     );
+  }
+
+  void _search(LabelsController labelsController, String kw) {
+    Log.info("搜索标签关键字：$kw");
+
+    // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
+    DelayUtil.delaySearch(() async {
+      labelsController.labels.value = await LabelDao.searchLabel(kw);
+      labelsController.kw = kw; // 记录关键字
+    });
   }
 
   _showOpMenuDialog(
@@ -392,12 +396,11 @@ class _LabelManagePageState extends State<LabelManagePage> {
     );
   }
 
-  void _renewAllLabels(LabelsController labelsController) async {
+  void _enterSearchModeIfHasKeyword(LabelsController labelsController) async {
     if (labelsController.kw.isNotEmpty) {
-      // 之前搜索了关键字后，退出了该页面，那么重新进入该页面时，需要重新获取所有标签
-      labelsController.inputKeywordController.clear();
-      labelsController.kw = "";
-      labelsController.getAllLabels();
+      setState(() {
+        searchAction = true;
+      });
     }
   }
 }
