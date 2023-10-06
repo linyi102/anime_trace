@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/utils/version_util.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -89,7 +90,7 @@ class AppUpgradeController extends GetxController {
       Log.info('最新版本：${latestRelease?.tagName}');
       // if (kDebugMode) latestRelease?.tagName = "v1.8.2";
 
-      if (_checkNewVersion(curVersion, latestVersion)) {
+      if (VersionUtil.greater(latestVersion, curVersion)) {
         // 检测到新版本
         if (autoCheck && SPUtil.getBool(ignoreVersionKey)) {
           // 自动检查时若忽略了该新版本，则不提示
@@ -120,38 +121,6 @@ class AppUpgradeController extends GetxController {
       ToastUtil.showText('检查更新失败！');
     }
     update();
-  }
-
-  bool _checkNewVersion(String curVersion, String newVersion) {
-    Log.info('当前版本：$curVersion，新版本：$newVersion');
-
-    var reg = RegExp('[0-9]+(\\.[0-9]+)+');
-    curVersion = reg.firstMatch(curVersion)?[0] ?? "";
-    newVersion = reg.firstMatch(newVersion)?[0] ?? "";
-    if (curVersion.isEmpty || newVersion.isEmpty) return false;
-    Log.info('正则匹配版本：当前版本=$curVersion, 新版本=$newVersion');
-
-    var list1 = curVersion.split(".");
-    var list2 = newVersion.split(".");
-    Log.info("小数点分割成数组：list1=$list1, list2=$list2");
-    int len1 = list1.length, len2 = list2.length;
-    if (len1 > len2) {
-      list2.addAll(List.generate(len1 - len2, (index) => '0'));
-    } else if (len1 < len2) {
-      list1.addAll(List.generate(len2 - len1, (index) => '0'));
-    }
-    Log.info("尾部填充0使之长度相同：list1=$list1, list2=$list2");
-
-    int len = list1.length;
-    for (int i = 0; i < len; ++i) {
-      int? n1 = int.tryParse(list1[i]), n2 = int.tryParse(list2[i]);
-      if (n1 != null && n2 != null && n2 > n1) {
-        Log.info('✅ 发现新版本：$newVersion($n2 > $n1)');
-        return true;
-      }
-    }
-    Log.info('❌ 不是新版本：$newVersion');
-    return false;
   }
 
   _showDialogUpgrade(bool autoCheck) {
