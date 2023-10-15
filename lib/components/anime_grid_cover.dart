@@ -8,6 +8,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 // 显示一个完整的动漫封面
 // 包括进度、第几次观看、名字
@@ -66,11 +67,12 @@ class AnimeGridCover extends StatelessWidget {
                     // _anime.animeEpisodeCnt > 0
                     // 不要在集数为0时隐藏，避免搜索时因集数为0，不显示进度导致认为没有收藏
                     _buildEpisodeState(context),
-                  if (showReviewNumber &&
-                      _anime.isCollected() &&
-                      _animeDisplayController.showReviewNumber.value &&
-                      _anime.reviewNumber > 1)
-                    _buildReviewNumber(context),
+                  _buildHasJoinedSeriesSymbol(context, _anime.hasJoinedSeries),
+                  // if (showReviewNumber &&
+                  //     _anime.isCollected() &&
+                  //     _animeDisplayController.showReviewNumber.value &&
+                  //     _anime.reviewNumber > 1)
+                  //   _buildReviewNumber(context),
                 ],
               ),
               if (_anime.isCollected() &&
@@ -160,6 +162,22 @@ class AnimeGridCover extends StatelessWidget {
                 fontSize: statusSize,
                 color: Theme.of(context).colorScheme.onPrimary),
           ),
+        ));
+  }
+
+  _buildHasJoinedSeriesSymbol(BuildContext context, bool hasJoinedSeries) {
+    if (!hasJoinedSeries) return const SizedBox();
+
+    return Positioned(
+        right: spacing,
+        top: spacing,
+        child: Container(
+          decoration:
+              const BoxDecoration(shape: BoxShape.circle, color: Colors.green),
+          height: 20,
+          width: 20,
+          child: const Icon(MingCuteIcons.mgc_book_3_line,
+              size: 14, color: Colors.white),
         ));
   }
 

@@ -97,7 +97,6 @@ class _NoteCardState extends State<NoteCard> {
           note.anime,
           showReviewNumber: true,
           reviewNumber: note.episode.reviewNumber,
-          circular: false,
         ),
       ),
       trailing: _buildMoreButton(note),

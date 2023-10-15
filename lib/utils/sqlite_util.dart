@@ -387,6 +387,8 @@ class SqliteUtil {
     int reviewNumber = list[0]['review_number'] as int;
     int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
         reviewNumber: reviewNumber);
+    bool hasJoinedSeries =
+        (await AnimeSeriesDao.getSeriesIdListByAnimeId(animeId)).isNotEmpty;
 
     Anime anime = Anime(
       animeId: animeId,
@@ -409,6 +411,7 @@ class SqliteUtil {
       category: list[0]['category'] as String? ?? "",
       animeUrl: list[0]['anime_url'] as String? ?? "",
       rate: list[0]['rate'] as int? ?? 0,
+      hasJoinedSeries: hasJoinedSeries,
     );
     anime = restoreEscapeAnime(anime);
     return anime;
@@ -583,21 +586,25 @@ class SqliteUtil {
       int reviewNumber = element['review_number'] as int;
       int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
           reviewNumber: reviewNumber);
+      bool hasJoinedSeries =
+          (await AnimeSeriesDao.getSeriesIdListByAnimeId(animeId)).isNotEmpty;
 
       res.add(Anime(
-          animeId: animeId,
-          // 进入详细页面后需要该id
-          animeName: element['anime_name'] as String,
-          animeEpisodeCnt: element['anime_episode_cnt'] as int,
-          // 详细地址和播放状态用于在收藏页更新全部动漫
-          animeUrl: element['anime_url'] as String? ?? "",
-          playStatus: element['play_status'] as String? ?? "",
-          animeCoverUrl: element['anime_cover_url'] as String? ?? "",
-          // 强制转换为String?，如果为null，则设置为空字符串
-          tagName: tagName,
-          // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
-          checkedEpisodeCnt: checkedEpisodeCnt,
-          reviewNumber: reviewNumber));
+        animeId: animeId,
+        // 进入详细页面后需要该id
+        animeName: element['anime_name'] as String,
+        animeEpisodeCnt: element['anime_episode_cnt'] as int,
+        // 详细地址和播放状态用于在收藏页更新全部动漫
+        animeUrl: element['anime_url'] as String? ?? "",
+        playStatus: element['play_status'] as String? ?? "",
+        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        // 强制转换为String?，如果为null，则设置为空字符串
+        tagName: tagName,
+        // 必要：用于和从详细页面返回的新标签比较，看是否需要移动位置
+        checkedEpisodeCnt: checkedEpisodeCnt,
+        reviewNumber: reviewNumber,
+        hasJoinedSeries: hasJoinedSeries,
+      ));
     }
     return res;
   }

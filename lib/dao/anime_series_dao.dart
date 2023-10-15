@@ -23,19 +23,35 @@ class AnimeSeriesDao {
     ''');
   }
 
-  // 查询某个动漫下的所有系列
-  static Future<List<Series>> getSeriesListByAnimeId(int animeId) async {
-    Log.info("sql:getSeriesByAnimeId(animeId=$animeId)");
+  // 查询某个动漫下的所有系列id
+  static Future<List<int>> getSeriesIdListByAnimeId(int animeId) async {
+    // Log.info("sql:getSeriesIdListByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有系列id
     List<Map<String, Object?>> maps = await db.query(table,
         columns: [columnSeriesId],
         where: "$columnAnimeId = ?",
         whereArgs: [animeId]);
     // 再根据系列id查询完整系列信息
-    List<Series> seriesList = [];
+    List<int> seriesIdList = [];
     for (var map in maps) {
       int seriesId = map[columnSeriesId] as int;
-      Series series = await SeriesDao.getSeriesById(seriesId);
+      seriesIdList.add(seriesId);
+    }
+
+    return seriesIdList;
+  }
+
+  // 查询某个动漫下的所有系列
+  static Future<List<Series>> getSeriesListByAnimeId(int animeId,
+      {bool needAnimes = true}) async {
+    Log.info("sql:getSeriesByAnimeId(animeId=$animeId)");
+    // 先获取该动漫的所有系列id
+    List<int> seriesIds = await getSeriesIdListByAnimeId(animeId);
+    // 再根据系列id查询完整系列信息
+    List<Series> seriesList = [];
+    for (var seriesId in seriesIds) {
+      Series series =
+          await SeriesDao.getSeriesById(seriesId, needAnimes: needAnimes);
       if (series.isValid) {
         seriesList.add(series);
       }

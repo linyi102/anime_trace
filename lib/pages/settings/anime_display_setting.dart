@@ -137,13 +137,13 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     ));
 
     // 其他公共选项
-    list.add(SwitchListTile(
-      title: const Text("显示第几次观看"),
-      value: animeDisplayController.showReviewNumber.value,
-      onChanged: (bool value) {
-        animeDisplayController.turnShowReviewNumber();
-      },
-    ));
+    // list.add(SwitchListTile(
+    //   title: const Text("显示第几次观看"),
+    //   value: animeDisplayController.showReviewNumber.value,
+    //   onChanged: (bool value) {
+    //     animeDisplayController.turnShowReviewNumber();
+    //   },
+    // ));
 
     list.add(SwitchListTile(
       title: const Text("显示清单数量"),

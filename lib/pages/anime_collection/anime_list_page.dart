@@ -541,7 +541,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     child: Opacity(
                   opacity: 1.0, // 候选：0.8
                   child: Text(
-                    animeCntPerTag[i].toString(),
+                    ' ${animeCntPerTag[i]}',
                     // textScaleFactor: AppTheme.tinyScaleFactor,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),

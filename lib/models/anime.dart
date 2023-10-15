@@ -26,8 +26,8 @@ class Anime {
   String officialSite;
 
   bool climbFinished;
-
   String? tempInfo; // 临时信息，例如查询豆瓣用户收藏
+  bool hasJoinedSeries;
 
   Anime({
     this.animeId = 0,
@@ -51,6 +51,7 @@ class Anime {
     this.rate = 0,
     this.climbFinished = false,
     this.tempInfo,
+    this.hasJoinedSeries = false,
   });
 
   @override

@@ -71,14 +71,16 @@ class SeriesDao {
   }
 
   // 根据id获取系列
-  static Future<Series> getSeriesById(int id) async {
+  static Future<Series> getSeriesById(int id, {bool needAnimes = true}) async {
     Log.info("sql:getSeriesById(id=$id)");
     List<Map<String, Object?>> maps =
         await db.query(table, where: "$columnId = ?", whereArgs: [id]);
 
     if (maps.isNotEmpty) {
       var series = Series.fromMap(maps[0]);
-      series.animes = await AnimeSeriesDao.getAnimesBySeriesIds([series.id]);
+      if (needAnimes) {
+        series.animes = await AnimeSeriesDao.getAnimesBySeriesIds([series.id]);
+      }
       return series;
     } else {
       return Series.noneLabel();
