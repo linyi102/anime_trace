@@ -39,7 +39,7 @@ class _SeriesManageLayoutStateSettingPage
                 logic.update();
               },
               title: Text("${SeriesStyle.useList ? '列表' : '网格'}样式"),
-              subtitle: const Text('切换列表/网格样式'),
+              subtitle: const Text('点击切换列表/网格样式'),
             ),
             if (SeriesStyle.useGrid)
               SwitchListTile(
