@@ -166,7 +166,10 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildHasJoinedSeriesSymbol(BuildContext context, bool hasJoinedSeries) {
-    if (!hasJoinedSeries) return const SizedBox();
+    if (!AnimeDisplayController.to.showSeriesFlagInGridStyle.value ||
+        !hasJoinedSeries) {
+      return const SizedBox();
+    }
 
     return Positioned(
         right: spacing,

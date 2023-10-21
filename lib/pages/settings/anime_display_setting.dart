@@ -122,6 +122,14 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       ));
 
       list.add(SwitchListTile(
+        title: const Text("右上角显示是否已加入系列"),
+        value: animeDisplayController.showSeriesFlagInGridStyle.value,
+        onChanged: (bool value) {
+          animeDisplayController.turnShowSeriesFlagInGridStyle();
+        },
+      ));
+
+      list.add(SwitchListTile(
         title: const Text("显示进度"),
         value: animeDisplayController.showGridAnimeProgress.value,
         onChanged: (bool value) {

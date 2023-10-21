@@ -13,12 +13,16 @@ class AnimeDisplayController extends GetxController {
   RxBool showGridAnimeName =
       SPUtil.getBool("showGridAnimeName", defaultValue: true)
           .obs; // 网格样式下显示动漫名(封面内或封面下)
-  RxBool showNameInCover = SPUtil.getBool("showNameInCover", defaultValue: true)
-      .obs; // 网格样式下动漫名字显示在封面内底部
+  RxBool showNameInCover =
+      SPUtil.getBool("showNameInCover", defaultValue: false)
+          .obs; // 网格样式下动漫名字显示在封面内底部
   RxInt nameMaxLines = SPUtil.getInt("coverNameMaxLines", defaultValue: 2).obs;
   RxBool showGridAnimeProgress =
       SPUtil.getBool("showGridAnimeProgress", defaultValue: true)
           .obs; // 网格样式下显示进度
+  RxBool showSeriesFlagInGridStyle =
+      SPUtil.getBool("showSeriesFlagInGridStyle", defaultValue: true)
+          .obs; // 网格样式下显示系列图标
   RxBool showReviewNumber =
       SPUtil.getBool("showReviewNumber", defaultValue: true).obs; // 显示第几次观看
   RxBool showAnimeCntAfterTag =
@@ -58,6 +62,12 @@ class AnimeDisplayController extends GetxController {
   turnShowGridAnimeName() {
     showGridAnimeName.value = !showGridAnimeName.value;
     SPUtil.setBool("showGridAnimeName", showGridAnimeName.value);
+  }
+
+  turnShowSeriesFlagInGridStyle() {
+    showSeriesFlagInGridStyle.value = !showSeriesFlagInGridStyle.value;
+    SPUtil.setBool(
+        "showSeriesFlagInGridStyle", showSeriesFlagInGridStyle.value);
   }
 
   turnShowGridAnimeProgress() {
