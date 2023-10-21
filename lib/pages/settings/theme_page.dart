@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:flutter_test_future/widgets/setting_card.dart';
 import 'package:get/get.dart';
 
 class ThemePage extends StatefulWidget {
@@ -30,37 +29,45 @@ class _ThemePageState extends State<ThemePage> {
       body: CommonScaffoldBody(
           child: ListView(
         children: [
-          ListTile(
-            title: const Text('调整选项卡'),
-            subtitle: const Text('启用或禁用选项卡'),
-            onTap: () {
-              _showDialogConfigureMainTab();
-            },
+          SettingCard(
+            title: '选项卡',
+            children: [
+              ListTile(
+                title: const Text('调整选项卡'),
+                subtitle: const Text('启用或禁用选项卡'),
+                onTap: () {
+                  _showDialogConfigureMainTab();
+                },
+              ),
+            ],
           ),
-          const CommonDivider(),
+          SettingCard(
+            title: '夜间模式',
+            children: [
+              for (int i = 0; i < AppTheme.darkModes.length; ++i)
+                RadioListTile(
+                  title: Text(AppTheme.darkModes[i]),
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  value: i,
+                  groupValue: themeModeIdx,
+                  onChanged: (value) {
+                    if (value == null) return;
 
-          const SettingTitle(title: '夜间模式'),
-          // _buildTileSelectDarkMode(context),
-          for (int i = 0; i < AppTheme.darkModes.length; ++i)
-            RadioListTile(
-              title: Text(AppTheme.darkModes[i]),
-              controlAffinity: ListTileControlAffinity.trailing,
-              value: i,
-              groupValue: themeModeIdx,
-              onChanged: (value) {
-                if (value == null) return;
+                    setState(() {
+                      themeModeIdx = value;
+                    });
 
-                setState(() {
-                  themeModeIdx = value;
-                });
-
-                ThemeController.to.setThemeMode(i);
-              },
-            ),
-          const CommonDivider(),
-          const SettingTitle(title: '夜间主题'),
-
-          Obx(() => _buildColorAtlasList()),
+                    ThemeController.to.setThemeMode(i);
+                  },
+                ),
+            ],
+          ),
+          SettingCard(
+            title: '夜间主题',
+            children: [
+              Obx(() => _buildColorAtlasList()),
+            ],
+          ),
         ],
       )),
     );

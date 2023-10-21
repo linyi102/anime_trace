@@ -5,11 +5,9 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:flutter_test_future/widgets/setting_card.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-
-import '../../widgets/common_divider.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);
@@ -55,75 +53,89 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
   ListView _buildBody(BuildContext context) {
     return ListView(
       children: [
-        const SettingTitle(title: '偏好'),
-        ListTile(
-          title: const Text("选择页面切换动画"),
-          onTap: () {
-            ThemeController themeController = Get.find();
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    children: PageSwitchAnimation.values
-                        .map((e) => ListTile(
-                              title: Text(e.title),
-                              trailing:
-                                  e == themeController.pageSwitchAnimation.value
-                                      ? const Icon(Icons.check)
-                                      : null,
-                              onTap: () {
-                                themeController.pageSwitchAnimation.value = e;
-                                SpProfile.savePageSwitchAnimationId(e.id);
-                                Navigator.pop(context);
-                              },
-                            ))
-                        .toList(),
-                  );
-                });
-          },
+        SettingCard(
+          title: '偏好',
+          children: [
+            ListTile(
+              title: const Text("选择页面切换动画"),
+              subtitle:
+                  Text(ThemeController.to.pageSwitchAnimation.value.title),
+              onTap: () {
+                _showDialogSelectPageSwitchAnimation(context);
+              },
+            ),
+            ListTile(
+              title: const Text('重置移动清单对话框提示'),
+              subtitle: const Text("完成最后一集时会提示移动清单"),
+              onTap: () {
+                SPUtil.remove("autoMoveToFinishedTag"); // 总是
+                SPUtil.remove("showModifyChecklistDialog"); // 不再提示
+                SPUtil.remove("selectedFinishedTag"); // 存放已完成动漫的清单
+                ToastUtil.showText("重置成功");
+              },
+            ),
+          ],
         ),
-        ListTile(
-          title: const Text("重置完成最后一集时提示移动清单的对话框"),
-          onTap: () {
-            SPUtil.remove("autoMoveToFinishedTag"); // 总是
-            SPUtil.remove("showModifyChecklistDialog"); // 不再提示
-            SPUtil.remove("selectedFinishedTag"); // 存放已完成动漫的清单
-            ToastUtil.showText("重置成功");
-          },
-        ),
-        const CommonDivider(),
-        const SettingTitle(title: '时间显示'),
-        SwitchListTile(
-          title: const Text("精确到时分"),
-          subtitle: Text(
-              TimeUtil.getHumanReadableDateTimeStr(beforeCurYearTimeExample)),
-          value: TimeUtil.showPreciseTime,
-          onChanged: (bool value) {
-            TimeUtil.turnShowPreciseTime();
-            setState(() {});
-          },
-        ),
-        SwitchListTile(
-          title: const Text("显示昨天/今天"),
-          subtitle:
-              Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
-          value: TimeUtil.showYesterdayAndToday,
-          onChanged: (bool value) {
-            TimeUtil.turnShowYesterdayAndToday();
-            setState(() {});
-          },
-        ),
-        SwitchListTile(
-          title: const Text("今年时间显示年份"),
-          subtitle:
-              Text(TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
-          value: TimeUtil.showCurYear,
-          onChanged: (bool value) {
-            TimeUtil.turnShowCurYear();
-            setState(() {});
-          },
+        SettingCard(
+          title: '时间显示',
+          children: [
+            SwitchListTile(
+              title: const Text("精确到时分"),
+              subtitle: Text(TimeUtil.getHumanReadableDateTimeStr(
+                  beforeCurYearTimeExample)),
+              value: TimeUtil.showPreciseTime,
+              onChanged: (bool value) {
+                TimeUtil.turnShowPreciseTime();
+                setState(() {});
+              },
+            ),
+            SwitchListTile(
+              title: const Text("显示昨天/今天"),
+              subtitle:
+                  Text(TimeUtil.getHumanReadableDateTimeStr(todayTimeExample)),
+              value: TimeUtil.showYesterdayAndToday,
+              onChanged: (bool value) {
+                TimeUtil.turnShowYesterdayAndToday();
+                setState(() {});
+              },
+            ),
+            SwitchListTile(
+              title: const Text("今年时间显示年份"),
+              subtitle: Text(
+                  TimeUtil.getHumanReadableDateTimeStr(curYearTimeExample)),
+              value: TimeUtil.showCurYear,
+              onChanged: (bool value) {
+                TimeUtil.turnShowCurYear();
+                setState(() {});
+              },
+            ),
+          ],
         ),
       ],
     );
+  }
+
+  Future<dynamic> _showDialogSelectPageSwitchAnimation(BuildContext context) {
+    ThemeController themeController = Get.find();
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            children: PageSwitchAnimation.values
+                .map((e) => ListTile(
+                      title: Text(e.title),
+                      trailing: e == themeController.pageSwitchAnimation.value
+                          ? const Icon(Icons.check)
+                          : null,
+                      onTap: () {
+                        themeController.pageSwitchAnimation.value = e;
+                        SpProfile.savePageSwitchAnimationId(e.id);
+                        Navigator.pop(context);
+                      },
+                    ))
+                .toList(),
+          );
+        });
   }
 }

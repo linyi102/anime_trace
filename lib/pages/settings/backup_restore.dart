@@ -79,7 +79,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
                 )
               : ListView(
                   children: [
-                    _buildClearAnimeDescTile(),
+                    // _buildClearAnimeDescTile(),
                     ListTile(
                       title: const Text("撤销还原"),
                       subtitle: const Text("点击查看还原前的记录"),
