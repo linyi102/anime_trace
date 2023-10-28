@@ -15,7 +15,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
-
+import 'package:media_kit/media_kit.dart';
 import 'values/values.dart';
 
 class Global {
@@ -39,6 +39,7 @@ class Global {
     }
     // 确保初始化，否则会提示Unhandled Exception: Null check operator used on a null value
     WidgetsFlutterBinding.ensureInitialized();
+    MediaKit.ensureInitialized();
     // 获取SharedPreferences
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化
@@ -142,6 +143,11 @@ class Global {
   /// 是否为竖屏
   static bool isPortrait(BuildContext context) {
     return MediaQuery.of(context).orientation == Orientation.portrait;
+  }
+
+  /// 获取AppBar高度
+  static getAppBarHeight(BuildContext context) {
+    return kToolbarHeight + MediaQuery.of(context).padding.top;
   }
 
   /// 恢复系统顶部栏和底部栏，用于退出全屏

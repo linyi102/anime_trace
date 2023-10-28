@@ -15,6 +15,9 @@ class AppTheme {
   static double get dialogRadius => 16.0;
   static double get textButtonRadius => 16.0;
 
+  /// 半透明背景
+  static final translucentBgColor = Colors.black.withOpacity(0.5);
+
   /// 当前是否是夜间模式
   static bool isDark = false;
 
