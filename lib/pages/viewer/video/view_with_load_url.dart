@@ -47,7 +47,12 @@ class _VideoPlayerWithLoadUrlPageState
         child: Scaffold(
             body: Stack(
           children: [
-            const StackAppBar(),
+            StackAppBar(
+              onTapLeading: () async {
+                await Global.restoreDevice();
+                Navigator.pop(context);
+              },
+            ),
             _buildBody(),
           ],
         )),

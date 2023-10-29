@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -107,23 +108,32 @@ class VideoPlayerLogic extends GetxController {
   }
 
   capture() async {
+    _handleError(String msg) {
+      ToastUtil.showText(msg);
+      capturing = false;
+      update();
+    }
+
     capturing = true;
     update();
 
-    var uint8list = await player.screenshot();
+    late Uint8List? uint8list;
+    // var uint8list = await player.screenshot();
+    try {
+      uint8list = await player.screenshot();
+    } catch (e) {
+      _handleError("截图出错：$e");
+      return;
+    }
 
     if (uint8list == null) {
-      ToastUtil.showText("截图失败");
-      capturing = false;
-      update();
+      _handleError("截图失败");
       return;
     }
 
     String? rootPath = (await getDownloadsDirectory())?.path;
     if (rootPath == null) {
-      ToastUtil.showText("无法获取到保存路径");
-      capturing = false;
-      update();
+      _handleError("无法获取到保存路径");
       return;
     }
 

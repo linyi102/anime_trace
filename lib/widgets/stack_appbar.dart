@@ -6,12 +6,14 @@ class StackAppBar extends StatelessWidget {
       this.title = '',
       this.titleSize = 20,
       this.foregroundColor = Colors.white,
+      this.onTapLeading,
       super.key});
 
   final Widget? leading;
   final String title;
   final double titleSize;
   final Color foregroundColor;
+  final void Function()? onTapLeading;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class StackAppBar extends StatelessWidget {
             const SizedBox(width: 5),
             leading ??
                 IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: onTapLeading ?? () => Navigator.pop(context),
                   icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
                   color: foregroundColor,
                 ),
