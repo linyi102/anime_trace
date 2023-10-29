@@ -48,6 +48,12 @@ class AnimeController extends GetxController {
   // 评价数量
   var rateNoteCount = 0;
 
+  // 是否支持播放
+  bool get supportPlayVideo =>
+      ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(anime.animeUrl)
+          ?.supportPlayVideo ??
+      false;
+
   /////////////////////////////// ids ///////////////////////////////
 
   static const String prefix = "getbuilder-anime-detail-page";

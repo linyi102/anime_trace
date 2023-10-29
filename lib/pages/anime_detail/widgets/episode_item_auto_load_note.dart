@@ -10,6 +10,8 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/note_image_list.dart';
 import 'package:flutter_test_future/pages/modules/note_edit.dart';
+import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -17,6 +19,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:get/get.dart';
 
 /// 集+自动获取笔记
 
@@ -185,16 +188,41 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       );
     }
 
-    return GestureDetector(
-      // 避免长按穿透到ListTile导致多选
-      onLongPress: () {},
-      child: IconButton(
-        splashRadius: 24,
-        icon: const Icon(Icons.more_horiz),
-        onPressed: () {
-          _showLongPressDialog();
-        },
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.animeController.supportPlayVideo)
+          GestureDetector(
+            onLongPress: () {},
+            child: IconButton(
+              splashRadius: 24,
+              icon: const Icon(Icons.play_circle_fill_rounded),
+              onPressed: () async {
+                Get.to(() => VideoPlayerWithLoadUrlPage(
+                      loadUrl: () async {
+                        String url = await ClimbAnimeUtil.getVideoUrl(
+                            widget.animeController.anime.animeUrl,
+                            widget.episode.number);
+                        return url;
+                      },
+                      title:
+                          '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
+                    ));
+              },
+            ),
+          ),
+        GestureDetector(
+          // 避免长按穿透到ListTile导致多选
+          onLongPress: () {},
+          child: IconButton(
+            splashRadius: 24,
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {
+              _showLongPressDialog();
+            },
+          ),
+        ),
+      ],
     );
   }
 

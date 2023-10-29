@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -109,5 +112,74 @@ class ClimbCycdm extends Climb {
   Future<List<Anime>> climbDirectory(
       AnimeFilter filter, PageParams pageParams) async {
     return [];
+  }
+
+  /// 动漫链接：https://www.cycdm01.top/bangumi/3390.html
+  /// 第4集：https://www.cycdm01.top/watch/3390/1/4.html
+  @override
+  Future<String> getVideoUrl(String animeUrl, int episodeNumber) async {
+    String animeUrlWithoutHtml = animeUrl;
+    // 提取出动漫id
+    if (animeUrlWithoutHtml.endsWith('.html')) {
+      animeUrlWithoutHtml =
+          animeUrl.substring(0, animeUrl.length - '.html'.length);
+    }
+    // 播放路线
+    int? urlId = int.tryParse(animeUrlWithoutHtml
+        .substring(animeUrlWithoutHtml.lastIndexOf('/') + 1));
+    if (urlId == null) return '';
+
+    int playRoute = 1;
+    // 拼接该集的地址
+    String episodeUrl = '$baseUrl/watch/$urlId/$playRoute/$episodeNumber.html';
+
+    // 访问后获取到播放链接
+    var document = await dioGetAndParse(episodeUrl);
+    if (document == null) return '';
+
+    String html = document.getElementsByClassName('player-box').first.innerHtml;
+    String? urlLine = RegExp(r'"url":".*","url_next"').firstMatch(html)?[0];
+    if (urlLine == null) return '';
+
+    String base64DecodedPlayUrl = urlLine.substring(
+        '"url":"'.length, urlLine.length - '","url_next"'.length);
+    if (base64DecodedPlayUrl.isEmpty) return '';
+
+    String playUrl = Uri.decodeFull(
+        String.fromCharCodes(base64Decode(base64DecodedPlayUrl)));
+
+    // 访问https://player.cycdm01.top/?url=xxx解析必要参数
+    document = await dioGetAndParse(
+        '${baseUrl.replaceFirst('www', 'player')}/?url=$playUrl');
+    if (document == null) return '';
+
+    html = document.getElementsByTagName('body')[0].innerHtml;
+
+    var configMatch = RegExp(r'var config = (\{[^}]*\})').firstMatch(html);
+    if (configMatch == null) return '';
+
+    // 获取匹配的config字符串
+    var configString = configMatch.group(0)?.replaceFirst('var config = ', '');
+    if (configString == null) return '';
+    // 去除每行左右两边的空格，拼接成一行
+    configString = configString.split('\n').map((e) => e.trim()).join();
+    // 移除json中最后一个key-value尾部的逗号
+    if (configString.endsWith(",}")) {
+      configString = '${configString.substring(0, configString.length - 2)}}';
+    }
+
+    // 将config字符串解析为Map
+    var configMap = jsonDecode(configString);
+    var result = await DioUtil.post(
+        '${baseUrl.replaceFirst('www', 'player')}/api_config.php',
+        data: {
+          'url': configMap['url'],
+          'time': configMap['time'],
+          'key': configMap['key'],
+        });
+    if (!result.isSuccess) return '';
+
+    String playUrlWithVerify = result.data.data['url'];
+    return playUrlWithVerify;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/widgets/stack_appbar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path/path.dart' as p;
@@ -34,47 +35,23 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            Video(controller: controller),
-            _buildAppBar(context),
-          ],
-        ));
+    return Theme(
+      data: ThemeData.dark(useMaterial3: true).copyWith(
+        scaffoldBackgroundColor: Colors.black,
+      ),
+      child: Scaffold(
+          body: Stack(
+        children: [
+          Video(controller: controller),
+          _buildAppBar(context),
+        ],
+      )),
+    );
   }
 
   _buildAppBar(BuildContext context) {
-    return Positioned(
-      top: 15,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Row(
-          children: [
-            const SizedBox(width: 5),
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.arrow_back_ios_new_outlined),
-              color: Colors.white,
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    overflow: TextOverflow.ellipsis),
-              ),
-            ),
-            // IconButton(
-            //     onPressed: () {},
-            //     icon: const Icon(Icons.more_vert, color: Colors.white))
-          ],
-        ),
-      ),
+    return StackAppBar(
+      title: title,
     );
   }
 }

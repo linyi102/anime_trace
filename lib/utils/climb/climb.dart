@@ -58,6 +58,11 @@ class Climb {
     throw '未实现';
   }
 
+  //////////////////// 获取视频链接 ////////////////////
+  Future<String> getVideoUrl(String animeUrl, int episodeNumber) async {
+    throw '未实现';
+  }
+
   //////////////////// 统一解析 ////////////////////
   Future<Document?> dioGetAndParse(String url,
       {bool isMobile = false, String? foreignSourceName}) async {

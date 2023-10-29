@@ -15,6 +15,7 @@ class ClimbWebsite {
   Climb climb; // 爬取工具
   bool discard; // 放弃使用
   bool supportImport; // 支持导入
+  bool supportPlayVideo;
 
   ClimbWebsite({
     required this.name,
@@ -29,6 +30,7 @@ class ClimbWebsite {
     this.desc = "",
     this.discard = false,
     this.supportImport = false,
+    this.supportPlayVideo = false,
   });
 
   @override

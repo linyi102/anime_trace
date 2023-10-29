@@ -27,6 +27,17 @@ class ClimbAnimeUtil {
     return null;
   }
 
+  // 获取视频链接
+  static Future<String> getVideoUrl(String animeUrl, int episodeNumber) async {
+    var climbWebsite = getClimbWebsiteByAnimeUrl(animeUrl);
+    if (climbWebsite == null) {
+      ToastUtil.showText('未知网站，无法获取播放链接');
+      return '';
+    }
+
+    return climbWebsite.climb.getVideoUrl(animeUrl, episodeNumber);
+  }
+
   // 查询周表中某天的更新记录
   static Future<List<WeekRecord>> climbWeekRecords(
       ClimbWebsite climbWebsite, int weekday) async {

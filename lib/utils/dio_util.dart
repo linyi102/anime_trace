@@ -52,6 +52,21 @@ class DioUtil {
     }
   }
 
+  static Future<Result> post<T>(String path,
+      {Map<String, dynamic> data = const {}}) async {
+    try {
+      Response response = await dio.post(
+        path,
+        data: FormData.fromMap(data),
+      );
+
+      return Result.success(response);
+    } catch (e) {
+      String msg = ErrorFormatUtil.formatError(e);
+      return Result.failure(-1, msg);
+    }
+  }
+
   static const bool _enablePing = false;
 
   // 查询链接状态

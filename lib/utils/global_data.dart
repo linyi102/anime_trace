@@ -47,6 +47,7 @@ List<ClimbWebsite> climbWebsites = [
       enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
       pingStatus: PingStatus(),
       climb: ClimbCycdm(),
+      supportPlayVideo: true,
       desc: "高质量在线追番平台！"),
   ClimbWebsite(
     name: "豆瓣",
