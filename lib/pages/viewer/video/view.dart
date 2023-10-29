@@ -28,8 +28,17 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       : widget.title;
 
   @override
+  void initState() {
+    Global.toLandscape();
+    Global.hideSystemUIOverlays();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     Get.delete<VideoPlayerLogic>();
+    Global.toPortrait();
+    Global.restoreSystemUIOverlays();
     super.dispose();
   }
 
@@ -42,9 +51,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             // 桌面端单击播放/暂停
             if (PlatformUtil.isDesktop) logic.player.playOrPause();
           },
-          onDoubleTap: () {
+          onDoubleTapDown: (details) {
             // 移动端双击播放/暂停
+            // 不能放在onDoubleTapDown，可能是会和自带的快进和后退10s冲突(即使关闭了也不行)
             if (PlatformUtil.isMobile) logic.player.playOrPause();
+          },
+          onDoubleTap: () {
             // 桌面端双击进入/退出全屏
             if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
           },
@@ -89,15 +101,26 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return MultiPlatform(
       mobile: MaterialVideoControlsTheme(
         normal: MaterialVideoControlsThemeData(
-          topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
-          topButtonBar: _buildTopBar(context),
-          volumeGesture: true,
-        ),
-        fullscreen: MaterialVideoControlsThemeData(
-          topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
-          topButtonBar: _buildTopBar(context),
-          volumeGesture: true,
-        ),
+            topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
+            topButtonBar: _buildTopBar(context),
+            volumeGesture: true,
+            brightnessGesture: true,
+            // 取消自带的中心播放按钮
+            primaryButtonBar: [],
+            // 取消双击两侧后退或前进10s
+            seekOnDoubleTap: false,
+            // 底部进度条移动到底部栏上方
+            seekBarMargin: const EdgeInsets.fromLTRB(16, 0, 16, 60),
+            controlsTransitionDuration: const Duration(milliseconds: 100),
+            bottomButtonBar: [
+              const MaterialSkipPreviousButton(),
+              const MaterialPlayOrPauseButton(),
+              const MaterialSkipNextButton(),
+              const MaterialPositionIndicator(),
+              const Spacer(),
+              _buildScreenShotBottomButton(),
+            ]),
+        fullscreen: const MaterialVideoControlsThemeData(),
         child: _buildVideoView(),
       ),
       desktop: MaterialDesktopVideoControlsTheme(
@@ -176,7 +199,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
-    var width = MediaQuery.of(context).size.width / 4;
+    var width = MediaQuery.of(context).size.width / 3;
 
     if (logic.capturing) {
       return Container(
