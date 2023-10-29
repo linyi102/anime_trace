@@ -54,7 +54,9 @@ class _TestPageState extends State<TestPage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const VideoPlayerPage()));
+                    builder: (context) => const VideoPlayerPage(
+                          url: 'http://vjs.zencdn.net/v/oceans.mp4',
+                        )));
           },
         ),
         const SizedBox(height: 10),
