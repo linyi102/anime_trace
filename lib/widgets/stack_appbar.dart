@@ -16,7 +16,7 @@ class StackAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 10,
+      top: 8,
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Row(

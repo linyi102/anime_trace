@@ -31,8 +31,7 @@ class _VideoPlayerWithLoadUrlPageState
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData.dark(useMaterial3: true)
-          .copyWith(scaffoldBackgroundColor: Colors.black),
+      data: Theme.of(context).copyWith(scaffoldBackgroundColor: Colors.black),
       child: Scaffold(
           body: Stack(
         children: [
@@ -47,7 +46,7 @@ class _VideoPlayerWithLoadUrlPageState
     if (loading) {
       return const Align(
         alignment: Alignment.center,
-        child: LoadingWidget(text: '正在解析视频链接…'),
+        child: LoadingWidget(text: '正在解析视频链接…', textColor: Colors.white),
       );
     }
 
@@ -57,7 +56,7 @@ class _VideoPlayerWithLoadUrlPageState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(error),
+            Text(error, style: const TextStyle(color: Colors.white)),
           ],
         ),
       );

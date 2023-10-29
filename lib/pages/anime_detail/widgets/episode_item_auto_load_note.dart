@@ -196,7 +196,12 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             onLongPress: () {},
             child: IconButton(
               splashRadius: 24,
-              icon: const Icon(Icons.play_circle_fill_rounded),
+              icon: Icon(
+                // Icons.Color.fromARGB(255, 69, 69, 69)eo_rounded,
+                Icons.play_circle_fill_rounded,
+                // color: Colors.redAccent,
+                color: Get.isDarkMode ? null : Colors.red.shade400,
+              ),
               onPressed: () async {
                 Get.to(() => VideoPlayerWithLoadUrlPage(
                       loadUrl: () async {

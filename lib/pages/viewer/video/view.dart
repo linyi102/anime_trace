@@ -37,40 +37,32 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: logic,
-      builder: (_) => Theme(
-        data: Theme.of(context).copyWith(
-          scaffoldBackgroundColor: Colors.black,
-          iconTheme: const IconThemeData(color: Colors.white),
-          // progressIndicatorTheme:
-          //     ProgressIndicatorThemeData(color: Theme.of(context).primaryColor),
-        ),
-        child: GestureDetector(
-            onTap: () {
-              // 桌面端单击播放/暂停
-              if (PlatformUtil.isDesktop) logic.player.playOrPause();
-            },
-            onDoubleTap: () {
-              // 移动端双击播放/暂停
-              if (PlatformUtil.isMobile) logic.player.playOrPause();
-              // 桌面端双击进入/退出全屏
-              if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
-            },
-            onLongPressStart: (details) => logic.longPressToSpeedUp(),
-            onLongPressUp: () => logic.cancelSpeedUp(),
-            onHorizontalDragStart: (details) => logic.player.pause(),
-            onHorizontalDragUpdate: (details) =>
-                logic.calculateWillSeekPosition(details.delta.dx),
-            onHorizontalDragEnd: (details) => logic.seekDragEndPosition(),
-            child: Stack(
-              children: [
-                _buildMultiPlatformVideoView(context),
-                _buildFastForwarding(),
-                _buildDragSeekPosition(),
-                // _buildScreenShotFloatButton(),
-                _buildScreenShotPreview(),
-              ],
-            )),
-      ),
+      builder: (_) => GestureDetector(
+          onTap: () {
+            // 桌面端单击播放/暂停
+            if (PlatformUtil.isDesktop) logic.player.playOrPause();
+          },
+          onDoubleTap: () {
+            // 移动端双击播放/暂停
+            if (PlatformUtil.isMobile) logic.player.playOrPause();
+            // 桌面端双击进入/退出全屏
+            if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
+          },
+          onLongPressStart: (details) => logic.longPressToSpeedUp(),
+          onLongPressUp: () => logic.cancelSpeedUp(),
+          onHorizontalDragStart: (details) => logic.player.pause(),
+          onHorizontalDragUpdate: (details) =>
+              logic.calculateWillSeekPosition(details.delta.dx),
+          onHorizontalDragEnd: (details) => logic.seekDragEndPosition(),
+          child: Stack(
+            children: [
+              _buildMultiPlatformVideoView(context),
+              _buildFastForwarding(),
+              _buildDragSeekPosition(),
+              // _buildScreenShotFloatButton(),
+              _buildScreenShotPreview(),
+            ],
+          )),
     );
   }
 
@@ -97,10 +89,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return MultiPlatform(
       mobile: MaterialVideoControlsTheme(
         normal: MaterialVideoControlsThemeData(
+          topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
           topButtonBar: _buildTopBar(context),
           volumeGesture: true,
         ),
         fullscreen: MaterialVideoControlsThemeData(
+          topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
           topButtonBar: _buildTopBar(context),
           volumeGesture: true,
         ),
@@ -108,6 +102,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       ),
       desktop: MaterialDesktopVideoControlsTheme(
         normal: MaterialDesktopVideoControlsThemeData(
+            topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
             toggleFullscreenOnDoublePress: false,
             topButtonBar: _buildTopBar(context),
             bottomButtonBar: [
@@ -248,12 +243,13 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   _buildFullscreenButton() {
     return IconButton(
         onPressed: logic.windowEnterOrExitFullscreen,
-        icon: const Icon(MingCuteIcons.mgc_fullscreen_line));
+        icon:
+            const Icon(MingCuteIcons.mgc_fullscreen_line, color: Colors.white));
   }
 
   _buildScreenShotBottomButton() {
     return IconButton(
-      icon: const Icon(MingCuteIcons.mgc_camera_2_line),
+      icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
       onPressed: () => logic.capture(),
     );
   }
