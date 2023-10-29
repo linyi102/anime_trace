@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
 import 'package:flutter_test_future/utils/platform.dart';
@@ -37,7 +38,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return GetBuilder(
       init: logic,
       builder: (_) => Theme(
-        data: ThemeData.dark().copyWith(
+        data: Theme.of(context).copyWith(
           scaffoldBackgroundColor: Colors.black,
           iconTheme: const IconThemeData(color: Colors.white),
           // progressIndicatorTheme:
@@ -65,7 +66,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
                 _buildMultiPlatformVideoView(context),
                 _buildFastForwarding(),
                 _buildDragSeekPosition(),
-                _buildScreenShotButton(),
+                // _buildScreenShotFloatButton(),
                 _buildScreenShotPreview(),
               ],
             )),
@@ -116,9 +117,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
               const MaterialDesktopVolumeButton(),
               const MaterialDesktopPositionIndicator(),
               const Spacer(),
-              IconButton(
-                  onPressed: logic.windowEnterOrExitFullscreen,
-                  icon: const Icon(Icons.fullscreen))
+              _buildScreenShotBottomButton(),
+              _buildFullscreenButton()
             ]),
         // 自带的双击和右下角的全屏按钮，进入全屏是通过push一个新页面实现的，会导致手势失效和无法看到Stack上的组件，因此使用windowManager对当前页面进行全屏
         fullscreen: const MaterialDesktopVideoControlsThemeData(),
@@ -180,49 +180,85 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   _buildVideoView() => Video(controller: logic.videoController);
 
   _buildScreenShotPreview() {
+    var radius = BorderRadius.circular(6);
+    var width = MediaQuery.of(context).size.width / 4;
+
+    if (logic.capturing) {
+      return Container(
+        alignment: Alignment.topRight,
+        padding: EdgeInsets.fromLTRB(0, Global.getAppBarHeight(context), 20, 0),
+        child: Container(
+          height: width *
+              ((logic.player.state.height ?? 9) /
+                  (logic.player.state.width ?? 16)),
+          width: width,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4),
+            borderRadius: radius,
+          ),
+          child: const LoadingWidget(center: true),
+        ),
+      );
+    }
+
     if (logic.screenShotFile == null) {
       return const SizedBox();
     }
 
-    return Align(
+    return Container(
       alignment: Alignment.topRight,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0, Global.getAppBarHeight(context), 20, 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 4,
-                child: SizedBox(
-                  width: 100,
-                  // 使用文件显示截图时，加载时没有高度，因此取消按钮会在上方，加载完毕后下移
-                  child: Image.file(logic.screenShotFile!),
-                ),
+      padding: EdgeInsets.fromLTRB(0, Global.getAppBarHeight(context), 20, 0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+            borderRadius: radius,
+            child: InkWell(
+              onTap: () {
+                // TODO 移动端打开图片，桌面端打开浏览器定位图片
+              },
+              child: SizedBox(
+                width: width,
+                // 使用文件显示截图时，加载时没有高度，因此取消按钮会在上方，加载完毕后下移
+                child: Image.file(logic.screenShotFile!),
               ),
             ),
-            const SizedBox(height: 5),
-            InkWell(
+          ),
+          const SizedBox(height: 5),
+          Material(
+            borderRadius: radius,
+            color: Colors.white,
+            child: InkWell(
               onTap: logic.deleteScreenShotFile,
-              child: Card(
-                color: Colors.white,
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    width: 100,
-                    child: const Center(
-                        child:
-                            Text("删除", style: TextStyle(color: Colors.black)))),
-              ),
+              borderRadius: radius,
+              child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(borderRadius: radius),
+                  width: width,
+                  child: const Center(
+                      child:
+                          Text("删除", style: TextStyle(color: Colors.black)))),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  _buildScreenShotButton() {
+  _buildFullscreenButton() {
+    return IconButton(
+        onPressed: logic.windowEnterOrExitFullscreen,
+        icon: const Icon(MingCuteIcons.mgc_fullscreen_line));
+  }
+
+  _buildScreenShotBottomButton() {
+    return IconButton(
+      icon: const Icon(MingCuteIcons.mgc_camera_2_line),
+      onPressed: () => logic.capture(),
+    );
+  }
+
+  _buildScreenShotFloatButton() {
     return Align(
       alignment: Alignment.centerRight,
       child: FloatButton(

@@ -28,6 +28,7 @@ class VideoPlayerLogic extends GetxController {
 
   /// 截图
   File? screenShotFile; // 截图文件
+  bool capturing = false;
 
   @override
   void onInit() {
@@ -106,16 +107,23 @@ class VideoPlayerLogic extends GetxController {
   }
 
   capture() async {
+    capturing = true;
+    update();
+
     var uint8list = await player.screenshot();
 
     if (uint8list == null) {
       ToastUtil.showText("截图失败");
+      capturing = false;
+      update();
       return;
     }
 
     String? rootPath = (await getDownloadsDirectory())?.path;
     if (rootPath == null) {
       ToastUtil.showText("无法获取到保存路径");
+      capturing = false;
+      update();
       return;
     }
 
@@ -126,6 +134,7 @@ class VideoPlayerLogic extends GetxController {
     await file.writeAsBytes(uint8list);
 
     screenShotFile = file;
+    capturing = false;
     // 重绘，显示截图
     update();
 
@@ -139,7 +148,9 @@ class VideoPlayerLogic extends GetxController {
   }
 
   deleteScreenShotFile() {
-    screenShotFile?.delete();
+    screenShotFile?.delete().then((value) {
+      ToastUtil.showText('已删除');
+    });
     screenShotFile = null;
     update();
   }
