@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/float_button.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
@@ -47,11 +46,13 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         child: GestureDetector(
             onTap: () {
               // 桌面端单击播放/暂停
-              if (Platform.isWindows) logic.player.playOrPause();
+              if (PlatformUtil.isDesktop) logic.player.playOrPause();
             },
             onDoubleTap: () {
               // 移动端双击播放/暂停
-              if (!Platform.isAndroid) logic.player.playOrPause();
+              if (PlatformUtil.isMobile) logic.player.playOrPause();
+              // 桌面端双击进入/退出全屏
+              if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
             },
             onLongPressStart: (details) => logic.longPressToSpeedUp(),
             onLongPressUp: () => logic.cancelSpeedUp(),
