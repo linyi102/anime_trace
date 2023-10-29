@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
+import 'package:flutter_test_future/widgets/float_button.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:path/path.dart' as p;
 
 class VideoPlayerPage extends StatefulWidget {
@@ -40,6 +45,14 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
           //     ProgressIndicatorThemeData(color: Theme.of(context).primaryColor),
         ),
         child: GestureDetector(
+            onTap: () {
+              // 桌面端单击播放/暂停
+              if (Platform.isWindows) logic.player.playOrPause();
+            },
+            onDoubleTap: () {
+              // 移动端双击播放/暂停
+              if (!Platform.isAndroid) logic.player.playOrPause();
+            },
             onLongPressStart: (details) => logic.longPressToSpeedUp(),
             onLongPressUp: () => logic.cancelSpeedUp(),
             onHorizontalDragStart: (details) => logic.player.pause(),
@@ -51,6 +64,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
                 _buildMultiPlatformVideoView(context),
                 _buildFastForwarding(),
                 _buildDragSeekPosition(),
+                _buildScreenShotButton(),
+                _buildScreenShotPreview(),
               ],
             )),
       ),
@@ -91,11 +106,21 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       ),
       desktop: MaterialDesktopVideoControlsTheme(
         normal: MaterialDesktopVideoControlsThemeData(
-          topButtonBar: _buildTopBar(context),
-        ),
-        fullscreen: MaterialDesktopVideoControlsThemeData(
-          topButtonBar: _buildTopBar(context),
-        ),
+            toggleFullscreenOnDoublePress: false,
+            topButtonBar: _buildTopBar(context),
+            bottomButtonBar: [
+              const MaterialDesktopSkipPreviousButton(),
+              const MaterialDesktopPlayOrPauseButton(),
+              const MaterialDesktopSkipNextButton(),
+              const MaterialDesktopVolumeButton(),
+              const MaterialDesktopPositionIndicator(),
+              const Spacer(),
+              IconButton(
+                  onPressed: logic.windowEnterOrExitFullscreen,
+                  icon: const Icon(Icons.fullscreen))
+            ]),
+        // 自带的双击和右下角的全屏按钮，进入全屏是通过push一个新页面实现的，会导致手势失效和无法看到Stack上的组件，因此使用windowManager对当前页面进行全屏
+        fullscreen: const MaterialDesktopVideoControlsThemeData(),
         child: _buildVideoView(),
       ),
     );
@@ -110,12 +135,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         margin: const EdgeInsets.only(top: 80),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withOpacity(0.4),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Text(
-          '3 倍速播放中…',
-          style: TextStyle(color: Colors.white),
+        child: Text(
+          '${logic.fastForwardRate.toInt()} 倍速播放中…',
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -138,7 +163,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               color: Colors.white,
               shadows: _shadows,
             ),
@@ -151,5 +176,58 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   List<Shadow> get _shadows =>
       [const Shadow(blurRadius: 3, color: Colors.black)];
 
-  Video _buildVideoView() => Video(controller: logic.videoController);
+  _buildVideoView() => Video(controller: logic.videoController);
+
+  _buildScreenShotPreview() {
+    if (logic.screenShotFile == null) {
+      return const SizedBox();
+    }
+
+    return Align(
+      alignment: Alignment.topRight,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(0, Global.getAppBarHeight(context), 20, 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 4,
+                child: SizedBox(
+                  width: 100,
+                  // 使用文件显示截图时，加载时没有高度，因此取消按钮会在上方，加载完毕后下移
+                  child: Image.file(logic.screenShotFile!),
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
+            InkWell(
+              onTap: logic.deleteScreenShotFile,
+              child: Card(
+                color: Colors.white,
+                child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    width: 100,
+                    child: const Center(
+                        child:
+                            Text("删除", style: TextStyle(color: Colors.black)))),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildScreenShotButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: FloatButton(
+        icon: MingCuteIcons.mgc_camera_2_line,
+        onTap: () => logic.capture(),
+      ),
+    );
+  }
 }
