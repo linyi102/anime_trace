@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/stack_appbar.dart';
 
 class VideoPlayerWithLoadUrlPage extends StatefulWidget {
@@ -26,19 +28,30 @@ class _VideoPlayerWithLoadUrlPageState
     super.initState();
 
     _loadUrl();
+
+    if (PlatformUtil.isMobile) {
+      Global.toLandscape();
+      Global.hideSystemUIOverlays();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(scaffoldBackgroundColor: Colors.black),
-      child: Scaffold(
-          body: Stack(
-        children: [
-          const StackAppBar(),
-          _buildBody(),
-        ],
-      )),
+    return WillPopScope(
+      onWillPop: () async {
+        await Global.restoreDevice();
+        return true;
+      },
+      child: Theme(
+        data: Theme.of(context).copyWith(scaffoldBackgroundColor: Colors.black),
+        child: Scaffold(
+            body: Stack(
+          children: [
+            const StackAppBar(),
+            _buildBody(),
+          ],
+        )),
+      ),
     );
   }
 

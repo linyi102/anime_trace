@@ -28,17 +28,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       : widget.title;
 
   @override
-  void initState() {
-    Global.toLandscape();
-    Global.hideSystemUIOverlays();
-    super.initState();
-  }
-
-  @override
   void dispose() {
     Get.delete<VideoPlayerLogic>();
-    Global.toPortrait();
-    Global.restoreSystemUIOverlays();
     super.dispose();
   }
 
@@ -170,7 +161,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       Row(
         children: [
           IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              await Global.restoreDevice();
+              Navigator.pop(context);
+            },
             icon: Icon(
               Icons.arrow_back_ios_rounded,
               size: 20,
@@ -199,7 +193,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
-    var width = MediaQuery.of(context).size.width / 3;
+    var width = MediaQuery.of(context).size.width / 4;
 
     if (logic.capturing) {
       return Container(

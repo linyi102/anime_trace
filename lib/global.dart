@@ -9,6 +9,7 @@ import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -128,6 +129,14 @@ class Global {
   static Future<void> toPortrait() {
     return SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp]);
+  }
+
+  /// 恢复设备方向和系统任务栏
+  static Future<void> restoreDevice() async {
+    if (PlatformUtil.isMobile) {
+      await Global.autoRotate();
+      await Global.restoreSystemUIOverlays();
+    }
   }
 
   /// 恢复为手机旋转时自动切换横竖屏。避免退出视频页后无法切换为横屏
