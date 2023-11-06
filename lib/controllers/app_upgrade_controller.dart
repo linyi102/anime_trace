@@ -219,7 +219,7 @@ class AppUpgradeController extends GetxController {
             },
           ),
           ListTile(
-            title: const Text('前往gitee手动下载'),
+            title: const Text('前往 Gitee 手动下载'),
             onTap: () {
               close();
               LaunchUrlUtil.launch(
