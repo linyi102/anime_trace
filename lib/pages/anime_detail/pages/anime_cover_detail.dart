@@ -156,7 +156,7 @@ class AnimeCoverDetail extends StatelessWidget {
         headers: coverUrl.contains("douban")
             ? Global.getHeadersToGetDoubanPic()
             : null,
-        errorListener: () {
+        errorListener: (_) {
           Log.error("缓存网络图片错误：$coverUrl");
         },
       );
