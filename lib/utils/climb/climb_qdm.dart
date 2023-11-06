@@ -5,14 +5,17 @@ import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class ClimbQdm extends Climb {
+class ClimbQdm with Climb {
   // 单例
   static final ClimbQdm _instance = ClimbQdm._();
   factory ClimbQdm() => _instance;
   ClimbQdm._();
 
   @override
-  String get baseUrl => "https://www.qdm66.com";
+  String get idName => "qdm";
+
+  @override
+  String get defaultBaseUrl => "https://www.qdm66.com";
 
   @override
   String get sourceName => "趣动漫";

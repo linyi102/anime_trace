@@ -8,11 +8,14 @@ import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:html/dom.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class ClimbDouban extends Climb {
+class ClimbDouban with Climb {
   // 单例
   static final ClimbDouban _instance = ClimbDouban._();
   factory ClimbDouban() => _instance;
   ClimbDouban._();
+
+  @override
+  String get idName => "douban";
 
   @override
   String get baseUrl => "https://www.douban.com";

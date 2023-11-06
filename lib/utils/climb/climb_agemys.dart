@@ -8,18 +8,17 @@ import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class ClimbAgemys extends Climb {
+class ClimbAgemys with Climb {
   // 单例
   static final ClimbAgemys _instance = ClimbAgemys._();
   factory ClimbAgemys() => _instance;
   ClimbAgemys._();
 
   @override
-  String get baseUrl =>
-      // "https://www.agemys.cc";
-      // "https://www.agemys.net"; // 2022.10.27
-      // "https://www.agemys.vip"; // 2023.04.19
-      "https://age.tv"; // 2023.07.02
+  String get idName => "age";
+
+  @override
+  String get defaultBaseUrl => "https://www.agedm.org";
 
   @override
   String get sourceName => "AGE动漫";

@@ -6,15 +6,18 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
 // 次元城动漫
-class ClimbCycdm extends Climb {
+class ClimbCycdm with Climb {
   // 单例
   static final ClimbCycdm _instance = ClimbCycdm._();
   factory ClimbCycdm() => _instance;
   ClimbCycdm._();
 
   @override
-  // String baseUrl = "https://www.cycacg.com";
-  String get baseUrl => "https://www.cycdm01.top"; // 2022.10.27
+  String get idName => "cycdm";
+
+  @override
+  String get defaultBaseUrl => "https://www.cycdm01.top";
+
   @override
   String get sourceName => "次元城动漫";
 
