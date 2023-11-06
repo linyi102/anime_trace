@@ -147,10 +147,10 @@ class _SourceDetailState extends State<SourceDetail> {
               showEditBaseUrlDialog(context);
             },
             trailing: TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
-                  climbWebstie.climb.removeCustomBaseUrl();
-                  setState(() {});
+                  await climbWebstie.climb.removeCustomBaseUrl();
+                  if (mounted) setState(() {});
                 },
                 child: const Text('重置')),
           )

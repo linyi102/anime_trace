@@ -31,8 +31,8 @@ mixin Climb {
     SPUtil.setString(customBaseUrlKey, url);
   }
 
-  removeCustomBaseUrl() {
-    SPUtil.remove(customBaseUrlKey);
+  removeCustomBaseUrl() async {
+    await SPUtil.remove(customBaseUrlKey);
   }
 
   String get baseUrl => customBaseUrl.isEmpty ? defaultBaseUrl : customBaseUrl;
