@@ -5,14 +5,17 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class ClimbOmofun extends Climb {
+class ClimbOmofun with Climb {
   // 单例
   static final ClimbOmofun _instance = ClimbOmofun._();
   factory ClimbOmofun() => _instance;
   ClimbOmofun._();
 
   @override
-  String get baseUrl => "https://omofun.tv";
+  String get idName => "omofun";
+
+  @override
+  String get defaultBaseUrl => "https://omofun.tv";
 
   @override
   String get sourceName => "OmoFun";

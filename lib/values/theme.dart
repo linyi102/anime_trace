@@ -13,7 +13,7 @@ class AppTheme {
   static double get chipRadius => 40.0;
   static double get timePickerDialogRadius => 16.0;
   static double get dialogRadius => 16.0;
-  static double get textButtonRadius => 16.0;
+  static double get textButtonRadius => 99.0;
 
   /// 半透明背景
   static final translucentBgColor = Colors.black.withOpacity(0.5);

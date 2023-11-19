@@ -5,14 +5,17 @@ import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 
-class ClimbQuqi extends Climb {
+class ClimbQuqi with Climb {
   // 单例
   static final ClimbQuqi _instance = ClimbQuqi._();
   factory ClimbQuqi() => _instance;
   ClimbQuqi._();
 
   @override
-  String get baseUrl => "https://www.quqim.net";
+  String get idName => "quqi";
+
+  @override
+  String get defaultBaseUrl => "https://www.quqim.net";
 
   @override
   String get sourceName => "曲奇动漫";

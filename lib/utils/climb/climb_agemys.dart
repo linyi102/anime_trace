@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter_test_future/models/age_record.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
@@ -8,18 +7,17 @@ import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class ClimbAgemys extends Climb {
+class ClimbAgemys with Climb {
   // 单例
   static final ClimbAgemys _instance = ClimbAgemys._();
   factory ClimbAgemys() => _instance;
   ClimbAgemys._();
 
   @override
-  String get baseUrl =>
-      // "https://www.agemys.cc";
-      // "https://www.agemys.net"; // 2022.10.27
-      // "https://www.agemys.vip"; // 2023.04.19
-      "https://age.tv"; // 2023.07.02
+  String get idName => "age";
+
+  @override
+  String get defaultBaseUrl => "https://www.agedm.org";
 
   @override
   String get sourceName => "AGE动漫";
@@ -133,27 +131,17 @@ class ClimbAgemys extends Climb {
     }
 
     List<WeekRecord> records = [];
-    String script = document
-        .getElementById("new_anime_page")!
-        .nextElementSibling!
-        .innerHtml;
+    if (weekday == 7) weekday = 0;
+    final weekPane = document.getElementById("week-$weekday-pane");
+    if (weekPane == null) return [];
 
-    // \[.*\]
-    RegExp regExp = RegExp("\\[.*\\]");
-    String jsonStr = regExp.stringMatch(script).toString();
-    List<AgeRecord> ageRecords = ageRecordFromJson(jsonStr);
-    for (var ageRecord in ageRecords) {
-      // 跳过不是该天的
-      if (ageRecord.wd != weekday) continue;
-
-      Anime anime = Anime(animeName: "");
-      anime.animeName = ageRecord.name;
-      anime.animeUrl = "$baseUrl/detail/${ageRecord.id}";
-
-      String info = ageRecord.namefornew;
-      if (ageRecord.isnew) {
-        info += " new!";
-      }
+    final lis = weekPane.getElementsByTagName('li');
+    for (var li in lis) {
+      final info = li.getElementsByClassName('title_sub').first.innerHtml;
+      final anime = Anime(animeName: "");
+      anime.animeName = li.getElementsByTagName('a').first.innerHtml;
+      anime.animeUrl =
+          li.getElementsByTagName('a').first.attributes['href'] ?? '';
 
       WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
       records.add(weekRecord);

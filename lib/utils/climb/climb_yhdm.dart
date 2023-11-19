@@ -6,14 +6,17 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
-class ClimbYhdm extends Climb {
+class ClimbYhdm with Climb {
   // 单例，作用是曲奇动漫使用ClimbYhdm().方法时，不会再次创建ClimbYhdm对象
   static final ClimbYhdm _instance = ClimbYhdm._();
   factory ClimbYhdm() => _instance;
   ClimbYhdm._();
 
   @override
-  String get baseUrl => "https://www.yhdmz.org";
+  String get idName => "yhdm";
+
+  @override
+  String get defaultBaseUrl => "https://www.yhdmre.com";
 
   @override
   String get sourceName => "樱花动漫";

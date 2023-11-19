@@ -8,13 +8,36 @@ import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class Climb {
-  /// 直接使用Climb.baseUrl，不用在意具体子类
-  String baseUrl = "";
+mixin Climb {
+  late String idName;
+
+  late String customBaseUrlKey = "${idName}CustomBaseUrl";
+
+  String get customBaseUrl =>
+      SPUtil.getString(customBaseUrlKey, defaultValue: "");
+
+  set customBaseUrl(String url) {
+    if (!url.startsWith("https://") && !url.startsWith("http://")) {
+      url = 'https://$url';
+    }
+    if (url.endsWith("/") && url.length > 1) {
+      url = url.substring(0, url.length - 1);
+    }
+    SPUtil.setString(customBaseUrlKey, url);
+  }
+
+  removeCustomBaseUrl() async {
+    await SPUtil.remove(customBaseUrlKey);
+  }
+
+  String get baseUrl => customBaseUrl.isEmpty ? defaultBaseUrl : customBaseUrl;
+
+  String defaultBaseUrl = "";
 
   String sourceName = "";
 

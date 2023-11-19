@@ -213,7 +213,7 @@ class UpdateRecordPage extends StatelessWidget {
             ),
             CommonOutlinedButton(
               text: '更新',
-              onTap: updateRecordController.updating.value
+              onPressed: updateRecordController.updating.value
                   ? null
                   : () => ClimbAnimeUtil.updateAllAnimesInfo(),
             ),

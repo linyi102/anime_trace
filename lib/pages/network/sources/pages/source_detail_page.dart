@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -6,10 +5,13 @@ import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
+import 'package:flutter_test_future/utils/common_util.dart';
+import 'package:flutter_test_future/utils/form_validator.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_text_field.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'anime_list_in_source.dart';
@@ -44,7 +46,23 @@ class _SourceDetailState extends State<SourceDetail> {
           const SizedBox(height: 10),
           WebSiteLogo(url: climbWebstie.iconUrl, size: 100, addShadow: false),
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            margin: const EdgeInsets.only(top: 5),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: () {
+                _showUrlMenuDialog(context);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6.0),
+                child: Text(
+                  climbWebstie.climb.baseUrl,
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: ExpandText(climbWebstie.desc,
                 maxLines: 2, textAlign: TextAlign.center),
           ),
@@ -66,17 +84,6 @@ class _SourceDetailState extends State<SourceDetail> {
               setState(() {});
               // 保存
               SPUtil.setBool(climbWebstie.spkey, climbWebstie.enable);
-            },
-          ),
-          ListTile(
-            title: const Text("访问网站"),
-            leading: Icon(
-              EvaIcons.externalLink,
-              color: Theme.of(context).primaryColor,
-            ),
-            onTap: () {
-              LaunchUrlUtil.launch(
-                  context: context, uriStr: climbWebstie.climb.baseUrl);
             },
           ),
           ListTile(
@@ -108,6 +115,93 @@ class _SourceDetailState extends State<SourceDetail> {
         ],
       ),
     );
+  }
+
+  Future<dynamic> _showUrlMenuDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.open_in_new_rounded),
+            title: const Text('访问网站'),
+            onTap: () {
+              Navigator.pop(context);
+              LaunchUrlUtil.launch(
+                  context: context, uriStr: climbWebstie.climb.baseUrl);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.copy_rounded),
+            title: const Text('复制链接'),
+            onTap: () {
+              Navigator.pop(context);
+              CommonUtil.copyContent(climbWebstie.climb.baseUrl);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit_rounded),
+            title: const Text('自定义'),
+            onTap: () {
+              Navigator.pop(context);
+              showEditBaseUrlDialog(context);
+            },
+            trailing: TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await climbWebstie.climb.removeCustomBaseUrl();
+                  if (mounted) setState(() {});
+                },
+                child: const Text('重置')),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<dynamic> showEditBaseUrlDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final urlTEC = TextEditingController(text: climbWebstie.climb.baseUrl);
+    const title = '自定义链接';
+    const labelText = '链接';
+
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text(title),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      CommonTextFormField(
+                        controller: urlTEC,
+                        autofocus: true,
+                        labelText: labelText,
+                        validator: FormValidator.checkIsUrl,
+                        maxLength: 99,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('取消')),
+                TextButton(
+                    onPressed: () {
+                      if (FormValidator.isInvalid(formKey)) {
+                        return;
+                      }
+
+                      Navigator.pop(context);
+                      climbWebstie.climb.customBaseUrl = urlTEC.text;
+                      setState(() {});
+                    },
+                    child: const Text('确定')),
+              ],
+            ));
   }
 
   _buildImportDataTile(BuildContext context) {

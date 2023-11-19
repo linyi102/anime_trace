@@ -6,14 +6,17 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:html/dom.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class ClimbBangumi extends Climb {
+class ClimbBangumi with Climb {
   // 单例
   static final ClimbBangumi _instance = ClimbBangumi._();
   factory ClimbBangumi() => _instance;
   ClimbBangumi._();
 
   @override
-  String get baseUrl => "https://bangumi.tv";
+  String get idName => "bangumi";
+
+  @override
+  String get defaultBaseUrl => "https://bangumi.tv";
 
   @override
   String get sourceName => "Bangumi";

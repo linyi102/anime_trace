@@ -6,14 +6,18 @@ import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import '../../models/params/page_params.dart';
 
 // 艾米动漫
-class ClimbAimi extends Climb {
+class ClimbAimi with Climb {
   // 单例
   static final ClimbAimi _instance = ClimbAimi._();
   factory ClimbAimi() => _instance;
   ClimbAimi._();
 
   @override
-  String get baseUrl => "https://www.aimidm.com";
+  String get idName => "aimi";
+
+  @override
+  String get defaultBaseUrl => "https://www.aimidm.com";
+
   @override
   String get sourceName => "艾米动漫";
 

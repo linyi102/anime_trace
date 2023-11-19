@@ -1,14 +1,3 @@
-// To parse this JSON data, do
-//
-//     final appRelease = appReleaseFromJson(jsonString);
-
-import 'dart:convert';
-
-AppRelease appReleaseFromJson(String str) =>
-    AppRelease.fromJson(json.decode(str));
-
-String appReleaseToJson(AppRelease data) => json.encode(data.toJson());
-
 class AppRelease {
   int id;
   String nodeId;
@@ -17,6 +6,7 @@ class AppRelease {
   String name;
   List<Asset> assets;
   String body;
+  String htmlUrl;
 
   AppRelease({
     required this.id,
@@ -26,6 +16,7 @@ class AppRelease {
     required this.name,
     required this.assets,
     required this.body,
+    required this.htmlUrl,
   });
 
   factory AppRelease.fromJson(Map<String, dynamic> json) => AppRelease(
@@ -36,17 +27,8 @@ class AppRelease {
         name: json["name"],
         assets: List<Asset>.from(json["assets"].map((x) => Asset.fromJson(x))),
         body: json["body"],
+        htmlUrl: json["html_url"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "node_id": nodeId,
-        "tag_name": tagName,
-        "target_commitish": targetCommitish,
-        "name": name,
-        "assets": List<dynamic>.from(assets.map((x) => x.toJson())),
-        "body": body,
-      };
 }
 
 class Asset {

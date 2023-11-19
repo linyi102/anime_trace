@@ -8,11 +8,14 @@ import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:html/dom.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class ClimbDouban extends Climb {
+class ClimbDouban with Climb {
   // 单例
   static final ClimbDouban _instance = ClimbDouban._();
   factory ClimbDouban() => _instance;
   ClimbDouban._();
+
+  @override
+  String get idName => "douban";
 
   @override
   String get baseUrl => "https://www.douban.com";
@@ -105,11 +108,11 @@ class ClimbDouban extends Climb {
       return [];
     }
 
-    // 只获取第一个<div class="result-list">，也就是相关豆瓣内容，后面两个都是相关豆瓣用户和相关日记
+    // 只获取第一个<div class="result-list">，也就是相关书影音，后面两个都是相关豆瓣用户和相关日记
     var h2Elements = document.getElementsByTagName("h2");
     bool existResult = false;
     for (var h2Element in h2Elements) {
-      if (h2Element.innerHtml.contains("相关豆瓣内容")) {
+      if (h2Element.innerHtml.contains("相关书影音")) {
         existResult = true;
       }
     }
