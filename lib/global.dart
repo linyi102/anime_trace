@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
@@ -15,8 +16,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:video_player_win/video_player_win.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:media_kit/media_kit.dart';
 import 'values/values.dart';
 
 class Global {
@@ -40,7 +41,7 @@ class Global {
     }
     // 确保初始化，否则会提示Unhandled Exception: Null check operator used on a null value
     WidgetsFlutterBinding.ensureInitialized();
-    MediaKit.ensureInitialized();
+    if (!kIsWeb && Platform.isWindows) WindowsVideoPlayer.registerWith();
     // 获取SharedPreferences
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化

@@ -80,7 +80,7 @@ class _VideoPlayerWithLoadUrlPageState
       );
     }
 
-    return VideoPlayerPage(url: url, title: widget.title);
+    return VideoPlayerPage(path: url, title: widget.title);
   }
 
   void _loadUrl() async {

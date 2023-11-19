@@ -55,7 +55,8 @@ class _TestPageState extends State<TestPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const VideoPlayerPage(
-                          url: 'http://vjs.zencdn.net/v/oceans.mp4',
+                          path: 'http://vjs.zencdn.net/v/oceans.mp4',
+                          // path: 'C:\\Users\\11580\\Desktop\\202311191250.mp4',
                         )));
           },
         ),

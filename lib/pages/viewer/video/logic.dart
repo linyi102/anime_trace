@@ -2,21 +2,32 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter_test_future/utils/regexp.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_player/video_player.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
 class VideoPlayerLogic extends GetxController {
-  late final player = Player();
-  late final videoController = VideoController(player);
-  String url;
+  late final VideoPlayerController videoController;
+  final String path;
 
-  VideoPlayerLogic({required this.url});
+  VideoPlayerLogic({required this.path});
+
+  List<void Function()> videoListeners = []; // 监听
+
+  /// 属性
+  int totalMs = 0; // 总时长
+  int _curMs = 0; // 当前播放进度
+  int curBufferedMs = 0; // 当前缓冲进度
+  int preLatestMs = 0; // 记录上次监听到的最新进度
+  bool buffering = false; // 为true时表示正在缓冲视频，此时在中心显示加载圈
+
+  int get curMs => _curMs > totalMs ? 0 : _curMs;
 
   /// 长按倍速播放
   double get fastForwardRate => 3;
@@ -33,26 +44,65 @@ class VideoPlayerLogic extends GetxController {
 
   @override
   void onInit() {
+    videoListeners.add(_positionListener);
+    videoListeners.add(_bufferProgressListener);
+    videoListeners.add(_bufferingListener);
+
     super.onInit();
-    player.open(Media(url));
+    if (RegexpUtil.isUrl(path)) {
+      videoController = VideoPlayerController.networkUrl(Uri.parse(path));
+    } else {
+      videoController = VideoPlayerController.file(File(path));
+    }
+
+    videoController.initialize().then((_) {
+      update();
+      videoController.play();
+
+      totalMs = videoController.value.duration.inMilliseconds;
+      for (var element in videoListeners) {
+        videoController.addListener(element);
+      }
+      WakelockPlus.enable();
+    });
   }
 
   @override
   void onClose() {
-    player.dispose();
+    videoController.dispose();
+    WakelockPlus.disable();
     super.onClose();
   }
 
-  longPressToSpeedUp() {
-    if (!player.state.playing) return;
+  play() {
+    videoController.play();
+    update();
+  }
 
-    player.setRate(fastForwardRate);
+  pause() {
+    videoController.pause();
+    update();
+  }
+
+  playOrPause() {
+    if (videoController.value.isPlaying) {
+      videoController.pause();
+    } else {
+      videoController.play();
+    }
+    update();
+  }
+
+  longPressToSpeedUp() {
+    if (!videoController.value.isPlaying) return;
+
+    videoController.setPlaybackSpeed(fastForwardRate);
     fastForwarding = true;
     update();
   }
 
   cancelSpeedUp() {
-    player.setRate(1);
+    videoController.setPlaybackSpeed(1);
     fastForwarding = false;
     update();
   }
@@ -62,15 +112,15 @@ class VideoPlayerLogic extends GetxController {
     // 根据最终位移，计算出快进/后退的秒数
     int secondsGap = totalDx.abs() ~/ 5;
     // 获取当前视频播放的进度秒数
-    int curSeconds = player.state.position.inSeconds;
+    int curSeconds = videoController.value.position.inSeconds;
     // 要跳转的进度秒数
     destSeconds = curSeconds;
 
     if (totalDx > 0) {
       destSeconds += secondsGap;
       // 如果快进到最大秒数，则修正为最大秒数
-      if (destSeconds > player.state.duration.inSeconds) {
-        destSeconds = player.state.duration.inSeconds;
+      if (destSeconds > videoController.value.duration.inSeconds) {
+        destSeconds = videoController.value.duration.inSeconds;
       }
 
       willSeekPosition =
@@ -88,8 +138,8 @@ class VideoPlayerLogic extends GetxController {
 
   seekDragEndPosition() async {
     // 寻找并播放
-    await player.seek(Duration(seconds: destSeconds));
-    player.play();
+    await videoController.seekTo(Duration(seconds: destSeconds));
+    videoController.play();
     // 重置
     totalDx = 0;
     destSeconds = 0;
@@ -118,9 +168,9 @@ class VideoPlayerLogic extends GetxController {
     update();
 
     late Uint8List? uint8list;
-    // var uint8list = await player.screenshot();
     try {
-      uint8list = await player.screenshot();
+      // uint8list = await videoController.screenshot();
+      uint8list = null;
     } catch (e) {
       _handleError("截图出错：$e");
       return;
@@ -163,5 +213,50 @@ class VideoPlayerLogic extends GetxController {
     });
     screenShotFile = null;
     update();
+  }
+
+  /// 监听是否在缓冲
+  _bufferingListener() {
+    bool latestBuffering = videoController.value.isBuffering;
+    if (buffering != latestBuffering) {
+      buffering = latestBuffering;
+      update();
+    }
+  }
+
+  /// 监听缓冲进度(暂停时也要更新缓冲进度)
+  _bufferProgressListener() {
+    // TODO 会提示No Element
+    // int latestBufferedMs =
+    //     videoController.value.buffered.last.end.inMilliseconds;
+
+    // if (latestBufferedMs < totalMs &&
+    //     (latestBufferedMs - curBufferedMs).abs() < 1000) return;
+
+    // curBufferedMs = latestBufferedMs;
+    // update();
+  }
+
+  /// 监听播放进度
+  _positionListener() {
+    // 获取最新播放进度
+    int latestMs = videoController.value.position.inMilliseconds;
+
+    // 监听时同一个进度会收到两次，因此如果最新进度和上次一致，那么直接返回
+    // 好处：避免播放结束后，也会收到两次导致弹出两条提示没有下一个视频
+    if (latestMs == preLatestMs) return;
+    preLatestMs = latestMs;
+    // Log.info("_positionListener: latestMs=$latestMs");
+
+    // 如果没有结束(避免因相差过小而无法更新到结束)，且相差过小，直接跳过，不更新进度条
+    if (latestMs < totalMs && (latestMs - _curMs).abs() < 1000) return;
+
+    // 更新进度条
+    _curMs = latestMs;
+    update();
+
+    if (latestMs == totalMs) {
+      // 播放结束
+    }
   }
 }

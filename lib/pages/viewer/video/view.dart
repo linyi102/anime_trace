@@ -3,17 +3,18 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
 import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/float_button.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
+import 'package:flutter_test_future/widgets/gradient_bar.dart';
 import 'package:get/get.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatefulWidget {
-  const VideoPlayerPage({required this.url, this.title = '', Key? key})
+  const VideoPlayerPage({required this.path, this.title = '', Key? key})
       : super(key: key);
-  final String url;
+  final String path;
   final String title;
 
   @override
@@ -21,10 +22,10 @@ class VideoPlayerPage extends StatefulWidget {
 }
 
 class VideoPlayerPageState extends State<VideoPlayerPage> {
-  late VideoPlayerLogic logic = VideoPlayerLogic(url: widget.url);
+  late VideoPlayerLogic logic = VideoPlayerLogic(path: widget.path);
 
   String get title => widget.title.isEmpty
-      ? p.basenameWithoutExtension(widget.url)
+      ? p.basenameWithoutExtension(widget.path)
       : widget.title;
 
   @override
@@ -40,12 +41,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       builder: (_) => GestureDetector(
           onTap: () {
             // 桌面端单击播放/暂停
-            if (PlatformUtil.isDesktop) logic.player.playOrPause();
+            if (PlatformUtil.isDesktop) logic.playOrPause();
           },
           onDoubleTapDown: (details) {
             // 移动端双击播放/暂停
             // 不能放在onDoubleTapDown，可能是会和自带的快进和后退10s冲突(即使关闭了也不行)
-            if (PlatformUtil.isMobile) logic.player.playOrPause();
+            if (PlatformUtil.isMobile) logic.playOrPause();
           },
           onDoubleTap: () {
             // 桌面端双击进入/退出全屏
@@ -53,13 +54,16 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
           },
           onLongPressStart: (details) => logic.longPressToSpeedUp(),
           onLongPressUp: () => logic.cancelSpeedUp(),
-          onHorizontalDragStart: (details) => logic.player.pause(),
+          onHorizontalDragStart: (details) => logic.videoController.pause(),
           onHorizontalDragUpdate: (details) =>
               logic.calculateWillSeekPosition(details.delta.dx),
           onHorizontalDragEnd: (details) => logic.seekDragEndPosition(),
           child: Stack(
             children: [
-              _buildMultiPlatformVideoView(context),
+              _buildVideoView(),
+              _buildBufferingWidget(),
+              _buildTopBar(),
+              _buildBottomBar(),
               _buildFastForwarding(),
               _buildDragSeekPosition(),
               // _buildScreenShotFloatButton(),
@@ -67,6 +71,132 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             ],
           )),
     );
+  }
+
+  _buildTopBar() {
+    return Positioned(
+        left: 0,
+        top: 0,
+        child: SizedBox(
+            height: 60,
+            width: MediaQuery.of(context).size.width,
+            child: Row(children: _buildTopBarWidgets(context))));
+  }
+
+  _buildBufferingWidget() {
+    if (!logic.buffering) return const SizedBox();
+    return Container(
+      color: Colors.black12,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: const Align(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(strokeWidth: 3),
+      ),
+    );
+  }
+
+  _buildBottomBar() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: GradientBar(
+        reverse: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildProgressBar(),
+            Row(
+              children: [
+                _buildPlayOrPauseButton(),
+                const Spacer(),
+                _buildFullscreenButton(),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildProgressBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          Text(
+            TimeUtil.getReadableDuration(Duration(milliseconds: logic.curMs)),
+            style: const TextStyle(color: Colors.white),
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                // 缓冲条显示在底部，避免遮挡进度条
+                if (logic.videoController.value.buffered.isNotEmpty)
+                  SliderTheme(
+                    data: SliderThemeData(
+                      trackHeight: 2, // 轨迹高度
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 0, // 滑块大小
+                      ),
+                      activeTrackColor: Colors.white.withOpacity(0.5),
+                      inactiveTrackColor: Colors.transparent,
+                      trackShape: const RectangularSliderTrackShape(),
+                    ),
+                    child: Slider(
+                      value: logic.curBufferedMs / logic.totalMs.toDouble(),
+                      onChanged: (double value) {},
+                    ),
+                  ),
+                // 进度条
+                SliderTheme(
+                  data: SliderThemeData(
+                    trackHeight: 2,
+                    thumbColor: Theme.of(context).primaryColor,
+                    activeTrackColor: Theme.of(context).primaryColor,
+                    inactiveTrackColor: Colors.grey.shade800,
+                  ),
+                  child: Slider(
+                    min: 0,
+                    max: logic.totalMs.toDouble(),
+                    value: logic.curMs.toDouble(),
+                    onChangeStart: (value) {
+                      // 开始拖动时，暂停
+                      logic.pause();
+                    },
+                    onChangeEnd: (value) {
+                      // 恢复播放
+                      logic.play();
+                    },
+                    onChanged: (value) {
+                      int seekMs = value.toInt();
+
+                      logic.videoController
+                          .seekTo(Duration(milliseconds: seekMs));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            TimeUtil.getReadableDuration(Duration(milliseconds: logic.totalMs)),
+            style: const TextStyle(color: Colors.white),
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildPlayOrPauseButton() {
+    return IconButton(
+        onPressed: () => logic.playOrPause(),
+        icon: Icon(
+          logic.videoController.value.isPlaying
+              ? Icons.pause
+              : Icons.play_arrow,
+          color: Colors.white,
+        ));
   }
 
   /// 左右拖动改变进度位置
@@ -84,54 +214,6 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
               Shadow(blurRadius: 3, color: Colors.black),
             ]),
         textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  MultiPlatform _buildMultiPlatformVideoView(BuildContext context) {
-    return MultiPlatform(
-      mobile: MaterialVideoControlsTheme(
-        normal: MaterialVideoControlsThemeData(
-            topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
-            topButtonBar: _buildTopBar(context),
-            volumeGesture: true,
-            brightnessGesture: true,
-            // 取消自带的中心播放按钮
-            primaryButtonBar: [],
-            // 取消双击两侧后退或前进10s
-            seekOnDoubleTap: false,
-            // 底部进度条移动到底部栏上方
-            seekBarMargin: const EdgeInsets.fromLTRB(16, 0, 16, 60),
-            controlsTransitionDuration: const Duration(milliseconds: 100),
-            bottomButtonBar: [
-              const MaterialSkipPreviousButton(),
-              const MaterialPlayOrPauseButton(),
-              const MaterialSkipNextButton(),
-              const MaterialPositionIndicator(),
-              const Spacer(),
-              _buildScreenShotBottomButton(),
-            ]),
-        fullscreen: const MaterialVideoControlsThemeData(),
-        child: _buildVideoView(),
-      ),
-      desktop: MaterialDesktopVideoControlsTheme(
-        normal: MaterialDesktopVideoControlsThemeData(
-            topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
-            toggleFullscreenOnDoublePress: false,
-            topButtonBar: _buildTopBar(context),
-            bottomButtonBar: [
-              const MaterialDesktopSkipPreviousButton(),
-              const MaterialDesktopPlayOrPauseButton(),
-              const MaterialDesktopSkipNextButton(),
-              const MaterialDesktopVolumeButton(),
-              const MaterialDesktopPositionIndicator(),
-              const Spacer(),
-              _buildScreenShotBottomButton(),
-              _buildFullscreenButton()
-            ]),
-        // 自带的双击和右下角的全屏按钮，进入全屏是通过push一个新页面实现的，会导致手势失效和无法看到Stack上的组件，因此使用windowManager对当前页面进行全屏
-        fullscreen: const MaterialDesktopVideoControlsThemeData(),
-        child: _buildVideoView(),
       ),
     );
   }
@@ -156,7 +238,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 
-  List<Widget> _buildTopBar(BuildContext context) {
+  List<Widget> _buildTopBarWidgets(BuildContext context) {
     return [
       Row(
         children: [
@@ -189,7 +271,9 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   List<Shadow> get _shadows =>
       [const Shadow(blurRadius: 3, color: Colors.black)];
 
-  _buildVideoView() => Video(controller: logic.videoController);
+  _buildVideoView() => logic.videoController.value.isInitialized
+      ? VideoPlayer(logic.videoController)
+      : Container(color: Colors.black);
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
@@ -199,16 +283,15 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       return Container(
         alignment: Alignment.topRight,
         padding: EdgeInsets.fromLTRB(0, Global.getAppBarHeight(context), 20, 0),
-        child: Container(
-          height: width *
-              ((logic.player.state.height ?? 9) /
-                  (logic.player.state.width ?? 16)),
-          width: width,
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
-            borderRadius: radius,
+        child: AspectRatio(
+          aspectRatio: logic.videoController.value.aspectRatio,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              borderRadius: radius,
+            ),
+            child: const LoadingWidget(center: true),
           ),
-          child: const LoadingWidget(center: true),
         ),
       );
     }
