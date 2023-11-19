@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
+import 'package:flutter_test_future/pages/changelog/view.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/values/assets.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
@@ -58,12 +59,11 @@ class _AboutVersionState extends State<AboutVersion> {
             ),
             ListTile(
                 title: const Text("更新日志"),
-                trailing: const Icon(EvaIcons.externalLink),
                 onTap: () {
-                  LaunchUrlUtil.launch(
-                      context: context,
-                      uriStr: "https://www.yuque.com/linyi517/fzfxr0",
-                      inApp: false);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChangelogPage()));
                 }),
             ListTile(
                 title: const Text("下载地址"),
