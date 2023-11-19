@@ -3,7 +3,6 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
 import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/float_button.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -38,10 +37,6 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return GetBuilder(
       init: logic,
       builder: (_) => GestureDetector(
-          onTap: () {
-            // 桌面端单击播放/暂停
-            if (PlatformUtil.isDesktop) logic.player.playOrPause();
-          },
           onDoubleTapDown: (details) {
             // 移动端双击播放/暂停
             // 不能放在onDoubleTapDown，可能是会和自带的快进和后退10s冲突(即使关闭了也不行)
@@ -71,7 +66,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   /// 左右拖动改变进度位置
   _buildDragSeekPosition() {
+    // BUG: 拖动进度条也会触发，因此Windows禁用
+    if (PlatformUtil.isDesktop) return const SizedBox();
     if (logic.willSeekPosition.isEmpty) return const SizedBox();
+
     return Align(
       alignment: Alignment.center,
       child: Text(
@@ -103,6 +101,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             // 底部进度条移动到底部栏上方
             seekBarMargin: const EdgeInsets.fromLTRB(16, 0, 16, 60),
             controlsTransitionDuration: const Duration(milliseconds: 100),
+            seekBarThumbColor: Theme.of(context).primaryColor,
+            seekBarPositionColor: Theme.of(context).primaryColor,
             bottomButtonBar: [
               const MaterialSkipPreviousButton(),
               const MaterialPlayOrPauseButton(),
@@ -118,6 +118,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         normal: MaterialDesktopVideoControlsThemeData(
             topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
             toggleFullscreenOnDoublePress: false,
+            seekBarThumbColor: Theme.of(context).primaryColor,
+            seekBarPositionColor: Theme.of(context).primaryColor,
             topButtonBar: _buildTopBar(context),
             bottomButtonBar: [
               const MaterialDesktopSkipPreviousButton(),
@@ -189,7 +191,13 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   List<Shadow> get _shadows =>
       [const Shadow(blurRadius: 3, color: Colors.black)];
 
-  _buildVideoView() => Video(controller: logic.videoController);
+  _buildVideoView() => GestureDetector(
+      onTap: () {
+        // 桌面端单击播放/暂停
+        // BUG：单击进度条也会触发
+        // if (PlatformUtil.isDesktop) logic.player.playOrPause();
+      },
+      child: Video(controller: logic.videoController));
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
@@ -265,19 +273,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   _buildScreenShotBottomButton() {
-    return IconButton(
-      icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
-      onPressed: () => logic.capture(),
-    );
-  }
-
-  _buildScreenShotFloatButton() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: FloatButton(
-        icon: MingCuteIcons.mgc_camera_2_line,
-        onTap: () => logic.capture(),
-      ),
-    );
+    return const SizedBox();
+    // return IconButton(
+    //   icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
+    //   onPressed: () => logic.capture(),
+    // );
   }
 }
