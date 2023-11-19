@@ -64,10 +64,11 @@ class _WeeklyBarState extends State<WeeklyBar> {
                   // 显示周几
                   Text(TimeUtil.getChineseWeekdayByNumber(weekday),
                       style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 5),
                   // 显示日期
                   Container(
-                    height: 24,
-                    width: 24,
+                    height: 30,
+                    width: 30,
                     child: Center(
                         child: Text(
                       dateTime.day == now.day ? "今" : "${dateTime.day}",
