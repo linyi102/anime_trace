@@ -12,6 +12,7 @@ import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/version_util.dart';
@@ -139,16 +140,6 @@ class AppUpgradeController extends GetxController {
               controller: scrollController,
               child: SingleChildScrollView(
                   controller: scrollController, child: Text(content))),
-          // MarkdownBody必须被包裹在Scaffold，但这会导致对话框始终为最大
-          // content: Scaffold(
-          //     backgroundColor: Colors.transparent,
-          //     body: Scrollbar(
-          //       controller: scrollController,
-          //       child: SingleChildScrollView(
-          //         controller: scrollController,
-          //         child: MarkdownBody(data: content),
-          //       ),
-          //     )),
           actions: [
             // 自动检查时，提供忽略操作
             if (autoCheck)
@@ -177,6 +168,12 @@ class AppUpgradeController extends GetxController {
   }
 
   _onSelectDownloadWay() async {
+    if (PlatformUtil.isDesktop) {
+      LaunchUrlUtil.launch(
+          context: Get.context!, uriStr: latestRelease!.htmlUrl);
+      return;
+    }
+
     // 选择下载方式
     ToastUtil.showDialog(
       builder: (close) => SimpleDialog(
@@ -216,6 +213,16 @@ class AppUpgradeController extends GetxController {
               _prepareDownload(
                 speedUrl: (url) => "https://git.xfj0.cn/$url",
               );
+            },
+          ),
+          ListTile(
+            title: const Text('前往 GitHub 手动下载'),
+            onTap: () {
+              close();
+              LaunchUrlUtil.launch(
+                  context: Get.context!,
+                  uriStr: latestRelease!.htmlUrl,
+                  inApp: false);
             },
           ),
           ListTile(
