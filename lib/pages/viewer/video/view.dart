@@ -22,7 +22,10 @@ class VideoPlayerPage extends StatefulWidget {
 }
 
 class VideoPlayerPageState extends State<VideoPlayerPage> {
-  late VideoPlayerLogic logic = VideoPlayerLogic(url: widget.url);
+  get logicTag => VideoPlayerLogic.generateTag(widget.url);
+
+  late VideoPlayerLogic logic =
+      Get.put(VideoPlayerLogic(url: widget.url), tag: logicTag);
 
   String get title => widget.title.isEmpty
       ? p.basenameWithoutExtension(widget.url)
@@ -30,7 +33,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   void dispose() {
-    Get.delete<VideoPlayerLogic>();
+    Get.delete<VideoPlayerLogic>(tag: logicTag);
     super.dispose();
   }
 
