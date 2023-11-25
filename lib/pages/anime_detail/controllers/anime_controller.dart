@@ -54,6 +54,9 @@ class AnimeController extends GetxController {
           ?.supportPlayVideo ??
       false;
 
+  // 当前播放的集
+  Episode? curPlayEpisode;
+
   /////////////////////////////// ids ///////////////////////////////
 
   static const String prefix = "getbuilder-anime-detail-page";
@@ -519,5 +522,15 @@ class AnimeController extends GetxController {
     update([episodeId]);
 
     return true;
+  }
+
+  playEpisode(Episode episode) {
+    curPlayEpisode = episode;
+    update();
+  }
+
+  closeEpisodePlayPage() {
+    curPlayEpisode = null;
+    update();
   }
 }

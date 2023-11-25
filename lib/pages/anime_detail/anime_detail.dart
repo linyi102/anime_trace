@@ -8,7 +8,10 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
+import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailPage extends StatefulWidget {
@@ -80,53 +83,96 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         Log.info("返回true");
         return true;
       },
-      child: Scaffold(
-        body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Stack(children: [
-              GetBuilder<AnimeController>(
-                id: animeController.detailPageId,
-                tag: tag,
-                init: animeController,
-                initState: (_) {},
-                builder: (_) {
-                  Log.info("build ${animeController.detailPageId}");
-
-                  if (animeController.loadingAnime) {
-                    return Scaffold(
-                      appBar: AppBar(
-                          leading: IconButton(
-                              onPressed: _popPage,
-                              icon: const Icon(Icons.arrow_back))),
-                      body: const LoadingWidget(center: true),
-                    );
-                  }
-                  if (enableSplitScreenInLandscape &&
-                      Global.isLandscape(context)) {
-                    return _buildLandscapeView();
-                  }
-
-                  return _buildRefreshAnimeIndicator(
-                    child: CustomScrollView(
-                      slivers: [
-                        // 构建顶部栏
-                        AnimeDetailAppBar(
-                          animeController: animeController,
-                          popPage: _popPage,
-                        ),
-                        // 构建动漫信息(名字、评分、其他信息)
-                        AnimeDetailInfo(animeController: animeController),
-                        // const SliverToBoxAdapter(child: CommonDivider()),
-                        // 构建主体(集信息页)
-                        AnimeDetailEpisodeInfo(animeController: animeController)
-                      ],
-                    ),
-                  );
-                },
-              ),
-              Obx(() => _buildButtonsBarAboutEpisodeMulti())
-            ])),
+      child: MultiPlatform(
+        mobile: _buildMobileDetailPage(),
+        desktop: _buildDesktopDetailPage(),
       ),
+    );
+  }
+
+  _buildDesktopDetailPage() {
+    double rightWidth = 400;
+
+    return GetBuilder(
+      init: animeController,
+      builder: (_) {
+        if (animeController.curPlayEpisode == null) {
+          return _buildDetailPage();
+        }
+
+        return Row(
+          children: [
+            Expanded(
+                child: VideoPlayerWithLoadUrlPage(
+              key: Key('${animeController.curPlayEpisode?.number}'),
+              loadUrl: () async {
+                String url = await ClimbAnimeUtil.getVideoUrl(
+                    animeController.anime.animeUrl,
+                    animeController.curPlayEpisode!.number);
+                return url;
+              },
+              title:
+                  '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
+            )),
+            SizedBox(
+              width: rightWidth,
+              child: _buildDetailPage(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Scaffold _buildMobileDetailPage() => _buildDetailPage();
+
+  Scaffold _buildDetailPage() {
+    return Scaffold(
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Stack(children: [
+            GetBuilder<AnimeController>(
+              id: animeController.detailPageId,
+              tag: tag,
+              init: animeController,
+              initState: (_) {},
+              builder: (_) {
+                Log.info("build ${animeController.detailPageId}");
+
+                if (animeController.loadingAnime) {
+                  return Scaffold(
+                    appBar: AppBar(
+                        leading: IconButton(
+                            onPressed: _popPage,
+                            icon: const Icon(Icons.arrow_back))),
+                    body: const LoadingWidget(center: true),
+                  );
+                }
+                if (enableSplitScreenInLandscape &&
+                    Global.isLandscape(context)) {
+                  return _buildLandscapeView();
+                }
+
+                return _buildRefreshAnimeIndicator(
+                  child: CustomScrollView(
+                    slivers: [
+                      // 构建顶部栏
+                      AnimeDetailAppBar(
+                        animeController: animeController,
+                        popPage: _popPage,
+                      ),
+                      // 构建动漫信息(名字、评分、其他信息)
+                      AnimeDetailInfo(animeController: animeController),
+                      // const SliverToBoxAdapter(child: CommonDivider()),
+                      // 构建主体(集信息页)
+                      AnimeDetailEpisodeInfo(animeController: animeController)
+                    ],
+                  ),
+                );
+              },
+            ),
+            Obx(() => _buildButtonsBarAboutEpisodeMulti())
+          ])),
     );
   }
 

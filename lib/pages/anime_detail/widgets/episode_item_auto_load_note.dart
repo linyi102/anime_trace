@@ -14,6 +14,7 @@ import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -203,16 +204,20 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 color: Get.isDarkMode ? null : Colors.red.shade400,
               ),
               onPressed: () async {
-                Get.to(() => VideoPlayerWithLoadUrlPage(
-                      loadUrl: () async {
-                        String url = await ClimbAnimeUtil.getVideoUrl(
-                            widget.animeController.anime.animeUrl,
-                            widget.episode.number);
-                        return url;
-                      },
-                      title:
-                          '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
-                    ));
+                if (PlatformUtil.isDesktop) {
+                  widget.animeController.playEpisode(widget.episode);
+                } else {
+                  Get.to(() => VideoPlayerWithLoadUrlPage(
+                        loadUrl: () async {
+                          String url = await ClimbAnimeUtil.getVideoUrl(
+                              widget.animeController.anime.animeUrl,
+                              widget.episode.number);
+                          return url;
+                        },
+                        title:
+                            '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
+                      ));
+                }
               },
             ),
           ),
