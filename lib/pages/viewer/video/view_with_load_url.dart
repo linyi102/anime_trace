@@ -50,7 +50,7 @@ class _VideoPlayerWithLoadUrlPageState
             body: Stack(
           children: [
             widget.leading != null
-                ? widget.leading!
+                ? StackAppBar(leading: widget.leading)
                 : StackAppBar(
                     onTapLeading: () async {
                       await Global.restoreDevice();
