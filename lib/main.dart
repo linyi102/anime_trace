@@ -329,12 +329,8 @@ class MyAppState extends State<MyApp> {
       thickness: MaterialStateProperty.all(5),
       interactive: true,
       radius: const Radius.circular(10),
-      // 避免紧挨屏幕边缘
-      crossAxisMargin: 4,
       thumbColor: MaterialStateProperty.all(
-        isDark
-            ? Colors.white.withOpacity(0.4)
-            : const Color.fromRGBO(147, 147, 147, 1),
+        isDark ? Colors.white.withOpacity(0.4) : Colors.black38,
       ),
     );
   }
