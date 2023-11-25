@@ -98,15 +98,18 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       init: animeController,
       builder: (_) {
         if (animeController.curPlayEpisode == null) {
-          return _buildDetailPage();
+          return _buildDetailScreen();
         }
 
         return Row(
           children: [
             Expanded(child: _buildVideoScreen()),
-            SizedBox(
-              width: rightWidth,
-              child: _buildDetailPage(),
+            Offstage(
+              offstage: animeController.rightDetailScreenIsFolded,
+              child: SizedBox(
+                width: rightWidth,
+                child: _buildDetailScreen(),
+              ),
             ),
           ],
         );
@@ -114,28 +117,77 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     );
   }
 
-  VideoPlayerWithLoadUrlPage _buildVideoScreen() {
-    return VideoPlayerWithLoadUrlPage(
-      key: Key('${animeController.curPlayEpisode?.number}'),
-      leading: PlatformUtil.isDesktop
-          ? IconButton(
-              onPressed: () => animeController.closeEpisodePlayPage(),
-              icon: const Icon(Icons.close, color: Colors.white))
-          : null,
-      loadUrl: () async {
-        String url = await ClimbAnimeUtil.getVideoUrl(
-            animeController.anime.animeUrl,
-            animeController.curPlayEpisode!.number);
-        return url;
-      },
-      title:
-          '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
+  _buildVideoScreen() {
+    return Stack(
+      children: [
+        VideoPlayerWithLoadUrlPage(
+          key: Key('${animeController.curPlayEpisode?.number}'),
+          leading: PlatformUtil.isDesktop
+              ? IconButton(
+                  onPressed: () => animeController.closeEpisodePlayPage(),
+                  icon: const Icon(Icons.close, color: Colors.white))
+              : null,
+          loadUrl: () async {
+            String url = await ClimbAnimeUtil.getVideoUrl(
+                animeController.anime.animeUrl,
+                animeController.curPlayEpisode!.number);
+            return url;
+          },
+          title:
+              '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
+        ),
+        _buildFoldDetailScreenButton()
+      ],
     );
   }
 
-  Scaffold _buildMobileDetailPage() => _buildDetailPage();
+  StatefulBuilder _buildFoldDetailScreenButton() {
+    bool show = false;
 
-  Scaffold _buildDetailPage() {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return MouseRegion(
+          hitTestBehavior: HitTestBehavior.translucent,
+          onEnter: (_) => setState(() => show = true),
+          onExit: (_) => setState(() => show = false),
+          onHover: (_) {
+            if (show) return;
+            setState(() => show = true);
+          },
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: show ? 1 : 0,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () => animeController.foldOrUnfoldRightDetailScreen(),
+                child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius:
+                          BorderRadius.horizontal(left: Radius.circular(8))),
+                  height: 50,
+                  width: 24,
+                  child: Center(
+                    child: Icon(
+                      animeController.rightDetailScreenIsFolded
+                          ? Icons.chevron_left_rounded
+                          : Icons.chevron_right_rounded,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Scaffold _buildMobileDetailPage() => _buildDetailScreen();
+
+  Scaffold _buildDetailScreen() {
     return Scaffold(
       body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),

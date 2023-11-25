@@ -529,8 +529,31 @@ class AnimeController extends GetxController {
     update();
   }
 
+  /// 关闭左侧视频区域
   closeEpisodePlayPage() {
     curPlayEpisode = null;
+    update();
+  }
+
+  bool rightDetailScreenIsFolded = false;
+
+  foldOrUnfoldRightDetailScreen() {
+    if (rightDetailScreenIsFolded) {
+      _unfoldRightDetailScreen();
+    } else {
+      _foldRightDetailScreen();
+    }
+  }
+
+  /// 折叠右侧详情区域
+  _foldRightDetailScreen() {
+    rightDetailScreenIsFolded = true;
+    update();
+  }
+
+  /// 展开右侧详情区域
+  _unfoldRightDetailScreen() {
+    rightDetailScreenIsFolded = false;
     update();
   }
 }
