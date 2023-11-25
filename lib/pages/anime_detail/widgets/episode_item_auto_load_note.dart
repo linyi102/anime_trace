@@ -21,6 +21,7 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 /// 集+自动获取笔记
 
@@ -192,35 +193,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.animeController.supportPlayVideo)
-          GestureDetector(
-            onLongPress: () {},
-            child: IconButton(
-              splashRadius: 24,
-              icon: Icon(
-                // Icons.Color.fromARGB(255, 69, 69, 69)eo_rounded,
-                Icons.play_circle_fill_rounded,
-                // color: Colors.redAccent,
-                color: Get.isDarkMode ? null : Colors.red.shade400,
-              ),
-              onPressed: () async {
-                if (PlatformUtil.isDesktop) {
-                  widget.animeController.playEpisode(widget.episode);
-                } else {
-                  Get.to(() => VideoPlayerWithLoadUrlPage(
-                        loadUrl: () async {
-                          String url = await ClimbAnimeUtil.getVideoUrl(
-                              widget.animeController.anime.animeUrl,
-                              widget.episode.number);
-                          return url;
-                        },
-                        title:
-                            '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
-                      ));
-                }
-              },
-            ),
-          ),
+        _buildPlayButton(),
         GestureDetector(
           // 避免长按穿透到ListTile导致多选
           onLongPress: () {},
@@ -233,6 +206,53 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
           ),
         ),
       ],
+    );
+  }
+
+  _buildPlayButton() {
+    if (!widget.animeController.supportPlayVideo) return const SizedBox();
+
+    bool playingVideo =
+        widget.animeController.curPlayEpisode?.number == widget.episode.number;
+
+    return GestureDetector(
+      onLongPress: () {},
+      child: IconButton(
+        splashRadius: 24,
+        icon: playingVideo
+            ? _buildPlayingGif()
+            : Icon(
+                // Icons.Color.fromARGB(255, 69, 69, 69)eo_rounded,
+                Icons.play_circle_fill_rounded,
+                // color: Colors.redAccent,
+                color: Get.isDarkMode ? null : Colors.red.shade400,
+              ),
+        onPressed: () async {
+          if (PlatformUtil.isDesktop) {
+            widget.animeController.playEpisode(widget.episode);
+          } else {
+            Get.to(() => VideoPlayerWithLoadUrlPage(
+                  loadUrl: () async {
+                    String url = await ClimbAnimeUtil.getVideoUrl(
+                        widget.animeController.anime.animeUrl,
+                        widget.episode.number);
+                    return url;
+                  },
+                  title:
+                      '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
+                ));
+          }
+        },
+      ),
+    );
+  }
+
+  LottieBuilder _buildPlayingGif() {
+    return LottieBuilder.asset(
+      Assets.lottiesPlaying,
+      width: 24,
+      height: 24,
+      fit: BoxFit.fill,
     );
   }
 
