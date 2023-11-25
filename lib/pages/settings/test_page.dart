@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -50,6 +51,7 @@ class _TestPageState extends State<TestPage> {
   ListView _buildBody(BuildContext context) {
     return ListView(
       children: [
+        const LoadingWidget(),
         LottieBuilder.asset(
           Assets.lottiesPlaying,
           width: 24,
