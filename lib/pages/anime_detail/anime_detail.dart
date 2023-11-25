@@ -138,77 +138,19 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
           title:
               '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
         ),
-        _buildFoldDetailScreenButton()
+        _FoldDetailScreenButton(animeController: animeController)
       ],
-    );
-  }
-
-  StatefulBuilder _buildFoldDetailScreenButton() {
-    bool show = false;
-    Timer? timer;
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        _resetTimer() {
-          timer?.cancel();
-          timer = Timer(const Duration(seconds: 3), () {
-            if (mounted && show) {
-              setState(() => show = false);
-            }
-          });
-        }
-
-        _showButton() {
-          setState(() => show = true);
-          _resetTimer();
-        }
-
-        return MouseRegion(
-          hitTestBehavior: HitTestBehavior.translucent,
-          onEnter: (_) => _showButton(),
-          onExit: (_) => setState(() => show = false),
-          onHover: (_) {
-            if (show) {
-              _resetTimer();
-              return;
-            }
-            _showButton();
-          },
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            opacity: show ? 1 : 0,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: InkWell(
-                onTap: () => animeController.foldOrUnfoldRightDetailScreen(),
-                child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius:
-                          BorderRadius.horizontal(left: Radius.circular(8))),
-                  height: 50,
-                  width: 24,
-                  child: Center(
-                    child: Icon(
-                      animeController.rightDetailScreenIsFolded
-                          ? Icons.chevron_left_rounded
-                          : Icons.chevron_right_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 
   Scaffold _buildMobileDetailPage() => _buildDetailScreen();
 
+  // 避免打开/关闭左侧播放区域后重绘右侧详情区域
+  final detailScreenKey = GlobalKey();
+
   Scaffold _buildDetailScreen() {
     return Scaffold(
+      key: detailScreenKey,
       body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: Stack(children: [
@@ -376,4 +318,83 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   //       return const Icon(Icons.error_outline_outlined);
   //   }
   // }
+}
+
+class _FoldDetailScreenButton extends StatefulWidget {
+  const _FoldDetailScreenButton({
+    required this.animeController,
+  });
+
+  final AnimeController animeController;
+
+  @override
+  State<_FoldDetailScreenButton> createState() =>
+      _FoldDetailScreenButtonState();
+}
+
+class _FoldDetailScreenButtonState extends State<_FoldDetailScreenButton> {
+  bool show = false;
+  Timer? timer;
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      hitTestBehavior: HitTestBehavior.translucent,
+      onEnter: (_) => _showButton(),
+      onExit: (_) => setState(() => show = false),
+      onHover: (_) {
+        if (show) {
+          _resetTimer();
+          return;
+        }
+        _showButton();
+      },
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: show ? 1 : 0,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: InkWell(
+            onTap: () => widget.animeController.foldOrUnfoldRightDetailScreen(),
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius:
+                      BorderRadius.horizontal(left: Radius.circular(8))),
+              height: 50,
+              width: 24,
+              child: Center(
+                child: Icon(
+                  widget.animeController.rightDetailScreenIsFolded
+                      ? Icons.chevron_left_rounded
+                      : Icons.chevron_right_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _resetTimer() {
+    timer?.cancel();
+    timer = Timer(const Duration(seconds: 3), () {
+      if (mounted && show) {
+        setState(() => show = false);
+      }
+    });
+  }
+
+  _showButton() {
+    setState(() => show = true);
+    _resetTimer();
+  }
 }
