@@ -3,6 +3,7 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
 import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/stack_appbar.dart';
 
 class VideoPlayerWithLoadUrlPage extends StatefulWidget {
@@ -67,7 +68,7 @@ class _VideoPlayerWithLoadUrlPageState
     if (loading) {
       return const Align(
         alignment: Alignment.center,
-        child: LoadingWidget(text: '正在解析视频链接…', textColor: Colors.white),
+        child: LoadingWidget(text: '解析链接中…', textColor: Colors.white),
       );
     }
 
@@ -77,7 +78,12 @@ class _VideoPlayerWithLoadUrlPageState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(error, style: const TextStyle(color: Colors.white)),
+            const Text(
+              '解析链接失败 :(',
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 10),
+            CommonOutlinedButton(onPressed: () => _loadUrl(), text: '重试')
           ],
         ),
       );
@@ -96,7 +102,7 @@ class _VideoPlayerWithLoadUrlPageState
 
     url = await widget.loadUrl();
     if (url.isEmpty) {
-      error = '很抱歉，无法获取到播放链接';
+      error = '获取播放链接失败';
     }
 
     loading = false;
