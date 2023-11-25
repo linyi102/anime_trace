@@ -6,7 +6,7 @@ Widget loadingWidget(BuildContext context) {
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget(
-      {this.height = 60,
+      {this.height = 80,
       this.center = false,
       this.text = '',
       this.textColor,
