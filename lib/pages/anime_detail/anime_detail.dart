@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
@@ -143,16 +145,34 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   StatefulBuilder _buildFoldDetailScreenButton() {
     bool show = false;
+    Timer? timer;
 
     return StatefulBuilder(
       builder: (context, setState) {
+        _resetTimer() {
+          timer?.cancel();
+          timer = Timer(const Duration(seconds: 3), () {
+            if (mounted && show) {
+              setState(() => show = false);
+            }
+          });
+        }
+
+        _showButton() {
+          setState(() => show = true);
+          _resetTimer();
+        }
+
         return MouseRegion(
           hitTestBehavior: HitTestBehavior.translucent,
-          onEnter: (_) => setState(() => show = true),
+          onEnter: (_) => _showButton(),
           onExit: (_) => setState(() => show = false),
           onHover: (_) {
-            if (show) return;
-            setState(() => show = true);
+            if (show) {
+              _resetTimer();
+              return;
+            }
+            _showButton();
           },
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 200),
