@@ -10,10 +10,12 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:path/path.dart' as p;
 
 class VideoPlayerPage extends StatefulWidget {
-  const VideoPlayerPage({required this.url, this.title = '', Key? key})
+  const VideoPlayerPage(
+      {required this.url, this.title = '', this.leading, Key? key})
       : super(key: key);
   final String url;
   final String title;
+  final Widget? leading;
 
   @override
   State<VideoPlayerPage> createState() => VideoPlayerPageState();
@@ -162,18 +164,20 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return [
       Row(
         children: [
-          IconButton(
-            onPressed: () async {
-              await Global.restoreDevice();
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              size: 20,
-              color: Colors.white,
-              shadows: _shadows,
-            ),
-          ),
+          widget.leading != null
+              ? widget.leading!
+              : IconButton(
+                  onPressed: () async {
+                    await Global.restoreDevice();
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios_rounded,
+                    size: 20,
+                    color: Colors.white,
+                    shadows: _shadows,
+                  ),
+                ),
           const SizedBox(width: 15),
           Text(
             title,

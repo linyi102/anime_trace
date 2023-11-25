@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
 import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 
@@ -102,18 +103,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
         return Row(
           children: [
-            Expanded(
-                child: VideoPlayerWithLoadUrlPage(
-              key: Key('${animeController.curPlayEpisode?.number}'),
-              loadUrl: () async {
-                String url = await ClimbAnimeUtil.getVideoUrl(
-                    animeController.anime.animeUrl,
-                    animeController.curPlayEpisode!.number);
-                return url;
-              },
-              title:
-                  '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
-            )),
+            Expanded(child: _buildVideoScreen()),
             SizedBox(
               width: rightWidth,
               child: _buildDetailPage(),
@@ -121,6 +111,25 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
           ],
         );
       },
+    );
+  }
+
+  VideoPlayerWithLoadUrlPage _buildVideoScreen() {
+    return VideoPlayerWithLoadUrlPage(
+      key: Key('${animeController.curPlayEpisode?.number}'),
+      leading: PlatformUtil.isDesktop
+          ? IconButton(
+              onPressed: () => animeController.closeEpisodePlayPage(),
+              icon: const Icon(Icons.close, color: Colors.white))
+          : null,
+      loadUrl: () async {
+        String url = await ClimbAnimeUtil.getVideoUrl(
+            animeController.anime.animeUrl,
+            animeController.curPlayEpisode!.number);
+        return url;
+      },
+      title:
+          '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
     );
   }
 

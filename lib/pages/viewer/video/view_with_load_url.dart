@@ -7,9 +7,10 @@ import 'package:flutter_test_future/widgets/stack_appbar.dart';
 
 class VideoPlayerWithLoadUrlPage extends StatefulWidget {
   const VideoPlayerWithLoadUrlPage(
-      {required this.loadUrl, this.title = '', super.key});
+      {required this.loadUrl, this.title = '', this.leading, super.key});
 
   final Future<String> Function() loadUrl;
+  final Widget? leading;
   final String title;
 
   @override
@@ -47,12 +48,14 @@ class _VideoPlayerWithLoadUrlPageState
         child: Scaffold(
             body: Stack(
           children: [
-            StackAppBar(
-              onTapLeading: () async {
-                await Global.restoreDevice();
-                Navigator.pop(context);
-              },
-            ),
+            widget.leading != null
+                ? widget.leading!
+                : StackAppBar(
+                    onTapLeading: () async {
+                      await Global.restoreDevice();
+                      Navigator.pop(context);
+                    },
+                  ),
             _buildBody(),
           ],
         )),
@@ -80,7 +83,11 @@ class _VideoPlayerWithLoadUrlPageState
       );
     }
 
-    return VideoPlayerPage(url: url, title: widget.title);
+    return VideoPlayerPage(
+      url: url,
+      title: widget.title,
+      leading: widget.leading,
+    );
   }
 
   void _loadUrl() async {
