@@ -9,6 +9,7 @@ import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -85,14 +86,28 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
               // 都叠放在图片上面，否则无法显示
               _buildStackAppBar(context),
               // 没有全屏时显示预览图片
-              Positioned(
-                bottom: 10,
-                child: Offstage(
-                  offstage: fullScreen,
-                  child: SizedBox(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    child: _buildScrollAxis(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Offstage(
+                    offstage: fullScreen,
+                    child: MultiPlatform(
+                        mobile: SizedBox(
+                          height: 100,
+                          width: MediaQuery.of(context).size.width,
+                          child: _buildScrollAxis(),
+                        ),
+                        desktop: Container(
+                          height: 100,
+                          padding: const EdgeInsets.all(6),
+                          width: MediaQuery.of(context).size.width * 2 / 3,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            color: Colors.black54,
+                          ),
+                          child: _buildScrollAxis(),
+                        )),
                   ),
                 ),
               ),
