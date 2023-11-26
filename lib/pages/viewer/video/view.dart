@@ -162,7 +162,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
-        margin: const EdgeInsets.only(top: 80),
+        margin: const EdgeInsets.only(top: 50),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: Colors.black38,
@@ -171,11 +171,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.fast_forward_rounded, color: Colors.white),
+            const Icon(Icons.fast_forward_rounded,
+                color: Colors.white, size: 20),
             const SizedBox(width: 5),
             Text(
               '${logic.fastForwardRate.toInt()} 倍速播放',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           ],
         ),
