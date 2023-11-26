@@ -4,12 +4,15 @@ import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -48,6 +51,12 @@ class _TestPageState extends State<TestPage> {
   ListView _buildBody(BuildContext context) {
     return ListView(
       children: [
+        const LoadingWidget(),
+        LottieBuilder.asset(
+          Assets.lottiesPlaying,
+          width: 24,
+          height: 24,
+        ),
         ListTile(
           title: const Text('视频播放'),
           onTap: () {

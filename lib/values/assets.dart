@@ -84,4 +84,8 @@ class Assets {
   /// Assets for imagesWebsiteYhdm
   /// assets/images/website/yhdm.ico
   static const String imagesWebsiteYhdm = "assets/images/website/yhdm.ico";
+
+  /// Assets for lottiesPlaying
+  /// assets/lotties/playing.json
+  static const String lottiesPlaying = "assets/lotties/playing.json";
 }

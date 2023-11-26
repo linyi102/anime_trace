@@ -43,6 +43,11 @@ class VideoPlayerLogic extends GetxController {
     super.onClose();
   }
 
+  /// 添加tag来支持通过从系列进入到其他动漫来打开多个视频播放页
+  static String generateTag(String url) {
+    return 'video-url-$url';
+  }
+
   longPressToSpeedUp() {
     if (!player.state.playing) return;
 

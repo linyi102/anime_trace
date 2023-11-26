@@ -15,12 +15,12 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/version_util.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:version/version.dart';
 
 /// App升级
 /// DONE：
@@ -89,9 +89,9 @@ class AppUpgradeController extends GetxController {
       }
       status = LoadStatus.success;
       Log.info('最新版本：${latestRelease?.tagName}');
-      // if (kDebugMode) latestRelease?.tagName = "v1.8.2";
+      // if (!Global.isRelease) latestRelease?.tagName = "1.10.1-beta";
 
-      if (VersionUtil.greater(latestVersion, curVersion)) {
+      if (Version.parse(latestVersion) > Version.parse(curVersion)) {
         // 检测到新版本
         if (autoCheck && SPUtil.getBool(ignoreVersionKey)) {
           // 自动检查时若忽略了该新版本，则不提示

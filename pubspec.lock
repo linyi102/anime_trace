@@ -396,6 +396,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.1"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: b8bdd54b488c54068c57d41ae85d02808da09e2bee8b8dd1f59f441e7efa60cd
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.6.0"
   markdown:
     dependency: transitive
     description:
@@ -1017,6 +1025,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.4"
+  version:
+    dependency: "direct main"
+    description:
+      name: version
+      sha256: "3d4140128e6ea10d83da32fef2fa4003fccbf6852217bb854845802f04191f94"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.2"
   volume_controller:
     dependency: transitive
     description:

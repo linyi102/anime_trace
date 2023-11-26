@@ -62,7 +62,7 @@ class SpProfile {
   // 1024*720
   // 900*600
   static double getWindowWidth() {
-    double defaultValue = 900.0;
+    double defaultValue = 1024.0;
     if (Global.isRelease) {
       return SPUtil.getDouble("WindowWidth", defaultValue: defaultValue);
     }
@@ -70,7 +70,7 @@ class SpProfile {
   }
 
   static double getWindowHeight() {
-    double defaultValue = 700.0;
+    double defaultValue = 720.0;
     if (Global.isRelease) {
       return SPUtil.getDouble("WindowHeight", defaultValue: defaultValue);
     }

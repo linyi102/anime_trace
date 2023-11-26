@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
@@ -8,7 +10,10 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
+import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailPage extends StatefulWidget {
@@ -80,53 +85,113 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         Log.info("返回true");
         return true;
       },
-      child: Scaffold(
-        body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Stack(children: [
-              GetBuilder<AnimeController>(
-                id: animeController.detailPageId,
-                tag: tag,
-                init: animeController,
-                initState: (_) {},
-                builder: (_) {
-                  Log.info("build ${animeController.detailPageId}");
+      child: _buildDesktopDetailPage(),
+    );
+  }
 
-                  if (animeController.loadingAnime) {
-                    return Scaffold(
-                      appBar: AppBar(
-                          leading: IconButton(
-                              onPressed: _popPage,
-                              icon: const Icon(Icons.arrow_back))),
-                      body: const LoadingWidget(center: true),
-                    );
-                  }
-                  if (enableSplitScreenInLandscape &&
-                      Global.isLandscape(context)) {
-                    return _buildLandscapeView();
-                  }
+  _buildDesktopDetailPage() {
+    double rightWidth = 300;
 
-                  return _buildRefreshAnimeIndicator(
-                    child: CustomScrollView(
-                      slivers: [
-                        // 构建顶部栏
-                        AnimeDetailAppBar(
-                          animeController: animeController,
-                          popPage: _popPage,
-                        ),
-                        // 构建动漫信息(名字、评分、其他信息)
-                        AnimeDetailInfo(animeController: animeController),
-                        // const SliverToBoxAdapter(child: CommonDivider()),
-                        // 构建主体(集信息页)
-                        AnimeDetailEpisodeInfo(animeController: animeController)
-                      ],
-                    ),
-                  );
-                },
+    return GetBuilder(
+      init: animeController,
+      builder: (_) {
+        if (animeController.curPlayEpisode == null) {
+          return _buildDetailScreen();
+        }
+
+        return Row(
+          children: [
+            Expanded(child: _buildVideoScreen()),
+            Offstage(
+              offstage: animeController.rightDetailScreenIsFolded,
+              child: SizedBox(
+                width: rightWidth,
+                child: _buildDetailScreen(),
               ),
-              Obx(() => _buildButtonsBarAboutEpisodeMulti())
-            ])),
-      ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _buildVideoScreen() {
+    return Stack(
+      children: [
+        VideoPlayerWithLoadUrlPage(
+          key: Key('${animeController.curPlayEpisode?.number}'),
+          leading: PlatformUtil.isDesktop
+              ? IconButton(
+                  onPressed: () => animeController.closeEpisodePlayPage(),
+                  icon: const Icon(Icons.close, color: Colors.white))
+              : null,
+          loadUrl: () async {
+            String url = await ClimbAnimeUtil.getVideoUrl(
+                animeController.anime.animeUrl,
+                animeController.curPlayEpisode!.number);
+            return url;
+          },
+          title:
+              '${animeController.anime.animeName} - ${animeController.curPlayEpisode?.caption}',
+        ),
+        _FoldDetailScreenButton(animeController: animeController)
+      ],
+    );
+  }
+
+  Scaffold _buildMobileDetailPage() => _buildDetailScreen();
+
+  // 避免打开/关闭左侧播放区域后重绘右侧详情区域
+  final detailScreenKey = GlobalKey();
+
+  Scaffold _buildDetailScreen() {
+    return Scaffold(
+      key: detailScreenKey,
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Stack(children: [
+            GetBuilder<AnimeController>(
+              id: animeController.detailPageId,
+              tag: tag,
+              init: animeController,
+              initState: (_) {},
+              builder: (_) {
+                Log.info("build ${animeController.detailPageId}");
+
+                if (animeController.loadingAnime) {
+                  return Scaffold(
+                    appBar: AppBar(
+                        leading: IconButton(
+                            onPressed: _popPage,
+                            icon: const Icon(Icons.arrow_back))),
+                    body: const LoadingWidget(center: true),
+                  );
+                }
+                if (enableSplitScreenInLandscape &&
+                    Global.isLandscape(context)) {
+                  return _buildLandscapeView();
+                }
+
+                return _buildRefreshAnimeIndicator(
+                  child: CustomScrollView(
+                    slivers: [
+                      // 构建顶部栏
+                      AnimeDetailAppBar(
+                        animeController: animeController,
+                        popPage: _popPage,
+                      ),
+                      // 构建动漫信息(名字、评分、其他信息)
+                      AnimeDetailInfo(animeController: animeController),
+                      // const SliverToBoxAdapter(child: CommonDivider()),
+                      // 构建主体(集信息页)
+                      AnimeDetailEpisodeInfo(animeController: animeController)
+                    ],
+                  ),
+                );
+              },
+            ),
+            Obx(() => _buildButtonsBarAboutEpisodeMulti())
+          ])),
     );
   }
 
@@ -249,4 +314,83 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   //       return const Icon(Icons.error_outline_outlined);
   //   }
   // }
+}
+
+class _FoldDetailScreenButton extends StatefulWidget {
+  const _FoldDetailScreenButton({
+    required this.animeController,
+  });
+
+  final AnimeController animeController;
+
+  @override
+  State<_FoldDetailScreenButton> createState() =>
+      _FoldDetailScreenButtonState();
+}
+
+class _FoldDetailScreenButtonState extends State<_FoldDetailScreenButton> {
+  bool show = false;
+  Timer? timer;
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      hitTestBehavior: HitTestBehavior.translucent,
+      onEnter: (_) => _showButton(),
+      onExit: (_) => setState(() => show = false),
+      onHover: (_) {
+        if (show) {
+          _resetTimer();
+          return;
+        }
+        _showButton();
+      },
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: show ? 1 : 0,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: InkWell(
+            onTap: () => widget.animeController.foldOrUnfoldRightDetailScreen(),
+            child: Container(
+              decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius:
+                      BorderRadius.horizontal(left: Radius.circular(8))),
+              height: 50,
+              width: 24,
+              child: Center(
+                child: Icon(
+                  widget.animeController.rightDetailScreenIsFolded
+                      ? Icons.chevron_left_rounded
+                      : Icons.chevron_right_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _resetTimer() {
+    timer?.cancel();
+    timer = Timer(const Duration(seconds: 3), () {
+      if (mounted && show) {
+        setState(() => show = false);
+      }
+    });
+  }
+
+  _showButton() {
+    setState(() => show = true);
+    _resetTimer();
+  }
 }

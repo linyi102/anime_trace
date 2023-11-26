@@ -10,17 +10,22 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:path/path.dart' as p;
 
 class VideoPlayerPage extends StatefulWidget {
-  const VideoPlayerPage({required this.url, this.title = '', Key? key})
+  const VideoPlayerPage(
+      {required this.url, this.title = '', this.leading, Key? key})
       : super(key: key);
   final String url;
   final String title;
+  final Widget? leading;
 
   @override
   State<VideoPlayerPage> createState() => VideoPlayerPageState();
 }
 
 class VideoPlayerPageState extends State<VideoPlayerPage> {
-  late VideoPlayerLogic logic = VideoPlayerLogic(url: widget.url);
+  get logicTag => VideoPlayerLogic.generateTag(widget.url);
+
+  late VideoPlayerLogic logic =
+      Get.put(VideoPlayerLogic(url: widget.url), tag: logicTag);
 
   String get title => widget.title.isEmpty
       ? p.basenameWithoutExtension(widget.url)
@@ -28,7 +33,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   void dispose() {
-    Get.delete<VideoPlayerLogic>();
+    Get.delete<VideoPlayerLogic>(tag: logicTag);
     super.dispose();
   }
 
@@ -162,18 +167,20 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     return [
       Row(
         children: [
-          IconButton(
-            onPressed: () async {
-              await Global.restoreDevice();
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              size: 20,
-              color: Colors.white,
-              shadows: _shadows,
-            ),
-          ),
+          widget.leading != null
+              ? widget.leading!
+              : IconButton(
+                  onPressed: () async {
+                    await Global.restoreDevice();
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios_rounded,
+                    size: 20,
+                    color: Colors.white,
+                    shadows: _shadows,
+                  ),
+                ),
           const SizedBox(width: 15),
           Text(
             title,

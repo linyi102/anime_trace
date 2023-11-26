@@ -414,6 +414,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
         },
       ),
     ).then((value) async {
+      if (value == null) return;
+
       // 根据传回的动漫id获取最新的更新进度以及清单
       Anime newAnime = value;
       if (!newAnime.isCollected()) {
