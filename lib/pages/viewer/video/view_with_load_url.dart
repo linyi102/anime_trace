@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
 import 'package:flutter_test_future/utils/platform.dart';
@@ -58,8 +57,24 @@ class _VideoPlayerWithLoadUrlPageState
                     },
                   ),
             _buildBody(),
+            _buildParseHint()
           ],
         )),
+      ),
+    );
+  }
+
+  _buildParseHint() {
+    return Positioned(
+      left: 20,
+      bottom: 20,
+      child: Text(
+        loading
+            ? '解析链接中…'
+            : error.isNotEmpty
+                ? '解析链接失败 :('
+                : '',
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }
@@ -68,25 +83,14 @@ class _VideoPlayerWithLoadUrlPageState
     if (loading) {
       return const Align(
         alignment: Alignment.center,
-        child: LoadingWidget(text: '解析链接中…', textColor: Colors.white),
+        child: CircularProgressIndicator(color: Colors.white),
       );
     }
 
     if (error.isNotEmpty) {
       return Align(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              '解析链接失败 :(',
-              style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 10),
-            CommonOutlinedButton(onPressed: () => _loadUrl(), text: '重试')
-          ],
-        ),
-      );
+          alignment: Alignment.center,
+          child: CommonOutlinedButton(onPressed: () => _loadUrl(), text: '重试'));
     }
 
     return VideoPlayerPage(
@@ -98,11 +102,12 @@ class _VideoPlayerWithLoadUrlPageState
 
   void _loadUrl() async {
     loading = true;
+    error = '';
     if (mounted) setState(() {});
 
     url = await widget.loadUrl();
     if (url.isEmpty) {
-      error = '获取播放链接失败';
+      error = '解析链接失败 :(';
     }
 
     loading = false;
