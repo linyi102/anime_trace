@@ -6,7 +6,7 @@ Widget loadingWidget(BuildContext context) {
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget(
-      {this.height = 80,
+      {this.height = 60,
       this.center = false,
       this.text = '',
       this.textColor,
@@ -26,10 +26,10 @@ class LoadingWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: 32,
-                width: 32,
+                height: 24,
+                width: 24,
                 child: CircularProgressIndicator(
-                  strokeWidth: 4,
+                  strokeWidth: 3,
                   backgroundColor:
                       Theme.of(context).primaryColor.withOpacity(0.3),
                 ),
