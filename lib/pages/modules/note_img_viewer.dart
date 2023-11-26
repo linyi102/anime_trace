@@ -85,15 +85,17 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
               // 都叠放在图片上面，否则无法显示
               _buildStackAppBar(context),
               // 没有全屏时显示预览图片
-              if (!fullScreen)
-                Positioned(
-                  bottom: 10,
+              Positioned(
+                bottom: 10,
+                child: Offstage(
+                  offstage: fullScreen,
                   child: SizedBox(
                     height: 100,
                     width: MediaQuery.of(context).size.width,
                     child: _buildScrollAxis(),
                   ),
                 ),
+              ),
             ],
           ),
         ));
@@ -146,7 +148,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
           errorBuilder: (buildContext, object, stackTrace) {
             return _buildErrorImage(context);
           },
-          onTapUp: (_, __, ___) {
+          onTapDown: (_, __, ___) {
             _turnFullScreen();
           },
         );
@@ -337,9 +339,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
   void _scrollToCurrentImage() {
     if (currentIndex == 0) return; // 如果访问的是第一个图片，不需要移动共用轴
 
-    if (!fullScreen) {
-      scrollController.animateTo(150.0 * (currentIndex - 1),
-          duration: const Duration(milliseconds: 200), curve: Curves.linear);
-    }
+    scrollController.animateTo(150.0 * (currentIndex - 1),
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 }
