@@ -14,6 +14,7 @@ import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailPage extends StatefulWidget {
@@ -85,7 +86,10 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         Log.info("返回true");
         return true;
       },
-      child: _buildDesktopDetailPage(),
+      child: MultiPlatform(
+        mobile: _buildMobileDetailPage(),
+        desktop: _buildDesktopDetailPage(),
+      ),
     );
   }
 
