@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
@@ -51,6 +52,18 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             // 桌面端双击进入/退出全屏
             if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
           },
+          onTapUp: PlatformUtil.isDesktop
+              ? (details) {
+                  Log.info(MediaQuery.of(context).size);
+                  Log.info(details.globalPosition);
+                  // 顶部栏高度60 底部栏高度80
+                  final wholeHeight = MediaQuery.of(context).size.height;
+                  final dy = details.globalPosition.dy;
+                  if (dy > 60 && dy < wholeHeight - 80) {
+                    logic.player.playOrPause();
+                  }
+                }
+              : null,
           onLongPressStart: (details) => logic.longPressToSpeedUp(),
           onLongPressUp: () => logic.cancelSpeedUp(),
           onHorizontalDragStart: (details) => logic.player.pause(),
@@ -205,13 +218,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   List<Shadow> get _shadows =>
       [const Shadow(blurRadius: 3, color: Colors.black)];
 
-  _buildVideoView() => GestureDetector(
-      onTap: () {
-        // 桌面端单击播放/暂停
-        // BUG：单击进度条也会触发
-        // if (PlatformUtil.isDesktop) logic.player.playOrPause();
-      },
-      child: Video(controller: logic.videoController));
+  _buildVideoView() => Video(controller: logic.videoController);
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
