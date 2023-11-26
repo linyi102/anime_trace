@@ -1,7 +1,7 @@
 export HOME=/c/Users/11580
 
 # 获取版本
-androidVersion=$(grep 'version:' pubspec.yaml | awk '{print $2}')
+androidVersion=$(grep -m1 'version:' pubspec.yaml | awk '{print $2}')
 androidVersion="v$androidVersion"
 echo "Android版本：$androidVersion"
 windowsVerison=$(grep -oP '#define VERSION_AS_STRING "\K[^"]+' windows/runner/Runner.rc)
