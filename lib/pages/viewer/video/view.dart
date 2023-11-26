@@ -152,12 +152,19 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         margin: const EdgeInsets.only(top: 80),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.4),
+          color: Colors.black38,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
-          '${logic.fastForwardRate.toInt()} 倍速播放中…',
-          style: const TextStyle(color: Colors.white),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.fast_forward_rounded, color: Colors.white),
+            const SizedBox(width: 5),
+            Text(
+              '${logic.fastForwardRate.toInt()} 倍速播放',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ],
         ),
       ),
     );
