@@ -14,7 +14,6 @@ import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailPage extends StatefulWidget {
@@ -86,15 +85,12 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
         Log.info("返回true");
         return true;
       },
-      child: MultiPlatform(
-        mobile: _buildMobileDetailPage(),
-        desktop: _buildDesktopDetailPage(),
-      ),
+      child: _buildDesktopDetailPage(),
     );
   }
 
   _buildDesktopDetailPage() {
-    double rightWidth = 400;
+    double rightWidth = 300;
 
     return GetBuilder(
       init: animeController,
@@ -136,7 +132,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
             return url;
           },
           title:
-              '${animeController.anime.animeName} - 第 ${animeController.curPlayEpisode!.number} 集',
+              '${animeController.anime.animeName} - ${animeController.curPlayEpisode?.caption}',
         ),
         _FoldDetailScreenButton(animeController: animeController)
       ],

@@ -239,7 +239,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     return url;
                   },
                   title:
-                      '${widget.animeController.anime.animeName} - 第 ${widget.episode.number} 集',
+                      '${widget.animeController.anime.animeName} - ${widget.episode.caption}',
                 ));
           }
         },
@@ -342,7 +342,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     if (hideDefault) {
       return title;
     } else {
-      return "第$number集 $title";
+      return "第 $number 集 $title";
     }
   }
 
