@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 
@@ -8,6 +9,7 @@ import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -39,6 +41,8 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
   late PageController pageController;
   ScrollController scrollController = ScrollController();
+
+  bool get showSwitchImageButton => false;
 
   @override
   void initState() {
@@ -79,41 +83,86 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
           _pop();
           return true;
         },
-        child: Scaffold(
-          body: Stack(
-            children: [
-              _buildPhotoViewGallery(),
-              // 都叠放在图片上面，否则无法显示
-              _buildStackAppBar(context),
-              // 没有全屏时显示预览图片
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Offstage(
-                    offstage: fullScreen,
-                    child: MultiPlatform(
-                        mobile: SizedBox(
-                          height: 100,
-                          width: MediaQuery.of(context).size.width,
-                          child: _buildScrollAxis(),
-                        ),
-                        desktop: Container(
-                          height: 100,
-                          padding: const EdgeInsets.all(6),
-                          width: MediaQuery.of(context).size.width * 2 / 3,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: Colors.black54,
+        child: Listener(
+          onPointerSignal: (pointerSignal) {
+            if (PlatformUtil.isDesktop && pointerSignal is PointerScrollEvent) {
+              if (pointerSignal.scrollDelta.dy > 0) {
+                _animatedToNextImage();
+              } else {
+                _animatedToPreviousImage();
+              }
+            }
+          },
+          child: Scaffold(
+            body: Stack(
+              children: [
+                _buildPhotoViewGallery(),
+                // 都叠放在图片上面，否则无法显示
+                _buildStackAppBar(context),
+                // 没有全屏时显示预览图片
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Offstage(
+                      offstage: fullScreen,
+                      child: MultiPlatform(
+                          mobile: SizedBox(
+                            height: 100,
+                            width: MediaQuery.of(context).size.width,
+                            child: _buildScrollAxis(),
                           ),
-                          child: _buildScrollAxis(),
-                        )),
+                          desktop: Container(
+                            height: 100,
+                            padding: const EdgeInsets.all(6),
+                            width: MediaQuery.of(context).size.width * 2 / 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: Colors.black54,
+                            ),
+                            child: _buildScrollAxis(),
+                          )),
+                    ),
                   ),
                 ),
-              ),
-            ],
+                if (showSwitchImageButton &&
+                    PlatformUtil.isDesktop &&
+                    currentIndex > 0)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _HoverButton(
+                      icon: Icons.arrow_back_rounded,
+                      onTap: () {
+                        _animatedToPreviousImage();
+                      },
+                    ),
+                  ),
+                if (showSwitchImageButton &&
+                    PlatformUtil.isDesktop &&
+                    currentIndex < widget.relativeLocalImages.length - 1)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _HoverButton(
+                      icon: Icons.arrow_forward_rounded,
+                      onTap: () {
+                        _animatedToNextImage();
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ),
         ));
+  }
+
+  Future<void> _animatedToPreviousImage() {
+    return pageController.previousPage(
+        duration: const Duration(milliseconds: 600), curve: Curves.easeOutCirc);
+  }
+
+  Future<void> _animatedToNextImage() {
+    return pageController.nextPage(
+        duration: const Duration(milliseconds: 600), curve: Curves.easeOutCirc);
   }
 
   _buildStackAppBar(BuildContext context) {
@@ -356,5 +405,35 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
     scrollController.animateTo(150.0 * (currentIndex - 1),
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
+  }
+}
+
+class _HoverButton extends StatelessWidget {
+  const _HoverButton({
+    required this.icon,
+    this.onTap,
+  });
+  final IconData icon;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 30,
+          width: 30,
+          decoration: const BoxDecoration(
+              shape: BoxShape.circle, color: Colors.black87),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+      ),
+    );
   }
 }
