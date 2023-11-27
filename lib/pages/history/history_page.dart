@@ -192,6 +192,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 MultiPlatform(
                   mobile: ListView.builder(
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: records.length,
                     itemBuilder: (context, recordIndex) {
                       final record = records[recordIndex];
@@ -200,6 +201,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   desktop: GridView.builder(
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                             mainAxisExtent: 80, maxCrossAxisExtent: 320),
