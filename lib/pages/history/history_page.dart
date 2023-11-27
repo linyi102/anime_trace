@@ -224,7 +224,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return _RecordItem(
       record: record,
       date: date,
-      key: UniqueKey(),
+      key: ObjectKey(record),
     );
   }
 }
