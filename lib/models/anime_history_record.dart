@@ -13,4 +13,11 @@ class AnimeHistoryRecord {
   String toString() {
     return "[$startEpisodeNumber-$endEpisodeNumber] ${anime.animeName}";
   }
+
+  assign(AnimeHistoryRecord record) {
+    anime = record.anime;
+    reviewNumber = record.reviewNumber;
+    startEpisodeNumber = record.startEpisodeNumber;
+    endEpisodeNumber = record.endEpisodeNumber;
+  }
 }

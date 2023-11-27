@@ -10,8 +10,10 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/history/history_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 
@@ -160,47 +162,54 @@ class _HistoryPageState extends State<HistoryPage> {
         // key: Key("history-page-view-$selectedViewIndex"),
         controller: views[selectedViewIndex].scrollController,
         itemCount: views[selectedViewIndex].historyRecords.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (context, cardIndex) {
           int threshold = views[selectedViewIndex].pageParams.getQueriedSize();
-          if (index + 2 == threshold) {
-            Log.info("index=$index, threshold=$threshold");
+          if (cardIndex + 2 == threshold) {
+            Log.info("index=$cardIndex, threshold=$threshold");
             views[selectedViewIndex].pageParams.pageIndex++;
             historyController.loadMoreData();
           }
 
-          String date = views[selectedViewIndex].historyRecords[index].date;
+          String date = views[selectedViewIndex].historyRecords[cardIndex].date;
+          final records =
+              views[selectedViewIndex].historyRecords[cardIndex].records;
 
           return Card(
             child: Column(
               children: [
                 // 卡片标题
-                SettingTitle(
-                  title: date.replaceAll("-", "/"),
-                  // trailing: Text(
-                  //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
-                  //   style: Theme.of(context).textTheme.bodySmall,
-                  // ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SettingTitle(
+                    title: date.replaceAll("-", "/"),
+                    // trailing: Text(
+                    //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
+                    //   style: Theme.of(context).textTheme.bodySmall,
+                    // ),
+                  ),
                 ),
                 // 卡片主体
-                Column(
-                    children: views[selectedViewIndex]
-                        .historyRecords[index]
-                        .records
-                        .map(
-                          // 测试发现必须为RecordItem添加UniqueKey才能保证切换回历史页后显示出新数据
-                          // 应该和StatefulWidget的状态有关
-                          // (record) => ListTile(
-                          //   title: Text(record.anime.animeName),
-                          //   subtitle: Text(
-                          //       "${record.startEpisodeNumber}-${record.endEpisodeNumber}"),
-                          // ),
-                          (record) => RecordItem(
-                            record: record,
-                            date: date,
-                            key: UniqueKey(),
-                          ),
-                        )
-                        .toList()),
+                MultiPlatform(
+                  mobile: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: records.length,
+                    itemBuilder: (context, recordIndex) {
+                      final record = records[recordIndex];
+                      return _buildRecordItem(record, date);
+                    },
+                  ),
+                  desktop: GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisExtent: 80, maxCrossAxisExtent: 320),
+                    itemCount: records.length,
+                    itemBuilder: (context, recordIndex) {
+                      final record = records[recordIndex];
+                      return _buildRecordItem(record, date);
+                    },
+                  ),
+                ),
                 // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
                 const SizedBox(height: 5)
               ],
@@ -210,60 +219,71 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
     );
   }
+
+  _RecordItem _buildRecordItem(AnimeHistoryRecord record, String date) {
+    return _RecordItem(
+      record: record,
+      date: date,
+      key: UniqueKey(),
+    );
+  }
 }
 
-class RecordItem extends StatefulWidget {
+class _RecordItem extends StatefulWidget {
   final AnimeHistoryRecord record;
   final String date;
 
-  const RecordItem({required this.record, required this.date, Key? key})
-      : super(key: key);
+  const _RecordItem({required this.record, required this.date, super.key});
 
   @override
-  State<RecordItem> createState() => _RecordItemState();
+  State<_RecordItem> createState() => _RecordItemState();
 }
 
-class _RecordItemState extends State<RecordItem> {
-  late AnimeHistoryRecord record;
-
-  @override
-  void initState() {
-    super.initState();
-    record = widget.record;
-  }
+class _RecordItemState extends State<_RecordItem> {
+  late AnimeHistoryRecord record = widget.record;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: AnimeListCover(
-        record.anime,
-        reviewNumber: record.reviewNumber,
-        showReviewNumber: true,
-      ),
-      subtitle: Text(
-        (record.startEpisodeNumber == record.endEpisodeNumber
-            ? record.startEpisodeNumber.toString()
-            : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      title: Text(
-        record.anime.animeName,
-        // textScaleFactor: AppTheme.smallScaleFactor,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) {
-            return AnimeDetailPage(record.anime);
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Center(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) {
+                return AnimeDetailPage(record.anime);
+              },
+            )).then((value) async {
+              final newRecord =
+                  await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
+                      record.anime, record.reviewNumber, widget.date);
+              record.assign(newRecord);
+              setState(() {});
+            });
           },
-        )).then((value) async {
-          record = await HistoryDao.getRecordByAnimeIdAndReviewNumberAndDate(
-              record.anime, record.reviewNumber, widget.date);
-          setState(() {});
-        });
-      },
+          child: ListTile(
+            leading: AnimeListCover(
+              record.anime,
+              reviewNumber: record.reviewNumber,
+              showReviewNumber: true,
+            ),
+            subtitle: Text(
+              (record.startEpisodeNumber == record.endEpisodeNumber
+                  ? record.startEpisodeNumber.toString()
+                  : "${record.startEpisodeNumber}~${record.endEpisodeNumber}"),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            title: Text(
+              record.anime.animeName,
+              // textScaleFactor: AppTheme.smallScaleFactor,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            // subtitle: Text(updateRecordVo.anime.getAnimeSource()),
+          ),
+        ),
+      ),
     );
   }
 }
