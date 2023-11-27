@@ -94,7 +94,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   }
 
   _buildDesktopDetailPage() {
-    double rightWidth = 300;
+    double rightWidth = 340;
 
     return GetBuilder(
       init: animeController,
