@@ -81,8 +81,10 @@ class TimeUtil {
 
     // 先得到年后面的月日时分
     String showTimeStr = "";
-    // 同月，并且设置了显示昨天或今天
-    if (showYesterdayAndToday && dateTime.month == now.month) {
+    // 同年同月，并且设置了显示昨天或今天
+    if (showYesterdayAndToday &&
+        dateTime.year == now.year &&
+        dateTime.month == now.month) {
       if (dateTime.day == now.day) {
         showTimeStr += "今天";
       } else if (now.day.toInt() - dateTime.day.toInt() == 1) {
