@@ -29,7 +29,7 @@ class _AggregatePageState extends State<AggregatePage> {
   bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
 
-  double get itemHeight => 90.0;
+  double get itemHeight => 100.0;
   double get itemWidth => 100.0;
 
   List<ClimbWebsite> usableWebsites = [];
@@ -158,8 +158,9 @@ class _AggregatePageState extends State<AggregatePage> {
 
                 return IconTextButton(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-                    margin: const EdgeInsets.symmetric(vertical: 6),
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                     onTap: () => _enterSourceDetail(climbWebsite),
                     icon: Stack(
                       children: [

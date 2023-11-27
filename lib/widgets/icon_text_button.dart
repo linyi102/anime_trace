@@ -48,6 +48,7 @@ class IconTextButton extends StatelessWidget {
         child: Container(
           padding: padding,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildIcon(),
               SizedBox(height: space),
