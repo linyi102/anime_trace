@@ -8,12 +8,12 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_outlined_button.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -83,22 +83,20 @@ class UpdateRecordPage extends StatelessWidget {
             return Card(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: SettingTitle(
-                        title: TimeUtil.getHumanReadableDateTimeStr(
-                      date,
-                      showTime: false,
-                      showDayOfWeek: true,
-                      chineseDelimiter: true,
-                      removeLeadingZero: true,
-                    )),
-                  ),
-                  MultiPlatform(
+                  SettingTitle(
+                      title: TimeUtil.getHumanReadableDateTimeStr(
+                    date,
+                    showTime: false,
+                    showDayOfWeek: true,
+                    chineseDelimiter: true,
+                    removeLeadingZero: true,
+                  )),
+                  Responsive(
                     mobile: ListView(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: _buildRecords(context, map[date]!),
+                      children:
+                          _buildRecords(context, map[date]!, useCard: false),
                     ),
                     desktop: GridView(
                       shrinkWrap: true,
@@ -106,7 +104,8 @@ class UpdateRecordPage extends StatelessWidget {
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
                               mainAxisExtent: 80, maxCrossAxisExtent: 320),
-                      children: _buildRecords(context, map[date]!),
+                      children:
+                          _buildRecords(context, map[date]!, useCard: true),
                     ),
                   ),
                   // 避免最后一项太靠近卡片底部，因为标题没有紧靠顶部，所以会导致不美观
@@ -118,49 +117,66 @@ class UpdateRecordPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildRecords(context, List<UpdateRecordVo> records) {
+  List<Widget> _buildRecords(
+    context,
+    List<UpdateRecordVo> records, {
+    bool useCard = false,
+  }) {
     List<Widget> recordsWidget = [];
     for (var i = 0; i < records.length; ++i) {
       var record = records[i];
-      recordsWidget.add(_buildRecordItem(context, record, records));
+      recordsWidget
+          .add(_buildRecordItem(context, record, records, useCard: useCard));
     }
     return recordsWidget;
   }
 
   Widget _buildRecordItem(
-      context, UpdateRecordVo record, List<UpdateRecordVo> records) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Center(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) {
-                return AnimeDetailPage(record.anime);
-              },
-            ));
-          },
-          onLongPress: () {
-            // 提供删除操作
-            _showDialogAboutRecordItem(context, record, records);
-          },
-          child: ListTile(
-            leading: AnimeListCover(record.anime),
-            subtitle: Text(
-              "更新至 ${record.newEpisodeCnt} 集",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            title: Text(
-              record.anime.animeName,
-              // textScaleFactor: AppTheme.smallScaleFactor,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+    context,
+    UpdateRecordVo record,
+    List<UpdateRecordVo> records, {
+    bool useCard = false,
+  }) {
+    _buildItem() {
+      return InkWell(
+        borderRadius:
+            useCard ? BorderRadius.circular(AppTheme.cardRadius) : null,
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return AnimeDetailPage(record.anime);
+            },
+          ));
+        },
+        onLongPress: () {
+          // 提供删除操作
+          _showDialogAboutRecordItem(context, record, records);
+        },
+        child: ListTile(
+          leading: AnimeListCover(record.anime),
+          subtitle: Text(
+            "更新至 ${record.newEpisodeCnt} 集",
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          title: Text(
+            record.anime.animeName,
+            // textScaleFactor: AppTheme.smallScaleFactor,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-      ),
-    );
+      );
+    }
+
+    if (useCard) {
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        child: Center(
+          child: _buildItem(),
+        ),
+      );
+    }
+    return _buildItem();
   }
 
   _showDialogAboutRecordItem(

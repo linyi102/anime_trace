@@ -18,7 +18,7 @@ import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
-import 'package:flutter_test_future/responsive.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 
 import '../../utils/time_util.dart';
 
