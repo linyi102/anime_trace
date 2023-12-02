@@ -191,6 +191,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
           context: context,
           icon: Center(
             child: PopupMenuButton(
+              splashRadius: 1,
+              tooltip: '',
               padding: EdgeInsets.zero,
               position: PopupMenuPosition.under,
               icon: const Icon(
@@ -209,6 +211,19 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                         Navigator.pop(context);
 
                         _dialogDeleteAnime();
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    padding: const EdgeInsets.all(0),
+                    child: ListTile(
+                      leading: const Icon(Icons.update),
+                      title: const Text("更新动漫"),
+                      onTap: () {
+                        // 关闭下拉菜单
+                        Navigator.pop(context);
+
+                        widget.animeController.climbAnimeInfo(context);
                       },
                     ),
                   ),
