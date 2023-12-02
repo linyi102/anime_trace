@@ -132,7 +132,8 @@ class ClimbCycdm with Climb {
         .substring(animeUrlWithoutHtml.lastIndexOf('/') + 1));
     if (urlId == null) return '';
 
-    int playRoute = 1;
+    // 尝试获取播放线路
+    int playRoute = await getPlayRoute(animeUrl) ?? 1;
     // 拼接该集的地址
     String episodeUrl = '$baseUrl/watch/$urlId/$playRoute/$episodeNumber.html';
 
@@ -184,5 +185,31 @@ class ClimbCycdm with Climb {
 
     String playUrlWithVerify = result.data.data['url'];
     return playUrlWithVerify;
+  }
+
+  Future<int?> getPlayRoute(String animeUrl) async {
+    final detailDocument = await dioGetAndParse(animeUrl, isMobile: isMobile);
+    if (detailDocument == null) return null;
+
+    final playlists =
+        detailDocument.getElementsByClassName('anthology-list-play');
+    if (playlists.isEmpty) return null;
+
+    final playlist = playlists.first;
+    final aElements = playlist.getElementsByTagName('a');
+    if (aElements.isEmpty) return null;
+
+    final aElement = aElements.first;
+    final relativeUrl = aElement.attributes['href'];
+    if (relativeUrl == null || relativeUrl.isEmpty) return null;
+
+    try {
+      final playRoute =
+          RegExp(r'([0-9]*)\/[0-9]*.html').firstMatch(relativeUrl)?.group(1);
+      if (playRoute == null) return null;
+      return int.tryParse(playRoute);
+    } catch (e) {
+      return null;
+    }
   }
 }
