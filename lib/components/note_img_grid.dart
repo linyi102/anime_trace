@@ -14,7 +14,7 @@ class NoteImgGrid extends StatelessWidget {
   const NoteImgGrid({Key? key, required this.relativeLocalImages})
       : super(key: key);
 
-  bool get enableTwitterStyle => false;
+  bool get useFillStyle => false;
   // 是否开启显示所有图片配置
   bool get enableShowAllNoteGridImage => false;
 
@@ -26,78 +26,116 @@ class NoteImgGrid extends StatelessWidget {
     }
 
     // 构建网格图片
-    return Responsive(
-        mobile: _buildView(columnCnt: 3, maxDisplayCount: 9),
-        tablet: _buildView(columnCnt: 5, maxDisplayCount: 10),
-        desktop: _buildView(columnCnt: 6, maxDisplayCount: 12));
+    return Container(
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
+      child: Responsive(
+          // mobile: _buildMobileView(),
+          mobile: _buildView(columnCnt: 3, maxDisplayCount: 9),
+          tablet: _buildView(columnCnt: 5, maxDisplayCount: 10),
+          desktop: _buildView(columnCnt: 6, maxDisplayCount: 12)),
+    );
+  }
+
+  // ignore: unused_element
+  _buildMobileView() {
+    final imageCount = relativeLocalImages.length;
+
+    Widget? child;
+    int columnCount = 3, maxDisplayCount = 9;
+    double childAspectRatio = 1;
+
+    if (imageCount == 1) {
+      columnCount = 1;
+      childAspectRatio = 16 / 9;
+    }
+
+    if (imageCount == 2) {
+      columnCount = 2;
+      childAspectRatio = 4 / 3;
+    }
+
+    if (imageCount == 3) {
+      columnCount = 3;
+      childAspectRatio = 4 / 3;
+    }
+
+    if (imageCount == 4) {
+      columnCount = 2;
+      childAspectRatio = 4 / 3;
+    }
+
+    if (imageCount == 6) {
+      columnCount = 3;
+      childAspectRatio = 4 / 3;
+    }
+
+    if (imageCount >= 9) {
+      columnCount = 3;
+      maxDisplayCount = 9;
+      childAspectRatio = 1;
+    }
+
+    if (imageCount == 5 || imageCount == 7 || imageCount == 8) {
+      columnCount = 3;
+      maxDisplayCount = 9;
+      childAspectRatio = 1;
+    }
+
+    child = _buildCommonGrid(
+      columnCnt: columnCount,
+      maxDisplayCount: maxDisplayCount,
+      childAspectRatio: childAspectRatio,
+    );
+
+    if (imageCount == 3) {
+      columnCount = 3;
+      childAspectRatio = 4 / 3;
+
+      // 左边上下两张，右边一张
+      child = Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                NoteImgItem(
+                  useCustomAspectRatio: true,
+                  aspectRatio: childAspectRatio,
+                  relativeLocalImages: relativeLocalImages,
+                  initialIndex: 0,
+                ),
+                SizedBox(height: AppTheme.noteImageSpacing),
+                NoteImgItem(
+                  useCustomAspectRatio: true,
+                  aspectRatio: childAspectRatio,
+                  relativeLocalImages: relativeLocalImages,
+                  initialIndex: 1,
+                )
+              ],
+            ),
+          ),
+          SizedBox(width: AppTheme.noteImageSpacing),
+          Expanded(
+              child: NoteImgItem(
+            useCustomAspectRatio: true,
+            aspectRatio: 4 / (3 * 2),
+            relativeLocalImages: relativeLocalImages,
+            initialIndex: 2,
+          ))
+        ],
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: child,
+    );
   }
 
   _buildView({int columnCnt = 3, int maxDisplayCount = 9}) {
-    late Widget twitterGrid;
-    if (enableTwitterStyle) {
-      double childAspectRatio = 4 / 3;
-
-      if (relativeLocalImages.length <= 2) {
-        columnCnt = relativeLocalImages.length;
-      }
-
-      if (relativeLocalImages.length >= 4) {
-        columnCnt = 2;
-        maxDisplayCount = 4;
-      }
-
-      twitterGrid = _buildCommonGrid(
-        columnCnt: columnCnt,
-        maxDisplayCount: maxDisplayCount,
-        childAspectRatio: childAspectRatio,
-      );
-
-      if (relativeLocalImages.length == 3) {
-        // 左边上下两张，右边一张
-        twitterGrid = Row(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  NoteImgItem(
-                    twitterStyle: true,
-                    aspectRatio: childAspectRatio,
-                    relativeLocalImages: relativeLocalImages,
-                    initialIndex: 0,
-                  ),
-                  SizedBox(height: AppTheme.noteImageSpacing),
-                  NoteImgItem(
-                    twitterStyle: true,
-                    aspectRatio: childAspectRatio,
-                    relativeLocalImages: relativeLocalImages,
-                    initialIndex: 1,
-                  )
-                ],
-              ),
-            ),
-            SizedBox(width: AppTheme.noteImageSpacing),
-            Expanded(
-                child: NoteImgItem(
-              twitterStyle: true,
-              aspectRatio: 4 / (3 * 2),
-              relativeLocalImages: relativeLocalImages,
-              initialIndex: 2,
-            ))
-          ],
-        );
-      }
-    }
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
-      child: ClipRRect(
-        borderRadius:
-            enableTwitterStyle ? BorderRadius.circular(12) : BorderRadius.zero,
-        child: enableTwitterStyle
-            ? twitterGrid
-            : _buildCommonGrid(
-                columnCnt: columnCnt, maxDisplayCount: maxDisplayCount),
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.zero,
+      child: _buildCommonGrid(
+          columnCnt: columnCnt, maxDisplayCount: maxDisplayCount),
     );
   }
 
@@ -126,7 +164,7 @@ class NoteImgGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         // Log.info("$runtimeType: index=$index");
         return NoteImgItem(
-            twitterStyle: enableTwitterStyle,
+            useCustomAspectRatio: useFillStyle,
             aspectRatio: childAspectRatio,
             relativeLocalImages: relativeLocalImages,
             initialIndex: index,

@@ -13,7 +13,7 @@ class NoteImgItem extends StatelessWidget {
       relativeLocalImages; // 传入该网格的所有图片，是因为需要点击该图片(传入的下标)后能够进入图片浏览页面
   final int initialIndex; // 传入多个图片的起始下标
   final int imageRemainCount; // 笔记列表页：第9张图显示剩余图片数量
-  final bool twitterStyle;
+  final bool useCustomAspectRatio;
   final double aspectRatio;
   final void Function()? onLongPress;
   const NoteImgItem(
@@ -21,7 +21,7 @@ class NoteImgItem extends StatelessWidget {
       this.initialIndex = 0,
       this.imageRemainCount = 0,
       this.aspectRatio = 4 / 3,
-      this.twitterStyle = false,
+      this.useCustomAspectRatio = false,
       this.onLongPress,
       Key? key})
       : super(key: key);
@@ -53,7 +53,7 @@ class NoteImgItem extends StatelessWidget {
       },
       child: Stack(children: [
         AspectRatio(
-          aspectRatio: twitterStyle ? aspectRatio : 1,
+          aspectRatio: useCustomAspectRatio ? aspectRatio : 1,
           // 圆角
           child: _buildImage(relativeImagePath),
         ),
@@ -77,7 +77,7 @@ class NoteImgItem extends StatelessWidget {
 
   _buildImage(String relativeImagePath) {
     return ClipRRect(
-      borderRadius: twitterStyle
+      borderRadius: useCustomAspectRatio
           ? BorderRadius.zero
           : BorderRadius.circular(AppTheme.noteImgRadius),
       child: CommonImage(ImageUtil.getAbsoluteNoteImagePath(relativeImagePath)),
