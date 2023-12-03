@@ -77,12 +77,6 @@ class _RateNoteListPageState extends State<RateNoteListPage>
   }
 
   @override
-  void didUpdateWidget(covariant RateNoteListPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _loadRateNoteData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
     return RefreshIndicator(

@@ -83,13 +83,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   }
 
   @override
-  void didUpdateWidget(covariant EpisodeNoteListPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    Log.info(widget.noteFilter.toString());
-    _loadEpisodeNoteData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
     return RefreshIndicator(
