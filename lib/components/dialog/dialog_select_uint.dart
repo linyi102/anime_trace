@@ -60,7 +60,8 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
   late int tmpValue = widget.initialValue;
   get minValue => widget.minValue;
   get maxValue => widget.maxValue;
-  double get radius => 8;
+  get radius => 8.0;
+  get numberRangeHint => "范围：[$minValue, $maxValue]";
   FocusNode blankFocusNode = FocusNode();
 
   @override
@@ -94,6 +95,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
             ),
             prefixIconConstraints: BoxConstraints.tight(const Size(32, 48)),
             suffixIconConstraints: BoxConstraints.tight(const Size(32, 48)),
+            // helperText: numberRangeHint,
             focusedBorder: _buildBorder(isFocused: true),
             enabledBorder: _buildBorder(),
             isDense: true,
@@ -101,7 +103,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
         ),
         const SizedBox(height: 5),
         Text(
-          "范围：[$minValue, $maxValue]",
+          numberRangeHint,
           style: TextStyle(
             color: Theme.of(context).hintColor,
             fontSize: 12,

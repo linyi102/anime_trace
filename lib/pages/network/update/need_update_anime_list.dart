@@ -53,7 +53,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       var dateTime = monday.add(Duration(days: i));
       var item = WeeklyItem(
         title: '周${TimeUtil.getChineseWeekdayByNumber(dateTime.weekday)}',
-        subtitle: '${dateTime.day}',
+        subtitle: '${dateTime.month}-${dateTime.day}',
         weekday: dateTime.weekday,
       );
       weeklyItems.add(item);

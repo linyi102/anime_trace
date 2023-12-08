@@ -167,7 +167,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     final time = DateTime.tryParse(anime.premiereTime);
     if (time == null) return const SizedBox();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(6),

@@ -19,17 +19,19 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          _buildFormCard(),
-          if (inputOk)
-            Expanded(
-                child: EpisodeNoteListPage(
-              noteFilter: noteFilter,
-              key: ValueKey(
-                  '${noteFilter.animeNameKeyword}-${noteFilter.noteContentKeyword}'),
-            ))
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildFormCard(),
+            if (inputOk)
+              Expanded(
+                  child: EpisodeNoteListPage(
+                noteFilter: noteFilter,
+                key: ValueKey(
+                    '${noteFilter.animeNameKeyword}-${noteFilter.noteContentKeyword}'),
+              ))
+          ],
+        ),
       ),
     );
   }

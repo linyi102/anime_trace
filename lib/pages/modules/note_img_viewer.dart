@@ -212,7 +212,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
           errorBuilder: (buildContext, object, stackTrace) {
             return _buildErrorImage(context);
           },
-          onTapDown: (_, __, ___) {
+          onTapUp: (_, __, ___) {
             _turnFullScreen();
           },
         );
