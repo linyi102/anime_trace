@@ -708,6 +708,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.9"
+  scrollview_observer:
+    dependency: "direct main"
+    description:
+      name: scrollview_observer
+      sha256: "72b806ea64d446efffac1000c0e0c0b03b06ce019b0fcc7d24d3b1f86e93fb0d"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.18.2"
   shared_preferences:
     dependency: "direct main"
     description:

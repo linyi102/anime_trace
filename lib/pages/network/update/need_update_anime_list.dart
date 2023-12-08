@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/play_status.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:scrollview_observer/scrollview_observer.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);
@@ -20,12 +19,18 @@ class NeedUpdateAnimeList extends StatefulWidget {
 
 class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   List<Anime> animes = [];
+  List<Anime> filteredAnimes = [];
   bool loadOk = false;
-  int cnt = 0;
 
-  bool useCard = true;
+  final allWeeklyItem = WeeklyItem(title: '全部', weekday: 0);
+  final unknownWeeklyItem = WeeklyItem(title: '未知', weekday: -1);
+  List<WeeklyItem> weeklyItems = [];
+  late WeeklyItem curWeeklyItem;
+  int get curBarItemIndex => weeklyItems.indexOf(curWeeklyItem);
 
   final scrollController = ScrollController();
+  late final observerController =
+      ListObserverController(controller: scrollController);
 
   @override
   void initState() {
@@ -39,125 +44,173 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
     super.dispose();
   }
 
-  _loadData() {
-    AnimeDao.getAllNeedUpdateAnimes().then((value) {
-      // 排序规则
-      // 1.连载中靠前，未开播靠后
-      // 2.首播时间
-      animes = value;
-      animes.sort((a, b) {
-        if (a.getPlayStatus() != b.getPlayStatus()) {
-          if (a.getPlayStatus() == PlayStatus.playing) {
-            return -1;
-          } else {
-            return 1;
-          }
-        } else {
-          // 播放状态相同，比较首播时间
-          return a.premiereTime.compareTo(b.premiereTime);
-        }
-      });
-      // List<Anime> playingAnimes = [], notStartedAnimes = [];
-      // for (var anime in value) {
-      //   if (anime.getPlayStatus() == PlayStatus.playing) {
-      //     playingAnimes.add(anime);
-      //   } else {
-      //     notStartedAnimes.add(anime);
-      //   }
-      // }
-      // animes.addAll(playingAnimes);
-      // animes.addAll(notStartedAnimes);
+  _loadData() async {
+    weeklyItems.addAll([allWeeklyItem, unknownWeeklyItem]);
 
-      cnt = animes.length;
-      loadOk = true;
-      setState(() {});
-    });
+    final now = DateTime.now();
+    DateTime monday = now.subtract(Duration(days: now.weekday - 1));
+    for (int i = 0; i < 7; ++i) {
+      var dateTime = monday.add(Duration(days: i));
+      var item = WeeklyItem(
+        title: '周${TimeUtil.getChineseWeekdayByNumber(dateTime.weekday)}',
+        subtitle: '${dateTime.day}',
+        weekday: dateTime.weekday,
+      );
+      weeklyItems.add(item);
+      if (now.weekday == dateTime.weekday) curWeeklyItem = item;
+    }
+
+    animes = await AnimeDao.getAllNeedUpdateAnimes();
+    _sortAnimes();
+    loadOk = true;
+    _filterAnime();
+
+    observerController.initialIndex = weeklyItems.indexOf(curWeeklyItem);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("未完结 ($cnt)"),
+        title: Text("${animes.length} 个未完结"),
       ),
       body: CommonScaffoldBody(
-          child: Scrollbar(
-        controller: scrollController,
-        child: FadeAnimatedSwitcher(
-          destWidget:
-              useCard ? _buildAnimeCardListView() : _buildAnimeTileListView(),
-          loadOk: loadOk,
+          child: FadeAnimatedSwitcher(
+        destWidget: Column(
+          children: [
+            _buildWeeklyBar(),
+            Expanded(child: _buildAnimeCardListView()),
+          ],
         ),
+        loadOk: loadOk,
       )),
+    );
+  }
+
+  _buildWeeklyBar() {
+    return Container(
+      height: 60,
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: ListViewObserver(
+        controller: observerController,
+        child: ListView(
+            controller: scrollController,
+            scrollDirection: Axis.horizontal,
+            children: [for (var item in weeklyItems) _buildWeeklyItem(item)]),
+      ),
+    );
+  }
+
+  _buildWeeklyItem(WeeklyItem item) {
+    bool isCur = curWeeklyItem == item;
+    var radius = BorderRadius.circular(12);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isCur
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).cardTheme.color,
+        borderRadius: radius,
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      child: InkWell(
+        borderRadius: radius,
+        onTap: () {
+          setState(() {
+            curWeeklyItem = item;
+            _filterAnime();
+          });
+
+          observerController.animateTo(
+            index: curBarItemIndex,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.linear,
+            offset: (_) {
+              return MediaQuery.of(context).size.width * 0.5;
+            },
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                item.title,
+                style: TextStyle(
+                  color: isCur ? Colors.white : null,
+                ),
+              ),
+              if (isCur && item.subtitle.isNotEmpty)
+                Text(
+                  item.subtitle,
+                  style: TextStyle(
+                      color: isCur ? Colors.white : Theme.of(context).hintColor,
+                      fontSize: 12),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   ListView _buildAnimeCardListView() {
     return ListView.separated(
-      controller: scrollController,
-      itemCount: animes.length,
+      key: ObjectKey(curWeeklyItem),
+      itemCount: filteredAnimes.length,
       separatorBuilder: (context, index) => const CommonDivider(thinkness: 0),
       itemBuilder: (context, index) => AnimeItemAutoLoad(
-        anime: animes[index],
+        anime: filteredAnimes[index],
         showProgress: false,
         showReviewNumber: false,
-        onChanged: (newAnime) {
-          Log.info("onChanged");
-          // animes[index] = newAnime;
-          String newPlayStatus = newAnime.playStatus;
-          Log.info("旧状态：${animes[index].playStatus}，新状态：$newPlayStatus");
-          if (newPlayStatus.contains("完结")) {
-            Log.info("已完结，从列表中删除");
-            setState(() {
-              animes.removeAt(index);
-              cnt = animes.length;
-            });
-            // 下拉再往上翻才能看到消失了，不过并不影响
-          } else {
-            animes[index] = newAnime;
-          }
-        },
+        showWeekday: true,
         showAnimeInfo: true,
+        onChanged: (Anime newAnime) {},
       ),
     );
   }
 
-  _buildAnimeTileListView() {
-    return ListView.builder(
-        controller: scrollController,
-        itemCount: animes.length,
-        itemBuilder: (context, index) {
-          Log.info("$runtimeType: index=$index");
-          Anime anime = animes[index];
-          return AnimeListTile(
-            isThreeLine: true,
-            anime: anime,
-            animeTileSubTitle: AnimeTileSubTitle.twoLinesOfInfo,
-            showReviewNumber: false,
-            showTrailingProgress: false,
-            onTap: () {
-              _enterAnimeDetailPage(anime, index);
-            },
-          );
-        });
-  }
-
-  _enterAnimeDetailPage(Anime anime, int index) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return AnimeDetailPage(anime);
-    })).then((value) {
-      Anime retAnime = value as Anime;
-      String newPlayStatus = retAnime.playStatus;
-      Log.info("旧状态：${anime.playStatus}，新状态：$newPlayStatus");
-      if (newPlayStatus.contains("完结")) {
-        Log.info("已完结，从列表中删除");
-        animes.removeAt(index);
-        cnt = animes.length;
-        setState(() {});
+  /// 排序规则
+  /// 1.连载中靠前，未开播靠后
+  /// 2.首播时间
+  void _sortAnimes() {
+    animes.sort((a, b) {
+      if (a.getPlayStatus() != b.getPlayStatus()) {
+        if (a.getPlayStatus() == PlayStatus.playing) {
+          return -1;
+        } else {
+          return 1;
+        }
       } else {
-        // 更新动漫(封面可能发生变化)
-        animes[index] = retAnime;
+        // 播放状态相同，比较首播时间
+        return a.premiereTime.compareTo(b.premiereTime);
       }
     });
   }
+
+  /// 筛选动漫
+  void _filterAnime() {
+    int weekday = curWeeklyItem.weekday;
+    if (weekday == allWeeklyItem.weekday) {
+      filteredAnimes = animes;
+    } else if (weekday == unknownWeeklyItem.weekday) {
+      filteredAnimes =
+          animes.where((anime) => anime.premiereDateTime == null).toList();
+    } else if (1 <= weekday && weekday <= 7) {
+      filteredAnimes = animes
+          .where((anime) => anime.premiereDateTime?.weekday == weekday)
+          .toList();
+    }
+
+    if (mounted) setState(() {});
+  }
+}
+
+class WeeklyItem {
+  String title;
+  String subtitle;
+  int weekday;
+  WeeklyItem({required this.title, this.subtitle = '', required this.weekday});
 }

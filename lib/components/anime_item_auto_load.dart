@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -17,6 +18,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
       this.subtitles = const [],
       this.showProgress = false,
       this.showReviewNumber = false,
+      this.showWeekday = false,
       this.showAnimeInfo = false,
       this.mixDb = true,
       this.climbDetail = true,
@@ -28,6 +30,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
   final AnimeItemStyle style;
   final bool showProgress;
   final bool showReviewNumber;
+  final bool showWeekday;
   final bool showAnimeInfo; // 显示与动漫相关的两行信息
   final bool mixDb; // 如果数据库已收藏，则混入
   final bool climbDetail; // 爬取详细信息
@@ -142,7 +145,12 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
                     for (var subtitle in widget.subtitles)
                       _showAnimeSubtitle(subtitle),
                     if (widget.showAnimeInfo)
-                      _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
+                      Row(
+                        children: [
+                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
+                          if (widget.showWeekday) _buildWeekday()
+                        ],
+                      ),
                     if (widget.showAnimeInfo)
                       _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
                   ],
@@ -151,6 +159,22 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  _buildWeekday() {
+    final time = DateTime.tryParse(anime.premiereTime);
+    if (time == null) return const SizedBox();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        '周${TimeUtil.getChineseWeekdayByNumber(time.weekday)}',
+        style: const TextStyle(color: Colors.white, fontSize: 12),
       ),
     );
   }
@@ -183,7 +207,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
         ? Container()
         : Container(
             alignment: Alignment.topLeft,
-            padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
             child: Text(
               info,
               style:
