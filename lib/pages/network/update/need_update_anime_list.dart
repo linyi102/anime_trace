@@ -60,7 +60,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       if (now.weekday == dateTime.weekday) curWeeklyItem = item;
     }
 
-    animes = await AnimeDao.getAllNeedUpdateAnimes();
+    animes = await AnimeDao.getAllNeedUpdateAnimes(includeEmptyUrl: true);
     _sortAnimes();
     loadOk = true;
     _filterAnime();

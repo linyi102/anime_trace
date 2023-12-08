@@ -57,7 +57,9 @@ class AnimeDao {
   }
 
   /// 获取所有未完结动漫
-  static Future<List<Anime>> getAllNeedUpdateAnimes() async {
+  static Future<List<Anime>> getAllNeedUpdateAnimes({
+    bool includeEmptyUrl = false,
+  }) async {
     List<Anime> animes = await getAllAnimes();
     List<Anime> needUpdateAnimes = [];
 
@@ -65,12 +67,16 @@ class AnimeDao {
       // 跳过完结动漫、豆瓣、bangumi、自定义动漫(也就是没有动漫地址)
       // 不能只更新连载中动漫，因为有些未播放，后面需要更新后才会变成连载
       if (anime.playStatus.contains("完结") ||
-          anime.animeUrl.contains("douban") ||
-          anime.animeUrl
-              .contains("bangumi.tv") || // 次元城动漫详细链接包含bangumi，因此要额外添加.tv避免过滤次元城
-          anime.animeUrl.isEmpty) {
+              anime.animeUrl.contains("douban") ||
+              anime.animeUrl.contains(
+                  "bangumi.tv") // 次元城动漫详细链接包含bangumi，因此要额外添加.tv避免过滤次元城
+          ) {
         continue;
       }
+      if (!includeEmptyUrl && anime.animeUrl.isEmpty) {
+        continue;
+      }
+
       needUpdateAnimes.add(anime);
     }
     return needUpdateAnimes;
