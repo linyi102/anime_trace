@@ -48,6 +48,7 @@ class AnimeGridCover extends StatelessWidget {
 
     if (onlyShowCover) return _buildCover(context, false);
     return InkWell(
+      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
       onTap: onPressed,
       // 监听是否显示进度、观看次数、原图
       child: Obx(() => Column(
