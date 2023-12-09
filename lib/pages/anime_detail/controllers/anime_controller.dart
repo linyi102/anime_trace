@@ -392,15 +392,24 @@ class AnimeController extends GetxController {
     Map<String, int>? result = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-          title: const Text('集数'),
           content: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  child: Text('总集数', style: TextStyle(fontSize: 14)),
+                ),
                 NumberControlInputField(
                   controller: episodeCntController,
                   minValue: episodeCntMinValue,
                   maxValue: episodeCntMaxValue,
                   initialValue: anime.animeEpisodeCnt,
+                ),
+                const SizedBox(height: 10),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  child: Text('起始集', style: TextStyle(fontSize: 14)),
                 ),
                 NumberControlInputField(
                   controller: episodeStartNumberController,
