@@ -7,11 +7,16 @@ import 'package:flutter_test_future/widgets/stack_appbar.dart';
 
 class VideoPlayerWithLoadUrlPage extends StatefulWidget {
   const VideoPlayerWithLoadUrlPage(
-      {required this.loadUrl, this.title = '', this.leading, super.key});
+      {required this.loadUrl,
+      this.title = '',
+      this.leading,
+      this.whenDesktopChangeFullScreen,
+      super.key});
 
   final Future<String> Function() loadUrl;
   final Widget? leading;
   final String title;
+  final void Function(bool isFullScreen)? whenDesktopChangeFullScreen;
 
   @override
   State<VideoPlayerWithLoadUrlPage> createState() =>
@@ -97,6 +102,7 @@ class _VideoPlayerWithLoadUrlPageState
       url: url,
       title: widget.title,
       leading: widget.leading,
+      whenDesktopChangeFullScreen: widget.whenDesktopChangeFullScreen,
     );
   }
 

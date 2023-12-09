@@ -12,11 +12,16 @@ import 'package:path/path.dart' as p;
 
 class VideoPlayerPage extends StatefulWidget {
   const VideoPlayerPage(
-      {required this.url, this.title = '', this.leading, Key? key})
+      {required this.url,
+      this.title = '',
+      this.leading,
+      this.whenDesktopChangeFullScreen,
+      Key? key})
       : super(key: key);
   final String url;
   final String title;
   final Widget? leading;
+  final void Function(bool isFullScreen)? whenDesktopChangeFullScreen;
 
   @override
   State<VideoPlayerPage> createState() => VideoPlayerPageState();
@@ -50,7 +55,11 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
           },
           onDoubleTap: () {
             // 桌面端双击进入/退出全屏
-            if (PlatformUtil.isDesktop) logic.windowEnterOrExitFullscreen();
+            if (PlatformUtil.isDesktop) {
+              logic.windowEnterOrExitFullscreen(
+                  whenDesktopChangeFullScreen:
+                      widget.whenDesktopChangeFullScreen);
+            }
           },
           onTapUp: PlatformUtil.isDesktop
               ? (details) {

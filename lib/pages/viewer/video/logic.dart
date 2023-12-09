@@ -102,9 +102,16 @@ class VideoPlayerLogic extends GetxController {
     update();
   }
 
-  windowEnterOrExitFullscreen() async {
-    await windowManager.setFullScreen(!await windowManager.isFullScreen());
-    if (!await windowManager.isFullScreen()) {
+  windowEnterOrExitFullscreen({
+    void Function(bool isFullScreen)? whenDesktopChangeFullScreen,
+  }) async {
+    bool isFullScreen = await windowManager.isFullScreen();
+    bool willFullScreen = !isFullScreen;
+    whenDesktopChangeFullScreen?.call(willFullScreen);
+
+    await windowManager.setFullScreen(!isFullScreen);
+    isFullScreen = await windowManager.isFullScreen();
+    if (!isFullScreen) {
       // 不是全屏时，重新设置宽高。因为全屏后退出全屏会导致无法展示当前页的所有信息
       var size = await windowManager.getSize();
       await windowManager.setSize(Size(size.width, size.height - 0.1));

@@ -539,20 +539,20 @@ class AnimeController extends GetxController {
 
   foldOrUnfoldRightDetailScreen() {
     if (rightDetailScreenIsFolded) {
-      _unfoldRightDetailScreen();
+      unfoldRightDetailScreen();
     } else {
-      _foldRightDetailScreen();
+      foldRightDetailScreen();
     }
   }
 
   /// 折叠右侧详情区域
-  _foldRightDetailScreen() {
+  foldRightDetailScreen() {
     rightDetailScreenIsFolded = true;
     update();
   }
 
   /// 展开右侧详情区域
-  _unfoldRightDetailScreen() {
+  unfoldRightDetailScreen() {
     rightDetailScreenIsFolded = false;
     update();
   }

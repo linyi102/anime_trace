@@ -137,6 +137,13 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
           },
           title:
               '${animeController.anime.animeName} - ${animeController.curPlayEpisode?.caption}',
+          whenDesktopChangeFullScreen: (fullScreen) {
+            if (PlatformUtil.isDesktop) {
+              fullScreen
+                  ? animeController.foldRightDetailScreen()
+                  : animeController.unfoldRightDetailScreen();
+            }
+          },
         ),
         _FoldDetailScreenButton(animeController: animeController)
       ],
