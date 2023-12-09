@@ -170,6 +170,11 @@ class Global {
     return SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: []);
   }
+
+  /// 是否为夜间模式
+  static bool isDark(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {

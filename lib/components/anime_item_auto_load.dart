@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
@@ -166,15 +167,19 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   _buildWeekday() {
     final time = DateTime.tryParse(anime.premiereTime);
     if (time == null) return const SizedBox();
+    var isDark = Global.isDark(context);
+    var fg = isDark ? Colors.black : Colors.white;
+    var bg = isDark ? Colors.white : Colors.black;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: bg,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         '周${TimeUtil.getChineseWeekdayByNumber(time.weekday)}',
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+        style: TextStyle(color: fg, fontSize: 12),
       ),
     );
   }
