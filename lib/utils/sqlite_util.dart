@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SqliteUtil {
@@ -44,6 +44,8 @@ class SqliteUtil {
     await SqliteUtil.createTableUpdateRecord();
     // 为动漫表增加评分列
     await SqliteUtil.addColumnRateToAnime();
+    // 为动漫表增加起始集数列
+    await SqliteUtil.addColumnEpisodeStartNumberToAnime();
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序
@@ -150,16 +152,6 @@ class SqliteUtil {
     ''');
   }
 
-  // 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复
-  static Anime restoreEscapeAnime(Anime anime) {
-    anime.animeName = EscapeUtil.restoreEscapeStr(anime.animeName);
-    anime.animeDesc = EscapeUtil.restoreEscapeStr(anime.animeDesc);
-    anime.tagName = EscapeUtil.restoreEscapeStr(anime.tagName);
-    anime.nameAnother = EscapeUtil.restoreEscapeStr(anime.nameAnother);
-    anime.nameOri = EscapeUtil.restoreEscapeStr(anime.nameOri);
-    return anime;
-  }
-
   static Future<void> addColumnInfoToAnime() async {
     Map<String, String> columns = {};
     columns['anime_cover_url'] = 'TEXT'; // 封面链接
@@ -255,6 +247,46 @@ class SqliteUtil {
       set rate = 0
       where rate is NULL;
       ''');
+    }
+  }
+
+  static addColumnEpisodeStartNumberToAnime() async {
+    var tableName = 'anime';
+    var columnName = 'episode_start_number';
+    var columnType = 'INTEGER';
+    _addColumnName(
+      tableName: tableName,
+      columnName: columnName,
+      columnType: columnType,
+      logName: 'addColumnEpisodeStartNumberToAnime',
+    );
+  }
+
+  static _addColumnName({
+    required String tableName,
+    required String columnName,
+    required String columnType,
+    dynamic initialValue,
+    String logName = '',
+  }) async {
+    var list = await database.rawQuery('''
+      select * from sqlite_master where name = '$tableName' and sql like '%$columnName%';
+      ''');
+    // 没有列时添加
+    if (list.isEmpty) {
+      Log.info("sql: $logName");
+      await database.execute('''
+        alter table $tableName
+        add column $columnName $columnType;
+        ''');
+
+      if (initialValue != null) {
+        await database.rawUpdate('''
+          update $tableName
+          set $columnName = $initialValue
+          where $columnName is NULL;
+          ''');
+      }
     }
   }
 
@@ -384,36 +416,9 @@ class SqliteUtil {
     if (list.isEmpty) {
       return Anime(animeId: 0, animeName: "", animeEpisodeCnt: 0);
     }
-    int reviewNumber = list[0]['review_number'] as int;
-    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        reviewNumber: reviewNumber);
-    bool hasJoinedSeries =
-        (await AnimeSeriesDao.getSeriesIdListByAnimeId(animeId)).isNotEmpty;
-
-    Anime anime = Anime(
-      animeId: animeId,
-      animeName: list[0]['anime_name'] as String,
-      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-      animeDesc: list[0]['anime_desc'] as String? ?? "",
-      // 如果为null，则返回空串
-      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
-      tagName: list[0]['tag_name'] as String,
-      checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: reviewNumber,
-      premiereTime: list[0]['premiere_time'] as String? ?? "",
-      nameOri: list[0]['name_ori'] as String? ?? "",
-      nameAnother: list[0]['name_another'] as String? ?? "",
-      authorOri: list[0]['author_ori'] as String? ?? "",
-      area: list[0]['area'] as String? ?? "",
-      playStatus: list[0]['play_status'] as String? ?? "",
-      productionCompany: list[0]['production_company'] as String? ?? "",
-      officialSite: list[0]['official_site'] as String? ?? "",
-      category: list[0]['category'] as String? ?? "",
-      animeUrl: list[0]['anime_url'] as String? ?? "",
-      rate: list[0]['rate'] as int? ?? 0,
-      hasJoinedSeries: hasJoinedSeries,
-    );
-    anime = restoreEscapeAnime(anime);
+    var row = list[0];
+    Anime anime = await AnimeDao.row2Bean(row,
+        queryCheckedEpisodeCnt: true, queryHasJoinedSeries: true);
     return anime;
   }
 
@@ -438,34 +443,10 @@ class SqliteUtil {
       anime.tagName = "";
       return anime;
     }
-    int animeId = list[0]['anime_id'] as int;
-    int reviewNumber = list[0]['review_number'] as int;
-    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        reviewNumber: reviewNumber);
-    Anime searchedanime = Anime(
-      animeId: animeId,
-      animeName: list[0]['anime_name'] as String,
-      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-      animeDesc: list[0]['anime_desc'] as String? ?? "",
-      // 如果为null，则返回空串
-      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
-      tagName: list[0]['tag_name'] as String,
-      checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: reviewNumber,
-      premiereTime: list[0]['premiere_time'] as String? ?? "",
-      nameOri: list[0]['name_ori'] as String? ?? "",
-      nameAnother: list[0]['name_another'] as String? ?? "",
-      authorOri: list[0]['author_ori'] as String? ?? "",
-      area: list[0]['area'] as String? ?? "",
-      playStatus: list[0]['play_status'] as String? ?? "",
-      productionCompany: list[0]['production_company'] as String? ?? "",
-      officialSite: list[0]['official_site'] as String? ?? "",
-      category: list[0]['category'] as String? ?? "",
-      animeUrl: list[0]['anime_url'] as String? ?? "",
-      rate: list[0]['rate'] as int? ?? 0,
-    );
-    searchedanime = restoreEscapeAnime(searchedanime);
-    return searchedanime;
+    var row = list[0];
+
+    Anime searchedAnime = await AnimeDao.row2Bean(row);
+    return searchedAnime;
   }
 
   static Future<String> getTagNameByAnimeId(int animeId) async {
@@ -495,7 +476,8 @@ class SqliteUtil {
     for (int episodeNumber = startEpisodeNumber;
         episodeNumber <= endEpisodeNumber;
         ++episodeNumber) {
-      episodes.add(Episode(episodeNumber, anime.reviewNumber));
+      episodes.add(Episode(episodeNumber, anime.reviewNumber,
+          startNumber: anime.episodeStartNumber));
     }
     // 遍历查询结果，每个元素都是一个键值对(列名-值)
     for (var element in list) {
@@ -629,85 +611,6 @@ class SqliteUtil {
     return res;
   }
 
-  // static Future<List<HistoryPlus>> getAllHistoryPlus() async {
-  //   Log.info("sql: getAllHistoryPlus");
-  //   String earliestDate;
-  //   // earliestDate = SPUtil.getString("earliest_date", defaultValue: "");
-  //   // if (earliestDate.isEmpty) {
-  //   var list = await _database.rawQuery('''
-  //     select min(date) min_date
-  //     from history;
-  //     ''');
-  //   if (list[0]['min_date'] == null) return []; // 还没有历史，直接返回，否则强制转为String会报错
-  //   earliestDate = list[0]['min_date'] as String;
-  //   //   SPUtil.setString("earliest_date", earliestDate);
-  //   // }
-  //   Log.info("最早日期为：$earliestDate");
-  //   DateTime earliestDateTime = DateTime.parse(earliestDate);
-  //   int earliestYear = earliestDateTime.year;
-  //   int earliestMonth = earliestDateTime.month;
-
-  //   // 先找到该月看的所有动漫id，然后根据动漫id去重，再根据动漫id得到当月看的最小值和最大值
-  //   List<HistoryPlus> history = [];
-  //   DateTime now = DateTime.now();
-  //   int curMonth = now.month;
-  //   int curYear = now.year;
-  //   for (int year = curYear; year >= earliestYear; --year) {
-  //     int month = curMonth;
-  //     int border = 1;
-  //     if (year != curYear) month = 12;
-  //     if (year == earliestYear) border = earliestMonth;
-  //     for (; month >= border; --month) {
-  //       String date;
-  //       if (month >= 10) {
-  //         date = "$year-$month";
-  //       } else {
-  //         date = "$year-0$month";
-  //       }
-  //       var list = await _database.rawQuery('''
-  //       select distinct anime.anime_id, anime.anime_name
-  //       from history, anime
-  //       where date like '$date%' and history.anime_id = anime.anime_id
-  //       order by date desc; -- 倒序
-  //       ''');
-  //       List<Anime> animes = [];
-  //       for (var item in list) {
-  //         animes.add(Anime(
-  //             animeId: item['anime_id'] as int,
-  //             animeName: item['anime_name'] as String,
-  //             animeEpisodeCnt: 0));
-  //       }
-  //       if (animes.isEmpty) continue; // 没有观看记录时直接跳过
-
-  //       List<Record> records = [];
-  //       // 对于每个动漫，找到当月观看的最小值的最大值
-  //       for (var anime in animes) {
-  //         // Log.info(anime);
-  //         list = await _database.rawQuery('''
-  //         select min(episode_number) as start
-  //         from history
-  //         where date like '$date%' and anime_id = ${anime.animeId};
-  //         ''');
-  //         int startEpisodeNumber = list[0]['start'] as int;
-  //         list = await _database.rawQuery('''
-  //         select max(episode_number) as end
-  //         from history
-  //         where date like '$date%' and anime_id = ${anime.animeId};
-  //         ''');
-  //         int endEpisodeNumber = list[0]['end'] as int;
-  //         Record record = Record(anime, startEpisodeNumber, endEpisodeNumber);
-  //         // Log.info(record);
-  //         records.add(record);
-  //       }
-  //       history.add(HistoryPlus(date, records));
-  //     }
-  //   }
-  //   // for (var item in history) {
-  //   //   Log.info(item);
-  //   // }
-  //   return history;
-  // }
-
   static createTableEpisodeNote() async {
     await database.execute('''
     CREATE TABLE IF NOT EXISTS episode_note ( -- IF NOT EXISTS表示不存在表时才会创建
@@ -770,33 +673,8 @@ class SqliteUtil {
       );
     }
 
-    int animeId = list[0]['anime_id'] as int;
-    int reviewNumber = list[0]['review_number'] as int;
-    int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-        reviewNumber: reviewNumber);
-
-    Anime anime = Anime(
-      animeId: animeId,
-      animeName: list[0]['anime_name'] as String,
-      animeEpisodeCnt: list[0]['anime_episode_cnt'] as int,
-      animeDesc: list[0]['anime_desc'] as String? ?? "",
-      animeCoverUrl: list[0]['anime_cover_url'] as String? ?? "",
-      tagName: list[0]['tag_name'] as String,
-      checkedEpisodeCnt: checkedEpisodeCnt,
-      reviewNumber: reviewNumber,
-      premiereTime: list[0]['premiere_time'] as String? ?? "",
-      nameOri: list[0]['name_ori'] as String? ?? "",
-      nameAnother: list[0]['name_another'] as String? ?? "",
-      authorOri: list[0]['author_ori'] as String? ?? "",
-      area: list[0]['area'] as String? ?? "",
-      playStatus: list[0]['play_status'] as String? ?? "",
-      productionCompany: list[0]['production_company'] as String? ?? "",
-      officialSite: list[0]['official_site'] as String? ?? "",
-      category: list[0]['category'] as String? ?? "",
-      animeUrl: list[0]['anime_url'] as String? ?? "",
-      rate: list[0]['rate'] as int? ?? 0,
-    );
-    anime = restoreEscapeAnime(anime);
+    Anime anime =
+        await AnimeDao.row2Bean(list[0], queryCheckedEpisodeCnt: true);
     return anime;
   }
 
@@ -812,36 +690,10 @@ class SqliteUtil {
     ''');
 
     List<Anime> res = [];
-    for (var element in list) {
-      int animeId = element['anime_id'] as int;
-      int reviewNumber = element['review_number'] as int;
-      int checkedEpisodeCnt = await getCheckedEpisodeCntByAnimeId(animeId,
-          reviewNumber: reviewNumber);
-
-      Anime anime = Anime(
-        animeId: element['anime_id'] as int,
-        animeName: element['anime_name'] as String,
-        animeEpisodeCnt: element['anime_episode_cnt'] as int,
-        animeDesc: element['anime_desc'] as String? ?? "",
-        animeCoverUrl: element['anime_cover_url'] as String? ?? "",
-        tagName: element['tag_name'] as String,
-        checkedEpisodeCnt: checkedEpisodeCnt,
-        reviewNumber: reviewNumber,
-        premiereTime: element['premiere_time'] as String? ?? "",
-        nameOri: element['name_ori'] as String? ?? "",
-        nameAnother: element['name_another'] as String? ?? "",
-        authorOri: element['author_ori'] as String? ?? "",
-        area: element['area'] as String? ?? "",
-        playStatus: element['play_status'] as String? ?? "",
-        productionCompany: element['production_company'] as String? ?? "",
-        officialSite: element['official_site'] as String? ?? "",
-        category: element['category'] as String? ?? "",
-        animeUrl: element['anime_url'] as String? ?? "",
-        rate: list[0]['rate'] as int? ?? 0,
-      );
+    for (var row in list) {
+      Anime anime = await AnimeDao.row2Bean(row, queryCheckedEpisodeCnt: true);
       // 如果名字完全一样，则去掉，因为已经有了
       if (anime.animeName == animeName) continue;
-      res.add(restoreEscapeAnime(anime));
     }
 
     return res;

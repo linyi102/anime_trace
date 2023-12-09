@@ -6,6 +6,7 @@ class Episode {
   final int _number; // 第几集
   String? dateTime; // 完成日期，若未完成，则是null
   int reviewNumber;
+  int startNumber;
 
   Note? note; // 用于动漫详情页存放
   bool noteLoaded; // 用于记录笔记是否已查询过数据库
@@ -15,6 +16,7 @@ class Episode {
   Episode(
     this._number,
     this.reviewNumber, {
+    this.startNumber = 1,
     this.dateTime,
     this.note,
     this.noteLoaded = false,
@@ -45,7 +47,7 @@ class Episode {
 
   /// 根据number和desc生成标题
   String get caption {
-    String defaultTitle = "第 $number 集";
+    String defaultTitle = "第 ${(startNumber - 1) + number} 集";
     if (desc == null) return defaultTitle;
 
     if (desc!.hideDefault) {

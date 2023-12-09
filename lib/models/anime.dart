@@ -5,7 +5,8 @@ import 'package:flutter_test_future/utils/image_util.dart';
 class Anime {
   int animeId;
   String animeName;
-  int animeEpisodeCnt;
+  int animeEpisodeCnt; // 总集数
+  int episodeStartNumber; // 起始集
   String tagName;
   String animeDesc;
   String animeCoverUrl;
@@ -33,6 +34,7 @@ class Anime {
     this.animeId = 0,
     required this.animeName,
     this.animeEpisodeCnt = 0,
+    this.episodeStartNumber = 1,
     this.tagName = "",
     this.animeCoverUrl = "",
     this.checkedEpisodeCnt = 0,
@@ -57,7 +59,7 @@ class Anime {
   @override
   String toString() {
     return "Anime=[animeId=$animeId, animeName=$animeName, "
-        "animeEpisodeCnt=$animeEpisodeCnt, tagName=$tagName, "
+        "animeEpisodeCnt=$animeEpisodeCnt, episodeStartNumber=$episodeStartNumber, tagName=$tagName, "
         "checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, "
         "animeUrl=$animeUrl, premiereTime=$premiereTime, "
         "animeDesc=${reduceStr(animeDesc)}, playStatus=$playStatus, "

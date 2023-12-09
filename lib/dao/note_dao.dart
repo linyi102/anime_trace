@@ -1,3 +1,4 @@
+import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -292,16 +293,11 @@ class NoteDao {
     ''';
     var lm1 = await database.rawQuery(sql);
     for (var item in lm1) {
-      Anime anime = Anime(
-          animeId: item['anime_id'] as int, // 不能写成episode_note.anime_id，下面也是
-          animeName: item['anime_name'] as String,
-          animeCoverUrl: item['anime_cover_url'] as String,
-          animeEpisodeCnt: 0);
+      Anime anime = await AnimeDao.row2Bean(item);
       Episode episode = Episode(
-        item['episode_number'] as int,
-        item['review_number'] as int,
-        dateTime: item['date'] as String,
-      );
+          item['episode_number'] as int, item['review_number'] as int,
+          dateTime: item['date'] as String,
+          startNumber: anime.episodeStartNumber);
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       Note episodeNote = Note(

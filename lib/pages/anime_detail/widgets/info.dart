@@ -344,7 +344,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 ],
               ),
               onTap: () {
-                widget.animeController.showDialogmodifyEpisodeCnt(context);
+                widget.animeController
+                    .showDialogModEpisodeCntAndStartNumber(context);
               },
             )
           ],

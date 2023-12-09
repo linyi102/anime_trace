@@ -1,3 +1,4 @@
+import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -488,13 +489,13 @@ class AnimeDao {
     ''');
   }
 
-  static Future<bool> updateEpisodeCntByAnimeId(
-      int animeId, int episodeCnt) async {
-    Log.info("sql: updateEpisodeCntByAnimeId");
+  static Future<bool> updateEpisodeCntAndStartNumberByAnimeId(
+      int animeId, int episodeCnt, int episodeStartNumber) async {
+    Log.info("sql: updateEpisodeCntAndStartNumberByAnimeId");
 
     return await db.rawUpdate('''
       update anime
-      set anime_episode_cnt = $episodeCnt
+      set anime_episode_cnt = $episodeCnt, episode_start_number = $episodeStartNumber
       where anime_id = $animeId;
       ''') > 0;
   }
@@ -563,19 +564,24 @@ class AnimeDao {
     ''');
     List<Anime> animes = [];
     for (var row in rows) {
-      animes.add(_row2Bean(row));
+      animes.add(await row2Bean(row, queryCheckedEpisodeCnt: false));
     }
     return animes;
   }
 
-  static Anime _row2Bean(Map<String, Object?> row) {
-    return Anime(
+  static Future<Anime> row2Bean(
+    Map<String, Object?> row, {
+    bool queryCheckedEpisodeCnt = false,
+    bool queryHasJoinedSeries = false,
+  }) async {
+    final anime = Anime(
       animeId: row['anime_id'] as int,
-      animeName: row['anime_name'] as String,
-      animeEpisodeCnt: row['anime_episode_cnt'] as int,
+      animeName: row['anime_name'] as String? ?? '',
+      animeEpisodeCnt: row['anime_episode_cnt'] as int? ?? 0,
+      episodeStartNumber: row['episode_start_number'] as int? ?? 1,
       animeDesc: row['anime_desc'] as String? ?? "",
       animeCoverUrl: row['anime_cover_url'] as String? ?? "",
-      tagName: row['tag_name'] as String,
+      tagName: row['tag_name'] as String? ?? '未知',
       reviewNumber: row['review_number'] as int? ?? 0,
       premiereTime: row['premiere_time'] as String? ?? "",
       nameOri: row['name_ori'] as String? ?? "",
@@ -589,5 +595,31 @@ class AnimeDao {
       animeUrl: row['anime_url'] as String? ?? "",
       rate: row['rate'] as int? ?? 0,
     );
+
+    if (queryCheckedEpisodeCnt) {
+      int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
+          anime.animeId,
+          reviewNumber: anime.reviewNumber);
+      anime.checkedEpisodeCnt = checkedEpisodeCnt;
+    }
+
+    if (queryHasJoinedSeries) {
+      anime.hasJoinedSeries =
+          (await AnimeSeriesDao.getSeriesIdListByAnimeId(anime.animeId))
+              .isNotEmpty;
+    }
+
+    _restoreEscapeAnime(anime);
+    return anime;
+  }
+
+  /// 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复
+  static Anime _restoreEscapeAnime(Anime anime) {
+    anime.animeName = EscapeUtil.restoreEscapeStr(anime.animeName);
+    anime.animeDesc = EscapeUtil.restoreEscapeStr(anime.animeDesc);
+    anime.tagName = EscapeUtil.restoreEscapeStr(anime.tagName);
+    anime.nameAnother = EscapeUtil.restoreEscapeStr(anime.nameAnother);
+    anime.nameOri = EscapeUtil.restoreEscapeStr(anime.nameOri);
+    return anime;
   }
 }

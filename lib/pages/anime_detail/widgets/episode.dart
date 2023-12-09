@@ -255,6 +255,8 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     if (_anime.animeEpisodeCnt == 0) {
       return "00-00";
     }
+    startEpisodeNumber += _anime.episodeStartNumber - 1;
+
     int endEpisodeNumber =
         startEpisodeNumber + widget.animeController.episodeRangeSize - 1;
     if (endEpisodeNumber > _anime.animeEpisodeCnt) {

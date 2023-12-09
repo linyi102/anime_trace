@@ -382,36 +382,107 @@ class AnimeController extends GetxController {
     });
   }
 
-  void showDialogmodifyEpisodeCnt(BuildContext context) {
+  void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
     if (!isCollected) return;
+    final episodeCntController = TextEditingController();
+    final episodeStartNumberController = TextEditingController();
+    const episodeCntMinValue = 0, episodeCntMaxValue = 2000;
+    const episodeStartNumberMinValue = 0, episodeStartNumberMaxValue = 2000;
 
-    dialogSelectUint(context, "集数",
-            initialValue: anime.animeEpisodeCnt,
-            // 传入已有的集长度而非_anime.animeEpisodeCnt，是为了避免更新动漫后，_anime.animeEpisodeCnt为0，然后点击修改集数按钮，弹出对话框，传入初始值0，如果点击了取消，就会返回初始值0，导致集数改变
-            // initialValue: initialValue,
-            // 添加选择集范围后，就不能传入已有的集长度了。
-            // 最终解决方法就是当爬取的集数小于当前集数，则不进行修改，所以这里只管传入当前动漫的集数
-            minValue: 0,
-            maxValue: 2000)
+    Map<String, int>? result = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+          title: const Text('集数'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                NumberControlInputField(
+                  controller: episodeCntController,
+                  minValue: episodeCntMinValue,
+                  maxValue: episodeCntMaxValue,
+                  initialValue: anime.animeEpisodeCnt,
+                ),
+                NumberControlInputField(
+                  controller: episodeStartNumberController,
+                  minValue: episodeStartNumberMinValue,
+                  maxValue: episodeStartNumberMaxValue,
+                  initialValue: anime.episodeStartNumber,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context, null);
+                },
+                child: const Text("取消")),
+            TextButton(
+                onPressed: () {
+                  if (episodeCntController.text.isEmpty) {
+                    ToastUtil.showText("不能为空！");
+                    return;
+                  }
+                  int inputEpisodeCnt = int.parse(episodeCntController.text);
+                  if (inputEpisodeCnt < episodeCntMinValue ||
+                      inputEpisodeCnt > episodeCntMaxValue) {
+                    ToastUtil.showText(
+                        "集数设置范围：[$episodeCntMinValue, $episodeCntMaxValue]");
+                    return;
+                  }
+
+                  if (episodeStartNumberController.text.isEmpty) {
+                    ToastUtil.showText("不能为空！");
+                    return;
+                  }
+                  int? inputEpisodeStartNumber =
+                      int.tryParse(episodeStartNumberController.text);
+                  if (inputEpisodeStartNumber != null &&
+                          inputEpisodeStartNumber <
+                              episodeStartNumberMinValue ||
+                      inputEpisodeStartNumber! > episodeStartNumberMaxValue) {
+                    ToastUtil.showText(
+                        "起始集设置范围：[$episodeStartNumberMinValue, $episodeStartNumberMaxValue]");
+                    return;
+                  }
+
+                  Navigator.pop(context, {
+                    'episodeCnt': inputEpisodeCnt,
+                    'episodeStartNumber': inputEpisodeStartNumber,
+                  });
+                },
+                child: const Text("确定")),
+          ]),
+    );
+
+    if (result == null) {
+      Log.info("未选择，直接返回");
+      return;
+    }
+
+    int? episodeCnt = result['episodeCnt'];
+    int? episodeStartNumber = result['episodeStartNumber'];
+
+    if (episodeCnt == null || episodeStartNumber == null) {
+      Log.error("没有收到episodeCnt或episodeStartNumber值");
+      return;
+    }
+
+    if (episodeCnt == anime.animeEpisodeCnt &&
+        episodeStartNumber == anime.episodeStartNumber) {
+      Log.info("没有修改，直接返回");
+      return;
+    }
+
+    AnimeDao.updateEpisodeCntAndStartNumberByAnimeId(
+            anime.animeId, episodeCnt, episodeStartNumber)
         .then((value) {
-      if (value == null) {
-        Log.info("未选择，直接返回");
-        return;
-      }
-      // if (value == _episodes.length) {
-      if (value == anime.animeEpisodeCnt) {
-        Log.info("设置的集数等于初始值${anime.animeEpisodeCnt}，直接返回");
-        return;
-      }
-      int episodeCnt = value;
-      AnimeDao.updateEpisodeCntByAnimeId(anime.animeId, episodeCnt)
-          .then((value) {
-        // 修改数据
-        anime.animeEpisodeCnt = episodeCnt;
-        // 重绘
-        updateAnimeInfo(); // 重绘信息行中显示的集数
-        loadEpisode(); // 重绘集信息
-      });
+      // 修改数据
+      anime.animeEpisodeCnt = episodeCnt;
+      anime.episodeStartNumber = episodeStartNumber;
+      // 重绘
+      updateAnimeInfo(); // 重绘信息行中显示的集数
+      loadEpisode(); // 重绘集信息
     });
   }
 
