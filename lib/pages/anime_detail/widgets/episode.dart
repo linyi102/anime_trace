@@ -255,13 +255,16 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     if (_anime.animeEpisodeCnt == 0) {
       return "00-00";
     }
-    startEpisodeNumber += _anime.episodeStartNumber - 1;
 
     int endEpisodeNumber =
         startEpisodeNumber + widget.animeController.episodeRangeSize - 1;
     if (endEpisodeNumber > _anime.animeEpisodeCnt) {
       endEpisodeNumber = _anime.animeEpisodeCnt;
     }
+
+    // 计算出范围后，根据动漫的起始集再次调整
+    startEpisodeNumber += _anime.episodeStartNumber - 1;
+    endEpisodeNumber += _anime.episodeStartNumber - 1;
 
     return startEpisodeNumber.toString().padLeft(2, '0') +
         "-" +
