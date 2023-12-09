@@ -46,11 +46,11 @@ class _WeeklyBarState extends State<WeeklyBar> {
           bool isSelected = dateTime.weekday == selectedWeekday;
 
           return Expanded(
-            child: MaterialButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+            child: InkWell(
               hoverColor: Colors.transparent,
-              onPressed: () {
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              onTap: () {
                 Log.info("点击weekday: $weekday");
                 setState(() {
                   selectedWeekday = weekday;
@@ -67,12 +67,14 @@ class _WeeklyBarState extends State<WeeklyBar> {
                   const SizedBox(height: 5),
                   // 显示日期
                   Container(
-                    height: 30,
-                    width: 30,
+                    height: 24,
+                    width: 24,
                     child: Center(
                         child: Text(
                       dateTime.day == now.day ? "今" : "${dateTime.day}",
-                      style: TextStyle(color: isSelected ? Colors.white : null),
+                      style: TextStyle(
+                          color: isSelected ? Colors.white : null,
+                          fontSize: 14),
                     )),
                     decoration: isSelected
                         ? BoxDecoration(
