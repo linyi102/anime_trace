@@ -73,6 +73,9 @@ class ClimbAnimeUtil {
       try {
         // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
         anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+
+        anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
+            anime.animeEpisodeCnt, anime.episodeStartNumber);
       } catch (e) {
         e.printError();
       }
@@ -144,5 +147,12 @@ class ClimbAnimeUtil {
     await Future.wait(futures);
     updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");
+  }
+
+  /// 调整获取到的总集数
+  /// 如果爬取到总集数为20集，但是设置的起始集为12，那么总集数应该为20-12+1=9
+  static int _adjustEpisodeCntByEpisdoeStartNumber(
+      int episodeCnt, int episodeStartNumber) {
+    return episodeCnt - episodeStartNumber + 1;
   }
 }
