@@ -78,10 +78,11 @@ class ToastUtil {
       animationDuration: const Duration(milliseconds: 100),
       animationReverseDuration: const Duration(milliseconds: 100),
       toastBuilder: (cancelFunc) => Card(
-        elevation: 10,
-        shadowColor: Colors.black.withOpacity(0.6),
+        elevation: 12,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: Text(
             msg,
             style: TextStyle(
