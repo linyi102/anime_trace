@@ -97,19 +97,11 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
     if (PlatformUtil.isDesktop) return const SizedBox();
     if (logic.willSeekPosition.isEmpty) return const SizedBox();
 
-    return Align(
-      alignment: Alignment.center,
-      child: Text(
-        logic.willSeekPosition,
-        style: const TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.w600,
-            shadows: [
-              Shadow(blurRadius: 3, color: Colors.black),
-            ]),
-        textAlign: TextAlign.center,
-      ),
+    return _buildStatusCard(
+      logic.willSeekPosition,
+      icon: logic.willSeekPositionIsFuture
+          ? Icons.fast_forward_rounded
+          : Icons.fast_rewind_rounded,
     );
   }
 
@@ -131,6 +123,17 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             seekBarThumbColor: Theme.of(context).primaryColor,
             seekBarPositionColor: Theme.of(context).primaryColor,
             seekBarHeight: 4,
+            volumeIndicatorBuilder: (context, value) {
+              return _buildStatusCard('${(value * 100).toInt()}%',
+                  icon: value == 0
+                      ? Icons.volume_off_rounded
+                      : Icons.volume_up_rounded);
+            },
+            // TODO 依赖包BUG：value为音量值
+            // brightnessIndicatorBuilder: (context, value) {
+            //   return _buildStatusCard('${(value * 100).toInt()}%',
+            //       icon: Icons.brightness_7_rounded);
+            // },
             bottomButtonBar: [
               const MaterialSkipPreviousButton(),
               const MaterialPlayOrPauseButton(),
@@ -170,23 +173,29 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   /// 长按倍速播放
   _buildFastForwarding() {
     if (!logic.fastForwarding) return const SizedBox();
+    return _buildStatusCard('${logic.fastForwardRate.toInt()} 倍速播放',
+        icon: Icons.fast_forward_rounded);
+  }
+
+  Align _buildStatusCard(String text, {IconData? icon}) {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
         margin: const EdgeInsets.only(top: 50),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.black38,
+          color: Colors.black.withOpacity(0.8),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.fast_forward_rounded,
-                color: Colors.white, size: 20),
-            const SizedBox(width: 5),
+            Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: Icon(icon, color: Colors.white, size: 20),
+            ),
             Text(
-              '${logic.fastForwardRate.toInt()} 倍速播放',
+              text,
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           ],

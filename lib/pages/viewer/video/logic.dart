@@ -26,6 +26,7 @@ class VideoPlayerLogic extends GetxController {
   double totalDx = 0; // 左右滑动过程中累计的dx
   int destSeconds = 0; // 最终要跳转的描述
   String willSeekPosition = ''; // 拖动时展示的文字
+  bool willSeekPositionIsFuture = false;
 
   /// 截图
   File? screenShotFile; // 截图文件
@@ -80,15 +81,17 @@ class VideoPlayerLogic extends GetxController {
         destSeconds = player.state.duration.inSeconds;
       }
 
+      willSeekPositionIsFuture = true;
       willSeekPosition =
-          "${TimeUtil.getReadableDuration(Duration(seconds: destSeconds))}\n[+${TimeUtil.getReadableDuration(Duration(seconds: secondsGap))}]";
+          "${TimeUtil.getReadableDuration(Duration(seconds: destSeconds))} | + ${TimeUtil.getReadableDuration(Duration(seconds: secondsGap))}";
     } else if (totalDx < 0 - minOffset) {
       destSeconds -= secondsGap;
       // 如果后退至开头，则修正为0
       if (destSeconds < 0) destSeconds = 0;
 
+      willSeekPositionIsFuture = false;
       willSeekPosition =
-          "${TimeUtil.getReadableDuration(Duration(seconds: destSeconds))}\n[-${TimeUtil.getReadableDuration(Duration(seconds: secondsGap))}]";
+          "${TimeUtil.getReadableDuration(Duration(seconds: destSeconds))} | - ${TimeUtil.getReadableDuration(Duration(seconds: secondsGap))}";
     }
     update();
   }
