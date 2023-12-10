@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_dialog.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/pages/viewer/video/view.dart';
+import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -56,6 +58,17 @@ class _TestPageState extends State<TestPage> {
           Assets.lottiesPlaying,
           width: 24,
           height: 24,
+        ),
+        ListTile(
+          title: const Text('视频播放 (解析链接)'),
+          onTap: () {
+            RouteUtil.materialTo(context, VideoPlayerWithLoadUrlPage(
+              loadUrl: () async {
+                await Future.delayed(const Duration(seconds: 1));
+                return 'http://vjs.zencdn.net/v/oceans.mp4';
+              },
+            ));
+          },
         ),
         ListTile(
           title: const Text('视频播放'),

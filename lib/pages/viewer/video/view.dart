@@ -125,11 +125,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             primaryButtonBar: [],
             // 取消双击两侧后退或前进10s
             seekOnDoubleTap: false,
+            controlsTransitionDuration: const Duration(milliseconds: 100),
             // 底部进度条移动到底部栏上方
             seekBarMargin: const EdgeInsets.fromLTRB(16, 0, 16, 60),
-            controlsTransitionDuration: const Duration(milliseconds: 100),
             seekBarThumbColor: Theme.of(context).primaryColor,
             seekBarPositionColor: Theme.of(context).primaryColor,
+            seekBarHeight: 4,
             bottomButtonBar: [
               const MaterialSkipPreviousButton(),
               const MaterialPlayOrPauseButton(),
@@ -144,10 +145,11 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
       desktop: MaterialDesktopVideoControlsTheme(
         normal: MaterialDesktopVideoControlsThemeData(
             topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
+            topButtonBar: _buildTopBar(context),
             toggleFullscreenOnDoublePress: false,
             seekBarThumbColor: Theme.of(context).primaryColor,
             seekBarPositionColor: Theme.of(context).primaryColor,
-            topButtonBar: _buildTopBar(context),
+            seekBarHeight: 4,
             bottomButtonBar: [
               const MaterialDesktopSkipPreviousButton(),
               const MaterialDesktopPlayOrPauseButton(),

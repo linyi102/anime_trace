@@ -70,8 +70,10 @@ class VideoPlayerLogic extends GetxController {
     int curSeconds = player.state.position.inSeconds;
     // 要跳转的进度秒数
     destSeconds = curSeconds;
+    // 最小偏移，偏移过小时不改变进度，避免和调整亮度和音量冲突
+    var minOffset = 5;
 
-    if (totalDx > 0) {
+    if (totalDx > 0 + minOffset) {
       destSeconds += secondsGap;
       // 如果快进到最大秒数，则修正为最大秒数
       if (destSeconds > player.state.duration.inSeconds) {
@@ -80,7 +82,7 @@ class VideoPlayerLogic extends GetxController {
 
       willSeekPosition =
           "${TimeUtil.getReadableDuration(Duration(seconds: destSeconds))}\n[+${TimeUtil.getReadableDuration(Duration(seconds: secondsGap))}]";
-    } else if (totalDx < 0) {
+    } else if (totalDx < 0 - minOffset) {
       destSeconds -= secondsGap;
       // 如果后退至开头，则修正为0
       if (destSeconds < 0) destSeconds = 0;
