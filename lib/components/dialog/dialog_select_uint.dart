@@ -41,15 +41,20 @@ Future<int?> dialogSelectUint(context, String title,
 }
 
 class NumberControlInputField extends StatefulWidget {
-  const NumberControlInputField(
-      {super.key,
-      required this.controller,
-      this.minValue = 0,
-      this.maxValue = 1 << 32,
-      required this.initialValue});
+  const NumberControlInputField({
+    super.key,
+    required this.controller,
+    this.minValue = 0,
+    this.maxValue = 1 << 32,
+    required this.initialValue,
+    this.onChanged,
+    this.showRangeHintText = true,
+  });
   final TextEditingController controller;
   final int minValue, maxValue;
   final int initialValue;
+  final void Function(int? number)? onChanged;
+  final bool showRangeHintText;
 
   @override
   State<NumberControlInputField> createState() =>
@@ -65,6 +70,12 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
   FocusNode blankFocusNode = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    widget.controller.text = '${widget.initialValue}';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -75,7 +86,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
           ],
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
-          controller: widget.controller..text = tmpValue.toString(),
+          controller: widget.controller,
           onChanged: (value) {
             int? willValue = int.tryParse(value);
             if (willValue == null) return;
@@ -83,6 +94,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
             tmpValue = willValue;
             if (tmpValue < minValue) tmpValue = minValue;
             if (tmpValue > maxValue) tmpValue = maxValue;
+            widget.onChanged?.call(tmpValue);
           },
           decoration: InputDecoration(
             prefixIcon: _buildControlButton(
@@ -101,14 +113,17 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
             isDense: true,
           ),
         ),
-        const SizedBox(height: 5),
-        Text(
-          numberRangeHint,
-          style: TextStyle(
-            color: Theme.of(context).hintColor,
-            fontSize: 12,
-          ),
-        )
+        if (widget.showRangeHintText)
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Text(
+              numberRangeHint,
+              style: TextStyle(
+                color: Theme.of(context).hintColor,
+                fontSize: 12,
+              ),
+            ),
+          )
       ],
     );
   }
@@ -119,6 +134,9 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
     tmpValue++;
     if (tmpValue < minValue) tmpValue = minValue;
     if (tmpValue > maxValue) tmpValue = maxValue;
+
+    widget.controller.text = '$tmpValue';
+    widget.onChanged?.call(tmpValue);
     setState(() {});
   }
 
@@ -128,6 +146,9 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
     tmpValue--;
     if (tmpValue < minValue) tmpValue = minValue;
     if (tmpValue > maxValue) tmpValue = maxValue;
+
+    widget.controller.text = '$tmpValue';
+    widget.onChanged?.call(tmpValue);
     setState(() {});
   }
 
@@ -161,9 +182,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
                 color: Theme.of(context).hintColor.withOpacity(0.05),
                 borderRadius: borderRadius),
             child: Icon(
-              action == NumberAction.subtract
-                  ? Icons.chevron_left
-                  : Icons.chevron_right,
+              action == NumberAction.subtract ? Icons.remove : Icons.add,
               color: Theme.of(context).hintColor,
               size: 20,
             )));

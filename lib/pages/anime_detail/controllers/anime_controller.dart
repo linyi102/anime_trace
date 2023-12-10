@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/label.dart';
+import 'package:flutter_test_future/pages/anime_detail/widgets/episode_form.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
@@ -384,84 +384,10 @@ class AnimeController extends GetxController {
 
   void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
     if (!isCollected) return;
-    final episodeCntController = TextEditingController();
-    final episodeStartNumberController = TextEditingController();
-    const episodeCntMinValue = 0, episodeCntMaxValue = 2000;
-    const episodeStartNumberMinValue = 0, episodeStartNumberMaxValue = 2000;
 
     Map<String, int>? result = await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text('总集数', style: TextStyle(fontSize: 14)),
-                ),
-                NumberControlInputField(
-                  controller: episodeCntController,
-                  minValue: episodeCntMinValue,
-                  maxValue: episodeCntMaxValue,
-                  initialValue: anime.animeEpisodeCnt,
-                ),
-                const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Text('起始集', style: TextStyle(fontSize: 14)),
-                ),
-                NumberControlInputField(
-                  controller: episodeStartNumberController,
-                  minValue: episodeStartNumberMinValue,
-                  maxValue: episodeStartNumberMaxValue,
-                  initialValue: anime.episodeStartNumber,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context, null);
-                },
-                child: const Text("取消")),
-            TextButton(
-                onPressed: () {
-                  if (episodeCntController.text.isEmpty) {
-                    ToastUtil.showText("不能为空！");
-                    return;
-                  }
-                  int inputEpisodeCnt = int.parse(episodeCntController.text);
-                  if (inputEpisodeCnt < episodeCntMinValue ||
-                      inputEpisodeCnt > episodeCntMaxValue) {
-                    ToastUtil.showText(
-                        "集数设置范围：[$episodeCntMinValue, $episodeCntMaxValue]");
-                    return;
-                  }
-
-                  if (episodeStartNumberController.text.isEmpty) {
-                    ToastUtil.showText("不能为空！");
-                    return;
-                  }
-                  int? inputEpisodeStartNumber =
-                      int.tryParse(episodeStartNumberController.text);
-                  if (inputEpisodeStartNumber != null &&
-                          inputEpisodeStartNumber <
-                              episodeStartNumberMinValue ||
-                      inputEpisodeStartNumber! > episodeStartNumberMaxValue) {
-                    ToastUtil.showText(
-                        "起始集设置范围：[$episodeStartNumberMinValue, $episodeStartNumberMaxValue]");
-                    return;
-                  }
-
-                  Navigator.pop(context, {
-                    'episodeCnt': inputEpisodeCnt,
-                    'episodeStartNumber': inputEpisodeStartNumber,
-                  });
-                },
-                child: const Text("确定")),
-          ]),
+      builder: (context) => EpisodeForm(anime: anime),
     );
 
     if (result == null) {
