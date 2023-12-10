@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
@@ -160,6 +161,7 @@ class VideoPlayerLogic extends GetxController {
     File file = File(p.join(rootPath, '漫迹', 'capture', fileName));
     await file.create(recursive: true);
     await file.writeAsBytes(uint8list);
+    Log.info('caputre file：${file.path}');
 
     screenShotFile = file;
     capturing = false;

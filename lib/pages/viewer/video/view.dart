@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
+import 'package:flutter_test_future/pages/viewer/video/widgets/fixed_material_video_controls.dart'
+    as fix_video;
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
@@ -107,8 +109,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   MultiPlatform _buildMultiPlatformVideoView(BuildContext context) {
     return MultiPlatform(
-      mobile: MaterialVideoControlsTheme(
-        normal: MaterialVideoControlsThemeData(
+      mobile: fix_video.MaterialVideoControlsTheme(
+        normal: fix_video.MaterialVideoControlsThemeData(
             topButtonBarMargin: const EdgeInsets.symmetric(horizontal: 5),
             topButtonBar: _buildTopBar(context),
             volumeGesture: true,
@@ -129,11 +131,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
                       ? Icons.volume_off_rounded
                       : Icons.volume_up_rounded);
             },
-            // TODO 依赖包BUG：value为音量值
-            // brightnessIndicatorBuilder: (context, value) {
-            //   return _buildStatusCard('${(value * 100).toInt()}%',
-            //       icon: Icons.brightness_7_rounded);
-            // },
+            brightnessIndicatorBuilder: (context, value) {
+              return _buildStatusCard('${(value * 100).toInt()}%',
+                  icon: Icons.brightness_7_rounded);
+            },
             bottomButtonBar: [
               const MaterialSkipPreviousButton(),
               const MaterialPlayOrPauseButton(),
@@ -142,7 +143,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
               const Spacer(),
               _buildScreenShotBottomButton(),
             ]),
-        fullscreen: const MaterialVideoControlsThemeData(),
+        fullscreen: const fix_video.MaterialVideoControlsThemeData(),
         child: _buildVideoView(),
       ),
       desktop: MaterialDesktopVideoControlsTheme(
@@ -239,7 +240,12 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   List<Shadow> get _shadows =>
       [const Shadow(blurRadius: 3, color: Colors.black)];
 
-  _buildVideoView() => Video(controller: logic.videoController);
+  _buildVideoView() => Video(
+        controller: logic.videoController,
+        // 修改controls后，需要重新进入播放页才可以看到效果，热重载无效
+        controls:
+            PlatformUtil.isMobile ? fix_video.MaterialVideoControls : null,
+      );
 
   _buildScreenShotPreview() {
     var radius = BorderRadius.circular(6);
