@@ -107,12 +107,13 @@ class VideoPlayerLogic extends GetxController {
     update();
   }
 
-  windowEnterOrExitFullscreen({
-    void Function(bool isFullScreen)? whenDesktopChangeFullScreen,
+  /// 切换桌面端全屏
+  toggleDesktopFullscreen({
+    void Function(bool isFullScreen)? whenDesktopToggleFullScreen,
   }) async {
     bool isFullScreen = await windowManager.isFullScreen();
     bool willFullScreen = !isFullScreen;
-    whenDesktopChangeFullScreen?.call(willFullScreen);
+    whenDesktopToggleFullScreen?.call(willFullScreen);
 
     await windowManager.setFullScreen(!isFullScreen);
     isFullScreen = await windowManager.isFullScreen();

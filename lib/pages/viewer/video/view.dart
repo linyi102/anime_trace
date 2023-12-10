@@ -15,13 +15,13 @@ class VideoPlayerPage extends StatefulWidget {
       {required this.url,
       this.title = '',
       this.leading,
-      this.whenDesktopChangeFullScreen,
+      this.whenDesktopToggleFullScreen,
       Key? key})
       : super(key: key);
   final String url;
   final String title;
   final Widget? leading;
-  final void Function(bool isFullScreen)? whenDesktopChangeFullScreen;
+  final void Function(bool isFullScreen)? whenDesktopToggleFullScreen;
 
   @override
   State<VideoPlayerPage> createState() => VideoPlayerPageState();
@@ -56,9 +56,9 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
           onDoubleTap: () {
             // 桌面端双击进入/退出全屏
             if (PlatformUtil.isDesktop) {
-              logic.windowEnterOrExitFullscreen(
-                  whenDesktopChangeFullScreen:
-                      widget.whenDesktopChangeFullScreen);
+              logic.toggleDesktopFullscreen(
+                  whenDesktopToggleFullScreen:
+                      widget.whenDesktopToggleFullScreen);
             }
           },
           onTapUp: PlatformUtil.isDesktop
@@ -309,7 +309,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
 
   _buildFullscreenButton() {
     return IconButton(
-        onPressed: logic.windowEnterOrExitFullscreen,
+        onPressed: logic.toggleDesktopFullscreen,
         icon:
             const Icon(MingCuteIcons.mgc_fullscreen_line, color: Colors.white));
   }

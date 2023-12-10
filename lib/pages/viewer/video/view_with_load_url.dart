@@ -10,13 +10,13 @@ class VideoPlayerWithLoadUrlPage extends StatefulWidget {
       {required this.loadUrl,
       this.title = '',
       this.leading,
-      this.whenDesktopChangeFullScreen,
+      this.whenDesktopToggleFullScreen,
       super.key});
 
   final Future<String> Function() loadUrl;
   final Widget? leading;
   final String title;
-  final void Function(bool isFullScreen)? whenDesktopChangeFullScreen;
+  final void Function(bool isFullScreen)? whenDesktopToggleFullScreen;
 
   @override
   State<VideoPlayerWithLoadUrlPage> createState() =>
@@ -102,7 +102,7 @@ class _VideoPlayerWithLoadUrlPageState
       url: url,
       title: widget.title,
       leading: widget.leading,
-      whenDesktopChangeFullScreen: widget.whenDesktopChangeFullScreen,
+      whenDesktopToggleFullScreen: widget.whenDesktopToggleFullScreen,
     );
   }
 
