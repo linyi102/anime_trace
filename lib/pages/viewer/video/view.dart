@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/global.dart';
+import 'package:flutter_test_future/pages/viewer/image/view.dart';
 import 'package:flutter_test_future/pages/viewer/video/logic.dart';
 import 'package:flutter_test_future/pages/viewer/video/widgets/fixed_material_video_controls.dart'
     as fix_video;
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
@@ -283,7 +285,8 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
             borderRadius: radius,
             child: InkWell(
               onTap: () {
-                // TODO 移动端打开图片，桌面端打开浏览器定位图片
+                RouteUtil.materialTo(context,
+                    ImageViewerPage(imagePaths: [logic.screenShotFile!.path]));
               },
               child: SizedBox(
                 width: width,
@@ -321,10 +324,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   _buildScreenShotBottomButton() {
-    return const SizedBox();
-    // return IconButton(
-    //   icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
-    //   onPressed: () => logic.capture(),
-    // );
+    // return const SizedBox();
+    return IconButton(
+      icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
+      onPressed: () => logic.capture(),
+    );
   }
 }
