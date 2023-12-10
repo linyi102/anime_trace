@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -148,8 +146,8 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
                     if (widget.showAnimeInfo)
                       Row(
                         children: [
-                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
-                          if (widget.showWeekday) _buildWeekday()
+                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine(
+                              showWeekday: widget.showWeekday)),
                         ],
                       ),
                     if (widget.showAnimeInfo)
@@ -160,26 +158,6 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  _buildWeekday() {
-    final time = DateTime.tryParse(anime.premiereTime);
-    if (time == null) return const SizedBox();
-    var isDark = Global.isDark(context);
-    var fg = isDark ? Colors.black : Colors.white;
-    var bg = isDark ? Colors.white : Colors.black;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        '周${TimeUtil.getChineseWeekdayByNumber(time.weekday)}',
-        style: TextStyle(color: fg, fontSize: 12),
       ),
     );
   }

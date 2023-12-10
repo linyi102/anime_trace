@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/models/play_status.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 
 class Anime {
   int animeId;
@@ -72,7 +73,7 @@ class Anime {
     return str.length > 15 ? str.substring(0, 15) : str;
   }
 
-  String getAnimeInfoFirstLine() {
+  String getAnimeInfoFirstLine({bool showWeekday = true}) {
     var list = [];
     if (area.isNotEmpty) {
       list.add(area);
@@ -84,8 +85,14 @@ class Anime {
     } else {
       // list.add("类别");
     }
-    if (premiereTime.isNotEmpty) {
-      list.add(premiereTime);
+    if (premiereTime.isNotEmpty && premiereTime != 'null') {
+      final time = DateTime.tryParse(premiereTime);
+      if (time == null || !showWeekday) {
+        list.add(premiereTime);
+      } else {
+        list.add(
+            '$premiereTime 周${TimeUtil.getChineseWeekdayByNumber(time.weekday)}');
+      }
     } else {
       // list.add("首播时间");
     }
