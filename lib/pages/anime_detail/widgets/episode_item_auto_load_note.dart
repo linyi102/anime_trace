@@ -374,7 +374,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text("隐藏默认"),
                   subtitle: Text(
-                      "预览：${getPreviewCaption(_episode.number, textEditingController.text, hideDefault)}"),
+                      "预览：${getPreviewCaption(_episode.numberWithStartNumber, textEditingController.text, hideDefault)}"),
                   value: hideDefault,
                   onChanged: (value) {
                     // 重绘对话框

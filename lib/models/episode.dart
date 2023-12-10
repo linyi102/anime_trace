@@ -32,6 +32,7 @@ class Episode {
   }
 
   int get number => _number;
+  int get numberWithStartNumber => _number + startNumber - 1;
 
   bool isChecked() {
     return dateTime == null ? false : true;
@@ -47,7 +48,7 @@ class Episode {
 
   /// 根据number和desc生成标题
   String get caption {
-    String defaultTitle = "第 ${(startNumber - 1) + number} 集";
+    String defaultTitle = "第 $numberWithStartNumber 集";
     if (desc == null) return defaultTitle;
 
     if (desc!.hideDefault) {
