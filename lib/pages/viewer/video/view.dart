@@ -246,8 +246,9 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   _buildVideoView() => Video(
         controller: logic.videoController,
         // 修改controls后，需要重新进入播放页才可以看到效果，热重载无效
-        controls:
-            PlatformUtil.isMobile ? fix_video.MaterialVideoControls : null,
+        controls: PlatformUtil.isMobile
+            ? fix_video.MaterialVideoControls
+            : AdaptiveVideoControls,
       );
 
   _buildScreenShotPreview() {
