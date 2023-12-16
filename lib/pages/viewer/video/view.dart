@@ -79,9 +79,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
               : null,
           onLongPressStart: (details) => logic.longPressToSpeedUp(),
           onLongPressUp: () => logic.cancelSpeedUp(),
-          onHorizontalDragStart: (details) => logic.player.pause(),
+          onHorizontalDragStart: (details) =>
+              logic.onHorizontalDragStart(details),
           onHorizontalDragUpdate: (details) =>
-              logic.calculateWillSeekPosition(details.delta.dx),
+              logic.calculateWillSeekPosition(details),
           onHorizontalDragEnd: (details) => logic.seekDragEndPosition(),
           child: Stack(
             children: [
@@ -187,7 +188,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         margin: const EdgeInsets.only(top: 50),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
+          color: Colors.black.withOpacity(0.6),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

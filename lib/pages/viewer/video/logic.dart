@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -24,6 +25,7 @@ class VideoPlayerLogic extends GetxController {
   bool fastForwarding = false;
 
   /// 左右拖动进度
+  bool seeking = false;
   double totalDx = 0; // 左右滑动过程中累计的dx
   int destSeconds = 0; // 最终要跳转的描述
   String willSeekPosition = ''; // 拖动时展示的文字
@@ -64,8 +66,18 @@ class VideoPlayerLogic extends GetxController {
     update();
   }
 
-  calculateWillSeekPosition(double dx) {
-    totalDx += dx;
+  onHorizontalDragStart(DragStartDetails details) {
+    final dy = details.globalPosition.dy;
+    if (dy < 60) return;
+
+    seeking = true;
+    player.pause();
+  }
+
+  calculateWillSeekPosition(DragUpdateDetails details) {
+    if (!seeking) return;
+
+    totalDx += details.delta.dx;
     // 根据最终位移，计算出快进/后退的秒数
     int secondsGap = totalDx.abs() ~/ 5;
     // 获取当前视频播放的进度秒数
@@ -98,10 +110,13 @@ class VideoPlayerLogic extends GetxController {
   }
 
   seekDragEndPosition() async {
+    if (!seeking) return;
+
     // 寻找并播放
     await player.seek(Duration(seconds: destSeconds));
     player.play();
     // 重置
+    seeking = false;
     totalDx = 0;
     destSeconds = 0;
     willSeekPosition = '';
