@@ -325,10 +325,10 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   _buildScreenShotBottomButton() {
-    // return const SizedBox();
-    return IconButton(
-      icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
-      onPressed: () => logic.capture(),
-    );
+    return const SizedBox();
+    // return IconButton(
+    //   icon: const Icon(MingCuteIcons.mgc_camera_2_line, color: Colors.white),
+    //   onPressed: () => logic.capture(),
+    // );
   }
 }
