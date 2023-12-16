@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'dart:math';
+
+import 'package:flutter_test_future/utils/log.dart';
+import 'package:path_provider/path_provider.dart';
 
 class FileUtil {
   /// 根据传入的字节数，转为可读的文件大小
@@ -22,5 +26,17 @@ class FileUtil {
     const suffixes = [" Bytes", "KB", "MB", "GB", "TB"];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
+  }
+
+  /// 获取安卓外部存储根目录
+  static Future<String?> getExternalDirPath() async {
+    Directory? dir = await getExternalStorageDirectory();
+    if (dir == null) return null;
+    Log.info('externalStorageDirectory.path=${dir.path}');
+
+    String externalPath =
+        dir.path.replaceFirst(RegExp('/Android/data/.*/files'), '');
+    Log.info('externalPath=$externalPath');
+    return externalPath;
   }
 }

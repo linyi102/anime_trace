@@ -2,7 +2,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/file_util.dart';
+import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/permission.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:get/get.dart';
@@ -127,17 +132,17 @@ class VideoPlayerLogic extends GetxController {
   }
 
   capture() async {
-    _handleError(String msg) {
+    void _handleError(String msg) {
       ToastUtil.showText(msg);
       capturing = false;
       update();
     }
 
+    player.pause();
     capturing = true;
     update();
 
     late Uint8List? uint8list;
-    // var uint8list = await player.screenshot();
     try {
       uint8list = await player.screenshot();
     } catch (e) {
@@ -150,17 +155,76 @@ class VideoPlayerLogic extends GetxController {
       return;
     }
 
-    String? rootPath = (await getDownloadsDirectory())?.path;
-    if (rootPath == null) {
-      _handleError("无法获取到保存路径");
-      return;
+    String? rootPath;
+    File? file;
+    String fileName = "Capture_${TimeUtil.getNowString2()}.jpg";
+
+    if (PlatformUtil.isDesktop) {
+      rootPath = (await getDownloadsDirectory())?.path;
+      if (rootPath == null) {
+        return _handleError("无法获取到保存路径");
+      }
+
+      file = File(p.join(rootPath, '漫迹', fileName));
+    } else if (Platform.isAndroid) {
+      rootPath = await FileUtil.getExternalDirPath();
+      if (rootPath == null) {
+        return _handleError("无法获取到保存路径");
+      }
+
+      if (Platform.isAndroid) {
+        bool? isGranted =
+            await PermissionUtil.requestManageExternalStorage(onlyCheck: true);
+        if (isGranted == false) {
+          isGranted = await Get.dialog(AlertDialog(
+            title: const Text('提示'),
+            content: const Text('保存文件需要您授予文件管理权限，是否前往设置？'),
+            actions: [
+              TextButton(onPressed: () => Get.back(), child: const Text('取消')),
+              TextButton(
+                  onPressed: () async {
+                    bool isGranted =
+                        await PermissionUtil.requestManageExternalStorage();
+                    Get.back(result: isGranted);
+                  },
+                  child: const Text('前往设置')),
+            ],
+          ));
+        }
+        if (isGranted != true) {
+          return _handleError("没有权限写入文件");
+        }
+      }
+
+      // 如果设置了笔记图片路径，则保存到该位置下
+      final noteImageRootDirPath = ImageUtil.noteImageRootDirPath;
+      if (noteImageRootDirPath.isNotEmpty) {
+        file = File(p.join(noteImageRootDirPath, fileName));
+      } else {
+        file = File(p.join(rootPath, 'Pictures', '漫迹', fileName));
+      }
+    }
+
+    if (file == null) {
+      return _handleError("无法获取到保存文件");
     }
 
     // 图片保存到文件中
-    String fileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
-    File file = File(p.join(rootPath, '漫迹', 'capture', fileName));
-    await file.create(recursive: true);
-    await file.writeAsBytes(uint8list);
+    if (await file.exists()) {
+      return _handleError("文件 ${p.basename(file.path)} 已存在");
+    }
+
+    try {
+      await file.create(recursive: true);
+      await file.writeAsBytes(uint8list);
+    } catch (e) {
+      return _handleError("写入文件错误");
+    }
+
+    if (!(await file.exists())) {
+      return _handleError("写入文件失败");
+    }
+
     Log.info('caputre file：${file.path}');
 
     screenShotFile = file;

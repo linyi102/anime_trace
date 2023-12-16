@@ -9,6 +9,7 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
@@ -39,11 +40,7 @@ class BackupUtil {
 
   /// 备份时，用于生成文件名
   static Future<String> generateZipName() async {
-    // 2020-02-22 01:01:01.182096取到秒
-    String time = DateTime.now().toString().split(".")[0];
-    // :和空格转为-，文件名不能包含英文冒号，否则会提示文件名、目录名或卷标语法不正确
-    time = time.replaceAll(":", "-");
-    time = time.replaceAll(" ", "-");
+    String time = TimeUtil.getNowString1();
 
     String zipName = "";
     if (Platform.isAndroid) {

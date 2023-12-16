@@ -318,6 +318,9 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                 try {
                   await file.delete();
                   imagePaths.removeAt(currentIndex);
+                  if (imagePaths.isEmpty) {
+                    Navigator.pop(context);
+                  }
                   setState(() {});
                 } on Exception catch (_) {
                   ToastUtil.showText('删除失败');

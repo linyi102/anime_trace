@@ -38,12 +38,34 @@ class TimeUtil {
     SPUtil.setBool("showCurYear", showCurYear);
   }
 
-  // 获取当前时间的字符串形式
+  /// 获取当前时间的字符串形式
   static String getDateTimeNowStr() {
     return DateTime.now().toString().substring(0, 19);
   }
 
-  // 显示年月日时分
+  /// 获取时间格式1
+  /// 2020-02-22-01-01-01
+  static String getNowString1() {
+    // 2020-02-22 01:01:01.182096取到秒
+    String time = DateTime.now().toString().split(".")[0];
+    // :和空格转为-，文件名不能包含英文冒号，否则会提示文件名、目录名或卷标语法不正确
+    time = time.replaceAll(":", "-");
+    time = time.replaceAll(" ", "-");
+    return time;
+  }
+
+  /// 获取时间格式2
+  /// 20200222_010101_182096
+  static String getNowString2() {
+    String time = DateTime.now().toString();
+    time = time.replaceAll(":", "");
+    time = time.replaceAll("-", "");
+    time = time.replaceAll(" ", "_");
+    time = time.replaceAll(".", "_");
+    return time;
+  }
+
+  /// 显示年月日时分
   static String getHumanReadableDateTimeStr(
     String time, {
     bool showTime = true,

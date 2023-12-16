@@ -26,9 +26,6 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    // compileSdkVersion 30
-    // compileSdkVersion 31
-    // 2022.11.04 webview_flutter: ^3.0.4
     compileSdkVersion 33
 
     compileOptions {
