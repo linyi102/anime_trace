@@ -838,7 +838,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                       ? (e) async {
                                           final delta = e.delta.dy;
                                           final brightness =
-                                              _brightnessValue - delta / 100.0;
+                                              _brightnessValue - delta / 200.0;
                                           final result =
                                               brightness.clamp(0.0, 1.0);
                                           setBrightness(result);
@@ -865,7 +865,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                       ? (e) async {
                                           final delta = e.delta.dy;
                                           final volume =
-                                              _volumeValue - delta / 100.0;
+                                              _volumeValue - delta / 200.0;
                                           final result = volume.clamp(0.0, 1.0);
                                           setVolume(result);
                                         }
