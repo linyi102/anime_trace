@@ -595,9 +595,12 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
       _volumeIndicator = true;
       _volumeInterceptEventStream = true;
     });
+    // --------------------------------------------------
+  }
+
+  void hideVolumeIndicator() {
     _volumeTimer?.cancel();
-    // linyi/feat: 避免调整音量值后，消失过快
-    _volumeTimer = Timer(const Duration(milliseconds: 400), () {
+    _volumeTimer = Timer(const Duration(milliseconds: 0), () {
       if (mounted) {
         setState(() {
           _volumeIndicator = false;
@@ -605,7 +608,6 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
         });
       }
     });
-    // --------------------------------------------------
   }
 
   Future<void> setBrightness(double value) async {
@@ -617,16 +619,20 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
     setState(() {
       _brightnessIndicator = true;
     });
+
+    // --------------------------------------------------
+  }
+
+  void hideBrightnessIndicator() {
     _brightnessTimer?.cancel();
     // linyi/feat: 避免调整亮度值后，消失过快
-    _brightnessTimer = Timer(const Duration(milliseconds: 400), () {
+    _brightnessTimer = Timer(const Duration(milliseconds: 0), () {
       if (mounted) {
         setState(() {
           _brightnessIndicator = false;
         });
       }
     });
-    // --------------------------------------------------
   }
 
   @override
@@ -655,7 +661,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
               AnimatedOpacity(
                 curve: Curves.easeInOut,
                 opacity:
-                    // linyi/fix: mount时，改变亮度或音量也显示进度器
+                    // linyi/fix: mount时，改变音量也显示进度器
                     //  !mount &&
                     _volumeIndicator ? 1.0 : 0.0,
                 duration: _theme(context).controlsTransitionDuration,
@@ -708,7 +714,10 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
               // Brightness Indicator.
               AnimatedOpacity(
                 curve: Curves.easeInOut,
-                opacity: !mount && _brightnessIndicator ? 1.0 : 0.0,
+                opacity:
+                    // linyi/fix: mount时，改变亮度也显示进度器
+                    //  !mount &&
+                    _brightnessIndicator ? 1.0 : 0.0,
                 duration: _theme(context).controlsTransitionDuration,
                 child: _theme(context)
                         .brightnessIndicatorBuilder
@@ -823,7 +832,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                       ? onDoubleTapSeekBackward
                                       : () {},
                               onVerticalDragUpdate:
-                                  // linyi/fix: 移除mount判断，修复显示时无法改变音量或亮度
+                                  // linyi/fix: 移除mount判断，修复显示顶部栏和底部栏时无法改变音量或亮度
                                   // !mount &&
                                   _theme(context).brightnessGesture
                                       ? (e) async {
@@ -835,6 +844,8 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                           setBrightness(result);
                                         }
                                       : null,
+                              onVerticalDragEnd: (details) =>
+                                  hideBrightnessIndicator(),
                               child: Container(
                                 color: const Color(0x00000000),
                               ),
@@ -848,7 +859,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                       ? onDoubleTapSeekForward
                                       : () {},
                               onVerticalDragUpdate:
-                                  // linyi/fix: 移除mount判断，修复显示时无法改变音量或亮度
+                                  // linyi/fix: 移除mount判断，修复显示顶部栏和底部栏时无法改变音量或亮度
                                   // !mount &&
                                   _theme(context).volumeGesture
                                       ? (e) async {
@@ -859,6 +870,8 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                                           setVolume(result);
                                         }
                                       : null,
+                              onVerticalDragEnd: (details) =>
+                                  hideVolumeIndicator(),
                               child: Container(
                                 color: const Color(0x00000000),
                               ),
