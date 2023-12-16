@@ -73,28 +73,21 @@ class Anime {
     return str.length > 15 ? str.substring(0, 15) : str;
   }
 
-  String getAnimeInfoFirstLine({bool showWeekday = true}) {
+  String getAnimeInfoFirstLine() {
     var list = [];
     if (area.isNotEmpty) {
       list.add(area);
-    } else {
-      // list.add("地区");
     }
     if (category.isNotEmpty) {
       list.add(category);
-    } else {
-      // list.add("类别");
     }
     if (premiereTime.isNotEmpty && premiereTime != 'null') {
-      final time = DateTime.tryParse(premiereTime);
-      if (time == null || !showWeekday) {
-        list.add(premiereTime);
-      } else {
-        list.add(
-            '$premiereTime 周${TimeUtil.getChineseWeekdayByNumber(time.weekday)}');
+      String timeInfo = premiereTime;
+      int? weekday = DateTime.tryParse(premiereTime)?.weekday;
+      if (weekday != null && getPlayStatus() == PlayStatus.playing) {
+        timeInfo += ' 周${TimeUtil.getChineseWeekdayByNumber(weekday)}';
       }
-    } else {
-      // list.add("首播时间");
+      list.add(timeInfo);
     }
 
     return list.join(" / ");

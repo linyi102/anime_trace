@@ -146,8 +146,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
                     if (widget.showAnimeInfo)
                       Row(
                         children: [
-                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine(
-                              showWeekday: widget.showWeekday)),
+                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
                         ],
                       ),
                     if (widget.showAnimeInfo)
