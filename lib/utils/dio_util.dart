@@ -34,15 +34,18 @@ class DioUtil {
     };
   }
 
-  static Future<Result> get<T>(String path, {bool isMobile = false}) async {
+  static Future<Result> get<T>(String path,
+      {bool isMobile = false, String? referer}) async {
     try {
-      Options? options;
+      Map<String, dynamic> headers = {};
       if (isMobile) {
-        options = Options(headers: {
-          "User-Agent":
-              "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36 Edg/109.0.1518.78",
-        });
+        headers['User-Agent'] =
+            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36 Edg/109.0.1518.78';
       }
+      if (referer != null) {
+        headers['referer'] = referer;
+      }
+      Options? options = Options(headers: headers);
       Response response = await dio.request(path, options: options);
 
       return Result.success(response);

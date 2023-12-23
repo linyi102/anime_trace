@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
@@ -99,49 +100,37 @@ class ClimbDouban with Climb {
   Future<List<Anime>> searchAnimeByKeyword(String keyword,
       {bool showMessage = true}) async {
     List<Anime> animes = [];
-
     keyword = keyword.replaceAll(" ", "+"); // 网页搜索时输入空格会被替换为加号
-    String url = "$baseUrl/search?q=$keyword";
 
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return [];
-    }
+    Result result = await DioUtil.get(
+      'https://m.douban.com/rexxar/api/v2/search?q=$keyword&type=&loc_id=&start=0&count=10&sort=relevance',
+      referer: 'https://www.douban.com/search?q=jojo',
+    );
 
-    // 只获取第一个<div class="result-list">，也就是相关书影音，后面两个都是相关豆瓣用户和相关日记
-    var h2Elements = document.getElementsByTagName("h2");
-    bool existResult = false;
-    for (var h2Element in h2Elements) {
-      if (h2Element.innerHtml.contains("相关书影音")) {
-        existResult = true;
+    dynamic json = result.data.data;
+    if (json is! Map || !json.containsKey('subjects')) return [];
+
+    List<dynamic>? items = json['subjects']['items'];
+    for (var item in items ?? []) {
+      if (item is! Map) continue;
+
+      var target = item['target'];
+      String? title = target['title'];
+      String? coverUrl = target['cover_url'];
+      String? detailId = target['id'];
+      if (title == null || coverUrl == null || detailId == null) {
+        continue;
       }
+
+      coverUrl = coverUrl.replaceFirst(RegExp(r'h\/[0-9]+'), 'h/600');
+
+      animes.add(
+        Anime(
+            animeName: title,
+            animeCoverUrl: coverUrl,
+            animeUrl: 'https://movie.douban.com/subject/$detailId'),
+      );
     }
-    if (!existResult) return animes;
-
-    var elements = document
-        .getElementsByClassName("result-list")[0]
-        .getElementsByClassName("result");
-    for (var element in elements) {
-      // Log.info("element=${element.innerHtml}");
-      String coverUrl =
-          element.getElementsByTagName("img")[0].attributes["src"] ?? "";
-      String name = element
-          .getElementsByTagName("h3")[0]
-          .getElementsByTagName("a")[0]
-          .innerHtml;
-      String animeUrl =
-          element.getElementsByClassName("nbg")[0].attributes["href"] ?? "";
-      animeUrl = Uri.decodeComponent(animeUrl);
-      animeUrl = animeUrl.split("&")[0];
-      animeUrl = animeUrl.replaceAll("https://www.douban.com/link2/?url=", "");
-
-      animes.add(Anime(
-          animeName: name,
-          animeEpisodeCnt: 0,
-          animeCoverUrl: coverUrl,
-          animeUrl: animeUrl));
-    }
-
     return animes;
   }
 
