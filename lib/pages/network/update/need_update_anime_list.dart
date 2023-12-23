@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/play_status.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
@@ -18,7 +19,6 @@ class NeedUpdateAnimeList extends StatefulWidget {
 
 class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   List<Anime> animes = [];
-  List<Anime> filteredAnimes = [];
   bool loadOk = false;
 
   final allWeeklyItem = WeeklyItem(title: '全部', weekday: 0);
@@ -61,8 +61,11 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
     animes = await AnimeDao.getAllNeedUpdateAnimes(includeEmptyUrl: true);
     _sortAnimes();
+    for (var weeklyItem in weeklyItems) {
+      weeklyItem.animes = _filterAnime(weeklyItem.weekday);
+    }
     loadOk = true;
-    _filterAnime();
+    setState(() {});
 
     observerController.initialIndex = weeklyItems.indexOf(curWeeklyItem);
   }
@@ -75,28 +78,57 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       ),
       body: CommonScaffoldBody(
           child: FadeAnimatedSwitcher(
-        destWidget: Column(
-          children: [
-            _buildWeeklyBar(),
-            Expanded(child: _buildAnimeCardListView()),
-          ],
+        destWidget: ListViewObserver(
+          controller: observerController,
+          child: Scrollbar(
+            controller: scrollController,
+            thumbVisibility: PlatformUtil.isDesktop,
+            child: ListView.builder(
+              controller: scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: weeklyItems.length,
+              itemBuilder: (context, index) {
+                final weeklyItem = weeklyItems[index];
+
+                return SizedBox(
+                  width: 400,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        child: _buildWeeklyItem(weeklyItem),
+                      ),
+                      weeklyItem.animes.isEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text('无'),
+                            )
+                          : Expanded(
+                              child: ListView.builder(
+                              itemCount: weeklyItem.animes.length,
+                              itemBuilder: (context, index) =>
+                                  _buildAnimeItem(weeklyItem, index),
+                            ))
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ),
         loadOk: loadOk,
       )),
     );
   }
 
-  _buildWeeklyBar() {
-    return Container(
-      height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: ListViewObserver(
-        controller: observerController,
-        child: ListView(
-            controller: scrollController,
-            scrollDirection: Axis.horizontal,
-            children: [for (var item in weeklyItems) _buildWeeklyItem(item)]),
-      ),
+  _buildAnimeItem(WeeklyItem weeklyItem, int index) {
+    Anime anime = weeklyItem.animes[index];
+    return AnimeItemAutoLoad(
+      anime: anime,
+      showAnimeInfo: true,
+      onChanged: (Anime newAnime) {},
     );
   }
 
@@ -105,23 +137,12 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
     var radius = BorderRadius.circular(12);
 
     return Container(
-      decoration: BoxDecoration(
-        color: isCur
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).cardTheme.color,
-        borderRadius: radius,
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       child: InkWell(
         borderRadius: radius,
         onTap: () {
-          setState(() {
-            curWeeklyItem = item;
-            _filterAnime();
-          });
-
           observerController.animateTo(
-            index: curBarItemIndex,
+            index: weeklyItems.indexOf(item),
             duration: const Duration(milliseconds: 200),
             curve: Curves.linear,
             offset: (_) {
@@ -131,48 +152,28 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
         },
         child: Container(
           padding: const EdgeInsets.all(8),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 item.title,
                 style: TextStyle(
-                  color: isCur ? Colors.white : null,
-                ),
+                    color: isCur ? Theme.of(context).primaryColor : null,
+                    fontWeight: FontWeight.w600),
               ),
-              if (isCur && item.subtitle.isNotEmpty)
-                Text(
-                  item.subtitle,
-                  style: TextStyle(
-                      color: isCur ? Colors.white : Theme.of(context).hintColor,
-                      fontSize: 12),
-                ),
+              const SizedBox(width: 10),
+              Text(
+                item.subtitle,
+                style: TextStyle(
+                    color: isCur
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).hintColor,
+                    fontSize: 12),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  _buildAnimeCardListView() {
-    return GridView.builder(
-      key: ObjectKey(curWeeklyItem),
-      itemCount: filteredAnimes.length,
-      itemBuilder: (context, index) => _buildAnimeItem(index),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          mainAxisExtent: 140, maxCrossAxisExtent: 520),
-    );
-  }
-
-  AnimeItemAutoLoad _buildAnimeItem(int index) {
-    return AnimeItemAutoLoad(
-      anime: filteredAnimes[index],
-      showProgress: false,
-      showReviewNumber: false,
-      showWeekday: true,
-      showAnimeInfo: true,
-      onChanged: (Anime newAnime) {},
     );
   }
 
@@ -195,8 +196,8 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   }
 
   /// 筛选动漫
-  void _filterAnime() {
-    int weekday = curWeeklyItem.weekday;
+  List<Anime> _filterAnime(int weekday) {
+    List<Anime> filteredAnimes = [];
     if (weekday == allWeeklyItem.weekday) {
       filteredAnimes = animes;
     } else if (weekday == unknownWeeklyItem.weekday) {
@@ -208,7 +209,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
           .toList();
     }
 
-    if (mounted) setState(() {});
+    return filteredAnimes;
   }
 }
 
@@ -216,5 +217,10 @@ class WeeklyItem {
   String title;
   String subtitle;
   int weekday;
-  WeeklyItem({required this.title, this.subtitle = '', required this.weekday});
+  List<Anime> animes;
+  WeeklyItem(
+      {required this.title,
+      this.subtitle = '',
+      required this.weekday,
+      this.animes = const []});
 }
