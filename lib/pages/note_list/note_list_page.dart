@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/note_search_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
+import 'package:flutter_test_future/pages/note_list/widgets/recently_create_note_anime_list_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -17,13 +20,11 @@ class NoteListPage extends StatefulWidget {
 
 class _NoteListPageState extends State<NoteListPage>
     with SingleTickerProviderStateMixin {
-  // tab
   late TabController _tabController;
   final List<String> _navs = ["笔记", "评价"];
-  NoteFilter noteFilter = NoteFilter();
 
-  // 输入框
-  final bool _showSearchField = false;
+  NoteFilter noteFilter = NoteFilter();
+  Anime? selectedAnime;
 
   @override
   void initState() {
@@ -52,45 +53,50 @@ class _NoteListPageState extends State<NoteListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _showSearchField
-          ? _buildSearchField()
-          : AppBar(
-              title: _buildTabBar(),
-              actions: [
-                _buildSearchIconButton(),
-              ],
-            ),
+      appBar: AppBar(
+        title: _buildTabBar(),
+        actions: [
+          _buildSearchIconButton(),
+        ],
+      ),
       body: CommonScaffoldBody(
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            EpisodeNoteListPage(noteFilter: noteFilter),
-            RateNoteListPage(noteFilter: noteFilter)
-          ],
-        ),
+        child: Responsive(
+            mobile: _buildTabBarView(),
+            tablet: _buildTabBarView(),
+            desktop: Row(
+              children: [
+                Expanded(child: _buildTabBarView()),
+                SizedBox(
+                  width: 300,
+                  child: RecentlyCreateNoteAnimeListPage(
+                    selectedAnime: selectedAnime,
+                    onTapItem: (anime) {
+                      setState(() {
+                        selectedAnime = anime;
+                        noteFilter.animeNameKeyword = anime?.animeName ?? '';
+                      });
+                    },
+                  ),
+                )
+              ],
+            )),
       ),
     );
   }
 
-  _buildSearchField() {
-    var inputKeywordController = TextEditingController();
-
-    return TextField(
-      controller: inputKeywordController,
-      decoration: const InputDecoration(
-        hintText: "搜索笔记",
-        prefixIcon: Icon(Icons.search),
-        contentPadding: EdgeInsets.all(0),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
+  TabBarView _buildTabBarView() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        EpisodeNoteListPage(
+          noteFilter: noteFilter,
+          key: ValueKey('episode-note-${noteFilter.valueKeyStr}'),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
-      ),
+        RateNoteListPage(
+          noteFilter: noteFilter,
+          key: ValueKey('rate-note-${noteFilter.valueKeyStr}'),
+        )
+      ],
     );
   }
 
