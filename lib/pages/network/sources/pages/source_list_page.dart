@@ -18,6 +18,10 @@ class SourceListPage extends StatefulWidget {
 class _SourceListPageState extends State<SourceListPage> {
   final scrollController = ScrollController();
 
+  // 开启了所有未弃用的搜索源
+  bool get allEnabled =>
+      climbWebsites.where((e) => !e.discard).every((e) => e.enable);
+
   @override
   void dispose() {
     scrollController.dispose();
@@ -29,6 +33,24 @@ class _SourceListPageState extends State<SourceListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("搜索源"),
+        actions: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    bool willEnable = allEnabled ? false : true;
+
+                    for (var e in climbWebsites) {
+                      e.enable = willEnable;
+                      SPUtil.setBool(e.spkey, e.enable);
+                    }
+                    setState(() {});
+                  },
+                  child: Text(allEnabled ? '全部关闭' : '全部开启')),
+            ],
+          )
+        ],
       ),
       body: CommonScaffoldBody(
         child: Scrollbar(
