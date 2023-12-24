@@ -80,29 +80,40 @@ class _NoteListPageState extends State<NoteListPage>
     return TabBarView(
       controller: _tabController,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: EpisodeNoteListPage(
-                noteFilter: episodeNoteFilter,
-                key: ValueKey('episode-note-${episodeNoteFilter.valueKeyStr}'),
-              ),
-            ),
-            _buildAnimeListInNote()
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: RateNoteListPage(
-                noteFilter: rateNoteFilter,
-                key: ValueKey('rate-note-${rateNoteFilter.valueKeyStr}'),
-              ),
-            ),
-            _buildAnimeListInRate()
-          ],
-        ),
+        Responsive(
+            responsiveWidthSource: ResponsiveWidthSource.constraints,
+            mobile: _buildEpisodeNoteListPage(),
+            desktop: Row(
+              children: [
+                Expanded(child: _buildEpisodeNoteListPage()),
+                _buildAnimeListInNote()
+              ],
+            )),
+        Responsive(
+          responsiveWidthSource: ResponsiveWidthSource.constraints,
+          mobile: _buildRateNoteListPage(),
+          desktop: Row(
+            children: [
+              Expanded(child: _buildRateNoteListPage()),
+              _buildAnimeListInRate()
+            ],
+          ),
+        )
       ],
+    );
+  }
+
+  RateNoteListPage _buildRateNoteListPage() {
+    return RateNoteListPage(
+      noteFilter: rateNoteFilter,
+      key: ValueKey('rate-note-${rateNoteFilter.valueKeyStr}'),
+    );
+  }
+
+  EpisodeNoteListPage _buildEpisodeNoteListPage() {
+    return EpisodeNoteListPage(
+      noteFilter: episodeNoteFilter,
+      key: ValueKey('episode-note-${episodeNoteFilter.valueKeyStr}'),
     );
   }
 

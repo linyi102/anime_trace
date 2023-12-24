@@ -1,15 +1,22 @@
 import 'package:flutter/cupertino.dart';
 
+enum ResponsiveWidthSource {
+  mediaQuery,
+  constraints,
+}
+
 class Responsive extends StatelessWidget {
   final Widget mobile;
   final Widget? tablet;
   final Widget desktop;
+  final ResponsiveWidthSource responsiveWidthSource;
 
   const Responsive({
     Key? key,
     required this.mobile,
     this.tablet,
     required this.desktop,
+    this.responsiveWidthSource = ResponsiveWidthSource.mediaQuery,
   }) : super(key: key);
 
   static get _mobileMaxWidth => 600;
@@ -29,8 +36,34 @@ class Responsive extends StatelessWidget {
   // 根据不同的平台，为组件传入不同的比例
   @override
   Widget build(BuildContext context) {
-    final Size _size = MediaQuery.of(context).size;
+    switch (responsiveWidthSource) {
+      case ResponsiveWidthSource.mediaQuery:
+        return _buildByMediaQuery(context);
+      case ResponsiveWidthSource.constraints:
+        return _buildByConstraints();
+      default:
+        return _buildByMediaQuery(context);
+    }
+  }
 
+  _buildByConstraints() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+
+        if (width > _tabletMaxWidth) {
+          return desktop;
+        } else if (width > _mobileMaxWidth) {
+          return tablet ?? desktop;
+        } else {
+          return mobile;
+        }
+      },
+    );
+  }
+
+  _buildByMediaQuery(BuildContext context) {
+    final Size _size = MediaQuery.of(context).size;
     if (_size.width > _tabletMaxWidth) {
       return desktop;
     } else if (_size.width > _mobileMaxWidth) {

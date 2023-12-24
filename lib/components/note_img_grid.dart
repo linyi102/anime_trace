@@ -29,6 +29,7 @@ class NoteImgGrid extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
       child: Responsive(
+          responsiveWidthSource: ResponsiveWidthSource.constraints,
           // mobile: _buildMobileView(),
           mobile: _buildView(columnCnt: 3, maxDisplayCount: 9),
           tablet: _buildView(columnCnt: 5, maxDisplayCount: 10),
