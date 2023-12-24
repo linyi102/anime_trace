@@ -5,4 +5,7 @@ class PlatformUtil {
 
   // Windows、Linux、macOS、fuchsia、Web
   static bool get isDesktop => !isMobile;
+
+  static Duration? get tabControllerAnimationDuration =>
+      isMobile ? null : Duration.zero;
 }

@@ -3,11 +3,13 @@ import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/episode_note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/enum/note_type.dart';
 
 class RecentlyCreateNoteAnimeListPage extends StatefulWidget {
   const RecentlyCreateNoteAnimeListPage(
-      {super.key, this.selectedAnime, this.onTapItem});
+      {super.key, required this.noteType, this.selectedAnime, this.onTapItem});
   final Anime? selectedAnime;
+  final NoteType noteType;
   final void Function(Anime? anime)? onTapItem;
 
   @override
@@ -36,7 +38,7 @@ class _RecentlyCreateNoteAnimeListPageState
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return _buildAnimeItemCard(
-                    child: const ListTile(title: Text('全部笔记')),
+                    child: ListTile(title: Text('全部${widget.noteType.title}')),
                     isSelected: widget.selectedAnime == null,
                   );
                 }
@@ -79,8 +81,8 @@ class _RecentlyCreateNoteAnimeListPageState
   }
 
   _loadRecentlyCreatNoteAnime() async {
-    recentlyCreateNoteAnimes =
-        await EpisodeNoteDao.getAnimesRecentlyCreateNote();
+    recentlyCreateNoteAnimes = await EpisodeNoteDao.getAnimesRecentlyCreateNote(
+        noteType: widget.noteType);
     loadOk = true;
     if (mounted) setState(() {});
   }

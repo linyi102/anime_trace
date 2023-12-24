@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/enum/note_type.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/note_search_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/recently_create_note_anime_list_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
@@ -23,19 +25,21 @@ class _NoteListPageState extends State<NoteListPage>
   late TabController _tabController;
   final List<String> _navs = ["笔记", "评价"];
 
-  NoteFilter noteFilter = NoteFilter();
-  Anime? selectedAnime;
+  NoteFilter episodeNoteFilter = NoteFilter();
+  NoteFilter rateNoteFilter = NoteFilter();
+  Anime? selectedAnimeInNote;
+  Anime? selectedAnimeInRate;
 
   @override
   void initState() {
     super.initState();
     // 顶部tab控制器
     _tabController = TabController(
-      initialIndex:
-          SPUtil.getInt("lastNavIndexInNoteListPageNav", defaultValue: 0),
-      length: _navs.length,
-      vsync: this,
-    );
+        initialIndex:
+            SPUtil.getInt("lastNavIndexInNoteListPageNav", defaultValue: 0),
+        length: _navs.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
       if (_tabController.index == _tabController.animation!.value) {
@@ -66,18 +70,6 @@ class _NoteListPageState extends State<NoteListPage>
             desktop: Row(
               children: [
                 Expanded(child: _buildTabBarView()),
-                SizedBox(
-                  width: 300,
-                  child: RecentlyCreateNoteAnimeListPage(
-                    selectedAnime: selectedAnime,
-                    onTapItem: (anime) {
-                      setState(() {
-                        selectedAnime = anime;
-                        noteFilter.animeNameKeyword = anime?.animeName ?? '';
-                      });
-                    },
-                  ),
-                )
               ],
             )),
       ),
@@ -88,15 +80,61 @@ class _NoteListPageState extends State<NoteListPage>
     return TabBarView(
       controller: _tabController,
       children: [
-        EpisodeNoteListPage(
-          noteFilter: noteFilter,
-          key: ValueKey('episode-note-${noteFilter.valueKeyStr}'),
+        Row(
+          children: [
+            Expanded(
+              child: EpisodeNoteListPage(
+                noteFilter: episodeNoteFilter,
+                key: ValueKey('episode-note-${episodeNoteFilter.valueKeyStr}'),
+              ),
+            ),
+            _buildAnimeListInNote()
+          ],
         ),
-        RateNoteListPage(
-          noteFilter: noteFilter,
-          key: ValueKey('rate-note-${noteFilter.valueKeyStr}'),
-        )
+        Row(
+          children: [
+            Expanded(
+              child: RateNoteListPage(
+                noteFilter: rateNoteFilter,
+                key: ValueKey('rate-note-${rateNoteFilter.valueKeyStr}'),
+              ),
+            ),
+            _buildAnimeListInRate()
+          ],
+        ),
       ],
+    );
+  }
+
+  SizedBox _buildAnimeListInRate() {
+    return SizedBox(
+      width: 300,
+      child: RecentlyCreateNoteAnimeListPage(
+        selectedAnime: selectedAnimeInRate,
+        noteType: NoteType.rate,
+        onTapItem: (anime) {
+          setState(() {
+            selectedAnimeInRate = anime;
+            rateNoteFilter.animeId = anime?.animeId;
+          });
+        },
+      ),
+    );
+  }
+
+  SizedBox _buildAnimeListInNote() {
+    return SizedBox(
+      width: 300,
+      child: RecentlyCreateNoteAnimeListPage(
+        selectedAnime: selectedAnimeInNote,
+        noteType: NoteType.episode,
+        onTapItem: (anime) {
+          setState(() {
+            selectedAnimeInNote = anime;
+            episodeNoteFilter.animeNameKeyword = anime?.animeName ?? '';
+          });
+        },
+      ),
     );
   }
 

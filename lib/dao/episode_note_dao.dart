@@ -1,11 +1,24 @@
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/enum/note_type.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 
 class EpisodeNoteDao {
   /// 获取最近创建笔记的动漫
-  static getAnimesRecentlyCreateNote() async {
+  static getAnimesRecentlyCreateNote({NoteType? noteType}) async {
+    String whereSql = '';
+    switch (noteType) {
+      case NoteType.episode:
+        whereSql = 'where episode_number > 0';
+        break;
+      case NoteType.rate:
+        whereSql = 'where episode_number = 0';
+        break;
+      default:
+    }
+
     final rows = await SqliteUtil.database.rawQuery('''
       select distinct episode_note.anime_id from episode_note
+      $whereSql
       order by episode_note.note_id desc
     ''');
     List<Anime> animes = [];
@@ -14,7 +27,10 @@ class EpisodeNoteDao {
       int? animeId = row['anime_id'] as int?;
       if (animeId == null) continue;
 
-      animes.add(await SqliteUtil.getAnimeByAnimeId(animeId));
+      final anime = await SqliteUtil.getAnimeByAnimeId(animeId);
+      if (anime.isCollected()) {
+        animes.add(anime);
+      }
     }
 
     return animes;

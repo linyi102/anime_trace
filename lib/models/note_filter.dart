@@ -1,16 +1,17 @@
 class NoteFilter {
+  int? animeId;
   String animeNameKeyword;
   String noteContentKeyword;
 
-  NoteFilter({this.animeNameKeyword = "", this.noteContentKeyword = ""});
+  NoteFilter(
+      {this.animeNameKeyword = "", this.noteContentKeyword = "", this.animeId});
 
   bool hasFilter() =>
       animeNameKeyword.isNotEmpty || noteContentKeyword.isNotEmpty;
 
-  String get valueKeyStr => '$animeNameKeyword-$noteContentKeyword';
+  String get valueKeyStr => toString();
 
   @override
-  String toString() {
-    return "NoteFilter[animeNameKeyword=$animeNameKeyword, noteContentKeyword=$noteContentKeyword]";
-  }
+  String toString() =>
+      'NoteFilter(animeId: $animeId, animeNameKeyword: $animeNameKeyword, noteContentKeyword: $noteContentKeyword)';
 }

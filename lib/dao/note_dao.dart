@@ -37,12 +37,14 @@ class NoteDao {
 
   // 所有评价列表。分页
   static Future<List<Note>> getRateNotes(
-      {required PageParams pageParams, required NoteFilter noteFilter}) async {
+      {required PageParams pageParams, NoteFilter? noteFilter}) async {
     Log.info("sql: getRateNotes");
     List<Note> rateNotes = [];
+
+    int? animeId = noteFilter?.animeId;
     List<Map<String, Object?>> list = await database.rawQuery('''
     select anime_id, note_id, note_content, create_time, update_time from episode_note
-    where episode_number = 0 order by create_time desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+    where ${animeId != null ? 'anime_id=$animeId and' : ''} episode_number = 0 order by create_time desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
     ''');
     for (Map row in list) {
       rateNotes.add(await row2bean(row, searchAnime: true));
