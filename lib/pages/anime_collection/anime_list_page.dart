@@ -19,6 +19,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -99,7 +100,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                   ),
                   body: CommonScaffoldBody(
                     child: loadOk
-                        ? TabBarView(
+                        ? CommonTabBarView(
                             controller: _tabController,
                             children: _getAnimesPlus(),
                           )

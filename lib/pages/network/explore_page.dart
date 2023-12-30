@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/network/update/update_record_page.dart
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 探索页
@@ -67,14 +68,12 @@ class _ExplorePageState extends State<ExplorePage>
         actions: actions,
       ),
       body: CommonScaffoldBody(
-        child: TabBarView(
-            controller: _tabController, // 指定tab控制器
-            children: [
-              const AggregatePage(),
-              UpdateRecordPage(),
-              const WeeklyPage(),
-              const DirectoryPage(),
-            ]),
+        child: CommonTabBarView(controller: _tabController, children: [
+          const AggregatePage(),
+          UpdateRecordPage(),
+          const WeeklyPage(),
+          const DirectoryPage(),
+        ]),
       ),
       // floatingActionButton: _buildFAB(context),
     );

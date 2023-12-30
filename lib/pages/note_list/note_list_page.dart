@@ -11,6 +11,7 @@ import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -76,8 +77,8 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  TabBarView _buildTabBarView() {
-    return TabBarView(
+  _buildTabBarView() {
+    return CommonTabBarView(
       controller: _tabController,
       children: [
         Responsive(
@@ -103,14 +104,14 @@ class _NoteListPageState extends State<NoteListPage>
     );
   }
 
-  RateNoteListPage _buildRateNoteListPage() {
+  _buildRateNoteListPage() {
     return RateNoteListPage(
       noteFilter: rateNoteFilter,
       key: ValueKey('rate-note-${rateNoteFilter.valueKeyStr}'),
     );
   }
 
-  EpisodeNoteListPage _buildEpisodeNoteListPage() {
+  _buildEpisodeNoteListPage() {
     return EpisodeNoteListPage(
       noteFilter: episodeNoteFilter,
       key: ValueKey('episode-note-${episodeNoteFilter.valueKeyStr}'),
