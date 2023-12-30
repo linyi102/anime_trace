@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -37,12 +38,14 @@ class NoteDao {
 
   // 所有评价列表。分页
   static Future<List<Note>> getRateNotes(
-      {required PageParams pageParams, required NoteFilter noteFilter}) async {
+      {required PageParams pageParams, NoteFilter? noteFilter}) async {
     Log.info("sql: getRateNotes");
     List<Note> rateNotes = [];
+
+    int? animeId = noteFilter?.animeId;
     List<Map<String, Object?>> list = await database.rawQuery('''
     select anime_id, note_id, note_content, create_time, update_time from episode_note
-    where episode_number = 0 order by create_time desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+    where ${animeId != null ? 'anime_id=$animeId and' : ''} episode_number = 0 order by create_time desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
     ''');
     for (Map row in list) {
       rateNotes.add(await row2bean(row, searchAnime: true));
@@ -297,7 +300,7 @@ class NoteDao {
       Episode episode = Episode(
           item['episode_number'] as int, item['review_number'] as int,
           dateTime: item['date'] as String,
-          startNumber: anime.episodeStartNumber);
+          startNumber: EpisodeUtil.getFakeEpisodeStartNumber(anime));
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       Note episodeNote = Note(
@@ -344,19 +347,39 @@ class NoteDao {
   static Future<int> getEpisodeNoteTotal() async {
     Log.info('sql: getEpisodeNoteTotal');
 
-    var cols = await database.rawQuery('''
+    var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number > 0;
     ''');
-    return cols.first['total'] as int;
+    return rows.first['total'] as int;
+  }
+
+  /// 非空的笔记数量
+  static Future<int> getNotEmptyEpisodeNoteTotal() async {
+    Log.info('sql: getEpisodeNoteTotal');
+
+    // 内容不为空的笔记数量
+    final rows1 = await database.rawQuery('''
+      select count(note_id) total from episode_note where episode_number > 0 and length(note_content) != 0;
+    ''');
+    int notEmptyContentNoteCnt = rows1.first['total'] as int;
+
+    // 内容为空，但添加了图片的笔记数量
+    final rows2 = await database.rawQuery('''
+      select count(distinct note_id) total from image where note_id in
+        (select note_id from episode_note where episode_number > 0 and length(note_content) = 0)
+    ''');
+    int emptyContentButExistImageNoteCnt = rows2.first['total'] as int;
+
+    return notEmptyContentNoteCnt + emptyContentButExistImageNoteCnt;
   }
 
   /// 评价数量
   static Future<int> getRateNoteTotal() async {
     Log.info('sql: getRateNoteTotal');
 
-    var cols = await database.rawQuery('''
+    var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number == 0;
     ''');
-    return cols.first['total'] as int;
+    return rows.first['total'] as int;
   }
 }

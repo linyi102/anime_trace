@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/anime_detail/controllers/anime_control
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto_load_note.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get/get.dart';
@@ -263,8 +264,10 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     }
 
     // 计算出范围后，根据动漫的起始集再次调整
-    startEpisodeNumber += _anime.episodeStartNumber - 1;
-    endEpisodeNumber += _anime.episodeStartNumber - 1;
+    startEpisodeNumber =
+        EpisodeUtil.getFixedEpisodeNumber(_anime, startEpisodeNumber);
+    endEpisodeNumber =
+        EpisodeUtil.getFixedEpisodeNumber(_anime, endEpisodeNumber);
 
     return startEpisodeNumber.toString().padLeft(2, '0') +
         "-" +

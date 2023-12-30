@@ -27,8 +27,7 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
               Expanded(
                   child: EpisodeNoteListPage(
                 noteFilter: noteFilter,
-                key: ValueKey(
-                    '${noteFilter.animeNameKeyword}-${noteFilter.noteContentKeyword}'),
+                key: ValueKey(noteFilter.valueKeyStr),
               ))
           ],
         ),

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
+import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/enum/note_type.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/note_search_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
+import 'package:flutter_test_future/pages/note_list/widgets/recently_create_note_anime_list_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -17,24 +23,25 @@ class NoteListPage extends StatefulWidget {
 
 class _NoteListPageState extends State<NoteListPage>
     with SingleTickerProviderStateMixin {
-  // tab
   late TabController _tabController;
   final List<String> _navs = ["笔记", "评价"];
-  NoteFilter noteFilter = NoteFilter();
 
-  // 输入框
-  final bool _showSearchField = false;
+  NoteFilter episodeNoteFilter = NoteFilter();
+  NoteFilter rateNoteFilter = NoteFilter();
+  Anime? selectedAnimeInNote;
+  Anime? selectedAnimeInRate;
+  double get rightAnimeListWidth => 300;
 
   @override
   void initState() {
     super.initState();
     // 顶部tab控制器
     _tabController = TabController(
-      initialIndex:
-          SPUtil.getInt("lastNavIndexInNoteListPageNav", defaultValue: 0),
-      length: _navs.length,
-      vsync: this,
-    );
+        initialIndex:
+            SPUtil.getInt("lastNavIndexInNoteListPageNav", defaultValue: 0),
+        length: _navs.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
       if (_tabController.index == _tabController.animation!.value) {
@@ -52,44 +59,87 @@ class _NoteListPageState extends State<NoteListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _showSearchField
-          ? _buildSearchField()
-          : AppBar(
-              title: _buildTabBar(),
-              actions: [
-                _buildSearchIconButton(),
-              ],
-            ),
+      appBar: AppBar(
+        title: _buildTabBar(),
+        actions: [
+          _buildSearchIconButton(),
+        ],
+      ),
       body: CommonScaffoldBody(
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            EpisodeNoteListPage(noteFilter: noteFilter),
-            RateNoteListPage(noteFilter: noteFilter)
-          ],
-        ),
+        child: _buildTabBarView(),
       ),
     );
   }
 
-  _buildSearchField() {
-    var inputKeywordController = TextEditingController();
+  _buildTabBarView() {
+    return CommonTabBarView(
+      controller: _tabController,
+      children: [
+        Responsive(
+            responsiveWidthSource: ResponsiveWidthSource.constraints,
+            mobile: _buildEpisodeNoteListPage(),
+            desktop: Row(
+              children: [
+                Expanded(child: _buildEpisodeNoteListPage()),
+                _buildAnimeListInNote()
+              ],
+            )),
+        Responsive(
+          responsiveWidthSource: ResponsiveWidthSource.constraints,
+          mobile: _buildRateNoteListPage(),
+          desktop: Row(
+            children: [
+              Expanded(child: _buildRateNoteListPage()),
+              _buildAnimeListInRate()
+            ],
+          ),
+        )
+      ],
+    );
+  }
 
-    return TextField(
-      controller: inputKeywordController,
-      decoration: const InputDecoration(
-        hintText: "搜索笔记",
-        prefixIcon: Icon(Icons.search),
-        contentPadding: EdgeInsets.all(0),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
+  _buildRateNoteListPage() {
+    return RateNoteListPage(
+      noteFilter: rateNoteFilter,
+      key: ValueKey('rate-note-${rateNoteFilter.valueKeyStr}'),
+    );
+  }
+
+  _buildEpisodeNoteListPage() {
+    return EpisodeNoteListPage(
+      noteFilter: episodeNoteFilter,
+      key: ValueKey('episode-note-${episodeNoteFilter.valueKeyStr}'),
+    );
+  }
+
+  SizedBox _buildAnimeListInRate() {
+    return SizedBox(
+      width: rightAnimeListWidth,
+      child: RecentlyCreateNoteAnimeListPage(
+        selectedAnime: selectedAnimeInRate,
+        noteType: NoteType.rate,
+        onTapItem: (anime) {
+          setState(() {
+            selectedAnimeInRate = anime;
+            rateNoteFilter.animeId = anime?.animeId;
+          });
+        },
+      ),
+    );
+  }
+
+  SizedBox _buildAnimeListInNote() {
+    return SizedBox(
+      width: rightAnimeListWidth,
+      child: RecentlyCreateNoteAnimeListPage(
+        selectedAnime: selectedAnimeInNote,
+        noteType: NoteType.episode,
+        onTapItem: (anime) {
+          setState(() {
+            selectedAnimeInNote = anime;
+            episodeNoteFilter.animeNameKeyword = anime?.animeName ?? '';
+          });
+        },
       ),
     );
   }

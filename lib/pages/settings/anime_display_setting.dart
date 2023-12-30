@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -43,7 +44,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       appBar: CommonBottomTabBar(
           tabController: tabController,
           tabs: tabStr.map((e) => Tab(text: e)).toList()),
-      body: TabBarView(controller: tabController, children: [
+      body: CommonTabBarView(controller: tabController, children: [
         widget.sortPage,
         Obx(() => SingleChildScrollView(
               child: Column(

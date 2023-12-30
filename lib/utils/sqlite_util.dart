@@ -6,6 +6,7 @@ import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/dao/series_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -46,6 +47,8 @@ class SqliteUtil {
     await SqliteUtil.addColumnRateToAnime();
     // 为动漫表增加起始集数列
     await SqliteUtil.addColumnEpisodeStartNumberToAnime();
+    // 为动漫表增加集号是否从第1集计算
+    await SqliteUtil.addColumnCalEpisodeNumberFromOneToAnime();
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序
@@ -251,14 +254,20 @@ class SqliteUtil {
   }
 
   static addColumnEpisodeStartNumberToAnime() async {
-    var tableName = 'anime';
-    var columnName = 'episode_start_number';
-    var columnType = 'INTEGER';
     _addColumnName(
-      tableName: tableName,
-      columnName: columnName,
-      columnType: columnType,
+      tableName: 'anime',
+      columnName: 'episode_start_number',
+      columnType: 'INTEGER',
       logName: 'addColumnEpisodeStartNumberToAnime',
+    );
+  }
+
+  static addColumnCalEpisodeNumberFromOneToAnime() async {
+    _addColumnName(
+      tableName: 'anime',
+      columnName: 'cal_episode_number_from_one',
+      columnType: 'INTEGER',
+      logName: 'addColumnCalEpisodeNumberFromOneToAnime',
     );
   }
 
@@ -477,7 +486,7 @@ class SqliteUtil {
         episodeNumber <= endEpisodeNumber;
         ++episodeNumber) {
       episodes.add(Episode(episodeNumber, anime.reviewNumber,
-          startNumber: anime.episodeStartNumber));
+          startNumber: EpisodeUtil.getFakeEpisodeStartNumber(anime)));
     }
     // 遍历查询结果，每个元素都是一个键值对(列名-值)
     for (var element in list) {

@@ -280,7 +280,7 @@ class _TracePageState extends State<TracePage> {
 
     animeTotal = await AnimeDao.getTotal();
     recordTotal = await HistoryDao.getCount();
-    noteTotal = await NoteDao.getEpisodeNoteTotal();
+    noteTotal = await NoteDao.getNotEmptyEpisodeNoteTotal();
     rateTotal = await NoteDao.getRateNoteTotal();
 
     loading = false;

@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -115,7 +116,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
   }
 
   _buildTabBarView(BuildContext context) {
-    return TabBarView(
+    return CommonTabBarView(
       controller: icc.tabController,
       children: List.generate(siteCollectionTab.length, (collIdx) {
         if (icc.searching[collIdx]) return loadingWidget(context);

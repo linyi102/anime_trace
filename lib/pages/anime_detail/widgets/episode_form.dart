@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_episode_info.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
 class EpisodeForm extends StatefulWidget {
@@ -16,6 +17,8 @@ class _EpisodeFormState extends State<EpisodeForm> {
       TextEditingController(text: '${widget.anime.animeEpisodeCnt}');
   late final episodeStartNumberController =
       TextEditingController(text: '${widget.anime.episodeStartNumber}');
+  late bool calEpisodeNumberFromOne = widget.anime.calEpisodeNumberFromOne;
+
   int episodeCntMinValue = 0, episodeCntMaxValue = 2000;
   int episodeStartNumberMinValue = 0, episodeStartNumberMaxValue = 2000;
   int get totalCnt => int.tryParse(episodeCntController.text) ?? 0;
@@ -57,9 +60,23 @@ class _EpisodeFormState extends State<EpisodeForm> {
                 },
                 showRangeHintText: false,
               ),
+              const SizedBox(height: 10),
+              SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('从第 1 集计数'),
+                  value: calEpisodeNumberFromOne,
+                  onChanged: (value) {
+                    setState(() {
+                      calEpisodeNumberFromOne = value;
+                    });
+                  }),
               _buildTitle('预览'),
               Text(
-                '$startNumber-${startNumber - 1 + totalCnt}',
+                totalCnt == 0
+                    ? '0'
+                    : calEpisodeNumberFromOne
+                        ? '1-$totalCnt'
+                        : '$startNumber-${startNumber - 1 + totalCnt}',
                 style:
                     TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
               ),
@@ -100,10 +117,13 @@ class _EpisodeFormState extends State<EpisodeForm> {
                   return;
                 }
 
-                Navigator.pop(context, {
-                  'episodeCnt': inputEpisodeCnt,
-                  'episodeStartNumber': inputEpisodeStartNumber,
-                });
+                Navigator.pop(
+                    context,
+                    AnimeEpisodeInfo(
+                      totalCnt: inputEpisodeCnt,
+                      startNumber: inputEpisodeStartNumber,
+                      calNumberFromOne: calEpisodeNumberFromOne,
+                    ));
               },
               child: const Text("确定")),
         ]);
