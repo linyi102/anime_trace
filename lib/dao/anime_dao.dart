@@ -1,4 +1,5 @@
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
+import 'package:flutter_test_future/models/anime_episode_info.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -467,13 +468,13 @@ class AnimeDao {
     ''');
   }
 
-  static Future<bool> updateEpisodeCntAndStartNumberByAnimeId(
-      int animeId, int episodeCnt, int episodeStartNumber) async {
+  static Future<bool> updateEpisodeInfoByAnimeId(
+      int animeId, AnimeEpisodeInfo episodeInfo) async {
     Log.info("sql: updateEpisodeCntAndStartNumberByAnimeId");
 
     return await db.rawUpdate('''
       update anime
-      set anime_episode_cnt = $episodeCnt, episode_start_number = $episodeStartNumber
+      set anime_episode_cnt = ${episodeInfo.totalCnt}, episode_start_number = ${episodeInfo.startNumber}, cal_episode_number_from_one = ${episodeInfo.calNumberFromOne ? 1 : 0}
       where anime_id = $animeId;
       ''') > 0;
   }
@@ -557,6 +558,8 @@ class AnimeDao {
       animeName: row['anime_name'] as String? ?? '',
       animeEpisodeCnt: row['anime_episode_cnt'] as int? ?? 0,
       episodeStartNumber: row['episode_start_number'] as int? ?? 1,
+      calEpisodeNumberFromOne:
+          int2Bool(row['cal_episode_number_from_one'] as int?),
       animeDesc: row['anime_desc'] as String? ?? "",
       animeCoverUrl: row['anime_cover_url'] as String? ?? "",
       tagName: row['tag_name'] as String? ?? '未知',
@@ -589,6 +592,11 @@ class AnimeDao {
 
     _restoreEscapeAnime(anime);
     return anime;
+  }
+
+  /// int转bool
+  static bool int2Bool(int? val) {
+    return val == null || val == 0 ? false : true;
   }
 
   /// 转义后，单个单引号会变为两个单引号存放在数据库，查询的时候得到的是两个单引号，因此也需要恢复

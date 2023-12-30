@@ -8,6 +8,7 @@ class Anime {
   String animeName;
   int animeEpisodeCnt; // 总集数
   int episodeStartNumber; // 起始集
+  bool calEpisodeNumberFromOne; // 从第1集开始计算
   String tagName;
   String animeDesc;
   String animeCoverUrl;
@@ -55,23 +56,10 @@ class Anime {
     this.climbFinished = false,
     this.tempInfo,
     this.hasJoinedSeries = false,
+    this.calEpisodeNumberFromOne = false,
   });
 
-  @override
-  String toString() {
-    return "Anime=[animeId=$animeId, animeName=$animeName, "
-        "animeEpisodeCnt=$animeEpisodeCnt, episodeStartNumber=$episodeStartNumber, tagName=$tagName, "
-        "checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, "
-        "animeUrl=$animeUrl, premiereTime=$premiereTime, "
-        "animeDesc=${reduceStr(animeDesc)}, playStatus=$playStatus, "
-        "category=$category, area=$area, rate=$rate]";
-  }
-
   DateTime? get premiereDateTime => DateTime.tryParse(premiereTime);
-
-  String reduceStr(String str) {
-    return str.length > 15 ? str.substring(0, 15) : str;
-  }
 
   String getAnimeInfoFirstLine() {
     var list = [];
@@ -151,6 +139,7 @@ class Anime {
     String? animeName,
     int? animeEpisodeCnt,
     int? episodeStartNumber,
+    bool? calEpisodeNumberFromOne,
     String? tagName,
     String? animeDesc,
     String? animeCoverUrl,
@@ -167,12 +156,17 @@ class Anime {
     String? playStatus,
     String? productionCompany,
     String? officialSite,
+    bool? climbFinished,
+    String? tempInfo,
+    bool? hasJoinedSeries,
   }) {
     return Anime(
       animeId: animeId ?? this.animeId,
       animeName: animeName ?? this.animeName,
       animeEpisodeCnt: animeEpisodeCnt ?? this.animeEpisodeCnt,
       episodeStartNumber: episodeStartNumber ?? this.episodeStartNumber,
+      calEpisodeNumberFromOne:
+          calEpisodeNumberFromOne ?? this.calEpisodeNumberFromOne,
       tagName: tagName ?? this.tagName,
       animeDesc: animeDesc ?? this.animeDesc,
       animeCoverUrl: animeCoverUrl ?? this.animeCoverUrl,
@@ -189,6 +183,23 @@ class Anime {
       playStatus: playStatus ?? this.playStatus,
       productionCompany: productionCompany ?? this.productionCompany,
       officialSite: officialSite ?? this.officialSite,
+      climbFinished: climbFinished ?? this.climbFinished,
+      tempInfo: tempInfo ?? this.tempInfo,
+      hasJoinedSeries: hasJoinedSeries ?? this.hasJoinedSeries,
     );
+  }
+
+  @override
+  String toString() {
+    return "Anime=[animeId=$animeId, animeName=$animeName, "
+        "animeEpisodeCnt=$animeEpisodeCnt, episodeStartNumber=$episodeStartNumber, tagName=$tagName, "
+        "checkedEpisodeCnt=$checkedEpisodeCnt, animeCoverUrl=$animeCoverUrl, "
+        "animeUrl=$animeUrl, premiereTime=$premiereTime, "
+        "animeDesc=${reduceStr(animeDesc)}, playStatus=$playStatus, "
+        "category=$category, area=$area, rate=$rate]";
+  }
+
+  String reduceStr(String str) {
+    return str.length > 15 ? str.substring(0, 15) : str;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -299,7 +300,7 @@ class NoteDao {
       Episode episode = Episode(
           item['episode_number'] as int, item['review_number'] as int,
           dateTime: item['date'] as String,
-          startNumber: anime.episodeStartNumber);
+          startNumber: EpisodeUtil.getFakeEpisodeStartNumber(anime));
       List<RelativeLocalImage> relativeLocalImages =
           await getRelativeLocalImgsByNoteId(item['note_id'] as int);
       Note episodeNote = Note(

@@ -1,4 +1,5 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../models/anime.dart';
@@ -39,7 +40,7 @@ class HistoryDao {
 
   static _getHistoryRecordsByDate(String date) async {
     var list = await SqliteUtil.database.rawQuery('''
-        select distinct anime.anime_id, anime.anime_name, anime.anime_cover_url, anime.episode_start_number
+        select distinct anime.anime_id, anime.anime_name, anime.anime_cover_url, anime.episode_start_number, anime.cal_episode_number_from_one
         from history, anime
         where date like '$date%' and history.anime_id = anime.anime_id
         order by date desc; -- 倒序
@@ -91,10 +92,11 @@ class HistoryDao {
     int endEpisodeNumber = list[0]['end'] as int;
     // Log.info("$date: [$startEpisodeNumber-$endEpisodeNumber]");
     AnimeHistoryRecord record = AnimeHistoryRecord(
-        anime,
-        reviewNumber,
-        anime.episodeStartNumber - 1 + startEpisodeNumber,
-        anime.episodeStartNumber - 1 + endEpisodeNumber);
+      anime,
+      reviewNumber,
+      EpisodeUtil.getFixedEpisodeNumber(anime, startEpisodeNumber),
+      EpisodeUtil.getFixedEpisodeNumber(anime, endEpisodeNumber),
+    );
     return record;
   }
 

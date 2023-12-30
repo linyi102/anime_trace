@@ -5,6 +5,7 @@ import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_episode_info.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_form.dart';
@@ -385,7 +386,7 @@ class AnimeController extends GetxController {
   void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
     if (!isCollected) return;
 
-    Map<String, int>? result = await showDialog(
+    AnimeEpisodeInfo? result = await showDialog(
       context: context,
       builder: (context) => EpisodeForm(anime: anime),
     );
@@ -395,26 +396,11 @@ class AnimeController extends GetxController {
       return;
     }
 
-    int? episodeCnt = result['episodeCnt'];
-    int? episodeStartNumber = result['episodeStartNumber'];
-
-    if (episodeCnt == null || episodeStartNumber == null) {
-      Log.error("没有收到episodeCnt或episodeStartNumber值");
-      return;
-    }
-
-    if (episodeCnt == anime.animeEpisodeCnt &&
-        episodeStartNumber == anime.episodeStartNumber) {
-      Log.info("没有修改，直接返回");
-      return;
-    }
-
-    AnimeDao.updateEpisodeCntAndStartNumberByAnimeId(
-            anime.animeId, episodeCnt, episodeStartNumber)
-        .then((value) {
+    AnimeDao.updateEpisodeInfoByAnimeId(anime.animeId, result).then((value) {
       // 修改数据
-      anime.animeEpisodeCnt = episodeCnt;
-      anime.episodeStartNumber = episodeStartNumber;
+      anime.animeEpisodeCnt = result.totalCnt;
+      anime.episodeStartNumber = result.startNumber;
+      anime.calEpisodeNumberFromOne = result.calNumberFromOne;
       // 重绘
       updateAnimeInfo(); // 重绘信息行中显示的集数
       loadEpisode(); // 重绘集信息
