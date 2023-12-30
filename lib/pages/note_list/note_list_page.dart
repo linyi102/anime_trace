@@ -30,6 +30,7 @@ class _NoteListPageState extends State<NoteListPage>
   NoteFilter rateNoteFilter = NoteFilter();
   Anime? selectedAnimeInNote;
   Anime? selectedAnimeInRate;
+  double get rightAnimeListWidth => 300;
 
   @override
   void initState() {
@@ -65,14 +66,7 @@ class _NoteListPageState extends State<NoteListPage>
         ],
       ),
       body: CommonScaffoldBody(
-        child: Responsive(
-            mobile: _buildTabBarView(),
-            tablet: _buildTabBarView(),
-            desktop: Row(
-              children: [
-                Expanded(child: _buildTabBarView()),
-              ],
-            )),
+        child: _buildTabBarView(),
       ),
     );
   }
@@ -120,7 +114,7 @@ class _NoteListPageState extends State<NoteListPage>
 
   SizedBox _buildAnimeListInRate() {
     return SizedBox(
-      width: 300,
+      width: rightAnimeListWidth,
       child: RecentlyCreateNoteAnimeListPage(
         selectedAnime: selectedAnimeInRate,
         noteType: NoteType.rate,
@@ -136,7 +130,7 @@ class _NoteListPageState extends State<NoteListPage>
 
   SizedBox _buildAnimeListInNote() {
     return SizedBox(
-      width: 300,
+      width: rightAnimeListWidth,
       child: RecentlyCreateNoteAnimeListPage(
         selectedAnime: selectedAnimeInNote,
         noteType: NoteType.episode,
