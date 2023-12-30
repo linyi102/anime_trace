@@ -363,19 +363,11 @@ class NoteDao {
     int notEmptyContentNoteCnt = rows1.first['total'] as int;
 
     // 内容为空，但添加了图片的笔记数量
-    int emptyContentButExistImageNoteCnt = 0;
     final rows2 = await database.rawQuery('''
-      select note_id from episode_note where episode_number > 0 and length(note_content) = 0;
+      select count(distinct note_id) total from image where note_id in
+        (select note_id from episode_note where episode_number > 0 and length(note_content) = 0)
     ''');
-    for (var row in rows2) {
-      int noteId = row['note_id'] as int;
-      final rows3 = await database.rawQuery('''
-        select count(image_id) total from image where note_id = $noteId;
-      ''');
-      if (rows3.first['total'] as int > 0) {
-        emptyContentButExistImageNoteCnt++;
-      }
-    }
+    int emptyContentButExistImageNoteCnt = rows2.first['total'] as int;
 
     return notEmptyContentNoteCnt + emptyContentButExistImageNoteCnt;
   }
