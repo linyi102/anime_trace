@@ -346,19 +346,47 @@ class NoteDao {
   static Future<int> getEpisodeNoteTotal() async {
     Log.info('sql: getEpisodeNoteTotal');
 
-    var cols = await database.rawQuery('''
+    var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number > 0;
     ''');
-    return cols.first['total'] as int;
+    return rows.first['total'] as int;
+  }
+
+  /// 非空的笔记数量
+  static Future<int> getNotEmptyEpisodeNoteTotal() async {
+    Log.info('sql: getEpisodeNoteTotal');
+
+    // 内容不为空的笔记数量
+    final rows1 = await database.rawQuery('''
+      select count(note_id) total from episode_note where episode_number > 0 and length(note_content) != 0;
+    ''');
+    int notEmptyContentNoteCnt = rows1.first['total'] as int;
+
+    // 内容为空，但添加了图片的笔记数量
+    int emptyContentButExistImageNoteCnt = 0;
+    final rows2 = await database.rawQuery('''
+      select note_id from episode_note where episode_number > 0 and length(note_content) = 0;
+    ''');
+    for (var row in rows2) {
+      int noteId = row['note_id'] as int;
+      final rows3 = await database.rawQuery('''
+        select count(image_id) total from image where note_id = $noteId;
+      ''');
+      if (rows3.first['total'] as int > 0) {
+        emptyContentButExistImageNoteCnt++;
+      }
+    }
+
+    return notEmptyContentNoteCnt + emptyContentButExistImageNoteCnt;
   }
 
   /// 评价数量
   static Future<int> getRateNoteTotal() async {
     Log.info('sql: getRateNoteTotal');
 
-    var cols = await database.rawQuery('''
+    var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number == 0;
     ''');
-    return cols.first['total'] as int;
+    return rows.first['total'] as int;
   }
 }
