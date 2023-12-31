@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/local.dart';
-
 import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/pages/settings/pages/rbr_page.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
@@ -41,9 +40,9 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
             context: context, builder: (context) => const RBRPage());
       },
       trailing: IconButton(
-        onPressed: _showHelpDialog,
-        icon: const Icon(Icons.help_outline),
-      ),
+          onPressed: _showHelpDialog,
+          splashRadius: 20,
+          icon: const Icon(Icons.help_outline, size: 20)),
     );
   }
 

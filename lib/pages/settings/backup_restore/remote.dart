@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/login_form.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
@@ -33,6 +31,11 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
   bool canManualBackup = true;
 
   BackupService get backupService => BackupService.to;
+  bool get isOnline => SPUtil.getBool("online");
+
+  bool get _autoBackupIsOff =>
+      backupService.curRemoteBackupMode == BackupMode.close;
+  bool get _autoBackupIsOn => !_autoBackupIsOff;
 
   @override
   void initState() {
@@ -48,24 +51,23 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SettingTitle(title: 'WebDav备份'),
-        ListTile(
-          title: const Text("查看教程"),
-          trailing: const Icon(EvaIcons.externalLink),
-          onTap: () {
-            LaunchUrlUtil.launch(
-                context: context,
-                uriStr: "https://help.jianguoyun.com/?p=2064");
-          },
+        SettingTitle(
+          title: 'WebDav备份',
+          trailing: IconButton(
+              onPressed: () {
+                LaunchUrlUtil.launch(
+                    context: context,
+                    uriStr: "https://help.jianguoyun.com/?p=2064");
+              },
+              splashRadius: 20,
+              icon: const Icon(Icons.help_outline, size: 20)),
         ),
         ListTile(
           title: const Text("账号配置"),
           trailing: Icon(
             Icons.circle,
             size: 12,
-            color: SPUtil.getBool("online")
-                ? AppTheme.connectableColor
-                : Colors.grey,
+            color: isOnline ? AppTheme.connectableColor : Colors.grey,
           ),
           onTap: () {
             _loginWebDav();
@@ -73,7 +75,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
         ),
         ListTile(
           title: const Text("立即备份"),
-          subtitle: const Text("单击进行备份，备份目录为 /animetrace"),
+          subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
           onTap: () async {
             if (!SPUtil.getBool("login")) {
               ToastUtil.showText("请先配置账号，再进行备份！");
@@ -96,52 +98,25 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             }
           },
         ),
-        if (!widget.fromHome)
-          ListTile(
-            title: const Text("自动备份"),
-            subtitle: Text(backupService.curRemoteBackupMode.title),
-            onTap: () {
-              showDialog(
+        ListTile(
+          title: const Text("还原备份"),
+          subtitle: const Text("选择备份文件进行还原"),
+          onTap: () async {
+            if (isOnline) {
+              showModalBottomSheet(
+                // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
+                barrierColor: widget.fromHome ? Colors.transparent : null,
                 context: context,
-                builder: (context) => SimpleDialog(
-                  title: const Text("自动备份"),
-                  children: [
-                    for (int i = 0; i < BackupMode.values.length; ++i)
-                      RadioListTile(
-                          title: Text(BackupMode.values[i].title),
-                          value: BackupMode.values[i].name,
-                          groupValue: backupService.curRemoteBackupModeName,
-                          onChanged: (String? value) {
-                            if (value == null) return;
-
-                            backupService.setBackupMode(value);
-                            // 关闭对话框
-                            Navigator.pop(context);
-                            // 重绘页面
-                            setState(() {});
-                          }),
-                  ],
-                ),
-              );
-            },
-          ),
-        // _buildOldAutoBackupSwitchTile(),
-        if (!widget.fromHome)
-          ListTile(
-            title: const Text("自动备份数量"),
-            subtitle: Text("$autoBackupWebDavNumber"),
-            onTap: () async {
-              int? number = await dialogSelectUint(context, "自动备份数量",
-                  initialValue: autoBackupWebDavNumber,
-                  minValue: 10,
-                  maxValue: 20);
-              if (number != null) {
-                autoBackupWebDavNumber = number;
-                SPUtil.setInt("autoBackupWebDavNumber", number);
+                builder: (context) => const BackUpFileListPage(),
+              ).then((value) {
                 setState(() {});
-              }
-            },
-          ),
+              });
+            } else {
+              ToastUtil.showText("配置账号后才可以进行还原");
+            }
+          },
+        ),
+        _buildAutoBackupPrompt(),
         if (!widget.fromHome)
           SwitchListTile(
             title: const Text("自动还原"),
@@ -166,25 +141,119 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
               ChecklistController.to.update();
             },
           ),
-        ListTile(
-          title: const Text("手动还原"),
-          subtitle: const Text("点击查看所有备份文件"),
-          onTap: () async {
-            if (SPUtil.getBool("online")) {
-              showModalBottomSheet(
-                // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
-                barrierColor: widget.fromHome ? Colors.transparent : null,
-                context: context,
-                builder: (context) => const BackUpFileListPage(),
-              ).then((value) {
-                setState(() {});
-              });
-            } else {
-              ToastUtil.showText("配置账号后才可以进行还原");
-            }
-          },
-        ),
+        const SizedBox(height: 50),
       ],
+    );
+  }
+
+  void _handleSelectAutoBackupNumber() async {
+    int? number = await dialogSelectUint(context, "备份数量",
+        initialValue: autoBackupWebDavNumber, minValue: 10, maxValue: 20);
+    if (number != null) {
+      autoBackupWebDavNumber = number;
+      SPUtil.setInt("autoBackupWebDavNumber", number);
+      setState(() {});
+    }
+  }
+
+  _buildAutoBackupPrompt() {
+    const configTitleStyle = TextStyle(fontSize: 14);
+    final configSubtitleStyle = TextStyle(
+      fontSize: 13,
+      color: Theme.of(context).hintColor,
+    );
+
+    return _autoBackupIsOff
+        ? CommonStatusPrompt(
+            icon: Icons.cloud_off,
+            titleText: '自动备份未开启',
+            subtitleText: '开启自动备份后，可在打开应用时或关闭应用前自动进行备份',
+            buttonText: '开启自动备份',
+            onTapButton: () {
+              backupService.setBackupMode(BackupMode.backupAfterOpenApp.name);
+              setState(() {});
+            },
+          )
+        : CommonStatusPrompt(
+            icon: Icons.cloud_outlined,
+            titleText: '自动备份已开启',
+            // subtitleText: '开启自动备份后，可在打开应用时或关闭应用前自动进行备份',
+            subtitle: Column(
+              children: [
+                InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {
+                    _handleSelectAutoBackupMode();
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
+                    child: Row(
+                      children: [
+                        const Text("备份时机", style: configTitleStyle),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            Text(backupService.curRemoteBackupMode.title,
+                                style: configSubtitleStyle),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {
+                    _handleSelectAutoBackupNumber();
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: Row(
+                      children: [
+                        const Text("备份数量", style: configTitleStyle),
+                        const Spacer(),
+                        Text("$autoBackupWebDavNumber",
+                            style: configSubtitleStyle),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            buttonText: '关闭自动备份',
+            onTapButton: () {
+              backupService.setBackupMode(BackupMode.close.name);
+              setState(() {});
+            },
+          );
+  }
+
+  Future<dynamic> _handleSelectAutoBackupMode() {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text("备份时机"),
+        children: [
+          for (int i = 0; i < BackupMode.values.length; ++i)
+            BackupMode.values[i] == BackupMode.close
+                ? const SizedBox()
+                : RadioListTile(
+                    title: Text(BackupMode.values[i].title),
+                    value: BackupMode.values[i].name,
+                    groupValue: backupService.curRemoteBackupModeName,
+                    onChanged: (String? value) {
+                      if (value == null) return;
+
+                      backupService.setBackupMode(value);
+                      // 关闭对话框
+                      Navigator.pop(context);
+                      // 重绘页面
+                      setState(() {});
+                    }),
+        ],
+      ),
     );
   }
 
@@ -194,5 +263,60 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
       builder: (context) => const WebDavLoginForm(),
     );
     setState(() {});
+  }
+}
+
+class CommonStatusPrompt extends StatelessWidget {
+  const CommonStatusPrompt({
+    super.key,
+    required this.icon,
+    required this.titleText,
+    this.subtitleText,
+    this.subtitle,
+    required this.buttonText,
+    required this.onTapButton,
+  });
+  final IconData icon;
+  final String titleText;
+  final String? subtitleText;
+  final Widget? subtitle;
+  final String buttonText;
+  final void Function() onTapButton;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 30, 0),
+            child: Icon(icon),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(titleText,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 10),
+                if (subtitleText != null)
+                  Text(
+                    subtitleText!,
+                    style: TextStyle(
+                        fontSize: 14, color: Theme.of(context).hintColor),
+                  ),
+                if (subtitle != null) subtitle!,
+                const SizedBox(height: 10),
+                ElevatedButton(onPressed: onTapButton, child: Text(buttonText))
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+        ],
+      ),
+    );
   }
 }

@@ -268,6 +268,7 @@ class MyAppState extends State<MyApp> {
         popupMenuRadius: 8.0,
         textButtonRadius: AppTheme.textButtonRadius,
         splashType: FlexSplashType.defaultSplash,
+        elevatedButtonElevation: 0,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
@@ -316,6 +317,7 @@ class MyAppState extends State<MyApp> {
         popupMenuRadius: 8.0,
         textButtonRadius: AppTheme.textButtonRadius,
         splashType: FlexSplashType.inkRipple,
+        elevatedButtonElevation: 0,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
