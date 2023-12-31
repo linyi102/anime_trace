@@ -23,13 +23,14 @@ class Label {
 
   String? get emoji => getEmoji(name);
 
-  String? get nameWithoutEmoji => getNameWithoutEmoji(emoji, name);
+  String? get nameWithoutEmoji => getNameWithoutEmoji(name);
 
   static String? getEmoji(String name) {
     return RegexpUtil.extractFirstEmoji(name);
   }
 
-  static String? getNameWithoutEmoji(String? emoji, String name) {
+  static String? getNameWithoutEmoji(String name) {
+    final emoji = getEmoji(name);
     return emoji == null ? name : name.replaceFirst(emoji, '').trim();
   }
 

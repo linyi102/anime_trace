@@ -116,4 +116,22 @@ class LabelsController extends GetxController {
       return false;
     }
   }
+
+  Future<bool> updateLabel(Label label, String newLabelName) async {
+    int index = labels.indexOf(label);
+
+    int updateCnt = await LabelDao.update(label.id, newLabelName);
+    if (updateCnt > 0) {
+      Log.info("修改标签成功");
+      // 修改controller里的该标签的名字
+      // labelsController.labels[index].name = newLabelName; // 无效
+      label.name = newLabelName;
+      labels[index] = label; // 必须要重新赋值，才能看到变化
+
+      return true;
+    } else {
+      ToastUtil.showText("修改标签失败");
+      return false;
+    }
+  }
 }

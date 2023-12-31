@@ -22,28 +22,48 @@ class _RecommendedLabelListViewState extends State<RecommendedLabelListView> {
       body: ListView.builder(
         itemCount: LabelsController.to.recommendedLabels.length,
         itemBuilder: (context, index) {
-          String labelName = LabelsController.to.recommendedLabels[index];
-          bool isAdded = LabelsController.to.labels.indexWhere((e) =>
-                  e.nameWithoutEmoji ==
-                  Label.getNameWithoutEmoji(
-                      Label.getEmoji(labelName), labelName)) >=
-              0;
-          String? emoji = Label.getEmoji(labelName);
+          String recommendedLabel =
+              LabelsController.to.recommendedLabels[index];
 
           return ListTile(
-            leading: EmojiLeading(emoji: emoji),
-            title: Text(Label.getNameWithoutEmoji(emoji, labelName) ?? ''),
-            trailing: isAdded
-                ? const TextButton(onPressed: null, child: Text('已添加'))
-                : TextButton(
-                    onPressed: () async {
-                      await LabelsController.to.addLabel(labelName);
-                      setState(() {});
-                    },
-                    child: const Text('添加')),
+            leading: EmojiLeading(emoji: Label.getEmoji(recommendedLabel)),
+            title: Text(Label.getNameWithoutEmoji(recommendedLabel) ?? ''),
+            trailing: _buildAction(recommendedLabel),
           );
         },
       ),
     );
+  }
+
+  TextButton _buildAction(String recommendedLabel) {
+    int addedLabelIndex = LabelsController.to.labels.indexWhere((e) =>
+        e.nameWithoutEmoji == Label.getNameWithoutEmoji(recommendedLabel));
+    bool isAdded = false;
+    Label? addedLabel;
+    if (addedLabelIndex >= 0) {
+      isAdded = true;
+      addedLabel = LabelsController.to.labels[addedLabelIndex];
+    }
+
+    if (isAdded) {
+      if (addedLabel?.name == recommendedLabel) {
+        return const TextButton(onPressed: null, child: Text('已添加'));
+      } else {
+        return TextButton(
+            onPressed: () async {
+              await LabelsController.to
+                  .updateLabel(addedLabel!, recommendedLabel);
+              setState(() {});
+            },
+            child: const Text('添加图标'));
+      }
+    }
+
+    return TextButton(
+        onPressed: () async {
+          await LabelsController.to.addLabel(recommendedLabel);
+          setState(() {});
+        },
+        child: const Text('添加'));
   }
 }

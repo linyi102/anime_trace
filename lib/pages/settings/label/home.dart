@@ -269,24 +269,21 @@ class _LabelManagePageState extends State<LabelManagePage> {
           return LabelForm(
               label: label,
               onUpdate: (newLabelName) async {
-                int updateCnt = await LabelDao.update(label.id, newLabelName);
-                if (updateCnt > 0) {
-                  Log.info("修改标签成功");
-                  // 修改controller里的该标签的名字
-                  // labelsController.labels[index].name = newLabelName; // 无效
-                  label.name = newLabelName;
-                  labelsController.labels[index] = label; // 必须要重新赋值，才能看到变化
-                  if (widget.enableSelectLabelForAnime) {
-                    int index = widget.animeController!.labels
-                        .indexWhere((element) => element.id == label.id);
-                    // 如果动漫添加了该标签，则更新动漫里的这个标签
-                    if (index >= 0) {
-                      widget.animeController!.labels[index] = label;
-                    }
+                bool upadteSuccess =
+                    await labelsController.updateLabel(label, newLabelName);
+                Navigator.pop(context);
+
+                if (!upadteSuccess) {
+                  return;
+                }
+
+                if (widget.enableSelectLabelForAnime) {
+                  int index = widget.animeController!.labels
+                      .indexWhere((element) => element.id == label.id);
+                  // 如果动漫添加了该标签，则更新动漫里的这个标签
+                  if (index >= 0) {
+                    widget.animeController!.labels[index] = label;
                   }
-                  Navigator.of(context).pop();
-                } else {
-                  Log.info("修改失败");
                 }
               });
         });
