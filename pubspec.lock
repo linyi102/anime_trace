@@ -177,6 +177,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
+  emoji_picker_flutter:
+    dependency: "direct main"
+    description:
+      name: emoji_picker_flutter
+      sha256: "009c51efc763d5a6ba05a5628b8b2184c327cd117d66ea9c3e7edf2ff269c423"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.6.3"
   eva_icons_flutter:
     dependency: "direct main"
     description:

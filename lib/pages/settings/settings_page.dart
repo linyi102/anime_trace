@@ -8,7 +8,7 @@ import 'package:flutter_test_future/pages/settings/about_version.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/home.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
-import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
+import 'package:flutter_test_future/pages/settings/label/home.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';

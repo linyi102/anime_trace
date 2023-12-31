@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import '../models/label.dart';
 
 class LabelsController extends GetxController {
+  static LabelsController get to => Get.find();
+
   // 所有标签
   RxList<Label> labels = RxList.empty();
 
