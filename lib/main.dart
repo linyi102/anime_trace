@@ -233,7 +233,8 @@ class MyAppState extends State<MyApp> {
       scheme: baseScheme,
       useMaterial3: themeController.useM3.value,
       textTheme: _getTextTheme(textStyle, context),
-      primary: curDarkThemeColor.primaryColor,
+      primary: themeController.customPrimaryColor.value ??
+          curDarkThemeColor.primaryColor,
       scaffoldBackground: curDarkThemeColor.bodyColor,
       // surface: curDarkThemeColor.cardColor,
       // BottomNavigationBar
@@ -279,7 +280,8 @@ class MyAppState extends State<MyApp> {
       scheme: baseScheme,
       useMaterial3: themeController.useM3.value,
       textTheme: _getTextTheme(textStyle, context),
-      primary: curLightThemeColor.primaryColor,
+      primary: themeController.customPrimaryColor.value ??
+          curLightThemeColor.primaryColor,
       scaffoldBackground: curLightThemeColor.bodyColor,
       // surface: curLightThemeColor.cardColor,
       // BottomNavigationBar

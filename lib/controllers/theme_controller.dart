@@ -16,6 +16,9 @@ class ThemeController extends GetxController {
   Rx<ThemeColor> lightThemeColor = getSelectedTheme();
   Rx<ThemeColor> darkThemeColor = getSelectedTheme(dark: true);
 
+  static String customPrimaryColorKey = 'customPrimaryColor';
+  Rx<Color?> customPrimaryColor = getCustomPrimaryColor().obs;
+
   Rx<PageSwitchAnimation> pageSwitchAnimation =
       SpProfile.getPageSwitchAnimation().obs;
 
@@ -60,6 +63,23 @@ class ThemeController extends GetxController {
       dark ? "darkThemeColor" : "lighThemeColor",
       themeColorKey,
     );
+  }
+
+  /// 更新主题色
+  Future<bool> changeCustomPrimaryColor(Color color) async {
+    customPrimaryColor.value = color;
+    return SPUtil.setInt(customPrimaryColorKey, color.value);
+  }
+
+  Future<bool> resetCustomPrimaryColor() async {
+    customPrimaryColor.value = null;
+    return SPUtil.remove(customPrimaryColorKey);
+  }
+
+  static Color? getCustomPrimaryColor() {
+    final colorValue = SPUtil.getInt(customPrimaryColorKey);
+    if (colorValue == 0) return null;
+    return Color(colorValue);
   }
 
   /// 根据key从list中查找主题
