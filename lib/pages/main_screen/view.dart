@@ -145,7 +145,10 @@ class _MainScreenState extends State<MainScreen> {
                       : MainAxisAlignment.center,
                   children: [
                     isSelected
-                        ? mainTab.selectedIcon ?? mainTab.icon
+                        ? IconTheme.merge(
+                            data: IconThemeData(
+                                color: Theme.of(context).primaryColor),
+                            child: mainTab.selectedIcon ?? mainTab.icon)
                         : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
                     if (expandSideBar) const Spacer(flex: 2),
@@ -157,6 +160,9 @@ class _MainScreenState extends State<MainScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
+                              color: isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : null,
                               fontWeight: isSelected ? FontWeight.w600 : null),
                         ),
                       ),
