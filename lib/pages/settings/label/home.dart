@@ -6,6 +6,7 @@ import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/settings/label/form.dart';
+import 'package:flutter_test_future/pages/settings/label/recommend.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -56,13 +57,30 @@ class _LabelManagePageState extends State<LabelManagePage> {
             ),
       body: CommonScaffoldBody(
           child: ListView(
-        padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
         children: [
-          Obx(() => _buildLabelWrap()),
+          _buildRecommendedLabel(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Obx(() => _buildLabelWrap()),
+          ),
           const SizedBox(height: 50),
         ],
       )),
       floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  ListTile _buildRecommendedLabel() {
+    return ListTile(
+      title: const Text('推荐标签'),
+      trailing: const Icon(Icons.chevron_right, size: 20),
+      onTap: () {
+        // RouteUtil.materialTo(context, const RecommendedLabelListView());
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => const RecommendedLabelListView(),
+        );
+      },
     );
   }
 
@@ -235,9 +253,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
         showDialog(
             context: context,
             builder: (context) {
-              return LabelForm(
-                searchKeyword: labelsController.inputKeywordController.text,
-              );
+              return const LabelForm();
             });
       },
       child: const Icon(MingCuteIcons.mgc_add_line),
@@ -252,7 +268,6 @@ class _LabelManagePageState extends State<LabelManagePage> {
         builder: (context) {
           return LabelForm(
               label: label,
-              searchKeyword: labelsController.inputKeywordController.text,
               onUpdate: (newLabelName) async {
                 int updateCnt = await LabelDao.update(label.id, newLabelName);
                 if (updateCnt > 0) {

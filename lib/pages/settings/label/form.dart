@@ -4,16 +4,13 @@ import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/settings/label/home.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/regexp.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter_test_future/widgets/emoji_leading.dart';
 
 class LabelForm extends StatefulWidget {
-  const LabelForm(
-      {super.key, this.label, this.onUpdate, this.searchKeyword = ''});
-  final String searchKeyword;
+  const LabelForm({super.key, this.label, this.onUpdate});
   final Label? label;
   final void Function(String newLabelName)? onUpdate;
 
@@ -32,13 +29,8 @@ class _LabelFormState extends State<LabelForm> {
   void initState() {
     super.initState();
     if (updateAction) {
-      emoji = RegexpUtil.extractFirstEmoji(widget.label?.name ?? '');
-      if (emoji != null) {
-        inputLabelNameController.text =
-            widget.label?.name.replaceFirst(emoji!, '').trim() ?? '';
-      } else {
-        inputLabelNameController.text = widget.label?.name ?? '';
-      }
+      emoji = widget.label?.emoji;
+      inputLabelNameController.text = widget.label?.nameWithoutEmoji ?? '';
     }
   }
 
@@ -56,25 +48,10 @@ class _LabelFormState extends State<LabelForm> {
         children: [
           InkWell(
             borderRadius: BorderRadius.circular(6),
-            child: Container(
-              height: 36,
-              width: 36,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: Theme.of(context).hintColor.withOpacity(0.06),
-              ),
-              child: emoji == null
-                  ? Icon(
-                      Icons.tag,
-                      color: Theme.of(context).hintColor,
-                      size: 20,
-                    )
-                  : Center(
-                      child: Text(
-                      emoji ?? '',
-                      style: const TextStyle(fontSize: 18),
-                    )),
-            ),
+            child: EmojiLeading(emoji: emoji),
+            onLongPress: () {
+              _cancelEmoji();
+            },
             onTap: () {
               _showEmojiPicker(
                 onEmojiSelected: (emoji) {
@@ -124,40 +101,26 @@ class _LabelFormState extends State<LabelForm> {
               // 禁止重名
               if (await LabelDao.existLabelName(labelName)) {
                 ToastUtil.showText('已有该标签');
-                setState(() {});
                 return;
               }
 
               if (updateAction) {
                 widget.onUpdate?.call(labelName);
                 return;
-              }
-
-              Label newLabel = Label(0, labelName);
-              int newId = await LabelDao.insert(newLabel);
-              if (newId > 0) {
-                Log.info("添加标签成功，新插入的id=$newId");
-                // 指定新id，并添加到controller中
-                newLabel.id = newId;
-
-                LabelsController labelsController = LabelsController.to;
-                if (widget.searchKeyword.isEmpty) {
-                  // 没在搜索，直接添加
-                  labelsController.labels.add(newLabel);
-                } else {
-                  // 如果在搜索后添加，则看是否存在关键字，如果有，则添加到labels里(此时controller里的labels存放的是搜索结果)
-                  if (labelName.contains(widget.searchKeyword)) {
-                    labelsController.labels.add(newLabel);
-                  }
-                }
-                Navigator.of(context).pop();
               } else {
-                ToastUtil.showText('添加失败');
+                LabelsController.to.addLabel(labelName);
+                Navigator.of(context).pop();
               }
             },
             child: const Text("确定")),
       ],
     );
+  }
+
+  _cancelEmoji() {
+    setState(() {
+      emoji = null;
+    });
   }
 
   Future<dynamic> _showEmojiPicker(
