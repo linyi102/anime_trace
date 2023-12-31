@@ -121,11 +121,14 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            // color: isSelected ? Theme.of(context).hoverColor : null,
+            color: isSelected
+                ? Theme.of(context).primaryColor.withOpacity(0.2)
+                : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
           child: InkWell(
             borderRadius: BorderRadius.circular(radius),
+            splashFactory: NoSplash.splashFactory,
             onTap: () {
               if (logic.searchTabIdx == i && logic.selectedTabIdx == i) {
                 // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
