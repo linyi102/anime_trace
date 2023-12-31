@@ -360,7 +360,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   _enterDetail(Widget detailView) {
-    if (Responsive.isMobile(context)) {
+    if (Responsive.isMobile(context) || Responsive.isTablet(context)) {
       RouteUtil.materialTo(context, detailView);
     } else {
       setState(() {
