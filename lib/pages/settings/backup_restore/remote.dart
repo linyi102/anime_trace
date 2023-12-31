@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_status_prompt.dart';
+import 'package:flutter_test_future/widgets/setting_card.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 
 class RemoteBackupPage extends StatefulWidget {
@@ -120,29 +121,34 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
           ),
           _buildAutoBackupPrompt(),
           if (!widget.fromHome)
-            SwitchListTile(
-              title: const Text("自动还原"),
-              subtitle: const Text("进入应用前还原最新备份文件\n若选择打开应用后自动备份，则该功能不会生效"),
-              value: backupService.enableAutoRestoreFromRemote,
-              onChanged: (value) {
-                backupService.setAutoRestoreFromRemote(value);
-                // 重绘页面
-                setState(() {});
-              },
-            ),
-          if (!widget.fromHome)
-            SwitchListTile(
-              title: const Text("下拉还原"),
-              subtitle: const Text("动漫收藏页下拉时，会尝试还原最新备份文件"),
-              value: SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage),
-              onChanged: (value) {
-                SPUtil.setBool(
-                    pullDownRestoreLatestBackupInChecklistPage, value);
-                // 重绘页面
-                setState(() {});
-                // 重绘收藏页，以便于允许或取消下拉刷新
-                ChecklistController.to.update();
-              },
+            SettingCard(
+              title: '高级配置',
+              children: [
+                SwitchListTile(
+                  title: const Text("自动还原"),
+                  subtitle: const Text("进入应用前还原最新数据\n注意：选择「打开应用后自动备份」时不会生效"),
+                  value: backupService.enableAutoRestoreFromRemote,
+                  onChanged: (value) {
+                    backupService.setAutoRestoreFromRemote(value);
+                    // 重绘页面
+                    setState(() {});
+                  },
+                ),
+                SwitchListTile(
+                  title: const Text("下拉还原"),
+                  subtitle: const Text("动漫收藏页下拉时，尝试还原最新数据"),
+                  value: SPUtil.getBool(
+                      pullDownRestoreLatestBackupInChecklistPage),
+                  onChanged: (value) {
+                    SPUtil.setBool(
+                        pullDownRestoreLatestBackupInChecklistPage, value);
+                    // 重绘页面
+                    setState(() {});
+                    // 重绘收藏页，以便于允许或取消下拉刷新
+                    ChecklistController.to.update();
+                  },
+                ),
+              ],
             ),
           const SizedBox(height: 50),
         ],

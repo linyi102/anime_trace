@@ -10,15 +10,15 @@ class SettingCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingTitle(title: title),
+        _SettingTitle(title: title),
         Card(child: Column(children: children))
       ],
     );
   }
 }
 
-class SettingTitle extends StatelessWidget {
-  const SettingTitle({
+class _SettingTitle extends StatelessWidget {
+  const _SettingTitle({
     super.key,
     required this.title,
   });
