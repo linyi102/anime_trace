@@ -11,9 +11,11 @@ import 'package:flutter_test_future/pages/settings/checklist_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/label_manage_page.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/pages/settings/theme_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'general_setting.dart';
@@ -34,6 +36,8 @@ class _SettingPageState extends State<SettingPage> {
   late int _selectedImageTypeIdx; // 记录选择的哪种图片
   bool get enableDivider => false;
 
+  Widget? settingDetailView;
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +52,25 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(
+      body: Responsive(
+        mobile: _buildSettingListView(),
+        tablet: _buildSettingListView(),
+        desktop: _buildSplitView(),
+      ),
+    );
+  }
+
+  _buildSplitView() {
+    return Row(
+      children: [
+        Expanded(child: _buildSettingListView()),
+        _buildSettingDetailView(),
+      ],
+    );
+  }
+
+  ListView _buildSettingListView() {
+    return ListView(
       children: [
         _buildBanner(),
         if (enableDivider) const CommonDivider(),
@@ -58,7 +80,7 @@ class _SettingPageState extends State<SettingPage> {
         if (enableDivider) const CommonDivider(),
         Card(child: _buildOtherGroup()),
       ],
-    ));
+    );
   }
 
   Column _buildOtherGroup() {
@@ -72,13 +94,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("关于版本"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const AboutVersion();
-                },
-              ),
-            );
+            _enterDetail(const AboutVersion());
           },
         ),
         if (!Global.isRelease)
@@ -87,13 +103,7 @@ class _SettingPageState extends State<SettingPage> {
             leading: const Icon(Icons.bug_report_outlined),
             title: const Text("测试页面"),
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const TestPage();
-                  },
-                ),
-              );
+              _enterDetail(const TestPage());
             },
           )
       ],
@@ -111,13 +121,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("常规设置"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const GeneralSettingPage();
-                },
-              ),
-            );
+            _enterDetail(const GeneralSettingPage());
           },
         ),
         ListTile(
@@ -130,13 +134,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("图片设置"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const ImagePathSetting();
-                },
-              ),
-            );
+            _enterDetail(const ImagePathSetting());
           },
         ),
         ListTile(
@@ -147,11 +145,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("外观设置"),
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ThemePage(),
-                ));
+            _enterDetail(const ThemePage());
           },
         ),
       ],
@@ -166,13 +160,7 @@ class _SettingPageState extends State<SettingPage> {
           leading: const Icon(Icons.settings_backup_restore_rounded),
           title: const Text("备份还原"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const BackupAndRestorePage();
-                },
-              ),
-            );
+            _enterDetail(const BackupAndRestorePage());
           },
         ),
         ListTile(
@@ -183,13 +171,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("清单管理"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const ChecklistManagePage();
-                },
-              ),
-            );
+            _enterDetail(const ChecklistManagePage());
           },
         ),
         ListTile(
@@ -200,13 +182,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           title: const Text("标签管理"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const LabelManagePage();
-                },
-              ),
-            );
+            _enterDetail(const LabelManagePage());
           },
         ),
         ListTile(
@@ -218,13 +194,7 @@ class _SettingPageState extends State<SettingPage> {
           // ),
           title: const Text("系列管理"),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return const SeriesManagePage();
-                },
-              ),
-            );
+            _enterDetail(const SeriesManagePage());
           },
         ),
       ],
@@ -387,5 +357,20 @@ class _SettingPageState extends State<SettingPage> {
         ],
       ),
     );
+  }
+
+  _enterDetail(Widget detailView) {
+    if (Responsive.isMobile(context)) {
+      RouteUtil.materialTo(context, detailView);
+    } else {
+      setState(() {
+        settingDetailView = detailView;
+      });
+    }
+  }
+
+  _buildSettingDetailView() {
+    if (settingDetailView == null) return const SizedBox();
+    return Expanded(child: settingDetailView!);
   }
 }
