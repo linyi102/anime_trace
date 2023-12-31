@@ -116,7 +116,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         rate: _anime.rate,
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
-          _anime.rate = v.toInt();
+          setState(() {
+            _anime.rate = v.toInt();
+          });
           AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
         });
   }
