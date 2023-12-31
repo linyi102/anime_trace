@@ -14,7 +14,8 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
-import 'package:flutter_test_future/pages/settings/backup_restore.dart';
+import 'package:flutter_test_future/pages/settings/backup_restore/home.dart';
+import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -143,7 +144,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                   //     onPressed: () {}, icon: const Icon(Icons.chevron_right))
                 ],
               ),
-              body: const BackupAndRestorePage(fromHome: true)),
+              body: const RemoteBackupPage(fromHome: true)),
         );
       },
       icon: const Icon(
