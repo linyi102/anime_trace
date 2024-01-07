@@ -17,6 +17,8 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
       SPUtil.getBool("updateCoverInMigratePage", defaultValue: true);
   bool updateInfo =
       SPUtil.getBool("updateInfoInMigratePage", defaultValue: true);
+  bool updateAnimeUrl =
+      SPUtil.getBool("updateAnimeUrlInMigratePage", defaultValue: true);
 
   // 如果已添加，则不能迁移到该动漫
   if (newAnime.isCollected()) {
@@ -99,6 +101,25 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                               color: Theme.of(context).primaryColor)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
+                  ),
+                  ListTile(
+                    contentPadding: const EdgeInsets.all(0),
+                    style: ListTileStyle.drawer,
+                    dense: true,
+                    title: const Text("更新网址"),
+                    leading: IconButton(
+                      onPressed: () {
+                        dialogState(() {
+                          updateAnimeUrl = !updateAnimeUrl;
+                        });
+                        SPUtil.setBool(
+                            "updateAnimeUrlInMigratePage", updateAnimeUrl);
+                      },
+                      icon: updateAnimeUrl
+                          ? Icon(Icons.check_box,
+                              color: Theme.of(context).primaryColor)
+                          : const Icon(Icons.check_box_outline_blank),
+                    ),
                   )
                 ],
               ),
@@ -117,25 +138,19 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
 
                     // 获取详细信息
                     if (updateInfo) {
-                      ToastUtil.showLoading(
-                        msg: "获取信息中...",
-                        task: () async {
-                          newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(
-                              newAnime);
-                        },
-                        onTaskComplete: (taskValue) async {
-                          AnimeDao.updateAnime(
-                              await SqliteUtil.getAnimeByAnimeId(animeId),
-                              newAnime,
-                              updateCover: updateCover,
-                              updateInfo: updateInfo,
-                              updateName: updateName);
-
-                          // 退回到详细页
-                          Navigator.pop(parentContext);
-                        },
-                      );
+                      var closeLoading = ToastUtil.showLoading(msg: '获取信息中...');
+                      newAnime =
+                          await ClimbAnimeUtil.climbAnimeInfoByUrl(newAnime);
+                      closeLoading();
                     }
+
+                    AnimeDao.updateAnime(
+                        await SqliteUtil.getAnimeByAnimeId(animeId), newAnime,
+                        updateCover: updateCover,
+                        updateInfo: updateInfo,
+                        updateName: updateName,
+                        updateAnimeUrl: updateAnimeUrl);
+                    Navigator.pop(parentContext);
                   },
                   child: const Text("迁移"))
             ],
