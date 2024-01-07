@@ -122,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
             color: isSelected
-                ? Theme.of(context).primaryColor.withOpacity(0.2)
+                ? Theme.of(context).primaryColor.withOpacity(0.1)
                 : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
@@ -160,10 +160,10 @@ class _MainScreenState extends State<MainScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : null,
-                              fontWeight: isSelected ? FontWeight.w600 : null),
+                            color: isSelected
+                                ? Theme.of(context).primaryColor
+                                : null,
+                          ),
                         ),
                       ),
                   ]),
