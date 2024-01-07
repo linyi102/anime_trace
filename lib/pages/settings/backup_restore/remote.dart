@@ -34,6 +34,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
 
   BackupService get backupService => BackupService.to;
   bool get isOnline => SPUtil.getBool("online");
+  bool get isOffline => !isOnline;
 
   bool get autoBackupIsOff =>
       backupService.curRemoteBackupMode == BackupMode.close;
@@ -80,8 +81,8 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             title: const Text("立即备份"),
             subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
             onTap: () async {
-              if (!SPUtil.getBool("login")) {
-                ToastUtil.showText("请先配置账号，再进行备份！");
+              if (!SPUtil.getBool("login") || isOffline) {
+                ToastUtil.showText("请先配置账号，再进行备份");
                 return;
               }
 
@@ -105,18 +106,19 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             title: const Text("还原备份"),
             subtitle: const Text("选择备份文件进行还原"),
             onTap: () async {
-              if (isOnline) {
-                showModalBottomSheet(
-                  // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
-                  barrierColor: widget.fromHome ? Colors.transparent : null,
-                  context: context,
-                  builder: (context) => const BackUpFileListPage(),
-                ).then((value) {
-                  setState(() {});
-                });
-              } else {
-                ToastUtil.showText("配置账号后才可以进行还原");
+              if (isOffline) {
+                ToastUtil.showText("请先配置账号，再进行还原");
+                return;
               }
+
+              showModalBottomSheet(
+                // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
+                barrierColor: widget.fromHome ? Colors.transparent : null,
+                context: context,
+                builder: (context) => const BackUpFileListPage(),
+              ).then((value) {
+                setState(() {});
+              });
             },
           ),
           _buildAutoBackupPrompt(),
