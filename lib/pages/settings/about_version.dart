@@ -96,6 +96,7 @@ class _AboutVersionState extends State<AboutVersion> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
+          splashRadius: 20,
           onPressed: () {
             LaunchUrlUtil.launch(
                 context: context,
@@ -109,6 +110,7 @@ class _AboutVersionState extends State<AboutVersion> {
           ),
         ),
         IconButton(
+          splashRadius: 20,
           onPressed: () {
             LaunchUrlUtil.launch(
                 context: context,
