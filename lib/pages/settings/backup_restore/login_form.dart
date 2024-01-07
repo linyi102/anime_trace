@@ -28,7 +28,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
   ];
   bool connecting = false;
 
-  List<String> labelTexts = ["服务器地址", "账号", "密码"];
+  List<String> labelTexts = ["服务器地址", "帐号", "密码"];
   List<List<String>?> autofillHintsList = [
     null,
     [AutofillHints.username],
@@ -46,7 +46,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("账号配置"),
+      title: const Text("帐号配置"),
       content: AutofillGroup(
         child: SingleChildScrollView(
           child: Column(
@@ -98,7 +98,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
     }
 
     connecting = false;
-    // 连接正确后，修改账号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
+    // 连接正确后，修改帐号后连接失败，需要重新更新显示状态。init里的ping会通过SPUtil记录状态
     if (mounted) setState(() {});
   }
 }

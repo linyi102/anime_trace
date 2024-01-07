@@ -68,7 +68,7 @@ class WebDavUtil {
 
   static Future<String> getRemoteDirPath() async {
     if (!SPUtil.getBool("online")) {
-      ToastUtil.showText("请先连接账号，再进行备份");
+      ToastUtil.showText("请先连接帐号，再进行备份");
       return "";
     }
     String backupDir = "/animetrace";

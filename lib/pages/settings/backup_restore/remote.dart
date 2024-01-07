@@ -67,7 +67,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                 icon: const Icon(Icons.help_outline, size: 20)),
           ),
           ListTile(
-            title: const Text("账号配置"),
+            title: const Text("帐号配置"),
             trailing: Icon(
               Icons.circle,
               size: 12,
@@ -82,7 +82,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
             onTap: () async {
               if (!SPUtil.getBool("login") || isOffline) {
-                ToastUtil.showText("请先配置账号，再进行备份");
+                ToastUtil.showText("请先配置帐号，再进行备份");
                 return;
               }
 
@@ -107,7 +107,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             subtitle: const Text("选择备份文件进行还原"),
             onTap: () async {
               if (isOffline) {
-                ToastUtil.showText("请先配置账号，再进行还原");
+                ToastUtil.showText("请先配置帐号，再进行还原");
                 return;
               }
 
