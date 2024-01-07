@@ -512,7 +512,7 @@ class AppDownloadProgressBar extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: PercentBar(controller.downloadPercent),
+              child: PercentBar(percent: controller.downloadPercent),
             ),
             Text(
               "${FileUtil.getReadableFileSize(controller.count)}/${FileUtil.getReadableFileSize(controller.total)}",

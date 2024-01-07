@@ -13,11 +13,11 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -232,43 +232,60 @@ class UpdateRecordPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return const NeedUpdateAnimeList();
-                  }));
-                },
-                child: Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: Container()),
-                      Text(
-                        "更新进度 $updateOkCnt/$needUpdateCnt",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
-                      Expanded(child: Container()),
-                    ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "更新进度",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                ),
+                  Text("$updateOkCnt/$needUpdateCnt",
+                      style: Theme.of(context).textTheme.bodySmall),
+                ],
               ),
             ),
-            CommonOutlinedButton(
-              text: '更新',
-              onPressed: updateRecordController.updating.value
-                  ? null
-                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-            ),
+            const Spacer(),
+            IconButton(
+                tooltip: '更新',
+                splashRadius: 24,
+                onPressed: updateRecordController.updating.value
+                    ? null
+                    : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+                icon: updateRecordController.updating.value
+                    ? _buildUpdatePercentIndicator(
+                        context, updateOkCnt, needUpdateCnt)
+                    : const Icon(Icons.refresh_rounded)),
+            IconButton(
+                tooltip: '周表',
+                splashRadius: 24,
+                onPressed: () => _toNeedUpdateAnimeListPage(context),
+                icon: const Icon(Icons.arrow_right_alt_rounded)),
           ],
         ),
       ),
     );
+  }
+
+  CircularPercentIndicator _buildUpdatePercentIndicator(
+      BuildContext context, int updateOkCnt, int needUpdateCnt) {
+    return CircularPercentIndicator(
+      radius: 10,
+      lineWidth: 3,
+      percent: updateOkCnt / needUpdateCnt,
+      animation: true,
+      animateFromLastPercent: true,
+      progressColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).disabledColor.withOpacity(0.1),
+    );
+  }
+
+  void _toNeedUpdateAnimeListPage(context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return const NeedUpdateAnimeList();
+    }));
   }
 
   // ignore: unused_element

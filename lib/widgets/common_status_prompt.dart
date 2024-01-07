@@ -15,7 +15,7 @@ class CommonStatusPrompt extends StatelessWidget {
   final String? subtitleText;
   final Widget? subtitle;
   final String buttonText;
-  final void Function() onTapButton;
+  final void Function()? onTapButton;
 
   @override
   Widget build(BuildContext context) {
