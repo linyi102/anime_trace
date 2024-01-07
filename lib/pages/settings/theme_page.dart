@@ -89,7 +89,7 @@ class _ThemePageState extends State<ThemePage> {
     final Color newColor = await showColorPickerDialog(
       context,
       _getCurPrimaryColor(),
-      title: Text('ColorPicker', style: Theme.of(context).textTheme.titleLarge),
+      title: Text('主题色', style: Theme.of(context).textTheme.titleLarge),
       width: 40,
       height: 40,
       spacing: 0,
@@ -108,9 +108,9 @@ class _ThemePageState extends State<ThemePage> {
         longPressMenu: true,
       ),
       actionButtons: const ColorPickerActionButtons(
-        okButton: true,
-        closeButton: true,
-        dialogActionButtons: false,
+        okButton: false,
+        closeButton: false,
+        dialogActionButtons: true,
       ),
       constraints:
           const BoxConstraints(minHeight: 480, minWidth: 320, maxWidth: 320),
