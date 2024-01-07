@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            color: isSelected
+            color: isSelected && expandSideBar
                 ? Theme.of(context).primaryColor.withOpacity(0.1)
                 : null,
           ),
