@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 
 /// 动漫详情页ui和集排序设置
@@ -27,7 +28,10 @@ class _AnimeDetailUISettingPageState extends State<AnimeDetailUISettingPage>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: tabStr.length, vsync: this);
+    tabController = TabController(
+        length: tabStr.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
   }
 
   @override

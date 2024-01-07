@@ -5,6 +5,7 @@ import 'package:flutter_test_future/pages/network/directory/directory_page.dart'
 import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
@@ -29,11 +30,11 @@ class _ExplorePageState extends State<ExplorePage>
     super.initState();
     // 顶部tab控制器
     _tabController = TabController(
-      initialIndex: SPUtil.getInt("lastNavIndexInNetWorkNav",
-          defaultValue: 0), // 设置初始index
-      length: navs.length,
-      vsync: this,
-    );
+        initialIndex: SPUtil.getInt("lastNavIndexInNetWorkNav",
+            defaultValue: 0), // 设置初始index
+        length: navs.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
     // 添加监听器，记录最后一次的topTab的index
     _tabController.addListener(() {
       // Log.info("切换tab，tab.index=${_tabController.index}"); // doubt win端发现会连续输出两次
