@@ -25,7 +25,7 @@ class OperationButton extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 6,
         child: Container(
-            margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 10),
+            margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 12),
             child: Material(
               borderRadius: borderRadius,
               color: active
