@@ -35,6 +35,7 @@ class _SettingPageState extends State<SettingPage> {
   final String _defaultImageUrl = "";
   late int _selectedImageTypeIdx; // 记录选择的哪种图片
   bool get enableDivider => false;
+  bool get enableSplitView => false;
 
   Widget? settingDetailView;
 
@@ -55,7 +56,7 @@ class _SettingPageState extends State<SettingPage> {
       body: Responsive(
         mobile: _buildSettingListView(),
         tablet: _buildSettingListView(),
-        desktop: _buildSplitView(),
+        desktop: enableSplitView ? _buildSplitView() : _buildSettingListView(),
       ),
     );
   }
@@ -360,12 +361,12 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   _enterDetail(Widget detailView) {
-    if (Responsive.isMobile(context) || Responsive.isTablet(context)) {
-      RouteUtil.materialTo(context, detailView);
-    } else {
+    if (Responsive.isDesktop(context) && enableSplitView) {
       setState(() {
         settingDetailView = detailView;
       });
+    } else {
+      RouteUtil.materialTo(context, detailView);
     }
   }
 
