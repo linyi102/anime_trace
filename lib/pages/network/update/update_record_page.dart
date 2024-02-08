@@ -8,6 +8,7 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
+import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -232,37 +233,39 @@ class UpdateRecordPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "更新进度",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const NeedUpdateAnimeList();
+                  }));
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: Container()),
+                      Text(
+                        "更新进度 $updateOkCnt/$needUpdateCnt",
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
+                      Expanded(child: Container()),
+                    ],
                   ),
-                  Text("$updateOkCnt/$needUpdateCnt",
-                      style: Theme.of(context).textTheme.bodySmall),
-                ],
+                ),
               ),
             ),
-            const Spacer(),
-            IconButton(
-                tooltip: '更新',
-                splashRadius: 24,
-                onPressed: updateRecordController.updating.value
-                    ? null
-                    : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-                icon: updateRecordController.updating.value
-                    ? _buildUpdatePercentIndicator(
-                        context, updateOkCnt, needUpdateCnt)
-                    : const Icon(Icons.refresh_rounded)),
-            IconButton(
-                tooltip: '周表',
-                splashRadius: 24,
-                onPressed: () => _toNeedUpdateAnimeListPage(context),
-                icon: const Icon(Icons.arrow_right_alt_rounded)),
+            CommonOutlinedButton(
+              text: '更新',
+              onPressed: updateRecordController.updating.value
+                  ? null
+                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+            ),
           ],
         ),
       ),
