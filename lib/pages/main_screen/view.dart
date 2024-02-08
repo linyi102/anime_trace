@@ -121,9 +121,9 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            color: isSelected && expandSideBar
-                ? Theme.of(context).primaryColor.withOpacity(0.1)
-                : null,
+            // color: isSelected && expandSideBar
+            //     ? Theme.of(context).primaryColor.withOpacity(0.1)
+            //     : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
           child: InkWell(
