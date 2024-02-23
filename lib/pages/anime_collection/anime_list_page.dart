@@ -14,11 +14,11 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
-import 'package:flutter_test_future/pages/settings/backup_restore/home.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
@@ -118,33 +118,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
 
     actions.add(IconButton(
       onPressed: () {
-        showModalBottomSheet(
+        showCommonModalBottomSheet(
           context: context,
-          builder: (context) => Scaffold(
-              appBar: AppBar(
-                title: const Text("云端数据"),
-                automaticallyImplyLeading: false,
-                actions: [
-                  Container(
-                    padding: const EdgeInsets.only(right: 5),
-                    child: Center(
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BackupAndRestorePage()));
-                          },
-                          child: const Text("显示全部")),
-                    ),
-                  ),
-                  // IconButton(
-                  //     onPressed: () {}, icon: const Icon(Icons.chevron_right))
-                ],
-              ),
-              body: const RemoteBackupPage(fromHome: true)),
+          isScrollControlled: true,
+          builder: (context) => Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: const RemoteBackupPage(fromHome: true),
+          ),
         );
       },
       icon: const Icon(
@@ -155,7 +135,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
     ));
     actions.add(IconButton(
       onPressed: () {
-        showModalBottomSheet(
+        showCommonModalBottomSheet(
             context: context,
             builder: (context) => AnimesDisplaySetting(
                   showAppBar: false,
@@ -509,7 +489,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
       );
     }
 
-    showModalBottomSheet(
+    showCommonModalBottomSheet(
       context: context,
       builder: (context) => Scaffold(
         appBar: AppBar(

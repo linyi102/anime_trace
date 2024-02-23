@@ -6,6 +6,7 @@ import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart'
 import 'package:flutter_test_future/pages/settings/label/home.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 
 class AnimeDetailLabels extends StatefulWidget {
@@ -79,7 +80,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
         //           enableSelectLabelForAnime: true,
         //           animeController: widget.animeController,
         //         )));
-        showModalBottomSheet(
+        showCommonModalBottomSheet(
           context: context,
           builder: (context) => LabelManagePage(
             enableSelectLabelForAnime: true,

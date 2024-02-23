@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
@@ -121,7 +122,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
   }
 
   _showLayoutBottomSheet() {
-    showModalBottomSheet(
+    showCommonModalBottomSheet(
         context: context,
         builder: (context) => SeriesManageLayoutSettingPage(logic: logic));
   }

@@ -7,6 +7,7 @@ import 'package:flutter_test_future/pages/settings/label/home.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/emoji_leading.dart';
 
 class LabelForm extends StatefulWidget {
@@ -125,7 +126,7 @@ class _LabelFormState extends State<LabelForm> {
 
   Future<dynamic> _showEmojiPicker(
       {required void Function(String emoji) onEmojiSelected}) {
-    return showModalBottomSheet(
+    return showCommonModalBottomSheet(
       context: context,
       builder: (context) => EmojiPicker(
         onEmojiSelected: (Category? category, Emoji emoji) {

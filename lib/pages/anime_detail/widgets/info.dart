@@ -15,6 +15,7 @@ import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -373,7 +374,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   void _dialogSelectTag() {
-    showModalBottomSheet(
+    showCommonModalBottomSheet(
         context: context,
         builder: (context) => Scaffold(
               appBar: AppBar(

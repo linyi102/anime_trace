@@ -10,6 +10,7 @@ import 'package:flutter_test_future/pages/settings/label/recommend.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -76,7 +77,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: () {
         // RouteUtil.materialTo(context, const RecommendedLabelListView());
-        showModalBottomSheet(
+        showCommonModalBottomSheet(
           context: context,
           builder: (context) => const RecommendedLabelListView(),
         );

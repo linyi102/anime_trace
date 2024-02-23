@@ -47,7 +47,6 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("远程备份 (${files.length})"),
-          automaticallyImplyLeading: false,
         ),
         body: FadeAnimatedSwitcher(
           loadOk: _loadOk,

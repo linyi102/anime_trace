@@ -10,6 +10,7 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -117,7 +118,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         children: [
           InkWell(
             onTap: () {
-              showModalBottomSheet(
+              showCommonModalBottomSheet(
                 context: context,
                 builder: (context) => Scaffold(
                   appBar: AppBar(

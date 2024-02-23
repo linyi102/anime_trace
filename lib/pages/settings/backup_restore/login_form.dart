@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/components/operation_button.dart';
+import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/button/loading_button.dart';
+import 'package:flutter_test_future/widgets/limit_width_center.dart';
 
 class WebDavLoginForm extends StatefulWidget {
   const WebDavLoginForm({super.key});
@@ -45,33 +47,64 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("帐号配置"),
-      content: AutofillGroup(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              for (int i = 0; i < controllers.length; ++i)
-                TextField(
-                  obscureText: controllers[i] == inputPasswordController,
-                  controller: controllers[i],
-                  decoration: InputDecoration(labelText: labelTexts[i]),
-                  autofillHints: autofillHintsList[i],
+    return Scaffold(
+      appBar: AppBar(title: const Text('登录帐号')),
+      body: AutofillGroup(
+        child: AlignLimitedBox(
+          maxWidth: 500,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Column(
+              children: [
+                for (int i = 0; i < controllers.length; ++i)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: TextField(
+                      obscureText: controllers[i] == inputPasswordController,
+                      controller: controllers[i],
+                      decoration: InputDecoration(
+                        labelText: labelTexts[i],
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Theme.of(context).hintColor.withOpacity(0.2)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      autofillHints: autofillHintsList[i],
+                    ),
+                  ),
+                ActionButton(
+                  height: 45,
+                  loader: circularTextButtonLoader('登录中'),
+                  loaderStyle: ButtonLoaderStyle.custom,
+                  child: const Text('登录'),
+                  onTap: () async {
+                    setState(() {
+                      connecting = true;
+                    });
+                    await Future.delayed(const Duration(milliseconds: 400));
+                    _connect();
+                  },
                 ),
-              OperationButton(
-                horizontal: 0,
-                text: connecting ? '连接中' : '连接',
-                fontSize: 14,
-                // 连接时不允许再次点击按钮
-                active: !connecting,
-                onTap: () {
-                  setState(() {
-                    connecting = true;
-                  });
-                  _connect();
-                },
-              )
-            ],
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                      onPressed: () {
+                        LaunchUrlUtil.launch(
+                            context: context,
+                            uriStr: "https://help.jianguoyun.com/?p=2064");
+                      },
+                      child: const Text('查看教程')),
+                )
+              ],
+            ),
           ),
         ),
       ),

@@ -5,9 +5,10 @@ import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
+import 'package:flutter_test_future/pages/settings/backup_restore/home.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/login_form.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_status_prompt.dart';
 import 'package:flutter_test_future/widgets/setting_card.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class RemoteBackupPage extends StatefulWidget {
   const RemoteBackupPage({
@@ -56,32 +58,34 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
       child: Column(
         children: [
           SettingTitle(
-            title: 'WebDav备份',
-            trailing: IconButton(
-                onPressed: () {
-                  LaunchUrlUtil.launch(
-                      context: context,
-                      uriStr: "https://help.jianguoyun.com/?p=2064");
-                },
-                splashRadius: 20,
-                icon: const Icon(Icons.help_outline, size: 20)),
+            title: 'WebDav 备份',
+            trailing: widget.fromHome
+                ? IconButton(
+                    color: Theme.of(context).iconTheme.color,
+                    splashRadius: 20,
+                    onPressed: () {
+                      RouteUtil.materialTo(
+                          context, const BackupAndRestorePage());
+                    },
+                    icon: const Icon(MingCuteIcons.mgc_arrow_right_line))
+                : null,
           ),
           ListTile(
-            title: const Text("帐号配置"),
+            title: const Text("登录帐号"),
             trailing: Icon(
               Icons.circle,
               size: 12,
               color: isOnline ? AppTheme.connectableColor : Colors.grey,
             ),
             onTap: () {
-              _loginWebDav();
+              _toWebDavLoginPage();
             },
           ),
           ListTile(
             title: const Text("立即备份"),
             subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
             onTap: () async {
-              if (!SPUtil.getBool("login") || isOffline) {
+              if (isOffline) {
                 ToastUtil.showText("请先配置帐号，再进行备份");
                 return;
               }
@@ -111,14 +115,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                 return;
               }
 
-              showModalBottomSheet(
-                // 主页打开底部面板再次打开底部面板时，不再指定barrierColor颜色，避免不透明度加深
-                barrierColor: widget.fromHome ? Colors.transparent : null,
-                context: context,
-                builder: (context) => const BackUpFileListPage(),
-              ).then((value) {
-                setState(() {});
-              });
+              RouteUtil.materialTo(context, const BackUpFileListPage());
             },
           ),
           _buildAutoBackupPrompt(),
@@ -269,11 +266,8 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
     );
   }
 
-  void _loginWebDav() async {
-    await showDialog(
-      context: context,
-      builder: (context) => const WebDavLoginForm(),
-    );
+  void _toWebDavLoginPage() async {
+    await RouteUtil.materialTo(context, const WebDavLoginForm());
     setState(() {});
   }
 }

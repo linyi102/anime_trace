@@ -15,6 +15,10 @@ class AppTheme {
   static double get dialogRadius => 16.0;
   static double get textButtonRadius => 99.0;
 
+  /// 底部面板宽度
+  static BoxConstraints get bottomSheetBoxConstraints =>
+      const BoxConstraints(maxWidth: 600);
+
   /// 半透明背景
   static final translucentBgColor = Colors.black.withOpacity(0.5);
 

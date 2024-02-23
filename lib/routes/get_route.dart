@@ -6,8 +6,9 @@ class RouteUtil {
     Get.to(page, transition: Transition.fadeIn);
   }
 
-  static void materialTo(BuildContext context, Widget widget) {
-    Navigator.push(
+  static Future<T?> materialTo<T extends Object?>(
+      BuildContext context, Widget widget) {
+    return Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => widget,
