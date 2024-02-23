@@ -1,3 +1,5 @@
+import 'package:flutter_test_future/utils/sp_util.dart';
+
 /// 收藏页开启下拉还原最新备份
 const pullDownRestoreLatestBackupInChecklistPage =
     "pullDownRestoreLatestBackupInChecklistPage";
@@ -30,4 +32,13 @@ class SPKey {
   // 系列详情页中显示推荐动漫
   static get showRecommendedAnimesInSeriesPage =>
       "showRecommendedAnimesInSeriesPage";
+
+  // bangumi搜索类型
+  static get selectedBangumiSearchCategoryKey =>
+      "selectedBangumiSearchCategoryKey";
+
+  static String getSelectedBangumiSearchCategoryKey() {
+    return SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,
+        defaultValue: 'all');
+  }
 }

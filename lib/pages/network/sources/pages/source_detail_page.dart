@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
+import 'package:flutter_test_future/models/enum/bangumi_search_category.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/common_text_field.dart';
@@ -175,6 +177,21 @@ class _SourceDetailState extends State<SourceDetail> {
               }));
             },
           ),
+          if (climbWebstie == bangumiClimbWebsite)
+            ListTile(
+              leading: Icon(
+                Icons.filter_alt_outlined,
+                color: Theme.of(context).primaryColor,
+              ),
+              title: const Text('搜索类型'),
+              subtitle: Text(
+                BangumiSearchCategory.getCategoryByKey(
+                            SPKey.getSelectedBangumiSearchCategoryKey())
+                        ?.label ??
+                    '',
+              ),
+              onTap: _showDialogSelectBangumiCategory,
+            ),
           ListTile(
             title: const Text("收藏列表"),
             leading: Icon(
@@ -189,6 +206,29 @@ class _SourceDetailState extends State<SourceDetail> {
           ),
           if (climbWebstie.supportImport) _buildImportDataTile()
         ],
+      ),
+    );
+  }
+
+  void _showDialogSelectBangumiCategory() {
+    String categoryKey = SPKey.getSelectedBangumiSearchCategoryKey();
+
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('搜索类型'),
+        children: BangumiSearchCategory.values
+            .map((e) => RadioListTile(
+                title: Text(e.label),
+                groupValue: categoryKey,
+                value: e.key,
+                onChanged: (value) {
+                  SPUtil.setString(
+                      SPKey.selectedBangumiSearchCategoryKey, e.key);
+                  Navigator.pop(context);
+                  setState(() {});
+                }))
+            .toList(),
       ),
     );
   }
@@ -229,7 +269,7 @@ class _SourceDetailState extends State<SourceDetail> {
                   if (mounted) setState(() {});
                 },
                 child: const Text('重置')),
-          )
+          ),
         ],
       ),
     );

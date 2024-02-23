@@ -3,6 +3,7 @@ import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:html/dom.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
@@ -39,7 +40,8 @@ class ClimbBangumi with Climb {
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
-    String url = baseUrl + "/subject_search/$keyword?cat=all";
+    String url = baseUrl +
+        "/subject_search/$keyword?cat=${SPKey.getSelectedBangumiSearchCategoryKey()}";
     List<Anime> climbAnimes = [];
 
     var document = await dioGetAndParse(url);
