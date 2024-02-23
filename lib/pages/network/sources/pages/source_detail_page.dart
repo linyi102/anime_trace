@@ -7,11 +7,14 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/form_validator.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/common_text_field.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'anime_list_in_source.dart';
@@ -32,25 +35,98 @@ class _SourceDetailState extends State<SourceDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(climbWebstie.name),
-      ),
-      body: CommonScaffoldBody(child: _buildBody(context)),
+      appBar: AppBar(title: Text(climbWebstie.name)),
+      body: CommonScaffoldBody(
+          child: Responsive(
+              mobile: Column(
+                children: [
+                  _buildAllSourceHorizontal(),
+                  // const CommonDivider(direction: Axis.horizontal),
+                  Expanded(child: _buildSourceDetail()),
+                ],
+              ),
+              desktop: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAllSourceVertical(),
+                  const CommonDivider(direction: Axis.vertical),
+                  Expanded(child: _buildSourceDetail()),
+                ],
+              ))),
     );
   }
 
-  SingleChildScrollView _buildBody(BuildContext context) {
+  _buildAllSourceHorizontal() {
+    return Container(
+      decoration:
+          BoxDecoration(color: Theme.of(context).appBarTheme.backgroundColor),
+      height: 60,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        scrollDirection: Axis.horizontal,
+        itemCount: climbWebsites.length,
+        itemBuilder: (context, index) => _buildSourceItem(climbWebsites[index]),
+      ),
+    );
+  }
+
+  SizedBox _buildAllSourceVertical() {
+    return SizedBox(
+        width: 80,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          itemCount: climbWebsites.length,
+          itemBuilder: (context, index) =>
+              _buildSourceItem(climbWebsites[index]),
+        ));
+  }
+
+  GestureDetector _buildSourceItem(ClimbWebsite website) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          climbWebstie = website;
+        });
+      },
+      child: Container(
+        color: Colors.transparent,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1.5,
+                  color: website == climbWebstie
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
+                ),
+                borderRadius: BorderRadius.circular(99),
+              ),
+              child:
+                  WebSiteLogo(url: website.iconUrl, size: 35, addShadow: false),
+            ),
+            // Text(climbWebsites[index].name),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SingleChildScrollView _buildSourceDetail() {
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
-          const SizedBox(height: 10),
           WebSiteLogo(url: climbWebstie.iconUrl, size: 100, addShadow: false),
           Container(
             margin: const EdgeInsets.only(top: 5),
             child: InkWell(
               borderRadius: BorderRadius.circular(4),
               onTap: () {
-                _showUrlMenuDialog(context);
+                _showUrlMenuDialog();
               },
               child: Container(
                 padding: const EdgeInsets.all(6.0),
@@ -111,13 +187,13 @@ class _SourceDetailState extends State<SourceDetail> {
               }));
             },
           ),
-          if (climbWebstie.supportImport) _buildImportDataTile(context)
+          if (climbWebstie.supportImport) _buildImportDataTile()
         ],
       ),
     );
   }
 
-  Future<dynamic> _showUrlMenuDialog(BuildContext context) {
+  Future<dynamic> _showUrlMenuDialog() {
     return showDialog(
       context: context,
       builder: (context) => SimpleDialog(
@@ -144,7 +220,7 @@ class _SourceDetailState extends State<SourceDetail> {
             title: const Text('自定义'),
             onTap: () {
               Navigator.pop(context);
-              showEditBaseUrlDialog(context);
+              showEditBaseUrlDialog();
             },
             trailing: TextButton(
                 onPressed: () async {
@@ -159,7 +235,7 @@ class _SourceDetailState extends State<SourceDetail> {
     );
   }
 
-  Future<dynamic> showEditBaseUrlDialog(BuildContext context) {
+  Future<dynamic> showEditBaseUrlDialog() {
     final formKey = GlobalKey<FormState>();
     final urlTEC = TextEditingController(text: climbWebstie.climb.baseUrl);
     const title = '自定义链接';
@@ -204,7 +280,7 @@ class _SourceDetailState extends State<SourceDetail> {
             ));
   }
 
-  _buildImportDataTile(BuildContext context) {
+  _buildImportDataTile() {
     return ListTile(
       title: const Text("导入数据"),
       leading: Icon(
