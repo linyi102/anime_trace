@@ -111,7 +111,7 @@ class _SourceDetailState extends State<SourceDetail> {
               }));
             },
           ),
-          _buildImportDataTile(context)
+          if (climbWebstie.supportImport) _buildImportDataTile(context)
         ],
       ),
     );
@@ -206,7 +206,6 @@ class _SourceDetailState extends State<SourceDetail> {
 
   _buildImportDataTile(BuildContext context) {
     return ListTile(
-      enabled: climbWebstie.supportImport,
       title: const Text("导入数据"),
       leading: Icon(
         // Icons.post_add,
