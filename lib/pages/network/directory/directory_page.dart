@@ -6,11 +6,7 @@ import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
-
 import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
-import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -38,7 +34,10 @@ class _DirectoryPageState extends State<DirectoryPage>
 
   late ClimbWebsite curWebsite;
 
-  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbQuqi()];
+  final List<ClimbWebsite> usableWebsites = [
+    yhdmClimbWebsite,
+    quqiClimbWebsite,
+  ];
 
   late final RefreshController _refreshController;
 
@@ -49,8 +48,8 @@ class _DirectoryPageState extends State<DirectoryPage>
     super.initState();
 
     // 默认为可用列表中的第一个，然后从所有搜索源中找到对应的下标
-    int defaultIdx = climbWebsites.indexWhere((element) =>
-        element.climb.runtimeType == usableClimbs.first.runtimeType);
+    int defaultIdx =
+        climbWebsites.indexWhere((element) => element == usableWebsites.first);
     int websiteIdx =
         SPUtil.getInt(selectedDirectorySourceIdx, defaultValue: defaultIdx);
     if (websiteIdx > climbWebsites.length) {
@@ -168,23 +167,14 @@ class _DirectoryPageState extends State<DirectoryPage>
         showDialog(
           context: context,
           builder: (context) => SimpleDialog(
-            children: climbWebsites.map((e) {
+            children: usableWebsites.map((e) {
               if (e.discard) return Container();
 
-              // 如果该搜索源e的climb工具在usableClimbs中，则显示可用
-              bool usable = usableClimbs.indexWhere(
-                    (element) => element.runtimeType == e.climb.runtimeType,
-                  ) >=
-                  0;
               return ListTile(
-                title: Text(
-                  e.name,
-                  style: usable ? null : const TextStyle(color: Colors.grey),
-                ),
+                title: Text(e.name),
                 leading: WebSiteLogo(url: e.iconUrl, size: 25),
                 trailing:
                     e.name == curWebsite.name ? const Icon(Icons.check) : null,
-                enabled: usable,
                 onTap: () {
                   curWebsite = e;
                   SPUtil.setInt(selectedDirectorySourceIdx,
