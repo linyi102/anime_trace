@@ -172,6 +172,8 @@ class ClimbCycdm with Climb {
       configString = '${configString.substring(0, configString.length - 2)}}';
     }
 
+    configString = '$configString}';
+    configString = configString.replaceAll('\'', '"');
     // 将config字符串解析为Map
     var configMap = jsonDecode(configString);
     var result = await DioUtil.post(
