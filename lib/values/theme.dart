@@ -19,6 +19,9 @@ class AppTheme {
   static BoxConstraints get bottomSheetBoxConstraints =>
       const BoxConstraints(maxWidth: 600);
 
+  /// 表单最大宽度
+  static double get formMaxWidth => 500;
+
   /// 半透明背景
   static final translucentBgColor = Colors.black.withOpacity(0.5);
 

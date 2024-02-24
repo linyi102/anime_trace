@@ -6,7 +6,8 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/values/assets.dart';
-import 'package:flutter_test_future/widgets/button/loading_button.dart';
+import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/button/action_button.dart';
 import 'package:flutter_test_future/widgets/limit_width_center.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 
@@ -56,7 +57,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: AlignLimitedBox(
-        maxWidth: 500,
+        maxWidth: AppTheme.formMaxWidth,
         alignment: Alignment.topCenter,
         child: AutofillGroup(
           child: SingleChildScrollView(
@@ -90,7 +91,6 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
                   autofillHints: [AutofillHints.password],
                 ),
                 ActionButton(
-                  height: 45,
                   loader: circularTextButtonLoader('登录中'),
                   loaderStyle: ButtonLoaderStyle.custom,
                   child: const Text('登录'),

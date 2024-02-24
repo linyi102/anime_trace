@@ -278,7 +278,7 @@ class _SourceDetailState extends State<SourceDetail> {
   Future<dynamic> showEditBaseUrlDialog() {
     final formKey = GlobalKey<FormState>();
     final urlTEC = TextEditingController(text: climbWebstie.climb.baseUrl);
-    const title = '自定义链接';
+    const title = '自定义';
     const labelText = '链接';
 
     return showDialog(

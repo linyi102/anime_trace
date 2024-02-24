@@ -33,7 +33,7 @@ class _ActionButtonState extends State<ActionButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.height,
+      height: widget.height ?? 45,
       child: Stack(
         fit: StackFit.expand,
         children: [

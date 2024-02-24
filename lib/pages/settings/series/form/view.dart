@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/operation_button.dart';
+import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/button/action_button.dart';
+import 'package:flutter_test_future/widgets/common_text_field.dart';
+import 'package:flutter_test_future/widgets/limit_width_center.dart';
 
 import '../../../../dao/series_dao.dart';
 import '../../../../models/series.dart';
@@ -38,45 +41,48 @@ class _SeriesFormPageState extends State<SeriesFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(insertAction ? '添加系列' : '编辑系列'),
+        title: Text(insertAction ? '新建系列' : '编辑系列'),
       ),
       body: CommonScaffoldBody(
-          child: SingleChildScrollView(
-              child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration: const InputDecoration(
+          child: AlignLimitedBox(
+        maxWidth: AppTheme.formMaxWidth,
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+            child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                CommonTextFormField(
+                  controller: nameController,
                   labelText: '名称',
+                  autofocus: true,
+                  maxLength: 30,
                 ),
-                autofocus: true,
-                maxLength: 30,
-              ),
-              TextFormField(
-                controller: descController,
-                decoration: const InputDecoration(
+                const SizedBox(height: 20),
+                CommonTextFormField(
+                  controller: descController,
                   labelText: '描述',
+                  maxLength: 300,
                 ),
-                maxLength: 300,
-              ),
-              const SizedBox(height: 10),
-              OperationButton(
-                  onTap: () {
-                    if (insertAction) {
-                      clickInsertButton();
-                    } else {
-                      clickUpdateButton();
-                    }
-                  },
-                  text: insertAction ? '添加' : '保存'),
-            ],
+                const SizedBox(height: 20),
+                ActionButton(
+                    onTap: () async {
+                      if (insertAction) {
+                        clickInsertButton();
+                      } else {
+                        clickUpdateButton();
+                      }
+                    },
+                    loaderStyle: ButtonLoaderStyle.circularCenter,
+                    child: const Text('保存'))
+              ],
+            ),
           ),
-        ),
-      ))),
+        )),
+      )),
     );
   }
 
@@ -120,7 +126,6 @@ class _SeriesFormPageState extends State<SeriesFormPage> {
     // 禁止重名
     if (await SeriesDao.existSeriesName(seriesName)) {
       ToastUtil.showText("已有该系列");
-
       return;
     }
 
