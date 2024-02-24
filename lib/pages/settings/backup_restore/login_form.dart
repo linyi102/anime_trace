@@ -4,6 +4,7 @@ import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/values/assets.dart';
 import 'package:flutter_test_future/widgets/button/loading_button.dart';
 import 'package:flutter_test_future/widgets/limit_width_center.dart';
 
@@ -48,14 +49,34 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('登录帐号')),
+      appBar: AppBar(
+        title: const Text(''),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      ),
       body: AutofillGroup(
         child: AlignLimitedBox(
           maxWidth: 500,
+          alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(
               children: [
+                SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: Image.asset(Assets.imagesWebsiteJianguoyun),
+                  // child: Icon(
+                  //   Icons.cloud,
+                  //   size: 80,
+                  //   color: Theme.of(context).primaryColor,
+                  // ),
+                ),
+                // const SizedBox(height: 10),
+                const Text(
+                  'WebDAV',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                const SizedBox(height: 60),
                 for (int i = 0; i < controllers.length; ++i)
                   Container(
                     margin: const EdgeInsets.only(bottom: 20),

@@ -69,6 +69,10 @@ class Assets {
   /// assets/images/website/fzff.png
   static const String imagesWebsiteFzff = "assets/images/website/fzff.png";
 
+  /// Assets for imagesWebsiteJianguoyun
+  /// assets/images/website/jianguoyun.png
+  static const String imagesWebsiteJianguoyun = "assets/images/website/jianguoyun.png";
+
   /// Assets for imagesWebsiteOmofun
   /// assets/images/website/omofun.jpg
   static const String imagesWebsiteOmofun = "assets/images/website/omofun.jpg";
@@ -89,3 +93,4 @@ class Assets {
   /// assets/lotties/playing.json
   static const String lottiesPlaying = "assets/lotties/playing.json";
 }
+
