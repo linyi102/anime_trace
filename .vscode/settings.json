@@ -4,5 +4,6 @@
     "files.associations": {
         "*.jsp": "html",
         "xstring": "cpp"
-    }
+    },
+    "svg.preview.background": "transparent"
 }
