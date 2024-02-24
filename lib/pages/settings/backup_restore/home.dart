@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/local.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/pages/settings/pages/rbr_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 
@@ -37,8 +37,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
       title: const Text("撤销还原"),
       subtitle: const Text("点击查看还原前的记录"),
       onTap: () {
-        showCommonModalBottomSheet(
-            context: context, builder: (context) => const RBRPage());
+        RouteUtil.materialTo(context, const RBRPage());
       },
       trailing: IconButton(
           onPressed: _showHelpDialog,
