@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/components/note/note_img_item.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';

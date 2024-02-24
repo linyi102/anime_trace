@@ -1,12 +1,12 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-@Deprecated("导致进入和退出页面时重复多次build")
-class FadeRoute<T extends Object?> extends PageRoute<T> {
-  FadeRoute({
+class SharedAxisTransitionRoute<T extends Object?> extends PageRoute<T> {
+  SharedAxisTransitionRoute({
     required this.builder,
+    required this.transitionType,
     this.transitionDuration = const Duration(milliseconds: 200),
-    this.reverseTransitionDuration =
-        const Duration(milliseconds: 150), // 100 没有效果
+    this.reverseTransitionDuration = const Duration(milliseconds: 150),
     this.opaque = true,
     this.barrierDismissible = false,
     this.barrierColor = Colors.transparent,
@@ -37,6 +37,8 @@ class FadeRoute<T extends Object?> extends PageRoute<T> {
   @override
   final bool maintainState;
 
+  final SharedAxisTransitionType transitionType;
+
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation) =>
@@ -45,9 +47,11 @@ class FadeRoute<T extends Object?> extends PageRoute<T> {
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    return FadeTransition(
-      opacity: animation,
-      child: builder(context),
+    return SharedAxisTransition(
+      animation: animation,
+      secondaryAnimation: secondaryAnimation,
+      transitionType: transitionType,
+      child: child,
     );
   }
 }

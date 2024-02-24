@@ -5,7 +5,7 @@ import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/note_img_grid.dart';
+import 'package:flutter_test_future/components/note/note_img_grid.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';

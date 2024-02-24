@@ -4,7 +4,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/note_img_item.dart';
+import 'package:flutter_test_future/components/note/note_img_item.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';

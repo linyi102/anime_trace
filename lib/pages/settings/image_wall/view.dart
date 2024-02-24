@@ -8,6 +8,7 @@ import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/style.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 
@@ -396,13 +397,11 @@ class _ImageWallPageState extends State<ImageWallPage> {
   }
 
   void _toImageViewerPage(String imageUrl) async {
-    await Navigator.push(
+    await RouteUtil.toImageViewer(
         context,
-        MaterialPageRoute(
-          builder: (context) => ImageViewerPage(relativeLocalImages: [
-            RelativeLocalImage(0, ImageUtil.getRelativeNoteImagePath(imageUrl))
-          ]),
-        ));
+        ImageViewerPage(relativeLocalImages: [
+          RelativeLocalImage(0, ImageUtil.getRelativeNoteImagePath(imageUrl))
+        ]));
     // 返回后如果是播放状态，重新播放，避免过一会定时器触发后才继续自动播放
     _pauseAndPlay();
   }
