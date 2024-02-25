@@ -15,6 +15,7 @@ import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -116,18 +117,11 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         rate: _anime.rate,
         onRatingUpdate: (v) {
           Log.info("评价分数：$v");
-          _anime.rate = v.toInt();
+          setState(() {
+            _anime.rate = v.toInt();
+          });
           AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
         });
-  }
-
-  // 显示信息按钮，点击后进入动漫属性信息页
-  _buildInfoIcon() {
-    return _buildIconTextButton(
-      iconData: MingCuteIcons.mgc_information_line,
-      text: '信息',
-      onTap: _toPropertiesPage,
-    );
   }
 
   // 显示评价按钮，点击后进入评价列表页
@@ -371,7 +365,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   }
 
   void _dialogSelectTag() {
-    showModalBottomSheet(
+    showCommonModalBottomSheet(
         context: context,
         builder: (context) => Scaffold(
               appBar: AppBar(

@@ -1,3 +1,4 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
@@ -18,11 +19,6 @@ class _ThemePageState extends State<ThemePage> {
   ThemeController get themeController => ThemeController.to;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("外观设置")),
@@ -37,6 +33,22 @@ class _ThemePageState extends State<ThemePage> {
                 subtitle: const Text('启用或禁用选项卡'),
                 onTap: () {
                   _showDialogConfigureMainTab();
+                },
+              ),
+            ],
+          ),
+          SettingCard(
+            title: '配色',
+            children: [
+              ListTile(
+                title: const Text('选择主题色'),
+                trailing: Obx(() => _buildColorIndicator()),
+                onTap: _showColorPicker,
+              ),
+              ListTile(
+                title: const Text('重置'),
+                onTap: () {
+                  themeController.resetCustomPrimaryColor();
                 },
               ),
             ],
@@ -71,6 +83,54 @@ class _ThemePageState extends State<ThemePage> {
         ],
       )),
     );
+  }
+
+  Future<void> _showColorPicker() async {
+    final Color newColor = await showColorPickerDialog(
+      context,
+      _getCurPrimaryColor(),
+      title: Text('主题色', style: Theme.of(context).textTheme.titleLarge),
+      width: 40,
+      height: 40,
+      spacing: 0,
+      runSpacing: 0,
+      borderRadius: 0,
+      wheelDiameter: 165,
+      enableOpacity: true,
+      showColorCode: true,
+      colorCodeHasColor: true,
+      pickersEnabled: <ColorPickerType, bool>{
+        ColorPickerType.wheel: true,
+      },
+      copyPasteBehavior: const ColorPickerCopyPasteBehavior(
+        copyButton: true,
+        pasteButton: true,
+        longPressMenu: true,
+      ),
+      actionButtons: const ColorPickerActionButtons(
+        okButton: false,
+        closeButton: false,
+        dialogActionButtons: true,
+      ),
+      constraints:
+          const BoxConstraints(minHeight: 480, minWidth: 320, maxWidth: 320),
+    );
+    themeController.changeCustomPrimaryColor(newColor);
+  }
+
+  ColorIndicator _buildColorIndicator() {
+    return ColorIndicator(
+        width: 32,
+        height: 32,
+        borderRadius: 12,
+        color: _getCurPrimaryColor(),
+        elevation: 1,
+        onSelectFocus: false);
+  }
+
+  _getCurPrimaryColor() {
+    return themeController.customPrimaryColor.value ??
+        Theme.of(context).primaryColor;
   }
 
   _showDialogConfigureMainTab() {

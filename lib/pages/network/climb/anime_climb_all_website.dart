@@ -81,7 +81,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     for (var climbWebsite in climbWebsites) {
       Log.info(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源
-      if (!climbWebsite.enable) continue; // 不是break啊...
+      if (!climbWebsite.enable || climbWebsite.discard) continue; // 不是break啊...
 
       Future(() async {
         // 正在搜索，用于显示加载圈
@@ -215,7 +215,9 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       itemBuilder: (context, index) {
         ClimbWebsite webstie = climbWebsites[index];
         // 如果关闭了，则不显示
-        if (!climbWebsites[index].enable) return Container();
+        if (!climbWebsites[index].enable || climbWebsites[index].discard) {
+          return Container();
+        }
         // 遍历时，第一次(isFirstEnableSource为false)到达这里，则说明是第一个启动了的搜索源，需要在上面添加自定义
         if (!isFirstEnableSource) {
           isFirstEnableSource = true;

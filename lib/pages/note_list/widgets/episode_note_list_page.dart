@@ -6,7 +6,7 @@ import 'package:flutter_test_future/dao/episode_desc_dao.dart';
 import 'package:flutter_test_future/dao/note_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/components/note_card.dart';
+import 'package:flutter_test_future/components/note/note_card.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 import '../../../models/anime.dart';

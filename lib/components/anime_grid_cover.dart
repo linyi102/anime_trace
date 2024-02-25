@@ -185,7 +185,7 @@ class AnimeGridCover extends StatelessWidget {
         ));
   }
 
-  _buildReviewNumber(BuildContext context) {
+  buildReviewNumber(BuildContext context) {
     return Positioned(
         right: spacing,
         top: spacing,

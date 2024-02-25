@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 
@@ -34,22 +35,12 @@ class NoteImgItem extends StatelessWidget {
       onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(
-            // transitionDuration: Duration.zero,
-            // reverseTransitionDuration: Duration.zero,
-            builder: (context) {
-          // 点击图片进入图片浏览页面
-          return ImageViewerPage(
+        RouteUtil.toImageViewer(
+          context,
+          ImageViewerPage(
               relativeLocalImages: relativeLocalImages,
-              initialIndex: initialIndex);
-        })).then((value) {
-          // if (Global.modifiedNoteImgRootPath) {
-          //   // 修改了路径，重新渲染，然后重置
-          //   // 注：不应该在这里渲染，因为这只是单个图片，应该渲染所有图片
-          //   // 暂时没找到哪里应该执行这段代码，因为上级把该NoteImgItem作为组件，并不是push
-          //   Global.modifiedNoteImgRootPath = false;
-          // }
-        });
+              initialIndex: initialIndex),
+        );
       },
       child: Stack(children: [
         AspectRatio(

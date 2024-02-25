@@ -256,7 +256,8 @@ class AnimeDao {
   static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
       {bool updateCover = false,
       bool updateName = true,
-      bool updateInfo = true}) async {
+      bool updateInfo = true,
+      bool updateAnimeUrl = true}) async {
     Log.info("sql: updateAnime");
     String datetime = DateTime.now().toString();
     Log.info("oldAnime=$oldAnime, newAnime=$newAnime");
@@ -315,7 +316,9 @@ class AnimeDao {
       newAnime.category = oldAnime.category;
     }
 
-    if (newAnime.animeUrl.isEmpty) newAnime.animeUrl = oldAnime.animeUrl;
+    if (newAnime.animeUrl.isEmpty | !updateAnimeUrl) {
+      newAnime.animeUrl = oldAnime.animeUrl;
+    }
 
     if (newAnime.reviewNumber == 0) {
       if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;

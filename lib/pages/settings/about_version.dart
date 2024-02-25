@@ -50,9 +50,9 @@ class _AboutVersionState extends State<AboutVersion> {
                   title: const Text("检查更新"),
                   trailing: appUpgradeLogic.status == LoadStatus.loading
                       ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(strokeWidth: 3))
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2.4))
                       : null,
                 );
               },
@@ -96,6 +96,7 @@ class _AboutVersionState extends State<AboutVersion> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
+          splashRadius: 20,
           onPressed: () {
             LaunchUrlUtil.launch(
                 context: context,
@@ -109,6 +110,7 @@ class _AboutVersionState extends State<AboutVersion> {
           ),
         ),
         IconButton(
+          splashRadius: 20,
           onPressed: () {
             LaunchUrlUtil.launch(
                 context: context,

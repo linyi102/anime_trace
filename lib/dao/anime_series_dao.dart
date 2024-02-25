@@ -82,6 +82,14 @@ class AnimeSeriesDao {
       }
     }
 
+    animes.sort(
+      (a, b) {
+        // 没有首播时间时，排序到最后面
+        if (a.premiereTime.isEmpty || b.premiereTime.isEmpty) return -1;
+        // 首播时间升序排序
+        return a.premiereTime.compareTo(b.premiereTime);
+      },
+    );
     return animes;
   }
 

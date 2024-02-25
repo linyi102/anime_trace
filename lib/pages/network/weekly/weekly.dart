@@ -7,11 +7,7 @@ import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly_bar.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly_controller.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
-import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
-import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -30,7 +26,11 @@ class _WeeklyPageState extends State<WeeklyPage> {
   final weeklyController = Get.put(WeeklyController());
   int get selectedWeekdayIdx => weeklyController.selectedWeekday - 1;
 
-  final List<Climb> usableClimbs = [ClimbYhdm(), ClimbQdm(), ClimbQuqi()];
+  final List<ClimbWebsite> usableWebsites = [
+    yhdmClimbWebsite,
+    quClimbWebsite,
+    quqiClimbWebsite
+  ];
   late ClimbWebsite curWebsite;
 
   late bool loading;
@@ -47,8 +47,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
     pageController = PageController(initialPage: selectedWeekdayIdx);
 
     // 默认为可用列表中的第一个，然后从所有搜索源中找到对应的下标
-    int defaultIdx = climbWebsites.indexWhere((element) =>
-        element.climb.runtimeType == usableClimbs.first.runtimeType);
+    int defaultIdx =
+        climbWebsites.indexWhere((element) => element == usableWebsites.first);
     int websiteIdx =
         SPUtil.getInt(selectedWeeklyTableSourceIdx, defaultValue: defaultIdx);
     if (websiteIdx > climbWebsites.length) {
@@ -239,23 +239,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
         showDialog(
           context: context,
           builder: (context) => SimpleDialog(
-            children: climbWebsites.map((e) {
-              if (e.discard) return Container();
-
-              // 如果该搜索源e的climb工具在usableClimbs中，则显示可用
-              bool usable = usableClimbs.indexWhere(
-                    (element) => element.runtimeType == e.climb.runtimeType,
-                  ) >=
-                  0;
+            children: usableWebsites.map((e) {
               return ListTile(
-                title: Text(
-                  e.name,
-                  style: usable ? null : const TextStyle(color: Colors.grey),
-                ),
+                title: Text(e.name),
                 leading: WebSiteLogo(url: e.iconUrl, size: 25),
                 trailing:
                     e.name == curWebsite.name ? const Icon(Icons.check) : null,
-                enabled: usable,
                 onTap: () {
                   // 记录
                   curWebsite = e;

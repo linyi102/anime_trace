@@ -32,7 +32,7 @@ class ToastUtil {
     );
   }
 
-  static showLoading({
+  static void Function() showLoading({
     String msg = "加载中",
     bool clickClose = true,
     Future<dynamic> Function()? task,

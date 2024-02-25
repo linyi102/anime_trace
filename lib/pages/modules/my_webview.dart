@@ -3,8 +3,7 @@ import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-/// 弃用
-@Deprecated("推荐使用launchUrl，而不是WebView，因为太占存储空间了")
+@Deprecated("WebView占用手机存储空间太高，推荐使用launchUrl")
 class MyWebView extends StatefulWidget {
   final String url;
   final String title;
@@ -15,6 +14,7 @@ class MyWebView extends StatefulWidget {
   State<MyWebView> createState() => _MyWebViewState();
 }
 
+// ignore: deprecated_member_use_from_same_package
 class _MyWebViewState extends State<MyWebView> {
   @override
   Widget build(BuildContext context) {

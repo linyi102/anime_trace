@@ -5,6 +5,7 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 
 dialogSelectChecklist(
   setState,
@@ -76,7 +77,7 @@ dialogSelectChecklist(
     );
   }
 
-  showModalBottomSheet(
+  showCommonModalBottomSheet(
     context: context,
     builder: (context) => Scaffold(
       appBar: AppBar(

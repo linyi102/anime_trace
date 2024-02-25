@@ -29,6 +29,14 @@ class Assets {
   /// assets/icons/github.svg
   static const String iconsGithub = "assets/icons/github.svg";
 
+  /// Assets for iconsInfiniCloud
+  /// assets/icons/infini_cloud.svg
+  static const String iconsInfiniCloud = "assets/icons/infini_cloud.svg";
+
+  /// Assets for iconsJianguoyun
+  /// assets/icons/jianguoyun.png
+  static const String iconsJianguoyun = "assets/icons/jianguoyun.png";
+
   /// Assets for imagesDefaultAnimeCover
   /// assets/images/defaultAnimeCover.png
   static const String imagesDefaultAnimeCover = "assets/images/defaultAnimeCover.png";
@@ -89,3 +97,4 @@ class Assets {
   /// assets/lotties/playing.json
   static const String lottiesPlaying = "assets/lotties/playing.json";
 }
+

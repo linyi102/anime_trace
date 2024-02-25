@@ -121,11 +121,14 @@ class _MainScreenState extends State<MainScreen> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            // color: isSelected ? Theme.of(context).hoverColor : null,
+            // color: isSelected && expandSideBar
+            //     ? Theme.of(context).primaryColor.withOpacity(0.1)
+            //     : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
           child: InkWell(
             borderRadius: BorderRadius.circular(radius),
+            splashFactory: NoSplash.splashFactory,
             onTap: () {
               if (logic.searchTabIdx == i && logic.selectedTabIdx == i) {
                 // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
@@ -142,7 +145,10 @@ class _MainScreenState extends State<MainScreen> {
                       : MainAxisAlignment.center,
                   children: [
                     isSelected
-                        ? mainTab.selectedIcon ?? mainTab.icon
+                        ? IconTheme.merge(
+                            data: IconThemeData(
+                                color: Theme.of(context).primaryColor),
+                            child: mainTab.selectedIcon ?? mainTab.icon)
                         : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
                     if (expandSideBar) const Spacer(flex: 2),
@@ -154,7 +160,10 @@ class _MainScreenState extends State<MainScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontWeight: isSelected ? FontWeight.w600 : null),
+                            color: isSelected
+                                ? Theme.of(context).primaryColor
+                                : null,
+                          ),
                         ),
                       ),
                   ]),

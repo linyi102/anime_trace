@@ -43,7 +43,6 @@ class _RBRPageState extends State<RBRPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("还原前记录 (${files.length})"),
-        automaticallyImplyLeading: false,
       ),
       body: FadeAnimatedSwitcher(
         loadOk: loadOk,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -29,7 +30,10 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: tabStr.length, vsync: this);
+    tabController = TabController(
+        length: tabStr.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
   }
 
   @override

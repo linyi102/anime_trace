@@ -53,6 +53,17 @@ class CommonTextFormField extends StatelessWidget {
                         labelText: isRequired ? labelText : '$labelText (选填)',
                         suffix: suffix,
                         suffixIcon: suffixIcon,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color:
+                                  Theme.of(context).hintColor.withOpacity(0.2)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                 validator: validator,
                 inputFormatters: inputFormatters,

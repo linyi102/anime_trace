@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -66,13 +67,13 @@ class _NoteImageHorizontalListViewState
         child: InkWell(
           borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              // 点击图片进入图片浏览页面
-              return ImageViewerPage(
+            RouteUtil.toImageViewer(
+              context,
+              ImageViewerPage(
                 relativeLocalImages: widget.note.relativeLocalImages,
                 initialIndex: imgIdx,
-              );
-            }));
+              ),
+            );
           },
           child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),

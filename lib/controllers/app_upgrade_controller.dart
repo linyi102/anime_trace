@@ -22,12 +22,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:version/version.dart';
 
-/// App升级
-/// DONE：
-///   检测版本、自动下载、查看下载进度、取消下载、下载失败提示蓝奏云下载
-///   Android自动安装、Android版本为最新版本时自动删除apk
-/// TODO：
-///   断点续传、md5校验、Windows自动安装
 class AppUpgradeController extends GetxController {
   static AppUpgradeController get to => Get.find();
 
@@ -512,7 +506,7 @@ class AppDownloadProgressBar extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: PercentBar(controller.downloadPercent),
+              child: PercentBar(percent: controller.downloadPercent),
             ),
             Text(
               "${FileUtil.getReadableFileSize(controller.count)}/${FileUtil.getReadableFileSize(controller.total)}",

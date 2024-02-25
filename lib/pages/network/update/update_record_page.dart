@@ -8,12 +8,12 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
+import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -269,17 +269,5 @@ class UpdateRecordPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // ignore: unused_element
-  double _getUpdatePercent(int updateOkCnt, int needUpdateCnt) {
-    if (needUpdateCnt == 0) {
-      return 0;
-    } else if (updateOkCnt > needUpdateCnt) {
-      Log.info("error: updateOkCnt=$updateOkCnt, needUpdateCnt=$needUpdateCnt");
-      return 1;
-    } else {
-      return updateOkCnt / needUpdateCnt;
-    }
   }
 }

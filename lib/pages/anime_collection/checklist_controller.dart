@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
@@ -71,10 +72,10 @@ class ChecklistController extends GetxController
     tabController?.removeListener(_tabIdxlistener);
     tabController?.dispose();
     tabController = TabController(
-      initialIndex: tabIdx,
-      length: tags.length,
-      vsync: this,
-    );
+        initialIndex: tabIdx,
+        length: tags.length,
+        vsync: this,
+        animationDuration: PlatformUtil.tabControllerAnimationDuration);
     // 添加监听器，记录最后一次的topTab的index
     tabController!.addListener(_tabIdxlistener);
 

@@ -4,6 +4,8 @@ import 'package:flutter_test_future/components/dialog/dialog_select_play_status.
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/pages/common/category_intro_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -173,8 +175,18 @@ class AnimePropertiesPage extends StatelessWidget {
     return showDialog(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text("类别"),
-        children: ['未知', 'TV', 'WEB', '剧场版', 'OVA', "OAD", "BD"]
+        title: Row(
+          children: [
+            const Text("类别"),
+            const Spacer(),
+            IconButton(
+                onPressed: () {
+                  RouteUtil.materialTo(context, const CategoryIntroPage());
+                },
+                icon: const Icon(Icons.help_outline))
+          ],
+        ),
+        children: ['未知', 'TV', 'WEB', '剧场版', 'OVA', "OAD"]
             .map((e) => RadioListTile(
                   title: Text(e),
                   value: e,

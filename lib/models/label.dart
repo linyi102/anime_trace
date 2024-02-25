@@ -1,3 +1,5 @@
+import 'package:flutter_test_future/utils/regexp.dart';
+
 class Label {
   int id;
   String name;
@@ -18,6 +20,19 @@ class Label {
 
   bool get isNone => id == -1 && name.isEmpty;
   bool get isValid => !isNone;
+
+  String? get emoji => getEmoji(name);
+
+  String? get nameWithoutEmoji => getNameWithoutEmoji(name);
+
+  static String? getEmoji(String name) {
+    return RegexpUtil.extractFirstEmoji(name);
+  }
+
+  static String? getNameWithoutEmoji(String name) {
+    final emoji = getEmoji(name);
+    return emoji == null ? name : name.replaceFirst(emoji, '').trim();
+  }
 
   @override
   String toString() {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 @Deprecated("导致进入和退出页面时重复多次build")
-class FadeRoute extends PageRoute {
+class FadeRoute<T extends Object?> extends PageRoute<T> {
   FadeRoute({
     required this.builder,
     this.transitionDuration = const Duration(milliseconds: 200),

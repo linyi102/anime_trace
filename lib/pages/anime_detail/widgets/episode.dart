@@ -10,6 +10,7 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -117,7 +118,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         children: [
           InkWell(
             onTap: () {
-              showModalBottomSheet(
+              showCommonModalBottomSheet(
                 context: context,
                 builder: (context) => Scaffold(
                   appBar: AppBar(
@@ -272,35 +273,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     return startEpisodeNumber.toString().padLeft(2, '0') +
         "-" +
         endEpisodeNumber.toString().padLeft(2, '0');
-  }
-
-  _buildEpisodeRangeChips(BuildContext dialogContext) {
-    List<Widget> chips = [];
-    for (var startEpisodeNumber = 1;
-        startEpisodeNumber <= _anime.animeEpisodeCnt;
-        startEpisodeNumber += widget.animeController.episodeRangeSize) {
-      chips.add(GestureDetector(
-        onTap: () {
-          widget.animeController.currentStartEpisodeNumber = startEpisodeNumber;
-          SPUtil.setInt("${_anime.animeId}-currentStartEpisodeNumber",
-              widget.animeController.currentStartEpisodeNumber);
-          Navigator.pop(dialogContext);
-          // 获取集数据
-          widget.animeController.loadEpisode();
-        },
-        child: Chip(
-          label: Text(
-            _getEpisodeRangeStr((startEpisodeNumber)),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          // backgroundColor: widget.animeController.currentStartEpisodeNumber ==
-          //         startEpisodeNumber
-          //     ? Colors.grey
-          //     : null,
-        ),
-      ));
-    }
-    return chips;
   }
 
   // 如果设置了未完成的靠前，则完成某集后移到最后面

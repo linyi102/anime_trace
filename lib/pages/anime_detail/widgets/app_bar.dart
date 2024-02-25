@@ -13,6 +13,7 @@ import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.
 import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -61,7 +62,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               children: [
                 _buildBg(),
                 _buildGradient(),
-                // _buildCoverAndInfo(),
+                // buildCoverAndInfo(),
                 _buildGestureDetector(),
               ],
             ),
@@ -248,7 +249,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                         ).then((value) {
                           // 从数据库中获取迁移后的动漫
                           widget.animeController.loadAnime(_anime);
-                          // TODO 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
+                          // NOTE 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
                           // widget.animeController.loadEpisode();
                         });
                       },
@@ -314,7 +315,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   // 弹出底部弹出菜单，用于外观设置
   _showLayoutBottomSheet() {
-    showModalBottomSheet(
+    showCommonModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
@@ -429,7 +430,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         ));
   }
 
-  _buildCoverAndInfo() {
+  buildCoverAndInfo() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 0),
       child: Column(

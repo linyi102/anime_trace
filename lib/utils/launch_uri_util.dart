@@ -5,9 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 class LaunchUrlUtil {
   static launch(
       {required BuildContext context,
-      required String uriStr,
+      required String? uriStr,
       bool inApp = false}) async {
-    if (uriStr.isEmpty) {
+    if (uriStr == null || uriStr.isEmpty) {
       ToastUtil.showText("无法访问空链接");
     }
     // else if (inApp && Platform.isAndroid) {

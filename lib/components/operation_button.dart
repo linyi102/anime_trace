@@ -8,6 +8,7 @@ class OperationButton extends StatelessWidget {
       this.horizontal = 30,
       this.height = 65,
       this.fontSize,
+      this.borderRadius,
       super.key});
   final void Function()? onTap;
   final String text;
@@ -15,8 +16,10 @@ class OperationButton extends StatelessWidget {
   final double horizontal;
   final double height;
   final double? fontSize;
+  final BorderRadius? borderRadius;
 
-  get borderRadius => BorderRadius.circular(50);
+  BorderRadius get finalBorderRadius =>
+      borderRadius ?? BorderRadius.circular(99);
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +28,14 @@ class OperationButton extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 6,
         child: Container(
-            margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 10),
+            margin: EdgeInsets.symmetric(horizontal: horizontal, vertical: 12),
             child: Material(
-              borderRadius: borderRadius,
+              borderRadius: finalBorderRadius,
               color: active
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).disabledColor.withOpacity(0.2),
               child: InkWell(
-                  borderRadius: borderRadius,
+                  borderRadius: finalBorderRadius,
                   onTap: onTap,
                   child: Center(
                       child: Text(text,

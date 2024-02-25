@@ -7,11 +7,14 @@ import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
+import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
+import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -98,7 +101,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
               children: [
                 _buildPhotoViewGallery(),
                 // 都叠放在图片上面，否则无法显示
-                _buildStackAppBar(context),
+                if (!fullScreen) _buildStackAppBar(context),
                 // 没有全屏时显示预览图片
                 Align(
                   alignment: Alignment.bottomCenter,
@@ -177,7 +180,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         // 返回按钮
         leading: IconButton(
           onPressed: () => _pop(),
-          icon: const Icon(Icons.arrow_back_outlined, color: Colors.white),
+          icon: const Icon(Icons.close, color: Colors.white),
         ),
         centerTitle: true,
         title: imageLocalPaths.length > 1 ? _buildImageProgressText() : null,
@@ -280,36 +283,14 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
   List<Widget> _buildActions() {
     return [
-      PopupMenuButton(
-        position: PopupMenuPosition.under,
-        icon: const Icon(Icons.more_vert, color: Colors.white),
-        itemBuilder: (BuildContext context) {
-          return [
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: Text("${fullScreen ? "开启" : "关闭"}图片预览"),
-                minLeadingWidth: 0,
-                onTap: () {
-                  Navigator.pop(context);
-                  _turnFullScreen();
-                },
-              ),
-            ),
-            PopupMenuItem(
-              padding: const EdgeInsets.all(0),
-              child: ListTile(
-                title: const Text("查看属性"),
-                minLeadingWidth: 0,
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDialogAboutImageAttributes();
-                },
-              ),
-            ),
-          ];
-        },
-      ),
+      IconButton(
+          onPressed: () {
+            _showDialogAboutImageAttributes();
+          },
+          icon: const Icon(
+            Icons.info_outline,
+            color: Colors.white,
+          ))
     ];
   }
 
@@ -317,36 +298,34 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     File file = File(ImageUtil.getAbsoluteNoteImagePath(
         widget.relativeLocalImages[currentIndex].path));
 
-    return showDialog(
+    return showCommonModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (dialogContext) {
-          return AlertDialog(
-            title: const Text("图片信息"),
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SettingTitle(title: '信息'),
+                ListTile(
+                  title: const Text("完全路径"),
+                  subtitle: Text(imageLocalPaths[currentIndex]),
+                  onTap: () =>
+                      CommonUtil.copyContent(imageLocalPaths[currentIndex]),
+                ),
+                ListTile(
+                  title: const Text("相对路径"),
+                  subtitle: Text(widget.relativeLocalImages[currentIndex].path),
+                  onTap: () => CommonUtil.copyContent(
+                      widget.relativeLocalImages[currentIndex].path),
+                ),
+                if (file.existsSync())
                   ListTile(
-                      contentPadding: EdgeInsetsDirectional.zero,
-                      title: const Text("完全路径"),
-                      subtitle: SelectableText(
-                        imageLocalPaths[currentIndex],
-                      )),
-                  ListTile(
-                      contentPadding: EdgeInsetsDirectional.zero,
-                      title: const Text("相对路径"),
-                      subtitle: SelectableText(
-                        widget.relativeLocalImages[currentIndex].path,
-                      )),
-                  if (file.existsSync())
-                    ListTile(
-                        contentPadding: EdgeInsetsDirectional.zero,
-                        title: const Text("图片大小"),
-                        subtitle: Text(
-                          FileUtil.getReadableFileSize(file.lengthSync()),
-                        )),
-                ],
-              ),
+                      title: const Text("图片大小"),
+                      subtitle: Text(
+                          FileUtil.getReadableFileSize(file.lengthSync()))),
+              ],
             ),
           );
         });
