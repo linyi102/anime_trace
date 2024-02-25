@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
@@ -135,7 +136,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                 ),
                 SwitchListTile(
                   title: const Text("下拉还原"),
-                  subtitle: const Text("动漫收藏页下拉时，尝试还原最新数据"),
+                  subtitle: const Text("动漫收藏页下拉时，会尝试还原最新数据"),
                   value: SPUtil.getBool(
                       pullDownRestoreLatestBackupInChecklistPage),
                   onChanged: (value) {
@@ -147,6 +148,21 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                     ChecklistController.to.update();
                   },
                 ),
+                if (Platform.isWindows)
+                  SwitchListTile(
+                    title: const Text("快捷键还原"),
+                    subtitle: const Text("动漫收藏页中按下 Ctrl+R 时，会尝试还原最新数据"),
+                    value: Config.enableRestoreLatestHotkey,
+                    onChanged: (value) {
+                      Config.toggleEnableRestoreLatestHotkey(value);
+                      setState(() {});
+                      if (value) {
+                        ChecklistController.to.tryRegisterRestoreLatestHotkey();
+                      } else {
+                        ChecklistController.to.unregisterRestoreLatestHotkey();
+                      }
+                    },
+                  ),
               ],
             ),
           const SizedBox(height: 50),

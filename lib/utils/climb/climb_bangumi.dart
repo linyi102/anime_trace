@@ -41,7 +41,7 @@ class ClimbBangumi with Climb {
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl +
-        "/subject_search/$keyword?cat=${SPKey.getSelectedBangumiSearchCategoryKey()}";
+        "/subject_search/$keyword?cat=${Config.selectedBangumiSearchCategoryKey}";
     List<Anime> climbAnimes = [];
 
     var document = await dioGetAndParse(url);

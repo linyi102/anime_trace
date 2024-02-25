@@ -14,6 +14,7 @@ import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:get/get.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:media_kit/media_kit.dart';
@@ -55,6 +56,8 @@ class Global {
     _handleWindowsManager();
     // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
     HttpOverrides.global = MyHttpOverrides();
+    // 热键
+    await hotKeyManager.unregisterAll();
   }
 
   static _putGetController() async {

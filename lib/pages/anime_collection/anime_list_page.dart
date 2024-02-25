@@ -59,6 +59,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
   void initState() {
     super.initState();
     checklistController.loadData();
+    checklistController.tryRegisterRestoreLatestHotkey();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    checklistController.unregisterRestoreLatestHotkey();
   }
 
   @override
