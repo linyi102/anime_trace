@@ -57,7 +57,7 @@ class Global {
     // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
     HttpOverrides.global = MyHttpOverrides();
     // 热键
-    await hotKeyManager.unregisterAll();
+    if (Platform.isWindows) await hotKeyManager.unregisterAll();
   }
 
   static _putGetController() async {
