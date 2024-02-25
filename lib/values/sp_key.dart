@@ -38,7 +38,7 @@ class SPKey {
       "selectedBangumiSearchCategoryKey";
 
   // 开启热键恢复最新备份文件
-  static get enableHotkeyToRestore => "enableHotkeyToRestore";
+  static get enableRestoreLatestHotkey => "enableRestoreLatestHotkey";
 }
 
 class Config {
@@ -50,10 +50,10 @@ class Config {
     SPUtil.setString(SPKey.selectedBangumiSearchCategoryKey, value);
   }
 
-  static bool get enableHotkeyToRestore =>
-      SPUtil.getBool(SPKey.enableHotkeyToRestore);
+  static bool get enableRestoreLatestHotkey =>
+      SPUtil.getBool(SPKey.enableRestoreLatestHotkey);
 
-  static void toggleEnableHotkeyToRestore(bool value) {
-    SPUtil.setBool(SPKey.enableHotkeyToRestore, value);
+  static void toggleEnableRestoreLatestHotkey(bool value) {
+    SPUtil.setBool(SPKey.enableRestoreLatestHotkey, value);
   }
 }

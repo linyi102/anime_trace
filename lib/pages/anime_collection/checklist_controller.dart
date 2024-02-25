@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 class ChecklistController extends GetxController
     with GetTickerProviderStateMixin {
@@ -134,5 +139,29 @@ class ChecklistController extends GetxController
       if (i + 1 < tags.length) res += " ";
     }
     return res;
+  }
+
+  /// 恢复最新备份热键 ///
+  final HotKey restoreLatestHotKey = HotKey(
+    KeyCode.keyR,
+    modifiers: [KeyModifier.control],
+    scope: HotKeyScope.inapp,
+  );
+
+  bool hasRegisteredRestoreLatestHotkey = false;
+
+  tryRegisterRestoreLatestHotkey() {
+    if (Platform.isWindows && Config.enableRestoreLatestHotkey) {
+      hotKeyManager.register(restoreLatestHotKey, keyDownHandler: (hotKey) {
+        BackupService.to.tryRestoreRemoteFile();
+      });
+      hasRegisteredRestoreLatestHotkey = true;
+    }
+  }
+
+  unregisterRestoreLatestHotkey() {
+    if (hasRegisteredRestoreLatestHotkey) {
+      hotKeyManager.unregister(restoreLatestHotKey);
+    }
   }
 }
