@@ -18,7 +18,6 @@ import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class UpdateRecordPage extends StatelessWidget {
   UpdateRecordPage({Key? key}) : super(key: key);
@@ -270,36 +269,5 @@ class UpdateRecordPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  CircularPercentIndicator _buildUpdatePercentIndicator(
-      BuildContext context, int updateOkCnt, int needUpdateCnt) {
-    return CircularPercentIndicator(
-      radius: 10,
-      lineWidth: 3,
-      percent: updateOkCnt / needUpdateCnt,
-      animation: true,
-      animateFromLastPercent: true,
-      progressColor: Theme.of(context).primaryColor,
-      backgroundColor: Theme.of(context).disabledColor.withOpacity(0.1),
-    );
-  }
-
-  void _toNeedUpdateAnimeListPage(context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return const NeedUpdateAnimeList();
-    }));
-  }
-
-  // ignore: unused_element
-  double _getUpdatePercent(int updateOkCnt, int needUpdateCnt) {
-    if (needUpdateCnt == 0) {
-      return 0;
-    } else if (updateOkCnt > needUpdateCnt) {
-      Log.info("error: updateOkCnt=$updateOkCnt, needUpdateCnt=$needUpdateCnt");
-      return 1;
-    } else {
-      return updateOkCnt / needUpdateCnt;
-    }
   }
 }

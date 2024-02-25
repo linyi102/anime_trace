@@ -46,7 +46,7 @@ class _HistoryPageState extends State<HistoryPage> {
         title: const Text("历史"),
         actions: [
           _buildCupertinoViewSwitch(),
-          // _buildMaterialViewSwitch(),
+          // buildMaterialViewSwitch(),
         ],
       ),
       body: CommonScaffoldBody(
@@ -74,7 +74,7 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  _buildMaterialViewSwitch() {
+  buildMaterialViewSwitch() {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(

@@ -18,10 +18,7 @@ class SettingCard extends StatelessWidget {
 }
 
 class _SettingTitle extends StatelessWidget {
-  const _SettingTitle({
-    super.key,
-    required this.title,
-  });
+  const _SettingTitle({required this.title});
 
   final String title;
 

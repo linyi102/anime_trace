@@ -124,15 +124,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         });
   }
 
-  // 显示信息按钮，点击后进入动漫属性信息页
-  _buildInfoIcon() {
-    return _buildIconTextButton(
-      iconData: MingCuteIcons.mgc_information_line,
-      text: '信息',
-      onTap: _toPropertiesPage,
-    );
-  }
-
   // 显示评价按钮，点击后进入评价列表页
   _buildRateIcon() {
     return GetBuilder<AnimeController>(

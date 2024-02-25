@@ -275,35 +275,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         endEpisodeNumber.toString().padLeft(2, '0');
   }
 
-  _buildEpisodeRangeChips(BuildContext dialogContext) {
-    List<Widget> chips = [];
-    for (var startEpisodeNumber = 1;
-        startEpisodeNumber <= _anime.animeEpisodeCnt;
-        startEpisodeNumber += widget.animeController.episodeRangeSize) {
-      chips.add(GestureDetector(
-        onTap: () {
-          widget.animeController.currentStartEpisodeNumber = startEpisodeNumber;
-          SPUtil.setInt("${_anime.animeId}-currentStartEpisodeNumber",
-              widget.animeController.currentStartEpisodeNumber);
-          Navigator.pop(dialogContext);
-          // 获取集数据
-          widget.animeController.loadEpisode();
-        },
-        child: Chip(
-          label: Text(
-            _getEpisodeRangeStr((startEpisodeNumber)),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          // backgroundColor: widget.animeController.currentStartEpisodeNumber ==
-          //         startEpisodeNumber
-          //     ? Colors.grey
-          //     : null,
-        ),
-      ));
-    }
-    return chips;
-  }
-
   // 如果设置了未完成的靠前，则完成某集后移到最后面
   // 如果取消了日期，还需要移到最前面。好麻烦...还得插入到合适的位置
   // 不改变位置的好处：误点击完成了，不用翻到最下面取消

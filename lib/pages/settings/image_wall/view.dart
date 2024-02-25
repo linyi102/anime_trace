@@ -91,7 +91,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
           body: Stack(
             children: [
               _buildGallery(),
-              // _buildSelectGroupCntContext(),
+              // buildSelectGroupCntContext(),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _buildAppBar(),
@@ -103,8 +103,8 @@ class _ImageWallPageState extends State<ImageWallPage> {
     );
   }
 
-  // TODO 需要处理选择后、或点击其他区域后隐藏
-  _buildSelectGroupCntContext() {
+  // 需要处理选择后、或点击其他区域后隐藏
+  buildSelectGroupCntContext() {
     return Positioned(
         right: 40,
         bottom: 60,
