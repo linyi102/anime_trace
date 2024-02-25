@@ -37,8 +37,23 @@ class SPKey {
   static get selectedBangumiSearchCategoryKey =>
       "selectedBangumiSearchCategoryKey";
 
-  static String getSelectedBangumiSearchCategoryKey() {
-    return SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,
-        defaultValue: 'all');
+  // 开启热键恢复最新备份文件
+  static get enableHotkeyToRestore => "enableHotkeyToRestore";
+}
+
+class Config {
+  static String get selectedBangumiSearchCategoryKey =>
+      SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,
+          defaultValue: 'all');
+
+  static void setSelectedBangumiSearchCategoryKey(String value) {
+    SPUtil.setString(SPKey.selectedBangumiSearchCategoryKey, value);
+  }
+
+  static bool get enableHotkeyToRestore =>
+      SPUtil.getBool(SPKey.enableHotkeyToRestore);
+
+  static void toggleEnableHotkeyToRestore(bool value) {
+    SPUtil.setBool(SPKey.enableHotkeyToRestore, value);
   }
 }

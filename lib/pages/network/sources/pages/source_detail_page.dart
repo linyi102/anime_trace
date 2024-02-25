@@ -200,7 +200,7 @@ class _SourceDetailState extends State<SourceDetail> {
                   title: const Text('搜索类型'),
                   subtitle: Text(
                     BangumiSearchCategory.getCategoryByKey(
-                                SPKey.getSelectedBangumiSearchCategoryKey())
+                                Config.selectedBangumiSearchCategoryKey)
                             ?.label ??
                         '',
                   ),
@@ -248,7 +248,7 @@ class _SourceDetailState extends State<SourceDetail> {
   }
 
   void _showDialogSelectBangumiCategory() {
-    String categoryKey = SPKey.getSelectedBangumiSearchCategoryKey();
+    String categoryKey = Config.selectedBangumiSearchCategoryKey;
 
     showDialog(
       context: context,
@@ -260,8 +260,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 groupValue: categoryKey,
                 value: e.key,
                 onChanged: (value) {
-                  SPUtil.setString(
-                      SPKey.selectedBangumiSearchCategoryKey, e.key);
+                  Config.setSelectedBangumiSearchCategoryKey(e.key);
                   Navigator.pop(context);
                   setState(() {});
                 }))
