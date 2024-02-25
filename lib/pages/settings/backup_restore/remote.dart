@@ -109,6 +109,21 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
           ListTile(
             title: const Text("还原备份"),
             subtitle: const Text("选择备份文件进行还原"),
+            contentPadding: EdgeInsets.only(
+                left: Theme.of(context)
+                        .listTileTheme
+                        .contentPadding
+                        ?.horizontal ??
+                    16,
+                right: 0),
+            trailing: ElevatedButton(
+              onPressed: () {},
+              child: const Text('还原最新数据 (Ctrl + R)'),
+              style: const ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.horizontal(left: Radius.circular(99))))),
+            ),
             onTap: () async {
               if (isOffline) {
                 ToastUtil.showText("请先配置帐号，再进行还原");
