@@ -65,15 +65,18 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
           itemBuilder: (context, animeIndex) {
             Anime anime = widget.animes[animeIndex];
 
-            return Column(
-              children: [
-                AnimeGridCover(
-                  anime,
-                  coverWidth: coverWidth,
-                  onPressed: () => _onTapAnime(anime, animeIndex),
-                ),
-                const Spacer(),
-              ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Column(
+                children: [
+                  AnimeGridCover(
+                    anime,
+                    coverWidth: coverWidth,
+                    onPressed: () => _onTapAnime(anime, animeIndex),
+                  ),
+                  const Spacer(),
+                ],
+              ),
             );
           }),
     );
