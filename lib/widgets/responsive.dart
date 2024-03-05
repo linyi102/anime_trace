@@ -17,15 +17,13 @@ class Responsive extends StatelessWidget {
     this.tablet,
     required this.desktop,
     this.responsiveWidthSource = ResponsiveWidthSource.mediaQuery,
+    this.mobileMaxWidth = 600,
   }) : super(key: key);
 
-  static get _mobileMaxWidth => 600;
+  final int mobileMaxWidth;
   static get _tabletMaxWidth => 850;
 
   // 获取平台，用于显示或隐藏某些组件
-  static bool isMobile(BuildContext context) =>
-      MediaQuery.of(context).size.width <= _mobileMaxWidth;
-
   static bool isTablet(BuildContext context) =>
       600 <= MediaQuery.of(context).size.width &&
       MediaQuery.of(context).size.width <= _tabletMaxWidth;
@@ -53,7 +51,7 @@ class Responsive extends StatelessWidget {
 
         if (width > _tabletMaxWidth) {
           return desktop;
-        } else if (width > _mobileMaxWidth) {
+        } else if (width > mobileMaxWidth) {
           return tablet ?? desktop;
         } else {
           return mobile;
@@ -66,7 +64,7 @@ class Responsive extends StatelessWidget {
     final Size _size = MediaQuery.of(context).size;
     if (_size.width > _tabletMaxWidth) {
       return desktop;
-    } else if (_size.width > _mobileMaxWidth) {
+    } else if (_size.width > mobileMaxWidth) {
       return tablet ?? desktop;
     } else {
       return mobile;

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
@@ -8,6 +6,7 @@ import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -24,7 +23,6 @@ class _MainScreenState extends State<MainScreen> {
   final logic = Get.put(MainScreenLogic());
   int _clickBackCnt = 0;
   bool get enableAnimation => false;
-  bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
 
@@ -34,12 +32,12 @@ class _MainScreenState extends State<MainScreen> {
       onWillPop: clickTwiceToExitApp,
       child: GetBuilder(
         init: logic,
-        builder: (_) => alwaysPortrait
-            ? _buildPortraitScreen()
-            : Platform.isAndroid &&
-                    MediaQuery.of(context).orientation == Orientation.portrait
-                ? _buildPortraitScreen()
-                : _buildLandscapeScreen(),
+        builder: (_) => Responsive(
+          mobileMaxWidth: 500,
+          mobile: _buildPortraitScreen(),
+          tablet: _buildLandscapeScreen(),
+          desktop: _buildLandscapeScreen(),
+        ),
       ),
     );
   }
@@ -151,8 +149,8 @@ class _MainScreenState extends State<MainScreen> {
                             child: mainTab.selectedIcon ?? mainTab.icon)
                         : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
-                    if (expandSideBar) const Spacer(flex: 2),
-                    if (expandSideBar)
+                    if (expandSideBar) ...[
+                      const Spacer(flex: 2),
                       Expanded(
                         flex: 4,
                         child: Text(
@@ -165,7 +163,8 @@ class _MainScreenState extends State<MainScreen> {
                                 : null,
                           ),
                         ),
-                      ),
+                      )
+                    ],
                   ]),
             ),
           ),
