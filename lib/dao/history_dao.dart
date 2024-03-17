@@ -129,7 +129,8 @@ class HistoryDao {
   static Future<List<Anime>> recentWatchedAnimes({int day = 10}) async {
     List<Anime> animes = [];
     final rows = await SqliteUtil.database.rawQuery('''
-      select distinct anime_id from history
+      select anime_id, max(date) from history
+      group by anime_id
       order by date desc limit $day
     ''');
     for (final row in rows) {
