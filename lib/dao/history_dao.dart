@@ -124,4 +124,18 @@ class HistoryDao {
       'date': col['date'],
     };
   }
+
+  /// 最近观看的动漫
+  static Future<List<Anime>> recentWatchedAnimes({int day = 10}) async {
+    List<Anime> animes = [];
+    final rows = await SqliteUtil.database.rawQuery('''
+      select distinct anime_id from history
+      order by date desc limit $day
+    ''');
+    for (final row in rows) {
+      final anime = await SqliteUtil.getAnimeByAnimeId(row['anime_id'] as int);
+      if (anime.isCollected()) animes.add(anime);
+    }
+    return animes;
+  }
 }

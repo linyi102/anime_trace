@@ -736,10 +736,10 @@ packages:
     dependency: "direct main"
     description:
       name: scrollview_observer
-      sha256: "72b806ea64d446efffac1000c0e0c0b03b06ce019b0fcc7d24d3b1f86e93fb0d"
+      sha256: "9fde897d25f05f8f8295807eae96ac337aae70d6860714ca8702a430d735ac4a"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.18.2"
+    version: "1.19.1"
   shared_preferences:
     dependency: "direct main"
     description:
