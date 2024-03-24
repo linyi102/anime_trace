@@ -66,7 +66,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
             Anime anime = widget.animes[animeIndex];
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 1),
               child: Column(
                 children: [
                   AnimeGridCover(
