@@ -40,8 +40,8 @@ class ClimbCycdm with Climb {
     }
 
     anime.animeCoverUrl = document
-            .getElementsByClassName("detail-pic lazy mask-0")[0]
-            .attributes["data-original"] ??
+            .getElementsByClassName("lazy lazy1 mask-0")[0]
+            .attributes["data-src"] ??
         anime.animeCoverUrl;
     anime.premiereTime = document
         .getElementsByClassName("slide-info-remarks")[1]
@@ -51,9 +51,7 @@ class ClimbCycdm with Climb {
         .getElementsByClassName("slide-info-remarks")[2]
         .children[0]
         .innerHtml;
-    anime.animeDesc = document
-        .getElementsByClassName("check text selected cor3")[0]
-        .innerHtml;
+    anime.animeDesc = document.getElementsByClassName("text cor3")[0].innerHtml;
     if (anime.animeDesc == '暂无简介') anime.animeDesc = '';
 
     var lis = document
@@ -87,7 +85,7 @@ class ClimbCycdm with Climb {
     var coverElements = document.getElementsByClassName("lazy");
 
     for (var element in coverElements) {
-      String? coverUrl = element.attributes["data-original"];
+      String? coverUrl = element.attributes["data-src"];
       if (coverUrl != null) {
         if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
         climbAnimes.add(
