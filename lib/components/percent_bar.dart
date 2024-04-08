@@ -16,7 +16,7 @@ class PercentBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return LinearPercentIndicator(
       padding: padding,
-      percent: percent,
+      percent: percent.clamp(0, 1),
       lineHeight: lineHeight,
       animation: true,
       animateFromLastPercent: percent != 0,
