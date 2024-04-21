@@ -14,19 +14,15 @@ mkdir "$packRootDir"
 
 # Android
 apkOriPath="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
-apkOutputPath1="$packRootDir/漫迹 $androidVersion for Android.apk"
-apkOutputPath2="$packRootDir/manji-$androidVersion-android.apk"
+apkOutputPath="$packRootDir/manji-$androidVersion-android.apk"
 
-cp "$apkOriPath" "$apkOutputPath1"
-cp "$apkOriPath" "$apkOutputPath2"
+cp "$apkOriPath" "$apkOutputPath"
 
 # Windows
 windowsOriDir="build/windows/runner/Release"
 windowsOutputDir="$packRootDir/漫迹 $windowsVerison for Windows"
-windowsOutputZipPath1="$packRootDir/漫迹 $windowsVerison for Windows.zip"
-windowsOutputZipPath2="$packRootDir/manji-$windowsVerison-windows.zip"
+windowsOutputZipPath="$packRootDir/manji-$windowsVerison-windows.zip"
 
 cp -r "$windowsOriDir" "$packRootDir"
 mv "$packRootDir/Release" "$windowsOutputDir"
-7z a -tzip "$windowsOutputZipPath1" "$windowsOutputDir"
-cp "$windowsOutputZipPath1" "$windowsOutputZipPath2"
+7z a -tzip "$windowsOutputZipPath" "$windowsOutputDir"
