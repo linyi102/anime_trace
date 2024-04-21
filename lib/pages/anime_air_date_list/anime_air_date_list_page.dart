@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
+import 'package:flutter_test_future/models/anime_grid_cover_config.dart';
 import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_controller.dart';
 import 'package:get/get.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
@@ -129,6 +130,12 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
         AnimeHorizontalCover(
           animes: airDateItem.animes,
           callback: () async => false,
+          coverConfig: airDateItem.time == controller.recentWatchDate
+              ? AnimeGridCoverConfig.allShow()
+              : AnimeGridCoverConfig.noneShow().copyWith(
+                  showCover: true,
+                  showName: true,
+                ),
         ),
       ],
     );

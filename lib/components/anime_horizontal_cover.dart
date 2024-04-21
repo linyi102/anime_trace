@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dar
 import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_grid_cover_config.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
@@ -14,13 +15,20 @@ class AnimeHorizontalCover extends StatefulWidget {
   final List<Anime> animes;
   final int animeId;
   final Future<bool> Function() callback;
+  final AnimeGridCoverConfig coverConfig;
 
-  const AnimeHorizontalCover(
-      {Key? key,
-      required this.animes,
-      this.animeId = 0,
-      required this.callback})
-      : super(key: key);
+  const AnimeHorizontalCover({
+    Key? key,
+    required this.animes,
+    this.animeId = 0,
+    required this.callback,
+    this.coverConfig = const AnimeGridCoverConfig(
+      showCover: true,
+      showName: true,
+      showProgress: true,
+      showReviewNumber: true,
+    ),
+  }) : super(key: key);
 
   @override
   State<AnimeHorizontalCover> createState() => _AnimeHorizontalCoverState();
@@ -73,6 +81,12 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     anime,
                     coverWidth: coverWidth,
                     onPressed: () => _onTapAnime(anime, animeIndex),
+                    showName: widget.coverConfig.showName,
+                    showProgress: widget.coverConfig.showProgress,
+                    // 无法显示进度条，因此始终设置为false
+                    showProgressBar: false,
+                    showReviewNumber: widget.coverConfig.showReviewNumber,
+                    showSeries: widget.coverConfig.showSeries,
                   ),
                   const Spacer(),
                 ],
