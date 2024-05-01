@@ -41,7 +41,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   final _scrollController = ScrollController();
   final localSearchController = Get.put(LocalSearchController());
 
-  bool autofocus = true;
+  bool autofocus = false;
 
   bool get selectAction => widget.onSelectOk != null;
   List<int> selectedAnimeIds = [];

@@ -44,6 +44,7 @@ class _LocalFilterPageState extends State<LocalFilterPage>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: CommonBottomTabBar(
             isScrollable: true,
             tabController: tabController,
