@@ -40,7 +40,7 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
           icon: Icon(widget.filter.icon, size: 16),
           label: Text(
             selected ? widget.filter.selectedLabel : widget.filter.label,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14, height: 1.1),
           )),
     );
   }

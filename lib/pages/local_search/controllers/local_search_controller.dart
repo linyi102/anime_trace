@@ -43,7 +43,7 @@ class LocalSearchController extends GetxController {
 
   final categoryFilter = LocalSearchFilter(
     label: '类别',
-    icon: Icons.category,
+    icon: Icons.category_rounded,
     filterView: const SelectCategoryView(),
   );
 

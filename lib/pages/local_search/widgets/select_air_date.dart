@@ -30,7 +30,7 @@ class _SelectAirDateViewState extends State<SelectAirDateView> {
             final selectedLabel = () {
               if (year == null && month == null) return null;
               if (year != null && month == null) return '$year';
-              return '$year-$month';
+              return '$year-${month.toString().padLeft(2, '0')}';
             }();
             LocalSearchController.to.setSelectedLabelTitle(
                 LocalSearchController.to.airDateFilter, selectedLabel);
