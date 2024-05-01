@@ -6,7 +6,7 @@ import 'package:flutter_test_future/models/label.dart';
 
 class LocalSelectFilter {
   String? checklist;
-  List<Label> labels;
+  late List<Label> labels;
   int? rate;
   AnimeArea? area;
   AnimeCategory? category;
@@ -15,14 +15,16 @@ class LocalSelectFilter {
   PlayStatus? playStatus;
   LocalSelectFilter({
     this.checklist,
-    this.labels = const [],
+    List<Label>? labels,
     this.rate,
     this.area,
     this.category,
     this.airDateYear,
     this.airDateMonth,
     this.playStatus,
-  });
+  }) {
+    this.labels = labels ?? [];
+  }
 
   LocalSelectFilter copyWith({
     String? checklist,

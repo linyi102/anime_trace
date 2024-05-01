@@ -5,6 +5,7 @@ import 'package:flutter_test_future/pages/local_search/widgets/select_air_date.d
 import 'package:flutter_test_future/pages/local_search/widgets/select_area.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_category.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_checklist.dart';
+import 'package:flutter_test_future/pages/local_search/widgets/select_label.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_play_status.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_rate.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -25,7 +26,7 @@ class LocalSearchController extends GetxController {
   final labelFilter = LocalSearchFilter(
     label: '标签',
     icon: MingCuteIcons.mgc_tag_2_fill,
-    filterView: const SizedBox(),
+    filterView: const SelectLabelView(),
   );
 
   final rateFilter = LocalSearchFilter(

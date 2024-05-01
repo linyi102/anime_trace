@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/local_filter_chip.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/delay_util.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 
@@ -46,10 +41,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   final _scrollController = ScrollController();
   final localSearchController = Get.put(LocalSearchController());
 
-  bool showLabelPage = true;
-  LabelsController labelsController = Get.find();
-  List<Label> selectedLabels = [];
-
   bool autofocus = true;
 
   bool get selectAction => widget.onSelectOk != null;
@@ -68,15 +59,14 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       Log.info("动漫详细页点击了${widget.incomingLabelId}，进入搜索页");
       // 从controller中根据id找到label对象，再添加到选中的labels中
       // 之所以不直接传入label对象，是因为这个对象和controller中的labels里的同id对象不是同一个对象
-      selectedLabels.add(labelsController.labels
-          .singleWhere((element) => element.id == widget.incomingLabelId));
-      _searchAnimesByLabels();
+      // TODO
+      // selectedLabels.add(labelsController.labels
+      //     .singleWhere((element) => element.id == widget.incomingLabelId));
+      // _searchAnimesByLabels();
     }
 
     // 周表中点击某个动漫会进入该搜索页，来查找已收藏的动漫
     if (widget.kw != null) {
-      // 不显示标签
-      showLabelPage = false;
       // 取消输入框聚焦
       autofocus = false;
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
@@ -107,7 +97,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(child: _buildFilterChips()),
-          if (showLabelPage) SliverToBoxAdapter(child: _buildLabelsCard()),
           if (searchOk)
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -204,9 +193,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       onTapClear: () {
         _inputController.clear();
         _lastInputText = "";
-        // 清空搜索的动漫，并显示标签页
         _animes.clear();
-        showLabelPage = true;
         setState(() {});
       },
       onEditingComplete: () {
@@ -218,18 +205,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       onChanged: (value) {
         Log.info("value=$value");
         if (value.isEmpty) {
-          // 删除了搜索关键字，那么就清空搜索的动漫，展示所有标签
           _animes.clear();
-          showLabelPage = true;
           _lastInputText = "";
           setState(() {});
           return;
         }
-
-        // 按关键字搜索动漫时，不显示label页面，并且清空选中的label
-        showLabelPage = false;
-        selectedLabels.clear();
-
         // 延时搜索
         DelayUtil.delaySearch(() {
           _searchDbAnimesByKeyword(value);
@@ -260,53 +240,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         });
   }
 
-  _buildLabelsCard() {
-    return Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text("按标签搜索"),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {
-                    SpProfile.turnEnableMultiLabelQuery();
-                    if (SpProfile.getEnableMultiLabelQuery()) {
-                      // 开启多标签后，不需要清空已选中的标签和搜索结果
-                    } else {
-                      // 关闭多标签后，需要清空已选中的标签，以及搜索结果
-                      selectedLabels.clear();
-                      _animes.clear();
-                    }
-
-                    setState(() {});
-                  },
-                  child: Text(
-                    SpProfile.getEnableMultiLabelQuery() ? "关闭多标签" : "开启多标签",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    selectedLabels.clear();
-                    _animes.clear();
-                    setState(() {});
-                  },
-                  child: Text(
-                    "清空选中",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(height: 5),
-            _buildLabelWrap()
-          ],
-        ));
-  }
-
   // 取消键盘聚焦
   _cancelFocus() {
     FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
@@ -334,59 +267,15 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   }
 
   _searchAnimesByLabels() async {
-    if (selectedLabels.isNotEmpty) {
-      _animes = await AnimeLabelDao.getAnimesByLabelIds(
-          selectedLabels.map((e) => e.id).toList());
-    } else {
-      // 没有标签时不查询数据库，直接清空
-      _animes.clear();
-    }
+    // if (selectedLabels.isNotEmpty) {
+    //   _animes = await AnimeLabelDao.getAnimesByLabelIds(
+    //       selectedLabels.map((e) => e.id).toList());
+    // } else {
+    //   // 没有标签时不查询数据库，直接清空
+    //   _animes.clear();
+    // }
     searchOk = true;
     setState(() {});
-  }
-
-  _buildLabelWrap() {
-    // 使用obx监听，否则labelController懒加载，打开app后进入本地搜索页看不到标签
-    return Obx(() => Wrap(
-          spacing: AppTheme.wrapSacing,
-          runSpacing: AppTheme.wrapRunSpacing,
-          children: labelsController.labels.reversed.map((e) {
-            bool checked = selectedLabels.contains(e);
-
-            return FilterChip(
-              showCheckmark: false,
-              pressElevation: 0,
-              selected: checked,
-              label: Text(e.name),
-              onSelected: (value) {
-                // 点击标签后，取消搜索输入框的聚焦
-                _cancelFocus();
-
-                // 查询数据库
-                if (SpProfile.getEnableMultiLabelQuery()) {
-                  // 多标签查询
-                  if (checked) {
-                    Log.info("移除");
-                    selectedLabels.remove(e);
-                  } else {
-                    selectedLabels.add(e);
-                  }
-                } else {
-                  // 单标签查询，需要先清空选中的标签
-                  selectedLabels.clear();
-                  selectedLabels.add(e);
-                }
-
-                _searchAnimesByLabels();
-              },
-
-              // backgroundColor:checked ? Theme.of(context).
-              // backgroundColor: checked
-              //     ? Theme.of(context).chipTheme.selectedColor
-              //     : Theme.of(context).chipTheme.disabledColor,
-            );
-          }).toList(),
-        ));
   }
 
   _enterAnimeDetail(int index) {
@@ -400,12 +289,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         },
       ),
     ).then((value) async {
-      // 选择的标签不为空时，说明是点击标签后进入的动漫详情页，返回后要重新根据标签查询动漫
-      if (selectedLabels.isNotEmpty) {
-        _searchAnimesByLabels();
-      } else {
-        _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
-      }
+      _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
     });
   }
 }
