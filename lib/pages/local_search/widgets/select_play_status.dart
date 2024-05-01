@@ -30,7 +30,7 @@ class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
                 groupValue: localSelectFilter.playStatus,
                 onChanged: (value) {
                   LocalSearchController.to.setSelectedLabelTitle(
-                      LocalSearchController.to.playStatus, value?.text);
+                      LocalSearchController.to.playStatusFilter, value?.text);
 
                   setState(() {
                     localSelectFilter.playStatus = value;

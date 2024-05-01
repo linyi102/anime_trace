@@ -54,7 +54,7 @@ class _LocalFilterPageState extends State<LocalFilterPage>
           controller: tabController,
           children: [...filters.map((e) => e.filterView)]),
       bottomNavigationBar: SelectViewAction(
-          onReset: LocalSearchController.to.reset,
+          onReset: LocalSearchController.to.resetAll,
           onApply: LocalSearchController.to.search),
     );
   }

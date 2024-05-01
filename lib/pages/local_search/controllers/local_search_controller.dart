@@ -53,7 +53,7 @@ class LocalSearchController extends GetxController {
     filterView: const SelectAirDateView(),
   );
 
-  final playStatus = LocalSearchFilter(
+  final playStatusFilter = LocalSearchFilter(
     label: '播放状态',
     icon: Icons.stacked_bar_chart,
     filterView: const SelectPlayStatusView(),
@@ -66,15 +66,36 @@ class LocalSearchController extends GetxController {
     areaFilter,
     categoryFilter,
     airDateFilter,
-    playStatus,
+    playStatusFilter,
   ];
 
-  void reset() {
+  void resetAll() {
     localSelectFilter = LocalSelectFilter();
     for (final e in filters) {
       e.selectedLabel = '';
     }
     update();
+  }
+
+  void reset(LocalSearchFilter filter) {
+    if (filter == checklistFilter) {
+      localSelectFilter.checklist = null;
+    } else if (filter == labelFilter) {
+      localSelectFilter.labels.clear();
+    } else if (filter == rateFilter) {
+      localSelectFilter.rate = null;
+    } else if (filter == areaFilter) {
+      localSelectFilter.area = null;
+    } else if (filter == categoryFilter) {
+      localSelectFilter.category = null;
+    } else if (filter == airDateFilter) {
+      localSelectFilter.airDateYear = null;
+      localSelectFilter.airDateMonth = null;
+    } else if (filter == playStatusFilter) {
+      localSelectFilter.playStatus = null;
+    }
+    setSelectedLabelTitle(filter, null);
+    search();
   }
 
   search() {
