@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
+import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/settings/label/home.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';

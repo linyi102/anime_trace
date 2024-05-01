@@ -6,6 +6,8 @@ import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/label.dart';
+import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
+import 'package:flutter_test_future/pages/local_search/widgets/local_filter_chip.dart';
 
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
@@ -42,6 +44,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   FocusNode blankFocusNode = FocusNode(); // 空白焦点
 
   final _scrollController = ScrollController();
+  final localSearchController = Get.put(LocalSearchController());
 
   bool showLabelPage = true;
   LabelsController labelsController = Get.find();
@@ -103,10 +106,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           child: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          if (showLabelPage)
-            SliverToBoxAdapter(
-              child: _buildLabelsCard(),
-            ),
+          SliverToBoxAdapter(child: _buildFilterChips()),
+          if (showLabelPage) SliverToBoxAdapter(child: _buildLabelsCard()),
           if (searchOk)
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -128,6 +129,22 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           )
         ],
       )),
+    );
+  }
+
+  SingleChildScrollView _buildFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      child: GetBuilder(
+        init: LocalSearchController.to,
+        builder: (_) => Row(
+          children: [
+            ...localSearchController.filters
+                .map((filter) => LocalFilterChip(filter: filter))
+          ],
+        ),
+      ),
     );
   }
 

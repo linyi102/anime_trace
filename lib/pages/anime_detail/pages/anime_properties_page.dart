@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/models/enum/anime_area.dart';
+import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/common/category_intro_page.dart';
@@ -186,7 +188,8 @@ class AnimePropertiesPage extends StatelessWidget {
                 icon: const Icon(Icons.help_outline))
           ],
         ),
-        children: ['未知', 'TV', 'WEB', '剧场版', 'OVA', "OAD"]
+        children: AnimeCategory.values
+            .map((e) => e.label)
             .map((e) => RadioListTile(
                   title: Text(e),
                   value: e,
@@ -210,7 +213,8 @@ class AnimePropertiesPage extends StatelessWidget {
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text("地区"),
-        children: ['未知', '日本', '中国', '欧美']
+        children: AnimeArea.values
+            .map((e) => e.label)
             .map((e) => RadioListTile(
                   title: Text(e),
                   value: e,

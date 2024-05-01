@@ -4,7 +4,7 @@ import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/play_status.dart';
+import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
