@@ -25,6 +25,7 @@ class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
             final playStatus = PlayStatus.values[index];
             return RadioListTile<PlayStatus>(
                 title: Text(playStatus.text),
+                toggleable: true,
                 value: playStatus,
                 groupValue: localSelectFilter.playStatus,
                 onChanged: (value) {

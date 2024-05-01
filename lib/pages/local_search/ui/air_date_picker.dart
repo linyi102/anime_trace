@@ -3,10 +3,15 @@ import 'package:flutter_test_future/widgets/common_divider.dart';
 
 class AirDatePicker extends StatefulWidget {
   const AirDatePicker(
-      {this.initialYear, this.initialMonth, this.onChanged, super.key});
+      {this.initialYear,
+      this.initialMonth,
+      this.toggleable = false,
+      this.onChanged,
+      super.key});
   final int? initialYear;
   final int? initialMonth;
-  final void Function(int year, int? month)? onChanged;
+  final bool toggleable;
+  final void Function(int? year, int? month)? onChanged;
 
   @override
   State<AirDatePicker> createState() => _AirDatePickerState();
@@ -57,7 +62,13 @@ class _AirDatePickerState extends State<AirDatePicker> {
       margin: const EdgeInsets.symmetric(vertical: 3),
       child: InkWell(
         borderRadius: BorderRadius.circular(99),
-        onTap: () => widget.onChanged?.call(year, null),
+        onTap: () {
+          if (widget.toggleable && selected) {
+            widget.onChanged?.call(null, null);
+          } else {
+            widget.onChanged?.call(year, null);
+          }
+        },
         child: Container(
             decoration: BoxDecoration(
               color: selected ? Theme.of(context).primaryColor : null,
@@ -82,7 +93,13 @@ class _AirDatePickerState extends State<AirDatePicker> {
     return Expanded(
       child: InkWell(
           borderRadius: BorderRadius.circular(99),
-          onTap: () => widget.onChanged?.call(year, month),
+          onTap: () {
+            if (widget.toggleable && selected) {
+              widget.onChanged?.call(null, null);
+            } else {
+              widget.onChanged?.call(year, month);
+            }
+          },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(

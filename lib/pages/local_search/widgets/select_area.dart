@@ -25,6 +25,7 @@ class _SelectAreaViewState extends State<SelectAreaView> {
             final area = AnimeArea.values[index];
             return RadioListTile<AnimeArea>(
                 title: Text(area.label),
+                toggleable: true,
                 value: area,
                 groupValue: localSelectFilter.area,
                 onChanged: (value) {

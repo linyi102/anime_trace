@@ -27,6 +27,7 @@ class _SelectChecklistViewState extends State<SelectChecklistView> {
             final checklist = checklistController.tags[index];
             return RadioListTile(
                 title: Text(checklist),
+                toggleable: true,
                 value: checklist,
                 groupValue: localSelectFilter.checklist,
                 onChanged: (value) {

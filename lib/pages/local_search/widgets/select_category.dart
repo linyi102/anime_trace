@@ -25,6 +25,7 @@ class _SelectCategoryViewState extends State<SelectCategoryView> {
             final category = AnimeCategory.values[index];
             return RadioListTile<AnimeCategory>(
                 title: Text(category.label),
+                toggleable: true,
                 value: category,
                 groupValue: localSelectFilter.category,
                 onChanged: (value) {
