@@ -20,6 +20,7 @@ class _SelectCategoryViewState extends State<SelectCategoryView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: AnimeCategory.values.length,

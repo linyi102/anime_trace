@@ -39,6 +39,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           const SizedBox(height: 5),
           GetBuilder(
             init: widget.localSearchController,
+            tag: widget.localSearchController.tag,
             builder: (_) => _buildLabelWrap(),
           )
         ],

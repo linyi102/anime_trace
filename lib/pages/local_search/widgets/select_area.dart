@@ -20,6 +20,7 @@ class _SelectAreaViewState extends State<SelectAreaView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: AnimeArea.values.length,

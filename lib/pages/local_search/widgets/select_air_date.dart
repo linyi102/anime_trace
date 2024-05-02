@@ -22,6 +22,7 @@ class _SelectAirDateViewState extends State<SelectAirDateView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: AirDatePicker(
           initialYear: localSelectFilter.airDateYear,

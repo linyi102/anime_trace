@@ -20,6 +20,7 @@ class _SelectRateViewState extends State<SelectRateView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: Center(
             child: AnimeRatingBar(

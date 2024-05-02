@@ -20,6 +20,7 @@ class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: PlayStatus.values.length,

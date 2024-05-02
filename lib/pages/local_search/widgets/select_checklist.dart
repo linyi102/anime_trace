@@ -22,6 +22,7 @@ class _SelectChecklistViewState extends State<SelectChecklistView> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: widget.localSearchController,
+      tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: checklistController.tags.length,

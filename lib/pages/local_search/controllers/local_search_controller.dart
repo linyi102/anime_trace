@@ -21,6 +21,9 @@ import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class LocalSearchController extends GetxController {
+  String tag;
+  LocalSearchController(this.tag);
+
   bool searchOk = false;
   List<Anime> animes = [];
   LocalSelectFilter localSelectFilter = LocalSelectFilter();

@@ -36,7 +36,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
   final localSearchControllerTag = DateTime.now().toString();
   late final localSearchController = Get.put<LocalSearchController>(
-    LocalSearchController(),
+    LocalSearchController(localSearchControllerTag),
     tag: localSearchControllerTag,
   );
   bool get searchOk => localSearchController.searchOk;
