@@ -13,8 +13,6 @@ class SelectAirDateView extends StatefulWidget {
 }
 
 class _SelectAirDateViewState extends State<SelectAirDateView> {
-  int curYear = DateTime.now().year;
-  late int yearCount = curYear - 1970 + 1;
   LocalSelectFilter get localSelectFilter =>
       widget.localSearchController.localSelectFilter;
 

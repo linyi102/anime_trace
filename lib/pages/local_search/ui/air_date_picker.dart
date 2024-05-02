@@ -18,8 +18,8 @@ class AirDatePicker extends StatefulWidget {
 }
 
 class _AirDatePickerState extends State<AirDatePicker> {
-  int curYear = DateTime.now().year;
-  late int yearCount = curYear - 1970 + 1;
+  int maxYear = DateTime.now().year + 1;
+  late int yearCount = maxYear - 1970 + 1;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _AirDatePickerState extends State<AirDatePicker> {
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         itemCount: yearCount,
         itemBuilder: (context, index) {
-          final year = curYear - index;
+          final year = maxYear - index;
           return _buildYearAndMonth(year);
         },
         separatorBuilder: (BuildContext context, int index) =>
