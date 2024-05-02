@@ -92,6 +92,7 @@ class LocalSearchController extends GetxController {
     for (final e in filters) {
       e.selectedLabel = '';
     }
+    animes.clear();
     update();
   }
 
