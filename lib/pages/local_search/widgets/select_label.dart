@@ -49,9 +49,6 @@ class _SelectLabelViewState extends State<SelectLabelView> {
   TextButton _buildClearSelectedLabels() {
     return TextButton(
       onPressed: () {
-        localSearchController.localSelectFilter.labels.clear();
-        setState(() {});
-
         widget.localSearchController.setLabels([]);
       },
       child: Text(
@@ -101,21 +98,24 @@ class _SelectLabelViewState extends State<SelectLabelView> {
         ));
   }
 
-  void _onTapLabelChip(bool selected, Label lbael) {
+  void _onTapLabelChip(bool selected, Label label) {
+    final labels = localSearchController.localSelectFilter.labels;
     if (SpProfile.getEnableMultiLabelQuery()) {
       // 多标签查询
       if (selected) {
-        localSearchController.localSelectFilter.labels.remove(lbael);
+        labels.remove(label);
       } else {
-        localSearchController.localSelectFilter.labels.add(lbael);
+        labels.add(label);
       }
     } else {
-      // 单标签查询，需要先清空选中的标签
-      localSearchController.localSelectFilter.labels.clear();
-      localSearchController.localSelectFilter.labels.add(lbael);
+      // 单标签查询
+      if (labels.length == 1 && labels.first == label) {
+        labels.clear();
+      } else {
+        labels.clear();
+        labels.add(label);
+      }
     }
-    setState(() {});
-
     widget.localSearchController
         .setLabels(localSearchController.localSelectFilter.labels);
   }
