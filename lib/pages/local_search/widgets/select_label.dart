@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
 
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -19,8 +18,8 @@ class SelectLabelView extends StatefulWidget {
 class _SelectLabelViewState extends State<SelectLabelView> {
   LabelsController labelsController = Get.find();
 
-  late LocalSelectFilter localSelectFilter =
-      widget.localSearchController.localSelectFilter;
+  late LocalSearchController localSearchController =
+      widget.localSearchController;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
   TextButton _buildClearSelectedLabels() {
     return TextButton(
       onPressed: () {
-        localSelectFilter.labels.clear();
+        localSearchController.localSelectFilter.labels.clear();
         setState(() {});
 
         widget.localSearchController.setLabels([]);
@@ -88,7 +87,8 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           spacing: AppTheme.wrapSacing,
           runSpacing: AppTheme.wrapRunSpacing,
           children: labelsController.labels.reversed.map((label) {
-            bool selected = localSelectFilter.labels.contains(label);
+            bool selected =
+                localSearchController.localSelectFilter.labels.contains(label);
 
             return FilterChip(
               showCheckmark: false,
@@ -105,17 +105,18 @@ class _SelectLabelViewState extends State<SelectLabelView> {
     if (SpProfile.getEnableMultiLabelQuery()) {
       // 多标签查询
       if (selected) {
-        localSelectFilter.labels.remove(lbael);
+        localSearchController.localSelectFilter.labels.remove(lbael);
       } else {
-        localSelectFilter.labels.add(lbael);
+        localSearchController.localSelectFilter.labels.add(lbael);
       }
     } else {
       // 单标签查询，需要先清空选中的标签
-      localSelectFilter.labels.clear();
-      localSelectFilter.labels.add(lbael);
+      localSearchController.localSelectFilter.labels.clear();
+      localSearchController.localSelectFilter.labels.add(lbael);
     }
     setState(() {});
 
-    widget.localSearchController.setLabels(localSelectFilter.labels);
+    widget.localSearchController
+        .setLabels(localSearchController.localSelectFilter.labels);
   }
 }
