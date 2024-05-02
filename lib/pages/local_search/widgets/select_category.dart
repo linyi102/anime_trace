@@ -31,13 +31,12 @@ class _SelectCategoryViewState extends State<SelectCategoryView> {
                 value: category,
                 groupValue: localSelectFilter.category,
                 onChanged: (value) {
-                  widget.localSearchController.setSelectedLabelTitle(
-                      widget.localSearchController.categoryFilter,
-                      value?.label);
-
                   setState(() {
                     localSelectFilter.category = value;
                   });
+                  widget.localSearchController.setSelectedLabelTitle(
+                      widget.localSearchController.categoryFilter,
+                      value?.label);
                 });
           },
         ),

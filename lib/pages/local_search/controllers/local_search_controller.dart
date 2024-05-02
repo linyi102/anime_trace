@@ -110,7 +110,7 @@ class LocalSearchController extends GetxController {
     searchOk = false;
     update();
 
-    animes = await AnimeDao.getAnimesBySearch(localSelectFilter.keyword ?? '');
+    animes = await AnimeDao.complexSearch(localSelectFilter);
     searchOk = true;
     update();
   }
@@ -118,5 +118,6 @@ class LocalSearchController extends GetxController {
   void setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {
     filter.selectedLabel = selectedLabel ?? '';
     update();
+    search();
   }
 }

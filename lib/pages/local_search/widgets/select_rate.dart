@@ -26,12 +26,11 @@ class _SelectRateViewState extends State<SelectRateView> {
           rate: localSelectFilter.rate ?? 0,
           iconSize: 28,
           onRatingUpdate: (value) {
+            localSelectFilter.rate = value.toInt();
+            widget.localSearchController.update();
             widget.localSearchController.setSelectedLabelTitle(
                 widget.localSearchController.rateFilter,
                 value.toInt().toString());
-
-            localSelectFilter.rate = value.toInt();
-            widget.localSearchController.update();
           },
         )),
       ),

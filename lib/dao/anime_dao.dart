@@ -1,6 +1,10 @@
+import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/models/anime_episode_info.dart';
+import 'package:flutter_test_future/models/enum/anime_area.dart';
+import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -220,7 +224,7 @@ class AnimeDao {
     });
   }
 
-  /// 搜索动漫
+  /// 根据关键字搜索动漫
   static Future<List<Anime>> getAnimesBySearch(String keyword) async {
     Log.info("sql: getAnimesBySearch");
     keyword = EscapeUtil.escapeStr(keyword);
@@ -245,11 +249,97 @@ class AnimeDao {
         animeEpisodeCnt: element['anime_episode_cnt'] as int? ?? 0,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        premiereTime: element['premiere_time'] as String? ?? '',
         reviewNumber: reviewNumber,
       );
       res.add(anime);
     }
+    res.sort((a, b) => -a.premiereTime.compareTo(b.premiereTime));
     return res;
+  }
+
+  static Future<List<Anime>> complexSearch(LocalSelectFilter filter) async {
+    List<Anime> result = [];
+
+    final keywordSql = filter.keyword == null || filter.keyword!.isEmpty
+        ? ''
+        // 此处为or，需要添加()来避免优先级错误
+        : '(anime_name like "%${filter.keyword}%" or name_another like "%${filter.keyword}%")';
+    final checklistSql = filter.checklist == null || filter.checklist!.isEmpty
+        ? ''
+        : 'tag_name = "${filter.checklist}"';
+    final areaSql = filter.area == null
+        ? ''
+        : 'area = "${filter.area == AnimeArea.unknown ? '' : filter.area!.label}"';
+    final categorySql = filter.category == null
+        ? ''
+        : 'category = "${filter.category == AnimeCategory.unknown ? '' : filter.category!.label}"';
+    final airDateSql = filter.airDate == null
+        ? ''
+        : 'premiere_time like "%${filter.airDate}%"';
+    final playStatusSql = filter.playStatus == null
+        ? ''
+        : 'play_status = "${filter.playStatus!.text}"';
+    // rate为null表示不根据评分搜索
+    final rateSql = filter.rate == null ? '' : 'rate = ${filter.rate}';
+    final sqls = [
+      keywordSql,
+      checklistSql,
+      areaSql,
+      categorySql,
+      airDateSql,
+      playStatusSql,
+      rateSql,
+    ].where((sql) => sql.isNotEmpty);
+
+    if (sqls.isEmpty) {
+      if (filter.labels.isEmpty) return [];
+      result = await AnimeLabelDao.getAnimesByLabelIds(
+          filter.labels.map((e) => e.id).toList());
+    } else {
+      final list = await db.rawQuery('''
+      select * from anime
+       where ${sqls.join(' and ')}
+      ''');
+      final List<Anime> animes = [];
+      for (final row in list) {
+        int animeId = row['anime_id'] as int;
+        int reviewNumber = row['review_number'] as int;
+        int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
+            animeId,
+            reviewNumber: reviewNumber);
+        Anime anime = Anime(
+          animeId: animeId,
+          // 进入详细页面后需要该id
+          animeName: row['anime_name'] as String? ?? "",
+          nameAnother: row['name_another'] as String? ?? "",
+          animeEpisodeCnt: row['anime_episode_cnt'] as int? ?? 0,
+          checkedEpisodeCnt: checkedEpisodeCnt,
+          animeCoverUrl: row['anime_cover_url'] as String? ?? "",
+          premiereTime: row['premiere_time'] as String? ?? '',
+          reviewNumber: reviewNumber,
+        );
+        animes.add(anime);
+      }
+      if (filter.labels.isEmpty) {
+        result = animes;
+      } else {
+        // 从标签查询的动漫列表中过滤动漫
+        final labelAnimes = await AnimeLabelDao.getAnimesByLabelIds(
+            filter.labels.map((e) => e.id).toList());
+        for (final labelAnime in labelAnimes) {
+          if (animes
+                  .indexWhere((anime) => anime.animeId == labelAnime.animeId) >=
+              0) {
+            result.add(labelAnime);
+          }
+        }
+      }
+    }
+
+    // 按首播时间升序排列
+    result.sort((a, b) => -a.premiereTime.compareTo(b.premiereTime));
+    return result;
   }
 
   /// 迁移动漫、全局更新动漫

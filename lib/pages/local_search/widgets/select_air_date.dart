@@ -33,13 +33,13 @@ class _SelectAirDateViewState extends State<SelectAirDateView> {
               if (year != null && month == null) return '$year';
               return '$year-${month.toString().padLeft(2, '0')}';
             }();
-            widget.localSearchController.setSelectedLabelTitle(
-                widget.localSearchController.airDateFilter, selectedLabel);
 
             setState(() {
               localSelectFilter.airDateYear = year;
               localSelectFilter.airDateMonth = month;
             });
+            widget.localSearchController.setSelectedLabelTitle(
+                widget.localSearchController.airDateFilter, selectedLabel);
           },
         ),
       ),

@@ -51,7 +51,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              DbAnimeSearchPage(incomingLabelId: label.id)),
+                              DbAnimeSearchPage(label: label)),
                     ).then((value) {
                       widget.animeController.reloadAnime(_anime);
                     });

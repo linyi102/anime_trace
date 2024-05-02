@@ -27,6 +27,12 @@ class LocalSelectFilter {
     this.labels = labels ?? [];
   }
 
+  String? get airDate {
+    if (airDateYear == null) return null;
+    if (airDateMonth == null) return airDateYear.toString();
+    return '$airDateYear-${airDateMonth.toString().padLeft(2, '0')}';
+  }
+
   LocalSelectFilter copyWith({
     String? keyword,
     String? checklist,

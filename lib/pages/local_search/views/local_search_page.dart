@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/local_filter_chip.dart';
@@ -13,13 +14,13 @@ import 'package:get/get.dart';
 /// 搜索已添加的动漫
 class DbAnimeSearchPage extends StatefulWidget {
   const DbAnimeSearchPage(
-      {this.incomingLabelId,
+      {this.label,
       this.kw,
       this.onSelectOk,
       this.hasSelectedAnimeIds = const [],
       Key? key})
       : super(key: key);
-  final int? incomingLabelId;
+  final Label? label;
   final List<int> hasSelectedAnimeIds;
   final void Function(List<int> selectedAnimeIds)? onSelectOk;
   final String? kw;
@@ -29,11 +30,9 @@ class DbAnimeSearchPage extends StatefulWidget {
 }
 
 class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
+  final _scrollController = ScrollController();
   late TextEditingController _inputController;
   FocusNode blankFocusNode = FocusNode();
-  bool autofocus = false;
-
-  final _scrollController = ScrollController();
 
   final localSearchControllerTag = DateTime.now().toString();
   late final localSearchController = Get.put<LocalSearchController>(
@@ -50,26 +49,23 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   void initState() {
     super.initState();
     _inputController = TextEditingController(text: widget.kw ?? '');
+    _searchInitialFilter();
+  }
 
+  Future<void> _searchInitialFilter() async {
     // 动漫详细页点击某个标签后，会进入该搜索页，此时不需要显示顶部搜索框，还需要把传入的标签添加进来
-    if (widget.incomingLabelId != null) {
-      Log.info("动漫详细页点击了${widget.incomingLabelId}，进入搜索页");
-      // 从controller中根据id找到label对象，再添加到选中的labels中
-      // 之所以不直接传入label对象，是因为这个对象和controller中的labels里的同id对象不是同一个对象
-      // TODO
-      // selectedLabels.add(labelsController.labels
-      //     .singleWhere((element) => element.id == widget.incomingLabelId));
-      // _searchAnimesByLabels();
+    if (widget.label != null) {
+      Log.info("动漫详细页点击了${widget.label}，进入搜索页");
+      await Future.delayed(const Duration(milliseconds: 200));
+      localSearchController.localSelectFilter.labels = [widget.label!];
+      localSearchController.setSelectedLabelTitle(
+          localSearchController.labelFilter, widget.label?.name);
     }
-
     // 周表中点击某个动漫会进入该搜索页，来查找已收藏的动漫
-    if (widget.kw != null) {
-      // 取消输入框聚焦
-      autofocus = false;
+    else if (widget.kw != null) {
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
-      Future.delayed(const Duration(milliseconds: 200)).then((value) {
-        localSearchController.searchKeyword(widget.kw);
-      });
+      await Future.delayed(const Duration(milliseconds: 200));
+      localSearchController.searchKeyword(widget.kw);
     }
   }
 
@@ -83,15 +79,10 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 如果传入了标签id，则说明是从动漫详细页进来的，此时不显示搜索栏
-    bool showSearchBar = widget.incomingLabelId == null;
-
-    Log.build(runtimeType);
-
     return GetBuilder(
       init: localSearchController,
       builder: (_) => Scaffold(
-        appBar: showSearchBar ? _buildSearchBar() : AppBar(),
+        appBar: _buildSearchBar(),
         floatingActionButton: _buildFAB(),
         body: CommonScaffoldBody(
             child: CustomScrollView(
@@ -123,14 +114,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: GetBuilder(
-        init: localSearchController,
-        builder: (_) => Row(
-          children: [
-            ...localSearchController.filters.map((filter) => LocalFilterChip(
-                localSearchController: localSearchController, filter: filter))
-          ],
-        ),
+      child: Row(
+        children: [
+          ...localSearchController.filters.map((filter) => LocalFilterChip(
+              localSearchController: localSearchController, filter: filter))
+        ],
       ),
     );
   }
@@ -186,7 +174,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
       useModernStyle: false,
-      autofocus: autofocus,
       inputController: _inputController,
       onTapClear: () {
         _inputController.clear();
