@@ -339,7 +339,7 @@ class AnimeDao {
     }
 
     // 按首播时间升序排列
-    result.sort((a, b) => -a.premiereTime.compareTo(b.premiereTime));
+    result.sort((a, b) => a.premiereTime.compareTo(b.premiereTime));
     return result;
   }
 
