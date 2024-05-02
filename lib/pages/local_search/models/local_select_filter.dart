@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/models/label.dart';
 
 class LocalSelectFilter {
+  String? keyword;
   String? checklist;
   late List<Label> labels;
   int? rate;
@@ -14,6 +14,7 @@ class LocalSelectFilter {
   int? airDateMonth;
   PlayStatus? playStatus;
   LocalSelectFilter({
+    this.keyword,
     this.checklist,
     List<Label>? labels,
     this.rate,
@@ -27,6 +28,7 @@ class LocalSelectFilter {
   }
 
   LocalSelectFilter copyWith({
+    String? keyword,
     String? checklist,
     List<Label>? labels,
     int? rate,
@@ -37,6 +39,7 @@ class LocalSelectFilter {
     PlayStatus? playStatus,
   }) {
     return LocalSelectFilter(
+      keyword: keyword ?? this.keyword,
       checklist: checklist ?? this.checklist,
       labels: labels ?? this.labels,
       rate: rate ?? this.rate,
@@ -50,15 +53,16 @@ class LocalSelectFilter {
 
   @override
   String toString() {
-    return 'LocalSelectFilter(checklist: $checklist, labels: $labels, rate: $rate, area: $area, category: $category, airDateYear: $airDateYear, airDateMonth: $airDateMonth, playStatus: $playStatus)';
+    return 'LocalSelectFilter(keyword: $keyword, checklist: $checklist, labels: $labels, rate: $rate, area: $area, category: $category, airDateYear: $airDateYear, airDateMonth: $airDateMonth, playStatus: $playStatus)';
   }
 
   @override
   bool operator ==(covariant LocalSelectFilter other) {
     if (identical(this, other)) return true;
 
-    return other.checklist == checklist &&
-        listEquals(other.labels, labels) &&
+    return other.keyword == keyword &&
+        other.checklist == checklist &&
+        other.labels == labels &&
         other.rate == rate &&
         other.area == area &&
         other.category == category &&
@@ -69,7 +73,8 @@ class LocalSelectFilter {
 
   @override
   int get hashCode {
-    return checklist.hashCode ^
+    return keyword.hashCode ^
+        checklist.hashCode ^
         labels.hashCode ^
         rate.hashCode ^
         area.hashCode ^

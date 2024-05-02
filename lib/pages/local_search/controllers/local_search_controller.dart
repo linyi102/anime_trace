@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_air_date.dart';
@@ -13,50 +15,50 @@ import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class LocalSearchController extends GetxController {
-  static LocalSearchController to = Get.find();
-
+  bool searchOk = false;
+  List<Anime> animes = [];
   LocalSelectFilter localSelectFilter = LocalSelectFilter();
 
-  final checklistFilter = LocalSearchFilter(
+  late final checklistFilter = LocalSearchFilter(
     label: '清单',
     icon: Icons.checklist_rounded,
-    filterView: const SelectChecklistView(),
+    filterView: SelectChecklistView(localSearchController: this),
   );
 
-  final labelFilter = LocalSearchFilter(
+  late final labelFilter = LocalSearchFilter(
     label: '标签',
     icon: MingCuteIcons.mgc_tag_2_fill,
-    filterView: const SelectLabelView(),
+    filterView: SelectLabelView(localSearchController: this),
   );
 
-  final rateFilter = LocalSearchFilter(
+  late final rateFilter = LocalSearchFilter(
     label: '星级',
     icon: Icons.star,
-    filterView: const SelectRateView(),
+    filterView: SelectRateView(localSearchController: this),
   );
 
-  final areaFilter = LocalSearchFilter(
+  late final areaFilter = LocalSearchFilter(
     label: '地区',
     icon: Icons.location_on,
-    filterView: const SelectAreaView(),
+    filterView: SelectAreaView(localSearchController: this),
   );
 
-  final categoryFilter = LocalSearchFilter(
+  late final categoryFilter = LocalSearchFilter(
     label: '类别',
     icon: Icons.category_rounded,
-    filterView: const SelectCategoryView(),
+    filterView: SelectCategoryView(localSearchController: this),
   );
 
-  final airDateFilter = LocalSearchFilter(
+  late final airDateFilter = LocalSearchFilter(
     label: '首播时间',
     icon: Icons.date_range,
-    filterView: const SelectAirDateView(),
+    filterView: SelectAirDateView(localSearchController: this),
   );
 
-  final playStatusFilter = LocalSearchFilter(
+  late final playStatusFilter = LocalSearchFilter(
     label: '播放状态',
     icon: Icons.stacked_bar_chart,
-    filterView: const SelectPlayStatusView(),
+    filterView: SelectPlayStatusView(localSearchController: this),
   );
 
   late List<LocalSearchFilter> filters = [
@@ -98,8 +100,19 @@ class LocalSearchController extends GetxController {
     search();
   }
 
-  search() {
+  Future<void> searchKeyword(String? keyword) async {
+    localSelectFilter.keyword = keyword;
+    await search();
+  }
+
+  Future<void> search() async {
     Log.info(localSelectFilter);
+    searchOk = false;
+    update();
+
+    animes = await AnimeDao.getAnimesBySearch(localSelectFilter.keyword ?? '');
+    searchOk = true;
+    update();
   }
 
   void setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {

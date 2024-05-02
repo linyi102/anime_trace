@@ -6,9 +6,11 @@ import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 
 class LocalFilterChip extends StatefulWidget {
   const LocalFilterChip({
+    required this.localSearchController,
     required this.filter,
     super.key,
   });
+  final LocalSearchController localSearchController;
   final LocalSearchFilter filter;
 
   @override
@@ -26,7 +28,10 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
           onPressed: () {
             showCommonModalBottomSheet(
               context: context,
-              builder: (context) => LocalFilterPage(filter: widget.filter),
+              builder: (context) => LocalFilterPage(
+                localSearchController: widget.localSearchController,
+                filter: widget.filter,
+              ),
             );
           },
           style: ButtonStyle(
@@ -50,7 +55,8 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
                 const SizedBox(width: 5),
                 InkWell(
                   borderRadius: BorderRadius.circular(99),
-                  onTap: () => LocalSearchController.to.reset(widget.filter),
+                  onTap: () =>
+                      widget.localSearchController.reset(widget.filter),
                   child: Container(
                       height: 18,
                       width: 18,

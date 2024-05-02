@@ -5,19 +5,21 @@ import 'package:flutter_test_future/pages/local_search/models/local_select_filte
 import 'package:get/get.dart';
 
 class SelectAreaView extends StatefulWidget {
-  const SelectAreaView({super.key});
+  const SelectAreaView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
+
   @override
   State<SelectAreaView> createState() => _SelectAreaViewState();
 }
 
 class _SelectAreaViewState extends State<SelectAreaView> {
   LocalSelectFilter get localSelectFilter =>
-      LocalSearchController.to.localSelectFilter;
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: LocalSearchController.to,
+      init: widget.localSearchController,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: AnimeArea.values.length,
@@ -29,8 +31,8 @@ class _SelectAreaViewState extends State<SelectAreaView> {
                 value: area,
                 groupValue: localSelectFilter.area,
                 onChanged: (value) {
-                  LocalSearchController.to.setSelectedLabelTitle(
-                      LocalSearchController.to.areaFilter, value?.label);
+                  widget.localSearchController.setSelectedLabelTitle(
+                      widget.localSearchController.areaFilter, value?.label);
 
                   setState(() {
                     localSelectFilter.area = value;

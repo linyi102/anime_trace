@@ -5,19 +5,21 @@ import 'package:flutter_test_future/pages/local_search/models/local_select_filte
 import 'package:get/get.dart';
 
 class SelectPlayStatusView extends StatefulWidget {
-  const SelectPlayStatusView({super.key});
+  const SelectPlayStatusView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
+
   @override
   State<SelectPlayStatusView> createState() => _SelectPlayStatusViewState();
 }
 
 class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
   LocalSelectFilter get localSelectFilter =>
-      LocalSearchController.to.localSelectFilter;
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: LocalSearchController.to,
+      init: widget.localSearchController,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: PlayStatus.values.length,
@@ -29,8 +31,9 @@ class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
                 value: playStatus,
                 groupValue: localSelectFilter.playStatus,
                 onChanged: (value) {
-                  LocalSearchController.to.setSelectedLabelTitle(
-                      LocalSearchController.to.playStatusFilter, value?.text);
+                  widget.localSearchController.setSelectedLabelTitle(
+                      widget.localSearchController.playStatusFilter,
+                      value?.text);
 
                   setState(() {
                     localSelectFilter.playStatus = value;

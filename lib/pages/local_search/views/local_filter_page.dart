@@ -7,7 +7,12 @@ import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 
 class LocalFilterPage extends StatefulWidget {
-  const LocalFilterPage({required this.filter, super.key});
+  const LocalFilterPage({
+    required this.localSearchController,
+    required this.filter,
+    super.key,
+  });
+  final LocalSearchController localSearchController;
   final LocalSearchFilter filter;
 
   @override
@@ -17,7 +22,7 @@ class LocalFilterPage extends StatefulWidget {
 class _LocalFilterPageState extends State<LocalFilterPage>
     with SingleTickerProviderStateMixin {
   late LocalSearchFilter curFilter;
-  List<LocalSearchFilter> get filters => LocalSearchController.to.filters;
+  List<LocalSearchFilter> get filters => widget.localSearchController.filters;
 
   late TabController tabController;
 
@@ -54,8 +59,8 @@ class _LocalFilterPageState extends State<LocalFilterPage>
           controller: tabController,
           children: [...filters.map((e) => e.filterView)]),
       bottomNavigationBar: SelectViewAction(
-          onReset: LocalSearchController.to.resetAll,
-          onApply: LocalSearchController.to.search),
+          onReset: widget.localSearchController.resetAll,
+          onApply: widget.localSearchController.search),
     );
   }
 }

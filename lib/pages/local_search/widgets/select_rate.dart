@@ -5,7 +5,8 @@ import 'package:flutter_test_future/pages/local_search/models/local_select_filte
 import 'package:get/get.dart';
 
 class SelectRateView extends StatefulWidget {
-  const SelectRateView({super.key});
+  const SelectRateView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
 
   @override
   State<SelectRateView> createState() => _SelectRateViewState();
@@ -13,23 +14,24 @@ class SelectRateView extends StatefulWidget {
 
 class _SelectRateViewState extends State<SelectRateView> {
   LocalSelectFilter get localSelectFilter =>
-      LocalSearchController.to.localSelectFilter;
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: LocalSearchController.to,
+      init: widget.localSearchController,
       builder: (_) => Scaffold(
         body: Center(
             child: AnimeRatingBar(
           rate: localSelectFilter.rate ?? 0,
           iconSize: 28,
           onRatingUpdate: (value) {
-            LocalSearchController.to.setSelectedLabelTitle(
-                LocalSearchController.to.rateFilter, value.toInt().toString());
+            widget.localSearchController.setSelectedLabelTitle(
+                widget.localSearchController.rateFilter,
+                value.toInt().toString());
 
             localSelectFilter.rate = value.toInt();
-            LocalSearchController.to.update();
+            widget.localSearchController.update();
           },
         )),
       ),

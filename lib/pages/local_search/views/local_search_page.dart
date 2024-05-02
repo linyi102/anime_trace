@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/local_filter_chip.dart';
-
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/delay_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
@@ -32,26 +29,26 @@ class DbAnimeSearchPage extends StatefulWidget {
 }
 
 class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
-  bool searchOk = false;
-  List<Anime> _animes = [];
-
-  String _lastInputText = ""; // 必须作为类成员，否则setstate会重新调用build，然后又赋值为""
-  FocusNode blankFocusNode = FocusNode(); // 空白焦点
+  late TextEditingController _inputController;
+  FocusNode blankFocusNode = FocusNode();
+  bool autofocus = false;
 
   final _scrollController = ScrollController();
-  final localSearchController = Get.put(LocalSearchController());
 
-  bool autofocus = false;
+  final localSearchControllerTag = DateTime.now().toString();
+  late final localSearchController = Get.put<LocalSearchController>(
+    LocalSearchController(),
+    tag: localSearchControllerTag,
+  );
+  bool get searchOk => localSearchController.searchOk;
+  List<Anime> get _animes => localSearchController.animes;
 
   bool get selectAction => widget.onSelectOk != null;
   List<int> selectedAnimeIds = [];
 
-  late TextEditingController _inputController;
-
   @override
   void initState() {
     super.initState();
-    Log.info("$runtimeType: initState");
     _inputController = TextEditingController(text: widget.kw ?? '');
 
     // 动漫详细页点击某个标签后，会进入该搜索页，此时不需要显示顶部搜索框，还需要把传入的标签添加进来
@@ -70,8 +67,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       // 取消输入框聚焦
       autofocus = false;
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
-      Future.delayed(const Duration(milliseconds: 200))
-          .then((value) => _searchDbAnimesByKeyword(widget.kw!));
+      Future.delayed(const Duration(milliseconds: 200)).then((value) {
+        localSearchController.searchKeyword(widget.kw);
+      });
     }
   }
 
@@ -80,6 +78,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     super.dispose();
     _scrollController.dispose();
     _inputController.dispose();
+    Get.delete<LocalSearchController>(tag: localSearchControllerTag);
   }
 
   @override
@@ -89,35 +88,34 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
 
     Log.build(runtimeType);
 
-    return Scaffold(
-      appBar: showSearchBar ? _buildSearchBar() : AppBar(),
-      floatingActionButton: _buildFAB(),
-      body: CommonScaffoldBody(
-          child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(child: _buildFilterChips()),
-          if (searchOk)
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  // Log.info("$runtimeType: index=$index");
-                  var anime = _animes[index];
-                  return _buildAnimeTile(anime, context, index);
-                },
-                childCount: _animes.length,
+    return GetBuilder(
+      init: localSearchController,
+      builder: (_) => Scaffold(
+        appBar: showSearchBar ? _buildSearchBar() : AppBar(),
+        floatingActionButton: _buildFAB(),
+        body: CommonScaffoldBody(
+            child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverToBoxAdapter(child: _buildFilterChips()),
+            if (searchOk)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    // Log.info("$runtimeType: index=$index");
+                    var anime = _animes[index];
+                    return _buildAnimeTile(anime, context, index);
+                  },
+                  childCount: _animes.length,
+                ),
               ),
-            ),
-          // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
-          if (searchOk && _inputController.text.isNotEmpty && !selectAction)
-            SliverToBoxAdapter(
-              child: _buildNetworkSearchHint(context),
-            ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 60),
-          )
-        ],
-      )),
+            // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
+            if (searchOk && _inputController.text.isNotEmpty && !selectAction)
+              SliverToBoxAdapter(child: _buildNetworkSearchHint(context)),
+            const SliverToBoxAdapter(child: SizedBox(height: 60))
+          ],
+        )),
+      ),
     );
   }
 
@@ -126,11 +124,11 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: GetBuilder(
-        init: LocalSearchController.to,
+        init: localSearchController,
         builder: (_) => Row(
           children: [
-            ...localSearchController.filters
-                .map((filter) => LocalFilterChip(filter: filter))
+            ...localSearchController.filters.map((filter) => LocalFilterChip(
+                localSearchController: localSearchController, filter: filter))
           ],
         ),
       ),
@@ -192,28 +190,10 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       inputController: _inputController,
       onTapClear: () {
         _inputController.clear();
-        _lastInputText = "";
-        _animes.clear();
-        setState(() {});
-      },
-      onEditingComplete: () {
-        String text = _inputController.text;
-        if (text.isEmpty) return;
-
-        _searchDbAnimesByKeyword(text);
+        localSearchController.searchKeyword(null);
       },
       onChanged: (value) {
-        Log.info("value=$value");
-        if (value.isEmpty) {
-          _animes.clear();
-          _lastInputText = "";
-          setState(() {});
-          return;
-        }
-        // 延时搜索
-        DelayUtil.delaySearch(() {
-          _searchDbAnimesByKeyword(value);
-        });
+        localSearchController.searchKeyword(value);
       },
     );
   }
@@ -233,49 +213,14 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         onTap: () {
           _cancelFocus();
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return AnimeClimbAllWebsite(keyword: _lastInputText);
-          })).then((value) {
-            _searchDbAnimesByKeyword(_lastInputText);
-          });
+            return AnimeClimbAllWebsite(keyword: _inputController.text);
+          }));
         });
   }
 
   // 取消键盘聚焦
   _cancelFocus() {
     FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
-  }
-
-  void _searchDbAnimesByKeyword(String text, {bool forceSearch = false}) {
-    if (text.isEmpty) {
-      Log.info('输入内容为空，不进行搜索');
-      return;
-    }
-    if (!forceSearch && _lastInputText == text) {
-      Log.info("相同内容，不进行搜索");
-      return;
-    }
-    _lastInputText = text;
-    Future(() {
-      Log.info("search: $text");
-      return AnimeDao.getAnimesBySearch(text);
-    }).then((value) {
-      _animes = value;
-      searchOk = true;
-      Log.info("_resAnimes.length=${_animes.length}");
-      setState(() {});
-    });
-  }
-
-  _searchAnimesByLabels() async {
-    // if (selectedLabels.isNotEmpty) {
-    //   _animes = await AnimeLabelDao.getAnimesByLabelIds(
-    //       selectedLabels.map((e) => e.id).toList());
-    // } else {
-    //   // 没有标签时不查询数据库，直接清空
-    //   _animes.clear();
-    // }
-    searchOk = true;
-    setState(() {});
   }
 
   _enterAnimeDetail(int index) {
@@ -288,8 +233,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           return AnimeDetailPage(anime);
         },
       ),
-    ).then((value) async {
-      _searchDbAnimesByKeyword(_lastInputText, forceSearch: true);
-    });
+    );
   }
 }

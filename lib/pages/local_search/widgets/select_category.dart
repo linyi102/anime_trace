@@ -5,19 +5,21 @@ import 'package:flutter_test_future/pages/local_search/models/local_select_filte
 import 'package:get/get.dart';
 
 class SelectCategoryView extends StatefulWidget {
-  const SelectCategoryView({super.key});
+  const SelectCategoryView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
+
   @override
   State<SelectCategoryView> createState() => _SelectCategoryViewState();
 }
 
 class _SelectCategoryViewState extends State<SelectCategoryView> {
   LocalSelectFilter get localSelectFilter =>
-      LocalSearchController.to.localSelectFilter;
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: LocalSearchController.to,
+      init: widget.localSearchController,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: AnimeCategory.values.length,
@@ -29,8 +31,9 @@ class _SelectCategoryViewState extends State<SelectCategoryView> {
                 value: category,
                 groupValue: localSelectFilter.category,
                 onChanged: (value) {
-                  LocalSearchController.to.setSelectedLabelTitle(
-                      LocalSearchController.to.categoryFilter, value?.label);
+                  widget.localSearchController.setSelectedLabelTitle(
+                      widget.localSearchController.categoryFilter,
+                      value?.label);
 
                   setState(() {
                     localSelectFilter.category = value;

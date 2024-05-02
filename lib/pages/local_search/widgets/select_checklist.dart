@@ -5,7 +5,9 @@ import 'package:flutter_test_future/pages/local_search/models/local_select_filte
 import 'package:get/get.dart';
 
 class SelectChecklistView extends StatefulWidget {
-  const SelectChecklistView({super.key});
+  const SelectChecklistView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
+
   @override
   State<SelectChecklistView> createState() => _SelectChecklistViewState();
 }
@@ -14,12 +16,12 @@ class _SelectChecklistViewState extends State<SelectChecklistView> {
   final checklistController = ChecklistController.to;
 
   LocalSelectFilter get localSelectFilter =>
-      LocalSearchController.to.localSelectFilter;
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: LocalSearchController.to,
+      init: widget.localSearchController,
       builder: (_) => Scaffold(
         body: ListView.builder(
           itemCount: checklistController.tags.length,
@@ -31,8 +33,8 @@ class _SelectChecklistViewState extends State<SelectChecklistView> {
                 value: checklist,
                 groupValue: localSelectFilter.checklist,
                 onChanged: (value) {
-                  LocalSearchController.to.setSelectedLabelTitle(
-                      LocalSearchController.to.checklistFilter, value);
+                  widget.localSearchController.setSelectedLabelTitle(
+                      widget.localSearchController.checklistFilter, value);
 
                   setState(() {
                     localSelectFilter.checklist = value;

@@ -9,7 +9,8 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 
 class SelectLabelView extends StatefulWidget {
-  const SelectLabelView({super.key});
+  const SelectLabelView({required this.localSearchController, super.key});
+  final LocalSearchController localSearchController;
 
   @override
   State<SelectLabelView> createState() => _SelectLabelViewState();
@@ -18,8 +19,8 @@ class SelectLabelView extends StatefulWidget {
 class _SelectLabelViewState extends State<SelectLabelView> {
   LabelsController labelsController = Get.find();
 
-  LocalSelectFilter localSelectFilter =
-      LocalSearchController.to.localSelectFilter;
+  late LocalSelectFilter localSelectFilter =
+      widget.localSearchController.localSelectFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           ),
           const SizedBox(height: 5),
           GetBuilder(
-            init: LocalSearchController.to,
+            init: widget.localSearchController,
             builder: (_) => _buildLabelWrap(),
           )
         ],
@@ -51,8 +52,8 @@ class _SelectLabelViewState extends State<SelectLabelView> {
         localSelectFilter.labels.clear();
         setState(() {});
 
-        LocalSearchController.to
-            .setSelectedLabelTitle(LocalSearchController.to.labelFilter, null);
+        widget.localSearchController.setSelectedLabelTitle(
+            widget.localSearchController.labelFilter, null);
       },
       child: Text(
         "清空选中",
@@ -70,8 +71,8 @@ class _SelectLabelViewState extends State<SelectLabelView> {
         } else {
           // 关闭多标签后，需要清空已选中的标签，以及搜索结果
           localSelectFilter.labels.clear();
-          LocalSearchController.to.setSelectedLabelTitle(
-              LocalSearchController.to.labelFilter, null);
+          widget.localSearchController.setSelectedLabelTitle(
+              widget.localSearchController.labelFilter, null);
         }
 
         setState(() {});
@@ -117,8 +118,8 @@ class _SelectLabelViewState extends State<SelectLabelView> {
     }
     setState(() {});
 
-    LocalSearchController.to.setSelectedLabelTitle(
-        LocalSearchController.to.labelFilter,
+    widget.localSearchController.setSelectedLabelTitle(
+        widget.localSearchController.labelFilter,
         localSelectFilter.labels.map((e) => e.nameWithoutEmoji).join(' & '));
   }
 }
