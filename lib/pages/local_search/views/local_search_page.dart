@@ -173,6 +173,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
       useModernStyle: false,
+      autofocus: false,
       inputController: _inputController,
       onTapClear: () {
         _inputController.clear();
