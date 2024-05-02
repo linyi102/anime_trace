@@ -33,11 +33,7 @@ class _SelectChecklistViewState extends State<SelectChecklistView> {
                 value: checklist,
                 groupValue: localSelectFilter.checklist,
                 onChanged: (value) {
-                  setState(() {
-                    localSelectFilter.checklist = value;
-                  });
-                  widget.localSearchController.setSelectedLabelTitle(
-                      widget.localSearchController.checklistFilter, value);
+                  widget.localSearchController.setChecklist(value);
                 });
           },
         ),

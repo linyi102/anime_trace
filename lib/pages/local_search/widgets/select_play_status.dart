@@ -31,12 +31,7 @@ class _SelectPlayStatusViewState extends State<SelectPlayStatusView> {
                 value: playStatus,
                 groupValue: localSelectFilter.playStatus,
                 onChanged: (value) {
-                  setState(() {
-                    localSelectFilter.playStatus = value;
-                  });
-                  widget.localSearchController.setSelectedLabelTitle(
-                      widget.localSearchController.playStatusFilter,
-                      value?.text);
+                  widget.localSearchController.setPlayStatus(value);
                 });
           },
         ),

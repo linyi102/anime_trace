@@ -28,18 +28,7 @@ class _SelectAirDateViewState extends State<SelectAirDateView> {
           initialMonth: localSelectFilter.airDateMonth,
           toggleable: true,
           onChanged: (year, month) {
-            final selectedLabel = () {
-              if (year == null && month == null) return null;
-              if (year != null && month == null) return '$year';
-              return '$year-${month.toString().padLeft(2, '0')}';
-            }();
-
-            setState(() {
-              localSelectFilter.airDateYear = year;
-              localSelectFilter.airDateMonth = month;
-            });
-            widget.localSearchController.setSelectedLabelTitle(
-                widget.localSearchController.airDateFilter, selectedLabel);
+            widget.localSearchController.setAirDate(year, month);
           },
         ),
       ),

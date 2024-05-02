@@ -52,8 +52,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
         localSelectFilter.labels.clear();
         setState(() {});
 
-        widget.localSearchController.setSelectedLabelTitle(
-            widget.localSearchController.labelFilter, null);
+        widget.localSearchController.setLabels([]);
       },
       child: Text(
         "清空选中",
@@ -70,9 +69,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           // 开启多标签后，不需要清空已选中的标签和搜索结果
         } else {
           // 关闭多标签后，需要清空已选中的标签，以及搜索结果
-          localSelectFilter.labels.clear();
-          widget.localSearchController.setSelectedLabelTitle(
-              widget.localSearchController.labelFilter, null);
+          widget.localSearchController.setLabels([]);
         }
 
         setState(() {});
@@ -118,8 +115,6 @@ class _SelectLabelViewState extends State<SelectLabelView> {
     }
     setState(() {});
 
-    widget.localSearchController.setSelectedLabelTitle(
-        widget.localSearchController.labelFilter,
-        localSelectFilter.labels.map((e) => e.nameWithoutEmoji).join(' & '));
+    widget.localSearchController.setLabels(localSelectFilter.labels);
   }
 }

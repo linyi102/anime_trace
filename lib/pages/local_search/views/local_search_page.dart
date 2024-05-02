@@ -57,15 +57,13 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     if (widget.label != null) {
       Log.info("动漫详细页点击了${widget.label}，进入搜索页");
       await Future.delayed(const Duration(milliseconds: 200));
-      localSearchController.localSelectFilter.labels = [widget.label!];
-      localSearchController.setSelectedLabelTitle(
-          localSearchController.labelFilter, widget.label?.name);
+      localSearchController.setLabels([widget.label!]);
     }
     // 周表中点击某个动漫会进入该搜索页，来查找已收藏的动漫
     else if (widget.kw != null) {
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
       await Future.delayed(const Duration(milliseconds: 200));
-      localSearchController.searchKeyword(widget.kw);
+      localSearchController.setKeyword(widget.kw);
     }
   }
 
@@ -177,10 +175,10 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       inputController: _inputController,
       onTapClear: () {
         _inputController.clear();
-        localSearchController.searchKeyword(null);
+        localSearchController.setKeyword(null);
       },
       onChanged: (value) {
-        localSearchController.searchKeyword(value);
+        localSearchController.setKeyword(value);
       },
     );
   }

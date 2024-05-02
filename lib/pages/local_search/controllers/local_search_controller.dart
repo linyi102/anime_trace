@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/enum/anime_area.dart';
+import 'package:flutter_test_future/models/enum/anime_category.dart';
+import 'package:flutter_test_future/models/enum/play_status.dart';
+import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_air_date.dart';
@@ -19,56 +23,56 @@ class LocalSearchController extends GetxController {
   List<Anime> animes = [];
   LocalSelectFilter localSelectFilter = LocalSelectFilter();
 
-  late final checklistFilter = LocalSearchFilter(
+  late final _checklistFilter = LocalSearchFilter(
     label: '清单',
     icon: Icons.checklist_rounded,
     filterView: SelectChecklistView(localSearchController: this),
   );
 
-  late final labelFilter = LocalSearchFilter(
+  late final _labelFilter = LocalSearchFilter(
     label: '标签',
     icon: MingCuteIcons.mgc_tag_2_fill,
     filterView: SelectLabelView(localSearchController: this),
   );
 
-  late final rateFilter = LocalSearchFilter(
+  late final _rateFilter = LocalSearchFilter(
     label: '星级',
     icon: Icons.star,
     filterView: SelectRateView(localSearchController: this),
   );
 
-  late final areaFilter = LocalSearchFilter(
+  late final _areaFilter = LocalSearchFilter(
     label: '地区',
     icon: Icons.location_on,
     filterView: SelectAreaView(localSearchController: this),
   );
 
-  late final categoryFilter = LocalSearchFilter(
+  late final _categoryFilter = LocalSearchFilter(
     label: '类别',
     icon: Icons.category_rounded,
     filterView: SelectCategoryView(localSearchController: this),
   );
 
-  late final airDateFilter = LocalSearchFilter(
+  late final _airDateFilter = LocalSearchFilter(
     label: '首播时间',
     icon: Icons.date_range,
     filterView: SelectAirDateView(localSearchController: this),
   );
 
-  late final playStatusFilter = LocalSearchFilter(
+  late final _playStatusFilter = LocalSearchFilter(
     label: '播放状态',
     icon: Icons.stacked_bar_chart,
     filterView: SelectPlayStatusView(localSearchController: this),
   );
 
   late List<LocalSearchFilter> filters = [
-    checklistFilter,
-    labelFilter,
-    rateFilter,
-    areaFilter,
-    categoryFilter,
-    airDateFilter,
-    playStatusFilter,
+    _checklistFilter,
+    _labelFilter,
+    _rateFilter,
+    _areaFilter,
+    _categoryFilter,
+    _airDateFilter,
+    _playStatusFilter,
   ];
 
   void resetAll() {
@@ -80,29 +84,24 @@ class LocalSearchController extends GetxController {
   }
 
   void reset(LocalSearchFilter filter) {
-    if (filter == checklistFilter) {
+    if (filter == _checklistFilter) {
       localSelectFilter.checklist = null;
-    } else if (filter == labelFilter) {
+    } else if (filter == _labelFilter) {
       localSelectFilter.labels.clear();
-    } else if (filter == rateFilter) {
+    } else if (filter == _rateFilter) {
       localSelectFilter.rate = null;
-    } else if (filter == areaFilter) {
+    } else if (filter == _areaFilter) {
       localSelectFilter.area = null;
-    } else if (filter == categoryFilter) {
+    } else if (filter == _categoryFilter) {
       localSelectFilter.category = null;
-    } else if (filter == airDateFilter) {
+    } else if (filter == _airDateFilter) {
       localSelectFilter.airDateYear = null;
       localSelectFilter.airDateMonth = null;
-    } else if (filter == playStatusFilter) {
+    } else if (filter == _playStatusFilter) {
       localSelectFilter.playStatus = null;
     }
-    setSelectedLabelTitle(filter, null);
+    _setSelectedLabelTitle(filter, null);
     search();
-  }
-
-  Future<void> searchKeyword(String? keyword) async {
-    localSelectFilter.keyword = keyword;
-    await search();
   }
 
   Future<void> search() async {
@@ -115,7 +114,54 @@ class LocalSearchController extends GetxController {
     update();
   }
 
-  void setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {
+  void setKeyword(String? keyword) {
+    localSelectFilter.keyword = keyword;
+    search();
+  }
+
+  void setChecklist(String? checklist) {
+    localSelectFilter.checklist = checklist;
+    _setSelectedLabelTitle(_checklistFilter, checklist);
+  }
+
+  void setLabels(List<Label>? labels) {
+    localSelectFilter.labels = labels ?? [];
+    _setSelectedLabelTitle(
+        _labelFilter, labels?.map((e) => e.nameWithoutEmoji).join(' & '));
+  }
+
+  void setRate(int? rate) {
+    localSelectFilter.rate = rate;
+    _setSelectedLabelTitle(_rateFilter, rate?.toInt().toString());
+  }
+
+  void setArea(AnimeArea? area) {
+    localSelectFilter.area = area;
+    _setSelectedLabelTitle(_areaFilter, area?.label);
+  }
+
+  void setCategory(AnimeCategory? category) {
+    localSelectFilter.category = category;
+    _setSelectedLabelTitle(_categoryFilter, category?.label);
+  }
+
+  void setAirDate(int? year, int? month) {
+    localSelectFilter.airDateYear = year;
+    localSelectFilter.airDateMonth = month;
+    final label = () {
+      if (year == null && month == null) return null;
+      if (year != null && month == null) return '$year';
+      return '$year-${month.toString().padLeft(2, '0')}';
+    }();
+    _setSelectedLabelTitle(_airDateFilter, label);
+  }
+
+  void setPlayStatus(PlayStatus? playStatus) {
+    localSelectFilter.playStatus = playStatus;
+    _setSelectedLabelTitle(_playStatusFilter, playStatus?.text);
+  }
+
+  void _setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {
     filter.selectedLabel = selectedLabel ?? '';
     update();
     search();

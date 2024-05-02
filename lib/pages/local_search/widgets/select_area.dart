@@ -31,11 +31,7 @@ class _SelectAreaViewState extends State<SelectAreaView> {
                 value: area,
                 groupValue: localSelectFilter.area,
                 onChanged: (value) {
-                  setState(() {
-                    localSelectFilter.area = value;
-                  });
-                  widget.localSearchController.setSelectedLabelTitle(
-                      widget.localSearchController.areaFilter, value?.label);
+                  widget.localSearchController.setArea(value);
                 });
           },
         ),
