@@ -4,6 +4,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
+import 'package:flutter_test_future/models/enum/search_source.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_test_future/pages/local_search/widgets/select_checklist.
 import 'package:flutter_test_future/pages/local_search/widgets/select_label.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_play_status.dart';
 import 'package:flutter_test_future/pages/local_search/widgets/select_rate.dart';
+import 'package:flutter_test_future/pages/local_search/widgets/select_source.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -65,6 +67,12 @@ class LocalSearchController extends GetxController {
     filterView: SelectPlayStatusView(localSearchController: this),
   );
 
+  late final _sourceFilter = LocalSearchFilter(
+    label: '搜索源',
+    icon: Icons.south_america_rounded,
+    filterView: SelectSourceView(localSearchController: this),
+  );
+
   late List<LocalSearchFilter> filters = [
     _checklistFilter,
     _labelFilter,
@@ -73,6 +81,7 @@ class LocalSearchController extends GetxController {
     _categoryFilter,
     _airDateFilter,
     _playStatusFilter,
+    _sourceFilter,
   ];
 
   void resetAll() {
@@ -99,6 +108,8 @@ class LocalSearchController extends GetxController {
       localSelectFilter.airDateMonth = null;
     } else if (filter == _playStatusFilter) {
       localSelectFilter.playStatus = null;
+    } else if (filter == _sourceFilter) {
+      localSelectFilter.source = null;
     }
     _setSelectedLabelTitle(filter, null);
     search();
@@ -159,6 +170,11 @@ class LocalSearchController extends GetxController {
   void setPlayStatus(PlayStatus? playStatus) {
     localSelectFilter.playStatus = playStatus;
     _setSelectedLabelTitle(_playStatusFilter, playStatus?.text);
+  }
+
+  void setSource(AnimeSource? source) {
+    localSelectFilter.source = source;
+    _setSelectedLabelTitle(_sourceFilter, source?.label);
   }
 
   void _setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {

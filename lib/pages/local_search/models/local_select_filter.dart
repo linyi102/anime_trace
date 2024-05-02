@@ -1,6 +1,7 @@
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
+import 'package:flutter_test_future/models/enum/search_source.dart';
 import 'package:flutter_test_future/models/label.dart';
 
 class LocalSelectFilter {
@@ -13,6 +14,7 @@ class LocalSelectFilter {
   int? airDateYear;
   int? airDateMonth;
   PlayStatus? playStatus;
+  AnimeSource? source;
   LocalSelectFilter({
     this.keyword,
     this.checklist,
@@ -23,6 +25,7 @@ class LocalSelectFilter {
     this.airDateYear,
     this.airDateMonth,
     this.playStatus,
+    this.source,
   }) {
     this.labels = labels ?? [];
   }
@@ -43,6 +46,7 @@ class LocalSelectFilter {
     int? airDateYear,
     int? airDateMonth,
     PlayStatus? playStatus,
+    AnimeSource? source,
   }) {
     return LocalSelectFilter(
       keyword: keyword ?? this.keyword,
@@ -54,12 +58,13 @@ class LocalSelectFilter {
       airDateYear: airDateYear ?? this.airDateYear,
       airDateMonth: airDateMonth ?? this.airDateMonth,
       playStatus: playStatus ?? this.playStatus,
+      source: source ?? this.source,
     );
   }
 
   @override
   String toString() {
-    return 'LocalSelectFilter(keyword: $keyword, checklist: $checklist, labels: $labels, rate: $rate, area: $area, category: $category, airDateYear: $airDateYear, airDateMonth: $airDateMonth, playStatus: $playStatus)';
+    return 'LocalSelectFilter(keyword: $keyword, checklist: $checklist, labels: $labels, rate: $rate, area: $area, category: $category, airDateYear: $airDateYear, airDateMonth: $airDateMonth, playStatus: $playStatus, source: $source)';
   }
 
   @override
@@ -74,7 +79,8 @@ class LocalSelectFilter {
         other.category == category &&
         other.airDateYear == airDateYear &&
         other.airDateMonth == airDateMonth &&
-        other.playStatus == playStatus;
+        other.playStatus == playStatus &&
+        other.source == source;
   }
 
   @override
@@ -87,6 +93,7 @@ class LocalSelectFilter {
         category.hashCode ^
         airDateYear.hashCode ^
         airDateMonth.hashCode ^
-        playStatus.hashCode;
+        playStatus.hashCode ^
+        source.hashCode;
   }
 }
