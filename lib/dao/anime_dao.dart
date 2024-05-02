@@ -3,6 +3,7 @@ import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/models/anime_episode_info.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
+import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
@@ -279,7 +280,7 @@ class AnimeDao {
         : 'premiere_time like "%${filter.airDate}%"';
     final playStatusSql = filter.playStatus == null
         ? ''
-        : 'play_status = "${filter.playStatus!.text}"';
+        : PlayStatus.toWhereSql(filter.playStatus!);
     // rate为null表示不根据评分搜索
     final rateSql = filter.rate == null ? '' : 'rate = ${filter.rate}';
     final sqls = [

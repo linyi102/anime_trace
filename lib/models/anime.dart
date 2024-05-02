@@ -101,19 +101,7 @@ class Anime {
     return ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl)?.name ?? "自定义";
   }
 
-  PlayStatus getPlayStatus() {
-    if (playStatus.contains("完结")) {
-      return PlayStatus.finished;
-    } else if (playStatus.contains("未知")) {
-      return PlayStatus.unknown;
-    } else if (playStatus.contains("未")) {
-      return PlayStatus.notStarted;
-    } else if (playStatus.contains("第") || playStatus.contains("连载")) {
-      return PlayStatus.playing;
-    } else {
-      return PlayStatus.unknown;
-    }
-  }
+  PlayStatus getPlayStatus() => PlayStatus.text2PlayStatus(playStatus);
 
   // 因为封面可能是网络图片，也可能是本地图片，如果是本地图片，那么需要将相对路径转为绝对路径
   String getCommonCoverUrl() {
