@@ -79,6 +79,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   Widget build(BuildContext context) {
     return GetBuilder(
       init: localSearchController,
+      tag: localSearchControllerTag,
       builder: (_) => Scaffold(
         appBar: _buildSearchBar(),
         floatingActionButton: _buildFAB(),
