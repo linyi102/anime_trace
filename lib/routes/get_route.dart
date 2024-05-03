@@ -22,13 +22,23 @@ class RouteUtil {
     Widget widget, {
     SharedAxisTransitionType transitionType =
         SharedAxisTransitionType.horizontal,
+    bool replace = false,
   }) {
-    return Navigator.push(
-        context,
-        SharedAxisTransitionRoute(
-          builder: (context) => widget,
-          transitionType: transitionType,
-        ));
+    if (replace) {
+      return Navigator.pushReplacement(
+          context,
+          SharedAxisTransitionRoute(
+            builder: (context) => widget,
+            transitionType: transitionType,
+          ));
+    } else {
+      return Navigator.push(
+          context,
+          SharedAxisTransitionRoute(
+            builder: (context) => widget,
+            transitionType: transitionType,
+          ));
+    }
   }
 
   static Future<T?> toImageViewer<T extends Object?>(

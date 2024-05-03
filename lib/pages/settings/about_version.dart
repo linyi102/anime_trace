@@ -1,7 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
+import 'package:flutter_test_future/pages/upgrade/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
@@ -45,8 +45,8 @@ class _AboutVersionState extends State<AboutVersion> {
               initState: (_) {},
               builder: (appUpgradeLogic) {
                 return ListTile(
-                  onTap: () =>
-                      appUpgradeLogic.getLatestVersion(showToast: true),
+                  onTap: () => appUpgradeLogic.getLatestVersion(context,
+                      showToast: true),
                   title: const Text("检查更新"),
                   trailing: appUpgradeLogic.status == LoadStatus.loading
                       ? const SizedBox(

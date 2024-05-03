@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animations/animations.dart';
 import 'package:app_installer/app_installer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_test_future/components/percent_bar.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/app_release.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
+import 'package:flutter_test_future/pages/upgrade/views/upgrade_notice_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/file_util.dart';
@@ -37,7 +40,7 @@ class AppUpgradeController extends GetxController {
   String get downloadPercnetStr => "${(downloadPercent * 100).toInt()}%";
   CancelToken? releaseCancelToken;
 
-  String get curVersion => packageInfo.version;
+  String get curVersion => '1.0.0';
   String get latestVersion {
     String tagName = latestRelease?.tagName ?? '';
     if (tagName.startsWith('v')) {
@@ -56,11 +59,11 @@ class AppUpgradeController extends GetxController {
       Log.info("Windows exe path: ${Platform.resolvedExecutable}");
     }
     packageInfo = await PackageInfo.fromPlatform();
-    getLatestVersion(autoCheck: true);
     super.onInit();
   }
 
-  getLatestVersion({bool showToast = false, bool autoCheck = false}) async {
+  Future<void> getLatestVersion(BuildContext context,
+      {bool showToast = false, bool autoCheck = false}) async {
     if (downloading) {
       _showDownloadDialog();
       return;
@@ -91,7 +94,7 @@ class AppUpgradeController extends GetxController {
           // 自动检查时若忽略了该新版本，则不提示
           Log.info('忽略了新版本：$latestVersion');
         } else {
-          _showDialogUpgrade(autoCheck);
+          _showDialogUpgrade(context, autoCheck);
         }
       } else {
         if (showToast) ToastUtil.showText('已是最新版本');
@@ -118,11 +121,13 @@ class AppUpgradeController extends GetxController {
     update();
   }
 
-  _showDialogUpgrade(bool autoCheck) {
+  _showDialogUpgrade(BuildContext context, bool autoCheck) {
     if (latestRelease == null && Get.context == null) return;
 
     String content = latestRelease!.body;
 
+    RouteUtil.materialTo(context, const UpgradeNoticePage());
+    return;
     ToastUtil.showDialog(
       clickClose: false,
       builder: (close) {

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
+import 'package:flutter_test_future/pages/upgrade/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
