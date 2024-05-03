@@ -19,7 +19,7 @@ class ClimbCycdm with Climb {
   String get idName => "cycdm";
 
   @override
-  String get defaultBaseUrl => "https://www.cycdm01.top";
+  String get defaultBaseUrl => "https://www.cycanime.com";
 
   @override
   String get sourceName => "次元城动漫";
