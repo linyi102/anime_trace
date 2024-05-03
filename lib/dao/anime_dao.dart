@@ -108,20 +108,6 @@ class AnimeDao {
     return animes;
   }
 
-  /// 查询某个动漫的动漫网址
-  static Future<String> getAnimeUrlById(int animeId) async {
-    var list = await db.rawQuery('''
-    select anime_url
-    from anime
-    where anime_id = $animeId
-    ''');
-    for (Map row in list) {
-      // 返回第一行的网址列
-      return row['anime_url'] ?? '';
-    }
-    return '';
-  }
-
   /// 找出相同名字的动漫
   static Future<List<Anime>> getDupAnimes() async {
     List<Anime> animes = [];
