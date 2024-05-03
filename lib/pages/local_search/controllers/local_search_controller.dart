@@ -80,11 +80,11 @@ class LocalSearchController extends GetxController {
     _checklistFilter,
     _labelFilter,
     _rateFilter,
-    _areaFilter,
-    _categoryFilter,
+    _sourceFilter,
     _airDateFilter,
     _playStatusFilter,
-    _sourceFilter,
+    _areaFilter,
+    _categoryFilter,
   ];
 
   void resetAll() {
