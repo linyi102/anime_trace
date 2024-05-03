@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/models/enum/search_source.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
@@ -176,9 +176,9 @@ class LocalSearchController extends GetxController {
     _setSelectedLabelTitle(_playStatusFilter, playStatus?.text);
   }
 
-  void setSource(AnimeSource? source) {
+  void setSource(ClimbWebsite? source) {
     localSelectFilter.source = source;
-    _setSelectedLabelTitle(_sourceFilter, source?.label);
+    _setSelectedLabelTitle(_sourceFilter, source?.name);
   }
 
   void _setSelectedLabelTitle(LocalSearchFilter filter, String? selectedLabel) {

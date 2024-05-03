@@ -1,7 +1,7 @@
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
 import 'package:flutter_test_future/models/enum/anime_category.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/models/enum/search_source.dart';
 import 'package:flutter_test_future/models/label.dart';
 
 class LocalSelectFilter {
@@ -14,7 +14,7 @@ class LocalSelectFilter {
   int? airDateYear;
   int? airDateMonth;
   PlayStatus? playStatus;
-  AnimeSource? source;
+  ClimbWebsite? source;
   LocalSelectFilter({
     this.keyword,
     this.checklist,
@@ -46,7 +46,7 @@ class LocalSelectFilter {
     int? airDateYear,
     int? airDateMonth,
     PlayStatus? playStatus,
-    AnimeSource? source,
+    ClimbWebsite? source,
   }) {
     return LocalSelectFilter(
       keyword: keyword ?? this.keyword,
