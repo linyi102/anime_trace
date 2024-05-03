@@ -430,7 +430,8 @@ class AnimeController extends GetxController {
     Anime oldAnime = anime.copyWith();
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
     Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
-    Anime newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime);
+    Anime newAnime =
+        await ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false);
     // 如果更新后动漫集数比原来的集数小，则不更新集数
     // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
     // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
@@ -457,54 +458,17 @@ class AnimeController extends GetxController {
       newAnime.animeDesc = oldAnime.animeDesc;
     }
 
-    if (anime.isCollected()) {
+    Future<void> updateDbAnime() async {
       // 如果收藏了，才去更新
-      bool updateCover = false;
+      bool shouldUpdateCover = false;
       // 提示是否更新封面
       if (oldAnime.animeCoverUrl != newAnime.animeCoverUrl) {
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("发现新封面"),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      RouteUtil.materialTo(context,
-                          NetworkImageViewPage(newAnime.animeCoverUrl));
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-                      child: SizedBox(
-                          width: 200,
-                          child: CommonImage(newAnime.animeCoverUrl)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  updateCover = false;
-                  Navigator.pop(context);
-                },
-                child: const Text("取消"),
-              ),
-              TextButton(
-                onPressed: () {
-                  updateCover = true;
-                  Navigator.pop(context);
-                },
-                child: const Text("更新"),
-              )
-            ],
-          ),
-        );
+        shouldUpdateCover =
+            await showDialogPickCover(context, newAnime.animeCoverUrl) ?? false;
       }
 
-      AnimeDao.updateAnime(oldAnime, newAnime, updateCover: updateCover)
+      await AnimeDao.updateAnime(oldAnime, newAnime,
+              updateCover: shouldUpdateCover)
           .then((value) {
         // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
         if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
@@ -515,12 +479,53 @@ class AnimeController extends GetxController {
           updateRecordController.updateSingleAnimeData(oldAnime, newAnime);
         }
       });
+      ToastUtil.showText('更新完毕');
     }
+
+    if (anime.isCollected()) updateDbAnime();
     climbing = false;
     updateAnime(newAnime);
     update([episodeId]);
 
     return true;
+  }
+
+  Future<bool?> showDialogPickCover(BuildContext context, String coverUrl) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("发现新封面"),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  RouteUtil.materialTo(context, NetworkImageViewPage(coverUrl));
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+                  child: SizedBox(width: 200, child: CommonImage(coverUrl)),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+            child: const Text("取消"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+            child: const Text("更新"),
+          )
+        ],
+      ),
+    );
   }
 
   playEpisode(Episode episode) {
