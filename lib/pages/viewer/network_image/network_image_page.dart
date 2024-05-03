@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:photo_view/photo_view.dart';
 
 class NetworkImageViewPage extends StatefulWidget {
@@ -17,6 +18,10 @@ class _NetworkImageViewPageState extends State<NetworkImageViewPage> {
     return PhotoView(
       imageProvider: imageProvider,
       onTapDown: (_, __, ___) => Navigator.pop(context),
+      loadingBuilder: (context, event) => Container(
+        color: Colors.black,
+        child: const Center(child: LoadingWidget()),
+      ),
       errorBuilder: (context, error, stackTrace) {
         return GestureDetector(
             onTap: () => Navigator.pop(context),
