@@ -220,6 +220,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           return AnimeDetailPage(anime);
         },
       ),
-    );
+    ).then((popAnime) {
+      _animes[index] = popAnime;
+    });
   }
 }

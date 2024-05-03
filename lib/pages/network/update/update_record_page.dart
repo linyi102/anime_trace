@@ -19,9 +19,16 @@ import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
-class UpdateRecordPage extends StatelessWidget {
-  UpdateRecordPage({Key? key}) : super(key: key);
+class UpdateRecordPage extends StatefulWidget {
+  const UpdateRecordPage({Key? key}) : super(key: key);
+
+  @override
+  State<UpdateRecordPage> createState() => _UpdateRecordPageState();
+}
+
+class _UpdateRecordPageState extends State<UpdateRecordPage> {
   final scrollController = ScrollController();
+
   UpdateRecordController get updateRecordController => Get.find();
 
   @override
@@ -146,7 +153,11 @@ class UpdateRecordPage extends StatelessWidget {
             builder: (context) {
               return AnimeDetailPage(record.anime);
             },
-          ));
+          )).then((popAnime) {
+            setState(() {
+              record.anime = popAnime;
+            });
+          });
         },
         onLongPress: () {
           // 提供删除操作
