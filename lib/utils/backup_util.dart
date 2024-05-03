@@ -102,10 +102,10 @@ class BackupUtil {
     if (localBackupDirPath.isNotEmpty) {
       // 已设置路径，直接备份
       if (localBackupDirPath != "unset") {
-        // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
-        await Directory("$localBackupDirPath/automatic").create();
         String localBackupFilePath;
         if (automatic) {
+          // 不管是否都会先创建文件夹，确保存在，否则不能拷贝
+          await Directory("$localBackupDirPath/automatic").create();
           localBackupFilePath = "$localBackupDirPath/automatic/$zipName";
         } else {
           localBackupFilePath = "$localBackupDirPath/$zipName";

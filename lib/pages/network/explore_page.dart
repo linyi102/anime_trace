@@ -69,11 +69,11 @@ class _ExplorePageState extends State<ExplorePage>
         actions: actions,
       ),
       body: CommonScaffoldBody(
-        child: CommonTabBarView(controller: _tabController, children: [
-          const AggregatePage(),
+        child: CommonTabBarView(controller: _tabController, children: const [
+          AggregatePage(),
           UpdateRecordPage(),
-          const WeeklyPage(),
-          const DirectoryPage(),
+          WeeklyPage(),
+          DirectoryPage(),
         ]),
       ),
       // floatingActionButton: _buildFAB(context),
