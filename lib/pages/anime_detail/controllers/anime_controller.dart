@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
@@ -9,14 +10,16 @@ import 'package:flutter_test_future/models/anime_episode_info.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/models/label.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_form.dart';
+import 'package:flutter_test_future/pages/viewer/network_image/network_image_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
-import 'package:photo_view/photo_view.dart';
 
 class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
@@ -463,27 +466,31 @@ class AnimeController extends GetxController {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text("发现新封面"),
-            content: const Text("检测到新封面，是否更新？"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  final imageProvider =
-                      Image.network(newAnime.animeCoverUrl).image;
-
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PhotoView(
-                          imageProvider: imageProvider,
-                          onTapDown: (_, __, ___) =>
-                              Navigator.of(context).pop())));
-                },
-                child: const Text("预览"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      RouteUtil.materialTo(context,
+                          NetworkImageViewPage(newAnime.animeCoverUrl));
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+                      child: SizedBox(
+                          width: 200,
+                          child: CommonImage(newAnime.animeCoverUrl)),
+                    ),
+                  ),
+                ],
               ),
+            ),
+            actions: [
               TextButton(
                 onPressed: () {
                   updateCover = false;
                   Navigator.pop(context);
                 },
-                child: const Text("跳过"),
+                child: const Text("取消"),
               ),
               TextButton(
                 onPressed: () {

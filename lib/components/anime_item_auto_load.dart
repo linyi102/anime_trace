@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/anime_grid_cover.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
+import 'package:flutter_test_future/pages/viewer/network_image/network_image_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:photo_view/photo_view.dart';
 
 /// 自动根据动漫详细地址来获取封面和信息
 /// 注意配合List/Grid.builder懒加载时，后面的组件因没有渲染，所以暂时不会获取封面和信息
@@ -231,12 +232,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     if (loading) return;
 
     // 查看图片
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PhotoView(
-                imageProvider: Image.network(anime.animeCoverUrl).image,
-                onTapDown: (_, __, ___) => Navigator.of(context).pop())));
+    RouteUtil.materialTo(context, NetworkImageViewPage(anime.animeCoverUrl));
   }
 
   void _enterDetailPage() {
