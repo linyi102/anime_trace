@@ -479,14 +479,13 @@ class AnimeController extends GetxController {
           updateRecordController.updateSingleAnimeData(oldAnime, newAnime);
         }
       });
+      updateAnime(newAnime);
+      update([episodeId]);
       ToastUtil.showText('更新完毕');
     }
 
     if (anime.isCollected()) updateDbAnime();
     climbing = false;
-    updateAnime(newAnime);
-    update([episodeId]);
-
     return true;
   }
 
