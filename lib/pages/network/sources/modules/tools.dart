@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_page.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/website_logo.dart';
@@ -49,6 +51,13 @@ class ToolsPage extends StatelessWidget {
               child: const Chip(
                   avatar: Icon(MingCuteIcons.mgc_film_line),
                   label: Text('照片墙'))),
+          GestureDetector(
+              onTap: () {
+                RouteUtil.materialTo(context, const AnimeAirDateListPage());
+              },
+              child: const Chip(
+                  avatar: Icon(MingCuteIcons.mgc_time_line),
+                  label: Text('时间线'))),
         ],
       ),
     );

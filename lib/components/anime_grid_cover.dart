@@ -20,6 +20,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool showProgressBar;
   final bool showReviewNumber;
   final bool showName;
+  final bool showSeries;
   final bool isSelected;
   final void Function()? onPressed;
   final bool loading;
@@ -32,6 +33,7 @@ class AnimeGridCover extends StatelessWidget {
     this.showProgressBar = false, // 只允许在收藏页显示进度条，聚合搜索页显示会报错
     this.showReviewNumber = true,
     this.showName = true,
+    this.showSeries = true,
     this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
@@ -167,7 +169,8 @@ class AnimeGridCover extends StatelessWidget {
   }
 
   _buildHasJoinedSeriesSymbol(BuildContext context, bool hasJoinedSeries) {
-    if (!AnimeDisplayController.to.showSeriesFlagInGridStyle.value ||
+    if (!showSeries ||
+        !AnimeDisplayController.to.showSeriesFlagInGridStyle.value ||
         !hasJoinedSeries) {
       return const SizedBox();
     }
