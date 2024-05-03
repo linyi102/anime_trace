@@ -3,6 +3,7 @@ import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
+import 'package:flutter_test_future/dao/key_value_dao.dart';
 import 'package:flutter_test_future/dao/label_dao.dart';
 import 'package:flutter_test_future/dao/series_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
@@ -61,6 +62,8 @@ class SqliteUtil {
     // 创建系列表、动漫系列表
     await SeriesDao.createTable();
     await AnimeSeriesDao.createTable();
+    // 创建键值对表
+    await KeyValueDao.createTable();
     return true;
   }
 
@@ -736,5 +739,16 @@ class SqliteUtil {
       add column order_idx INTEGER;
       ''');
     }
+  }
+
+  static Future<int> count(
+      {required String tableName, String? columnName = 'id'}) async {
+    final rows = await database
+        .query(tableName, columns: ['COUNT(${columnName ?? "*"})']);
+    return firstIntValue(rows);
+  }
+
+  static Future<int> firstIntValue(List<Map<String, Object?>> rows) async {
+    return rows.first.values.firstWhere((element) => element is int) as int;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/dao/config_dao.dart';
 import 'package:flutter_test_future/dao/series_dao.dart';
 import 'package:flutter_test_future/models/series.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
@@ -19,6 +20,9 @@ class SeriesManageLogic extends GetxController {
   List<Series> animeRecommendSeriesList = []; // 当前动漫推荐
   bool loadingRecommendSeriesList = true;
 
+  // 忽略的推荐系列
+  List<String> ignoredSerieNames = [];
+
   // 搜索
   var inputKeywordController = TextEditingController();
   String kw = "";
@@ -31,10 +35,16 @@ class SeriesManageLogic extends GetxController {
 
   @override
   void onInit() {
+    init();
     super.onInit();
+  }
+
+  Future<void> init() async {
+    ignoredSerieNames = await ConfigDao.getIgnoredRecommendSeries();
+
     // 避免路由动画时查询数据库导致动画卡顿
-    Future.delayed(const Duration(milliseconds: 100))
-        .then((value) => getAllSeries());
+    await Future.delayed(const Duration(milliseconds: 100));
+    getAllSeries();
   }
 
   @override
@@ -107,14 +117,16 @@ class SeriesManageLogic extends GetxController {
     var animes = await AnimeDao.getAllAnimes();
     for (var anime in animes) {
       String recommendSeriesName = _getRecommendSeriesName(anime.animeName);
-      if (recommendSeriesName.isNotEmpty &&
-          _isNotRecommended(recommendSeriesName, list) &&
-          // 为该动漫推荐了，则不在全部里展示
-          animeRecommendSeriesList.indexWhere(
-                  (element) => element.name == recommendSeriesName) <
-              0) {
-        list.add(Series(recommendSeriesId, recommendSeriesName));
-      }
+      if (recommendSeriesName.isEmpty) continue;
+      if (!_isNotRecommended(recommendSeriesName, list)) continue;
+      // 为该动漫推荐了，则不在全部里展示
+      if (animeRecommendSeriesList
+              .indexWhere((element) => element.name == recommendSeriesName) >=
+          0) continue;
+      // 忽略了该推荐
+      if (ignoredSerieNames.contains(recommendSeriesName)) continue;
+
+      list.add(Series(recommendSeriesId, recommendSeriesName));
     }
 
     allRecommendSeriesList = list;
@@ -167,5 +179,24 @@ class SeriesManageLogic extends GetxController {
         break;
       default:
     }
+  }
+
+  /// 忽略某个推荐系列
+  Future<void> ignoreSeries(String seriesName) async {
+    allRecommendSeriesList.removeWhere((e) => e.name == seriesName);
+    animeRecommendSeriesList.removeWhere((e) => e.name == seriesName);
+    update();
+
+    ignoredSerieNames.add(seriesName);
+    await ConfigDao.setIgnoredRecommendSeries(ignoredSerieNames);
+  }
+
+  /// 取消忽略某个推荐系列
+  Future<void> cancelIgnoreSeries(String seriesName) async {
+    allRecommendSeriesList.add(Series(recommendSeriesId, seriesName));
+    update();
+
+    ignoredSerieNames.remove(seriesName);
+    await ConfigDao.setIgnoredRecommendSeries(ignoredSerieNames);
   }
 }

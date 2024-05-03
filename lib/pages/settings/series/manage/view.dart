@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
+import 'package:flutter_test_future/pages/settings/series/manage/widgets/ignored_series_list_view.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
@@ -209,7 +210,24 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             init: logic,
             tag: logic.tag,
             builder: (_) => Scaffold(
-              appBar: AppBar(title: const Text('推荐')),
+              appBar: AppBar(
+                title: const Text('推荐'),
+                actions: [
+                  if (logic.ignoredSerieNames.isNotEmpty)
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                          onPressed: () {
+                            showCommonModalBottomSheet(
+                              context: context,
+                              builder: (context) =>
+                                  IgnoredSeriesListView(logic: logic),
+                            );
+                          },
+                          child: const Text('已忽略')),
+                    )
+                ],
+              ),
               body: Stack(
                 children: [
                   CommonScaffoldBody(
@@ -405,6 +423,14 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                       ),
                     ),
                   const Spacer(),
+                  if (series.id == logic.recommendSeriesId)
+                    TextButton(
+                        onPressed: () => logic.ignoreSeries(series.name),
+                        child: Text(
+                          '忽略',
+                          style: TextStyle(
+                              fontSize: 12, color: Theme.of(context).hintColor),
+                        )),
                   _buildActionButton(context, series),
                 ],
               ),
