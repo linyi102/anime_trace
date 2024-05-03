@@ -135,7 +135,8 @@ class ChecklistController extends GetxController
   String get desc {
     String res = "";
     for (int i = 0; i < tags.length; ++i) {
-      res += "${tags[i]}(${animeCntPerTag[i]})";
+      res += tags[i];
+      if (i < animeCntPerTag.length) res += "(${animeCntPerTag[i]})";
       if (i + 1 < tags.length) res += " ";
     }
     return res;
