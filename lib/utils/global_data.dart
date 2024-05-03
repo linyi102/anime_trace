@@ -76,7 +76,7 @@ final cycClimbWebsite = ClimbWebsite(
   enable: SPUtil.getBool("enableWebSiteCycdm", defaultValue: false),
   pingStatus: PingStatus(),
   climb: ClimbCycdm(),
-  supportPlayVideo: true,
+  supportPlayVideo: false,
   desc: "高质量在线追番平台！",
 );
 
