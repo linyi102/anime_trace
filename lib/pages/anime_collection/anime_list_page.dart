@@ -11,7 +11,7 @@ import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
+import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';

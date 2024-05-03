@@ -4,14 +4,14 @@ import 'package:flutter_test_future/components/anime_list_tile.dart';
 import 'package:flutter_test_future/components/empty_data_hint.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class AnimeListInSource extends StatefulWidget {
-  final String sourceKeyword; // 表示搜索源的关键字
-  const AnimeListInSource({Key? key, required this.sourceKeyword})
-      : super(key: key);
+  final ClimbWebsite website;
+  const AnimeListInSource({Key? key, required this.website}) : super(key: key);
 
   @override
   State<AnimeListInSource> createState() => _AnimeListInSourceState();
@@ -29,7 +29,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   void initState() {
     super.initState();
     // 获取动漫总数
-    AnimeDao.getAnimesCntBySourceKeyword(widget.sourceKeyword).then((value) {
+    AnimeDao.getAnimesCntInSource(widget.website.id).then((value) {
       cnt = value;
       Log.info("该搜索源下的动漫总数：$cnt");
       setState(() {});
@@ -39,8 +39,8 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   }
 
   _loadData() {
-    AnimeDao.getAnimesBySourceKeyword(
-            sourceKeyword: widget.sourceKeyword, pageParams: pageParams)
+    AnimeDao.getAnimesInSource(
+            sourceId: widget.website.id, pageParams: pageParams)
         .then((value) {
       animes = value;
       loadOk = true;
@@ -51,8 +51,8 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
   _loadMoreData() {
     pageParams.pageIndex++;
     Log.info("加载更多数据中，当前数量：${animes.length})");
-    AnimeDao.getAnimesBySourceKeyword(
-            sourceKeyword: widget.sourceKeyword, pageParams: pageParams)
+    AnimeDao.getAnimesInSource(
+            sourceId: widget.website.id, pageParams: pageParams)
         .then((value) {
       animes.addAll(value);
       Log.info("加载更多数据完毕，当前数量：${animes.length})");

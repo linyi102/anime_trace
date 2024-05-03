@@ -5,7 +5,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 class AnimeRatingBar extends StatelessWidget {
   const AnimeRatingBar(
       {required this.rate,
-      required this.onRatingUpdate,
+      this.onRatingUpdate,
       this.enableRate = true,
       this.iconSize,
       this.spacing,
@@ -15,7 +15,7 @@ class AnimeRatingBar extends StatelessWidget {
   final double? iconSize;
   final double? spacing;
   final bool enableRate;
-  final void Function(double) onRatingUpdate;
+  final void Function(double)? onRatingUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class AnimeRatingBar extends StatelessWidget {
             unratedColor: Colors.grey.withOpacity(0.5),
             itemBuilder: (context, _) =>
                 Icon(MingCuteIcons.mgc_star_fill, color: Colors.amber[600]),
-            onRatingUpdate: onRatingUpdate)
+            onRatingUpdate: onRatingUpdate ?? (_) {})
         // 评分栏指示器，不能点击star来评分
         : RatingBarIndicator(
             rating: rate.toDouble(),

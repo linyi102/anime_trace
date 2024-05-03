@@ -215,8 +215,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 onTap: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return AnimeListInSource(
-                        sourceKeyword: curClimbWebsite.keyword);
+                    return AnimeListInSource(website: curClimbWebsite);
                   }));
                 },
               ),

@@ -69,16 +69,19 @@ class ClimbAnimeUtil {
       return anime;
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
-    if (climb != null) {
-      try {
-        // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
-        anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+    if (climb == null) return anime;
 
-        anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
-            anime.animeEpisodeCnt, anime.episodeStartNumber);
-      } catch (e) {
-        e.printError();
-      }
+    // 使用最新的搜索源网址进行爬取
+    anime.animeUrl = anime.animeUrl.replaceFirst(
+        RegExp(r'https{0,1}:\/\/.+?\/'),
+        climb.baseUrl.endsWith('/') ? climb.baseUrl : '${climb.baseUrl}/');
+    try {
+      // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
+      anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+      anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
+          anime.animeEpisodeCnt, anime.episodeStartNumber);
+    } catch (e) {
+      e.printError();
     }
     return anime;
   }

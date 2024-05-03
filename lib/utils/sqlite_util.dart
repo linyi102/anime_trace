@@ -50,6 +50,8 @@ class SqliteUtil {
     await SqliteUtil.addColumnEpisodeStartNumberToAnime();
     // 为动漫表增加集号是否从第1集计算
     await SqliteUtil.addColumnCalEpisodeNumberFromOneToAnime();
+    // 为动漫表增加搜索源
+    await AnimeDao.addColumnSourceForAnime();
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序
@@ -235,7 +237,7 @@ class SqliteUtil {
     }
   }
 
-  static addColumnRateToAnime() async {
+  static Future<void> addColumnRateToAnime() async {
     var list = await database.rawQuery('''
     select * from sqlite_master where name = 'anime' and sql like '%rate%';
     ''');
@@ -256,8 +258,8 @@ class SqliteUtil {
     }
   }
 
-  static addColumnEpisodeStartNumberToAnime() async {
-    _addColumnName(
+  static Future<void> addColumnEpisodeStartNumberToAnime() async {
+    await addColumnName(
       tableName: 'anime',
       columnName: 'episode_start_number',
       columnType: 'INTEGER',
@@ -265,8 +267,8 @@ class SqliteUtil {
     );
   }
 
-  static addColumnCalEpisodeNumberFromOneToAnime() async {
-    _addColumnName(
+  static Future<void> addColumnCalEpisodeNumberFromOneToAnime() async {
+    await addColumnName(
       tableName: 'anime',
       columnName: 'cal_episode_number_from_one',
       columnType: 'INTEGER',
@@ -274,35 +276,36 @@ class SqliteUtil {
     );
   }
 
-  static _addColumnName({
+  static Future<void> addColumnName({
     required String tableName,
     required String columnName,
     required String columnType,
     dynamic initialValue,
     String logName = '',
+    Function()? whenAddSuccess,
   }) async {
     var list = await database.rawQuery('''
       select * from sqlite_master where name = '$tableName' and sql like '%$columnName%';
       ''');
+    if (list.isNotEmpty) return;
     // 没有列时添加
-    if (list.isEmpty) {
-      Log.info("sql: $logName");
-      await database.execute('''
-        alter table $tableName
-        add column $columnName $columnType;
-        ''');
+    Log.info("sql: $logName");
+    await database.execute('''
+      alter table $tableName
+      add column $columnName $columnType;
+    ''');
 
-      if (initialValue != null) {
-        await database.rawUpdate('''
-          update $tableName
-          set $columnName = $initialValue
-          where $columnName is NULL;
-          ''');
-      }
+    if (initialValue != null) {
+      await database.rawUpdate('''
+        update $tableName
+        set $columnName = $initialValue
+        where $columnName is NULL;
+      ''');
     }
+    whenAddSuccess?.call();
   }
 
-  static addColumnTwoTimeToEpisodeNote() async {
+  static Future<void> addColumnTwoTimeToEpisodeNote() async {
     var list = await database.rawQuery('''
     select * from sqlite_master where name = 'episode_note' and sql like '%create_time%';
     ''');
@@ -711,7 +714,7 @@ class SqliteUtil {
     return res;
   }
 
-  static createTableUpdateRecord() async {
+  static Future<void> createTableUpdateRecord() async {
     await database.execute('''
       CREATE TABLE IF NOT EXISTS update_record (
           id                 INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -727,7 +730,7 @@ class SqliteUtil {
       ''');
   }
 
-  static addColumnOrderIdxToImage() async {
+  static Future<void> addColumnOrderIdxToImage() async {
     var list = await database.rawQuery('''
     select * from sqlite_master where name = 'image' and sql like '%order_idx%';
     ''');

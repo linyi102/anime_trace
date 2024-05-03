@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/play_status.dart';
+import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 
 showDialogSelectPlayStatus(

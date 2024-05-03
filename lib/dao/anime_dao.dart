@@ -1,7 +1,14 @@
+import 'package:flutter_test_future/dao/anime_label_dao.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/models/anime_episode_info.dart';
+import 'package:flutter_test_future/models/enum/anime_area.dart';
+import 'package:flutter_test_future/models/enum/anime_category.dart';
+import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
+import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/escape_util.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -11,6 +18,9 @@ class AnimeDao {
   static final db = SqliteUtil.database;
 
   static const String table = 'anime';
+  static const String columnId = 'anime_id';
+  static const String columnUrl = 'anime_url';
+  static const String columnSource = 'anime_source';
 
   static Future<List<Anime>> getAllAnimes() async {
     Log.info("sql: getAllAnimes");
@@ -63,29 +73,29 @@ class AnimeDao {
   }
 
   /// 查询某个搜索源下的动漫数量
-  static Future<int> getAnimesCntBySourceKeyword(String sourceKeyword) async {
+  static Future<int> getAnimesCntInSource(int sourceId) async {
     List<Map<String, Object?>> list = await db.rawQuery('''
-    select count(anime_id) cnt
-    from anime
-    where anime_url like '%$sourceKeyword%';
+      select count(anime_id) cnt
+      from anime
+      where $columnSource = $sourceId;
     ''');
     return list[0]['cnt'] as int;
   }
 
   /// 查询某个搜索源下的所有动漫
-  static Future<List<Anime>> getAnimesBySourceKeyword(
-      {required String sourceKeyword, required PageParams pageParams}) async {
+  static Future<List<Anime>> getAnimesInSource(
+      {required int sourceId, required PageParams pageParams}) async {
     List<Anime> animes = [];
 
     // id用于表示动漫，name和cover用于显示，url用于确定是否已迁移
     List<Map<String, Object?>> list = await db.rawQuery('''
-    select anime_id, anime_name, anime_cover_url, anime_url
-    from anime
-    where anime_url like '$sourceKeyword'
-    order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+      select anime_id, anime_name, anime_cover_url, anime_url
+      from anime
+      where $columnSource = $sourceId
+      order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
     ''');
     Log.info(
-        "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceKeyword下的动漫");
+        "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceId下的动漫");
     for (Map row in list) {
       Anime anime = Anime(
           animeId: row['anime_id'],
@@ -96,20 +106,6 @@ class AnimeDao {
     }
 
     return animes;
-  }
-
-  /// 查询某个动漫的动漫网址
-  static Future<String> getAnimeUrlById(int animeId) async {
-    var list = await db.rawQuery('''
-    select anime_url
-    from anime
-    where anime_id = $animeId
-    ''');
-    for (Map row in list) {
-      // 返回第一行的网址列
-      return row['anime_url'] ?? '';
-    }
-    return '';
   }
 
   /// 找出相同名字的动漫
@@ -197,6 +193,7 @@ class AnimeDao {
   /// 添加动漫
   static Future<int> insertAnime(Anime anime) async {
     Log.info("sql: insertAnime(anime:$anime)");
+    final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(anime.animeUrl);
 
     String datetime = DateTime.now().toString();
     return db.insert('anime', {
@@ -217,10 +214,11 @@ class AnimeDao {
       'category': anime.category,
       'anime_url': anime.animeUrl,
       'review_number': anime.reviewNumber,
+      columnSource: website?.id,
     });
   }
 
-  /// 搜索动漫
+  /// 根据关键字搜索动漫
   static Future<List<Anime>> getAnimesBySearch(String keyword) async {
     Log.info("sql: getAnimesBySearch");
     keyword = EscapeUtil.escapeStr(keyword);
@@ -245,11 +243,107 @@ class AnimeDao {
         animeEpisodeCnt: element['anime_episode_cnt'] as int? ?? 0,
         checkedEpisodeCnt: checkedEpisodeCnt,
         animeCoverUrl: element['anime_cover_url'] as String? ?? "",
+        premiereTime: element['premiere_time'] as String? ?? '',
         reviewNumber: reviewNumber,
       );
       res.add(anime);
     }
+    res.sort((a, b) => -a.premiereTime.compareTo(b.premiereTime));
     return res;
+  }
+
+  static Future<List<Anime>> complexSearch(LocalSelectFilter filter) async {
+    List<Anime> result = [];
+
+    final keywordSql = filter.keyword == null || filter.keyword!.isEmpty
+        ? ''
+        // 此处为or，需要添加()来避免优先级错误
+        : '(anime_name like "%${filter.keyword}%" or name_another like "%${filter.keyword}%")';
+    final checklistSql = filter.checklist == null || filter.checklist!.isEmpty
+        ? ''
+        : 'tag_name = "${filter.checklist}"';
+    final areaSql = filter.area == null
+        ? ''
+        : 'area = "${filter.area == AnimeArea.unknown ? '' : filter.area!.label}"';
+    final categorySql = filter.category == null
+        ? ''
+        : 'category = "${filter.category == AnimeCategory.unknown ? '' : filter.category!.label}"';
+    final airDateSql = filter.airDate == null
+        ? ''
+        : 'premiere_time like "%${filter.airDate}%"';
+    final playStatusSql = filter.playStatus == null
+        ? ''
+        : PlayStatus.toWhereSql(filter.playStatus!);
+    final sourceSql = filter.source == null
+        ? ''
+        : () {
+            if (filter.source?.id == customSourceId) {
+              return '$columnSource is null';
+            } else {
+              return '$columnSource = ${filter.source?.id}';
+            }
+          }();
+    // rate为null表示不根据评分搜索
+    final rateSql = filter.rate == null ? '' : 'rate = ${filter.rate}';
+    final sqls = [
+      keywordSql,
+      checklistSql,
+      areaSql,
+      categorySql,
+      airDateSql,
+      playStatusSql,
+      rateSql,
+      sourceSql,
+    ].where((sql) => sql.isNotEmpty);
+
+    if (sqls.isEmpty) {
+      if (filter.labels.isEmpty) return [];
+      result = await AnimeLabelDao.getAnimesByLabelIds(
+          filter.labels.map((e) => e.id).toList());
+    } else {
+      final list = await db.rawQuery('''
+        select * from $table
+        where ${sqls.join(' and ')}
+      ''');
+      final List<Anime> animes = [];
+      for (final row in list) {
+        int animeId = row['anime_id'] as int;
+        int reviewNumber = row['review_number'] as int;
+        int checkedEpisodeCnt = await SqliteUtil.getCheckedEpisodeCntByAnimeId(
+            animeId,
+            reviewNumber: reviewNumber);
+        Anime anime = Anime(
+          animeId: animeId,
+          // 进入详细页面后需要该id
+          animeName: row['anime_name'] as String? ?? "",
+          nameAnother: row['name_another'] as String? ?? "",
+          animeEpisodeCnt: row['anime_episode_cnt'] as int? ?? 0,
+          checkedEpisodeCnt: checkedEpisodeCnt,
+          animeCoverUrl: row['anime_cover_url'] as String? ?? "",
+          premiereTime: row['premiere_time'] as String? ?? '',
+          reviewNumber: reviewNumber,
+        );
+        animes.add(anime);
+      }
+      if (filter.labels.isEmpty) {
+        result = animes;
+      } else {
+        // 从标签查询的动漫列表中过滤动漫
+        final labelAnimes = await AnimeLabelDao.getAnimesByLabelIds(
+            filter.labels.map((e) => e.id).toList());
+        for (final labelAnime in labelAnimes) {
+          if (animes
+                  .indexWhere((anime) => anime.animeId == labelAnime.animeId) >=
+              0) {
+            result.add(labelAnime);
+          }
+        }
+      }
+    }
+
+    // 按首播时间升序排列
+    result.sort((a, b) => a.premiereTime.compareTo(b.premiereTime));
+    return result;
   }
 
   /// 迁移动漫、全局更新动漫
@@ -315,10 +409,10 @@ class AnimeDao {
     if (newAnime.category.isEmpty | !updateInfo) {
       newAnime.category = oldAnime.category;
     }
-
     if (newAnime.animeUrl.isEmpty | !updateAnimeUrl) {
       newAnime.animeUrl = oldAnime.animeUrl;
     }
+    final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(newAnime.animeUrl);
 
     if (newAnime.reviewNumber == 0) {
       if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
@@ -343,7 +437,8 @@ class AnimeDao {
           'official_site': newAnime.officialSite,
           'category': newAnime.category,
           'anime_url': newAnime.animeUrl,
-          'review_number': newAnime.reviewNumber
+          'review_number': newAnime.reviewNumber,
+          columnSource: website?.id,
         },
         where: 'anime_id = ?',
         whereArgs: [oldAnime.animeId]);
@@ -390,14 +485,20 @@ class AnimeDao {
     ''');
   }
 
-  static void updateAnimeUrl(int animeId, String animeUrl) async {
+  static Future<void> updateAnimeUrl(int animeId, String animeUrl) async {
     Log.info("sql: updateAnimeUrl");
     animeUrl = EscapeUtil.escapeStr(animeUrl);
-    db.rawUpdate('''
-    update anime
-    set anime_url = '$animeUrl'
-    where anime_id = $animeId;
-    ''');
+    final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl);
+
+    await db.update(
+      table,
+      {
+        columnUrl: animeUrl,
+        columnSource: website?.id,
+      },
+      where: '$columnId = ?',
+      whereArgs: [animeId],
+    );
   }
 
   static Future<void> updateAnimeCoverUrl(
@@ -610,5 +711,45 @@ class AnimeDao {
     anime.nameAnother = EscapeUtil.restoreEscapeStr(anime.nameAnother);
     anime.nameOri = EscapeUtil.restoreEscapeStr(anime.nameOri);
     return anime;
+  }
+
+  /// 新增搜索源列
+  static Future<void> addColumnSourceForAnime() async {
+    Future<void> updateAllAnimeSource() async {
+      int pageSize = 50;
+      for (int pageIndex = 0;; pageIndex++) {
+        final rows = await db.query(
+          table,
+          columns: [columnId, columnUrl],
+          offset: pageIndex * pageSize,
+          limit: pageSize,
+        );
+        if (rows.isEmpty) break;
+
+        for (final row in rows) {
+          updateSource(row[columnId] as int?, row[columnUrl] as String?);
+        }
+      }
+    }
+
+    await SqliteUtil.addColumnName(
+      tableName: table,
+      columnName: columnSource,
+      columnType: 'INTEGER',
+      logName: 'addColumnSourceForAnime',
+      whenAddSuccess: updateAllAnimeSource,
+    );
+  }
+
+  static Future<void> updateSource(int? animeId, String? url) async {
+    if (animeId == null || url == null) return;
+    final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(url);
+
+    await db.update(
+      table,
+      {columnSource: website?.id},
+      where: '$columnId = ?',
+      whereArgs: [animeId],
+    );
   }
 }

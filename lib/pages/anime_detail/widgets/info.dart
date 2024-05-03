@@ -5,7 +5,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_checklist.da
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/pages/anime_collection/db_anime_search.dart';
+import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';

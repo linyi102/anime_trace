@@ -12,7 +12,7 @@ import '../../../../dao/anime_series_dao.dart';
 import '../../../../models/anime.dart';
 import '../../../../models/series.dart';
 import '../../../../widgets/common_scaffold_body.dart';
-import '../../../anime_collection/db_anime_search.dart';
+import '../../../local_search/views/local_search_page.dart';
 import '../../../anime_detail/anime_detail.dart';
 
 class SeriesDetailPage extends StatefulWidget {
