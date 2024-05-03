@@ -169,6 +169,7 @@ class MyAppState extends State<MyApp> {
       pageTransitionsTheme: _getPageTransitionsTheme(),
       floatingActionButtonTheme: _getFABTheme(dark),
       listTileTheme: _getListTileTheme(dark),
+      dialogTheme: _getDialogTheme(dark),
     );
   }
 
@@ -180,6 +181,7 @@ class MyAppState extends State<MyApp> {
       pageTransitionsTheme: _getPageTransitionsTheme(),
       floatingActionButtonTheme: _getFABTheme(light),
       listTileTheme: _getListTileTheme(light),
+      dialogTheme: _getDialogTheme(light),
       // 202308052321
       appBarTheme: light.appBarTheme.copyWith(
         systemOverlayStyle: const SystemUiOverlayStyle(
@@ -188,6 +190,15 @@ class MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  DialogTheme _getDialogTheme(ThemeData light) {
+    return light.dialogTheme.copyWith(
+        contentTextStyle: TextStyle(
+      fontSize: 15,
+      color: light.colorScheme.onSurface,
+      height: 1.6,
+    ));
   }
 
   FloatingActionButtonThemeData _getFABTheme(ThemeData themeData) {
