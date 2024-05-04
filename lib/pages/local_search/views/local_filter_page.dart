@@ -59,8 +59,12 @@ class _LocalFilterPageState extends State<LocalFilterPage>
           controller: tabController,
           children: [...filters.map((e) => e.filterView)]),
       bottomNavigationBar: SelectViewAction(
-          onReset: widget.localSearchController.resetAll,
-          onApply: widget.localSearchController.search),
+        onReset: widget.localSearchController.resetAll,
+        onApply: () {
+          // 每切换过滤条件都会进行搜索，因此点击确定后不用再次搜索
+          // widget.localSearchController.search();
+        },
+      ),
     );
   }
 }
