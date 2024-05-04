@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/models/enum/project_uri.dart';
 import 'package:flutter_test_future/pages/upgrade/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
@@ -6,7 +9,8 @@ import 'package:flutter_test_future/widgets/limit_width_center.dart';
 import 'package:get/get.dart';
 
 class UpgradeMethodPage extends StatefulWidget {
-  const UpgradeMethodPage({super.key});
+  const UpgradeMethodPage({this.showBackLeading = false, super.key});
+  final bool showBackLeading;
 
   @override
   State<UpgradeMethodPage> createState() => _UpgradeMethodPageState();
@@ -16,6 +20,7 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
   final upgradeController = AppUpgradeController.to;
   final urls = ['github.com', 'kgithub.com', 'download.nuaa.cf', 'git.xfj0.cn'];
   late String selectedUrl = urls.first;
+  late bool supportDirectDownload = Platform.isAndroid;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +42,7 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildBackButton(context),
+                        // _buildDownloadType(),
                         _buildDownloadMethods(context),
                         _buildOtherMethods(context),
                       ],
@@ -45,7 +51,7 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
                 ),
               ),
               const CommonDivider(padding: EdgeInsets.symmetric(vertical: 10)),
-              _buildDownloadButton(context),
+              _buildBottomActions(context),
             ],
           ),
         ),
@@ -53,7 +59,9 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
     );
   }
 
-  Container _buildBackButton(BuildContext context) {
+  Widget _buildBackButton(BuildContext context) {
+    if (!widget.showBackLeading) return const SizedBox();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: IconButton(
@@ -63,30 +71,50 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
     );
   }
 
-  AlignLimitedBox _buildDownloadButton(BuildContext context) {
-    return AlignLimitedBox(
-      maxWidth: AppTheme.formMaxWidth,
-      alignment: Alignment.topCenter,
-      child: Container(
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-          height: 36,
-          width: MediaQuery.of(context).size.width,
-          child: ElevatedButton(onPressed: () {}, child: const Text('下载'))),
-    );
-  }
-
-  Column _buildDownloadMethods(BuildContext context) {
+  // ignore: unused_element
+  Column _buildDownloadType() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-          child: Row(
-            children: [
-              Text('选择下载源', style: Theme.of(context).textTheme.titleLarge),
+        _buildTitle('选择下载类型'),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SegmentedButton<int>(
+            multiSelectionEnabled: false,
+            emptySelectionAllowed: false,
+            segments: const [
+              ButtonSegment(value: 0, label: Text('便捷版')),
+              ButtonSegment(value: 1, label: Text('安装版')),
             ],
+            selected: const {0},
+            onSelectionChanged: (p0) {},
+            // style: const ButtonStyle(
+            //     visualDensity: VisualDensity.compact,
+            //     textStyle: MaterialStatePropertyAll(TextStyle(fontSize: 14))),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildDownloadMethods(BuildContext context) {
+    if (!supportDirectDownload) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        _buildTitle('选择下载源'),
+        Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Text(
+              '当前不支持直接下载',
+              style: TextStyle(color: Theme.of(context).hintColor),
+            )),
+        const SizedBox(height: 20),
+      ]);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTitle('选择下载源'),
         for (var index = 0; index < urls.length; index++)
           RadioListTile(
             title: Text(index == 0 ? 'GitHub' : '镜像 $index'),
@@ -94,11 +122,6 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
             dense: true,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            // secondary: SizedBox(
-            //   height: 30,
-            //   child: OutlinedButton(
-            //       onPressed: () {}, child: const Text('下载')),
-            // ),
             groupValue: selectedUrl,
             value: urls[index],
             onChanged: (String? value) {
@@ -107,26 +130,6 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
               });
             },
           ),
-
-        // ListTile(
-        //   title: const Text('GitHub'),
-        //   subtitle: const Text('github.com'),
-        //   trailing: SizedBox(
-        //     height: 30,
-        //     child: OutlinedButton(
-        //         onPressed: () {}, child: const Text('下载')),
-        //   ),
-        // ),
-        // for (var index = 0; index < urls.length; index++)
-        //   ListTile(
-        //     title: Text('镜像 ${index + 1}'),
-        //     subtitle: Text(urls[index]),
-        //     trailing: SizedBox(
-        //       height: 30,
-        //       child: OutlinedButton(
-        //           onPressed: () {}, child: const Text('下载')),
-        //     ),
-        //   ),
       ],
     );
   }
@@ -135,25 +138,61 @@ class _UpgradeMethodPageState extends State<UpgradeMethodPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-          child: Text('或访问网站下载', style: Theme.of(context).textTheme.titleLarge),
-        ),
+        _buildTitle(supportDirectDownload ? '或访问网站下载' : '访问网站下载'),
         SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           scrollDirection: Axis.horizontal,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ...['GitHub', 'Gitee', '蓝奏云', '百度网盘'].map((e) => Container(
-                    height: 30,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    child: TextButton(onPressed: () {}, child: Text(e)),
-                  ))
+              ...ProjectUri.values
+                  .where((e) => e.isDownloadChannel)
+                  .map((e) => Container(
+                        height: 30,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextButton(
+                            onPressed: () => e.launch(context),
+                            child: Text(e.label)),
+                      ))
             ],
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildBottomActions(BuildContext context) {
+    return AlignLimitedBox(
+      maxWidth: AppTheme.formMaxWidth,
+      alignment: Alignment.topCenter,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (supportDirectDownload) ...[
+              SizedBox(
+                  height: 36,
+                  child: ElevatedButton(
+                      onPressed: () {}, child: const Text('下载'))),
+              const SizedBox(height: 10),
+            ],
+            SizedBox(
+                height: 36,
+                width: MediaQuery.of(context).size.width,
+                child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('取消'))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+      child: Text(title, style: Theme.of(context).textTheme.titleLarge),
     );
   }
 }

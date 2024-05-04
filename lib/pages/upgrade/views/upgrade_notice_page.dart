@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
@@ -19,6 +21,8 @@ class UpgradeNoticePage extends StatefulWidget {
 
 class UpgradeNoticePageState extends State<UpgradeNoticePage> {
   final upgradeController = AppUpgradeController.to;
+  final emojis = ['🤩', '🥰', '🥳', '🔥', '🎉', '🌟', '🌈'];
+  late final emoji = emojis[Random().nextInt(emojis.length)];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +88,10 @@ class UpgradeNoticePageState extends State<UpgradeNoticePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text('🤩', style: TextStyle(fontSize: 36)),
+        Text(
+          emoji,
+          style: const TextStyle(fontSize: 36),
+        ),
         Padding(
           padding: const EdgeInsets.only(top: 10, bottom: 0),
           child: Text(
@@ -155,7 +162,10 @@ class UpgradeNoticePageState extends State<UpgradeNoticePage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        upgradeController.ignoreVersion();
+                        Navigator.pop(context);
+                      },
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Text('忽略该版本'),
@@ -172,6 +182,7 @@ class UpgradeNoticePageState extends State<UpgradeNoticePage> {
                       onPressed: () => RouteUtil.materialTo(
                             context,
                             const UpgradeMethodPage(),
+                            replace: true,
                           ),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 5),

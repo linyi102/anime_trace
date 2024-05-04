@@ -1,11 +1,12 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
+import 'package:flutter_test_future/models/enum/project_uri.dart';
 import 'package:flutter_test_future/pages/upgrade/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/values/assets.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
@@ -66,25 +67,15 @@ class _AboutVersionState extends State<AboutVersion> {
                           builder: (context) => const ChangelogPage()));
                 }),
             ListTile(
-                title: const Text("下载地址"),
+                title: const Text("蓝奏云下载"),
                 subtitle: const Text("密码：eocv"),
                 trailing: const Icon(EvaIcons.externalLink),
-                onTap: () {
-                  LaunchUrlUtil.launch(
-                      context: context,
-                      uriStr: "https://wwc.lanzouw.com/b01uyqcrg?password=eocv",
-                      inApp: false);
-                }),
+                onTap: () => ProjectUri.lanzou.launch(context)),
             ListTile(
                 title: const Text("QQ 交流群"),
                 subtitle: const Text("414226908"),
                 trailing: const Icon(EvaIcons.externalLink),
-                onTap: () {
-                  LaunchUrlUtil.launch(
-                      context: context,
-                      uriStr: "https://jq.qq.com/?_wv=1027&k=qOpUIx7x",
-                      inApp: false);
-                }),
+                onTap: () => ProjectUri.qqGroup.launch(context)),
           ],
         ),
       ],
@@ -97,11 +88,7 @@ class _AboutVersionState extends State<AboutVersion> {
       children: [
         IconButton(
           splashRadius: 20,
-          onPressed: () {
-            LaunchUrlUtil.launch(
-                context: context,
-                uriStr: "https://github.com/linyi102/anime_trace");
-          },
+          onPressed: () => ProjectUri.github.launch(context),
           icon: SvgAssetIcon(
             assetPath: Assets.iconsGithub,
             color: Theme.of(context).brightness == Brightness.dark
@@ -111,12 +98,7 @@ class _AboutVersionState extends State<AboutVersion> {
         ),
         IconButton(
           splashRadius: 20,
-          onPressed: () {
-            LaunchUrlUtil.launch(
-                context: context,
-                uriStr: "https://gitee.com/linyi517/anime_trace",
-                inApp: false);
-          },
+          onPressed: () => ProjectUri.gitee.launch(context),
           icon: const SvgAssetIcon(
             assetPath: Assets.iconsGitee,
             color: Color.fromRGBO(187, 33, 36, 1),

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:animations/animations.dart';
 import 'package:app_installer/app_installer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +93,8 @@ class AppUpgradeController extends GetxController {
           // 自动检查时若忽略了该新版本，则不提示
           Log.info('忽略了新版本：$latestVersion');
         } else {
-          _showDialogUpgrade(context, autoCheck);
+          if (latestRelease == null) return;
+          RouteUtil.materialTo(context, const UpgradeNoticePage());
         }
       } else {
         if (showToast) ToastUtil.showText('已是最新版本');
@@ -121,45 +121,8 @@ class AppUpgradeController extends GetxController {
     update();
   }
 
-  _showDialogUpgrade(BuildContext context, bool autoCheck) {
-    if (latestRelease == null && Get.context == null) return;
-
-    String content = latestRelease!.body;
-
-    RouteUtil.materialTo(context, const UpgradeNoticePage());
-    return;
-    ToastUtil.showDialog(
-      clickClose: false,
-      builder: (close) {
-        var scrollController = ScrollController();
-
-        return AlertDialog(
-          title: Text('发现新版本 ${latestRelease!.tagName}'),
-          content: Scrollbar(
-              controller: scrollController,
-              child: SingleChildScrollView(
-                  controller: scrollController, child: Text(content))),
-          actions: [
-            // 自动检查时，提供忽略操作
-            if (autoCheck)
-              TextButton(
-                onPressed: () {
-                  SPUtil.setBool(ignoreVersionKey, true);
-                  close();
-                },
-                child: const Text("忽略"),
-              ),
-            TextButton(onPressed: () => close(), child: const Text('取消')),
-            TextButton(
-                onPressed: () {
-                  close();
-                  _onSelectDownloadWay();
-                },
-                child: const Text('下载')),
-          ],
-        );
-      },
-    );
+  void ignoreVersion() {
+    SPUtil.setBool(ignoreVersionKey, true);
   }
 
   Future<String?> _getAndroidDownloadDir() async {
