@@ -12,22 +12,19 @@ import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbAnimeUtil {
-  // 根据动漫网址中的关键字来判断来源
+  /// 根据动漫网址获取搜索源
   static ClimbWebsite? getClimbWebsiteByAnimeUrl(String animeUrl) {
     for (var climbWebsite in climbWebsites) {
-      // 存在animeUrl以https://www.agemys.cc/和https://www.agemys.com/开头的，因此都需要解释为age动漫源
-      // 因此采用contain keyword，而不是startWith baseUrl
-      // if (animeUrl.startsWith(climbWebsite.baseUrl)) {
-      //   return climbWebsite;
-      // }
-      if (RegExp(climbWebsite.regexp).hasMatch(animeUrl)) {
+      // 先使用baseUrl来获取搜索源，避免用户自定义网址后无法根据regexp找到该搜索源
+      if (animeUrl.startsWith(climbWebsite.climb.baseUrl) ||
+          RegExp(climbWebsite.regexp).hasMatch(animeUrl)) {
         return climbWebsite;
       }
     }
     return null;
   }
 
-  // 获取视频链接
+  /// 获取视频链接
   static Future<String> getVideoUrl(String animeUrl, int episodeNumber) async {
     var climbWebsite = getClimbWebsiteByAnimeUrl(animeUrl);
     if (climbWebsite == null) {
@@ -38,7 +35,7 @@ class ClimbAnimeUtil {
     return climbWebsite.climb.getVideoUrl(animeUrl, episodeNumber);
   }
 
-  // 查询周表中某天的更新记录
+  /// 查询周表中某天的更新记录
   static Future<List<WeekRecord>> climbWeekRecords(
       ClimbWebsite climbWebsite, int weekday) async {
     if (weekday <= 0 && weekday > 7) {
@@ -48,7 +45,7 @@ class ClimbAnimeUtil {
     return climbWebsite.climb.climbWeeklyTable(weekday);
   }
 
-  // 多搜索源。根据关键字搜索动漫
+  /// 多搜索源。根据关键字搜索动漫
   static Future<List<Anime>> climbAnimesByKeywordAndWebSite(
       String keyword, ClimbWebsite climbWebStie) async {
     List<Anime> climbAnimes = [];
@@ -60,8 +57,8 @@ class ClimbAnimeUtil {
     return climbAnimes;
   }
 
-  // collecting为false时，表示从动漫详细页下拉更新，通过动漫网址获取详细信息
-  // collecting为true时，表示第一次收藏，此时需要爬取动漫网址来获取更全的信息(age和樱花跳过)
+  /// collecting为false时，表示从动漫详细页下拉更新，通过动漫网址获取详细信息
+  /// collecting为true时，表示第一次收藏，此时需要爬取动漫网址来获取更全的信息(age和樱花跳过)
   static Future<Anime> climbAnimeInfoByUrl(Anime anime,
       {bool showMessage = true}) async {
     if (anime.animeUrl.isEmpty) {
@@ -88,7 +85,7 @@ class ClimbAnimeUtil {
 
   static bool canUpdateAllAnimesInfo = true;
 
-  // 获取数据库中所有动漫，然后更新未完结的动漫信息
+  /// 获取数据库中所有动漫，然后更新未完结的动漫信息
   static void updateAllAnimesInfo() async {
     if (!canUpdateAllAnimesInfo) {
       ToastUtil.showText("更新间隔为10s，请稍后再试");
