@@ -341,8 +341,8 @@ class AnimeDao {
       }
     }
 
-    // 按首播时间升序排列
-    result.sort((a, b) => a.premiereTime.compareTo(b.premiereTime));
+    // 按首播时间降序排列，最新的在最前面
+    result.sort((a, b) => -a.premiereTime.compareTo(b.premiereTime));
     return result;
   }
 
