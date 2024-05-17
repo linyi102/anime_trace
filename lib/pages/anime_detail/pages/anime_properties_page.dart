@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/common/category_intro_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:flutter_test_future/widgets/picker/date_time_picker.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -159,11 +161,11 @@ class AnimePropertiesPage extends StatelessWidget {
   _showDialogEditPremiereTime(BuildContext context) async {
     var initialDate = DateTime.tryParse(anime.premiereTime);
     initialDate ??= DateTime.now();
-    var selectedDate = await showDatePicker(
+    var selectedDate = await showCommonDateTimePicker(
       context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(initialDate.year + 10),
+      initialValue: initialDate,
+      maxYear: DateTime.now().year + 10,
+      type: PickerDateTimeType.kYMD,
     );
     if (selectedDate == null) return;
 

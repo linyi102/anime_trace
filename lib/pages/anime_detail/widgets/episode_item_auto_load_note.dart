@@ -277,8 +277,10 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   widget.animeController.mapSelected[widget.episodeIndex] =
                       true;
                   // 选择时间
-                  await widget.animeController
-                      .pickDateForEpisodes(context: context);
+                  await widget.animeController.pickDateForEpisodes(
+                    context: context,
+                    initialValue: DateTime.tryParse(_episode.dateTime ?? ''),
+                  );
                   // 清空多选
                   widget.animeController.mapSelected.clear();
                   // 更新设置的时间

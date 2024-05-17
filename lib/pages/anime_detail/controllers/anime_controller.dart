@@ -19,6 +19,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/values/values.dart';
+import 'package:flutter_test_future/widgets/picker/date_time_picker.dart';
 import 'package:get/get.dart';
 
 class AnimeController extends GetxController {
@@ -249,46 +250,29 @@ class AnimeController extends GetxController {
 
   // 多选后，选择日期，并更新数据库
   // 尾部的选择日期按钮也可以使用该方法，记得提前加入到多选中
-  Future<void> pickDateForEpisodes({required BuildContext context}) async {
-    DateTime defaultDateTime = DateTime.now();
-    String dateTime = await _showDatePicker(
-        context: context, defaultDateTime: defaultDateTime);
-    if (dateTime.isEmpty) return;
+  Future<void> pickDateForEpisodes(
+      {required BuildContext context, DateTime? initialValue}) async {
+    DateTime? dateTime = await showCommonDateTimePicker(
+      context: context,
+      initialValue: initialValue ?? DateTime.now(),
+      minYear: 1970,
+      maxYear: DateTime.now().year + 2,
+    );
+    if (dateTime == null) return;
+    final dateTimeStr = dateTime.toString();
 
     // 遍历选中的下标
     mapSelected.forEach((episodeIndex, value) {
       int episodeNumber = episodes[episodeIndex].number;
       if (episodes[episodeIndex].isChecked()) {
         SqliteUtil.updateHistoryItem(
-            anime.animeId, episodeNumber, dateTime, anime.reviewNumber);
+            anime.animeId, episodeNumber, dateTimeStr, anime.reviewNumber);
       } else {
         SqliteUtil.insertHistoryItem(
-            anime.animeId, episodeNumber, dateTime, anime.reviewNumber);
+            anime.animeId, episodeNumber, dateTimeStr, anime.reviewNumber);
       }
-      episodes[episodeIndex].dateTime = dateTime;
+      episodes[episodeIndex].dateTime = dateTimeStr;
     });
-  }
-
-  Future<String> _showDatePicker(
-      {required BuildContext context, DateTime? defaultDateTime}) async {
-    DateTime? datePicker = await showDatePicker(
-      context: context,
-      initialDate: defaultDateTime ?? DateTime.now(),
-      // 没有给默认时间时，设置为今天
-      firstDate: DateTime(1970),
-      lastDate: DateTime(DateTime.now().year + 2),
-    );
-    // 如果没有选择日期，则直接返回
-    if (datePicker == null) return "";
-    TimeOfDay? timePicker = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    // 同理
-    if (timePicker == null) return "";
-    return DateTime(datePicker.year, datePicker.month, datePicker.day,
-            timePicker.hour, timePicker.minute)
-        .toString();
   }
 
   //  其他页面(例如详情页修改了动漫封面)更新动漫时，动漫详细页可以收到通知并重新渲染
