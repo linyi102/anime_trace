@@ -32,6 +32,7 @@ dependencies:
   flutter_localizations: # 国际化
     sdk: flutter
   hotkey_manager: ^0.1.8
+  flutter_picker: ^2.1.0
   flex_color_picker: ^3.3.0
   emoji_picker_flutter: ^1.6.3
   scrollview_observer: ^1.19.1
