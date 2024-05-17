@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class StackAppBar extends StatelessWidget {
-  const StackAppBar(
-      {this.leading,
-      this.title = '',
-      this.titleSize = 20,
-      this.foregroundColor = Colors.white,
-      this.onTapLeading,
-      this.actions,
-      super.key});
+  const StackAppBar({
+    this.leading,
+    this.hideShadow = false,
+    this.title = '',
+    this.titleSize = 20,
+    this.foregroundColor = Colors.white,
+    this.onTapLeading,
+    this.actions,
+    super.key,
+  });
 
   final Widget? leading;
   final String title;
@@ -16,20 +18,23 @@ class StackAppBar extends StatelessWidget {
   final Color foregroundColor;
   final void Function()? onTapLeading;
   final List<Widget>? actions;
+  final bool hideShadow;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: kToolbarHeight + MediaQuery.of(context).padding.top,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.5),
-              Colors.transparent,
-            ]),
-      ),
+      decoration: hideShadow
+          ? null
+          : BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.5),
+                    Colors.transparent,
+                  ]),
+            ),
       child: Row(
         children: [
           const SizedBox(width: 5),
