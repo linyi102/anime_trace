@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/pages/viewer/network_image/network_image_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:photo_view/photo_view.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
   Log.info("迁移动漫$animeId");
@@ -62,14 +63,8 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                     title: const Text("更新封面"),
                     subtitle: const Text("查看新封面"),
                     onTap: () {
-                      final imageProvider =
-                          Image.network(newAnime.animeCoverUrl).image;
-
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => PhotoView(
-                              imageProvider: imageProvider,
-                              onTapDown: (_, __, ___) =>
-                                  Navigator.of(context).pop())));
+                      RouteUtil.materialTo(context,
+                          NetworkImageViewPage(newAnime.animeCoverUrl));
                     },
                     leading: IconButton(
                         onPressed: () {

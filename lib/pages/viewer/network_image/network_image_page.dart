@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/widgets/stack_appbar.dart';
 import 'package:photo_view/photo_view.dart';
 
 class NetworkImageViewPage extends StatefulWidget {
@@ -15,22 +17,29 @@ class _NetworkImageViewPageState extends State<NetworkImageViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PhotoView(
-      imageProvider: imageProvider,
-      onTapDown: (_, __, ___) => Navigator.pop(context),
-      loadingBuilder: (context, event) => Container(
-        color: Colors.black,
-        child: const Center(child: LoadingWidget()),
-      ),
-      errorBuilder: (context, error, stackTrace) {
-        return GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
+    return GestureDetector(
+      onTap: () => Navigator.pop(context),
+      child: Stack(
+        children: [
+          PhotoView(
+            imageProvider: imageProvider,
+            onTapDown: (_, __, ___) => Navigator.pop(context),
+            loadingBuilder: (context, event) => Container(
               color: Colors.black,
-              child: const Center(
-                  child: Text('图片加载失败', style: TextStyle(color: Colors.white))),
-            ));
-      },
+              child: const Center(child: LoadingWidget()),
+            ),
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: Colors.black,
+                child: const Center(
+                    child:
+                        Text('图片加载失败', style: TextStyle(color: Colors.white))),
+              );
+            },
+          ),
+          if (PlatformUtil.isDesktop) const StackAppBar(hideShadow: true),
+        ],
+      ),
     );
   }
 }
