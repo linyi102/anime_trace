@@ -257,8 +257,7 @@ class AnimeDao {
 
     final keywordSql = filter.keyword == null || filter.keyword!.isEmpty
         ? ''
-        // 此处为or，需要添加()来避免优先级错误
-        : '(anime_name like "%${filter.keyword}%" or name_another like "%${filter.keyword}%")';
+        : 'anime_name like "%${filter.keyword}%" or name_another like "%${filter.keyword}%"';
     final checklistSql = filter.checklist == null || filter.checklist!.isEmpty
         ? ''
         : 'tag_name = "${filter.checklist}"';
@@ -301,11 +300,14 @@ class AnimeDao {
       result = await AnimeLabelDao.getAnimesByLabelIds(
           filter.labels.map((e) => e.id).toList());
     } else {
+      // 拼接时为每个查询sql添加()，避免因为or导致优先级错误
+      final whereSql = sqls.map((e) => '($e)').join(' and ');
       final list = await db.rawQuery('''
         select * from $table
-        where ${sqls.join(' and ')}
+        where $whereSql
       ''');
       final List<Anime> animes = [];
+
       for (final row in list) {
         int animeId = row['anime_id'] as int;
         int reviewNumber = row['review_number'] as int;
