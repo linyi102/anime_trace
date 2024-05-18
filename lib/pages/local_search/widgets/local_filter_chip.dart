@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
 import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
 import 'package:flutter_test_future/pages/local_search/views/local_filter_page.dart';
+import 'package:flutter_test_future/utils/keyboard_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 
 class LocalFilterChip extends StatefulWidget {
@@ -26,6 +27,7 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
       margin: const EdgeInsets.symmetric(horizontal: 4),
       child: OutlinedButton.icon(
           onPressed: () {
+            KeyboardUtil.cancelKeyBoard();
             showCommonModalBottomSheet(
               context: context,
               builder: (context) => LocalFilterPage(

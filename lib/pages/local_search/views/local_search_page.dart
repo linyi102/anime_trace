@@ -20,10 +20,19 @@ class DbAnimeSearchPage extends StatefulWidget {
       this.hasSelectedAnimeIds = const [],
       Key? key})
       : super(key: key);
+
+  /// 需要搜索的标签
   final Label? label;
-  final List<int> hasSelectedAnimeIds;
-  final void Function(List<int> selectedAnimeIds)? onSelectOk;
+
+  /// 需要搜索的关键字
   final String? kw;
+
+  /// 已选择的初始动漫id列表
+  final List<int> hasSelectedAnimeIds;
+
+  /// 选择成功后的回调，返回已选择的动漫id列表
+  /// 函数不为null时显示选择视图
+  final void Function(List<int> selectedAnimeIds)? onSelectOk;
 
   @override
   _DbAnimeSearchPageState createState() => _DbAnimeSearchPageState();
@@ -45,6 +54,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   bool get selectAction => widget.onSelectOk != null;
   List<int> selectedAnimeIds = [];
 
+  bool autofocusSearchInput = true;
+
   @override
   void initState() {
     super.initState();
@@ -53,14 +64,13 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   }
 
   Future<void> _searchInitialFilter() async {
-    // 动漫详细页点击某个标签后，会进入该搜索页，此时不需要显示顶部搜索框，还需要把传入的标签添加进来
     if (widget.label != null) {
+      autofocusSearchInput = false;
       Log.info("动漫详细页点击了${widget.label}，进入搜索页");
       await Future.delayed(const Duration(milliseconds: 200));
       localSearchController.setLabels([widget.label!]);
-    }
-    // 周表中点击某个动漫会进入该搜索页，来查找已收藏的动漫
-    else if (widget.kw != null) {
+    } else if (widget.kw != null) {
+      autofocusSearchInput = false;
       // 等待200ms再去搜索，避免导致页面切换动画卡顿
       await Future.delayed(const Duration(milliseconds: 200));
       localSearchController.setKeyword(widget.kw);
@@ -173,7 +183,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
       useModernStyle: false,
-      autofocus: false,
+      autofocus: autofocusSearchInput,
       inputController: _inputController,
       onTapClear: () {
         _inputController.clear();
