@@ -483,7 +483,8 @@ class AnimeController extends GetxController {
             children: [
               GestureDetector(
                 onTap: () {
-                  RouteUtil.materialTo(context, NetworkImageViewPage(coverUrl));
+                  RouteUtil.toImageViewer(
+                      context, NetworkImageViewPage(coverUrl));
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.imgRadius),

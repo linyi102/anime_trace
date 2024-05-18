@@ -4,41 +4,53 @@ import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/stack_appbar.dart';
 import 'package:photo_view/photo_view.dart';
 
-class NetworkImageViewPage extends StatefulWidget {
+class NetworkImageViewPage extends StatelessWidget {
   const NetworkImageViewPage(this.url, {super.key});
   final String url;
 
   @override
-  State<NetworkImageViewPage> createState() => _NetworkImageViewPageState();
-}
-
-class _NetworkImageViewPageState extends State<NetworkImageViewPage> {
-  late final imageProvider = Image.network(widget.url).image;
-
-  @override
   Widget build(BuildContext context) {
+    Color bg = const Color.fromARGB(255, 14, 14, 14);
+
     return GestureDetector(
       onTap: () => Navigator.pop(context),
       child: Stack(
         children: [
           PhotoView(
-            imageProvider: imageProvider,
-            onTapDown: (_, __, ___) => Navigator.pop(context),
+            imageProvider: Image.network(url).image,
+            backgroundDecoration: BoxDecoration(color: bg),
             loadingBuilder: (context, event) => Container(
-              color: Colors.black,
+              color: bg,
               child: const Center(child: LoadingWidget()),
             ),
             errorBuilder: (context, error, stackTrace) {
               return Container(
-                color: Colors.black,
+                color: bg,
                 child: const Center(
                     child:
                         Text('图片加载失败', style: TextStyle(color: Colors.white))),
               );
             },
           ),
-          if (PlatformUtil.isDesktop) const StackAppBar(hideShadow: true),
+          if (PlatformUtil.isDesktop)
+            StackAppBar(hideShadow: true, leading: _buildCloseButton(context)),
         ],
+      ),
+    );
+  }
+
+  InkWell _buildCloseButton(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.pop(context),
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        height: 30,
+        width: 30,
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.close, color: Colors.white, size: 20),
       ),
     );
   }

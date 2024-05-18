@@ -63,7 +63,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                     title: const Text("更新封面"),
                     subtitle: const Text("查看新封面"),
                     onTap: () {
-                      RouteUtil.materialTo(context,
+                      RouteUtil.toImageViewer(context,
                           NetworkImageViewPage(newAnime.animeCoverUrl));
                     },
                     leading: IconButton(

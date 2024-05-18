@@ -232,7 +232,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     if (loading) return;
 
     // 查看图片
-    RouteUtil.materialTo(context, NetworkImageViewPage(anime.animeCoverUrl));
+    RouteUtil.toImageViewer(context, NetworkImageViewPage(anime.animeCoverUrl));
   }
 
   void _enterDetailPage() {
