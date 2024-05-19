@@ -10,13 +10,15 @@ echo "Windows版本：$windowsVerison"
 
 # 输出目录
 packRootDir="$HOME/Desktop/漫迹发布 ${androidVersion}"
-mkdir "$packRootDir"
+mkdir -p "$packRootDir/qq"
 
 # Android
-apkOriPath="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
-apkOutputPath="$packRootDir/manji-$androidVersion-android.apk"
-
-cp "$apkOriPath" "$apkOutputPath"
+apkBuildDir="build/app/outputs/flutter-apk"
+cp "$apkBuildDir/app-armeabi-v7a-release.apk" "$packRootDir/manji-$androidVersion-android.apk"
+cp "$apkBuildDir/app-arm64-v8a-release.apk" "$packRootDir/manji-$androidVersion-arm64-v8a.apk"
+cp "$apkBuildDir/app-x86_64-release.apk" "$packRootDir/manji-$androidVersion-x86_64.apk"
+cp "$apkBuildDir/app-armeabi-v7a-release.apk" "$packRootDir/qq/manji-$androidVersion-android.APK"
+cp "$apkBuildDir/app-arm64-v8a-release.apk" "$packRootDir/qq/manji-$androidVersion-arm64-v8a.APK"
 
 # Windows
 windowsOriDir="build/windows/runner/Release"
