@@ -172,19 +172,22 @@ class _AggregatePageState extends State<AggregatePage> {
     Widget? trailing,
     String? Function(Anime anime)? specifyItemSubtitle,
   }) {
+    const defaultHeight = 50.0;
+
     return Column(
       children: [
         _buildCardTitle(title, trailing: trailing),
         const SizedBox(height: 10),
         loading
-            ? const Row(
-                children: [
-                  SizedBox(width: 20),
-                  LoadingWidget(),
-                ],
-              )
+            ? const SizedBox(
+                height: defaultHeight, child: Center(child: LoadingWidget()))
             : animes.isEmpty
-                ? const ListTile(title: Text('无'))
+                ? Container(
+                    height: defaultHeight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Row(
+                      children: [Text('无')],
+                    ))
                 : HorizontalAnimeListPage(
                     animes: animes,
                     specifyItemSubtitle: specifyItemSubtitle,
