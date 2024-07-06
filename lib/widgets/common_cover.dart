@@ -44,67 +44,59 @@ class _CommonCoverState extends State<CommonCover> {
 
   MultiPlatform _buildMultiPlatform() {
     return MultiPlatform(
-      mobile: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+      mobile: GestureDetector(
         onTap: widget.onTap,
-        child: SizedBox(
-          width: widget.width,
-          child: _buildItem(),
-        ),
+        onTapDown: (_) => _zoomInCover(),
+        onTapUp: (_) => _zoomOutCover(),
+        onTapCancel: () => _zoomOutCover(),
+        child: _buildItem(),
       ),
       desktop: GestureDetector(
         onTap: widget.onTap,
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
-          onHover: (event) {
-            setState(() {
-              hovering = true;
-            });
-          },
-          onExit: (event) {
-            setState(() {
-              hovering = false;
-            });
-          },
-          child: SizedBox(
-            width: widget.width,
-            child: _buildItem(),
-          ),
+          onHover: (_) => _zoomInCover(),
+          onExit: (_) => _zoomOutCover(),
+          child: _buildItem(),
         ),
       ),
     );
   }
 
-  Column _buildItem() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (widget.coverUrl != null) _buildImage(),
-              if (widget.bottomRightText != null) _buildBottomShadow(),
-              if (widget.bottomRightText != null) _buildBottomRightText()
-            ],
+  Widget _buildItem() {
+    return SizedBox(
+      width: widget.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (widget.coverUrl != null) _buildImage(),
+                if (widget.bottomRightText != null) _buildBottomShadow(),
+                if (widget.bottomRightText != null) _buildBottomRightText()
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        if (widget.title != null)
-          Text(
-            widget.title ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14),
-          ),
-        if (widget.subtitle != null)
-          Text(
-            widget.subtitle ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
-          ),
-      ],
+          const SizedBox(height: 5),
+          if (widget.title != null)
+            Text(
+              widget.title ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14),
+            ),
+          if (widget.subtitle != null)
+            Text(
+              widget.subtitle ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
+            ),
+        ],
+      ),
     );
   }
 
@@ -162,5 +154,17 @@ class _CommonCoverState extends State<CommonCover> {
         ),
       ],
     );
+  }
+
+  void _zoomOutCover() {
+    setState(() {
+      hovering = false;
+    });
+  }
+
+  void _zoomInCover() {
+    setState(() {
+      hovering = true;
+    });
   }
 }
