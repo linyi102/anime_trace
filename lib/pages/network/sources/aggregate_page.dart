@@ -18,7 +18,6 @@ import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/icon_text_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
@@ -37,7 +36,7 @@ class _AggregatePageState extends State<AggregatePage> {
   bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
 
   double get itemHeight => 100.0;
-  double get itemWidth => 100.0;
+  double get itemWidth => 80.0;
 
   List<ClimbWebsite> usableWebsites = [];
 
@@ -65,22 +64,24 @@ class _AggregatePageState extends State<AggregatePage> {
   }
 
   void _refresh() {
-    for (var website in climbWebsites) {
-      website.pingStatus.needPing = true;
-    }
     _pingAllWebsites();
     logic.loadAnimes();
   }
 
   void _pingAllWebsites() {
-    if (!canClickPingButton) {
-      ToastUtil.showText("测试间隔为10s");
-      return;
-    }
+    if (!canClickPingButton) return;
 
-    canClickPingButton = false;
-    Future.delayed(const Duration(seconds: 10))
-        .then((value) => canClickPingButton = true);
+    for (var website in climbWebsites) {
+      website.pingStatus.needPing = true;
+    }
+    setState(() {
+      canClickPingButton = false;
+    });
+    Future.delayed(const Duration(seconds: 10)).then((value) {
+      setState(() {
+        canClickPingButton = true;
+      });
+    });
 
     for (var website in climbWebsites) {
       if (!website.discard && website.pingStatus.needPing) {
@@ -160,6 +161,27 @@ class _AggregatePageState extends State<AggregatePage> {
           loading: logic.loadingAnimesNYearsAgoTodayBroadcast,
           animes: logic.animesNYearsAgoTodayBroadcast,
           specifyItemSubtitle: _parseAnimeYearDistance,
+        ),
+      ],
+    );
+  }
+
+  Row _buildSourceTrailing() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: canClickPingButton ? _pingAllWebsites : null,
+          icon: const Icon(Icons.refresh),
+          splashRadius: 18,
+          iconSize: 21,
+        ),
+        IconButton(
+          onPressed: () =>
+              RouteUtil.materialTo(context, const SourceListPage()),
+          icon: const Icon(Icons.arrow_forward),
+          splashRadius: 18,
+          iconSize: 21,
         ),
       ],
     );
@@ -247,36 +269,37 @@ class _AggregatePageState extends State<AggregatePage> {
   _buildClimbWebsiteGridCard() {
     return Column(
       children: [
-        _buildCardTitle("搜索源", trailing: _buldMoreSourceButton()),
-        GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisExtent: itemHeight, // 格子高度
-              maxCrossAxisExtent: itemWidth, // 格子最大宽度
-            ),
-            itemCount: usableWebsites.length,
-            itemBuilder: (context, index) {
-              ClimbWebsite climbWebsite = usableWebsites[index];
-
-              return IconTextButton(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  onTap: () => _enterSourceDetail(climbWebsite),
-                  icon: Stack(
-                    children: [
-                      WebSiteLogo(url: climbWebsite.iconUrl, size: 40),
-                      _buildPingStatus(climbWebsite.pingStatus)
-                    ],
-                  ),
-                  text: Text(
-                    climbWebsite.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(height: 1.1, fontSize: 13),
-                  ));
-            }),
+        _buildCardTitle("搜索源", trailing: _buildSourceTrailing()),
+        SizedBox(
+          height: itemHeight,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              itemCount: usableWebsites.length,
+              itemBuilder: (context, index) {
+                ClimbWebsite climbWebsite = usableWebsites[index];
+                return SizedBox(
+                  width: itemWidth,
+                  child: IconTextButton(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 10),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 5),
+                      onTap: () => _enterSourceDetail(climbWebsite),
+                      icon: Stack(
+                        children: [
+                          WebSiteLogo(url: climbWebsite.iconUrl, size: 40),
+                          _buildPingStatus(climbWebsite.pingStatus)
+                        ],
+                      ),
+                      text: Text(
+                        climbWebsite.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(height: 1.1, fontSize: 13),
+                      )),
+                );
+              }),
+        ),
       ],
     );
   }
@@ -306,36 +329,6 @@ class _AggregatePageState extends State<AggregatePage> {
         child: Icon(Icons.circle, size: 10, color: pingStatus.color),
       ),
     );
-  }
-
-  InkWell _buldMoreSourceButton() {
-    return InkWell(
-        borderRadius: BorderRadius.circular(6),
-        onTap: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const SourceListPage()));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "更多",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(height: 1.2),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 10,
-                color: Theme.of(context).textTheme.bodySmall?.color,
-              )
-            ],
-          ),
-        ));
   }
 
   _enterSourceDetail(ClimbWebsite climbWebsite) {

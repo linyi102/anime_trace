@@ -45,7 +45,6 @@ class AggregateLogic extends GetxController {
     loadingAnimesNYearsAgoTodayBroadcast = true;
     update();
 
-    animesNYearsAgoTodayBroadcast.clear();
     animesNYearsAgoTodayBroadcast = await AnimeDao.getAnimesNYearAgoToday();
     // 时间早的在最后
     animesNYearsAgoTodayBroadcast.sort(

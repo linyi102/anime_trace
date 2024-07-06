@@ -69,7 +69,7 @@ final ageClimbWebsite = ClimbWebsite(
 
 final cycClimbWebsite = ClimbWebsite(
   id: 3,
-  name: "次元城动漫",
+  name: "次元城",
   iconUrl: "assets/images/website/cyc.png",
   regexp: "cyc",
   spkey: "enableWebSiteCycdm",
