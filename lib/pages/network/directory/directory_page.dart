@@ -35,8 +35,7 @@ class _DirectoryPageState extends State<DirectoryPage>
   late ClimbWebsite curWebsite;
 
   final List<ClimbWebsite> usableWebsites = [
-    yhdmClimbWebsite,
-    quqiClimbWebsite,
+    ageClimbWebsite,
   ];
 
   late final RefreshController _refreshController;
@@ -52,11 +51,11 @@ class _DirectoryPageState extends State<DirectoryPage>
         climbWebsites.indexWhere((element) => element == usableWebsites.first);
     int websiteIdx =
         SPUtil.getInt(selectedDirectorySourceIdx, defaultValue: defaultIdx);
-    if (websiteIdx > climbWebsites.length) {
+    if (websiteIdx > climbWebsites.length ||
+        !usableWebsites.contains(climbWebsites[websiteIdx])) {
       websiteIdx = defaultIdx;
-    } else {
-      curWebsite = climbWebsites[websiteIdx];
     }
+    curWebsite = climbWebsites[websiteIdx];
 
     _refreshController = RefreshController(initialRefresh: false);
     _loadData();

@@ -198,7 +198,7 @@ class AnimeController extends GetxController {
     SpProfile.turnShowDescInAnimeDetailPage();
   }
 
-  void loadEpisode() async {
+  Future<void> loadEpisode() async {
     // 重置，然后重新渲染
     loadEpisodeOk = false;
     episodes.clear();

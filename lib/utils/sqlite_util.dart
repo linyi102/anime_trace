@@ -460,7 +460,8 @@ class SqliteUtil {
     }
     var row = list[0];
 
-    Anime searchedAnime = await AnimeDao.row2Bean(row);
+    Anime searchedAnime =
+        await AnimeDao.row2Bean(row, queryCheckedEpisodeCnt: true);
     return searchedAnime;
   }
 
