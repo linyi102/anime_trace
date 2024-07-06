@@ -7,6 +7,14 @@ class PageParams {
     baseIndex = pageIndex;
   }
 
+  int getFixedPageIndex({int firstPageIndex = 0}) {
+    if (baseIndex == 0) {
+      return firstPageIndex == 0 ? pageIndex : pageIndex + 1;
+    } else {
+      return firstPageIndex == 0 ? pageIndex - 1 : pageIndex;
+    }
+  }
+
   int getOffset() {
     // 如果下标为0，则偏移0个数据
     if (baseIndex == 0) {

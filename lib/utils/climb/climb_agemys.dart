@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/anime_filter.dart';
+import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:html/dom.dart';
 
 class ClimbAgemys with Climb {
   // 单例
@@ -27,41 +29,10 @@ class ClimbAgemys with Climb {
       {bool showMessage = true}) async {
     String url = baseUrl + "/search?query=$keyword";
 
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return [];
-    }
+    final document = await dioGetAndParse(url);
+    if (document == null) return [];
 
-    List<Anime> climbAnimes = [];
-    var elements = document.getElementsByClassName("cata_video_item");
-
-    for (var element in elements) {
-      String? coverUrl =
-          element.getElementsByTagName("img")[0].attributes["data-original"];
-      String? animeName =
-          element.getElementsByTagName("img")[0].attributes["alt"];
-      String? animeUrl =
-          element.getElementsByTagName("a")[0].attributes["href"];
-      String? episodeCntStr =
-          element.getElementsByClassName("video_play_status")[0].innerHtml;
-      int episodeCnt = ClimbYhdm.parseEpisodeCntOfyhdm(
-          episodeCntStr); // AGE动漫的集表示和樱花动漫的一致，因此也使用这个解析
-      if (coverUrl != null) {
-        if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
-      }
-
-      Anime climbAnime = Anime(
-        animeName: animeName ?? "",
-        animeEpisodeCnt: episodeCnt,
-        animeCoverUrl: coverUrl ?? "",
-        animeUrl: animeUrl ?? "",
-      );
-      Log.info("爬取封面：$coverUrl");
-      Log.info("爬取动漫网址：${climbAnime.animeUrl}");
-      climbAnimes.add(climbAnime);
-    }
-    Log.info("解析完毕√");
-    return climbAnimes;
+    return _parseAnimeList(document);
   }
 
   @override
@@ -124,6 +95,19 @@ class ClimbAgemys with Climb {
   }
 
   @override
+  Future<List<Anime>> climbDirectory(
+      AnimeFilter filter, PageParams pageParams) async {
+    final pageIndex = pageParams.getFixedPageIndex(firstPageIndex: 1);
+    String parseArg(String arg) => arg.isEmpty ? 'all' : arg;
+    String url = baseUrl +
+        '/catalog/${parseArg(filter.category)}-${parseArg(filter.year)}-all-all-all-time-$pageIndex-${parseArg(filter.region)}-${parseArg(filter.season)}-${parseArg(filter.status)}';
+    final document = await dioGetAndParse(url);
+    if (document == null) return [];
+
+    return _parseAnimeList(document);
+  }
+
+  @override
   Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
     var document = await dioGetAndParse(baseUrl);
     if (document == null) {
@@ -148,5 +132,33 @@ class ClimbAgemys with Climb {
     }
 
     return records;
+  }
+
+  List<Anime> _parseAnimeList(Document document) {
+    List<Anime> animes = [];
+    var elements = document.getElementsByClassName("cata_video_item");
+
+    for (var element in elements) {
+      String? coverUrl =
+          element.getElementsByTagName("img")[0].attributes["data-original"];
+      String? animeName =
+          element.getElementsByTagName("img")[0].attributes["alt"];
+      String? animeUrl =
+          element.getElementsByTagName("a")[0].attributes["href"];
+      String? episodeCntStr =
+          element.getElementsByClassName("video_play_status")[0].innerHtml;
+      // AGE动漫的集表示和樱花动漫的一致，因此也使用这个解析
+      int episodeCnt = ClimbYhdm.parseEpisodeCntOfyhdm(episodeCntStr);
+      if (coverUrl != null) {
+        if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
+      }
+      animes.add(Anime(
+        animeName: animeName ?? "",
+        animeEpisodeCnt: episodeCnt,
+        animeCoverUrl: coverUrl ?? "",
+        animeUrl: animeUrl?.replaceFirst("http://", "https://") ?? "",
+      ));
+    }
+    return animes;
   }
 }
