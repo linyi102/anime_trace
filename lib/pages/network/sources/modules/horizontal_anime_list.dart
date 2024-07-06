@@ -22,7 +22,7 @@ class HorizontalAnimeListPage extends StatelessWidget {
     return GetBuilder(
       init: logic,
       builder: (_) => Responsive(
-        mobile: _buildListView(100),
+        mobile: _buildListView(110),
         desktop: _buildListView(140),
       ),
     );

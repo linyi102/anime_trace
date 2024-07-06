@@ -6,7 +6,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/pages/network/sources/logic.dart';
-import 'package:flutter_test_future/pages/network/sources/modules/today_anime_list.dart';
+import 'package:flutter_test_future/pages/network/sources/modules/horizontal_anime_list.dart';
 import 'package:flutter_test_future/pages/network/sources/modules/tools.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
@@ -111,7 +111,6 @@ class _AggregatePageState extends State<AggregatePage> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             _buildClimbWebsiteGridCard(),

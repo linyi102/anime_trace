@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 
 class CommonCover extends StatefulWidget {
   const CommonCover({
@@ -30,35 +31,44 @@ class _CommonCoverState extends State<CommonCover> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: MultiPlatform(
-        mobile: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-          onTap: widget.onTap,
+    return Responsive(
+        mobile: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: _buildMultiPlatform(),
+        ),
+        desktop: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _buildMultiPlatform(),
+        ));
+  }
+
+  MultiPlatform _buildMultiPlatform() {
+    return MultiPlatform(
+      mobile: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        onTap: widget.onTap,
+        child: SizedBox(
+          width: widget.width,
+          child: _buildItem(),
+        ),
+      ),
+      desktop: GestureDetector(
+        onTap: widget.onTap,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onHover: (event) {
+            setState(() {
+              hovering = true;
+            });
+          },
+          onExit: (event) {
+            setState(() {
+              hovering = false;
+            });
+          },
           child: SizedBox(
             width: widget.width,
             child: _buildItem(),
-          ),
-        ),
-        desktop: GestureDetector(
-          onTap: widget.onTap,
-          child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            onHover: (event) {
-              setState(() {
-                hovering = true;
-              });
-            },
-            onExit: (event) {
-              setState(() {
-                hovering = false;
-              });
-            },
-            child: SizedBox(
-              width: widget.width,
-              child: _buildItem(),
-            ),
           ),
         ),
       ),
@@ -85,6 +95,7 @@ class _CommonCoverState extends State<CommonCover> {
             widget.title ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 14),
           ),
         if (widget.subtitle != null)
           Text(
