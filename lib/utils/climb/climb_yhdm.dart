@@ -95,7 +95,7 @@ class ClimbYhdm with Climb {
   // 解析樱花动漫里的集数
   static int parseEpisodeCntOfyhdm(String episodeCntStr) {
     int episodeCnt = 0;
-    if (episodeCntStr.contains("[全集]")) {
+    if (episodeCntStr.contains("全集")) {
       episodeCnt = 1;
     } else if (episodeCntStr.contains("第")) {
       // 例如：第13集(完结)，第59话
