@@ -103,84 +103,83 @@ class _AggregatePageState extends State<AggregatePage> {
       onRefresh: () async {
         _refresh();
       },
-      child: ListView(
-        children: [
-          _buildClimbWebsiteGridCard(),
-          _buildTools(),
-          _buildAnimesList()
-        ],
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            _buildClimbWebsiteGridCard(),
+            _buildTools(),
+            _buildAnimesList(),
+            const ListTile(),
+          ],
+        ),
       ),
     );
   }
 
   _buildTools() {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCardTitle("工具"),
-          const ToolsPage(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCardTitle("工具"),
+        const ToolsPage(),
+      ],
     );
   }
 
   _buildAnimesList() {
-    return Card(
-      child: Column(
-        children: [
-          _buildCardTitle('今日开播'),
-          logic.loadingAnimesNYearsAgoTodayBroadcast
-              ? const Row(
-                  children: [
-                    SizedBox(width: 20),
-                    LoadingWidget(),
-                  ],
-                )
-              : logic.animesNYearsAgoTodayBroadcast.isEmpty
-                  ? const ListTile(title: Text('无'))
-                  : const TodayAnimeListPage(),
-        ],
-      ),
+    return Column(
+      children: [
+        _buildCardTitle('今日开播'),
+        logic.loadingAnimesNYearsAgoTodayBroadcast
+            ? const Row(
+                children: [
+                  SizedBox(width: 20),
+                  LoadingWidget(),
+                ],
+              )
+            : logic.animesNYearsAgoTodayBroadcast.isEmpty
+                ? const ListTile(title: Text('无'))
+                : const TodayAnimeListPage(),
+      ],
     );
   }
 
   _buildClimbWebsiteGridCard() {
-    return Card(
-      child: Column(
-        children: [
-          _buildCardTitle("搜索源", trailing: _buldMoreSourceButton()),
-          GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisExtent: itemHeight, // 格子高度
-                maxCrossAxisExtent: itemWidth, // 格子最大宽度
-              ),
-              itemCount: usableWebsites.length,
-              itemBuilder: (context, index) {
-                ClimbWebsite climbWebsite = usableWebsites[index];
+    return Column(
+      children: [
+        _buildCardTitle("搜索源", trailing: _buldMoreSourceButton()),
+        GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisExtent: itemHeight, // 格子高度
+              maxCrossAxisExtent: itemWidth, // 格子最大宽度
+            ),
+            itemCount: usableWebsites.length,
+            itemBuilder: (context, index) {
+              ClimbWebsite climbWebsite = usableWebsites[index];
 
-                return IconTextButton(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                    onTap: () => _enterSourceDetail(climbWebsite),
-                    icon: Stack(
-                      children: [
-                        WebSiteLogo(url: climbWebsite.iconUrl, size: 40),
-                        _buildPingStatus(climbWebsite.pingStatus)
-                      ],
-                    ),
-                    text: Text(
-                      climbWebsite.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(height: 1.1, fontSize: 13),
-                    ));
-              }),
-        ],
-      ),
+              return IconTextButton(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  onTap: () => _enterSourceDetail(climbWebsite),
+                  icon: Stack(
+                    children: [
+                      WebSiteLogo(url: climbWebsite.iconUrl, size: 40),
+                      _buildPingStatus(climbWebsite.pingStatus)
+                    ],
+                  ),
+                  text: Text(
+                    climbWebsite.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(height: 1.1, fontSize: 13),
+                  ));
+            }),
+      ],
     );
   }
 
