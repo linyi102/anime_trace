@@ -3,7 +3,6 @@ import 'package:flutter_test_future/components/common_tab_bar.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
 import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
-import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -22,16 +21,18 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController; // 创建tab控制器
-  final List<String> navs = ["聚合", "更新", "周表", "目录"];
+  final List<String> navs = ["聚合", "周表", "目录"];
   List<Widget> actions = [];
 
   @override
   void initState() {
     super.initState();
+    final initialIndex =
+        SPUtil.getInt("lastNavIndexInNetWorkNav", defaultValue: 0)
+            .clamp(0, navs.length);
     // 顶部tab控制器
     _tabController = TabController(
-        initialIndex: SPUtil.getInt("lastNavIndexInNetWorkNav",
-            defaultValue: 0), // 设置初始index
+        initialIndex: initialIndex, // 设置初始index
         length: navs.length,
         vsync: this,
         animationDuration: PlatformUtil.tabControllerAnimationDuration);
@@ -71,7 +72,6 @@ class _ExplorePageState extends State<ExplorePage>
       body: CommonScaffoldBody(
         child: CommonTabBarView(controller: _tabController, children: const [
           AggregatePage(),
-          UpdateRecordPage(),
           WeeklyPage(),
           DirectoryPage(),
         ]),

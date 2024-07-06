@@ -16,7 +16,6 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 
 class UpdateRecordPage extends StatefulWidget {
@@ -34,6 +33,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Obx(
         () => RefreshIndicator(
           onRefresh: () async {
@@ -82,7 +82,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
           itemBuilder: (context, index) {
             String date = dateList[index];
             PageParams pageParams = updateRecordController.pageParams;
-            Log.info("$index, ${pageParams.getQueriedSize()}");
+            // Log.info("$index, ${pageParams.getQueriedSize()}");
             if (index + 2 == pageParams.getQueriedSize()) {
               updateRecordController.loadMore();
             }
@@ -234,8 +234,6 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
   _buildUpdateProgress(context) {
     final UpdateRecordController updateRecordController = Get.find();
-    int updateOkCnt = updateRecordController.updateOkCnt.value;
-    int needUpdateCnt = updateRecordController.needUpdateCnt.value;
 
     return Card(
       child: Container(
@@ -259,7 +257,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                     children: [
                       Expanded(child: Container()),
                       Text(
-                        "更新进度 $updateOkCnt/$needUpdateCnt",
+                        "更新进度 ${updateRecordController.updateProgressStr}",
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),

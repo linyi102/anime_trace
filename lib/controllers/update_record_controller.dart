@@ -13,6 +13,11 @@ class UpdateRecordController extends GetxController {
   PageParams pageParams =
       PageParams(pageSize: 10, pageIndex: 0); // 动漫列表页刷新时也要传入该变量
   RxInt updateOkCnt = 0.obs, needUpdateCnt = 0.obs;
+  String get updateProgressStr =>
+      '${updateOkCnt.value} / ${needUpdateCnt.value}';
+  double get updateProgress => needUpdateCnt.value > 0
+      ? (updateOkCnt.value / needUpdateCnt.value).clamp(0, 1)
+      : 0;
 
   bool get updateOk => updateOkCnt.value == needUpdateCnt.value;
   var updating = false.obs;

@@ -195,11 +195,14 @@ class TimeUtil {
   }
 
   /// 和当前时间间隔
-  static String getTimeAgo(DateTime dateTime) {
+  static String getTimeAgo(
+    DateTime dateTime, {
+    String pattern = 'yyyy-MM-dd hh:mm:ss',
+  }) {
     return GetTimeAgo.parse(
       dateTime,
       locale: 'zh',
-      pattern: 'yyyy-MM-dd hh:mm:ss',
+      pattern: pattern,
     );
   }
 }

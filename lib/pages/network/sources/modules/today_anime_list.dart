@@ -6,8 +6,15 @@ import 'package:flutter_test_future/widgets/common_cover.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:get/get.dart';
 
-class TodayAnimeListPage extends StatelessWidget {
-  const TodayAnimeListPage({super.key});
+class HorizontalAnimeListPage extends StatelessWidget {
+  const HorizontalAnimeListPage({
+    super.key,
+    required this.animes,
+    this.specifyItemSubtitle,
+  });
+  final List<Anime> animes;
+  final String? Function(Anime anime)? specifyItemSubtitle;
+
   AggregateLogic get logic => AggregateLogic.to;
 
   @override
@@ -29,14 +36,14 @@ class TodayAnimeListPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: logic.animesNYearsAgoTodayBroadcast.length,
+        itemCount: animes.length,
         itemBuilder: (context, index) {
-          final anime = logic.animesNYearsAgoTodayBroadcast[index];
+          final anime = animes[index];
           return CommonCover(
             width: coverWidth,
             coverUrl: anime.animeCoverUrl,
             title: anime.animeName,
-            subtitle: _getDiffYear(anime),
+            subtitle: specifyItemSubtitle?.call(anime),
             onTap: () async {
               Anime value = await Navigator.push(
                   context,
@@ -51,14 +58,5 @@ class TodayAnimeListPage extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String _getDiffYear(Anime anime) {
-    var year = DateTime.parse(anime.premiereTime).year;
-    var diff = DateTime.now().year - year;
-    String text = '';
-    if (diff == 0) text = '今天';
-    text = diff == 0 ? '今天' : '$diff 年前';
-    return text;
   }
 }

@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/components/website_logo.dart';
+import 'package:flutter_test_future/controllers/update_record_controller.dart';
+import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/pages/network/sources/logic.dart';
 import 'package:flutter_test_future/pages/network/sources/modules/today_anime_list.dart';
 import 'package:flutter_test_future/pages/network/sources/modules/tools.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_list_page.dart';
+import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
+import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:flutter_test_future/widgets/icon_text_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
-
-import '../../../models/ping_result.dart';
-import '../../../widgets/icon_text_button.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 /// 聚合页
 class AggregatePage extends StatefulWidget {
@@ -62,8 +69,7 @@ class _AggregatePageState extends State<AggregatePage> {
       website.pingStatus.needPing = true;
     }
     _pingAllWebsites();
-
-    logic.loadAnimesNYearsAgoTodayBroadcast();
+    logic.loadAnimes();
   }
 
   void _pingAllWebsites() {
@@ -131,17 +137,110 @@ class _AggregatePageState extends State<AggregatePage> {
   _buildAnimesList() {
     return Column(
       children: [
-        _buildCardTitle('今日开播'),
-        logic.loadingAnimesNYearsAgoTodayBroadcast
+        Obx(
+          () => _buildAnimesListItem(
+            title: '最近更新',
+            loading: logic.loadingRecentUpdateAnimes,
+            animes: logic.recentUpdateAnimes,
+            specifyItemSubtitle: (anime) => anime.tempInfo,
+            trailing: _buildUpdateTrailing(),
+          ),
+        ),
+        _buildAnimesListItem(
+          title: '最近观看',
+          loading: logic.loadingRecentWatchedAnimes,
+          animes: logic.recentWatchedAnimes,
+          specifyItemSubtitle: (anime) {
+            final time = DateTime.tryParse(anime.tempInfo ?? '');
+            if (time == null) return '';
+            return TimeUtil.getTimeAgo(time, pattern: 'yyyy-MM-dd') + ' 观看';
+          },
+        ),
+        _buildAnimesListItem(
+          title: '今日开播',
+          loading: logic.loadingAnimesNYearsAgoTodayBroadcast,
+          animes: logic.animesNYearsAgoTodayBroadcast,
+          specifyItemSubtitle: _parseAnimeYearDistance,
+        ),
+      ],
+    );
+  }
+
+  Row _buildUpdateTrailing() {
+    final updateProgress = UpdateRecordController.to.updateProgress;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        UpdateRecordController.to.updating.value
+            ? IconButton(
+                onPressed: null,
+                icon: CircularPercentIndicator(
+                  radius: 10,
+                  lineWidth: 3,
+                  percent: updateProgress,
+                  animation: true,
+                  animateFromLastPercent: updateProgress != 0,
+                ))
+            : IconButton(
+                onPressed: () => ClimbAnimeUtil.updateAllAnimesInfo(),
+                icon: const Icon(Icons.refresh),
+                splashRadius: 18,
+                iconSize: 21,
+              ),
+        IconButton(
+          onPressed: () =>
+              RouteUtil.materialTo(context, const NeedUpdateAnimeList()),
+          icon: const Icon(Icons.date_range),
+          splashRadius: 18,
+          iconSize: 21,
+        ),
+        IconButton(
+          onPressed: () =>
+              RouteUtil.materialTo(context, const UpdateRecordPage()),
+          icon: const Icon(Icons.arrow_forward),
+          splashRadius: 18,
+          iconSize: 21,
+        ),
+      ],
+    );
+  }
+
+  String _parseAnimeYearDistance(Anime anime) {
+    final year = DateTime.tryParse(anime.premiereTime)?.year;
+    if (year == null) return '';
+
+    final diff = DateTime.now().year - year;
+    String text = '';
+    text = diff == 0 ? '今天' : '$diff 年前的今天';
+    return text;
+  }
+
+  _buildAnimesListItem({
+    required String title,
+    required List<Anime> animes,
+    required bool loading,
+    Widget? trailing,
+    String? Function(Anime anime)? specifyItemSubtitle,
+  }) {
+    return Column(
+      children: [
+        _buildCardTitle(title, trailing: trailing),
+        const SizedBox(height: 10),
+        loading
             ? const Row(
                 children: [
                   SizedBox(width: 20),
                   LoadingWidget(),
                 ],
               )
-            : logic.animesNYearsAgoTodayBroadcast.isEmpty
+            : animes.isEmpty
                 ? const ListTile(title: Text('无'))
-                : const TodayAnimeListPage(),
+                : HorizontalAnimeListPage(
+                    animes: animes,
+                    specifyItemSubtitle: specifyItemSubtitle,
+                  ),
+        const SizedBox(height: 20),
       ],
     );
   }

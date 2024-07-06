@@ -20,6 +20,7 @@ class SettingTitle extends StatelessWidget {
       title: Text(title, style: titleStyle),
       subtitle: subtitle.isEmpty ? null : Text(subtitle),
       trailing: trailing,
+      iconColor: Theme.of(context).iconTheme.color,
     );
   }
 }
