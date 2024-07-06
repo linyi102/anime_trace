@@ -217,7 +217,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
           // 添加清单
           dialogSelectChecklist(setState, context, _anime,
               onlyShowChecklist: true,
-              enableClimbDetailInfo: false, callback: (newAnime) {
+              enableClimbDetailInfo: true, callback: (newAnime) {
             widget.animeController.updateAnime(newAnime);
             widget.animeController.loadEpisode();
           });
