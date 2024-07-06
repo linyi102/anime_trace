@@ -5,7 +5,7 @@ import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/climb_website.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
-import 'package:flutter_test_future/pages/network/sources/logic.dart';
+import 'package:flutter_test_future/pages/network/sources/aggregate_logic.dart';
 import 'package:flutter_test_future/pages/network/sources/modules/horizontal_anime_list.dart';
 import 'package:flutter_test_future/pages/network/sources/modules/tools.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/source_detail_page.dart';
@@ -14,9 +14,6 @@ import 'package:flutter_test_future/pages/network/update/need_update_anime_list.
 import 'package:flutter_test_future/pages/network/update/update_record_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/icon_text_button.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
@@ -32,93 +29,24 @@ class AggregatePage extends StatefulWidget {
 }
 
 class _AggregatePageState extends State<AggregatePage> {
-  bool showPingDetail = true; // true时ListTile显示副标题，并做出样式调整
-  bool canClickPingButton = true; // 限制点击ping按钮(10s一次)。切换页面会重置(暂不打算改为全局变量)
-
-  double get itemHeight => 100.0;
-  double get itemWidth => 80.0;
-
-  List<ClimbWebsite> usableWebsites = [];
-
   AggregateLogic logic = Get.put(AggregateLogic());
 
   @override
-  void initState() {
-    super.initState();
-
-    // 网格只显示可用的搜索源
-    for (var website in climbWebsites) {
-      if (!website.discard) usableWebsites.add(website);
-    }
-
-    // 只要有一个needPing为false，则说明都ping过了或者正在ping，此时不需要再ping所有
-    bool needPingAll = true;
-    for (var website in climbWebsites) {
-      if (website.pingStatus.needPing == false) {
-        needPingAll = false;
-      }
-    }
-    if (needPingAll) {
-      _pingAllWebsites();
-    }
-  }
-
-  void _refresh() {
-    _pingAllWebsites();
-    logic.loadAnimes();
-  }
-
-  void _pingAllWebsites() {
-    if (!canClickPingButton) return;
-
-    for (var website in climbWebsites) {
-      website.pingStatus.needPing = true;
-    }
-    setState(() {
-      canClickPingButton = false;
-    });
-    Future.delayed(const Duration(seconds: 10)).then((value) {
-      setState(() {
-        canClickPingButton = true;
-      });
-    });
-
-    for (var website in climbWebsites) {
-      if (!website.discard && website.pingStatus.needPing) {
-        website.pingStatus.connectable = false; // 表示不能连接(ping时显示灰色)
-        website.pingStatus.pinging = true; // 表示正在ping
-      }
-    }
-    setState(() {});
-    for (var website in climbWebsites) {
-      if (!website.discard && website.pingStatus.needPing) {
-        DioUtil.ping(website.climb.baseUrl).then((value) {
-          website.pingStatus = value;
-          if (mounted) {
-            setState(() {});
-          }
-
-          Log.info("${website.name}:pingStatus=${website.pingStatus}");
-        });
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        _refresh();
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            _buildClimbWebsiteGridCard(),
-            _buildTools(),
-            _buildAnimesList(),
-            const ListTile(),
-          ],
+    return GetBuilder(
+      init: logic,
+      builder: (_) => RefreshIndicator(
+        onRefresh: () => logic.loadData(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              _buildClimbWebsiteGridCard(),
+              _buildTools(),
+              _buildAnimesList(),
+              const ListTile(),
+            ],
+          ),
         ),
       ),
     );
@@ -171,7 +99,7 @@ class _AggregatePageState extends State<AggregatePage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          onPressed: canClickPingButton ? _pingAllWebsites : null,
+          onPressed: logic.pingFinished ? () => logic.pingAllWebsites() : null,
           icon: const Icon(Icons.refresh),
           splashRadius: 18,
           iconSize: 21,
@@ -271,15 +199,15 @@ class _AggregatePageState extends State<AggregatePage> {
       children: [
         _buildCardTitle("搜索源", trailing: _buildSourceTrailing()),
         SizedBox(
-          height: itemHeight,
+          height: 100,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              itemCount: usableWebsites.length,
+              itemCount: logic.usableWebsites.length,
               itemBuilder: (context, index) {
-                ClimbWebsite climbWebsite = usableWebsites[index];
+                ClimbWebsite climbWebsite = logic.usableWebsites[index];
                 return SizedBox(
-                  width: itemWidth,
+                  width: 80,
                   child: IconTextButton(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 10),

@@ -1,5 +1,9 @@
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/history_dao.dart';
+import 'package:flutter_test_future/models/climb_website.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
+import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
 
 import '../../../dao/anime_dao.dart';
@@ -7,6 +11,8 @@ import '../../../models/anime.dart';
 
 class AggregateLogic extends GetxController {
   static AggregateLogic get to => Get.find();
+  List<ClimbWebsite> usableWebsites = [];
+  bool pingFinished = true;
 
   // 去年今天开播的动漫
   List<Anime> animesNYearsAgoTodayBroadcast = [];
@@ -31,14 +37,49 @@ class AggregateLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadAnimes();
+    // 网格只显示可用的搜索源
+    usableWebsites = climbWebsites.where((e) => !e.discard).toList();
+    loadData();
   }
 
-  Future<void> loadAnimes() async {
+  Future<void> loadData() async {
     await Future.wait([
+      pingAllWebsites(),
       _loadAnimesNYearsAgoTodayBroadcast(),
       _loadRecentWatchedAnimes(),
     ]);
+  }
+
+  Future<void> pingAllWebsites() async {
+    if (!pingFinished) return;
+
+    pingFinished = false;
+    update();
+
+    for (var website in climbWebsites) {
+      website.pingStatus.needPing = true;
+    }
+    for (var website in climbWebsites) {
+      if (!website.discard && website.pingStatus.needPing) {
+        website.pingStatus.connectable = false; // 表示不能连接(ping时显示灰色)
+        website.pingStatus.pinging = true; // 表示正在ping
+      }
+    }
+    update();
+
+    List<Future> futures = [];
+    for (var website in climbWebsites) {
+      if (!website.discard && website.pingStatus.needPing) {
+        futures.add(DioUtil.ping(website.climb.baseUrl).then((value) {
+          website.pingStatus = value;
+          update();
+          Log.info("${website.name}:pingStatus=${website.pingStatus}");
+        }));
+      }
+    }
+    await Future.wait(futures);
+    pingFinished = true;
+    update();
   }
 
   Future<void> _loadAnimesNYearsAgoTodayBroadcast() async {

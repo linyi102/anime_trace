@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/sources/logic.dart';
+import 'package:flutter_test_future/pages/network/sources/aggregate_logic.dart';
 import 'package:flutter_test_future/widgets/common_cover.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:get/get.dart';
