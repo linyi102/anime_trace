@@ -86,10 +86,10 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
     );
   }
 
-  _buildWeeklyBar() {
+  Widget _buildWeeklyBar() {
     return Container(
-      height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      height: 40,
+      margin: const EdgeInsets.fromLTRB(10, 15, 10, 5),
       child: ListViewObserver(
         controller: observerController,
         child: ListView(
@@ -102,24 +102,18 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
   _buildWeeklyItem(WeeklyItem item) {
     bool isCur = curWeeklyItem == item;
-    var radius = BorderRadius.circular(12);
 
     return Container(
-      decoration: BoxDecoration(
-        color: isCur
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).cardTheme.color,
-        borderRadius: radius,
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: InkWell(
-        borderRadius: radius,
-        onTap: () {
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      child: ChoiceChip(
+        label: Text(item.title),
+        selected: isCur,
+        onSelected: (value) {
+          if (!value) return;
           setState(() {
             curWeeklyItem = item;
             _filterAnime();
           });
-
           observerController.animateTo(
             index: curBarItemIndex,
             duration: const Duration(milliseconds: 200),
@@ -129,33 +123,17 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
             },
           );
         },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                item.title,
-                style: TextStyle(
-                  color: isCur ? Colors.white : null,
-                ),
-              ),
-              if (isCur && item.subtitle.isNotEmpty)
-                Text(
-                  item.subtitle,
-                  style: TextStyle(
-                      color: isCur ? Colors.white : Theme.of(context).hintColor,
-                      fontSize: 12),
-                ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  _buildAnimeCardListView() {
+  Widget _buildAnimeCardListView() {
+    if (filteredAnimes.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Text('什么都没有~'),
+      );
+    }
     return GridView.builder(
       key: ObjectKey(curWeeklyItem),
       itemCount: filteredAnimes.length,
