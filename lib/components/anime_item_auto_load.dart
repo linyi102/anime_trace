@@ -44,8 +44,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   late Anime anime;
   bool loading = true;
 
-  get itemHeight => 120.0;
-  get coverWidth => 80.0;
+  double get coverWidth => 90.0;
 
   @override
   void initState() {
@@ -112,48 +111,42 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
       child: InkWell(
         onTap: _enterDetailPage,
         onLongPress: widget.onLongPress,
-        child: Row(
-          children: [
-            // 封面
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: SizedBox(
-                    width: coverWidth,
-                    child: AnimeGridCover(
-                      anime,
-                      loading: loading,
-                      showName: false,
-                      showProgress: widget.showProgress,
-                      showReviewNumber: widget.showReviewNumber,
-                      onPressed: _openImage,
-                    ),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              // 封面
+              FittedBox(
+                child: SizedBox(
+                  width: coverWidth,
+                  child: AnimeGridCover(
+                    anime,
+                    loading: loading,
+                    showName: false,
+                    showProgress: widget.showProgress,
+                    showReviewNumber: widget.showReviewNumber,
+                    onPressed: _openImage,
                   ),
                 ),
-              ],
-            ),
-            // 信息
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _showAnimeName(anime.animeName),
-                  for (var subtitle in widget.subtitles)
-                    _showAnimeSubtitle(subtitle),
-                  if (widget.showAnimeInfo)
-                    Row(
-                      children: [
-                        _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
-                      ],
-                    ),
-                  if (widget.showAnimeInfo)
-                    _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
-                ],
               ),
-            ),
-          ],
+              const SizedBox(width: 10),
+              // 信息
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _showAnimeName(anime.animeName),
+                    for (var subtitle in widget.subtitles)
+                      _showAnimeSubtitle(subtitle),
+                    if (widget.showAnimeInfo) ...[
+                      _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
+                      _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
+                    ]
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -191,7 +184,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
             child: Text(
               info,
               style:
-                  TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
+                  TextStyle(fontSize: 13, color: Theme.of(context).hintColor),
               overflow: TextOverflow.ellipsis,
               // textScaleFactor: AppTheme.smallScaleFactor,
             ),

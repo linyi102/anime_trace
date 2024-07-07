@@ -162,13 +162,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
   }
 
   _buildAnimeList(int pageIndex) {
-    // if (weeklyController.weeks[pageIndex].isEmpty) {
-    //   return ListView( // ListView保证空数据下能够刷新
-    //     children: [emptyDataHint()],
-    //   );
-    // }
-
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 40),
       controller: scrollController,
       itemCount: weeklyController.weeks[pageIndex].length,
       itemBuilder: (context, recordIdx) {
