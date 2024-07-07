@@ -38,9 +38,10 @@ class DioUtil {
     String path, {
     bool isMobile = false,
     String? referer,
-    Map<String, dynamic> headers = const {},
+    Map<String, dynamic>? headers,
   }) async {
     try {
+      headers = headers ?? {};
       if (isMobile) {
         headers['User-Agent'] =
             'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Mobile Safari/537.36 Edg/109.0.1518.78';
