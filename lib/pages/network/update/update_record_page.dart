@@ -7,8 +7,6 @@ import 'package:flutter_test_future/dao/update_record_dao.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/vo/update_record_vo.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/update/need_update_anime_list.dart';
-import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -32,32 +30,37 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Obx(
-        () => RefreshIndicator(
+    return Obx(
+      () => Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "更新进度 ${updateRecordController.updateProgressStr}",
+          ),
+          actions: [
+            IconButton(
+              onPressed: updateRecordController.updating.value
+                  ? null
+                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
+              icon: const Icon(Icons.refresh),
+            )
+          ],
+        ),
+        body: RefreshIndicator(
           onRefresh: () async {
             ClimbAnimeUtil.updateAllAnimesInfo();
           },
-          // ListView嵌套ListView，那么内部LV会需要加上shrinkWrap: true，但这样会导致懒加载实现
-          // 所以改用Column
-          child: Column(
-            children: [
-              _buildUpdateProgress(context),
-              Expanded(
-                  child: FadeAnimatedSwitcher(
-                      loadOk: updateRecordController.loadOk.value,
-                      destWidget: updateRecordController.updateRecordVos.isEmpty
-                          ? _buildEmptyDataPage()
-                          : _buildUpdateRecordList(updateRecordController))),
-            ],
+          child: FadeAnimatedSwitcher(
+            loadOk: updateRecordController.loadOk.value,
+            destWidget: updateRecordController.updateRecordVos.isEmpty
+                ? _buildEmptyDataPage()
+                : _buildUpdateRecordList(updateRecordController),
           ),
         ),
       ),
     );
   }
 
-  _buildUpdateRecordList(UpdateRecordController updateRecordController) {
+  Widget _buildUpdateRecordList(UpdateRecordController updateRecordController) {
     List<String> dateList = [];
     Map<String, List<UpdateRecordVo>> map = {};
     for (var updateRecordVo in updateRecordController.updateRecordVos) {
@@ -223,60 +226,12 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     );
   }
 
-  _buildEmptyDataPage() {
+  Widget _buildEmptyDataPage() {
     return ListView(
       children: [
         const SizedBox(height: 20),
         emptyDataHint(msg: "没有更新记录。"),
       ],
-    );
-  }
-
-  _buildUpdateProgress(context) {
-    final UpdateRecordController updateRecordController = Get.find();
-
-    return Card(
-      child: Container(
-        height: 70,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return const NeedUpdateAnimeList();
-                  }));
-                },
-                child: Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: Container()),
-                      Text(
-                        "更新进度 ${updateRecordController.updateProgressStr}",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      // Text("查看未完结", style: Theme.of(context).textTheme.bodySmall),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            CommonOutlinedButton(
-              text: '更新',
-              onPressed: updateRecordController.updating.value
-                  ? null
-                  : () => ClimbAnimeUtil.updateAllAnimesInfo(),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
