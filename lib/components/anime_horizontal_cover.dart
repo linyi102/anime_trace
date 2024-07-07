@@ -55,8 +55,8 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
     }
 
     return Responsive(
-      mobile: _buildListView(coverHeight: 150, coverWidth: 100),
-      tablet: _buildListView(coverHeight: 175, coverWidth: 125),
+      mobile: _buildListView(coverHeight: 150, coverWidth: 110),
+      tablet: _buildListView(coverHeight: 175, coverWidth: 130),
       desktop: _buildListView(coverHeight: 200, coverWidth: 150),
     );
   }

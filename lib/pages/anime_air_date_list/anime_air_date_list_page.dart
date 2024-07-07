@@ -28,9 +28,7 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      ),
+      appBar: AppBar(title: const Text('时间线')),
       body: RefreshIndicator(
         onRefresh: () async {
           await controller.loadAllAnimes();
@@ -130,12 +128,10 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
         AnimeHorizontalCover(
           animes: airDateItem.animes,
           callback: () async => false,
-          coverConfig: airDateItem.time == controller.recentWatchDate
-              ? AnimeGridCoverConfig.allShow()
-              : AnimeGridCoverConfig.noneShow().copyWith(
-                  showCover: true,
-                  showName: true,
-                ),
+          coverConfig: AnimeGridCoverConfig.noneShow().copyWith(
+            showCover: true,
+            showName: true,
+          ),
         ),
       ],
     );
@@ -144,8 +140,6 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
   String getTimeTitle(DateTime time) {
     if (time == controller.unknownAirDate) {
       return '未知';
-    } else if (time == controller.recentWatchDate) {
-      return '最近观看';
     }
     return '${time.year} 年 ${time.month} 月';
   }

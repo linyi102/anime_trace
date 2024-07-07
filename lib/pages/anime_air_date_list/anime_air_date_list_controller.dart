@@ -1,14 +1,10 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:get/get.dart';
 
 class AnimeAirDateListController extends GetxController {
   List<AnimeAirDateItem> animeAirDateTimeItems = [];
   final unknownAirDate = DateTime(-1);
-  final recentWatchDate = DateTime(-2);
-  late final recentWatchedAnimeDateItem =
-      AnimeAirDateItem(time: recentWatchDate, animes: []);
   List<DateTime> allAirDate = [];
 
   @override
@@ -44,19 +40,9 @@ class AnimeAirDateListController extends GetxController {
     for (final item in animeAirDateTimeItems) {
       item.animes.sort((a, b) => a.premiereTime.compareTo(b.premiereTime));
     }
-    // 开头添加最近观看条目
-    animeAirDateTimeItems.insert(0, recentWatchedAnimeDateItem);
     // 生成所有放映时间，便于快速跳转
     allAirDate.addAll(animeAirDateTimeItems.map((e) => e.time));
-    // 获取最近观看动漫
-    await _loadRecentWatchedAnimes();
     update();
-  }
-
-  _loadRecentWatchedAnimes() async {
-    recentWatchedAnimeDateItem.animes.clear();
-    recentWatchedAnimeDateItem.animes
-        .addAll(await HistoryDao.recentWatchedAnimes(day: 10));
   }
 }
 
