@@ -57,8 +57,7 @@ mixin Climb {
     throw '未实现';
   }
 
-  /// 爬取周表，weekday范围[1,7]
-  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
+  Future<List<List<WeekRecord>>> climbWeeklyTable() async {
     throw '未实现';
   }
 

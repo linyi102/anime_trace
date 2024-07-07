@@ -40,8 +40,8 @@ class ClimbQuqi with Climb {
   }
 
   @override
-  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
-    return ClimbYhdm().climbWeeklyTable(weekday,
+  Future<List<List<WeekRecord>>> climbWeeklyTable() async {
+    return ClimbYhdm().climbWeeklyTable(
         foreignBaseUrl: baseUrl, foreignSourceName: sourceName);
   }
 }

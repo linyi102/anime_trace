@@ -1,7 +1,13 @@
+import 'dart:io';
+
+import 'package:darty_json/darty_json.dart';
+import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
+import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:html/dom.dart';
@@ -236,5 +242,45 @@ class ClimbBangumi with Climb {
     }
 
     return animes;
+  }
+
+  @override
+  Future<List<List<WeekRecord>>> climbWeeklyTable() async {
+    final resp = await DioUtil.get(
+      'https://api.bgm.tv/calendar',
+      headers: _apiHeaders,
+    );
+    if (resp.isFailure || resp.data.data is! List) return [];
+
+    final json = Json.fromList(resp.data.data);
+    List<List<WeekRecord>> weeks = [];
+    for (final Json week in json.listValue) {
+      List<WeekRecord> records = [];
+      for (final Json item in week.mapValue['items']?.listValue ?? []) {
+        String name = item.mapObjectValue['name_cn'] ?? '';
+        if (name.isEmpty) name = item.mapObjectValue['name'] ?? '';
+        String detailUrl = item.mapObjectValue['url'] ?? '';
+        detailUrl = detailUrl.replaceFirst('bgm.tv', 'bangumi.tv');
+
+        records.add(WeekRecord(
+          anime: Anime(
+            animeName: name,
+            animeCoverUrl:
+                item.mapValue['images']?.mapObjectValue['large'] ?? '',
+            animeUrl: detailUrl,
+          ),
+          info: item.mapObjectValue['name'] ?? '',
+        ));
+      }
+      weeks.add(records);
+    }
+    return weeks;
+  }
+
+  Map<String, dynamic> get _apiHeaders {
+    return {
+      'user-agent':
+          'linyi102/anime_trace/${AppUpgradeController.to.curVersion} (${Platform.operatingSystem}) (https://github.com/linyi102/anime_trace)',
+    };
   }
 }

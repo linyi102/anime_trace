@@ -153,6 +153,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.1.2"
+  darty_json:
+    dependency: "direct main"
+    description:
+      name: darty_json
+      sha256: "35fed955e22ad27c0033aa61da3c1dead79ee3cdafd177f62aa83c7ab1dea2d9"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.5"
   dbus:
     dependency: transitive
     description:

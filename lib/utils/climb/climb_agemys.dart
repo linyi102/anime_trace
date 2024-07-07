@@ -107,8 +107,7 @@ class ClimbAgemys with Climb {
     return _parseAnimeList(document);
   }
 
-  @override
-  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
+  Future<List<WeekRecord>> climbWeeklyTableItem(int weekday) async {
     var document = await dioGetAndParse(baseUrl);
     if (document == null) {
       return [];

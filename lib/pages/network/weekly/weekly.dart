@@ -27,15 +27,15 @@ class _WeeklyPageState extends State<WeeklyPage> {
   int get selectedWeekdayIdx => weeklyController.selectedWeekday - 1;
 
   final List<ClimbWebsite> usableWebsites = [
-    yhdmClimbWebsite,
+    bangumiClimbWebsite,
     quClimbWebsite,
-    quqiClimbWebsite
   ];
   late ClimbWebsite curWebsite;
+  bool get needClimbDetail => [quClimbWebsite].contains(curWebsite);
 
   late bool loading;
 
-  bool enableSlide = false; // 开启左右滑动切换周几
+  bool enableSlide = true; // 开启左右滑动切换周几
   late final PageController pageController;
 
   final scrollController = ScrollController();
@@ -57,13 +57,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
       curWebsite = climbWebsites[websiteIdx];
     }
 
-    // 为空时采才加载数据
-    if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
-      loading = true;
-      _loadData();
-    } else {
-      loading = false;
-    }
+    _loadData();
   }
 
   _loadData() async {
@@ -71,9 +65,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
       loading = true;
     });
 
-    weeklyController.weeks[selectedWeekdayIdx] =
-        await ClimbAnimeUtil.climbWeekRecords(
-            curWebsite, weeklyController.selectedWeekday);
+    weeklyController.weeks = await ClimbAnimeUtil.climbWeeklyTable(curWebsite);
     if (mounted) {
       setState(() {
         loading = false;
@@ -114,22 +106,13 @@ class _WeeklyPageState extends State<WeeklyPage> {
   Expanded _buildPageView() {
     return Expanded(
       child: PageView.builder(
-        // 不允许滚动，因为tabbar也要滚动。所以改用底部周按钮来切换周几
         physics: enableSlide ? null : const NeverScrollableScrollPhysics(),
         controller: pageController,
         itemCount: weeklyController.weeks.length,
         onPageChanged: (changedPage) {
-          weeklyController.selectedWeekday = changedPage + 1;
-          Log.info(
-              "changedPage=$changedPage, selectedWeekday=${weeklyController.selectedWeekday}");
-          if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
-            // 加载数据，里面会重新渲染，所以会同时渲染日期栏和动漫列表
-            _loadData();
-          } else {
-            setState(() {
-              // 需要重新渲染日期栏
-            });
-          }
+          setState(() {
+            weeklyController.selectedWeekday = changedPage + 1;
+          });
         },
         itemBuilder: (context, pageIndex) {
           Log.info("pageIndex=$pageIndex");
@@ -153,6 +136,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
   // ignore: unused_element
   GridView _buildAnimeGrid(int pageIndex) {
     return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 40),
       controller: scrollController,
       gridDelegate: getAnimeGridDelegate(context),
       // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
@@ -169,6 +153,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
               style: AnimeItemStyle.grid,
               showProgress: true,
               showReviewNumber: true,
+              climbDetail: needClimbDetail,
             ),
           ],
         );
@@ -196,6 +181,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
           subtitles: [record.info],
           showProgress: true,
           showReviewNumber: true,
+          climbDetail: needClimbDetail,
         );
       },
     );

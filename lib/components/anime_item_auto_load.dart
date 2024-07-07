@@ -109,54 +109,51 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
 
   _buildListItem() {
     return Card(
-      child: SizedBox(
-        height: itemHeight,
-        child: InkWell(
-          onTap: _enterDetailPage,
-          onLongPress: widget.onLongPress,
-          child: Row(
-            children: [
-              // 封面
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: SizedBox(
-                      width: coverWidth,
-                      child: AnimeGridCover(
-                        anime,
-                        loading: loading,
-                        showName: false,
-                        showProgress: widget.showProgress,
-                        showReviewNumber: widget.showReviewNumber,
-                        onPressed: _openImage,
-                      ),
+      child: InkWell(
+        onTap: _enterDetailPage,
+        onLongPress: widget.onLongPress,
+        child: Row(
+          children: [
+            // 封面
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: SizedBox(
+                    width: coverWidth,
+                    child: AnimeGridCover(
+                      anime,
+                      loading: loading,
+                      showName: false,
+                      showProgress: widget.showProgress,
+                      showReviewNumber: widget.showReviewNumber,
+                      onPressed: _openImage,
                     ),
                   ),
+                ),
+              ],
+            ),
+            // 信息
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _showAnimeName(anime.animeName),
+                  for (var subtitle in widget.subtitles)
+                    _showAnimeSubtitle(subtitle),
+                  if (widget.showAnimeInfo)
+                    Row(
+                      children: [
+                        _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
+                      ],
+                    ),
+                  if (widget.showAnimeInfo)
+                    _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
                 ],
               ),
-              // 信息
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _showAnimeName(anime.animeName),
-                    for (var subtitle in widget.subtitles)
-                      _showAnimeSubtitle(subtitle),
-                    if (widget.showAnimeInfo)
-                      Row(
-                        children: [
-                          _showAnimeSubtitle(anime.getAnimeInfoFirstLine()),
-                        ],
-                      ),
-                    if (widget.showAnimeInfo)
-                      _showAnimeSubtitle(anime.getAnimeInfoSecondLine()),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

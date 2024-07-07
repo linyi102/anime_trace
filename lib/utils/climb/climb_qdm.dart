@@ -126,26 +126,30 @@ class ClimbQdm with Climb {
   }
 
   @override
-  Future<List<WeekRecord>> climbWeeklyTable(int weekday) async {
+  Future<List<List<WeekRecord>>> climbWeeklyTable() async {
     var document = await dioGetAndParse(baseUrl);
     if (document == null) {
       return [];
     }
 
-    List<WeekRecord> records = [];
-    var lis = document
-        .getElementsByClassName("mod")[weekday - 1]
-        .getElementsByTagName("li");
-    for (var li in lis) {
-      Anime anime = Anime(animeName: "");
-      var a = li.getElementsByTagName("a")[0];
-      anime.animeName = a.innerHtml;
-      anime.animeUrl = "$baseUrl${a.attributes['href']}";
-      String info = li.getElementsByTagName("span")[0].innerHtml;
+    List<List<WeekRecord>> weeks = [];
+    for (int weekday = 1; weekday <= 7; weekday++) {
+      List<WeekRecord> records = [];
+      var lis = document
+          .getElementsByClassName("mod")[weekday - 1]
+          .getElementsByTagName("li");
+      for (var li in lis) {
+        Anime anime = Anime(animeName: "");
+        var a = li.getElementsByTagName("a")[0];
+        anime.animeName = a.innerHtml;
+        anime.animeUrl = "$baseUrl${a.attributes['href']}";
+        String info = li.getElementsByTagName("span")[0].innerHtml;
 
-      WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
-      records.add(weekRecord);
+        WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
+        records.add(weekRecord);
+      }
+      weeks.add(records);
     }
-    return records;
+    return weeks;
   }
 }

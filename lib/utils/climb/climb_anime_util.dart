@@ -36,13 +36,9 @@ class ClimbAnimeUtil {
   }
 
   /// 查询周表中某天的更新记录
-  static Future<List<WeekRecord>> climbWeekRecords(
-      ClimbWebsite climbWebsite, int weekday) async {
-    if (weekday <= 0 && weekday > 7) {
-      Log.info("非法weekday: $weekday");
-      return [];
-    }
-    return climbWebsite.climb.climbWeeklyTable(weekday);
+  static Future<List<List<WeekRecord>>> climbWeeklyTable(
+      ClimbWebsite climbWebsite) async {
+    return climbWebsite.climb.climbWeeklyTable();
   }
 
   /// 多搜索源。根据关键字搜索动漫

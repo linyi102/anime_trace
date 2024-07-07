@@ -31,6 +31,7 @@ dependencies:
     sdk: flutter
   flutter_localizations: # 国际化
     sdk: flutter
+  darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
   flutter_picker: ^2.1.0
   flex_color_picker: ^3.3.0

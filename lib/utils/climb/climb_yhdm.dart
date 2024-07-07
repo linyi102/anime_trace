@@ -174,7 +174,7 @@ class ClimbYhdm with Climb {
   }
 
   @override
-  Future<List<WeekRecord>> climbWeeklyTable(int weekday,
+  Future<List<List<WeekRecord>>> climbWeeklyTable(
       {String? foreignBaseUrl, String? foreignSourceName}) async {
     String baseUrl = foreignBaseUrl ?? this.baseUrl;
     var document = await dioGetAndParse(baseUrl);
@@ -182,33 +182,35 @@ class ClimbYhdm with Climb {
       return [];
     }
 
-    List<WeekRecord> records = [];
+    List<List<WeekRecord>> weeks = [];
+    for (int weekday = 1; weekday <= 7; weekday++) {
+      List<WeekRecord> records = [];
+      var tlist = document.getElementsByClassName("tlist")[0];
+      var ul = tlist.getElementsByTagName("ul")[weekday - 1];
+      var lis = ul.getElementsByTagName("li");
 
-    var tlist = document.getElementsByClassName("tlist")[0];
-    var ul = tlist.getElementsByTagName("ul")[weekday - 1];
-    var lis = ul.getElementsByTagName("li");
+      // 第[0-9]{1,}集(\(完结\)){0,}(.*new){0,}
+      RegExp regExp = RegExp("第[0-9]{1,}集(\\(完结\\)){0,}(.*new){0,}");
+      for (var li in lis) {
+        var as = li.getElementsByTagName("a");
 
-    // 第[0-9]{1,}集(\(完结\)){0,}(.*new){0,}
-    RegExp regExp = RegExp("第[0-9]{1,}集(\\(完结\\)){0,}(.*new){0,}");
-    for (var li in lis) {
-      var as = li.getElementsByTagName("a");
+        Anime anime = Anime(animeName: "");
+        anime.animeName = as[1].innerHtml;
+        anime.animeUrl = "$baseUrl${as[1].attributes["href"]}";
 
-      Anime anime = Anime(animeName: "");
-      anime.animeName = as[1].innerHtml;
-      anime.animeUrl = "$baseUrl${as[1].attributes["href"]}";
+        // innerHtml的三种情况：
+        // 第16集(完结)
+        // 第5集
+        // 第16集<font color="#FF0000"> new</font>
+        String info = regExp.stringMatch(as[0].innerHtml).toString();
+        if (info.contains("new")) {
+          info = info.replaceFirst("<font color=\"#FF0000\"> new", " new!");
+        }
 
-      // innerHtml的三种情况：
-      // 第16集(完结)
-      // 第5集
-      // 第16集<font color="#FF0000"> new</font>
-      String info = regExp.stringMatch(as[0].innerHtml).toString();
-      if (info.contains("new")) {
-        info = info.replaceFirst("<font color=\"#FF0000\"> new", " new!");
+        records.add(WeekRecord(anime: anime, info: info));
       }
-
-      records.add(WeekRecord(anime: anime, info: info));
+      weeks.add(records);
     }
-
-    return records;
+    return weeks;
   }
 }
