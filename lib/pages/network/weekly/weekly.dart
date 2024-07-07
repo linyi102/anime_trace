@@ -92,6 +92,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
     Log.build(runtimeType);
 
     return Scaffold(
+      appBar: AppBar(title: const Text('周表')),
       body: Column(
         children: [
           Card(

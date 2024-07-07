@@ -125,6 +125,7 @@ class _DirectoryPageState extends State<DirectoryPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      appBar: AppBar(title: const Text('目录')),
       body: Scrollbar(
         controller: _scrollController,
         // Scrollbar嵌套SmartRefresher，反过来无法下拉刷新

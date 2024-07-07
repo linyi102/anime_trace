@@ -36,7 +36,9 @@ class _AggregatePageState extends State<AggregatePage> {
     return GetBuilder(
       init: logic,
       builder: (_) => RefreshIndicator(
-        onRefresh: () => logic.loadData(),
+        onRefresh: () async {
+          logic.loadData();
+        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
