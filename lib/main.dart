@@ -251,7 +251,7 @@ class MyAppState extends State<MyApp> {
       primary: themeController.customPrimaryColor.value ??
           curDarkThemeColor.primaryColor,
       scaffoldBackground: curDarkThemeColor.bodyColor,
-      // surface: curDarkThemeColor.cardColor,
+      surface: curDarkThemeColor.cardColor,
       // BottomNavigationBar
       background: curDarkThemeColor.appBarColor,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -298,7 +298,7 @@ class MyAppState extends State<MyApp> {
       primary: themeController.customPrimaryColor.value ??
           curLightThemeColor.primaryColor,
       scaffoldBackground: curLightThemeColor.bodyColor,
-      // surface: curLightThemeColor.cardColor,
+      surface: curLightThemeColor.cardColor,
       // BottomNavigationBar
       background: curLightThemeColor.appBarColor,
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
