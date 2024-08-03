@@ -106,7 +106,7 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
                   noteFilter.noteContentKeyword = noteContentController.text;
                   _markInputOk();
                 },
-                child: const Text(' 搜索 '),
+                child: const Text('搜索'),
               )
             ],
           ),

@@ -9,7 +9,7 @@ class ThemeController extends GetxController {
   static ThemeController get to => Get.find();
 
   Rx<int> themeModeIdx = SPUtil.getInt("darkMode", defaultValue: 0).obs;
-  Rx<bool> useM3 = SPUtil.getBool("useM3", defaultValue: false).obs;
+  Rx<bool> useM3 = SPUtil.getBool("useM3", defaultValue: true).obs;
   Rx<bool> useCardStyle =
       SPUtil.getBool("useCardStyle", defaultValue: true).obs;
 
@@ -40,8 +40,10 @@ class ThemeController extends GetxController {
     SPUtil.getString("customFontFamily"),
     '苹方-简',
     'PingFang SC',
+    'HarmonyOS Sans SC',
+    'Noto Sans SC',
     'Microsoft YaHei UI',
-    '微软雅黑'
+    '微软雅黑',
   ].obs;
 
   /// 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor

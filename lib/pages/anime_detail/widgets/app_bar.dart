@@ -203,76 +203,60 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
-                    padding: const EdgeInsets.all(0),
-                    child: ListTile(
-                      leading: const Icon(Icons.delete_outline),
-                      title: const Text("取消收藏"),
-                      onTap: () {
-                        // 关闭下拉菜单
-                        Navigator.pop(context);
-
-                        _dialogDeleteAnime();
-                      },
+                    child: const ListTile(
+                      leading: Icon(Icons.delete_outline),
+                      title: Text("取消收藏"),
                     ),
+                    onTap: () {
+                      _dialogDeleteAnime();
+                    },
                   ),
                   PopupMenuItem(
-                    padding: const EdgeInsets.all(0),
-                    child: ListTile(
-                      leading: const Icon(Icons.update),
-                      title: const Text("更新动漫"),
-                      onTap: () {
-                        // 关闭下拉菜单
-                        Navigator.pop(context);
-
-                        widget.animeController.climbAnimeInfo(context);
-                      },
+                    child: const ListTile(
+                      leading: Icon(Icons.update),
+                      title: Text("更新动漫"),
                     ),
+                    onTap: () {
+                      widget.animeController.climbAnimeInfo(context);
+                    },
                   ),
                   PopupMenuItem(
-                    padding: const EdgeInsets.all(0),
-                    child: ListTile(
-                      leading: const Icon(MingCuteIcons.mgc_transfer_line),
-                      title: const Text("迁移动漫"),
-                      onTap: () {
-                        // 关闭下拉菜单
-                        Navigator.pop(context);
-
-                        Navigator.of(context).push(
+                    child: const ListTile(
+                      leading: Icon(MingCuteIcons.mgc_transfer_line),
+                      title: Text("迁移动漫"),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return AnimeClimbAllWebsite(
+                              animeId: _anime.animeId,
+                              keyword: _anime.animeName,
+                            );
+                          },
+                        ),
+                      ).then((value) {
+                        // 从数据库中获取迁移后的动漫
+                        widget.animeController.loadAnime(_anime);
+                        // NOTE 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
+                        // widget.animeController.loadEpisode();
+                      });
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: const ListTile(
+                      leading: Icon(MingCuteIcons.mgc_film_line),
+                      title: Text("照片墙"),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
                           MaterialPageRoute(
-                            builder: (context) {
-                              return AnimeClimbAllWebsite(
-                                animeId: _anime.animeId,
-                                keyword: _anime.animeName,
-                              );
-                            },
-                          ),
-                        ).then((value) {
-                          // 从数据库中获取迁移后的动漫
-                          widget.animeController.loadAnime(_anime);
-                          // NOTE 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
-                          // widget.animeController.loadEpisode();
-                        });
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    padding: const EdgeInsets.all(0),
-                    child: ListTile(
-                      leading: const Icon(MingCuteIcons.mgc_film_line),
-                      title: const Text("照片墙"),
-                      onTap: () {
-                        // 关闭下拉菜单
-                        Navigator.pop(context);
-
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NoteImageWallPage(
-                                animeId: _anime.animeId,
-                              ),
-                            ));
-                      },
-                    ),
+                            builder: (context) => NoteImageWallPage(
+                              animeId: _anime.animeId,
+                            ),
+                          ));
+                    },
                   ),
                 ];
               },

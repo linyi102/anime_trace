@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/pages/changelog/logic.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/widgets/common_outlined_button.dart';
 import 'package:get/get.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class ChangelogPage extends StatefulWidget {
   const ChangelogPage({super.key});
@@ -44,18 +45,26 @@ class _ChangelogPageState extends State<ChangelogPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CommonOutlinedButton(
-                      onPressed: () {
-                        LaunchUrlUtil.launch(
-                            context: context,
-                            uriStr: release.htmlUrl,
-                            inApp: false);
-                      },
-                      text: release.tagName,
-                      fontWeight: FontWeight.w600,
+                    SizedBox(
+                      height: 30,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(MingCuteIcons.mgc_tag_line, size: 16),
+                        onPressed: () {
+                          LaunchUrlUtil.launch(
+                              context: context,
+                              uriStr: release.htmlUrl,
+                              inApp: false);
+                        },
+                        label: Text(release.tagName),
+                        style: const ButtonStyle(
+                          visualDensity: VisualDensity(vertical: -2),
+                          padding: MaterialStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 16)),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    Text(release.body.trim()),
+                    MarkdownBody(data: release.body),
                     const SizedBox(height: 20),
                   ],
                 );

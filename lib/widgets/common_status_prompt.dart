@@ -10,7 +10,7 @@ class CommonStatusPrompt extends StatelessWidget {
     required this.buttonText,
     required this.onTapButton,
   });
-  final IconData icon;
+  final Widget icon;
   final String titleText;
   final String? subtitleText;
   final Widget? subtitle;
@@ -26,15 +26,13 @@ class CommonStatusPrompt extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 30, 0),
-            child: Icon(icon),
+            child: icon,
           ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(titleText,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(titleText, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 if (subtitleText != null)
                   Text(
@@ -44,7 +42,7 @@ class CommonStatusPrompt extends StatelessWidget {
                   ),
                 if (subtitle != null) subtitle!,
                 const SizedBox(height: 10),
-                ElevatedButton(onPressed: onTapButton, child: Text(buttonText))
+                FilledButton(onPressed: onTapButton, child: Text(buttonText))
               ],
             ),
           ),

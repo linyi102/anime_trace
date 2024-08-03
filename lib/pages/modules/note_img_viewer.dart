@@ -15,6 +15,7 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -180,7 +181,11 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
         // 返回按钮
         leading: IconButton(
           onPressed: () => _pop(),
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: const Icon(
+            MingCuteIcons.mgc_close_line,
+            color: Colors.white,
+            size: 22,
+          ),
         ),
         centerTitle: true,
         title: imageLocalPaths.length > 1 ? _buildImageProgressText() : null,

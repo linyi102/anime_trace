@@ -7,7 +7,7 @@ import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:flutter_test_future/widgets/setting_card.dart';
 
 class LocalBackupPage extends StatefulWidget {
   const LocalBackupPage({super.key});
@@ -23,9 +23,9 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SettingCard(
+      title: '本地备份',
       children: [
-        const SettingTitle(title: '本地备份'),
         if (Platform.isAndroid)
           ListTile(
             title: const Text("立即备份"),

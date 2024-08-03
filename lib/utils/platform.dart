@@ -9,8 +9,7 @@ class PlatformUtil {
   static bool get isDesktop => !isMobile;
 
   /// 点击tab栏切换时的动画时长
-  static Duration get tabControllerAnimationDuration =>
-      isMobile ? kTabScrollDuration : Duration.zero;
+  static Duration get tabControllerAnimationDuration => kTabScrollDuration;
 
   /// 左右滑动切换tab栏
   static ScrollPhysics? get tabBarViewPhysics =>

@@ -33,8 +33,19 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     return Obx(
       () => Scaffold(
         appBar: AppBar(
-          title: Text(
-            "更新进度 ${updateRecordController.updateProgressStr}",
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "更新进度",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                updateRecordController.updateProgressStr,
+                style: Theme.of(context).textTheme.bodySmall,
+              )
+            ],
           ),
           actions: [
             IconButton(

@@ -22,6 +22,7 @@ import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 集+自动获取笔记
 
@@ -264,7 +265,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             children: [
               ListTile(
                 title: const Text("选择时间"),
-                leading: const Icon(Icons.access_time),
+                leading: const Icon(MingCuteIcons.mgc_calendar_time_add_line,
+                    size: 22),
                 onTap: () async {
                   // 退出对话框
                   Navigator.of(dialogContext).pop();
@@ -290,7 +292,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               if (_episode.isChecked())
                 ListTile(
                   title: const Text("撤销时间"),
-                  leading: const Icon(Icons.close),
+                  leading:
+                      const Icon(MingCuteIcons.mgc_delete_back_line, size: 22),
                   onTap: () async {
                     // 退出对话框
                     Navigator.pop(dialogContext);
@@ -299,20 +302,18 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     _dialogRemoveDate();
                   },
                 ),
-              const CommonDivider(),
               ListTile(
                 title: const Text("编辑标题"),
-                leading: const Icon(Icons.title),
+                leading: const Icon(MingCuteIcons.mgc_text_2_line, size: 22),
                 onTap: () {
                   Navigator.pop(dialogContext);
 
                   _showDialogDescForm(dialogContext);
                 },
               ),
-              const CommonDivider(),
               ListTile(
                 title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
-                leading: const Icon(Icons.edit),
+                leading: const Icon(MingCuteIcons.mgc_edit_4_line, size: 22),
                 onTap: () {
                   Navigator.pop(dialogContext);
                   _enterNoteEditPage(needCreate: true);
@@ -321,7 +322,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               if (_episode.note != null)
                 ListTile(
                   title: const Text("复制笔记"),
-                  leading: const Icon(Icons.copy_rounded),
+                  leading: const Icon(MingCuteIcons.mgc_copy_line, size: 22),
                   onTap: () {
                     CommonUtil.copyContent(_episode.note!.noteContent);
                     Navigator.pop(dialogContext);
@@ -330,7 +331,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               if (_episode.note != null)
                 ListTile(
                   title: const Text("删除笔记"),
-                  leading: const Icon(Icons.delete_outline),
+                  leading:
+                      const Icon(MingCuteIcons.mgc_delete_3_line, size: 22),
                   onTap: () {
                     _dialogDeleteConfirm();
                   },

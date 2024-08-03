@@ -1,14 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AppTheme {
   /// 圆角
   static double get cardRadius => 8.0;
-  static double get imgRadius => 6.0;
-  static double get noteImgRadius => 6.0; // 笔记图片
+  static double get imgRadius => 8.0;
+  static double get noteImgRadius => 8.0; // 笔记图片
   static double get noteImageSpacing => 6.0; // 笔记图片间隔
-  static double get stateRadius => 4.0; // 集数、观看次数
+  static double get stateRadius => 6.0; // 集数、观看次数
   static double get bottomSheetRadius => 16.0;
   static double get chipRadius => 40.0;
   static double get timePickerDialogRadius => 16.0;
@@ -49,7 +50,14 @@ class AppTheme {
     ThemeMode.light,
     ThemeMode.dark,
   ];
-  static List<String> darkModes = ["跟随系统", "关闭", "开启"];
+  static List<IconData> darkModeIcons = [
+    Platform.isWindows
+        ? MingCuteIcons.mgc_windows_fill
+        : MingCuteIcons.mgc_android_2_fill,
+    MingCuteIcons.mgc_sun_2_fill,
+    MingCuteIcons.mgc_partly_cloud_night_fill,
+  ];
+  static List<String> darkModes = ["跟随系统", "日间", "夜间"];
 
   static Color get blueInLight => Colors.blue;
 
@@ -76,10 +84,10 @@ class AppTheme {
       key: "lightBlack",
       name: "浅黑",
       primaryColor: blueInDark,
-      representativeColor: const Color.fromRGBO(30, 30, 30, 1),
-      appBarColor: const Color.fromRGBO(32, 32, 32, 1),
+      representativeColor: const Color.fromRGBO(50, 50, 50, 1),
+      appBarColor: const Color.fromRGBO(24, 24, 24, 1),
       bodyColor: const Color.fromRGBO(18, 18, 18, 1),
-      cardColor: const Color.fromRGBO(30, 30, 30, 1),
+      cardColor: const Color.fromRGBO(24, 24, 24, 1),
     ),
     ThemeColor(
         isDarkMode: true,
@@ -87,15 +95,15 @@ class AppTheme {
         name: "纯黑",
         primaryColor: blueInDark,
         representativeColor: Colors.black,
-        appBarColor: const Color.fromRGBO(15, 15, 15, 1),
-        bodyColor: const Color.fromRGBO(0, 0, 0, 1),
-        cardColor: const Color.fromRGBO(15, 15, 15, 1)),
+        appBarColor: const Color.fromRGBO(14, 14, 14, 1),
+        bodyColor: const Color.fromRGBO(8, 8, 8, 1),
+        cardColor: const Color.fromRGBO(14, 14, 14, 1)),
     ThemeColor(
       isDarkMode: true,
       key: "nightPurple",
       name: "夜紫",
       primaryColor: const Color.fromRGBO(90, 106, 213, 1.0),
-      representativeColor: const Color.fromRGBO(12, 19, 35, 1),
+      representativeColor: const Color.fromARGB(255, 62, 73, 131),
       appBarColor: const Color.fromRGBO(8, 9, 27, 1),
       bodyColor: const Color.fromRGBO(12, 19, 35, 1),
       // cardColor: const Color.fromRGBO(24, 25, 43, 1),

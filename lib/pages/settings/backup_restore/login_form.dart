@@ -186,8 +186,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
           SizedBox(height: 100, width: 100, child: _buildLogo(webSite)),
           Text(
             webSite.title,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 24, height: 1.5),
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
         ],
       ),

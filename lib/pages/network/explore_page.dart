@@ -17,46 +17,57 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: _buildSearchBar()),
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-      body: const CommonScaffoldBody(
-        child: AggregatePage(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            const Expanded(
+              child: CommonScaffoldBody(
+                child: AggregatePage(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  _buildSearchBar() {
-    var fg = Theme.of(context).hintColor;
-    var radius = BorderRadius.circular(99);
+  Widget _buildSearchBar() {
+    final fg = Theme.of(context).hintColor;
+    final radius = BorderRadius.circular(16);
 
-    return Material(
-      borderRadius: radius,
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: InkWell(
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: Material(
         borderRadius: radius,
-        onTap: _enterAnimeClimbAllWebsitePage,
-        child: ClipRRect(
+        child: InkWell(
           borderRadius: radius,
-          child: Container(
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              border: Border.all(color: Theme.of(context).dividerColor),
-            ),
+          onTap: _enterAnimeClimbAllWebsitePage,
+          child: ClipRRect(
+            borderRadius: radius,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(MingCuteIcons.mgc_search_line, size: 16, color: fg),
-                      const SizedBox(width: 10),
-                      Text('搜索动漫', style: TextStyle(fontSize: 14, color: fg)),
-                    ],
-                  ),
-                ],
+              height: 46,
+              decoration: BoxDecoration(
+                borderRadius: radius,
+                border: Border.all(color: Theme.of(context).dividerColor),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(MingCuteIcons.mgc_search_line,
+                            size: 16, color: fg),
+                        const SizedBox(width: 10),
+                        Text('搜索动漫', style: TextStyle(fontSize: 14, color: fg)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

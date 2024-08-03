@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -128,7 +127,10 @@ class MyAppState extends State<MyApp> {
             child = BotToastInit()(context, child);
             // 全局点击空白处隐藏软键盘
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
-            return child;
+            return Theme(
+              data: _getFixedTheme(context),
+              child: child,
+            );
           },
           navigatorObservers: [BotToastNavigatorObserver()],
           // 后台应用显示名称
@@ -137,10 +139,62 @@ class MyAppState extends State<MyApp> {
           scrollBehavior: MyCustomScrollBehavior(),
           // 主题
           themeMode: themeController.getThemeMode(),
-          theme: _getLightTheme(),
-          darkTheme: _getDarkTheme(),
+          theme: _getFlexThemeDataLight(),
+          darkTheme: _getFlexThemeDataDark(),
         );
       }),
+    );
+  }
+
+  ThemeData _getFixedTheme(BuildContext context) {
+    final isDark = Global.isDark(context);
+    final theme = Theme.of(context);
+    final iconColor = isDark
+        ? const Color.fromRGBO(169, 169, 169, 1)
+        : const Color.fromRGBO(60, 60, 60, 1);
+
+    return theme.copyWith(
+      listTileTheme: theme.listTileTheme.copyWith(
+        titleTextStyle: theme.textTheme.bodyMedium?.copyWith(fontSize: 15),
+        subtitleTextStyle: theme.textTheme.bodySmall
+            ?.copyWith(fontSize: 13, color: Theme.of(context).hintColor),
+        iconColor: iconColor,
+      ),
+      iconTheme: theme.iconTheme.copyWith(color: iconColor),
+      scrollbarTheme: _getScrollbarThemeData(context, isDark: isDark),
+      // 不在底部添加margin是为了避免相邻卡片向下间距变大
+      // 在顶部添加margin是为了保证不紧挨AppBar
+      cardTheme: theme.cardTheme.copyWith(
+        margin: themeController.useCardStyle.value
+            ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
+            : const EdgeInsets.only(top: 10),
+        elevation: 0,
+        color:
+            isDark ? curDarkThemeColor.cardColor : curLightThemeColor.cardColor,
+      ),
+      pageTransitionsTheme: _getPageTransitionsTheme(),
+      floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      chipTheme: theme.chipTheme.copyWith(side: BorderSide.none),
+      // 202308052321
+      appBarTheme: theme.appBarTheme.copyWith(
+        titleTextStyle:
+            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+            (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return Icon(Icons.check, color: theme.primaryColor);
+          }
+          return null;
+        }),
+      ),
+      textTheme: theme.textTheme.copyWith(
+        bodySmall: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+      ),
     );
   }
 
@@ -161,74 +215,6 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  ThemeData _getDarkTheme() {
-    var dark = _getFlexThemeDataDark();
-    return dark.copyWith(
-      scrollbarTheme: _getScrollbarThemeData(context, isDark: true),
-      cardTheme: _getCardTheme(dark),
-      pageTransitionsTheme: _getPageTransitionsTheme(),
-      floatingActionButtonTheme: _getFABTheme(dark),
-      listTileTheme: _getListTileTheme(dark),
-      dialogTheme: _getDialogTheme(dark),
-    );
-  }
-
-  ThemeData _getLightTheme() {
-    var light = _getFlexThemeDataLight();
-    return light.copyWith(
-      scrollbarTheme: _getScrollbarThemeData(context, isDark: false),
-      cardTheme: _getCardTheme(light),
-      pageTransitionsTheme: _getPageTransitionsTheme(),
-      floatingActionButtonTheme: _getFABTheme(light),
-      listTileTheme: _getListTileTheme(light),
-      dialogTheme: _getDialogTheme(light),
-      // 202308052321
-      appBarTheme: light.appBarTheme.copyWith(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-      ),
-    );
-  }
-
-  DialogTheme _getDialogTheme(ThemeData light) {
-    return light.dialogTheme.copyWith(
-        contentTextStyle: TextStyle(
-      fontSize: 15,
-      color: light.colorScheme.onSurface,
-      height: 1.6,
-    ));
-  }
-
-  FloatingActionButtonThemeData _getFABTheme(ThemeData themeData) {
-    return FloatingActionButtonThemeData(
-      backgroundColor: themeData.primaryColor,
-      foregroundColor: Colors.white,
-    );
-  }
-
-  CardTheme _getCardTheme(ThemeData themeData) {
-    // 不在底部添加margin是为了避免相邻卡片向下间距变大
-    // 在顶部添加margin是为了保证不紧挨AppBar
-    return themeData.cardTheme.copyWith(
-      margin: themeController.useCardStyle.value
-          ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
-          : const EdgeInsets.only(top: 10),
-      elevation: 0,
-      color: themeData.brightness == Brightness.dark
-          ? curDarkThemeColor.cardColor
-          : curLightThemeColor.cardColor,
-    );
-  }
-
-  ListTileThemeData _getListTileTheme(ThemeData themeData) {
-    return ListTileThemeData(
-      titleTextStyle: themeData.textTheme.bodyMedium,
-      subtitleTextStyle: themeData.textTheme.bodySmall,
-    );
-  }
-
   PageTransitionsTheme _getPageTransitionsTheme() {
     return PageTransitionsTheme(
       builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -237,66 +223,21 @@ class MyAppState extends State<MyApp> {
         TargetPlatform.windows: const SharedAxisPageTransitionsBuilder(
           transitionType: SharedAxisTransitionType.horizontal,
         ),
-        // TargetPlatform.windows:
-        //     themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
       },
     );
   }
 
-  ThemeData _getFlexThemeDataDark() {
-    return FlexThemeData.dark(
-      scheme: baseScheme,
-      useMaterial3: themeController.useM3.value,
-      textTheme: _getTextTheme(textStyle, context),
-      primary: themeController.customPrimaryColor.value ??
-          curDarkThemeColor.primaryColor,
-      scaffoldBackground: curDarkThemeColor.bodyColor,
-      surface: curDarkThemeColor.cardColor,
-      // BottomNavigationBar
-      background: curDarkThemeColor.appBarColor,
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 15,
-      tabBarStyle: FlexTabBarStyle.forBackground,
-      appBarBackground: curDarkThemeColor.appBarColor,
-      appBarStyle: FlexAppBarStyle.scaffoldBackground,
-      tooltipsMatchBackground: true,
-      subThemesData: FlexSubThemesData(
-        // chip颜色
-        chipSchemeColor: SchemeColor.outlineVariant,
-        chipSelectedSchemeColor: SchemeColor.inversePrimary,
-        // 悬浮、按压等颜色不受主颜色影响
-        interactionEffects: false,
-        // true会导致AppBar的title字体有些大
-        useTextTheme: false,
-        // true会导致文字和按钮颜色受主色影响
-        blendTextTheme: false,
-        // 隐藏输入框底部边界
-        inputDecoratorUnfocusedHasBorder: false,
-        blendOnLevel: 20,
-        inputDecoratorIsFilled: false,
-        inputDecoratorBorderType: FlexInputBorderType.underline,
-        bottomSheetRadius: AppTheme.bottomSheetRadius,
-        cardRadius:
-            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
-        chipRadius: AppTheme.chipRadius,
-        dialogRadius: AppTheme.dialogRadius,
-        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
-        popupMenuRadius: 8.0,
-        textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.defaultSplash,
-        elevatedButtonElevation: 0,
-      ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    );
-  }
-
   ThemeData _getFlexThemeDataLight() {
+    final primary = themeController.customPrimaryColor.value ??
+        curLightThemeColor.primaryColor;
+
     return FlexThemeData.light(
       scheme: baseScheme,
       useMaterial3: themeController.useM3.value,
-      textTheme: _getTextTheme(textStyle, context),
-      primary: themeController.customPrimaryColor.value ??
-          curLightThemeColor.primaryColor,
+      fontFamilyFallback: textStyle.fontFamilyFallback,
+      primary: primary,
+      primaryContainer: primary.withOpacity(0.6),
+      tertiaryContainer: primary.withOpacity(0.4),
       scaffoldBackground: curLightThemeColor.bodyColor,
       surface: curLightThemeColor.cardColor,
       // BottomNavigationBar
@@ -304,19 +245,17 @@ class MyAppState extends State<MyApp> {
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       blendLevel: 9,
       tabBarStyle: FlexTabBarStyle.forBackground,
-      // 亮色模式下不管设置哪个，都会导致看不见手机状态栏(暗色模式正常)
-      // 解决方式：该代码文件中搜索202308052321
       appBarBackground: curLightThemeColor.appBarColor,
       appBarStyle: FlexAppBarStyle.scaffoldBackground,
       tooltipsMatchBackground: true,
       subThemesData: FlexSubThemesData(
         // chip颜色
-        chipSchemeColor: SchemeColor.outlineVariant,
-        chipSelectedSchemeColor: SchemeColor.inversePrimary,
+        chipSchemeColor: SchemeColor.primaryContainer,
+        chipSelectedSchemeColor: SchemeColor.tertiaryContainer,
+        useM2StyleDividerInM3: true,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
-        // true会导致AppBar的title字体有些大
-        useTextTheme: false,
+        useTextTheme: true,
         // true会导致文字和按钮颜色受主色影响
         blendTextTheme: false,
         // 隐藏输入框底部边界
@@ -333,8 +272,78 @@ class MyAppState extends State<MyApp> {
         timePickerDialogRadius: AppTheme.timePickerDialogRadius,
         popupMenuRadius: 8.0,
         textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.inkRipple,
+        splashType: FlexSplashType.inkSparkle,
         elevatedButtonElevation: 0,
+        // 对话框背景色
+        dialogElevation: 0.0,
+        // 滚动时AppBar背景色
+        appBarScrolledUnderElevation: 0.0,
+        // 底部面板背景色
+        bottomSheetElevation: 0.0,
+        bottomSheetModalElevation: 0.0,
+        tabBarDividerColor: Colors.transparent,
+        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+        popupMenuElevation: 1,
+      ),
+      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+    );
+  }
+
+  ThemeData _getFlexThemeDataDark() {
+    final primary = themeController.customPrimaryColor.value ??
+        curDarkThemeColor.primaryColor;
+
+    return FlexThemeData.dark(
+      scheme: baseScheme,
+      useMaterial3: themeController.useM3.value,
+      fontFamilyFallback: textStyle.fontFamilyFallback,
+      primary: primary,
+      primaryContainer: primary.withOpacity(0.6),
+      tertiaryContainer: primary.withOpacity(0.4),
+      scaffoldBackground: curDarkThemeColor.bodyColor,
+      surface: curDarkThemeColor.cardColor,
+      // BottomNavigationBar
+      background: curDarkThemeColor.appBarColor,
+      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+      blendLevel: 15,
+      tabBarStyle: FlexTabBarStyle.forBackground,
+      appBarBackground: curDarkThemeColor.appBarColor,
+      appBarStyle: FlexAppBarStyle.scaffoldBackground,
+      tooltipsMatchBackground: true,
+      subThemesData: FlexSubThemesData(
+        // chip颜色
+        chipSchemeColor: SchemeColor.primaryContainer,
+        chipSelectedSchemeColor: SchemeColor.tertiaryContainer,
+        // 悬浮、按压等颜色不受主颜色影响
+        interactionEffects: false,
+        useTextTheme: true,
+        // true会导致文字和按钮颜色受主色影响
+        blendTextTheme: false,
+        // 隐藏输入框底部边界
+        inputDecoratorUnfocusedHasBorder: false,
+        blendOnLevel: 20,
+        inputDecoratorIsFilled: false,
+        inputDecoratorBorderType: FlexInputBorderType.underline,
+        bottomSheetRadius: AppTheme.bottomSheetRadius,
+        cardRadius:
+            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
+        chipRadius: AppTheme.chipRadius,
+        dialogRadius: AppTheme.dialogRadius,
+        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
+        popupMenuRadius: 8.0,
+        textButtonRadius: AppTheme.textButtonRadius,
+        splashType: FlexSplashType.inkSparkle,
+        elevatedButtonElevation: 0,
+        // 对话框背景色
+        dialogElevation: 0.0,
+        // 滚动时AppBar背景色
+        appBarScrolledUnderElevation: 0.0,
+        // 底部面板背景色
+        bottomSheetElevation: 0.0,
+        bottomSheetModalElevation: 0.0,
+        tabBarDividerColor: Colors.transparent,
+        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+        popupMenuElevation: 1,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
@@ -351,28 +360,6 @@ class MyAppState extends State<MyApp> {
       thumbColor: MaterialStateProperty.all(
         isDark ? Colors.white.withOpacity(0.4) : Colors.black38,
       ),
-    );
-  }
-
-  TextTheme _getTextTheme(TextStyle textStyle, BuildContext context) {
-    return TextTheme(
-      // 按钮里的文字
-      labelLarge: textStyle,
-      // 底部tab，ListTile副标题
-      bodyMedium: textStyle,
-      // Text
-      bodyLarge: textStyle,
-      // AppBar里的title
-      titleLarge: textStyle,
-      // 未知
-      titleSmall: textStyle,
-      labelSmall: textStyle,
-      bodySmall: textStyle,
-      displayLarge: textStyle,
-      displayMedium: textStyle,
-      displaySmall: textStyle,
-      headlineMedium: textStyle,
-      headlineSmall: textStyle,
     );
   }
 }

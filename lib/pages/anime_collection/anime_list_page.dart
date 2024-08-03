@@ -88,6 +88,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
           child: !loadOk && animeCntPerTag.isEmpty
               ? _waitDataScaffold()
               : Scaffold(
+                  backgroundColor:
+                      Theme.of(context).appBarTheme.backgroundColor,
                   // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
                   appBar: AppBar(
                     title: Text(
@@ -183,16 +185,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
       builder: (context, setState) {
         List<Widget> sortCondList = [];
 
-        Widget checkBox = animeSortCond.desc
-            ? Icon(Icons.check_box_outlined,
-                color: Theme.of(context).primaryColor)
-            : const Icon(Icons.check_box_outline_blank);
-
-        sortCondList.add(ListTile(
+        sortCondList.add(CheckboxListTile(
           title: const Text("降序"),
-          leading: checkBox,
-          onTap: () {
-            animeSortCond.desc = !animeSortCond.desc;
+          value: animeSortCond.desc,
+          controlAffinity: ListTileControlAffinity.leading,
+          onChanged: (bool? value) {
+            if (value == null) return;
+            animeSortCond.desc = value;
             SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
             setState(() {}); // 更新对话框里的状态
             // 改变排序时，需要滚动到顶部，否则会加载很多页
@@ -201,31 +200,23 @@ class _AnimeListPageState extends State<AnimeListPage> {
           },
         ));
 
-        sortCondList.add(const Divider());
-
         for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
           var sortCondItem = AnimeSortCond.sortConds[i];
-          bool isChecked = animeSortCond.specSortColumnIdx == i;
-
-          Widget radio = isChecked
-              ? Icon(Icons.radio_button_checked,
-                  color: Theme.of(context).primaryColor)
-              : const Icon(Icons.radio_button_off);
-
-          sortCondList.add(ListTile(
+          sortCondList.add(RadioListTile(
             title: Text(sortCondItem.showName),
-            leading: radio,
-            onTap: () {
+            onChanged: (value) {
               // 不相等时才设置
-              if (animeSortCond.specSortColumnIdx != i) {
-                animeSortCond.specSortColumnIdx = i;
-                SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", i);
-                setState(() {}); // 更新对话框里的状态
-                // 改变排序时，需要滚动到顶部，否则会加载很多页
-                _scrollControllers[_tabController!.index].jumpTo(0);
-                checklistController.loadAnimes();
-              }
+              if (value == null) return;
+
+              animeSortCond.specSortColumnIdx = value;
+              SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", value);
+              setState(() {}); // 更新对话框里的状态
+              // 改变排序时，需要滚动到顶部，否则会加载很多页
+              _scrollControllers[_tabController!.index].jumpTo(0);
+              checklistController.loadAnimes();
             },
+            value: i,
+            groupValue: animeSortCond.specSortColumnIdx,
           ));
         }
 

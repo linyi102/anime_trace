@@ -158,8 +158,8 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
         borderSide: BorderSide(
           color: isFocused
               ? Theme.of(context).primaryColor
-              : Theme.of(context).hintColor.withOpacity(0.1),
-          width: 2.0,
+              : Theme.of(context).dividerColor,
+          width: 1.0,
         ));
   }
 
@@ -176,16 +176,11 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
         onTap: onTap,
         // 避免长按穿透，聚焦到输入框
         onLongPress: () {},
-        splashFactory: NoSplash.splashFactory,
-        child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).hintColor.withOpacity(0.05),
-                borderRadius: borderRadius),
-            child: Icon(
-              action == NumberAction.subtract ? Icons.remove : Icons.add,
-              color: Theme.of(context).hintColor,
-              size: 20,
-            )));
+        child: Icon(
+          action == NumberAction.subtract ? Icons.remove : Icons.add,
+          color: Theme.of(context).hintColor,
+          size: 20,
+        ));
   }
 }
 

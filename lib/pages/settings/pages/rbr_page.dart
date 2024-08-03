@@ -181,19 +181,19 @@ class _RBRPageState extends State<RBRPage> {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: const Text("恢复"),
+              title: const Text("确定要恢复吗？"),
               content: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("确定要恢复吗？"),
                     StatefulBuilder(
-                      builder: (context, setState) => SwitchListTile(
+                      builder: (context, setState) => CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         dense: true,
-                        title: const Text("恢复前记录当前数据到此处"),
+                        title: const Text("恢复前备份当前数据到此处"),
                         value: recordBeforeRestore,
                         onChanged: (value) {
+                          if (value == null) return;
                           setState(() {
                             recordBeforeRestore = value;
                           });

@@ -38,27 +38,43 @@ class _EpisodeFormState extends State<EpisodeForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTitle('总集数'),
-              NumberControlInputField(
-                controller: episodeCntController,
-                minValue: episodeCntMinValue,
-                maxValue: episodeCntMaxValue,
-                initialValue: widget.anime.animeEpisodeCnt,
-                onChanged: (number) {
-                  setState(() {});
-                },
-                showRangeHintText: false,
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Text('总集数'),
+                  const SizedBox(width: 30),
+                  Expanded(
+                    child: NumberControlInputField(
+                      controller: episodeCntController,
+                      minValue: episodeCntMinValue,
+                      maxValue: episodeCntMaxValue,
+                      initialValue: widget.anime.animeEpisodeCnt,
+                      onChanged: (number) {
+                        setState(() {});
+                      },
+                      showRangeHintText: false,
+                    ),
+                  ),
+                ],
               ),
-              _buildTitle('起始集'),
-              NumberControlInputField(
-                controller: episodeStartNumberController,
-                minValue: episodeStartNumberMinValue,
-                maxValue: episodeStartNumberMaxValue,
-                initialValue: widget.anime.episodeStartNumber,
-                onChanged: (number) {
-                  setState(() {});
-                },
-                showRangeHintText: false,
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Text('起始集'),
+                  const SizedBox(width: 30),
+                  Expanded(
+                    child: NumberControlInputField(
+                      controller: episodeStartNumberController,
+                      minValue: episodeStartNumberMinValue,
+                      maxValue: episodeStartNumberMaxValue,
+                      initialValue: widget.anime.episodeStartNumber,
+                      onChanged: (number) {
+                        setState(() {});
+                      },
+                      showRangeHintText: false,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               SwitchListTile(
@@ -70,15 +86,20 @@ class _EpisodeFormState extends State<EpisodeForm> {
                       calEpisodeNumberFromOne = value;
                     });
                   }),
-              _buildTitle('预览'),
-              Text(
-                totalCnt == 0
-                    ? '0'
-                    : calEpisodeNumberFromOne
-                        ? '1-$totalCnt'
-                        : '$startNumber-${startNumber - 1 + totalCnt}',
-                style:
-                    TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('预览'),
+                trailing: Container(
+                  margin: const EdgeInsets.only(right: 5),
+                  child: Text(
+                    totalCnt == 0
+                        ? '0'
+                        : calEpisodeNumberFromOne
+                            ? '1-$totalCnt'
+                            : '$startNumber-${startNumber - 1 + totalCnt}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ),
             ],
           ),
@@ -95,7 +116,10 @@ class _EpisodeFormState extends State<EpisodeForm> {
                   ToastUtil.showText("不能为空！");
                   return;
                 }
-                int inputEpisodeCnt = int.parse(episodeCntController.text);
+                int? inputEpisodeCnt = int.tryParse(episodeCntController.text);
+                if (inputEpisodeCnt == null) {
+                  return;
+                }
                 if (inputEpisodeCnt < episodeCntMinValue ||
                     inputEpisodeCnt > episodeCntMaxValue) {
                   ToastUtil.showText(
@@ -127,13 +151,5 @@ class _EpisodeFormState extends State<EpisodeForm> {
               },
               child: const Text("确定")),
         ]);
-  }
-
-  Padding _buildTitle(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 15, bottom: 5),
-      child: Text(text,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-    );
   }
 }

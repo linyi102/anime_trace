@@ -9,6 +9,7 @@ import 'package:flutter_test_future/components/note/note_img_grid.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 笔记卡片
 /// 使用：所有笔记页、所有评价页、动漫详细评价页
@@ -172,7 +173,7 @@ class _NoteCardState extends State<NoteCard> {
           return SimpleDialog(
             children: [
               ListTile(
-                leading: const Icon(Icons.edit),
+                leading: const Icon(MingCuteIcons.mgc_edit_4_line, size: 22),
                 title: const Text("编辑"),
                 onTap: () {
                   Navigator.pop(dialogContext);
@@ -180,7 +181,7 @@ class _NoteCardState extends State<NoteCard> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.copy_rounded),
+                leading: const Icon(MingCuteIcons.mgc_copy_line, size: 22),
                 title: const Text("复制内容"),
                 onTap: () {
                   CommonUtil.copyContent(note.noteContent);
@@ -188,7 +189,7 @@ class _NoteCardState extends State<NoteCard> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline),
+                leading: const Icon(MingCuteIcons.mgc_delete_3_line, size: 22),
                 title: const Text("删除笔记"),
                 onTap: () {
                   Navigator.pop(dialogContext);

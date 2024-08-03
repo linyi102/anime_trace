@@ -128,7 +128,6 @@ class _MainScreenState extends State<MainScreen> {
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
           child: InkWell(
             borderRadius: BorderRadius.circular(radius),
-            splashFactory: NoSplash.splashFactory,
             onTap: () {
               if (logic.searchTabIdx == i && logic.selectedTabIdx == i) {
                 // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
@@ -163,6 +162,7 @@ class _MainScreenState extends State<MainScreen> {
                             color: isSelected
                                 ? Theme.of(context).primaryColor
                                 : null,
+                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -212,9 +212,9 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           // const CommonDivider(),
           NavigationBar(
+              selectedIndex: logic.selectedTabIdx,
               height: 60,
               elevation: 0,
-              selectedIndex: logic.selectedTabIdx,
               labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               indicatorColor: Colors.transparent,
               backgroundColor: Theme.of(context).appBarTheme.backgroundColor,

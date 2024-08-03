@@ -4,8 +4,8 @@ import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/pages/settings/pages/rbr_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/setting_card.dart';
 
 class BackupAndRestorePage extends StatefulWidget {
   const BackupAndRestorePage({Key? key}) : super(key: key);
@@ -21,12 +21,16 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
       appBar: AppBar(title: const Text("备份还原")),
       body: CommonScaffoldBody(
           child: ListView(
+        padding: const EdgeInsets.only(bottom: 50),
         children: [
-          _buildRevokeRestoreTile(),
-          const CommonDivider(),
           const LocalBackupPage(),
-          const CommonDivider(),
           const RemoteBackupPage(),
+          SettingCard(
+            title: '撤销还原',
+            children: [
+              _buildRevokeRestoreTile(),
+            ],
+          ),
         ],
       )),
     );
@@ -34,15 +38,12 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
 
   ListTile _buildRevokeRestoreTile() {
     return ListTile(
-      title: const Text("撤销还原"),
-      subtitle: const Text("点击查看还原前的记录"),
+      title: const Text("还原前的备份记录"),
       onTap: () {
         RouteUtil.materialTo(context, const RBRPage());
       },
       trailing: IconButton(
-          onPressed: _showHelpDialog,
-          splashRadius: 20,
-          icon: const Icon(Icons.help_outline, size: 20)),
+          onPressed: _showHelpDialog, icon: const Icon(Icons.help_outline)),
     );
   }
 
@@ -51,9 +52,9 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("帮助"),
-        content: Text("用户在还原数据前，会记录当前的数据，存放在这里。\n"
+        content: Text("用户在还原数据前，会备份当前的数据，存放在此处。\n"
             "当用户在还原数据后，如果想要撤销还原，可以在这里恢复之前的数据。\n"
-            "注：最多会存放${BackupUtil.rbrMaxCnt}份，超出时会删除旧的。"),
+            "注：最多会存放 ${BackupUtil.rbrMaxCnt} 份，超出时会删除旧备份。"),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),

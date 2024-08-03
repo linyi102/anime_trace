@@ -16,7 +16,6 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_status_prompt.dart';
 import 'package:flutter_test_future/widgets/setting_card.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class RemoteBackupPage extends StatefulWidget {
@@ -58,8 +57,12 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SettingTitle(
+          SettingCard(
             title: 'WebDav 备份',
+            useCard: !widget.fromHome,
+            titleStyle: widget.fromHome
+                ? Theme.of(context).textTheme.titleMedium
+                : null,
             trailing: widget.fromHome
                 ? IconButton(
                     color: Theme.of(context).iconTheme.color,
@@ -70,56 +73,59 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                     },
                     icon: const Icon(MingCuteIcons.mgc_arrow_right_line))
                 : null,
-          ),
-          ListTile(
-            title: const Text("登录帐号"),
-            trailing: Icon(
-              Icons.circle,
-              size: 12,
-              color: isOnline ? AppTheme.connectableColor : Colors.grey,
-            ),
-            onTap: () {
-              _toWebDavLoginPage();
-            },
-          ),
-          ListTile(
-            title: const Text("立即备份"),
-            subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
-            onTap: () async {
-              if (isOffline) {
-                ToastUtil.showText("请先配置帐号，再进行备份");
-                return;
-              }
+            children: [
+              ListTile(
+                title: const Text("登录帐号"),
+                trailing: Icon(
+                  Icons.circle,
+                  size: 12,
+                  color: isOnline ? AppTheme.connectableColor : Colors.grey,
+                ),
+                onTap: () {
+                  _toWebDavLoginPage();
+                },
+              ),
+              ListTile(
+                title: const Text("立即备份"),
+                subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
+                onTap: () async {
+                  if (isOffline) {
+                    ToastUtil.showText("请先配置帐号，再进行备份");
+                    return;
+                  }
 
-              if (!canManualBackup) {
-                ToastUtil.showText("备份间隔为10s");
-                return;
-              }
+                  if (!canManualBackup) {
+                    ToastUtil.showText("备份间隔为10s");
+                    return;
+                  }
 
-              canManualBackup = false;
-              Future.delayed(const Duration(seconds: 10))
-                  .then((value) => canManualBackup = true);
+                  canManualBackup = false;
+                  Future.delayed(const Duration(seconds: 10))
+                      .then((value) => canManualBackup = true);
 
-              ToastUtil.showText("正在备份");
-              String remoteBackupDirPath = await WebDavUtil.getRemoteDirPath();
-              if (remoteBackupDirPath.isNotEmpty) {
-                BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);
-              }
-            },
+                  ToastUtil.showText("正在备份");
+                  String remoteBackupDirPath =
+                      await WebDavUtil.getRemoteDirPath();
+                  if (remoteBackupDirPath.isNotEmpty) {
+                    BackupUtil.backup(remoteBackupDirPath: remoteBackupDirPath);
+                  }
+                },
+              ),
+              ListTile(
+                title: const Text("还原备份"),
+                subtitle: const Text("选择备份文件进行还原"),
+                onTap: () async {
+                  if (isOffline) {
+                    ToastUtil.showText("请先配置帐号，再进行还原");
+                    return;
+                  }
+
+                  RouteUtil.materialTo(context, const BackUpFileListPage());
+                },
+              ),
+              _buildAutoBackupPrompt(),
+            ],
           ),
-          ListTile(
-            title: const Text("还原备份"),
-            subtitle: const Text("选择备份文件进行还原"),
-            onTap: () async {
-              if (isOffline) {
-                ToastUtil.showText("请先配置帐号，再进行还原");
-                return;
-              }
-
-              RouteUtil.materialTo(context, const BackUpFileListPage());
-            },
-          ),
-          _buildAutoBackupPrompt(),
           if (!widget.fromHome)
             SettingCard(
               title: '高级配置',
@@ -165,7 +171,6 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                   ),
               ],
             ),
-          const SizedBox(height: 50),
         ],
       ),
     );
@@ -190,7 +195,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
 
     return autoBackupIsOff
         ? CommonStatusPrompt(
-            icon: Icons.cloud_off,
+            icon: const Icon(Icons.cloud_off),
             titleText: '自动备份未开启',
             subtitleText: '开启自动备份后，可在打开应用时或关闭应用前自动进行备份',
             buttonText: '开启自动备份',
@@ -200,7 +205,8 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
             },
           )
         : CommonStatusPrompt(
-            icon: Icons.cloud_outlined,
+            icon: Icon(Icons.cloud_outlined,
+                color: Theme.of(context).primaryColor),
             titleText: '自动备份已开启',
             // subtitleText: '开启自动备份后，可在打开应用时或关闭应用前自动进行备份',
             subtitle: Column(

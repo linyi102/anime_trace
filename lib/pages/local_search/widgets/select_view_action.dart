@@ -23,7 +23,7 @@ class SelectViewAction extends StatelessWidget {
           OutlinedButton(
               onPressed: onReset, style: buttonStyle, child: const Text('重置')),
           const SizedBox(width: 10),
-          ElevatedButton(
+          FilledButton(
               onPressed: () {
                 onApply();
                 Navigator.pop(context);

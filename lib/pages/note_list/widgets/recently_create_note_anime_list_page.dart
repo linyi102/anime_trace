@@ -63,14 +63,13 @@ class _RecentlyCreateNoteAnimeListPageState
     var radius = BorderRadius.circular(6);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(10, 0, 15, 0),
+      margin: const EdgeInsets.fromLTRB(10, 2, 15, 2),
       decoration: BoxDecoration(
         borderRadius: radius,
         color:
-            isSelected ? Theme.of(context).hintColor.withOpacity(0.08) : null,
+            isSelected ? Theme.of(context).primaryColor.withOpacity(0.2) : null,
       ),
       child: InkWell(
-        splashFactory: NoSplash.splashFactory,
         borderRadius: radius,
         onTap: () {
           widget.onTapItem?.call(anime);
