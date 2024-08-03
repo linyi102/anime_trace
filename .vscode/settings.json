@@ -1,9 +1,10 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/windows",
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "files.associations": {
-        "*.jsp": "html",
-        "xstring": "cpp"
-    },
-    "svg.preview.background": "transparent"
+  "cmake.sourceDirectory": "${workspaceFolder}/windows",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "files.associations": {
+    "*.jsp": "html",
+    "xstring": "cpp"
+  },
+  "svg.preview.background": "transparent",
+  "dart.flutterSdkPath": ".fvm/versions/3.19.6"
 }
