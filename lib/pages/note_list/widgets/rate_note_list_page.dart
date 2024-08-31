@@ -106,7 +106,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
 
               return NoteCard(
                 note,
-                removeNote: () {
+                onDeleted: () {
                   // 从notes中移除，并重绘整个页面
                   setState(() {
                     rateNotes.removeAt(index);

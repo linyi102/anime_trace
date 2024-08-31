@@ -88,6 +88,12 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   _onWillpop() async {
+    if (widget.note.isEmpty) {
+      NoteDao.deleteNoteById(widget.note.id);
+      Navigator.pop(context, null);
+      return;
+    }
+
     Navigator.pop(context, widget.note);
 
     // 后台更新数据库中的图片顺序

@@ -109,8 +109,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   }
 
   _buildNoteCard() {
-    Note note = _episode.note!;
-    // return NoteCard(note);
+    Note? note = _episode.note;
+    if (note == null) return const SizedBox();
 
     return Column(
       children: [
@@ -119,7 +119,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
-                  return NoteEditPage(note);
+                  return NoteEditPage(note!);
                 },
               ),
             ).then((value) {
@@ -601,7 +601,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   }
 
   /// 进入笔记编辑页
-  void _enterNoteEditPage({bool needCreate = false}) async {
+  Future<void> _enterNoteEditPage({bool needCreate = false}) async {
     // 四种情况：
     // 1.集完成后，单击可以进入笔记编辑页(如果没有笔记则会自动创建)
     // 2.集没有完成，但有笔记，那么可以直接进入
@@ -613,16 +613,17 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         _episode.note = Note.createEpisodeNote(_anime, _episode);
         _episode.note!.id = await NoteDao.insertEpisodeNote(_episode.note!);
       }
-      Navigator.of(context).push(
+      final newNote = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
             return NoteEditPage(_episode.note!);
           },
         ),
-      ).then((value) {
-        _episode.note = value;
+      );
+      if (newNote == null || newNote is Note) {
+        _episode.note = newNote;
         setState(() {});
-      });
+      }
     }
   }
 
