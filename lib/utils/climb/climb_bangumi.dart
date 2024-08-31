@@ -266,7 +266,7 @@ class ClimbBangumi with Climb {
           anime: Anime(
             animeName: name,
             animeCoverUrl:
-                item.mapValue['images']?.mapObjectValue['large'] ?? '',
+                item.mapValue['images']?.mapObjectValue['common'] ?? '',
             animeUrl: detailUrl,
           ),
           info: item.mapObjectValue['name'] ?? '',
