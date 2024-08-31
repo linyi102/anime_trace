@@ -75,17 +75,12 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
   void _createRateNote() async {
     Log.info("添加评价");
     Note episodeNote = Note.createRateNote(widget.anime);
-    NoteDao.insertRateNote(widget.anime.animeId).then((value) {
-      // 获取到刚插入的笔记id，然后再进入笔记
-      episodeNote.id = value;
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NoteEditPage(episodeNote))).then((value) {
-        // 重新获取列表
-        _loadData();
-      });
-    });
+    episodeNote.id = await NoteDao.insertRateNote(widget.anime.animeId);
+    final note = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NoteEditPage(episodeNote)));
+    if (note == null) return;
+    notes.insert(0, note);
+    if (mounted) setState(() {});
   }
 
   _buildRateNoteList() {
@@ -100,7 +95,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
             return NoteCard(
               note,
-              removeNote: () {
+              onDeleted: () {
                 // 从notes中移除，并重绘整个页面
                 setState(() {
                   notes.removeAt(index);

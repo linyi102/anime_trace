@@ -16,13 +16,13 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 /// 提取到该Widget，目的是为了从编辑页返回后，setState重绘这一个卡片，而不是整个页面
 class NoteCard extends StatefulWidget {
   final Note note;
-  final void Function()? removeNote;
+  final void Function()? onDeleted;
   final void Function()? enterAnimeDetail;
   final bool showAnimeTile;
   final bool isRateNote;
 
   const NoteCard(this.note,
-      {this.removeNote,
+      {this.onDeleted,
       this.enterAnimeDetail,
       this.showAnimeTile = false,
       this.isRateNote = false,
@@ -67,16 +67,14 @@ class _NoteCardState extends State<NoteCard> {
     );
   }
 
-  void _enterNoteEditPage(Note note) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => NoteEditPage(note)))
-        .then((value) {
-      // 重新获取列表
-      // _loadData();
-      // 不要重新获取，否则有时会直接跳到最上面，而不是上次浏览位置
-      // 也不需要重新获取，因为笔记编辑页修改的就是传入的note数据，但注意返回后需要重新绘制
+  Future<void> _enterNoteEditPage(Note note) async {
+    final newNote = await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => NoteEditPage(note)));
+    if (newNote == null) {
+      widget.onDeleted?.call();
+    } else if (newNote is Note) {
       setState(() {});
-    });
+    }
   }
 
   _enterAnimeDetailPage() {
@@ -221,9 +219,7 @@ class _NoteCardState extends State<NoteCard> {
                 Navigator.pop(context);
 
                 if (await NoteDao.deleteNoteById(note.id)) {
-                  if (widget.removeNote != null) {
-                    widget.removeNote!();
-                  }
+                  widget.onDeleted?.call();
                 } else {
                   ToastUtil.showText("删除失败！");
                 }

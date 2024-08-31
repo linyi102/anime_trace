@@ -23,14 +23,20 @@ class Note {
     this.updateTime = "",
   });
 
+  bool get isEmpty =>
+      noteContent.isEmpty && relativeLocalImages.isEmpty && imgUrls.isEmpty;
+
   @override
   String toString() {
     return "${anime.animeName}-${episode.number}: $noteContent";
   }
 
   static Note createRateNote(Anime anime) {
-    return Note(anime: anime, episode: Episode(0, 1), // 第0集作为评价
-        relativeLocalImages: [], imgUrls: []);
+    return Note(
+        anime: anime,
+        episode: Episode(0, 1), // 第0集作为评价
+        relativeLocalImages: [],
+        imgUrls: []);
   }
 
   static Note createEpisodeNote(Anime anime, Episode episode) {
