@@ -108,6 +108,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       child: ChoiceChip(
         label: Text(item.title),
         selected: isCur,
+        showCheckmark: false,
         onSelected: (value) {
           if (!value) return;
           setState(() {

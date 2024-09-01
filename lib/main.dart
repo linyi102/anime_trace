@@ -251,7 +251,7 @@ class MyAppState extends State<MyApp> {
       subThemesData: FlexSubThemesData(
         // chip颜色
         chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.tertiaryContainer,
+        chipSelectedSchemeColor: SchemeColor.primary,
         useM2StyleDividerInM3: true,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
