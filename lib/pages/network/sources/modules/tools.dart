@@ -29,6 +29,15 @@ class ToolsPage extends StatelessWidget {
               child: const Chip(
                   avatar: Icon(Icons.filter_alt), label: Text('动漫去重'))),
           GestureDetector(
+            onTap: () {
+              RouteUtil.materialTo(context, const LapseCoverAnimesPage());
+            },
+            child: const Chip(
+              avatar: Icon(Icons.broken_image_outlined),
+              label: Text('修复封面'),
+            ),
+          ),
+          GestureDetector(
               onTap: () => _toTracePage(context),
               child:
                   const Chip(avatar: Icon(Icons.timeline), label: Text('总览'))),
@@ -58,15 +67,6 @@ class ToolsPage extends StatelessWidget {
             child: const Chip(
               avatar: Icon(Icons.format_list_bulleted),
               label: Text('目录'),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              RouteUtil.materialTo(context, const LapseCoverAnimesPage());
-            },
-            child: const Chip(
-              avatar: Icon(Icons.image_outlined),
-              label: Text('失效封面'),
             ),
           ),
         ],
