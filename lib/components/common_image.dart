@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -24,12 +24,7 @@ class CommonImage extends StatelessWidget {
 
     // 没有图片
     if (url.isEmpty) {
-      if (showIconWhenUrlIsEmptyOrError) {
-        return Center(
-            child: Image.asset("assets/icons/default_picture.png", width: 33));
-      } else {
-        return Image.memory(kTransparentImage);
-      }
+      return _buildDefaultImage(context);
     }
 
     // 网络图片
@@ -40,10 +35,9 @@ class CommonImage extends StatelessWidget {
             url.contains("douban") ? Global.getHeadersToGetDoubanPic() : null,
         memCacheWidth: reduceMemCache ? memCacheWidth : null,
         imageUrl: url,
-        errorWidget: (_, __, ___) => errorImageWidget(),
         fadeInDuration: fadeInDuration,
-        // 未加载完图片时显示进度圈
-        // placeholder: (_, __) => const LoadingWidget(center: true),
+        errorWidget: (_, __, ___) => _buildDefaultImage(context, isError: true),
+        placeholder: (_, __) => _buildDefaultImage(context),
         fit: BoxFit.cover,
       );
     }
@@ -53,34 +47,47 @@ class CommonImage extends StatelessWidget {
     if (file.existsSync()) {
       // 如果存在该文件，才使用fileImage(否则FileImage里面会抛出找不到文件的异常，而且这里捕获不到)
       FileImage fileImage = FileImage(file);
-      return FadeInImage(
-        image: reduceMemCache
-            ? ResizeImage(fileImage, width: memCacheWidth)
-                as ImageProvider<Object>
-            : fileImage,
-        fit: BoxFit.cover,
-        placeholder: MemoryImage(kTransparentImage),
-        // placeholder: reduceMemCache
-        //     ? MemoryImage(kTransparentImage)
-        //     // 如果不压缩，则在加载原图时先显示压缩后的图片
-        //     : ResizeImage(fileImage, width: memCacheWidth)
-        //         as ImageProvider<Object>,
-        // 去除占位图的渐变移除效果(为0会报错，而为1则会很快闪烁，所以都不行)
-        // fadeOutDuration: const Duration(milliseconds: 1),
-        fadeInDuration: fadeInDuration,
-        imageErrorBuilder: (_, __, ___) => errorImageWidget(),
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          _buildDefaultImage(context),
+          FadeInImage(
+            image: reduceMemCache
+                ? ResizeImage(fileImage, width: memCacheWidth)
+                    as ImageProvider<Object>
+                : fileImage,
+            fit: BoxFit.cover,
+            fadeInDuration: fadeInDuration,
+            placeholder: MemoryImage(kTransparentImage),
+            imageErrorBuilder: (_, __, ___) =>
+                _buildDefaultImage(context, isError: true),
+          )
+        ],
       );
     } else {
-      return errorImageWidget();
+      return _buildDefaultImage(context, isError: true);
     }
   }
 
-  errorImageWidget() {
-    if (showIconWhenUrlIsEmptyOrError) {
-      return Center(
-          child: Image.asset("assets/icons/failed_picture.png", width: 30));
-    } else {
-      return Image.memory(kTransparentImage);
-    }
+  Widget _buildDefaultImage(
+    context, {
+    bool isError = false,
+  }) {
+    final baseColor = Theme.of(context).primaryColor;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          color: baseColor.withOpacity(0.08),
+          child: Center(
+              child: Icon(
+            // TODO 放大效果导致图标重复切换
+            // isError ? Icons.broken_image : Icons.image,
+            Icons.image,
+            size: constraints.maxWidth < 50 ? 20 : 30,
+            color: baseColor.withOpacity(0.5),
+          )),
+        );
+      },
+    );
   }
 }
