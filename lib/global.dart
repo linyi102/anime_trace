@@ -17,7 +17,6 @@ import 'package:get/get.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:media_kit/media_kit.dart';
 import 'values/values.dart';
 
 class Global {
@@ -41,7 +40,7 @@ class Global {
     }
     // 确保初始化，否则会提示Unhandled Exception: Null check operator used on a null value
     WidgetsFlutterBinding.ensureInitialized();
-    MediaKit.ensureInitialized();
+    // MediaKit.ensureInitialized();
     // 获取SharedPreferences
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化
