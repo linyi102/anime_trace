@@ -286,6 +286,8 @@ class MyAppState extends State<MyApp> {
         tabBarDividerColor: Colors.transparent,
         outlinedButtonOutlineSchemeColor: SchemeColor.primary,
         popupMenuElevation: 1,
+        fabUseShape: true,
+        fabAlwaysCircular: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
@@ -348,6 +350,8 @@ class MyAppState extends State<MyApp> {
         tabBarDividerColor: Colors.transparent,
         outlinedButtonOutlineSchemeColor: SchemeColor.primary,
         popupMenuElevation: 1,
+        fabUseShape: true,
+        fabAlwaysCircular: true,
       ),
       visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
