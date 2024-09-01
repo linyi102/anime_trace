@@ -19,7 +19,7 @@ cp "$apkBuildDir/app-arm64-v8a-release.apk" "$packRootDir/manji-$androidVersion-
 cp "$apkBuildDir/app-x86_64-release.apk" "$packRootDir/manji-$androidVersion-x86_64.apk"
 cp "$apkBuildDir/app-armeabi-v7a-release.apk" "$packRootDir/qq/manji-$androidVersion-android.APK"
 cp "$apkBuildDir/app-arm64-v8a-release.apk" "$packRootDir/qq/manji-$androidVersion-arm64-v8a.APK"
-cp "$apkBuildDir/app-x86_64-release.apk" "$packRootDir/manji-$androidVersion-x86_64.APK"
+cp "$apkBuildDir/app-x86_64-release.apk" "$packRootDir/qq/manji-$androidVersion-x86_64.APK"
 
 # Windows
 windowsOriDir="build/windows/x64/runner/Release"
