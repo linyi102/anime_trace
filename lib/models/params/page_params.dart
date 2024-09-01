@@ -3,7 +3,7 @@ class PageParams {
   int pageSize;
   late int baseIndex;
 
-  PageParams({required this.pageIndex, required this.pageSize}) {
+  PageParams({this.pageIndex = 0, required this.pageSize}) {
     baseIndex = pageIndex;
   }
 

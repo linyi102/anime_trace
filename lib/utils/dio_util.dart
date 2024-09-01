@@ -88,7 +88,7 @@ class DioUtil {
         return false;
       }
     } catch (e) {
-      // debugPrint(e.toString());
+      // Log.error(e.toString());
       // 400会报异常，这里捕捉到后返回false
       return false;
     }

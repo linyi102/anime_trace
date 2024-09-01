@@ -22,15 +22,21 @@ class AnimeDao {
   static const String columnUrl = 'anime_url';
   static const String columnSource = 'anime_source';
 
-  static Future<List<Anime>> getAllAnimes() async {
-    Log.info("sql: getAllAnimes");
+  static Future<List<Anime>> getAnimes({
+    List<String>? columns,
+    PageParams? page,
+  }) async {
+    Log.info("sql: getAnimes");
 
-    var list = await db.rawQuery('''
-    select * from anime;
-    ''');
+    final rows = await db.query(
+      table,
+      columns: null,
+      limit: page?.pageSize,
+      offset: page?.getOffset(),
+    );
 
     List<Anime> res = [];
-    for (var row in list) {
+    for (var row in rows) {
       res.add(await row2Bean(row));
     }
     return res;
@@ -50,7 +56,7 @@ class AnimeDao {
   static Future<List<Anime>> getAllNeedUpdateAnimes({
     bool includeEmptyUrl = false,
   }) async {
-    List<Anime> animes = await getAllAnimes();
+    List<Anime> animes = await getAnimes();
     List<Anime> needUpdateAnimes = [];
 
     for (var anime in animes) {

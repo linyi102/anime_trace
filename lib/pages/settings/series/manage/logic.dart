@@ -114,7 +114,7 @@ class SeriesManageLogic extends GetxController {
     List<Series> list = [];
 
     // 否则根据收藏的所有动漫生成推荐系列
-    var animes = await AnimeDao.getAllAnimes();
+    var animes = await AnimeDao.getAnimes();
     for (var anime in animes) {
       String recommendSeriesName = _getRecommendSeriesName(anime.animeName);
       if (recommendSeriesName.isEmpty) continue;

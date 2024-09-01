@@ -4,6 +4,7 @@ enum ButtonLoaderStyle {
   custom, // 自定义，loader生效
   circularCenter, // 加载圈居中
   circularTrailing, // 加载圈放置尾部
+  none, // 不显示
 }
 
 class ActionButton extends StatefulWidget {
@@ -37,7 +38,7 @@ class _ActionButtonState extends State<ActionButton> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          FilledButton(
+          ElevatedButton(
             style: ButtonStyle(
                 shape: widget.borderRadius != null
                     ? MaterialStatePropertyAll(RoundedRectangleBorder(
@@ -78,6 +79,8 @@ class _ActionButtonState extends State<ActionButton> {
         return widget.loader;
       case ButtonLoaderStyle.circularCenter:
         return _buildCircularIndicator();
+      case ButtonLoaderStyle.none:
+        return widget.child;
       default:
         return widget.child;
     }

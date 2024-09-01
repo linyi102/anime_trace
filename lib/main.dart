@@ -273,7 +273,9 @@ class MyAppState extends State<MyApp> {
         popupMenuRadius: 8.0,
         textButtonRadius: AppTheme.textButtonRadius,
         splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 0,
+        elevatedButtonElevation: 2.0,
+        elevatedButtonSchemeColor: SchemeColor.onPrimary,
+        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
         // 对话框背景色
         dialogElevation: 0.0,
         // 滚动时AppBar背景色
@@ -333,7 +335,9 @@ class MyAppState extends State<MyApp> {
         popupMenuRadius: 8.0,
         textButtonRadius: AppTheme.textButtonRadius,
         splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 0,
+        elevatedButtonElevation: 2.0,
+        elevatedButtonSchemeColor: SchemeColor.onPrimary,
+        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
         // 对话框背景色
         dialogElevation: 0.0,
         // 滚动时AppBar背景色

@@ -17,7 +17,7 @@ class AnimeAirDateListController extends GetxController {
     animeAirDateTimeItems.clear();
     allAirDate.clear();
 
-    final allAnimes = await AnimeDao.getAllAnimes();
+    final allAnimes = await AnimeDao.getAnimes();
     // 先获取所有时间
     Map<DateTime, List<Anime>> timeMapAnime = {unknownAirDate: []};
     for (final anime in allAnimes) {

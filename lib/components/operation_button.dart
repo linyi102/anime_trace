@@ -36,7 +36,7 @@ class OperationButton extends StatelessWidget {
                   : Theme.of(context).disabledColor.withOpacity(0.2),
               child: InkWell(
                   borderRadius: finalBorderRadius,
-                  onTap: onTap,
+                  onTap: active ? onTap : null,
                   child: Center(
                       child: Text(text,
                           style: TextStyle(

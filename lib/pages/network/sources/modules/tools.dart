@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_page.dart';
 import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
+import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
 import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
@@ -51,11 +52,23 @@ class ToolsPage extends StatelessWidget {
                   avatar: Icon(MingCuteIcons.mgc_calendar_month_line),
                   label: Text('周表'))),
           GestureDetector(
-              onTap: () {
-                RouteUtil.materialTo(context, const DirectoryPage());
-              },
-              child: const Chip(
-                  avatar: Icon(Icons.format_list_bulleted), label: Text('目录'))),
+            onTap: () {
+              RouteUtil.materialTo(context, const DirectoryPage());
+            },
+            child: const Chip(
+              avatar: Icon(Icons.format_list_bulleted),
+              label: Text('目录'),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              RouteUtil.materialTo(context, const LapseCoverAnimesPage());
+            },
+            child: const Chip(
+              avatar: Icon(Icons.image_outlined),
+              label: Text('失效封面'),
+            ),
+          ),
         ],
       ),
     );
