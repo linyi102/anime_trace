@@ -1,4 +1,5 @@
 import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/data_state.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
@@ -20,8 +21,8 @@ class LapseCoverController extends GetxController {
   Map<int, DataState<String>> states = {};
   final fixProgressController = ProgressController(total: 0);
 
-  bool get mockDetect => true;
-  bool get mockFix => true;
+  bool get mockDetect => Global.isRelease ? false : true;
+  bool get mockFix => Global.isRelease ? false : false;
 
   Queue _createQueue() {
     return Queue(
