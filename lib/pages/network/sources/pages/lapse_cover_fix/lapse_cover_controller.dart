@@ -21,7 +21,7 @@ class LapseCoverController extends GetxController {
   Map<int, DataState<String>> states = {};
   final fixProgressController = ProgressController(total: 0);
 
-  bool get mockDetect => Global.isRelease ? false : true;
+  bool get mockDetect => Global.isRelease ? false : false;
   bool get mockFix => Global.isRelease ? false : false;
 
   Queue _createQueue() {
