@@ -17,7 +17,7 @@ dialogSelectChecklist(
 }) {
   List<Widget> items = [];
   if (!anime.isCollected() && !onlyShowChecklist) {
-    items.add(ListTile(title: Text(anime.animeName)));
+    items.add(ListTile(title: SelectableText(anime.animeName)));
   }
   var tags = ChecklistController.to.tags;
 
