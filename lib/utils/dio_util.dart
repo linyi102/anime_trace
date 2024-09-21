@@ -5,6 +5,7 @@ import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/models/ping_result.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/utils/network/dio_log_interceptor.dart';
 
 class DioUtil {
   static final BaseOptions _baseOptions = BaseOptions(
@@ -25,6 +26,7 @@ class DioUtil {
     // 来源：https://www.cnblogs.com/MingGyGy-Castle/p/13761327.html
     // OmoFun搜索动漫时会报错，因此添加证书验证，不再直接使用Response response = await Dio(_baseOptions).request(path);
     dio = Dio(_baseOptions);
+    dio.interceptors.add(DioLogInterceptor());
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
         (client) {
       client.badCertificateCallback = (cert, host, port) {

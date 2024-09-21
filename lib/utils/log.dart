@@ -1,38 +1,34 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_logkit/logkit.dart';
+
+final logger = LogkitLogger(
+  logkitSettings: const LogkitSettings(
+    disableAttachOverlay: kReleaseMode,
+    disableRecordLog: kReleaseMode,
+    maxLogCount: 500,
+    printToConsole: true,
+    printTime: true,
+  ),
+)..setupErrorCollector();
 
 class Log {
   static void build<T>(Type runtimeType) {
-    if (kDebugMode) {
-      info("$runtimeType: build");
-    }
+    logger.info('build widget', tag: runtimeType.toString());
   }
 
   static void info<T>(T content, {Type? runTimeType}) {
-    if (kDebugMode) {
-      String typeStr = runTimeType == null ? "" : ":${runTimeType.toString()}";
-      debugPrint(
-          '🟩[INFO$typeStr][${DateTime.now().toString().substring(5)}]$content🟩');
-    }
+    logger.info(content.toString(), tag: runTimeType?.toString());
   }
 
   static void debug<T>(T content) {
-    if (kDebugMode) {
-      debugPrint(
-          '🟦[DEBUG][${DateTime.now().toString().substring(5)}]$content🟦');
-    }
+    logger.debug(content.toString());
   }
 
   static void warn<T>(T content) {
-    if (kDebugMode) {
-      debugPrint(
-          '🟨[WARN][${DateTime.now().toString().substring(5)}]$content🟨');
-    }
+    logger.warning(content.toString());
   }
 
   static void error<T>(T content) {
-    if (kDebugMode) {
-      debugPrint(
-          '🟥[ERROR][${DateTime.now().toString().substring(5)}]$content🟥');
-    }
+    logger.error(content.toString());
   }
 }
