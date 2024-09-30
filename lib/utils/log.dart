@@ -9,7 +9,7 @@ final logger = LogkitLogger(
     printToConsole: true,
     printTime: true,
   ),
-)..setupErrorCollector();
+);
 
 class Log {
   static void build<T>(Type runtimeType) {

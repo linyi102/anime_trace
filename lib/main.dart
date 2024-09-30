@@ -21,7 +21,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
-  Global.init().then((_) => runApp(const MyApp()));
+  runLogkitZonedGuarded(logger, () async {
+    await Global.init();
+    runApp(const MyApp());
+  });
 }
 
 class WindowWrapper extends StatefulWidget {

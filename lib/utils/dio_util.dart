@@ -26,7 +26,7 @@ class DioUtil {
     // 来源：https://www.cnblogs.com/MingGyGy-Castle/p/13761327.html
     // OmoFun搜索动漫时会报错，因此添加证书验证，不再直接使用Response response = await Dio(_baseOptions).request(path);
     dio = Dio(_baseOptions);
-    dio.interceptors.add(DioLogInterceptor());
+    dio.interceptors.add(DioLogInterceptor(logger));
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
         (client) {
       client.badCertificateCallback = (cert, host, port) {

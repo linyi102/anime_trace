@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_logkit/logkit.dart';
-import 'package:flutter_test_future/utils/log.dart';
 
 class DioLogInterceptor extends Interceptor {
+  final LogkitLogger logger;
+  final logTag = 'DioInterceptor';
+
+  DioLogInterceptor(this.logger);
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     logger.logTyped(
