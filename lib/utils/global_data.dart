@@ -18,6 +18,7 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 
 List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
+  cycClimbWebsite,
   nyaFunWebsite,
   guguWebsite,
   doubanClimbWebsite,
@@ -26,7 +27,6 @@ List<ClimbWebsite> climbWebsites = [
   omofunClimbWebsite,
   aimiWebsite,
   yhdmClimbWebsite,
-  cycClimbWebsite,
   quqiClimbWebsite,
 ];
 
@@ -72,7 +72,6 @@ final cycClimbWebsite = ClimbWebsite(
   spkey: "enableWebSiteCycdm",
   climb: ClimbCycdm(),
   desc: "高质量在线追番平台！",
-  discard: true,
 );
 
 final doubanClimbWebsite = ClimbWebsite(
