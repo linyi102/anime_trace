@@ -236,9 +236,11 @@ packages:
   file_picker:
     dependency: "direct main"
     description:
-      path: "E:/Code/Flutter/module/flutter_file_picker_no_cache"
-      relative: false
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: a0c8fb9ba4af88de57061786ced64ba137b17228
+      url: "https://github.com/linyi102/flutter_file_picker_no_cache.git"
+    source: git
     version: "5.2.0"
   file_saver:
     dependency: "direct main"
@@ -301,10 +303,12 @@ packages:
   flutter_logkit:
     dependency: "direct main"
     description:
-      path: "E:/Code/Flutter/flutter_logkit"
-      relative: false
-    source: path
-    version: "1.0.0+1"
+      path: "."
+      ref: "v0.0.1"
+      resolved-ref: "6064a990bc7610503ca0972a1a5777f402273b44"
+      url: "https://github.com/linyi102/flutter_logkit.git"
+    source: git
+    version: "0.0.1+1"
   flutter_markdown:
     dependency: "direct main"
     description:
