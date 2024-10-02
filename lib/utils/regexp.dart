@@ -5,4 +5,9 @@ class RegexpUtil {
         unicode: true);
     return rx.firstMatch(text)?[0];
   }
+
+  static String? extractDate(String? text) {
+    if (text == null) return null;
+    return RegExp(r'\d{4}(-\d{0,2}){0,2}').firstMatch(text)?[0];
+  }
 }

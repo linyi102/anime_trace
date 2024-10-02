@@ -6,6 +6,7 @@ import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
 import 'package:flutter_test_future/utils/climb/climb_bangumi.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
+import 'package:flutter_test_future/utils/climb/climb_gugu.dart';
 import 'package:flutter_test_future/utils/climb/climb_nayfun.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
@@ -22,6 +23,7 @@ List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
   cycClimbWebsite,
   nyaFunWebsite,
+  guguWebsite,
   doubanClimbWebsite,
   quClimbWebsite,
   quqiClimbWebsite,
@@ -172,4 +174,16 @@ final nyaFunWebsite = ClimbWebsite(
   climb: ClimbNyaFun(),
   desc:
       "NyaFun专注于资源收集整理 海量的有效的高质量的动漫，资源下载，最新电影，观看完全免费、高速播放、更新及时在线，我们致力为所有动漫迷们提供最好看的动漫",
+);
+
+final guguWebsite = ClimbWebsite(
+  id: 11,
+  name: "咕咕番",
+  iconUrl: "assets/images/website/gugu.png",
+  regexp: "gugu",
+  spkey: "enableWebSiteGugu",
+  enable: SPUtil.getBool("enableWebSiteGugu", defaultValue: false),
+  pingStatus: PingStatus(),
+  climb: ClimbGugu(),
+  desc: "咕咕番 - 为广大二次元爱好者提供免费、高质量无广告的新番、老番、特摄动画在线观看！",
 );
