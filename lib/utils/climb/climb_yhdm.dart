@@ -3,7 +3,6 @@ import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbYhdm with Climb {
@@ -30,12 +29,9 @@ class ClimbYhdm with Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime,
-      {bool showMessage = true, String? foreignSourceName}) async {
+  Future<Anime> climbAnimeInfo(Anime anime, {String? foreignSourceName}) async {
     var document = await dioGetAndParse(anime.animeUrl);
-    if (document == null) {
-      return anime;
-    }
+    if (document == null) return anime;
 
     var animeInfo = document.getElementsByClassName("sinfo")[0];
     String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
@@ -84,11 +80,7 @@ class ClimbYhdm with Climb {
     anime.animeDesc = document.getElementsByClassName("info")[0].innerHtml;
     // 获取集数
     String episodeCntStr = animeInfo.getElementsByTagName("p")[1].innerHtml;
-    Log.info("开始解析集数：${anime.animeName}");
     anime.animeEpisodeCnt = parseEpisodeCntOfyhdm(episodeCntStr);
-    if (showMessage) ToastUtil.showText("更新完毕");
-
-    Log.info(anime.toString());
     return anime;
   }
 
@@ -128,9 +120,7 @@ class ClimbYhdm with Climb {
       {String? foreignSourceName}) async {
     var document =
         await dioGetAndParse(url, foreignSourceName: foreignSourceName);
-    if (document == null) {
-      return [];
-    }
+    if (document == null) return [];
 
     List<Anime> animes = [];
     var lpic = document.getElementsByClassName("lpic")[0];
@@ -154,8 +144,6 @@ class ClimbYhdm with Climb {
         animeCoverUrl: coverUrl ?? "",
         animeUrl: animeUrl,
       );
-      Log.info("爬取名字：${anime.animeName}");
-      Log.info("爬取封面：${anime.animeCoverUrl}");
       animes.add(anime);
     }
     return animes;
@@ -178,9 +166,7 @@ class ClimbYhdm with Climb {
       {String? foreignBaseUrl, String? foreignSourceName}) async {
     String baseUrl = foreignBaseUrl ?? this.baseUrl;
     var document = await dioGetAndParse(baseUrl);
-    if (document == null) {
-      return [];
-    }
+    if (document == null) return [];
 
     List<List<WeekRecord>> weeks = [];
     for (int weekday = 1; weekday <= 7; weekday++) {

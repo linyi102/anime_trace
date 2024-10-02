@@ -2,8 +2,6 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/anime_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
 
 class ClimbOmofun with Climb {
   // 单例
@@ -33,12 +31,9 @@ class ClimbOmofun with Climb {
 
     var document =
         await dioGetAndParse(url, foreignSourceName: foreignSourceName);
-    if (document == null) {
-      return [];
-    }
+    if (document == null) return [];
 
     var elements = document.getElementsByClassName("lazy lazyload");
-
     for (var element in elements) {
       String? coverUrl = element.attributes["data-original"];
       String? animeName = element.attributes["alt"];
@@ -48,7 +43,6 @@ class ClimbOmofun with Climb {
             animeName: animeName ?? "", // 没有名字时返回空串
             animeEpisodeCnt: 0,
             animeCoverUrl: coverUrl));
-        Log.info("爬取封面：$coverUrl");
       }
     }
 
@@ -60,8 +54,6 @@ class ClimbOmofun with Climb {
       climbAnimes[i].animeUrl = animeUrl == null
           ? ""
           : ((foreignBaseUrl.isEmpty ? baseUrl : foreignBaseUrl) + animeUrl);
-      Log.info("爬取动漫网址：${climbAnimes[i].animeUrl}");
-
       // 获取年份和地区
       // 2018<span class="slash">/</span>日本<span class="slash">/</span>
       List<String> strs = elementsInfo[i]
@@ -83,20 +75,14 @@ class ClimbOmofun with Climb {
     for (int i = 0; i < elementsInfo.length; ++i) {
       climbAnimes[i].category = elementsInfo[i].innerHtml;
     }
-
-    Log.info("解析完毕√");
     return climbAnimes;
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime,
-      {bool showMessage = true, String? foreignSourceName}) async {
-    Log.info("爬取动漫详细网址：${anime.animeUrl}");
+  Future<Anime> climbAnimeInfo(Anime anime, {String? foreignSourceName}) async {
     var document = await dioGetAndParse(anime.animeUrl,
         foreignSourceName: foreignSourceName);
-    if (document == null) {
-      return anime;
-    }
+    if (document == null) return anime;
 
     List elements;
     if ((elements = document.getElementsByTagName("small")).length >= 2) {
@@ -125,11 +111,6 @@ class ClimbOmofun with Climb {
         .getElementsByClassName("show-desc")[0]
         .getElementsByTagName("p")[0]
         .innerHtml;
-
-    Log.info("解析完毕√");
-    Log.info(anime.toString());
-    if (showMessage) ToastUtil.showText("更新完毕");
-
     return anime;
   }
 

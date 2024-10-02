@@ -1,8 +1,6 @@
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ClimbNyaFun with Climb {
   @override
@@ -15,8 +13,7 @@ class ClimbNyaFun with Climb {
   String get sourceName => "NyaFun";
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    Log.info("爬取动漫详细网址：${anime.animeUrl}");
+  Future<Anime> climbAnimeInfo(Anime anime) async {
     final document = await dioGetAndParse(anime.animeUrl);
     if (document == null) return anime;
 
@@ -53,9 +50,6 @@ class ClimbNyaFun with Climb {
             ?.getElementsByTagName("li")
             .length ??
         anime.animeEpisodeCnt;
-
-    // TODO 统一toast位置
-    if (showMessage) ToastUtil.showText("更新完毕");
     return anime;
   }
 

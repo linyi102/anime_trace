@@ -7,7 +7,6 @@ import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -31,7 +30,7 @@ mixin Climb {
     SPUtil.setString(customBaseUrlKey, url);
   }
 
-  removeCustomBaseUrl() async {
+  Future<void> removeCustomBaseUrl() async {
     await SPUtil.remove(customBaseUrlKey);
   }
 
@@ -47,7 +46,7 @@ mixin Climb {
   }
 
   /// 爬取动漫详细信息
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+  Future<Anime> climbAnimeInfo(Anime anime) async {
     throw '未实现';
   }
 
@@ -61,7 +60,7 @@ mixin Climb {
     throw '未实现';
   }
 
-  //////////////////// 用户收藏 ////////////////////
+  /// 用户收藏链接
   String userCollBaseUrl = "";
 
   List<SiteCollectionTab> siteCollectionTabs = [];
@@ -80,24 +79,22 @@ mixin Climb {
     throw '未实现';
   }
 
-  //////////////////// 获取视频链接 ////////////////////
+  /// 获取视频链接
   Future<String> getVideoUrl(String animeUrl, int episodeNumber) async {
     throw '未实现';
   }
 
-  //////////////////// 统一解析 ////////////////////
+  /// 统一解析
   Future<Document?> dioGetAndParse(String url,
       {bool isMobile = false, String? foreignSourceName}) async {
     String sourceName = foreignSourceName ?? this.sourceName;
 
-    Log.info("$sourceName：正在获取文档...");
     Result result = await DioUtil.get(url, isMobile: isMobile);
     if (result.code != 200) {
       ToastUtil.showText("$sourceName：${result.msg}");
       return null;
     }
     Response response = result.data;
-    Log.info("$sourceName：获取文档成功√");
     Document document = parse(response.data);
     return document;
   }

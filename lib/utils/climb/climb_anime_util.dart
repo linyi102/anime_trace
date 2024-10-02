@@ -70,11 +70,13 @@ class ClimbAnimeUtil {
         climb.baseUrl.endsWith('/') ? climb.baseUrl : '${climb.baseUrl}/');
     try {
       // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
-      anime = await climb.climbAnimeInfo(anime, showMessage: showMessage);
+      anime = await climb.climbAnimeInfo(anime);
       anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
           anime.animeEpisodeCnt, anime.episodeStartNumber);
-    } catch (e) {
-      e.printError();
+      if (showMessage) ToastUtil.showText("更新完毕");
+    } catch (err, stack) {
+      logger.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',
+          error: err, stackTrace: stack);
     }
     return anime;
   }

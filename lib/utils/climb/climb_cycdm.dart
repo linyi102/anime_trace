@@ -6,7 +6,6 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 
 // 次元城动漫
 class ClimbCycdm with Climb {
@@ -27,18 +26,14 @@ class ClimbCycdm with Climb {
   bool isMobile = true;
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    Log.info("爬取动漫详细网址：${anime.animeUrl}");
+  Future<Anime> climbAnimeInfo(Anime anime) async {
     var document = await dioGetAndParse(anime.animeUrl, isMobile: isMobile);
-    if (document == null) {
-      return anime;
-    }
+    if (document == null) return anime;
 
     var episodeBox = document.getElementsByClassName("anthology-list-box");
     if (episodeBox.isNotEmpty) {
       anime.animeEpisodeCnt = episodeBox[0].getElementsByTagName("li").length;
     }
-
     anime.animeCoverUrl = document
             .getElementsByClassName("lazy lazy1 mask-0")[0]
             .attributes["data-src"] ??
@@ -64,11 +59,6 @@ class ClimbCycdm with Climb {
     anime.premiereTime =
         exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
     anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
-
-    Log.info("解析完毕√");
-    Log.info(anime.toString());
-    if (showMessage) ToastUtil.showText("更新完毕");
-
     return anime;
   }
 
@@ -90,7 +80,6 @@ class ClimbCycdm with Climb {
         if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
         climbAnimes.add(
             Anime(animeName: "", animeEpisodeCnt: 0, animeCoverUrl: coverUrl));
-        Log.info("爬取封面：$coverUrl");
       }
     }
 
@@ -102,10 +91,7 @@ class ClimbCycdm with Climb {
       // 获取网址
       String? animeUrl = urlElements[i].attributes["href"];
       climbAnimes[i].animeUrl = animeUrl == null ? "" : baseUrl + animeUrl;
-      Log.info("爬取动漫网址：${climbAnimes[i].animeUrl}");
     }
-
-    Log.info("解析完毕√");
     return climbAnimes;
   }
 

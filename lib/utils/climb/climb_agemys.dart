@@ -6,7 +6,6 @@ import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:html/dom.dart';
 
 class ClimbAgemys with Climb {
@@ -25,8 +24,7 @@ class ClimbAgemys with Climb {
   String get sourceName => "AGE动漫";
 
   @override
-  Future<List<Anime>> searchAnimeByKeyword(String keyword,
-      {bool showMessage = true}) async {
+  Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl + "/search?query=$keyword";
 
     final document = await dioGetAndParse(url);
@@ -36,11 +34,9 @@ class ClimbAgemys with Climb {
   }
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+  Future<Anime> climbAnimeInfo(Anime anime) async {
     var document = await dioGetAndParse(anime.animeUrl);
-    if (document == null) {
-      return anime;
-    }
+    if (document == null) return anime;
 
     var detailImformValues =
         document.getElementsByClassName("detail_imform_value");
@@ -88,8 +84,6 @@ class ClimbAgemys with Climb {
       anime.animeEpisodeCnt =
           episodeNumbers.reduce((value, element) => max(value, element));
     }
-
-    if (showMessage) ToastUtil.showText("更新完毕");
 
     return anime;
   }

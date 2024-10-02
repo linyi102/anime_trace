@@ -98,10 +98,8 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
 
     // 若数据库已存在该动漫，则覆盖掉
     for (var i = 0; i < websiteClimbAnimes.length; i++) {
-      Log.info("搜索数据库前id=${websiteClimbAnimes[i].animeId}");
       mixedAnimes[i] =
           await SqliteUtil.getAnimeByAnimeUrl(websiteClimbAnimes[i]);
-      Log.info("搜索数据库后id=${mixedAnimes[i].animeId}");
     }
   }
 

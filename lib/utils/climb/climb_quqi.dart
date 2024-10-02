@@ -21,9 +21,8 @@ class ClimbQuqi with Climb {
   String get sourceName => "曲奇动漫";
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    return ClimbYhdm().climbAnimeInfo(anime,
-        foreignSourceName: sourceName, showMessage: showMessage);
+  Future<Anime> climbAnimeInfo(Anime anime) async {
+    return ClimbYhdm().climbAnimeInfo(anime, foreignSourceName: sourceName);
   }
 
   @override

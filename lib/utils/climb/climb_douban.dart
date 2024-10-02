@@ -7,7 +7,6 @@ import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:html/dom.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
 
 class ClimbDouban with Climb {
   // 单例
@@ -38,11 +37,9 @@ class ClimbDouban with Climb {
   int get userCollPageSize => 15;
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
+  Future<Anime> climbAnimeInfo(Anime anime) async {
     var document = await dioGetAndParse(anime.animeUrl);
-    if (document == null) {
-      return anime;
-    }
+    if (document == null) return anime;
 
     var mainpicElement = document.getElementById("mainpic");
     anime.animeCoverUrl =
@@ -91,14 +88,11 @@ class ClimbDouban with Climb {
         }
       }
     }
-    if (showMessage) ToastUtil.showText("更新完毕");
-
     return anime;
   }
 
   @override
-  Future<List<Anime>> searchAnimeByKeyword(String keyword,
-      {bool showMessage = true}) async {
+  Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     List<Anime> animes = [];
     keyword = keyword.replaceAll(" ", "+"); // 网页搜索时输入空格会被替换为加号
 

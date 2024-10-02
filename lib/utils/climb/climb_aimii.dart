@@ -22,9 +22,9 @@ class ClimbAimi with Climb {
   String get sourceName => "艾米动漫";
 
   @override
-  Future<Anime> climbAnimeInfo(Anime anime, {bool showMessage = true}) async {
-    anime = await ClimbOmofun().climbAnimeInfo(anime,
-        showMessage: showMessage, foreignSourceName: sourceName);
+  Future<Anime> climbAnimeInfo(Anime anime) async {
+    anime = await ClimbOmofun()
+        .climbAnimeInfo(anime, foreignSourceName: sourceName);
     return anime;
   }
 
