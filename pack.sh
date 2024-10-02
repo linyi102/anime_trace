@@ -29,3 +29,4 @@ windowsOutputZipPath="$packRootDir/manji-$windowsVerison-windows.zip"
 cp -r "$windowsOriDir" "$packRootDir"
 mv "$packRootDir/Release" "$windowsOutputDir"
 7z a -tzip "$windowsOutputZipPath" "$windowsOutputDir"
+iscc setup.iss
