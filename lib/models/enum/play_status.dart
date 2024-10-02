@@ -18,7 +18,7 @@ enum PlayStatus {
       return PlayStatus.unknown;
     } else if (text.contains("未")) {
       return PlayStatus.notStarted;
-    } else if (text.contains("第") || text.contains("连载")) {
+    } else if (text.contains("第") || text.contains("连载") || text.contains('更新至')) {
       return PlayStatus.playing;
     } else {
       return PlayStatus.unknown;

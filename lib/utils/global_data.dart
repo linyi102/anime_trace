@@ -6,6 +6,7 @@ import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
 import 'package:flutter_test_future/utils/climb/climb_bangumi.dart';
 import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_douban.dart';
+import 'package:flutter_test_future/utils/climb/climb_nayfun.dart';
 import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
 import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
 import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
@@ -20,6 +21,7 @@ List<ClimbWebsite> climbWebsites = [
   yhdmClimbWebsite,
   ageClimbWebsite,
   cycClimbWebsite,
+  nyaFunWebsite,
   doubanClimbWebsite,
   quClimbWebsite,
   quqiClimbWebsite,
@@ -157,4 +159,17 @@ final aimiWebsite = ClimbWebsite(
   pingStatus: PingStatus(),
   climb: ClimbAimi(),
   desc: "艾米动漫致力于收集动漫资源，为广大网友提供各种好番而生。",
+);
+
+final nyaFunWebsite = ClimbWebsite(
+  id: 10,
+  name: "NyaFun",
+  iconUrl: "assets/images/website/nayfun.png",
+  regexp: "nyacg",
+  spkey: "enableWebSiteNayfun",
+  enable: SPUtil.getBool("enableWebSiteNayfun", defaultValue: false),
+  pingStatus: PingStatus(),
+  climb: ClimbNyaFun(),
+  desc:
+      "NyaFun专注于资源收集整理 海量的有效的高质量的动漫，资源下载，最新电影，观看完全免费、高速播放、更新及时在线，我们致力为所有动漫迷们提供最好看的动漫",
 );
