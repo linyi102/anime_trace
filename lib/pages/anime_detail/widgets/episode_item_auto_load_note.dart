@@ -158,10 +158,17 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.25),
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
-      title: Text(
-        // "第${_episode.number}集",
-        _episode.caption,
-        style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
+      title: Align(
+        alignment: Alignment.centerLeft,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onLongPress: () {},
+          onTap: () => _showDialogDescForm(context),
+          child: Text(
+            _episode.caption,
+            style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
+          ),
+        ),
       ),
       // 没有完成时不显示subtitle
       subtitle: widget.episode.isChecked()
@@ -357,10 +364,35 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     TextEditingController textEditingController =
         TextEditingController(text: _episode.desc?.title);
 
+    void submitForm(BuildContext dialogContext) async {
+      Navigator.pop(dialogContext);
+
+      var title = textEditingController.text;
+      if (_episode.desc == null) {
+        _episode.desc = EpisodeDesc(
+            id: 0,
+            animeId: _anime.animeId,
+            number: _episode.number,
+            title: title,
+            hideDefault: hideDefault);
+      } else {
+        _episode.desc!.title = title;
+        _episode.desc!.hideDefault = hideDefault;
+      }
+
+      if (_episode.desc!.notInsert) {
+        int newId = await EpisodeDescDao.insert(_episode.desc!);
+        _episode.desc!.id = newId;
+      } else {
+        await EpisodeDescDao.update(_episode.desc!);
+      }
+      setState(() {});
+    }
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
+        builder: (dialogContext, setState) => AlertDialog(
           title: const Text("标题"),
           content: SingleChildScrollView(
             child: Column(
@@ -372,6 +404,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     // 重绘预览文本
                     setState(() {});
                   },
+                  onSubmitted: (_) => submitForm(dialogContext),
                 ),
                 SwitchListTile(
                   dense: true,
@@ -395,31 +428,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 onPressed: () => Navigator.pop(context),
                 child: const Text("取消")),
             TextButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-
-                  var title = textEditingController.text;
-                  if (_episode.desc == null) {
-                    _episode.desc = EpisodeDesc(
-                        id: 0,
-                        animeId: _anime.animeId,
-                        number: _episode.number,
-                        title: title,
-                        hideDefault: hideDefault);
-                  } else {
-                    _episode.desc!.title = title;
-                    _episode.desc!.hideDefault = hideDefault;
-                  }
-
-                  if (_episode.desc!.notInsert) {
-                    int newId = await EpisodeDescDao.insert(_episode.desc!);
-                    _episode.desc!.id = newId;
-                  } else {
-                    await EpisodeDescDao.update(_episode.desc!);
-                  }
-                  // 重绘该集Widget
-                  this.setState(() {});
-                },
+                onPressed: () => submitForm(dialogContext),
                 child: const Text("确定")),
           ],
         ),
