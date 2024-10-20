@@ -140,4 +140,14 @@ class HistoryDao {
     }
     return animes;
   }
+
+  /// 获取最大观看次数
+  static Future<int> getMaxReviewNumber(int animeId) async {
+    final rows = await SqliteUtil.database.rawQuery('''
+      select review_number from history where anime_id = $animeId order by review_number desc limit 1;
+    ''');
+    if (rows.isEmpty) return 1;
+    final number = rows.first['review_number'];
+    return number is int ? number : 1;
+  }
 }
