@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:darty_json/darty_json.dart';
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/week_record.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
 import 'package:flutter_test_future/utils/climb/user_collection.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
+import 'package:flutter_test_future/utils/network/bangumi_api.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:html/dom.dart';
 
@@ -237,8 +235,8 @@ class ClimbBangumi with Climb {
   @override
   Future<List<List<WeekRecord>>> climbWeeklyTable() async {
     final resp = await DioUtil.get(
-      'https://api.bgm.tv/calendar',
-      headers: _apiHeaders,
+      BangumiApi.calendar,
+      headers: BangumiApi.headers,
     );
     if (resp.isFailure || resp.data.data is! List) return [];
 
@@ -265,12 +263,5 @@ class ClimbBangumi with Climb {
       weeks.add(records);
     }
     return weeks;
-  }
-
-  Map<String, dynamic> get _apiHeaders {
-    return {
-      'user-agent':
-          'linyi102/anime_trace/${AppUpgradeController.to.curVersion} (${Platform.operatingSystem}) (https://github.com/linyi102/anime_trace)',
-    };
   }
 }

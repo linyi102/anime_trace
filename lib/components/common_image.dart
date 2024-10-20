@@ -11,12 +11,16 @@ class CommonImage extends StatelessWidget {
       {this.showIconWhenUrlIsEmptyOrError = true,
       this.reduceMemCache = true,
       this.memCacheWidth = 600,
+      this.fit = BoxFit.cover,
+      this.alignment = Alignment.center,
       Key? key})
       : super(key: key);
   final String url;
   final bool reduceMemCache;
   final int memCacheWidth;
   final bool showIconWhenUrlIsEmptyOrError; // 当没有图片或图片错误时，显示图标
+  final BoxFit fit;
+  final Alignment alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +42,8 @@ class CommonImage extends StatelessWidget {
         fadeInDuration: fadeInDuration,
         errorWidget: (_, __, ___) => _buildDefaultImage(context, isError: true),
         placeholder: (_, __) => _buildDefaultImage(context),
-        fit: BoxFit.cover,
+        fit: fit,
+        alignment: alignment,
       );
     }
 
@@ -56,7 +61,8 @@ class CommonImage extends StatelessWidget {
                 ? ResizeImage(fileImage, width: memCacheWidth)
                     as ImageProvider<Object>
                 : fileImage,
-            fit: BoxFit.cover,
+            fit: fit,
+            alignment: alignment,
             fadeInDuration: fadeInDuration,
             placeholder: MemoryImage(kTransparentImage),
             imageErrorBuilder: (_, __, ___) =>

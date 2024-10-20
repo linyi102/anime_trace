@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
 class Result<T> {
@@ -25,60 +26,103 @@ class Result<T> {
   }
 }
 
-extension ResultConverter on Result {
-  bool _isMap(dynamic value) => value is Map<String, dynamic>;
-  bool _isNotMap(dynamic value) => !_isMap(value);
+bool _isMap(dynamic value) => value is Map<String, dynamic>;
+bool _isNotMap(dynamic value) => !_isMap(value);
 
+enum ResultDataType {
+  body,
+  bodyData,
+  responseBody;
+}
+
+extension ResultDataTypeExtension on ResultDataType {
+  R? extract<R>(Result result) {
+    switch (this) {
+      case ResultDataType.body:
+        return _extractBody(result);
+      case ResultDataType.bodyData:
+        return _extractBodyData(result);
+      case ResultDataType.responseBody:
+        return _extractResponseBody(result);
+    }
+  }
+
+  R? _extractBodyData<R>(Result result) {
+    if (result.isFailure || _isNotMap(result.data)) return null;
+    final data = result.data['data'];
+    if (data is! R) return null;
+    return data;
+  }
+
+  R? _extractBody<R>(Result result) {
+    if (result.isFailure) return null;
+    final data = result.data;
+    if (data is! R) return null;
+    return data;
+  }
+
+  R? _extractResponseBody<R>(Result result) {
+    if (result.isFailure) return null;
+    if (result.data is! Response) return null;
+    final data = (result.data as Response).data;
+    if (data is! R) return null;
+    return data;
+  }
+}
+
+extension ResponseDataTransformer on Result {
   T toModel<T>({
     required T Function(Map<String, dynamic> json) transform,
-    required T Function() dataOnError,
+    required T Function() onError,
+    ResultDataType dataType = ResultDataType.body,
   }) {
-    if (isFailure || _isNotMap(data) || _isNotMap(data['data'])) {
-      return dataOnError();
-    }
+    final innerData = dataType.extract<Map<String, dynamic>>(this);
+    if (innerData == null) return onError();
 
     try {
-      return transform(data['data']);
+      return transform(innerData);
     } catch (e) {
-      return dataOnError();
+      return onError();
     }
   }
 
   List<T> toModelList<T>({
     required T Function(Map<String, dynamic> json) transform,
-    List<T> Function()? dataOnError,
+    List<T> Function()? onError,
+    ResultDataType dataType = ResultDataType.body,
   }) {
-    if (isFailure || _isNotMap(data) || data['data'] is! List) {
-      return dataOnError?.call() ?? [];
-    }
+    final data = dataType.extract<List<dynamic>>(this);
+    if (data == null) return onError?.call() ?? [];
 
     List<T> list = [];
-    for (final item in data['data']) {
+    for (final item in data) {
       if (_isNotMap(item)) continue;
       try {
         list.add(transform(item));
-      } catch (e) {
-        Log.error(e);
+      } catch (err, stack) {
+        logger.error('transfrom异常：$err', stackTrace: stack);
       }
     }
     return list;
   }
 
   T? toValue<T>({
-    T? Function()? dataOnError,
+    T? Function()? onError,
+    ResultDataType dataType = ResultDataType.body,
   }) {
-    if (isFailure || _isNotMap(data) || data['data'] is! T) {
-      return dataOnError?.call();
-    }
-    return data['data'];
+    final data = dataType.extract<T>(this);
+    if (data == null) return onError?.call();
+
+    return data;
   }
 
   List<T> toValueList<T>({
-    List<T> Function()? dataOnError,
+    List<T> Function()? onError,
+    ResultDataType dataType = ResultDataType.body,
   }) {
-    if (isFailure || _isNotMap(data) || data['data'] is! List<T>) {
-      return dataOnError?.call() ?? [];
-    }
-    return data['data'];
+    final data = dataType.extract<List<T>>(this);
+    if (data == null) return onError?.call() ?? [];
+
+    return data;
   }
 }

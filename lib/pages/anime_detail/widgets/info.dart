@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/dialog/dialog_select_checklist.da
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
+import 'package:flutter_test_future/pages/bangumi/subject_detail/view.dart';
 import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_pa
 import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
+import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -176,6 +178,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               });
             }),
       _buildSearchBtn(),
+      // _buildBangumiInfoBtn(),
     ];
   }
 
@@ -222,6 +225,16 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
             widget.animeController.loadEpisode();
           });
         }
+      },
+    );
+  }
+
+  Widget _buildBangumiInfoBtn() {
+    return _buildIconTextButton(
+      iconData: MingCuteIcons.mgc_profile_line,
+      text: '信息',
+      onTap: () {
+        RouteUtil.materialTo(context, const BangumiSubjectDetailPage());
       },
     );
   }
