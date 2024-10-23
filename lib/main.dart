@@ -7,7 +7,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_logkit/logkit.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test_future/components/classic_refresh_style.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
@@ -114,11 +113,8 @@ class MyAppState extends State<MyApp> {
         return GetMaterialApp(
           home: LogkitOverlayAttacher(
             logger: logger,
-            child: WindowWrapper(
-              child: ScreenUtilInit(
-                designSize: const Size(375, 812),
-                builder: (context, child) => const MainScreen(),
-              ),
+            child: const WindowWrapper(
+              child: MainScreen(),
             ),
           ),
           debugShowCheckedModeBanner: false,
