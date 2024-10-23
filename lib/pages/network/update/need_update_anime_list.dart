@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/anime_item_auto_load.dart';
+import 'package:flutter_test_future/components/common_tab_bar.dart';
+import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/enum/play_status.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:scrollview_observer/scrollview_observer.dart';
+import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);
@@ -16,20 +16,17 @@ class NeedUpdateAnimeList extends StatefulWidget {
   State<NeedUpdateAnimeList> createState() => _NeedUpdateAnimeListState();
 }
 
-class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
+class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList>
+    with SingleTickerProviderStateMixin {
   List<Anime> animes = [];
-  List<Anime> filteredAnimes = [];
   bool loadOk = false;
 
   final allWeeklyItem = WeeklyItem(title: '全部', weekday: 0);
   final unknownWeeklyItem = WeeklyItem(title: '未知', weekday: -1);
   List<WeeklyItem> weeklyItems = [];
   late WeeklyItem curWeeklyItem;
-  int get curBarItemIndex => weeklyItems.indexOf(curWeeklyItem);
 
-  final scrollController = ScrollController();
-  late final observerController =
-      ListObserverController(controller: scrollController);
+  late final tabController = TabController(length: 9, vsync: this);
 
   @override
   void initState() {
@@ -39,11 +36,11 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
 
   @override
   void dispose() {
-    scrollController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
-  _loadData() async {
+  Future<void> _loadData() async {
     weeklyItems.addAll([allWeeklyItem, unknownWeeklyItem]);
 
     final now = DateTime.now();
@@ -58,13 +55,12 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
       weeklyItems.add(item);
       if (now.weekday == dateTime.weekday) curWeeklyItem = item;
     }
-
+    tabController.animateTo(weeklyItems.indexOf(curWeeklyItem));
     animes = await AnimeDao.getAllNeedUpdateAnimes(includeEmptyUrl: true);
     _sortAnimes();
-    loadOk = true;
-    _filterAnime();
-
-    observerController.initialIndex = weeklyItems.indexOf(curWeeklyItem);
+    setState(() {
+      loadOk = true;
+    });
   }
 
   @override
@@ -72,81 +68,52 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${animes.length} 个未完结"),
-      ),
-      body: CommonScaffoldBody(
-          child: FadeAnimatedSwitcher(
-        destWidget: Column(
-          children: [
-            _buildWeeklyBar(),
-            Expanded(child: _buildAnimeCardListView()),
+        bottom: CommonBottomTabBar(
+          isScrollable: true,
+          tabController: tabController,
+          tabs: [
+            for (final item in weeklyItems)
+              Tab(
+                  child: Text.rich(TextSpan(children: [
+                TextSpan(text: item.title),
+                const WidgetSpan(child: SizedBox(width: 4)),
+                TextSpan(
+                  text: _filterAnime(item).length.toString(),
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.bodySmall?.fontSize),
+                )
+              ]))),
           ],
         ),
-        loadOk: loadOk,
-      )),
-    );
-  }
-
-  Widget _buildWeeklyBar() {
-    return Container(
-      height: 40,
-      margin: const EdgeInsets.fromLTRB(10, 15, 10, 5),
-      child: ListViewObserver(
-        controller: observerController,
-        child: ListView(
-            controller: scrollController,
-            scrollDirection: Axis.horizontal,
-            children: [for (var item in weeklyItems) _buildWeeklyItem(item)]),
+      ),
+      body: CommonTabBarView(
+        controller: tabController,
+        children: [
+          for (final item in weeklyItems)
+            loadOk
+                ? _buildAnimeCardListView(_filterAnime(item))
+                : const LoadingWidget(),
+        ],
       ),
     );
   }
 
-  _buildWeeklyItem(WeeklyItem item) {
-    bool isCur = curWeeklyItem == item;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      child: ChoiceChip(
-        label: Text(item.title),
-        selected: isCur,
-        showCheckmark: false,
-        onSelected: (value) {
-          if (!value) return;
-          setState(() {
-            curWeeklyItem = item;
-            _filterAnime();
-          });
-          observerController.animateTo(
-            index: curBarItemIndex,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.linear,
-            offset: (_) {
-              return MediaQuery.of(context).size.width * 0.5;
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildAnimeCardListView() {
-    if (filteredAnimes.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        child: Text('什么都没有~'),
-      );
+  Widget _buildAnimeCardListView(List<Anime> animes) {
+    if (animes.isEmpty) {
+      return const Center(child: Text('什么都没有~'));
     }
     return GridView.builder(
-      key: ObjectKey(curWeeklyItem),
-      itemCount: filteredAnimes.length,
-      itemBuilder: (context, index) => _buildAnimeItem(index),
+      itemCount: animes.length,
+      itemBuilder: (context, index) => _buildAnimeItem(animes[index]),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           mainAxisExtent: 140, maxCrossAxisExtent: 520),
     );
   }
 
-  AnimeItemAutoLoad _buildAnimeItem(int index) {
+  AnimeItemAutoLoad _buildAnimeItem(Anime anime) {
     return AnimeItemAutoLoad(
-      anime: filteredAnimes[index],
+      anime: anime,
       showProgress: false,
       showReviewNumber: false,
       showWeekday: true,
@@ -174,8 +141,10 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
   }
 
   /// 筛选动漫
-  void _filterAnime() {
-    int weekday = curWeeklyItem.weekday;
+  List<Anime> _filterAnime(WeeklyItem weeklyItem) {
+    final weekday = weeklyItem.weekday;
+    List<Anime> filteredAnimes = [];
+
     if (weekday == allWeeklyItem.weekday) {
       filteredAnimes = animes;
     } else if (weekday == unknownWeeklyItem.weekday) {
@@ -186,8 +155,7 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList> {
           .where((anime) => anime.premiereDateTime?.weekday == weekday)
           .toList();
     }
-
-    if (mounted) setState(() {});
+    return filteredAnimes;
   }
 }
 
