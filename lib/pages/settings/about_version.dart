@@ -1,14 +1,13 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/logo.dart';
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
+import 'package:flutter_test_future/services/update_service.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/values/assets.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
-import 'package:get/get.dart';
 
 class AboutVersion extends StatefulWidget {
   const AboutVersion({Key? key}) : super(key: key);
@@ -36,26 +35,25 @@ class _AboutVersionState extends State<AboutVersion> {
             Column(
               children: [
                 const Logo(),
-                Text("当前版本: ${AppUpgradeController.to.curVersion}"),
+                Text("当前版本: ${AppUpdateService.to.curVersion}"),
                 _buildWebsiteIconsRow(context),
               ],
             ),
-            GetBuilder<AppUpgradeController>(
-              init: AppUpgradeController.to,
-              initState: (_) {},
-              builder: (appUpgradeLogic) {
-                return ListTile(
-                  onTap: () =>
-                      appUpgradeLogic.getLatestVersion(showToast: true),
-                  title: const Text("检查更新"),
-                  trailing: appUpgradeLogic.status == LoadStatus.loading
-                      ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2.4))
-                      : null,
-                );
-              },
+            ValueListenableBuilder(
+              valueListenable: AppUpdateService.to.checkStatus,
+              builder: (context, checkStatus, child) => ListTile(
+                onTap: checkStatus == LoadStatus.loading
+                    ? null
+                    : () => AppUpdateService.to
+                        .checkLatestRelease(context: context),
+                title: const Text("检查更新"),
+                trailing: checkStatus == LoadStatus.loading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2.4))
+                    : null,
+              ),
             ),
             ListTile(
                 title: const Text("更新日志"),

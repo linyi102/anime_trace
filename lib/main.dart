@@ -45,9 +45,6 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
     super.initState();
     windowManager.addListener(this);
     _init();
-
-    // 还原最新备份、开启间隔备份
-    BackupService.to.startService();
   }
 
   @override

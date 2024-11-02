@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
+import 'package:flutter_test_future/services/update_service.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -27,6 +28,13 @@ class _MainScreenState extends State<MainScreen> {
   bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
+
+  @override
+  void initState() {
+    super.initState();
+    BackupService.to.startService();
+    AppUpdateService.to.checkLatestRelease(context: context);
+  }
 
   @override
   Widget build(BuildContext context) {

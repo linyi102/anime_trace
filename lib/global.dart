@@ -8,8 +8,10 @@ import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
+import 'package:flutter_test_future/services/update_service.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/utils/release_checker/github_release_checker.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
@@ -66,6 +68,9 @@ class Global {
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => BackupService());
     Get.put(AppUpgradeController());
+    Get.put(AppUpdateService(
+      checker: GithubReleaseChecker(dio: DioUtil.dio, url: githubReleaseApi),
+    ));
 
     final checklistController = ChecklistController();
     Get.put(checklistController);

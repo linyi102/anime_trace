@@ -52,11 +52,11 @@ class AppUpgradeController extends GetxController {
 
   @override
   void onInit() async {
-    if (Platform.isWindows) {
-      Log.info("Windows exe path: ${Platform.resolvedExecutable}");
-    }
-    packageInfo = await PackageInfo.fromPlatform();
-    getLatestVersion(autoCheck: true);
+    // if (Platform.isWindows) {
+    //   Log.info("Windows exe path: ${Platform.resolvedExecutable}");
+    // }
+    // packageInfo = await PackageInfo.fromPlatform();
+    // getLatestVersion(autoCheck: true);
     super.onInit();
   }
 
