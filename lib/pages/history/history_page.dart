@@ -10,6 +10,7 @@ import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/history/history_controller.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
@@ -179,7 +180,9 @@ class _HistoryPageState extends State<HistoryPage> {
               children: [
                 // 卡片标题
                 SettingTitle(
-                  title: date.replaceAll("-", "/"),
+                  title: TimeUtil.isUnRecordedDateTimeStr(date)
+                      ? '其他'
+                      : date.replaceAll("-", "/"),
                   // trailing: Text(
                   //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
                   //   style: Theme.of(context).textTheme.bodySmall,

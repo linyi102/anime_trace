@@ -3,6 +3,10 @@ import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 
 class TimeUtil {
+  static final unRecordedDateTime = DateTime(0);
+
+  static isUnRecordedDateTimeStr(String str) => str.startsWith('0000');
+
   /// 根据秒数转为时长字符串
   static String getReadableDuration(Duration duration) {
     String res = "";
@@ -53,8 +57,10 @@ class TimeUtil {
     bool removeLeadingZero = false,
   }) {
     if (time.isEmpty) return "";
+    DateTime? dateTime = DateTime.tryParse(time);
+    if (dateTime == null) return "";
+    if (dateTime == unRecordedDateTime) return "";
 
-    DateTime dateTime = DateTime.parse(time);
     String dateTimeStr = dateTime.toString();
     DateTime now = DateTime.now();
     //         0123456789      16

@@ -17,6 +17,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
@@ -164,18 +165,21 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
         style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
       ),
       // 没有完成时不显示subtitle
-      subtitle: widget.episode.isChecked()
-          ? Text(
-              widget.episode.getDate(),
-              style:
-                  TextStyle(color: _episode.isChecked() ? checkedColor : null),
-              // style: Theme.of(context).textTheme.bodySmall,
-            )
-          : null,
+      subtitle: _buildSubtitle(),
       onTap: () => onpressEpisode(),
       onLongPress: () => onLongPressEpisode(),
       leading: _buildLeading(),
       trailing: _buildEpisodeTileTrailing(),
+    );
+  }
+
+  Text? _buildSubtitle() {
+    if (!widget.episode.isChecked()) return null;
+    final dateStr = widget.episode.getDate();
+    if (dateStr.isEmpty) return null;
+    return Text(
+      dateStr,
+      style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
     );
   }
 
@@ -270,23 +274,17 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 onTap: () async {
                   // 退出对话框
                   Navigator.of(dialogContext).pop();
-
-                  // 如果是多选状态则先退出
-                  if (widget.animeController.multiSelected.value) {
-                    widget.animeController.quitMultiSelectionMode();
-                  }
-                  // 添加到多选中，保证只有这一个
-                  widget.animeController.mapSelected[widget.episodeIndex] =
-                      true;
-                  // 选择时间
-                  await widget.animeController.pickDateForEpisodes(
-                    context: context,
-                    initialValue: DateTime.tryParse(_episode.dateTime ?? ''),
-                  );
-                  // 清空多选
-                  widget.animeController.mapSelected.clear();
-                  // 更新设置的时间
-                  setState(() {});
+                  completeEpisode();
+                },
+              ),
+              ListTile(
+                title: const Text("仅标记完成"),
+                leading:
+                    const Icon(MingCuteIcons.mgc_check_circle_line, size: 22),
+                onTap: () async {
+                  // 退出对话框
+                  Navigator.of(dialogContext).pop();
+                  completeEpisode(dateTime: TimeUtil.unRecordedDateTime);
                 },
               ),
               if (_episode.isChecked())
@@ -340,6 +338,24 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
             ],
           );
         });
+  }
+
+  Future<void> completeEpisode({DateTime? dateTime}) async {
+    // 如果是多选状态则先退出
+    if (widget.animeController.multiSelected.value) {
+      widget.animeController.quitMultiSelectionMode();
+    }
+    // 添加到多选中，保证只有这一个
+    widget.animeController.mapSelected[widget.episodeIndex] = true;
+    await widget.animeController.pickDateForEpisodes(
+      context: context,
+      dateTime: dateTime,
+      initialDateTime: DateTime.tryParse(_episode.dateTime ?? ''),
+    );
+    // 清空多选
+    widget.animeController.mapSelected.clear();
+    // 更新设置的时间
+    setState(() {});
   }
 
   getPreviewCaption(int number, String title, bool hideDefault) {
