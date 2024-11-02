@@ -4,7 +4,9 @@ import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/widgets/setting_card.dart';
+import 'package:get/get.dart';
 
 class ThemePage extends StatefulWidget {
   const ThemePage({super.key});
@@ -36,26 +38,82 @@ class _ThemePageState extends State<ThemePage> {
               ),
             ],
           ),
-          SettingCard(
-            title: '主题配色',
-            trailing: TextButton(
-                onPressed: () {
-                  themeController.resetCustomPrimaryColor();
-                },
-                child: const Text('重置')),
-            children: [
-              ListTile(
-                title: const Text('选择主题色'),
-                trailing: _buildColorIndicator(),
-                onTap: _showColorPicker,
-              ),
-            ],
+          Obx(
+            () => SettingCard(
+              title: '主题',
+              trailing: TextButton(
+                  onPressed: () {
+                    themeController.resetCustomPrimaryColor();
+                  },
+                  child: const Text('重置')),
+              children: [
+                ListTile(
+                  title: const Text('选择主题色'),
+                  trailing: _buildColorIndicator(),
+                  onTap: _showColorPicker,
+                ),
+                if (!Responsive.isMobile(context)) ...[
+                  ListTile(
+                    title: const Text('主题模式'),
+                    trailing: _buildThemeSelector(),
+                  ),
+                  ListTile(
+                    title: const Text('夜间主题'),
+                    trailing: _buildColorSelector(),
+                  ),
+                ]
+              ],
+            ),
           ),
-          _buildThemeMode(),
-          _buildDarkTheme(),
+          if (Responsive.isMobile(context)) ...[
+            _buildThemeMode(),
+            _buildDarkTheme(),
+          ]
         ],
       )),
     );
+  }
+
+  Widget _buildColorSelector() {
+    return Obx(() => SegmentedButton<ThemeColor>(
+          segments: [
+            for (final themeColor in AppTheme.darkColors)
+              ButtonSegment(
+                icon: Icon(Icons.circle, color: themeColor.representativeColor),
+                value: themeColor,
+                label: Text(themeColor.name),
+              ),
+          ],
+          // showSelectedIcon: false,
+          emptySelectionAllowed: true,
+          selected: {ThemeController.to.darkThemeColor.value},
+          onSelectionChanged: (value) {
+            if (value.isEmpty) return;
+            final themeColor = value.first;
+            ThemeController.to.changeTheme(themeColor.key, dark: true);
+          },
+        ));
+  }
+
+  Widget _buildThemeSelector() {
+    return Obx(() => SegmentedButton<int>(
+          segments: [
+            for (int i = 0; i < AppTheme.darkModes.length; i++)
+              ButtonSegment(
+                icon: Icon(AppTheme.darkModeIcons[i]),
+                value: i,
+                label: Text(AppTheme.darkModes[i]),
+              ),
+          ],
+          // showSelectedIcon: false,
+          emptySelectionAllowed: true,
+          selected: {ThemeController.to.themeModeIdx.value},
+          onSelectionChanged: (value) {
+            if (value.isEmpty) return;
+            final selectedIndex = value.first;
+            ThemeController.to.setThemeMode(selectedIndex);
+          },
+        ));
   }
 
   SettingCard _buildThemeMode() {
@@ -63,30 +121,24 @@ class _ThemePageState extends State<ThemePage> {
       title: '主题模式',
       useCard: false,
       children: [
-        _buildRadioGrid(
-          children: [
-            for (int i = 0; i < AppTheme.darkModes.length; ++i)
-              _buildThemeModeItem(context, i)
-          ],
-        )
+        Container(
+          margin: const EdgeInsets.only(top: 8, left: 16),
+          child: _buildThemeSelector(),
+        ),
       ],
     );
   }
 
-  Widget _buildThemeModeItem(BuildContext context, int themeModeIndex) {
-    final selected = ThemeController.to.themeModeIdx.value == themeModeIndex;
-    final fg = selected ? Theme.of(context).primaryColor : null;
-
-    return _buildRadioItem(
-      icon: Icon(AppTheme.darkModeIcons[themeModeIndex], color: fg),
-      label: AppTheme.darkModes[themeModeIndex],
-      selected: ThemeController.to.themeModeIdx.value == themeModeIndex,
-      onTap: () {
-        setState(() {
-          ThemeController.to.themeModeIdx.value = themeModeIndex;
-        });
-        ThemeController.to.setThemeMode(themeModeIndex);
-      },
+  Widget _buildDarkTheme() {
+    return SettingCard(
+      title: '夜间主题',
+      useCard: false,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 8, left: 16),
+          child: _buildColorSelector(),
+        ),
+      ],
     );
   }
 
@@ -144,87 +196,6 @@ class _ThemePageState extends State<ThemePage> {
       builder: (context) => const AlertDialog(
         title: Text('调整选项卡'),
         content: MainTabLayoutSettingPage(),
-      ),
-    );
-  }
-
-  Widget _buildDarkTheme() {
-    return SettingCard(title: '夜间主题', useCard: false, children: [
-      _buildRadioGrid(
-        children: [
-          for (int i = 0; i < AppTheme.darkColors.length; ++i)
-            _buildColorAtlasItem(AppTheme.darkColors[i], dark: true)
-        ],
-      ),
-    ]);
-  }
-
-  Widget _buildColorAtlasItem(ThemeColor themeColor, {bool dark = false}) {
-    final selectedThemeColor = dark
-        ? ThemeController.to.darkThemeColor.value
-        : ThemeController.to.lightThemeColor.value;
-
-    return _buildRadioItem(
-      icon: Icon(Icons.circle, color: themeColor.representativeColor),
-      label: themeColor.name,
-      selected: selectedThemeColor == themeColor,
-      onTap: () {
-        ThemeController.to.changeTheme(themeColor.key, dark: dark);
-      },
-    );
-  }
-
-  Widget _buildRadioGrid({required List<Widget> children}) {
-    return Container(
-      height: 100,
-      margin: const EdgeInsets.only(top: 5),
-      child: GridView(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          mainAxisExtent: 100,
-          maxCrossAxisExtent: MediaQuery.of(context).size.width / 3,
-        ),
-        children: children,
-      ),
-    );
-  }
-
-  Widget _buildRadioItem({
-    Widget? icon,
-    String? label,
-    void Function()? onTap,
-    bool selected = false,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: selected
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).dividerColor,
-        ),
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (icon != null) icon,
-              const SizedBox(height: 5),
-              Text(
-                label ?? '',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected ? Theme.of(context).primaryColor : null),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
