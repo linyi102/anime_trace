@@ -6,6 +6,7 @@ class BangumiApi {
   static Map<String, dynamic> headers = {
     'user-agent':
         'linyi102/anime_trace/${AppUpgradeController.to.curVersion} (${Platform.operatingSystem}) (https://github.com/linyi102/anime_trace)',
+    'Cookie': 'chii_searchDateLine=1729417788',
   };
 
   static String baseUrl = 'https://api.bgm.tv';

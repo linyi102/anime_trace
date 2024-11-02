@@ -85,11 +85,19 @@ mixin Climb {
   }
 
   /// 统一解析
-  Future<Document?> dioGetAndParse(String url,
-      {bool isMobile = false, String? foreignSourceName}) async {
+  Future<Document?> dioGetAndParse(
+    String url, {
+    bool isMobile = false,
+    String? foreignSourceName,
+    Map<String, dynamic>? headers,
+  }) async {
     String sourceName = foreignSourceName ?? this.sourceName;
 
-    Result result = await DioUtil.get(url, isMobile: isMobile);
+    Result result = await DioUtil.get(
+      url,
+      isMobile: isMobile,
+      headers: headers,
+    );
     if (result.code != 200) {
       ToastUtil.showText("$sourceName：${result.msg}");
       return null;

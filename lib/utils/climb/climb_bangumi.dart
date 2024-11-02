@@ -46,10 +46,8 @@ class ClimbBangumi with Climb {
         "/subject_search/$keyword?cat=${Config.selectedBangumiSearchCategoryKey}";
     List<Anime> climbAnimes = [];
 
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return [];
-    }
+    final document = await dioGetAndParse(url, headers: BangumiApi.headers);
+    if (document == null) return [];
 
     climbAnimes = parseAnimeListByBrowserItemList(document);
     return climbAnimes;
