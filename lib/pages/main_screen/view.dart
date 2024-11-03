@@ -213,10 +213,6 @@ class _MainScreenState extends State<MainScreen> {
           // const CommonDivider(),
           NavigationBar(
               selectedIndex: logic.selectedTabIdx,
-              height: 60,
-              elevation: 0,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-              indicatorColor: Colors.transparent,
               backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               onDestinationSelected: (value) {
                 if (logic.searchTabIdx == value &&
