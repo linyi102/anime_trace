@@ -537,8 +537,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
   }
 
   Widget _buildBottomActions(int checklistIdx) {
-    if (!multiSelected) return const SizedBox();
     return FloatingBottomActions(
+        display: multiSelected,
         itemPadding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           IconButton(

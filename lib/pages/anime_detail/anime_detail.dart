@@ -249,9 +249,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   /// 显示底部集多选操作栏
   _buildButtonsBarAboutEpisodeMulti() {
-    if (!animeController.multiSelected.value) return Container();
-
     return FloatingBottomActions(
+      display: animeController.multiSelected.value,
       children: [
         IconButton(
           onPressed: () {

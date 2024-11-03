@@ -6,10 +6,12 @@ class FadeInUp extends StatefulWidget {
     required this.child,
     this.duration = const Duration(milliseconds: 200),
     this.curve = Curves.ease,
+    this.animate = true,
   });
   final Widget child;
   final Duration duration;
   final Curve curve;
+  final bool animate;
 
   @override
   State<FadeInUp> createState() => _FadeInUpState();
@@ -21,15 +23,35 @@ class _FadeInUpState extends State<FadeInUp>
   late Animation<double> offsetDy;
   late Animation<double> opacity;
 
+  bool display = true;
+
   @override
   void initState() {
     super.initState();
     controller = AnimationController(vsync: this, duration: widget.duration);
     offsetDy = Tween<double>(begin: 20, end: 0)
         .animate(CurvedAnimation(parent: controller, curve: widget.curve));
-    opacity = Tween<double>(begin: 0.1, end: 1)
+    opacity = Tween<double>(begin: 0, end: 1)
         .animate(CurvedAnimation(parent: controller, curve: widget.curve));
-    controller.forward();
+    controller.addStatusListener((status) {
+      switch (status) {
+        case AnimationStatus.forward:
+          if (mounted) {
+            setState(() {
+              display = true;
+            });
+          }
+          break;
+        case AnimationStatus.dismissed:
+          if (mounted) {
+            setState(() {
+              display = false;
+            });
+          }
+          break;
+        default:
+      }
+    });
   }
 
   @override
@@ -40,6 +62,9 @@ class _FadeInUpState extends State<FadeInUp>
 
   @override
   Widget build(BuildContext context) {
+    widget.animate ? controller.forward() : controller.reverse();
+    if (!display) return const SizedBox.shrink();
+
     return AnimatedBuilder(
       animation: offsetDy,
       builder: (context, child) => Transform.translate(
