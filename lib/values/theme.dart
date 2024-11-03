@@ -59,7 +59,7 @@ class AppTheme {
   ];
   static List<String> darkModes = ["系统", "白天", "夜间"];
 
-  static Color get blueInLight => Colors.blue;
+  static Color get blueInLight => const Color(0xFF1976D2);
 
   // 可选：70, 133, 243 | 61, 129, 228
   static Color get blueInDark => const Color.fromRGBO(70, 133, 243, 1);
