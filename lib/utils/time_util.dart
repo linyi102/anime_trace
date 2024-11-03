@@ -47,6 +47,17 @@ class TimeUtil {
     return DateTime.now().toString().substring(0, 19);
   }
 
+  /// 展示年月日
+  static String getYMD(String str) {
+    final dateTime = DateTime.tryParse(str);
+    if (dateTime == null) return '';
+    return [
+      dateTime.year,
+      dateTime.month.toString().padLeft(2, '0'),
+      dateTime.day.toString().padLeft(2, '0'),
+    ].join('-');
+  }
+
   // 显示年月日时分
   static String getHumanReadableDateTimeStr(
     String time, {

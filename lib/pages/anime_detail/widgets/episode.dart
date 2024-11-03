@@ -1,19 +1,17 @@
-import 'dart:math';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto_load_note.dart';
+import 'package:flutter_test_future/pages/anime_detail/widgets/review_infos.dart';
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/button/border_button.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -302,64 +300,12 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
 
     showCommonModalBottomSheet(
       context: context,
-      builder: (context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('选择第几次观看'),
-          automaticallyImplyLeading: false,
-        ),
-        body: FutureBuilder(
-          future: HistoryDao.getMaxReviewNumber(_anime.animeId),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(child: Text(snapshot.error?.toString() ?? '加载错误'));
-            }
-            if (snapshot.hasData) {
-              // 将历史的最大观看次数和当前选择的观看次数比较，避免无法多次点击新增按钮
-              // 例如当前获取的历史最大次数为1，点击新增按钮后次数为2，而历史的最大次数仍然为1，再次点击新增按钮可设置次数为3
-              final maxReviewNumber =
-                  max(snapshot.data ?? 1, _anime.reviewNumber);
-
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 80,
-                  mainAxisExtent: 40,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                itemCount: maxReviewNumber + 1,
-                itemBuilder: (context, index) {
-                  final number = index + 1;
-                  final selected = _anime.reviewNumber == number;
-                  if (index == maxReviewNumber) {
-                    return BorderButton(
-                      onTap: () {
-                        Navigator.pop(context);
-                        loadReviewNumber(maxReviewNumber + 1);
-                      },
-                      child: const Icon(Icons.add, size: 20),
-                    );
-                  }
-                  return BorderButton(
-                    selected: selected,
-                    onTap: () {
-                      Navigator.pop(context);
-                      loadReviewNumber(number);
-                    },
-                    child: Center(
-                        child: Text(
-                      number.toString(),
-                      style: selected
-                          ? TextStyle(color: Theme.of(context).primaryColor)
-                          : null,
-                    )),
-                  );
-                },
-              );
-            }
-            return const LoadingWidget();
-          },
-        ),
+      builder: (context) => AnimeReviewInfoView(
+        anime: _anime,
+        onSelect: (reviewNumber) {
+          Navigator.pop(context);
+          loadReviewNumber(reviewNumber);
+        },
       ),
     );
   }
