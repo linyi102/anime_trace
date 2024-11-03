@@ -112,8 +112,8 @@ class HistoryDao {
     Log.info('sql: getFirstHistory');
 
     var cols = await SqliteUtil.database.rawQuery('''
-      select date, anime_id from history
-      order by date limit 1;
+      select min(date) min_date, anime_id from history
+      where date not like '0000%';
     ''');
     if (cols.isEmpty) return null;
 
@@ -121,7 +121,7 @@ class HistoryDao {
     var anime = await SqliteUtil.getAnimeByAnimeId(col['anime_id'] as int);
     return {
       'anime': anime,
-      'date': col['date'],
+      'date': col['min_date'],
     };
   }
 
