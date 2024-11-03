@@ -1,12 +1,13 @@
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/pages/anime_detail/widgets/episode_item_auto_load_note.dart';
+import 'package:flutter_test_future/pages/anime_detail/widgets/review_infos.dart';
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -289,17 +290,23 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
   // }
 
   void _dialogSelectReviewNumber() {
-    dialogSelectUint(context, "选择第几次观看",
-            initialValue: _anime.reviewNumber, minValue: 1, maxValue: 99)
-        .then((value) {
-      if (value != null) {
-        if (_anime.reviewNumber != value) {
-          _anime.reviewNumber = value;
-          AnimeDao.updateReviewNumber(_anime.animeId, value);
-          // 不相等才设置并重新加载数据
-          widget.animeController.loadEpisode();
-        }
-      }
-    });
+    loadReviewNumber(int value) {
+      if (_anime.reviewNumber == value) return;
+
+      _anime.reviewNumber = value;
+      AnimeDao.updateReviewNumber(_anime.animeId, value);
+      widget.animeController.loadEpisode();
+    }
+
+    showCommonModalBottomSheet(
+      context: context,
+      builder: (context) => AnimeReviewInfoView(
+        anime: _anime,
+        onSelect: (reviewNumber) {
+          Navigator.pop(context);
+          loadReviewNumber(reviewNumber);
+        },
+      ),
+    );
   }
 }

@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/models/page_switch_animation.dart';
+import 'package:flutter_test_future/pages/settings/widgets/main_tab_layout_setting.dart';
 import 'package:flutter_test_future/utils/platform.dart';
+import 'package:flutter_test_future/utils/settings.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
@@ -60,12 +63,19 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
             if (PlatformUtil.isMobile)
               ListTile(
                 title: const Text("选择页面切换动画"),
-                subtitle:
-                    Text(ThemeController.to.pageSwitchAnimation.value.title),
+                subtitle: Obx(() =>
+                    Text(ThemeController.to.pageSwitchAnimation.value.title)),
                 onTap: () {
                   _showDialogSelectPageSwitchAnimation(context);
                 },
               ),
+            ListTile(
+              title: const Text('调整选项卡'),
+              subtitle: const Text('启用或禁用选项卡'),
+              onTap: () {
+                _showDialogConfigureMainTab();
+              },
+            ),
             ListTile(
               title: const Text('重置移动清单对话框提示'),
               subtitle: const Text("完成最后一集时会提示移动清单"),
@@ -76,6 +86,18 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                 ToastUtil.showText("重置成功");
               },
             ),
+            if (PlatformUtil.isMobile)
+              Obx(
+                () => SwitchListTile(
+                  title: const Text('隐藏底部栏文字'),
+                  value: ThemeController.to.hideMobileBottomLabel.value,
+                  onChanged: (value) {
+                    ThemeController.to.hideMobileBottomLabel.value = value;
+                    SettingsUtil.setValue(
+                        SettingsEnum.hideMobileBottomLabel, value);
+                  },
+                ),
+              ),
           ],
         ),
         SettingCard(
@@ -114,6 +136,16 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showDialogConfigureMainTab() {
+    showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text('调整选项卡'),
+        content: MainTabLayoutSettingPage(),
+      ),
     );
   }
 

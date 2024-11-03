@@ -752,7 +752,14 @@ class SqliteUtil {
     return firstIntValue(rows);
   }
 
-  static Future<int> firstIntValue(List<Map<String, Object?>> rows) async {
+  static int firstIntValue(List<Map<String, Object?>> rows) {
+    if (rows.isEmpty) return 0;
     return rows.first.values.firstWhere((element) => element is int) as int;
+  }
+
+  static T? firstRowColumnValue<T>(List<Map<String, Object?>> rows) {
+    if (rows.isEmpty || rows.first.values.isEmpty) return null;
+    final value = rows.first.values.first;
+    return value is T ? value : null;
   }
 }

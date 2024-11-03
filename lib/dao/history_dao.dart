@@ -112,8 +112,8 @@ class HistoryDao {
     Log.info('sql: getFirstHistory');
 
     var cols = await SqliteUtil.database.rawQuery('''
-      select date, anime_id from history
-      order by date limit 1;
+      select min(date) min_date, anime_id from history
+      where date not like '0000%';
     ''');
     if (cols.isEmpty) return null;
 
@@ -121,7 +121,7 @@ class HistoryDao {
     var anime = await SqliteUtil.getAnimeByAnimeId(col['anime_id'] as int);
     return {
       'anime': anime,
-      'date': col['date'],
+      'date': col['min_date'],
     };
   }
 
@@ -139,5 +139,40 @@ class HistoryDao {
       if (anime.isCollected()) animes.add(anime);
     }
     return animes;
+  }
+
+  /// 获取最大观看次数
+  static Future<int> getMaxReviewNumber(int animeId) async {
+    final rows = await SqliteUtil.database.rawQuery('''
+      select max(review_number) max_review_number from history where anime_id = $animeId;
+    ''');
+    return SqliteUtil.firstRowColumnValue<int>(rows) ?? 1;
+  }
+
+  /// 获取指定回顾序号动漫的观看集数
+  static Future<int> getAnimeWatchedCount(int animeId, int reviewNumber) async {
+    final rows = await SqliteUtil.database.rawQuery('''
+      select count(date) number from history
+      where anime_id = $animeId and review_number = $reviewNumber;
+    ''');
+    return SqliteUtil.firstRowColumnValue<int>(rows) ?? 0;
+  }
+
+  /// 获取当前观看次数的最早日期
+  static Future<String> getWatchedMinDate(int animeId, int reviewNumber) async {
+    final rows = await SqliteUtil.database.rawQuery('''
+      select min(date) from history
+      where anime_id = $animeId and review_number = $reviewNumber and date not like '0000%';
+    ''');
+    return SqliteUtil.firstRowColumnValue<String>(rows) ?? '';
+  }
+
+  /// 获取当前观看次数的最晚日期
+  static Future<String> getWatchedMaxDate(int animeId, int reviewNumber) async {
+    final rows = await SqliteUtil.database.rawQuery('''
+      select max(date) from history
+      where anime_id = $animeId and review_number = $reviewNumber and date not like '0000%';
+    ''');
+    return SqliteUtil.firstRowColumnValue<String>(rows) ?? '';
   }
 }

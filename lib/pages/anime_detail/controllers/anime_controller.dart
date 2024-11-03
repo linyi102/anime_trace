@@ -250,16 +250,31 @@ class AnimeController extends GetxController {
 
   // 多选后，选择日期，并更新数据库
   // 尾部的选择日期按钮也可以使用该方法，记得提前加入到多选中
-  Future<void> pickDateForEpisodes(
-      {required BuildContext context, DateTime? initialValue}) async {
-    DateTime? dateTime = await showCommonDateTimePicker(
-      context: context,
-      initialValue: initialValue ?? DateTime.now(),
-      minYear: 1970,
-      maxYear: DateTime.now().year + 2,
-    );
-    if (dateTime == null) return;
-    final dateTimeStr = dateTime.toString();
+  Future<void> pickDateForEpisodes({
+    required BuildContext context,
+    DateTime? dateTime,
+    DateTime? initialDateTime,
+  }) async {
+    DateTime? selectedDateTime;
+
+    if (dateTime == null) {
+      // 未指定日期时，弹出日期选择器
+      const minYear = 1970;
+      final initialValue = initialDateTime != null &&
+              initialDateTime.compareTo(DateTime(minYear)) > 0
+          ? initialDateTime
+          : DateTime.now();
+      selectedDateTime = await showCommonDateTimePicker(
+        context: context,
+        initialValue: initialValue,
+        minYear: minYear,
+        maxYear: DateTime.now().year + 2,
+      );
+      if (selectedDateTime == null) return;
+    } else {
+      selectedDateTime = dateTime;
+    }
+    final dateTimeStr = selectedDateTime.toString();
 
     // 遍历选中的下标
     mapSelected.forEach((episodeIndex, value) {
@@ -488,7 +503,11 @@ class AnimeController extends GetxController {
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-                  child: SizedBox(width: 200, child: CommonImage(coverUrl)),
+                  child: SizedBox(
+                    height: 260,
+                    width: 200,
+                    child: CommonImage(coverUrl),
+                  ),
                 ),
               ),
             ],

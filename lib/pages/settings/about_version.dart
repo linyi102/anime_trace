@@ -1,12 +1,12 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/logo.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/values/assets.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:flutter_test_future/widgets/rotated_logo.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 
@@ -35,7 +35,10 @@ class _AboutVersionState extends State<AboutVersion> {
           children: [
             Column(
               children: [
-                const Logo(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: RotatedLogo(size: 72),
+                ),
                 Text("当前版本: ${AppUpgradeController.to.curVersion}"),
                 _buildWebsiteIconsRow(context),
               ],

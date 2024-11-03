@@ -276,7 +276,7 @@ class _TracePageState extends State<TracePage> {
       maxReviewCntAnime = map['anime'];
     }
     // 最大回顾数都为1时，不进行显示
-    if (maxReviewCntAnime?.reviewNumber == 1) maxReviewCntAnime = null;
+    if (maxReviewCnt == 1) maxReviewCntAnime = null;
 
     animeTotal = await AnimeDao.getTotal();
     recordTotal = await HistoryDao.getCount();
