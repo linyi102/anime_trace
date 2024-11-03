@@ -57,7 +57,7 @@ class AppTheme {
     MingCuteIcons.mgc_sun_2_fill,
     MingCuteIcons.mgc_partly_cloud_night_fill,
   ];
-  static List<String> darkModes = ["跟随系统", "日间", "夜间"];
+  static List<String> darkModes = ["系统", "白天", "夜间"];
 
   static Color get blueInLight => Colors.blue;
 
