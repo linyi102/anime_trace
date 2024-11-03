@@ -130,10 +130,10 @@ class MyAppState extends State<MyApp> {
             child = BotToastInit()(context, child);
             // 全局点击空白处隐藏软键盘
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
-            return Theme(
-              data: _getFixedTheme(context),
-              child: child,
-            );
+            return Obx(() => Theme(
+                  data: _getFixedTheme(context),
+                  child: child ?? const SizedBox(),
+                ));
           },
           navigatorObservers: [BotToastNavigatorObserver()],
           // 后台应用显示名称

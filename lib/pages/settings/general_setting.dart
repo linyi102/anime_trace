@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
@@ -64,8 +63,8 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
             if (PlatformUtil.isMobile)
               ListTile(
                 title: const Text("选择页面切换动画"),
-                subtitle:
-                    Text(ThemeController.to.pageSwitchAnimation.value.title),
+                subtitle: Obx(() =>
+                    Text(ThemeController.to.pageSwitchAnimation.value.title)),
                 onTap: () {
                   _showDialogSelectPageSwitchAnimation(context);
                 },
@@ -87,14 +86,15 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                 ToastUtil.showText("重置成功");
               },
             ),
-            if (Platform.isAndroid)
+            if (PlatformUtil.isMobile)
               Obx(
                 () => SwitchListTile(
                   title: const Text('隐藏底部栏文字'),
                   value: ThemeController.to.hideMobileBottomLabel.value,
                   onChanged: (value) {
                     ThemeController.to.hideMobileBottomLabel.value = value;
-                    SettingsUtil.setValue(SettingsEnum.hideMobileBottomLabel, value);
+                    SettingsUtil.setValue(
+                        SettingsEnum.hideMobileBottomLabel, value);
                   },
                 ),
               ),
