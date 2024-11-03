@@ -36,7 +36,7 @@ class _AboutVersionState extends State<AboutVersion> {
             Column(
               children: [
                 const Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: RotatedLogo(size: 72),
                 ),
                 Text("当前版本: ${AppUpgradeController.to.curVersion}"),
