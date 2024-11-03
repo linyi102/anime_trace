@@ -38,32 +38,30 @@ class _ThemePageState extends State<ThemePage> {
               ),
             ],
           ),
-          Obx(
-            () => SettingCard(
-              title: '主题',
-              trailing: TextButton(
-                  onPressed: () {
-                    themeController.resetCustomPrimaryColor();
-                  },
-                  child: const Text('重置')),
-              children: [
+          SettingCard(
+            title: '主题',
+            trailing: TextButton(
+                onPressed: () {
+                  themeController.resetCustomPrimaryColor();
+                },
+                child: const Text('重置')),
+            children: [
+              ListTile(
+                title: const Text('选择主题色'),
+                trailing: _buildColorIndicator(),
+                onTap: _showColorPicker,
+              ),
+              if (!Responsive.isMobile(context)) ...[
                 ListTile(
-                  title: const Text('选择主题色'),
-                  trailing: _buildColorIndicator(),
-                  onTap: _showColorPicker,
+                  title: const Text('主题模式'),
+                  trailing: _buildThemeSelector(),
                 ),
-                if (!Responsive.isMobile(context)) ...[
-                  ListTile(
-                    title: const Text('主题模式'),
-                    trailing: _buildThemeSelector(),
-                  ),
-                  ListTile(
-                    title: const Text('夜间主题'),
-                    trailing: _buildColorSelector(),
-                  ),
-                ]
-              ],
-            ),
+                ListTile(
+                  title: const Text('夜间主题'),
+                  trailing: _buildColorSelector(),
+                ),
+              ]
+            ],
           ),
           if (Responsive.isMobile(context)) ...[
             _buildThemeMode(),
@@ -175,14 +173,14 @@ class _ThemePageState extends State<ThemePage> {
     themeController.changeCustomPrimaryColor(newColor);
   }
 
-  ColorIndicator _buildColorIndicator() {
-    return ColorIndicator(
+  Widget _buildColorIndicator() {
+    return Obx(() => ColorIndicator(
         width: 32,
         height: 32,
         borderRadius: 99,
         color: _getCurPrimaryColor(),
         elevation: 1,
-        onSelectFocus: false);
+        onSelectFocus: false));
   }
 
   Color _getCurPrimaryColor() {
