@@ -1,7 +1,6 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
@@ -26,18 +25,6 @@ class _ThemePageState extends State<ThemePage> {
           child: ListView(
         padding: const EdgeInsets.only(bottom: 50),
         children: [
-          SettingCard(
-            title: '选项卡',
-            children: [
-              ListTile(
-                title: const Text('调整选项卡'),
-                subtitle: const Text('启用或禁用选项卡'),
-                onTap: () {
-                  _showDialogConfigureMainTab();
-                },
-              ),
-            ],
-          ),
           SettingCard(
             title: '主题',
             trailing: TextButton(
@@ -186,68 +173,5 @@ class _ThemePageState extends State<ThemePage> {
   Color _getCurPrimaryColor() {
     return themeController.customPrimaryColor.value ??
         Theme.of(context).primaryColor;
-  }
-
-  void _showDialogConfigureMainTab() {
-    showDialog(
-      context: context,
-      builder: (context) => const AlertDialog(
-        title: Text('调整选项卡'),
-        content: MainTabLayoutSettingPage(),
-      ),
-    );
-  }
-}
-
-class MainTabLayoutSettingPage extends StatefulWidget {
-  const MainTabLayoutSettingPage({super.key});
-
-  @override
-  State<MainTabLayoutSettingPage> createState() =>
-      _MainTabLayoutSettingPageState();
-}
-
-class _MainTabLayoutSettingPageState extends State<MainTabLayoutSettingPage> {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: MainScreenLogic.to.allTabs
-            .map((tab) => ListTile(
-                  iconColor: Theme.of(context).iconTheme.color,
-                  leading: tab.icon,
-                  title: _buildTitle(tab, context),
-                  dense: true,
-                  trailing: tab.canHide ? _buildTurnShowIcon(tab) : null,
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  IconButton _buildTurnShowIcon(MainTab tab) {
-    return IconButton(
-      icon: Icon(tab.show ? Icons.remove : Icons.add_circle_outline),
-      onPressed: () async {
-        bool? show = tab.turnShow?.call();
-        if (show == null) return;
-
-        tab.show = show;
-        MainScreenLogic.to.loadTabs();
-        setState(() {});
-      },
-    );
-  }
-
-  Text _buildTitle(MainTab tab, BuildContext context) {
-    return Text(
-      tab.name,
-      style: tab.show
-          ? null
-          : TextStyle(
-              decoration: TextDecoration.lineThrough,
-              color: Theme.of(context).hintColor,
-            ),
-    );
   }
 }

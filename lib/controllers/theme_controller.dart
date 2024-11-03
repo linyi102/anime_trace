@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/page_switch_animation.dart';
+import 'package:flutter_test_future/utils/settings.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -12,6 +13,8 @@ class ThemeController extends GetxController {
   Rx<bool> useM3 = SPUtil.getBool("useM3", defaultValue: true).obs;
   Rx<bool> useCardStyle =
       SPUtil.getBool("useCardStyle", defaultValue: true).obs;
+  Rx<bool> hideMobileBottomLabel =
+      SettingsUtil.getValue<bool>(SettingsEnum.hideMobileBottomLabel).obs;
 
   Rx<ThemeColor> lightThemeColor = getSelectedTheme();
   Rx<ThemeColor> darkThemeColor = getSelectedTheme(dark: true);

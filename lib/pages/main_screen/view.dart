@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
+import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
@@ -27,6 +28,8 @@ class _MainScreenState extends State<MainScreen> {
   bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
+  bool get hideMobileBottomLabel =>
+      ThemeController.to.hideMobileBottomLabel.value;
 
   @override
   Widget build(BuildContext context) {
@@ -211,28 +214,39 @@ class _MainScreenState extends State<MainScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // const CommonDivider(),
-          NavigationBar(
-              selectedIndex: logic.selectedTabIdx,
-              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-              onDestinationSelected: (value) {
-                if (logic.searchTabIdx == value &&
-                    logic.selectedTabIdx == value) {
-                  // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
-                  logic.openSearchPage(context);
-                } else {
-                  logic.toTabPage(value);
-                }
-              },
-              destinations: [
-                for (var tab in logic.tabs)
-                  NavigationDestination(
-                    icon: tab.icon,
-                    selectedIcon: tab.selectedIcon ?? tab.icon,
-                    label: tab.name,
-                  ),
-              ]),
+          _buildBottomNavigationBar(),
         ],
       ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return Obx(
+      () => NavigationBar(
+          selectedIndex: logic.selectedTabIdx,
+          height: hideMobileBottomLabel ? 60 : null,
+          elevation: hideMobileBottomLabel ? 0 : null,
+          labelBehavior: hideMobileBottomLabel
+              ? NavigationDestinationLabelBehavior.alwaysHide
+              : null,
+          indicatorColor: hideMobileBottomLabel ? Colors.transparent : null,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          onDestinationSelected: (value) {
+            if (logic.searchTabIdx == value && logic.selectedTabIdx == value) {
+              // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
+              logic.openSearchPage(context);
+            } else {
+              logic.toTabPage(value);
+            }
+          },
+          destinations: [
+            for (var tab in logic.tabs)
+              NavigationDestination(
+                icon: tab.icon,
+                selectedIcon: tab.selectedIcon ?? tab.icon,
+                label: tab.name,
+              ),
+          ]),
     );
   }
 

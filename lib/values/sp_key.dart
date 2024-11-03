@@ -39,6 +39,9 @@ class SPKey {
 
   // 开启热键恢复最新备份文件
   static get enableRestoreLatestHotkey => "enableRestoreLatestHotkey";
+
+  /// 手机底部导航栏隐藏文字
+  static get hideMobileBottomBarLabel => "hideMobileBottomLabel";
 }
 
 class Config {
