@@ -503,7 +503,11 @@ class AnimeController extends GetxController {
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-                  child: SizedBox(width: 200, child: CommonImage(coverUrl)),
+                  child: SizedBox(
+                    height: 260,
+                    width: 200,
+                    child: CommonImage(coverUrl),
+                  ),
                 ),
               ),
             ],
