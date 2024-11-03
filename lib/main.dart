@@ -97,7 +97,6 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   final ThemeController themeController = Get.put(ThemeController());
-  FlexScheme get baseScheme => FlexScheme.blue;
   TextStyle get textStyle =>
       TextStyle(fontFamilyFallback: themeController.fontFamilyFallback);
   ThemeColor get curLightThemeColor => themeController.lightThemeColor.value;
@@ -236,12 +235,11 @@ class MyAppState extends State<MyApp> {
         curLightThemeColor.primaryColor;
 
     return FlexThemeData.light(
-      scheme: baseScheme,
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: primary, brightness: Brightness.light),
       useMaterial3: themeController.useM3.value,
       fontFamilyFallback: textStyle.fontFamilyFallback,
       primary: primary,
-      primaryContainer: primary.withOpacity(0.6),
-      tertiaryContainer: primary.withOpacity(0.4),
       scaffoldBackground: curLightThemeColor.bodyColor,
       surface: curLightThemeColor.cardColor,
       // BottomNavigationBar
@@ -255,7 +253,7 @@ class MyAppState extends State<MyApp> {
       subThemesData: FlexSubThemesData(
         // chip颜色
         chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.primary,
+        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
         useM2StyleDividerInM3: true,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
@@ -302,12 +300,13 @@ class MyAppState extends State<MyApp> {
         curDarkThemeColor.primaryColor;
 
     return FlexThemeData.dark(
-      scheme: baseScheme,
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: primary,
+          onPrimary: Colors.white,
+          brightness: Brightness.dark),
       useMaterial3: themeController.useM3.value,
       fontFamilyFallback: textStyle.fontFamilyFallback,
       primary: primary,
-      primaryContainer: primary.withOpacity(0.6),
-      tertiaryContainer: primary.withOpacity(0.4),
       scaffoldBackground: curDarkThemeColor.bodyColor,
       surface: curDarkThemeColor.cardColor,
       // BottomNavigationBar
@@ -321,7 +320,7 @@ class MyAppState extends State<MyApp> {
       subThemesData: FlexSubThemesData(
         // chip颜色
         chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.tertiaryContainer,
+        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
         // 悬浮、按压等颜色不受主颜色影响
         interactionEffects: false,
         useTextTheme: true,
