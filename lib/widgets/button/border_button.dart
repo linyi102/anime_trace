@@ -15,24 +15,26 @@ class BorderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(6);
 
-    return Material(
-      color: selected
-          ? Theme.of(context).primaryColor.withOpacity(0.2)
-          : Theme.of(context).cardColor,
-      child: Ink(
-        child: InkWell(
-          borderRadius: radius,
-          onTap: onTap,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                  width: 1,
-                  color: selected
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).hintColor.withOpacity(0.1)),
-              borderRadius: radius,
+    return ClipRRect(
+      borderRadius: radius,
+      child: Material(
+        color: selected
+            ? Theme.of(context).primaryColor.withOpacity(0.2)
+            : Theme.of(context).cardColor,
+        child: Ink(
+          child: InkWell(
+            onTap: onTap,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                    width: 1,
+                    color: selected
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).hintColor.withOpacity(0.1)),
+                borderRadius: radius,
+              ),
+              child: child,
             ),
-            child: child,
           ),
         ),
       ),
