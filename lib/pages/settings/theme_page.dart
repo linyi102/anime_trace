@@ -27,15 +27,25 @@ class _ThemePageState extends State<ThemePage> {
         children: [
           SettingCard(
             title: '主题',
-            trailing: TextButton(
-                onPressed: () {
-                  themeController.resetCustomPrimaryColor();
-                },
-                child: const Text('重置')),
             children: [
               ListTile(
-                title: const Text('选择主题色'),
-                trailing: _buildColorIndicator(),
+                title: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('选择主题色'),
+                    SizedBox(width: 8),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: themeController.resetCustomPrimaryColor,
+                      child: const Text('重置'),
+                    ),
+                    _buildColorIndicator(),
+                  ],
+                ),
                 onTap: _showColorPicker,
               ),
               if (!Responsive.isMobile(context)) ...[
@@ -162,8 +172,8 @@ class _ThemePageState extends State<ThemePage> {
 
   Widget _buildColorIndicator() {
     return Obx(() => ColorIndicator(
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         borderRadius: 99,
         color: _getCurPrimaryColor(),
         elevation: 1,
