@@ -15,6 +15,7 @@ import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:flutter_test_future/widgets/floating_bottom_actions.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -250,77 +251,51 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   _buildButtonsBarAboutEpisodeMulti() {
     if (!animeController.multiSelected.value) return Container();
 
-    return Container(
-      alignment: Alignment.bottomCenter,
-      child: Card(
-        elevation: 2,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: IconButton(
-                  onPressed: () {
-                    if (animeController.mapSelected.length ==
-                        animeController.episodes.length) {
-                      // 全选了，点击则会取消全选
-                      animeController.mapSelected.clear();
-                    } else {
-                      // 其他情况下，全选
-                      for (int j = 0; j < animeController.episodes.length; ++j) {
-                        animeController.mapSelected[j] = true;
-                      }
-                    }
-                    // 不重绘整个详情页面
-                    // setState(() {});
-                    // 只重绘集页面
-                    animeController.update([animeController.episodeId]);
-                  },
-                  icon: const Icon(Icons.select_all_rounded),
-                  tooltip: "全选",
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: IconButton(
-                  onPressed: () async {
-                    await animeController.pickDateForEpisodes(context: context);
-                    animeController.quitMultiSelectionMode();
-                  },
-                  icon: const Icon(MingCuteIcons.mgc_calendar_time_add_line),
-                  tooltip: "设置观看时间",
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: IconButton(
-                  onPressed: () async {
-                    await animeController.pickDateForEpisodes(
-                        context: context, dateTime: TimeUtil.unRecordedDateTime);
-                    animeController.quitMultiSelectionMode();
-                  },
-                  icon: const Icon(MingCuteIcons.mgc_check_circle_line),
-                  tooltip: "仅标记完成",
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: IconButton(
-                  onPressed: () => animeController.quitMultiSelectionMode(),
-                  icon: const Icon(Icons.exit_to_app),
-                  tooltip: "退出多选",
-                ),
-              ),
-            ],
-          ),
+    return FloatingBottomActions(
+      children: [
+        IconButton(
+          onPressed: () {
+            if (animeController.mapSelected.length ==
+                animeController.episodes.length) {
+              // 全选了，点击则会取消全选
+              animeController.mapSelected.clear();
+            } else {
+              // 其他情况下，全选
+              for (int j = 0; j < animeController.episodes.length; ++j) {
+                animeController.mapSelected[j] = true;
+              }
+            }
+            // 不重绘整个详情页面
+            // setState(() {});
+            // 只重绘集页面
+            animeController.update([animeController.episodeId]);
+          },
+          icon: const Icon(Icons.select_all_rounded),
+          tooltip: "全选",
         ),
-      ),
+        IconButton(
+          onPressed: () async {
+            await animeController.pickDateForEpisodes(context: context);
+            animeController.quitMultiSelectionMode();
+          },
+          icon: const Icon(MingCuteIcons.mgc_calendar_time_add_line),
+          tooltip: "设置观看时间",
+        ),
+        IconButton(
+          onPressed: () async {
+            await animeController.pickDateForEpisodes(
+                context: context, dateTime: TimeUtil.unRecordedDateTime);
+            animeController.quitMultiSelectionMode();
+          },
+          icon: const Icon(MingCuteIcons.mgc_check_circle_line),
+          tooltip: "仅标记完成",
+        ),
+        IconButton(
+          onPressed: () => animeController.quitMultiSelectionMode(),
+          icon: const Icon(Icons.exit_to_app),
+          tooltip: "退出多选",
+        ),
+      ],
     );
   }
 

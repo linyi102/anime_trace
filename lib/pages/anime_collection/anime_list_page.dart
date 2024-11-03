@@ -21,6 +21,7 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:flutter_test_future/widgets/floating_bottom_actions.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
 
@@ -266,7 +267,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                   )
                 : animeView,
             // 一定要叠放在ListView上面，否则点击按钮没有反应
-            _buildBottomButton(checklistIdx),
+            _buildBottomActions(checklistIdx),
           ]),
         ),
       );
@@ -535,40 +536,24 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return list;
   }
 
-  _buildBottomButton(int checklistIdx) {
-    return !multiSelected
-        ? Container()
-        : Container(
-            alignment: Alignment.bottomCenter,
-            child: Card(
-              elevation: 8,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(50))),
-              // 圆角
-              clipBehavior: Clip.antiAlias,
-              // 设置抗锯齿，实现圆角背景
-              margin: const EdgeInsets.fromLTRB(80, 20, 80, 20),
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: IconButton(
-                      onPressed: () {
-                        _dialogModifyTag(tags[checklistIdx]);
-                      },
-                      icon: const Icon(Icons.checklist),
-                    ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      onPressed: () => _dialogDeleteAnime(checklistIdx),
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+  Widget _buildBottomActions(int checklistIdx) {
+    if (!multiSelected) return const SizedBox();
+    return FloatingBottomActions(
+        itemPadding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          IconButton(
+            onPressed: () {
+              _dialogModifyTag(tags[checklistIdx]);
+            },
+            icon: const Icon(Icons.checklist),
+            tooltip: '移动清单',
+          ),
+          IconButton(
+            onPressed: () => _dialogDeleteAnime(checklistIdx),
+            icon: const Icon(Icons.delete_outline),
+            tooltip: '删除动漫',
+          ),
+        ]);
   }
 
   _dialogDeleteAnime(int checklistIdx) {
