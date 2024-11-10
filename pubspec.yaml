@@ -67,7 +67,6 @@ dependencies:
   photo_view: ^0.14.0
   flutter_rating_bar: ^4.0.1
   window_manager: ^0.2.5
-  tab_indicator_styler: ^2.0.0
   percent_indicator: ^4.2.2
   dart_ping: ^6.1.2
   expand_widget: ^3.1.1

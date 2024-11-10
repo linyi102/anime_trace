@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 class CommonTitleTabBar extends StatelessWidget {
   const CommonTitleTabBar({required this.tabs, this.tabController, super.key});
@@ -15,15 +14,9 @@ class CommonTitleTabBar extends StatelessWidget {
       isScrollable: true,
       tabAlignment: TabAlignment.start,
       indicatorSize: TabBarIndicatorSize.label,
+      indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
       indicator: MaterialIndicator(
-        horizontalPadding: 5,
-        height: 4,
         color: Theme.of(context).primaryColor,
-        paintingStyle: PaintingStyle.fill,
-        bottomLeftRadius: radius,
-        bottomRightRadius: radius,
-        topLeftRadius: radius,
-        topRightRadius: radius,
       ),
       splashBorderRadius: BorderRadius.circular(6),
       unselectedLabelColor: Theme.of(context).hintColor,
@@ -68,16 +61,9 @@ class CommonBottomTabBar extends StatelessWidget
         tabAlignment: isScrollable ? TabAlignment.start : null,
         labelPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         indicatorSize: TabBarIndicatorSize.label,
-        // 第三方指示器样式
+        indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
         indicator: MaterialIndicator(
-          horizontalPadding: 4,
-          height: 4,
           color: Theme.of(context).primaryColor,
-          paintingStyle: PaintingStyle.fill,
-          bottomLeftRadius: radius,
-          bottomRightRadius: radius,
-          topLeftRadius: radius,
-          topRightRadius: radius,
         ),
         splashBorderRadius: BorderRadius.circular(6),
         unselectedLabelColor: Theme.of(context).hintColor,
@@ -87,4 +73,44 @@ class CommonBottomTabBar extends StatelessWidget
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class MaterialIndicator extends Decoration {
+  final Color color;
+  final double height;
+
+  const MaterialIndicator({
+    this.color = Colors.black,
+    this.height = 4,
+  });
+
+  @override
+  BoxPainter createBoxPainter([VoidCallback? onChanged]) {
+    return _IndicatorPainter(color: color, height: height);
+  }
+}
+
+class _IndicatorPainter extends BoxPainter {
+  final Color color;
+  final double height;
+
+  _IndicatorPainter({
+    VoidCallback? onChanged,
+    required this.color,
+    required this.height,
+  }) : super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    final size = Size(configuration.size?.width ?? 0, height);
+    final myOffset = Offset(
+      offset.dx,
+      offset.dy + (configuration.size?.height ?? 0) - height,
+    );
+    final rect = myOffset & size;
+
+    final paint = Paint()..color = color;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(4)), paint);
+  }
 }
