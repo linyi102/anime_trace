@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/dao/episode_desc_dao.dart';
@@ -21,6 +20,7 @@ import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -261,7 +261,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   LottieBuilder _buildPlayingGif() {
     return LottieBuilder.asset(
-      Assets.lottiesPlaying,
+      Assets.lotties.playing,
       width: 24,
       height: 24,
       fit: BoxFit.fill,
@@ -454,55 +454,55 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   _buildLeading() {
     return IconButton(
-        onPressed: () async {
-          if (_episode.isChecked()) {
-            _dialogRemoveDate(); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
-          } else {
-            String date = DateTime.now().toString();
-            SqliteUtil.insertHistoryItem(
-                _anime.animeId, _episode.number, date, _anime.reviewNumber);
-            _episode.dateTime = date;
-            setState(() {});
+      onPressed: () async {
+        if (_episode.isChecked()) {
+          _dialogRemoveDate(); // 这个函数执行完毕后，在执行下面的setState并不会更新页面，因此需要在该函数中使用setState
+        } else {
+          String date = DateTime.now().toString();
+          SqliteUtil.insertHistoryItem(
+              _anime.animeId, _episode.number, date, _anime.reviewNumber);
+          _episode.dateTime = date;
+          setState(() {});
 
-            // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
-            if (_episode.number == _anime.animeEpisodeCnt &&
-                _anime.playStatus.contains("完结")) {
-              // 之前点击了不再提示
-              bool showModifyChecklistDialog = SPUtil.getBool(
-                  "showModifyChecklistDialog",
-                  defaultValue: true);
-              if (!showModifyChecklistDialog) return;
+          // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
+          if (_episode.number == _anime.animeEpisodeCnt &&
+              _anime.playStatus.contains("完结")) {
+            // 之前点击了不再提示
+            bool showModifyChecklistDialog =
+                SPUtil.getBool("showModifyChecklistDialog", defaultValue: true);
+            if (!showModifyChecklistDialog) return;
 
-              // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
-              String selectedFinishedTag =
-                  SPUtil.getString("selectedFinishedTag");
-              bool existSelectedFinishedTag = tags.indexWhere(
-                      (element) => selectedFinishedTag == element) !=
-                  -1;
-              if (!existSelectedFinishedTag) {
-                selectedFinishedTag = tags[0];
-              }
-
-              // 之前点击了总是。那么就修改清单而不需要弹出对话框了
-              if (existSelectedFinishedTag &&
-                  SPUtil.getBool("autoMoveToFinishedTag",
-                      defaultValue: false)) {
-                _anime.tagName = selectedFinishedTag;
-                AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-                Log.info("修改清单为${_anime.tagName}");
-                setState(() {});
-                return;
-              }
-
-              // 弹出对话框
-              _showDialogAutoMoveChecklist(selectedFinishedTag);
+            // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
+            String selectedFinishedTag =
+                SPUtil.getString("selectedFinishedTag");
+            bool existSelectedFinishedTag =
+                tags.indexWhere((element) => selectedFinishedTag == element) !=
+                    -1;
+            if (!existSelectedFinishedTag) {
+              selectedFinishedTag = tags[0];
             }
+
+            // 之前点击了总是。那么就修改清单而不需要弹出对话框了
+            if (existSelectedFinishedTag &&
+                SPUtil.getBool("autoMoveToFinishedTag", defaultValue: false)) {
+              _anime.tagName = selectedFinishedTag;
+              AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
+              Log.info("修改清单为${_anime.tagName}");
+              setState(() {});
+              return;
+            }
+
+            // 弹出对话框
+            _showDialogAutoMoveChecklist(selectedFinishedTag);
           }
-        },
-        icon: Icon(
-          _episode.isChecked() ? EvaIcons.checkmarkSquare : EvaIcons.square,
-          color: _episode.isChecked() ? checkedColor : null,
-        ));
+        }
+      },
+      icon: _episode.isChecked()
+          ? SvgAssetIcon(
+              assetPath: Assets.icons.evaCheckmarkSquareOutline,
+              color: checkedColor)
+          : SvgAssetIcon(assetPath: Assets.icons.evaSquareOutline),
+    );
   }
 
   _showDialogAutoMoveChecklist(String selectedFinishedTag) {

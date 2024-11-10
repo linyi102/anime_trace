@@ -193,14 +193,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.6.4"
-  eva_icons_flutter:
-    dependency: "direct main"
-    description:
-      name: eva_icons_flutter
-      sha256: "6d48a10b93590ab83eb092bee5adacdeb14f3d83f527a4b9e4092c363d56e2a8"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.0"
   expand_widget:
     dependency: "direct main"
     description:

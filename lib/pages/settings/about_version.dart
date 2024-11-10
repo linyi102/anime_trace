@@ -1,10 +1,9 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/models/enum/load_status.dart';
 import 'package:flutter_test_future/pages/changelog/view.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/values/assets.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/rotated_logo.dart';
 import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
@@ -71,7 +70,7 @@ class _AboutVersionState extends State<AboutVersion> {
             ListTile(
                 title: const Text("下载地址"),
                 subtitle: const Text("密码：eocv"),
-                trailing: const Icon(EvaIcons.externalLink),
+                trailing: const Icon(Icons.open_in_new_rounded),
                 onTap: () {
                   LaunchUrlUtil.launch(
                       context: context,
@@ -81,7 +80,7 @@ class _AboutVersionState extends State<AboutVersion> {
             ListTile(
                 title: const Text("QQ 交流群"),
                 subtitle: const Text("414226908"),
-                trailing: const Icon(EvaIcons.externalLink),
+                trailing: const Icon(Icons.open_in_new_rounded),
                 onTap: () {
                   LaunchUrlUtil.launch(
                       context: context,
@@ -106,7 +105,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 uriStr: "https://github.com/linyi102/anime_trace");
           },
           icon: SvgAssetIcon(
-            assetPath: Assets.iconsGithub,
+            assetPath: Assets.icons.github,
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
                 : Colors.black,
@@ -120,9 +119,9 @@ class _AboutVersionState extends State<AboutVersion> {
                 uriStr: "https://gitee.com/linyi517/anime_trace",
                 inApp: false);
           },
-          icon: const SvgAssetIcon(
-            assetPath: Assets.iconsGitee,
-            color: Color.fromRGBO(187, 33, 36, 1),
+          icon: SvgAssetIcon(
+            assetPath: Assets.icons.gitee,
+            color: const Color.fromRGBO(187, 33, 36, 1),
           ),
         )
       ],

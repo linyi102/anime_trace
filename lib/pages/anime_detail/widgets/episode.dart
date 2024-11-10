@@ -1,5 +1,3 @@
-
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
@@ -11,7 +9,9 @@ import 'package:flutter_test_future/pages/anime_detail/widgets/review_infos.dart
 import 'package:flutter_test_future/utils/episode.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -187,9 +187,10 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                     setState(() {});
                   },
                   tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
-                  icon: hideNoteInAnimeDetail
-                      ? const Icon(EvaIcons.expandOutline)
-                      : const Icon(EvaIcons.collapseOutline)),
+                  icon: SvgAssetIcon(
+                      assetPath: hideNoteInAnimeDetail
+                          ? Assets.icons.evaExpandOutline
+                          : Assets.icons.evaCollapseOutline)),
             ],
           ),
         ],

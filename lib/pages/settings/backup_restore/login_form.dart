@@ -199,11 +199,11 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
         return Icon(Icons.cloud,
             size: 80, color: Theme.of(context).primaryColor);
       case WebDAVWebSite.jianguoyun:
-        return Image.asset(Assets.iconsJianguoyun);
+        return Image.asset(Assets.icons.jianguoyun.path);
       case WebDAVWebSite.infiniCloud:
-        return const SvgAssetIcon(
-          assetPath: Assets.iconsInfiniCloud,
-          color: Color(0xFFEF8200),
+        return SvgAssetIcon(
+          assetPath: Assets.icons.infiniCloud,
+          color: const Color(0xFFEF8200),
         );
     }
   }

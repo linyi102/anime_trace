@@ -1,4 +1,3 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
@@ -78,7 +77,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
               onTap: () => LaunchUrlUtil.launch(
                   context: context,
                   uriStr: "https://www.yuque.com/linyi517/fzfxr0/xpx4xq"),
-              trailing: const Icon(EvaIcons.externalLink),
+              trailing: const Icon(Icons.open_in_new_rounded),
             ),
           ],
         ),

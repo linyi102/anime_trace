@@ -55,7 +55,7 @@ class _TestPageState extends State<TestPage> {
       children: [
         const LoadingWidget(),
         LottieBuilder.asset(
-          Assets.lottiesPlaying,
+          Assets.lotties.playing,
           width: 24,
           height: 24,
         ),
