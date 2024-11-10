@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/episode_note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/enum/note_type.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class RecentlyCreateNoteAnimeListPage extends StatefulWidget {
   const RecentlyCreateNoteAnimeListPage(
@@ -33,7 +34,7 @@ class _RecentlyCreateNoteAnimeListPageState
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: loadOk
-          ? ListView.builder(
+          ? SuperListView.builder(
               itemCount: recentlyCreateNoteAnimes.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {

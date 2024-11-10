@@ -10,6 +10,7 @@ import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/models/params/page_params.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class RateNoteListPage extends StatefulWidget {
   final NoteFilter noteFilter;
@@ -95,7 +96,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
   _buildRateNotes() {
     return rateNotes.isEmpty
         ? emptyDataHint(msg: "没有评价。")
-        : ListView.builder(
+        : SuperListView.builder(
             controller: _rateScrollController,
             itemCount: rateNotes.length,
             itemBuilder: (BuildContext context, int index) {

@@ -9,6 +9,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 // 动漫详细页的评价列表页
 class AnimeRateListPage extends StatefulWidget {
@@ -86,7 +87,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
   _buildRateNoteList() {
     return Scrollbar(
       controller: scrollController,
-      child: ListView.builder(
+      child: SuperListView.builder(
           controller: scrollController,
           itemCount: notes.length,
           itemBuilder: (context, index) {

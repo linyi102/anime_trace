@@ -17,6 +17,7 @@ import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -152,7 +153,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Scrollbar _buildHistoryPage() {
     return Scrollbar(
       controller: views[selectedViewIndex].scrollController,
-      child: ListView.separated(
+      child: SuperListView.separated(
         separatorBuilder: (context, index) => const CommonDivider(thinkness: 0),
         // 保留滚动位置，注意：如果滚动位置在加载更多的数据中，那么重新打开当前页面若重新加载数据，则恢复滚动位置不合适，故不采用
         // key: PageStorageKey("history-page-view-$selectedViewIndex"),

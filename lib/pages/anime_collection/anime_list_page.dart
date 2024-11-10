@@ -24,6 +24,7 @@ import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
 import 'package:flutter_test_future/widgets/floating_bottom_actions.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../widgets/empty_default_page.dart';
 
@@ -295,8 +296,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
         });
   }
 
-  ListView _buildAnimeListView(int tagIdx) {
-    return ListView.builder(
+  Widget _buildAnimeListView(int tagIdx) {
+    return SuperListView.builder(
       controller: _scrollControllers[tagIdx],
       itemCount: animesInTag[tagIdx].length,
       // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧

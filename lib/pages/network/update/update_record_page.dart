@@ -15,6 +15,7 @@ import 'package:flutter_test_future/widgets/common_divider.dart';
 import 'package:flutter_test_future/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class UpdateRecordPage extends StatefulWidget {
   const UpdateRecordPage({Key? key}) : super(key: key);
@@ -86,7 +87,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
     return Scrollbar(
       controller: scrollController,
-      child: ListView.separated(
+      child: SuperListView.separated(
           separatorBuilder: (context, index) =>
               const CommonDivider(thinkness: 0),
           controller: scrollController,

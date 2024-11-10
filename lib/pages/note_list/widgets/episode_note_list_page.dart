@@ -8,6 +8,7 @@ import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/components/note/note_card.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../../models/anime.dart';
 import '../../../models/params/page_params.dart';
@@ -99,7 +100,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
         ? emptyDataHint(msg: "没有笔记。")
         : Scrollbar(
             controller: _noteScrollController,
-            child: ListView.builder(
+            child: SuperListView.builder(
               controller: _noteScrollController,
               itemCount: episodeNotes.length,
               itemBuilder: (BuildContext context, int index) {

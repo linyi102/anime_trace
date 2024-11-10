@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({Key? key}) : super(key: key);
@@ -199,7 +200,7 @@ class _DirectoryPageState extends State<DirectoryPage>
       return const SliverToBoxAdapter(child: LoadingWidget(center: true));
     }
 
-    return SliverList(
+    return SuperSliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
       Anime anime = directory[index];
       return AnimeItemAutoLoad(
