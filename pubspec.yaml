@@ -42,7 +42,6 @@ dependencies:
   flutter_picker: ^2.1.0
   flex_color_picker: ^3.3.0
   emoji_picker_flutter: ^1.6.3
-  scrollview_observer: ^1.19.1
   version: ^3.0.2
   lottie: ^2.6.0
   media_kit: ^1.1.10

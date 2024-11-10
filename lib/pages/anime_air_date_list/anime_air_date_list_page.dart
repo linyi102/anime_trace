@@ -3,7 +3,7 @@ import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
 import 'package:flutter_test_future/models/anime_grid_cover_config.dart';
 import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_controller.dart';
 import 'package:get/get.dart';
-import 'package:scrollview_observer/scrollview_observer.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class AnimeAirDateListPage extends StatefulWidget {
   const AnimeAirDateListPage({super.key});
@@ -15,13 +15,13 @@ class AnimeAirDateListPage extends StatefulWidget {
 class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
   final controller = Get.put(AnimeAirDateListController());
   final scrollController = ScrollController();
-  late final observerController =
-      ListObserverController(controller: scrollController);
+  final listController = ListController();
 
   @override
   void dispose() {
     Get.delete<AnimeAirDateListController>();
     scrollController.dispose();
+    listController.dispose();
     super.dispose();
   }
 
@@ -59,9 +59,11 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
               margin: const EdgeInsets.symmetric(horizontal: 5),
               child: OutlinedButton(
                 onPressed: () {
-                  observerController.jumpTo(
+                  listController.jumpToItem(
+                    scrollController: scrollController,
                     index: controller.animeAirDateTimeItems
                         .indexWhere((e) => e.time == date),
+                    alignment: 0,
                   );
                 },
                 child: Text(
@@ -83,16 +85,14 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
   _buildAirDateListView() {
     return Scrollbar(
       controller: scrollController,
-      child: ListViewObserver(
-        controller: observerController,
-        child: ListView.builder(
-          controller: scrollController,
-          itemCount: controller.animeAirDateTimeItems.length,
-          itemBuilder: (context, index) {
-            AnimeAirDateItem item = controller.animeAirDateTimeItems[index];
-            return _buildAirDateItem(item);
-          },
-        ),
+      child: SuperListView.builder(
+        controller: scrollController,
+        listController: listController,
+        itemCount: controller.animeAirDateTimeItems.length,
+        itemBuilder: (context, index) {
+          AnimeAirDateItem item = controller.animeAirDateTimeItems[index];
+          return _buildAirDateItem(item);
+        },
       ),
     );
   }
