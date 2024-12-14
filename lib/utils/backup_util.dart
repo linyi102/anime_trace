@@ -233,8 +233,8 @@ class BackupUtil {
         if (files.length > rbrMaxCnt) {
           // 按名字排序，日期最小的是第1个
           files.sort((a, b) => a.path.compareTo(b.path));
+          files.first.delete();
         }
-        files.first.delete();
       });
     }
 
