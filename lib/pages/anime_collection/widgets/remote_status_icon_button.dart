@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/remote_controller.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
@@ -27,8 +29,8 @@ class RemoteStatusIconButton extends StatelessWidget {
           tooltip: "云端数据",
         ),
         Positioned(
-          right: 4,
-          bottom: 8,
+          right: Platform.isWindows ? 4 : 6,
+          bottom: Platform.isWindows ? 8 : 12,
           child: IgnorePointer(
             child: Container(
               height: 12,
