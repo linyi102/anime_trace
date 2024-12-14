@@ -32,7 +32,9 @@ bool _isNotMap(dynamic value) => !_isMap(value);
 enum ResultDataType {
   body,
   bodyData,
-  responseBody;
+  responseBody,
+  responseBodyData,
+  ;
 }
 
 extension ResultDataTypeExtension on ResultDataType {
@@ -44,6 +46,8 @@ extension ResultDataTypeExtension on ResultDataType {
         return _extractBodyData(result);
       case ResultDataType.responseBody:
         return _extractResponseBody(result);
+      case ResultDataType.responseBodyData:
+        return _extractResponseBodyData(result);
     }
   }
 
@@ -67,6 +71,13 @@ extension ResultDataTypeExtension on ResultDataType {
     final data = (result.data as Response).data;
     if (data is! R) return null;
     return data;
+  }
+
+  R? _extractResponseBodyData<R>(Result result) {
+    if (result.isFailure) return null;
+    if (result.data is! Response) return null;
+    final respData = (result.data as Response).data;
+    return _extractBodyData(Result(result.code, respData));
   }
 }
 

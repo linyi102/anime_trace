@@ -1,4 +1,4 @@
-enum PersonCareer {
+enum BgmPersonCareer {
   producer,
   mangaka,
   artist,

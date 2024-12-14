@@ -41,6 +41,7 @@ class DioUtil {
     bool isMobile = false,
     String? referer,
     Map<String, dynamic>? headers,
+    Map<String, dynamic>? query,
   }) async {
     try {
       headers = headers ?? {};
@@ -52,7 +53,8 @@ class DioUtil {
         headers['referer'] = referer;
       }
       Options? options = Options(headers: headers);
-      Response response = await dio.request(path, options: options);
+      Response response =
+          await dio.request(path, options: options, queryParameters: query);
 
       return Result.success(response);
     } catch (e) {

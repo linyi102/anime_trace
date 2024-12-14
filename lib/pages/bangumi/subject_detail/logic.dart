@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class BangumiSubjectDetailLogic extends GetxController {
   String subjectId = '400602';
   final repository = BangumiRepository();
-  List<RelatedCharacter> characters = [];
+  List<BgmCharacter> characters = [];
 
   @override
   void onInit() {
@@ -14,7 +14,7 @@ class BangumiSubjectDetailLogic extends GetxController {
   }
 
   Future<void> loadData() async {
-    characters = await repository.fetchSubjectCharacters(subjectId);
+    characters = await repository.fetchCharacters(subjectId);
     characters.sort((a, b) =>
         _getReleationPriority(b.relation) - _getReleationPriority(a.relation));
     update();

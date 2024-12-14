@@ -48,14 +48,25 @@ class TimeUtil {
   }
 
   /// 展示年月日
-  static String getYMD(String str) {
+  static String getYMD(
+    String str, {
+    String delimiter = "-",
+  }) {
     final dateTime = DateTime.tryParse(str);
+    return getYMDByDateTime(dateTime, delimiter: delimiter);
+  }
+
+  /// 展示年月日
+  static String getYMDByDateTime(
+    DateTime? dateTime, {
+    String delimiter = "-",
+  }) {
     if (dateTime == null) return '';
     return [
       dateTime.year,
       dateTime.month.toString().padLeft(2, '0'),
       dateTime.day.toString().padLeft(2, '0'),
-    ].join('-');
+    ].join(delimiter);
   }
 
   // 显示年月日时分

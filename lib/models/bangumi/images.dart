@@ -1,23 +1,23 @@
 import 'dart:convert';
 
-class Images {
+class BgmImages {
   String? small;
   String? grid;
   String? large;
   String? medium;
 
-  Images({
+  BgmImages({
     this.small,
     this.grid,
     this.large,
     this.medium,
   });
 
-  factory Images.fromJson(String str) => Images.fromMap(json.decode(str));
+  factory BgmImages.fromJson(String str) => BgmImages.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Images.fromMap(Map<String, dynamic> json) => Images(
+  factory BgmImages.fromMap(Map<String, dynamic> json) => BgmImages(
         small: json["small"],
         grid: json["grid"],
         large: json["large"],

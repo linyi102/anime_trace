@@ -4,21 +4,48 @@ import 'package:flutter_test_future/utils/dio_util.dart';
 import 'package:flutter_test_future/utils/network/bangumi_api.dart';
 
 class BangumiRepository {
-  Future<List<RelatedCharacter>> fetchSubjectCharacters(
-      String subjectId) async {
-    final result = await DioUtil.get(BangumiApi.subjectCharacters(subjectId),
+  final episodesLimit = 100;
+
+  Future<BgmSubject?> fetchSubject(String subjectId) async {
+    final result = await DioUtil.get(BangumiApi.subject(subjectId),
+        headers: BangumiApi.headers);
+    return result.toModel(
+      transform: BgmSubject.fromMap,
+      dataType: ResultDataType.responseBody,
+      onError: () => null,
+    );
+  }
+
+  Future<List<BgmEpisode>> fetchEpisodes(String subjectId) async {
+    final result = await DioUtil.get(
+      BangumiApi.episodes,
+      headers: BangumiApi.headers,
+      query: {
+        'subject_id': subjectId,
+        'limit': episodesLimit,
+        'offset': 0,
+      },
+    );
+    return result.toModelList(
+      transform: BgmEpisode.fromMap,
+      dataType: ResultDataType.responseBodyData,
+    );
+  }
+
+  Future<List<BgmCharacter>> fetchCharacters(String subjectId) async {
+    final result = await DioUtil.get(BangumiApi.characters(subjectId),
         headers: BangumiApi.headers);
     return result.toModelList(
-      transform: RelatedCharacter.fromMap,
+      transform: BgmCharacter.fromMap,
       dataType: ResultDataType.responseBody,
     );
   }
 
-  Future<List<RelatedPerson>> fetchSubjectPersons(String subjectId) async {
-    final result = await DioUtil.get(BangumiApi.subjectPersons(subjectId),
+  Future<List<BgmPerson>> fetchPersons(String subjectId) async {
+    final result = await DioUtil.get(BangumiApi.persons(subjectId),
         headers: BangumiApi.headers);
     return result.toModelList(
-      transform: RelatedPerson.fromMap,
+      transform: BgmPerson.fromMap,
       dataType: ResultDataType.responseBody,
     );
   }

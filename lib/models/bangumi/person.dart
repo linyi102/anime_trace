@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'bangumi.dart';
 
-class RelatedPerson {
-  Images? images;
+class BgmPerson {
+  BgmImages? images;
   String? name;
   String? shortSummary;
   List<String>? career;
@@ -11,7 +11,7 @@ class RelatedPerson {
   int? type;
   bool? locked;
 
-  RelatedPerson({
+  BgmPerson({
     this.images,
     this.name,
     this.shortSummary,
@@ -21,13 +21,13 @@ class RelatedPerson {
     this.locked,
   });
 
-  factory RelatedPerson.fromJson(String str) =>
-      RelatedPerson.fromMap(json.decode(str));
+  factory BgmPerson.fromJson(String str) =>
+      BgmPerson.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory RelatedPerson.fromMap(Map<String, dynamic> json) => RelatedPerson(
-        images: json["images"] == null ? null : Images.fromMap(json["images"]),
+  factory BgmPerson.fromMap(Map<String, dynamic> json) => BgmPerson(
+        images: json["images"] == null ? null : BgmImages.fromMap(json["images"]),
         name: json["name"],
         shortSummary: json["short_summary"],
         career: json["career"] == null

@@ -11,9 +11,20 @@ class BangumiApi {
 
   static String baseUrl = 'https://api.bgm.tv';
 
+  /// 每日放送
   static String calendar = '$baseUrl/calendar';
-  static String subjectCharacters(String subjectId) =>
+
+  /// 条目
+  static String subject(String subjectId) => '$baseUrl/v0/subjects/$subjectId';
+
+  /// 章节
+  static String episodes = '$baseUrl/v0/episodes';
+
+  /// 角色
+  static String characters(String subjectId) =>
       '$baseUrl/v0/subjects/$subjectId/characters';
-  static String subjectPersons(String subjectId) =>
+
+  /// 人物
+  static String persons(String subjectId) =>
       '$baseUrl/v0/subjects/$subjectId/persons';
 }

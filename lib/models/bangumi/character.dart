@@ -2,15 +2,15 @@ import 'dart:convert';
 
 import 'bangumi.dart';
 
-class RelatedCharacter {
-  Images? images;
+class BgmCharacter {
+  BgmImages? images;
   String? name;
   String? relation;
-  List<RelatedPerson>? actors;
+  List<BgmPerson>? actors;
   int? type;
   int? id;
 
-  RelatedCharacter({
+  BgmCharacter({
     this.images,
     this.name,
     this.relation,
@@ -19,20 +19,20 @@ class RelatedCharacter {
     this.id,
   });
 
-  factory RelatedCharacter.fromJson(String str) =>
-      RelatedCharacter.fromMap(json.decode(str));
+  factory BgmCharacter.fromJson(String str) =>
+      BgmCharacter.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory RelatedCharacter.fromMap(Map<String, dynamic> json) =>
-      RelatedCharacter(
-        images: json["images"] == null ? null : Images.fromMap(json["images"]),
+  factory BgmCharacter.fromMap(Map<String, dynamic> json) =>
+      BgmCharacter(
+        images: json["images"] == null ? null : BgmImages.fromMap(json["images"]),
         name: json["name"],
         relation: json["relation"],
         actors: json["actors"] == null
             ? []
-            : List<RelatedPerson>.from(
-                json["actors"]!.map((x) => RelatedPerson.fromMap(x))),
+            : List<BgmPerson>.from(
+                json["actors"]!.map((x) => BgmPerson.fromMap(x))),
         type: json["type"],
         id: json["id"],
       );
