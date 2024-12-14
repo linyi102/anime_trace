@@ -67,6 +67,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
   @override
   void dispose() {
     super.dispose();
+    checklistController.quitMulti();
     checklistController.unregisterRestoreLatestHotkey();
   }
 
