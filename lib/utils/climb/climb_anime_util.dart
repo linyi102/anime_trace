@@ -10,6 +10,7 @@ import 'package:flutter_test_future/utils/global_data.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:queue/queue.dart';
 
 class ClimbAnimeUtil {
   /// 根据动漫网址获取搜索源
@@ -103,50 +104,53 @@ class ClimbAnimeUtil {
 
     List<Anime> needUpdateAnimes = await AnimeDao.getAllNeedUpdateAnimes();
 
-    List<Future> futures = [];
+    final queue = Queue(delay: const Duration(seconds: 1), parallel: 5);
     // 异步更新所有动漫信息
     for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
       Log.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
       Anime oldAnime = anime.copyWith();
-      AnimeUpdateRecord updateRecord = AnimeUpdateRecord(animeId: 0);
       // 爬取
-      futures.add(ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
-          .then((value) {
-        // 集数变化则记录到表中
-        if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
-          updateRecord = AnimeUpdateRecord(
-              animeId: anime.animeId,
-              oldEpisodeCnt: oldAnime.animeEpisodeCnt,
-              newEpisodeCnt: anime.animeEpisodeCnt,
-              manualUpdateTime:
-                  DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
-          // 只有集数变化才插入更新表
-          UpdateRecordDao.insert(updateRecord).then((newId) {
-            updateRecord.id = newId;
-            // 获取到id后再添加，避免新增的删除失败
-            updateRecordController.addUpdateRecord(updateRecord.toVo(anime));
-          });
-        }
-        // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
+      queue.add(
+        () => ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false)
+            .then((_) {
+          // 集数变化则记录到表中
+          _addUpdateRecord(oldAnime, anime);
 
-        // 爬取完毕后，更新数据库中的动漫
-        AnimeDao.updateAnime(oldAnime, anime).then((value) {
-          // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
-          updateRecordController.incrementUpdateOkCnt();
-          int updateOkCnt = updateRecordController.updateOkCnt.value;
-          Log.info("updateOkCnt=$updateOkCnt");
-        });
-      }));
+          // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
+          // 爬取完毕后，更新数据库中的动漫
+          AnimeDao.updateAnime(oldAnime, anime).then((value) {
+            // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
+            updateRecordController.incrementUpdateOkCnt();
+            int updateOkCnt = updateRecordController.updateOkCnt.value;
+            Log.info("updateOkCnt=$updateOkCnt");
+          });
+        }),
+      );
     }
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
-    await Future.wait(futures);
-    await 400.milliseconds.delay();
+    await queue.onComplete;
     updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");
+  }
+
+  static void _addUpdateRecord(Anime oldAnime, Anime anime) {
+    if (oldAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
+      final updateRecord = AnimeUpdateRecord(
+          animeId: anime.animeId,
+          oldEpisodeCnt: oldAnime.animeEpisodeCnt,
+          newEpisodeCnt: anime.animeEpisodeCnt,
+          manualUpdateTime: DateTime.now().toString()); // 存放详细时间，目的保证最后更新记录在最前面
+      // 只有集数变化才插入更新表
+      UpdateRecordDao.insert(updateRecord).then((newId) {
+        updateRecord.id = newId;
+        // 获取到id后再添加，避免新增的删除失败
+        UpdateRecordController.to.addUpdateRecord(updateRecord.toVo(anime));
+      });
+    }
   }
 
   /// 调整获取到的总集数
