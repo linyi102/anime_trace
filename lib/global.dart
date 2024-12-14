@@ -6,6 +6,7 @@ import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/controllers/remote_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/utils/dio_util.dart';
@@ -65,6 +66,7 @@ class Global {
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => BackupService());
+    Get.lazyPut(() => RemoteController());
     Get.put(AppUpgradeController());
 
     final checklistController = ChecklistController();

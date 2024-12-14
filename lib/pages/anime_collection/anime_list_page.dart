@@ -9,12 +9,12 @@ import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
+import 'package:flutter_test_future/pages/anime_collection/widgets/remote_status_icon_button.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
-import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -128,23 +128,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
   List<Widget> _getActions() {
     List<Widget> actions = [];
 
-    actions.add(IconButton(
-      onPressed: () {
-        showCommonModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => Material(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: const RemoteBackupPage(fromHome: true),
-          ),
-        );
-      },
-      icon: const Icon(
-        Icons.cloud_outlined,
-        // MingCuteIcons.mgc_cloud_line,
-      ),
-      tooltip: "云端数据",
-    ));
+    actions.add(const RemoteStatusIconButton());
     actions.add(IconButton(
       onPressed: () {
         showCommonModalBottomSheet(

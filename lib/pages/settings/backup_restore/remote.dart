@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
+import 'package:flutter_test_future/controllers/remote_controller.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/settings/backup_file_list.dart';
 import 'package:flutter_test_future/pages/settings/backup_restore/home.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_test_future/values/values.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/common_status_prompt.dart';
 import 'package:flutter_test_future/widgets/setting_card.dart';
+import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class RemoteBackupPage extends StatefulWidget {
@@ -35,8 +37,6 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
   bool canManualBackup = true;
 
   BackupService get backupService => BackupService.to;
-  bool get isOnline => SPUtil.getBool("online");
-  bool get isOffline => !isOnline;
 
   bool get autoBackupIsOff =>
       backupService.curRemoteBackupMode == BackupMode.close;
@@ -74,22 +74,27 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                     icon: const Icon(MingCuteIcons.mgc_arrow_right_line))
                 : null,
             children: [
-              ListTile(
-                title: const Text("登录帐号"),
-                trailing: Icon(
-                  Icons.circle,
-                  size: 12,
-                  color: isOnline ? AppTheme.connectableColor : Colors.grey,
+              GetBuilder(
+                init: RemoteController.to,
+                builder: (_) => ListTile(
+                  title: const Text("登录帐号"),
+                  trailing: Icon(
+                    Icons.circle,
+                    size: 12,
+                    color: RemoteController.to.isOnline
+                        ? AppTheme.connectableColor
+                        : Colors.grey,
+                  ),
+                  onTap: () {
+                    _toWebDavLoginPage();
+                  },
                 ),
-                onTap: () {
-                  _toWebDavLoginPage();
-                },
               ),
               ListTile(
                 title: const Text("立即备份"),
                 subtitle: const Text("点击进行备份，备份目录为 /animetrace"),
                 onTap: () async {
-                  if (isOffline) {
+                  if (RemoteController.to.isOffline) {
                     ToastUtil.showText("请先配置帐号，再进行备份");
                     return;
                   }
@@ -115,7 +120,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
                 title: const Text("还原备份"),
                 subtitle: const Text("选择备份文件进行还原"),
                 onTap: () async {
-                  if (isOffline) {
+                  if (RemoteController.to.isOffline) {
                     ToastUtil.showText("请先配置帐号，再进行还原");
                     return;
                   }

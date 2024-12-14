@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter_test_future/controllers/labels_controller.dart';
+import 'package:flutter_test_future/controllers/remote_controller.dart';
 import 'package:flutter_test_future/controllers/update_record_controller.dart';
 import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
@@ -125,7 +126,7 @@ class BackupUtil {
       }
     }
     if (remoteBackupDirPath.isNotEmpty) {
-      if (!SPUtil.getBool("online")) {
+      if (RemoteController.to.isOffline) {
         Log.info("远程备份失败，请检查网络状态");
         ToastUtil.showText("远程备份失败，请检查网络状态");
         tempZipFile.delete(); // 备份失败后需要删掉临时备份文件

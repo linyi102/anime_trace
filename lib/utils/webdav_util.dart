@@ -1,3 +1,4 @@
+import 'package:flutter_test_future/controllers/remote_controller.dart';
 import 'package:flutter_test_future/utils/error_format_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
@@ -49,11 +50,11 @@ class WebDavUtil {
       // 不应该设置为false，应该假设login为true，这样每次进入应用都会init重新连接
       // SPUtil.setBool("login", false); // 如果之前成功，但现在失败了，所以需要覆盖
       // 应该用online=true表示在线还是
-      SPUtil.setBool("online", false);
+      RemoteController.to.setOnline(false);
       ErrorFormatUtil.formatError(e);
       return false;
     }
-    SPUtil.setBool("online", true);
+    RemoteController.to.setOnline(true);
     SPUtil.setBool("login", true); // 表示用户想要登录，第一次登录后永远为true
     Log.info("ping ok");
     return true;
@@ -67,7 +68,7 @@ class WebDavUtil {
   }
 
   static Future<String> getRemoteDirPath() async {
-    if (!SPUtil.getBool("online")) {
+    if (RemoteController.to.isOffline) {
       ToastUtil.showText("请先连接帐号，再进行备份");
       return "";
     }
