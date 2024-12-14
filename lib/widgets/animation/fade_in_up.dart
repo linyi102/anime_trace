@@ -22,8 +22,7 @@ class _FadeInUpState extends State<FadeInUp>
   late AnimationController controller;
   late Animation<double> offsetDy;
   late Animation<double> opacity;
-
-  bool display = true;
+  late bool display;
 
   @override
   void initState() {
@@ -33,6 +32,8 @@ class _FadeInUpState extends State<FadeInUp>
         .animate(CurvedAnimation(parent: controller, curve: widget.curve));
     opacity = Tween<double>(begin: 0, end: 1)
         .animate(CurvedAnimation(parent: controller, curve: widget.curve));
+    display = widget.animate;
+
     controller.addStatusListener((status) {
       switch (status) {
         case AnimationStatus.forward:
