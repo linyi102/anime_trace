@@ -91,6 +91,7 @@ class ClimbBangumi with Climb {
     if (allEpisodes.length >= repository.episodesLimit) {
       anime.playStatus = PlayStatus.unknown.text;
     } else {
+      anime.animeEpisodeCnt = playedEpisodes.length;
       anime.playStatus = playedEpisodes.isEmpty
           ? PlayStatus.notStarted.text
           : playedEpisodes.length < episodes.length
