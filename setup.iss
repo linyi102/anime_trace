@@ -3,7 +3,7 @@
 
 #define MyAppName "Âþ¼£"
 #define MyAppNameEN "Manji"
-#define MyAppVersion "1.12.2"
+#define MyAppVersion "1.12.3"
 #define MyAppExeName "anime_footmark_windows.exe"
 
 [Setup]
