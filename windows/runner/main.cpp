@@ -12,11 +12,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
     CreateAndAttachConsole();
   }
-  // dart_ping
-  else {
-    AllocConsole();
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
-  }
 
   // Initialize COM, so that it is available for use in the library and/or
   // plugins.
@@ -32,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1024, 720);
-  if (!window.CreateAndShow(L"Manji", origin, size)) {
+  if (!window.Create(L"Manji", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
