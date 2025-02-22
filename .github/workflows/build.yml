@@ -19,14 +19,17 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so our job can access it
-      - uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v4
 
-      # Install flutter
-      - name: Flutter get
-        uses: subosito/flutter-action@v1.4.0
+      # Set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.27.0"
-      - run: flutter pub get
+          flutter-version: 3.27.0
+      - run: |
+          flutter --version
+          flutter pub get
 
       # Build ipa
       - name: Building IPA
