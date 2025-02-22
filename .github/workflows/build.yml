@@ -37,12 +37,12 @@ jobs:
           cd build/ios/iphoneos
           mkdir -p Payload
           mv Runner.app Payload/Runner.app
-          zip -9 -r animetrace.ipa Payload
+          zip -9 -r app.ipa Payload
           cd -
 
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ipa
+          name: animetrace-ipa
           # Path to the release files
-          path: build/ios/iphoneos/animetrace.ipa
+          path: build/ios/iphoneos/*.ipa
