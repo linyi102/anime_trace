@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_test_future/controllers/backup_service.dart';
 import 'package:flutter_test_future/controllers/theme_controller.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
@@ -39,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
         init: logic,
         builder: (_) => alwaysPortrait
             ? _buildPortraitScreen()
-            : Platform.isAndroid &&
+            : PlatformUtil.isMobile &&
                     MediaQuery.of(context).orientation == Orientation.portrait
                 ? _buildPortraitScreen()
                 : _buildLandscapeScreen(),

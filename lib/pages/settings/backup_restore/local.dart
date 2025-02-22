@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/utils/backup_util.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/setting_card.dart';
@@ -26,7 +27,7 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
     return SettingCard(
       title: '本地备份',
       children: [
-        if (Platform.isAndroid || Platform.isIOS)
+        if (PlatformUtil.isMobile)
           ListTile(
             title: const Text("立即备份"),
             onTap: () async {

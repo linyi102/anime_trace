@@ -35,7 +35,7 @@ class Global {
 
   static Future<void> init() async {
     // 透明状态栏
-    if (Platform.isAndroid) {
+    if (PlatformUtil.isMobile) {
       SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     }

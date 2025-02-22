@@ -8,6 +8,7 @@ import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -25,7 +26,7 @@ class BackupUtil {
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
-    if (Platform.isAndroid || Platform.isWindows || Platform.isIOS) {
+    if (PlatformUtil.isMobile || Platform.isWindows) {
       localRootDirPath = (await getApplicationSupportDirectory()).path;
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");

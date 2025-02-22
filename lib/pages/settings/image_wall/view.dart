@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/style.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/values/values.dart';
 
 class ImageWallPage extends StatefulWidget {
@@ -175,7 +175,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
           _buildSpeedControlButton(),
           _buildGroupCntButton(),
           _buildShuffleButton(),
-          if (Platform.isAndroid) _buildRotateScreenButton(),
+          if (PlatformUtil.isMobile) _buildRotateScreenButton(),
         ],
       ),
     );

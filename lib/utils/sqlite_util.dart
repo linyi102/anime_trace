@@ -13,6 +13,7 @@ import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/episode.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -70,7 +71,7 @@ class SqliteUtil {
   }
 
   static _initDatabase() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (PlatformUtil.isMobile) {
       // dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
       dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
       Log.info("👉Android/iOS: path=$dbPath");
