@@ -68,6 +68,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  flutter_launcher_icons: "^0.14.3"
 
 dependency_overrides:
   intl: ^0.19.0
@@ -75,7 +76,7 @@ dependency_overrides:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/logo.png
+    - assets/images/logo-round.png
     - assets/images/website/
     - assets/icons/
     - assets/lotties/
@@ -88,3 +89,7 @@ flutter_assets:
 
 flutter_gen:
   output: lib/values/
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/images/logo.png"
