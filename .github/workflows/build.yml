@@ -34,13 +34,13 @@ jobs:
           flutter build ios --release --no-codesign
           mkdir build/ios/iphoneos/Payload
           mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/Runner.app
-          zip -9 -r build/ios/iphoneos/animetrace.zip build/ios/iphoneos/Payload
-          mv build/ios/iphoneos/animetrace.zip build/ios/iphoneos/animetrace.ipa
+          zip -9 -r build/ios/iphoneos/app.zip build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/app.zip build/ios/iphoneos/app.ipa
 
       # Collect the files
       - name: Collect artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: adhoc-ipa
           # Path to the release files
-          path: build/ios/iphoneos/animetrace.ipa
+          path: build/ios/iphoneos/app.ipa
