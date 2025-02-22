@@ -228,6 +228,10 @@ class AnimeCoverDetail extends StatelessWidget {
                 leading: const Icon(Icons.image),
                 title: const Text("从本地图库中选择"),
                 onTap: () {
+                  if (Platform.isIOS) {
+                    ToastUtil.showText('iOS 暂不支持选择本地图片');
+                    return;
+                  }
                   _selectCoverFromLocal(
                       context, howToEditCoverUrlDialogContext);
                 },
