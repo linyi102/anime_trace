@@ -18,32 +18,31 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so our job can access it
       - name: Clone repository
         uses: actions/checkout@v4
 
-      # Set up Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.27.0
-      - run: |
+
+      - name: Get dependencies
+        run: |
           flutter --version
           flutter pub get
 
-      # Build ipa
       - name: Building IPA
         run: |
           flutter build ios --release --no-codesign
-          mkdir build/ios/iphoneos/Payload
-          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/Runner.app
-          zip -9 -r build/ios/iphoneos/app.zip build/ios/iphoneos/Payload
-          mv build/ios/iphoneos/app.zip build/ios/iphoneos/app.ipa
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/Runner.app
+          zip -9 -r animetrace.ipa Payload
+          cd -
 
-      # Collect the files
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: adhoc-ipa
+          name: ipa
           # Path to the release files
-          path: build/ios/iphoneos/app.ipa
+          path: build/ios/iphoneos/animetrace.ipa
