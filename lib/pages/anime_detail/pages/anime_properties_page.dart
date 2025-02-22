@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_picker/flutter_picker.dart';
 import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
 import 'package:flutter_test_future/dao/anime_dao.dart';
 import 'package:flutter_test_future/models/enum/anime_area.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_test_future/pages/common/category_intro_page.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/widgets/picker/date_time_picker.dart';
+import 'package:flutter_test_future/widgets/picker/flutter_picker_fix_mouse_scroll.dart';
 import 'package:get/get.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
