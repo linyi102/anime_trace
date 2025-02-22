@@ -21,14 +21,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so our job can access it
       - uses: actions/checkout@v4
 
-      #install flutter
+      # Install flutter
       - name: Flutter get
         uses: subosito/flutter-action@v1.4.0
         with:
           flutter-version: "3.27.0"
       - run: flutter pub get
 
-      #build ipa
+      # Build ipa
       - name: Building IPA
         run: |
           flutter build ios --release --no-codesign
@@ -37,7 +37,7 @@ jobs:
           zip -9 -r build/ios/iphoneos/animetrace.zip build/ios/iphoneos/Payload
           mv build/ios/iphoneos/animetrace.zip build/ios/iphoneos/animetrace.ipa
 
-      #collect the files
+      # Collect the files
       - name: Collect artifacts
         uses: actions/upload-artifact@v3
         with:
