@@ -61,34 +61,35 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<dynamic> get values => [
-        chat4Line,
-        collections24Filled,
-        collections24Regular,
-        defaultPicture,
-        evaCheckmarkSquareOutline,
-        evaCollapseOutline,
-        evaExpandOutline,
-        evaExternalLinkOutline,
-        evaSquareOutline,
-        failedPicture,
-        gitee,
-        github,
-        infiniCloud,
-        jianguoyun
-      ];
+    chat4Line,
+    collections24Filled,
+    collections24Regular,
+    defaultPicture,
+    evaCheckmarkSquareOutline,
+    evaCollapseOutline,
+    evaExpandOutline,
+    evaExternalLinkOutline,
+    evaSquareOutline,
+    failedPicture,
+    gitee,
+    github,
+    infiniCloud,
+    jianguoyun,
+  ];
 }
 
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/logo.png
-  AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
+  /// File path: assets/images/logo-round.png
+  AssetGenImage get logoRound =>
+      const AssetGenImage('assets/images/logo-round.png');
 
   /// Directory path: assets/images/website
   $AssetsImagesWebsiteGen get website => const $AssetsImagesWebsiteGen();
 
   /// List of all assets
-  List<AssetGenImage> get values => [logo];
+  List<AssetGenImage> get values => [logoRound];
 }
 
 class $AssetsLottiesGen {
@@ -103,6 +104,10 @@ class $AssetsLottiesGen {
 
 class $AssetsImagesWebsiteGen {
   const $AssetsImagesWebsiteGen();
+
+  /// File path: assets/images/website/OmoFun.jpg
+  AssetGenImage get omoFun =>
+      const AssetGenImage('assets/images/website/OmoFun.jpg');
 
   /// File path: assets/images/website/agemys.jpg
   AssetGenImage get agemys =>
@@ -134,10 +139,6 @@ class $AssetsImagesWebsiteGen {
   AssetGenImage get nayfun =>
       const AssetGenImage('assets/images/website/nayfun.png');
 
-  /// File path: assets/images/website/omofun.jpg
-  AssetGenImage get omofun =>
-      const AssetGenImage('assets/images/website/omofun.jpg');
-
   /// File path: assets/images/website/qdm.png
   AssetGenImage get qdm => const AssetGenImage('assets/images/website/qdm.png');
 
@@ -149,23 +150,23 @@ class $AssetsImagesWebsiteGen {
 
   /// List of all assets
   List<dynamic> get values => [
-        agemys,
-        aimi,
-        bangumi,
-        cyc,
-        douban,
-        fzff,
-        gugu,
-        nayfun,
-        omofun,
-        qdm,
-        quqi,
-        yhdm
-      ];
+    omoFun,
+    agemys,
+    aimi,
+    bangumi,
+    cyc,
+    douban,
+    fzff,
+    gugu,
+    nayfun,
+    qdm,
+    quqi,
+    yhdm,
+  ];
 }
 
 class Assets {
-  Assets._();
+  const Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
@@ -173,11 +174,7 @@ class Assets {
 }
 
 class AssetGenImage {
-  const AssetGenImage(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-  });
+  const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
 
   final String _assetName;
 
@@ -205,7 +202,7 @@ class AssetGenImage {
     bool gaplessPlayback = true,
     bool isAntiAlias = false,
     String? package,
-    FilterQuality filterQuality = FilterQuality.low,
+    FilterQuality filterQuality = FilterQuality.medium,
     int? cacheWidth,
     int? cacheHeight,
   }) {
@@ -237,15 +234,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   String get path => _assetName;

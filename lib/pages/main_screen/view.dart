@@ -1,4 +1,3 @@
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/controllers/backup_service.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
+import 'package:flutter_test_future/values/assets.gen.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -110,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Image.asset("assets/images/logo.png", height: 40, width: 40),
+          Image.asset(Assets.images.logoRound.path, height: 40, width: 40),
         ],
       ),
     ));
