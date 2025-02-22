@@ -26,7 +26,7 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
     return SettingCard(
       title: '本地备份',
       children: [
-        if (Platform.isAndroid)
+        if (Platform.isAndroid || Platform.isIOS)
           ListTile(
             title: const Text("立即备份"),
             onTap: () async {

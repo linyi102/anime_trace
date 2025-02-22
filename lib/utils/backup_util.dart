@@ -25,13 +25,8 @@ class BackupUtil {
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
-    if (Platform.isAndroid) {
-      // localRootDirPath = ((await getExternalStorageDirectory())!.path);
-      localRootDirPath = ((await getApplicationSupportDirectory()).path);
-    } else if (Platform.isWindows) {
-      localRootDirPath = ((await getApplicationSupportDirectory()).path);
-      // rootImageDirPath =
-      //     join((await getApplicationSupportDirectory()).path, "images");
+    if (Platform.isAndroid || Platform.isWindows || Platform.isIOS) {
+      localRootDirPath = (await getApplicationSupportDirectory()).path;
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -46,15 +41,8 @@ class BackupUtil {
     time = time.replaceAll(":", "-");
     time = time.replaceAll(" ", "-");
 
-    String zipName = "";
-    if (Platform.isAndroid) {
-      zipName = "$backupZipNamePrefix-$time-android.zip";
-    } else if (Platform.isWindows) {
-      zipName = "$backupZipNamePrefix-$time-windows.zip";
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
-    }
-
+    String zipName =
+        "$backupZipNamePrefix-$time-${Platform.operatingSystem}.zip";
     return zipName;
   }
 

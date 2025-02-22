@@ -348,7 +348,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       );
       return;
     }
-    if (Platform.isWindows || Platform.isAndroid) {
+    if (Platform.isWindows || Platform.isAndroid || Platform.isIOS) {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
