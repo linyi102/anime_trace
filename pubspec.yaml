@@ -1,31 +1,10 @@
-name: flutter_test_future # 和包相关
+name: flutter_test_future
 description: 漫迹
-
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+publish_to: "none"
 version: 1.12.3
-
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
     sdk: flutter
@@ -39,16 +18,15 @@ dependencies:
   queue: ^3.1.0+2
   darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
-  flutter_picker: ^2.1.0
   flex_color_picker: ^3.3.0
   emoji_picker_flutter: ^1.6.3
   version: ^3.0.2
   lottie: ^2.6.0
-  media_kit: ^1.1.10
-  media_kit_video: ^1.2.4
-  media_kit_libs_android_video: ^1.3.6
-  media_kit_libs_windows_video: ^1.0.9
-  media_kit_native_event_loop: ^1.0.8
+  media_kit: 1.1.10+1
+  media_kit_video: 1.2.4
+  media_kit_libs_android_video: 1.3.6
+  media_kit_libs_windows_video: 1.0.9
+  media_kit_native_event_loop: 1.0.8
   desktop_drop: ^0.4.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
@@ -75,8 +53,7 @@ dependencies:
   sqflite: ^2.0.1
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
-  file_picker:
-    git: https://github.com/linyi102/flutter_file_picker_no_cache.git
+  file_picker: ^9.0.0
   webdav_client: ^1.1.8
   dio: ^4.0.4
   html: ^0.15.0
@@ -90,61 +67,20 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  flutter_launcher_icons: "^0.14.3"
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+dependency_overrides:
+  intl: ^0.19.0
 
-# The following section is specific to Flutter.
 flutter:
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/logo.png
+    - assets/images/logo-round.png
     - assets/images/website/
     - assets/icons/
     - assets/lotties/
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware.
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-
-  #  fonts:
-  #    - family: myfont
-  #      fonts:
-  #        - asset: assets/fonts/Alibaba-PuHuiTi-Regular.ttf
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
 flutter_assets:
   assets_path: assets/
   output_path: lib/values/
@@ -153,3 +89,7 @@ flutter_assets:
 
 flutter_gen:
   output: lib/values/
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/images/logo.png"

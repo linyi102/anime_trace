@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -42,7 +42,7 @@ class AnimeGridCover extends StatelessWidget {
 
   double get spacing => 8;
   double get statusSize => 12;
-  double get nameSize => Platform.isAndroid ? 13 : 14;
+  double get nameSize => PlatformUtil.isMobile ? 13 : 14;
 
   @override
   Widget build(BuildContext context) {

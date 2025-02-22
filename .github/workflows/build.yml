@@ -1,0 +1,48 @@
+# Set the name of your workflow
+name: IOSBuilder
+
+# Controls when the action will run.
+# [workflow_dispatch] --> allows to run the workflow manually
+# you may use the following to build on each push
+# on:
+# push:
+# branches: [ master ]
+on: [workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # In this workflow we use a single job called "build"
+  build:
+    # The type of runner ie, the OS that the job will run on. apart from mac windows and ubuntu are also available
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so our job can access it
+      - uses: actions/checkout@v2
+        with:
+          ref: ios
+
+      #install flutter
+      - name: Flutter get
+        uses: subosito/flutter-action@v1.4.0
+        with:
+          flutter-version: "3.27.0"
+      - run: flutter pub get
+
+      #build ipa
+      - name: Building IPA
+        run: |
+          flutter build ios --release --no-codesign
+          mkdir build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/Runner.app
+          zip -9 -r build/ios/iphoneos/animetrace.zip build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/animetrace.zip build/ios/iphoneos/animetrace.ipa
+
+      #collect the files
+      - name: Collect artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: adhoc-ipa
+          # Path to the release files
+          path: build/ios/iphoneos/animetrace.ipa

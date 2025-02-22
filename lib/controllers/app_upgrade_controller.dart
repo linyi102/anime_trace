@@ -162,7 +162,7 @@ class AppUpgradeController extends GetxController {
   }
 
   _onSelectDownloadWay() async {
-    if (PlatformUtil.isDesktop) {
+    if (PlatformUtil.isDesktop || Platform.isIOS) {
       LaunchUrlUtil.launch(
           context: Get.context!, uriStr: latestRelease!.htmlUrl);
       return;

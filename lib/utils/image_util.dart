@@ -31,6 +31,9 @@ class ImageUtil {
           SPUtil.getString(noteImageRootDirPathKeyInWindows, defaultValue: "");
       coverImageRootDirPath =
           SPUtil.getString(coverImageRootDirPathKeyInWindows, defaultValue: "");
+    } else if (Platform.isIOS) {
+      noteImageRootDirPath = '';
+      coverImageRootDirPath = '';
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -42,6 +45,7 @@ class ImageUtil {
       SPUtil.setString(noteImageRootDirPathKeyInAndroid, imageRootDirPath);
     } else if (Platform.isWindows) {
       SPUtil.setString(noteImageRootDirPathKeyInWindows, imageRootDirPath);
+    } else if (Platform.isIOS) {
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -53,6 +57,7 @@ class ImageUtil {
       SPUtil.setString(coverImageRootDirPathKeyInAndroid, imageRootDirPath);
     } else if (Platform.isWindows) {
       SPUtil.setString(coverImageRootDirPathKeyInWindows, imageRootDirPath);
+    } else if (Platform.isIOS) {
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }

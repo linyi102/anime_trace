@@ -212,16 +212,17 @@ class _SettingPageState extends State<SettingPage> {
       url = _networkImageUrl;
     }
 
+    final screenHeight = MediaQuery.of(context).size.height;
     return SizedBox(
-      height: MediaQuery.of(context).size.height / 4,
+      height: screenHeight / 4,
       child: Card(
         child: InkWell(
           onTap: () => _showDialogBanner(),
           child: _selectedImageTypeIdx == 0
               ? Center(
                   child: Image.asset(
-                  "assets/images/logo.png",
-                  width: MediaQuery.of(context).size.height / 8,
+                  "assets/images/logo-round.png",
+                  width: screenHeight / 8,
                 ))
               : CommonImage(url, reduceMemCache: false),
         ),

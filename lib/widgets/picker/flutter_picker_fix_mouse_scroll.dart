@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as Dialog;
-import 'package:flutter_picker/picker_localizations.dart';
 import 'dart:async';
+import './picker_localizations.dart';
 
 /// Picker selected callback.
 typedef PickerSelectedCallback = void Function(
@@ -429,7 +429,7 @@ class PickerWidgetState<T> extends State<_PickerWidget> {
                   top: BorderSide(color: theme!.dividerColor, width: 0.5),
                   bottom: BorderSide(color: theme!.dividerColor, width: 0.5),
                 ),
-                color: picker.headerColor ?? (theme!.bottomAppBarColor),
+                color: picker.headerColor ?? (theme!.bottomAppBarTheme.color),
               ),
         ));
       }

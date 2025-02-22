@@ -8,6 +8,7 @@ import 'package:flutter_test_future/dao/history_dao.dart';
 import 'package:flutter_test_future/models/params/result.dart';
 import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
+import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -25,13 +26,8 @@ class BackupUtil {
 
   static Future<String> getLocalRootDirPath() async {
     String localRootDirPath;
-    if (Platform.isAndroid) {
-      // localRootDirPath = ((await getExternalStorageDirectory())!.path);
-      localRootDirPath = ((await getApplicationSupportDirectory()).path);
-    } else if (Platform.isWindows) {
-      localRootDirPath = ((await getApplicationSupportDirectory()).path);
-      // rootImageDirPath =
-      //     join((await getApplicationSupportDirectory()).path, "images");
+    if (PlatformUtil.isMobile || Platform.isWindows) {
+      localRootDirPath = (await getApplicationSupportDirectory()).path;
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -46,15 +42,8 @@ class BackupUtil {
     time = time.replaceAll(":", "-");
     time = time.replaceAll(" ", "-");
 
-    String zipName = "";
-    if (Platform.isAndroid) {
-      zipName = "$backupZipNamePrefix-$time-android.zip";
-    } else if (Platform.isWindows) {
-      zipName = "$backupZipNamePrefix-$time-windows.zip";
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
-    }
-
+    String zipName =
+        "$backupZipNamePrefix-$time-${Platform.operatingSystem}.zip";
     return zipName;
   }
 

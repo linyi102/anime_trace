@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/global.dart';
 import 'package:flutter_test_future/utils/file_picker_util.dart';
@@ -32,7 +34,12 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
     );
   }
 
-  ListView _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
+    if (Platform.isIOS) {
+      return const Center(
+        child: Text('iOS暂不支持进行图片设置'),
+      );
+    }
     return ListView(
       children: [
         SettingCard(
