@@ -34,7 +34,10 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
               String zipName = await BackupUtil.generateZipName();
               File tmpZipFile = await BackupUtil.createTempBackUpFile(zipName);
               await FileSaver.instance.saveAs(
-                  zipName, tmpZipFile.readAsBytesSync(), "", MimeType.ZIP);
+                  name: zipName,
+                  ext: '',
+                  bytes: tmpZipFile.readAsBytesSync(),
+                  mimeType: MimeType.zip);
               tmpZipFile.delete();
             },
           ),
