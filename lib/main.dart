@@ -79,6 +79,7 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
         // 退出
         Navigator.of(context).pop();
         await windowManager.destroy();
+        exit(0);
       });
     }
   }
