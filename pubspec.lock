@@ -327,8 +327,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v0.0.1"
-      resolved-ref: "6064a990bc7610503ca0972a1a5777f402273b44"
+      ref: b9848270
+      resolved-ref: b98482709a386e141388c2e4a7ee6448161aa852
       url: "https://github.com/linyi102/flutter_logkit.git"
     source: git
     version: "0.0.1+1"
@@ -431,7 +431,7 @@ packages:
     source: hosted
     version: "4.3.0"
   intl:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: intl
       sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf

@@ -13,7 +13,7 @@ dependencies:
   flutter_logkit:
     git:
       url: https://github.com/linyi102/flutter_logkit.git
-      ref: v0.0.1
+      ref: b9848270
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
@@ -73,9 +73,6 @@ dev_dependencies:
     git:
       url: https://github.com/linyi102/shell_executor
       ref: main
-
-dependency_overrides:
-  intl: ^0.19.0
 
 flutter:
   uses-material-design: true
