@@ -41,8 +41,6 @@ class Responsive extends StatelessWidget {
         return _buildByMediaQuery(context);
       case ResponsiveWidthSource.constraints:
         return _buildByConstraints();
-      default:
-        return _buildByMediaQuery(context);
     }
   }
 

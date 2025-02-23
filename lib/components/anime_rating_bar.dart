@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeRatingBar extends StatelessWidget {
@@ -26,7 +27,7 @@ class AnimeRatingBar extends StatelessWidget {
             initialRating: rate.toDouble(),
             itemSize: iconSize ?? 20,
             itemPadding: EdgeInsets.only(right: spacing ?? 5),
-            unratedColor: Colors.grey.withOpacity(0.5),
+            unratedColor: Colors.grey.withOpacityFactor(0.5),
             itemBuilder: (context, _) =>
                 Icon(MingCuteIcons.mgc_star_fill, color: Colors.amber[600]),
             onRatingUpdate: onRatingUpdate ?? (_) {})
@@ -35,7 +36,7 @@ class AnimeRatingBar extends StatelessWidget {
             rating: rate.toDouble(),
             itemSize: iconSize ?? 20,
             itemPadding: EdgeInsets.only(right: spacing ?? 5),
-            unratedColor: Colors.grey.withOpacity(0.5),
+            unratedColor: Colors.grey.withOpacityFactor(0.5),
             itemBuilder: (BuildContext context, int index) =>
                 Icon(MingCuteIcons.mgc_star_fill, color: Colors.amber[600]),
           );

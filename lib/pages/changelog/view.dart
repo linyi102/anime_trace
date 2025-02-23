@@ -58,7 +58,7 @@ class _ChangelogPageState extends State<ChangelogPage> {
                         label: Text(release.tagName),
                         style: const ButtonStyle(
                           visualDensity: VisualDensity(vertical: -2),
-                          padding: MaterialStatePropertyAll(
+                          padding: WidgetStatePropertyAll(
                               EdgeInsets.symmetric(horizontal: 16)),
                         ),
                       ),

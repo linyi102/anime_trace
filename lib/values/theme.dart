@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AppTheme {
@@ -24,7 +25,7 @@ class AppTheme {
   static double get formMaxWidth => 500;
 
   /// 半透明背景
-  static final translucentBgColor = Colors.black.withOpacity(0.5);
+  static final translucentBgColor = Colors.black.withOpacityFactor(0.5);
 
   /// 当前是否是夜间模式
   static bool isDark = false;

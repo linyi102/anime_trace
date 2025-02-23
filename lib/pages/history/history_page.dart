@@ -89,7 +89,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   horizontal: VisualDensity.minimumDensity,
                   vertical: VisualDensity.minimumDensity,
                 ),
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(99)))),
             segments: historyController.views
                 .map((e) => ButtonSegment(

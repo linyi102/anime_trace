@@ -6,6 +6,7 @@
 // ignore_for_file: non_constant_identifier_names
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:screen_brightness/screen_brightness.dart';
@@ -793,7 +794,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Colors.black.withOpacity(0.5),
+                                Colors.black.withOpacityFactor(0.5),
                                 Colors.transparent,
                               ]),
                         ),
@@ -809,7 +810,7 @@ class _MaterialVideoControlsState extends State<_MaterialVideoControls> {
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                               colors: [
-                                Colors.black.withOpacity(0.5),
+                                Colors.black.withOpacityFactor(0.5),
                                 Colors.transparent,
                               ]),
                         ),

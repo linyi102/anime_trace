@@ -6,6 +6,7 @@ import 'package:flutter_test_future/pages/viewer/video/logic.dart';
 import 'package:flutter_test_future/pages/viewer/video/widgets/fixed_material_video_controls.dart'
     as fix_video;
 import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/widgets/multi_platform.dart';
@@ -188,7 +189,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
         margin: const EdgeInsets.only(top: 50),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
+          color: Colors.black.withOpacityFactor(0.6),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -265,7 +266,7 @@ class VideoPlayerPageState extends State<VideoPlayerPage> {
                   (logic.player.state.width ?? 16)),
           width: width,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withOpacityFactor(0.4),
             borderRadius: radius,
           ),
           child: const LoadingWidget(center: true),

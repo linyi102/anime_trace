@@ -10,6 +10,7 @@ import 'package:flutter_test_future/dao/image_dao.dart';
 import 'package:flutter_test_future/models/note.dart';
 import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/theme.dart';
@@ -168,7 +169,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
         color: _dragging
             ? ThemeController.to.isDark(context)
                 ? Colors.white10
-                : Colors.black.withOpacity(0.08)
+                : Colors.black.withOpacityFactor(0.08)
             : Colors.transparent,
         child: child,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 
 class CommonTextFormField extends StatelessWidget {
   const CommonTextFormField(
@@ -60,8 +61,9 @@ class CommonTextFormField extends StatelessWidget {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color:
-                                  Theme.of(context).hintColor.withOpacity(0.2)),
+                              color: Theme.of(context)
+                                  .hintColor
+                                  .withOpacityFactor(0.2)),
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),

@@ -15,6 +15,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
 import 'package:flutter_test_future/pages/main_screen/logic.dart';
 import 'package:flutter_test_future/pages/settings/anime_display_setting.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/sqlite_util.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -293,7 +294,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
-          selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.25),
+          selectedTileColor:
+              Theme.of(context).primaryColor.withOpacityFactor(0.25),
           selected: selectedAnimes.contains(anime),
           title: Text(
             anime.animeName,

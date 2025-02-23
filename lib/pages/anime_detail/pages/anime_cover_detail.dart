@@ -11,6 +11,7 @@ import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,7 @@ class AnimeCoverDetail extends StatelessWidget {
     return AppBar(
       backgroundColor: enableOpacity
           // 获取当前context对应的Element的的scaffold背景，并调整不透明度
-          ? Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6)
+          ? Theme.of(context).scaffoldBackgroundColor.withOpacityFactor(0.6)
           : null,
       actions: [
         _buildInfoButton(context),

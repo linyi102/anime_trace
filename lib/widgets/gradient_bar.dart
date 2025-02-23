@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 
 class GradientBar extends StatelessWidget {
   const GradientBar({this.child, this.reverse = false, this.height, super.key});
@@ -17,7 +18,7 @@ class GradientBar extends StatelessWidget {
               colors: [
             // Colors.black,
             // Colors.black.withOpacity(0.8),
-            Colors.black.withOpacity(0.5),
+            Colors.black.withOpacityFactor(0.5),
             // Colors.black.withOpacity(0.2),
             Colors.transparent,
           ])),

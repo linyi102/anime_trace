@@ -6,6 +6,7 @@ import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/dao/anime_series_dao.dart';
 import 'package:flutter_test_future/pages/settings/series/form/view.dart';
 import 'package:flutter_test_future/pages/settings/series/manage/widgets/ignored_series_list_view.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/toast_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
 import 'package:flutter_test_future/widgets/common_divider.dart';
@@ -181,7 +182,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       child: InkWell(
         onTap: () => _toAllRecommendSeriesPage(context),
         child: Container(
-          color: Theme.of(context).primaryColor.withOpacity(0.15),
+          color: Theme.of(context).primaryColor.withOpacityFactor(0.15),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
           child: Row(
             children: [
@@ -389,7 +390,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
             child: Icon(
               Icons.more_horiz,
               size: 20,
-              color: Theme.of(context).hintColor.withOpacity(0.4),
+              color: Theme.of(context).hintColor.withOpacityFactor(0.4),
             ),
           ),
         ));
@@ -532,7 +533,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
               child: Icon(
                 MingCuteIcons.mgc_book_3_line,
                 size: coverHeight / 2,
-                color: Theme.of(context).hintColor.withOpacity(0.2),
+                color: Theme.of(context).hintColor.withOpacityFactor(0.2),
               ),
             )
           : singleCoverInSeries || imgCnt == 1

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test_future/models/enum/webdav_website.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/launch_uri_util.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
 import 'package:flutter_test_future/utils/webdav_util.dart';
@@ -145,8 +146,8 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
             borderRadius: BorderRadius.circular(12),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).hintColor.withOpacity(0.2)),
+            borderSide: BorderSide(
+                color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
             borderRadius: BorderRadius.circular(12),
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/models/note_filter.dart';
 import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/widgets/responsive.dart';
 
 class NoteSearchPage extends StatefulWidget {
@@ -143,8 +144,8 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
           borderRadius: BorderRadius.circular(12),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Theme.of(context).hintColor.withOpacity(0.2)),
+          borderSide: BorderSide(
+              color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

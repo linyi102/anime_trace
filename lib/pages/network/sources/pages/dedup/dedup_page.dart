@@ -5,6 +5,7 @@ import 'package:flutter_test_future/components/operation_button.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
 import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:get/get.dart';
 
 /// 动漫去重页面
@@ -260,7 +261,7 @@ class DedupPage extends StatelessWidget {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           // 添加白色边框，并为内部添加不透明度，避免白色封面导致看不见
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withOpacityFactor(0.1),
                           border: Border.all(width: 1, color: Colors.white)))),
         ),
       ),

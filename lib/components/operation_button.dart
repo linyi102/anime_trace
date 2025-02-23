@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 
 class OperationButton extends StatelessWidget {
   const OperationButton(
@@ -33,7 +34,7 @@ class OperationButton extends StatelessWidget {
               borderRadius: finalBorderRadius,
               color: active
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).disabledColor.withOpacity(0.2),
+                  : Theme.of(context).disabledColor.withOpacityFactor(0.2),
               child: InkWell(
                   borderRadius: finalBorderRadius,
                   onTap: active ? onTap : null,

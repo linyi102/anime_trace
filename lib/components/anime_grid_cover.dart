@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/components/common_image.dart';
 import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
 import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/controllers/anime_display_controller.dart';
 import 'package:flutter_test_future/models/anime.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/values/values.dart';
 import 'package:get/get.dart';
@@ -92,7 +92,7 @@ class AnimeGridCover extends StatelessWidget {
                           : _anime.checkedEpisodeCnt / _anime.animeEpisodeCnt,
                       backgroundColor: Theme.of(context)
                           .unselectedWidgetColor
-                          .withOpacity(0.1),
+                          .withOpacityFactor(0.1),
                     ),
                   ),
                 ),
@@ -138,7 +138,7 @@ class AnimeGridCover extends StatelessWidget {
                     width: mqSize.width,
                     height: mqSize.height,
                     // color: Theme.of(context).primaryColor.withOpacity(0.4),
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withOpacityFactor(0.6),
                     child: const Center(
                         child: Icon(Icons.check, color: Colors.white)),
                   ),

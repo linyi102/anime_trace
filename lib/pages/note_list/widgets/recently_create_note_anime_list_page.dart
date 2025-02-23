@@ -4,6 +4,7 @@ import 'package:flutter_test_future/components/loading_widget.dart';
 import 'package:flutter_test_future/dao/episode_note_dao.dart';
 import 'package:flutter_test_future/models/anime.dart';
 import 'package:flutter_test_future/models/enum/note_type.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class RecentlyCreateNoteAnimeListPage extends StatefulWidget {
@@ -67,8 +68,9 @@ class _RecentlyCreateNoteAnimeListPageState
       margin: const EdgeInsets.fromLTRB(10, 2, 15, 2),
       decoration: BoxDecoration(
         borderRadius: radius,
-        color:
-            isSelected ? Theme.of(context).primaryColor.withOpacity(0.2) : null,
+        color: isSelected
+            ? Theme.of(context).primaryColor.withOpacityFactor(0.2)
+            : null,
       ),
       child: InkWell(
         borderRadius: radius,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 
 class FloatButton extends StatelessWidget {
   const FloatButton({this.icon, this.onTap, this.active = false, Key? key})
@@ -17,8 +18,8 @@ class FloatButton extends StatelessWidget {
         margin: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           color: active
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
-              : Colors.black.withOpacity(0.4),
+              ? Theme.of(context).colorScheme.primary.withOpacityFactor(0.4)
+              : Colors.black.withOpacityFactor(0.4),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_future/global.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CommonImage extends StatelessWidget {
@@ -83,14 +84,14 @@ class CommonImage extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          color: baseColor.withOpacity(0.08),
+          color: baseColor.withOpacityFactor(0.08),
           child: Center(
               child: Icon(
             // TODO 放大效果导致图标重复切换
             // isError ? Icons.broken_image : Icons.image,
             Icons.image,
             size: constraints.maxWidth < 50 ? 20 : 30,
-            color: baseColor.withOpacity(0.5),
+            color: baseColor.withOpacityFactor(0.5),
           )),
         );
       },

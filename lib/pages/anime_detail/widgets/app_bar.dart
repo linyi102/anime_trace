@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.
 import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
 import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
@@ -131,16 +132,16 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                 ? [
                     // Colors.black.withOpacity(0),
                     // 最上面添加一点黑色，这样就能看清按钮了
-                    Colors.black.withOpacity(0.2),
+                    Colors.black.withOpacityFactor(0.2),
                     // Colors.white.withOpacity(0.2),
                     // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
-                    scaffoldBgColor.withOpacity(0),
+                    scaffoldBgColor.withOpacityFactor(0),
                     // 过渡到主体颜色
                     scaffoldBgColor,
                   ]
                 : [
-                    Colors.black.withOpacity(0.2),
-                    scaffoldBgColor.withOpacity(0),
+                    Colors.black.withOpacityFactor(0.2),
+                    scaffoldBgColor.withOpacityFactor(0),
                     // 最后1个换成透明色，就取消渐变了
                     Colors.transparent
                   ]),

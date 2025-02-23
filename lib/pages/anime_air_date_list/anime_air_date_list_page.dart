@@ -72,7 +72,7 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
                 ),
                 style: const ButtonStyle(
                   visualDensity: VisualDensity(vertical: -2),
-                  padding: MaterialStatePropertyAll(
+                  padding: WidgetStatePropertyAll(
                       EdgeInsets.symmetric(horizontal: 10)),
                 ),
               ),

@@ -8,6 +8,7 @@ import 'package:flutter_test_future/models/relative_local_image.dart';
 import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
 import 'package:flutter_test_future/pages/settings/image_wall/style.dart';
 import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/image_util.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/values/values.dart';
@@ -510,13 +511,17 @@ class SelectNumberPage extends StatelessWidget {
                     width: 30,
                     decoration: BoxDecoration(
                       color: isCur
-                          ? Theme.of(context).primaryColor.withOpacity(0.2)
+                          ? Theme.of(context)
+                              .primaryColor
+                              .withOpacityFactor(0.2)
                           : null,
                       border: Border.all(
                           width: 0.6,
                           color: isCur
                               ? Theme.of(context).primaryColor
-                              : Theme.of(context).hintColor.withOpacity(0.1)),
+                              : Theme.of(context)
+                                  .hintColor
+                                  .withOpacityFactor(0.1)),
                       borderRadius: radius,
                     ),
                     child: Center(

@@ -12,6 +12,7 @@ import 'package:flutter_test_future/pages/modules/note_edit.dart';
 import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
 import 'package:flutter_test_future/utils/common_util.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/log.dart';
 import 'package:flutter_test_future/utils/platform.dart';
 import 'package:flutter_test_future/utils/sp_util.dart';
@@ -156,7 +157,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   ListTile _buildEpisodeTile() {
     return ListTile(
-      selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.25),
+      selectedTileColor: Theme.of(context).primaryColor.withOpacityFactor(0.25),
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
       title: Align(

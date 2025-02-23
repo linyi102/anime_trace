@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 
 class StackAppBar extends StatelessWidget {
   const StackAppBar({
@@ -31,7 +32,7 @@ class StackAppBar extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.5),
+                    Colors.black.withOpacityFactor(0.5),
                     Colors.transparent,
                   ]),
             ),

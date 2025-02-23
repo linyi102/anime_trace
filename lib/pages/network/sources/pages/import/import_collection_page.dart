@@ -11,6 +11,7 @@ import 'package:flutter_test_future/pages/anime_collection/checklist_controller.
 import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_controller.dart';
 import 'package:flutter_test_future/utils/climb/climb.dart';
 import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
+import 'package:flutter_test_future/utils/extensions/color.dart';
 import 'package:flutter_test_future/utils/sp_profile.dart';
 import 'package:flutter_test_future/utils/time_util.dart';
 import 'package:flutter_test_future/widgets/bottom_sheet.dart';
@@ -300,7 +301,8 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             width: size,
             child: CircularProgressIndicator(
               strokeWidth: 4,
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              backgroundColor:
+                  Theme.of(context).primaryColor.withOpacityFactor(0.3),
             ),
           ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)
