@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:shell_executor/shell_executor.dart';
 
-const flutterBuildVerbose = true;
+bool flutterBuildVerbose = false;
 const flutterVersion = '3.27.0';
 
 /// 打包脚本
 /// 环境变量：fvm, 7z, iscc
-void main() async {
+void main(List<String> arguments) async {
+  parseArguments(arguments);
+
   print('Select the platform to build:');
   print('[1]: Android');
   print('[2]: Windows');
@@ -17,30 +19,38 @@ void main() async {
   stdout.write('Please choose one (or "q" to quit): ');
 
   String choice = stdin.readLineSync()!.trim();
-
   String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-  String buildDir = 'build/manji_$timestamp';
+  String buildDir = 'dist/manji_$timestamp';
   Directory(buildDir).createSync(recursive: true);
-  await generateCommitLog(buildDir);
-  print('');
 
   switch (choice) {
     case '1':
       print('Building Android...');
+      await generateCommitLog(buildDir);
       await buildAndroid(buildDir);
       break;
     case '2':
       print('Building Windows...');
+      await generateCommitLog(buildDir);
       await buildWindows(buildDir);
       break;
     case '3':
       print('Building All...');
+      await generateCommitLog(buildDir);
       await buildAll(buildDir);
       break;
     case 'q':
       exit(0);
     default:
       print('Invalid choice');
+      exit(-1);
+  }
+  print('\nBuild success: $buildDir');
+}
+
+void parseArguments(List<String> arguments) {
+  if (arguments.contains('-v') || arguments.contains('--verbose')) {
+    flutterBuildVerbose = true;
   }
 }
 
@@ -89,8 +99,12 @@ Future<void> buildWindows(String buildDir) async {
     ],
     workingDirectory: buildDir,
   );
-  await runCommand('iscc',
-      ['setup.iss', '/DMyAppVersion=$windowsVersion', '/DOutputDir=$buildDir']);
+  await runCommand('iscc', [
+    'setup.iss',
+    '/Qp',
+    '/DMyAppVersion=$windowsVersion',
+    '/DOutputDir=$buildDir'
+  ]);
 }
 
 Future<void> buildAll(String buildDir) async {
@@ -140,4 +154,5 @@ void copyDirectory(Directory source, Directory destination) {
 Future<void> generateCommitLog(String dir) async {
   ProcessResult result = await $('git', ['log', '-3', '--pretty=format:%h %s']);
   File('$dir/commit.txt').writeAsStringSync(result.stdout);
+  print('');
 }
