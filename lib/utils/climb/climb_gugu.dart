@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/same_ui/climb_cyc_ui.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/climb/same_ui/climb_cyc_ui.dart';
 
 class ClimbGugu with Climb {
   @override

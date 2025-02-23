@@ -1,7 +1,7 @@
-import 'package:flutter_test_future/models/bangumi/bangumi.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/network/bangumi_api.dart';
+import 'package:animetrace/models/bangumi/bangumi.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/network/bangumi_api.dart';
 
 class BangumiRepository {
   final episodesLimit = 100;

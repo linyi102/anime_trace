@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/utils/file_picker_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/setting_card.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/utils/file_picker_util.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/setting_card.dart';
 
 class ImagePathSetting extends StatefulWidget {
   const ImagePathSetting({Key? key}) : super(key: key);

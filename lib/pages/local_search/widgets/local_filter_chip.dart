@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
-import 'package:flutter_test_future/pages/local_search/views/local_filter_page.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
-import 'package:flutter_test_future/utils/keyboard_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/pages/local_search/models/local_search_filter.dart';
+import 'package:animetrace/pages/local_search/views/local_filter_page.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/keyboard_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 
 class LocalFilterChip extends StatefulWidget {
   const LocalFilterChip({

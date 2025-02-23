@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 Widget emptyDataHint({String msg = "没有数据。", String toastMsg = ""}) {
   return Stack(

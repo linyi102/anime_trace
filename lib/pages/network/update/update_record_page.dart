@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/dao/update_record_dao.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/vo/update_record_vo.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/components/anime_list_cover.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/dao/update_record_dao.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/vo/update_record_vo.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/widgets/responsive.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/common_divider.dart';
+import 'package:animetrace/widgets/setting_title.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class UpdateRecordPage extends StatefulWidget {

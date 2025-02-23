@@ -1,21 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/dao/history_dao.dart';
-import 'package:flutter_test_future/models/anime_history_record.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/history/history_controller.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/values/theme.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:animetrace/components/anime_list_cover.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/dao/history_dao.dart';
+import 'package:animetrace/models/anime_history_record.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/history/history_controller.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/values/theme.dart';
+import 'package:animetrace/widgets/common_divider.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/responsive.dart';
+import 'package:animetrace/widgets/setting_title.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 

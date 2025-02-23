@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/note/note_card.dart';
-import 'package:flutter_test_future/dao/note_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/note/note_card.dart';
+import 'package:animetrace/dao/note_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/models/note_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class RateNoteListPage extends StatefulWidget {

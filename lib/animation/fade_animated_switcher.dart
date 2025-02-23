@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:animetrace/components/loading_widget.dart';
 
 class FadeAnimatedSwitcher extends StatelessWidget {
   final bool loadOk;

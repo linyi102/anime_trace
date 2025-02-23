@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:animetrace/utils/common_util.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 @Deprecated("WebView占用手机存储空间太高，推荐使用launchUrl")

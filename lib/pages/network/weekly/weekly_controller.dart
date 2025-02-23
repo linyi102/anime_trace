@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/models/week_record.dart';
+import 'package:animetrace/models/week_record.dart';
 import 'package:get/get.dart';
 
 class WeeklyController extends GetxController {

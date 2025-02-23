@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:animetrace/widgets/common_divider.dart';
 
 class CommonScaffoldBody extends StatelessWidget {
   const CommonScaffoldBody({super.key, required this.child});

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class CountController extends GetxController {
   RxInt count = 0.obs;

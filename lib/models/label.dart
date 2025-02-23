@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/regexp.dart';
+import 'package:animetrace/utils/regexp.dart';
 
 class Label {
   int id;

@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/models/vo/update_record_vo.dart';
+import 'package:animetrace/models/vo/update_record_vo.dart';
 
 import 'anime.dart';
 

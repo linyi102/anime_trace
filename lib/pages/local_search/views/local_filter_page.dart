@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
-import 'package:flutter_test_future/pages/local_search/widgets/select_view_action.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/pages/local_search/models/local_search_filter.dart';
+import 'package:animetrace/pages/local_search/widgets/select_view_action.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 
 class LocalFilterPage extends StatefulWidget {
   const LocalFilterPage({

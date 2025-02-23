@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/pages/bangumi/subject_detail/logic.dart';
-import 'package:flutter_test_future/utils/string.dart';
-import 'package:flutter_test_future/values/theme.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/pages/bangumi/subject_detail/logic.dart';
+import 'package:animetrace/utils/string.dart';
+import 'package:animetrace/values/theme.dart';
 import 'package:get/get.dart' hide GetDynamicUtils;
 
 class BangumiSubjectDetailPage extends StatefulWidget {

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/log.dart';
 
 // 次元城动漫
 class ClimbCycdm with Climb {

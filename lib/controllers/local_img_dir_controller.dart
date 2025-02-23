@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:animetrace/utils/image_util.dart';
 import 'package:get/get.dart';
 
 /// 太麻烦，暂不使用

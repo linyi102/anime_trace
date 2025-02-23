@@ -2,18 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
+import 'package:animetrace/components/common_image.dart';
 
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
-import 'package:flutter_test_future/utils/file_util.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
-import 'package:flutter_test_future/widgets/stack_appbar.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/pages/settings/image_path_setting.dart';
+import 'package:animetrace/utils/file_util.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/widgets/multi_platform.dart';
+import 'package:animetrace/widgets/stack_appbar.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 // 图片浏览器
 class ImageViewerPage extends StatefulWidget {

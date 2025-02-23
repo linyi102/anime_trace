@@ -1,8 +1,8 @@
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/anime_update_record.dart';
-import 'package:flutter_test_future/models/vo/update_record_vo.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/anime_update_record.dart';
+import 'package:animetrace/models/vo/update_record_vo.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
 
 class UpdateRecordDao {
   static var db = SqliteUtil.database;

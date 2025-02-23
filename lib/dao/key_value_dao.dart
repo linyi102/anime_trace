@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class KeyValueDao {

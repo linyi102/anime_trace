@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class PercentBar extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
 
 enum SettingsEnum<T> {
   hideMobileBottomLabel('hideMobileBottomNavigationBarLabel', false);

@@ -1,14 +1,14 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/dao/label_dao.dart';
-import 'package:flutter_test_future/models/label.dart';
-import 'package:flutter_test_future/pages/settings/label/home.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/controllers/labels_controller.dart';
+import 'package:animetrace/dao/label_dao.dart';
+import 'package:animetrace/models/label.dart';
+import 'package:animetrace/pages/settings/label/home.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/emoji_leading.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
+import 'package:animetrace/widgets/emoji_leading.dart';
 
 class LabelForm extends StatefulWidget {
   const LabelForm({super.key, this.label, this.onUpdate});

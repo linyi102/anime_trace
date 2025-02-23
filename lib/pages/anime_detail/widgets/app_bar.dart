@@ -1,20 +1,20 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/anime_rating_bar.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/anime_rating_bar.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/pages/anime_cover_detail.dart';
+import 'package:animetrace/pages/anime_detail/pages/ui_setting.dart';
+import 'package:animetrace/pages/network/climb/anime_climb_all_website.dart';
+import 'package:animetrace/pages/settings/image_wall/note_image_wall.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 

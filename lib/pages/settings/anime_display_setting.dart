@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_uint.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
+import 'package:animetrace/components/dialog/dialog_select_uint.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class AnimesDisplaySetting extends StatefulWidget {
   final bool showAppBar;

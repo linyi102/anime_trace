@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_list_tile.dart';
-import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/label.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/widgets/local_filter_chip.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/anime_list_tile.dart';
+import 'package:animetrace/components/search_app_bar.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/label.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/pages/local_search/widgets/local_filter_chip.dart';
+import 'package:animetrace/pages/network/climb/anime_climb_all_website.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 
 /// 搜索已添加的动漫

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/label_dao.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/dao/label_dao.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get.dart';
 
 import '../models/label.dart';

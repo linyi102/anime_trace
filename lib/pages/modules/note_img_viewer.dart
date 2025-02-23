@@ -2,22 +2,22 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
+import 'package:animetrace/components/common_image.dart';
 
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
-import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
-import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/file_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/models/relative_local_image.dart';
+import 'package:animetrace/pages/settings/image_path_setting.dart';
+import 'package:animetrace/utils/common_util.dart';
+import 'package:animetrace/utils/file_util.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
+import 'package:animetrace/widgets/multi_platform.dart';
+import 'package:animetrace/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 // 点击笔记图片，进入浏览页面
 class ImageViewerPage extends StatefulWidget {

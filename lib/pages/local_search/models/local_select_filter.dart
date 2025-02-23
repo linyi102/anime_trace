@@ -1,8 +1,8 @@
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/enum/anime_area.dart';
-import 'package:flutter_test_future/models/enum/anime_category.dart';
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/models/label.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/models/enum/anime_area.dart';
+import 'package:animetrace/models/enum/anime_category.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/label.dart';
 
 class LocalSelectFilter {
   String? keyword;

@@ -1,7 +1,7 @@
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/time_util.dart';
 
 class Anime {
   int animeId;

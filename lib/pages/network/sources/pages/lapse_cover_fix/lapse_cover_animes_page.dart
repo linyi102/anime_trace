@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/percent_bar.dart';
-import 'package:flutter_test_future/models/data_state.dart';
-import 'package:flutter_test_future/widgets/progress.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_controller.dart';
-import 'package:flutter_test_future/widgets/button/action_button.dart';
+import 'package:animetrace/components/anime_list_cover.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/percent_bar.dart';
+import 'package:animetrace/models/data_state.dart';
+import 'package:animetrace/widgets/progress.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/network/sources/pages/lapse_cover_fix/lapse_cover_controller.dart';
+import 'package:animetrace/widgets/button/action_button.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 /// 展示网络封面失效的所有动漫
 class LapseCoverAnimesPage extends StatefulWidget {

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/enum/anime_area.dart';
-import 'package:flutter_test_future/models/enum/anime_category.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/common/category_intro_page.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/widgets/picker/date_time_picker.dart';
-import 'package:flutter_test_future/widgets/picker/flutter_picker_fix_mouse_scroll.dart';
+import 'package:animetrace/components/dialog/dialog_select_play_status.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/enum/anime_area.dart';
+import 'package:animetrace/models/enum/anime_category.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/common/category_intro_page.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
+import 'package:animetrace/widgets/picker/date_time_picker.dart';
+import 'package:animetrace/widgets/picker/flutter_picker_fix_mouse_scroll.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/utils/log.dart';
 
 class AnimePropertiesPage extends StatelessWidget {
   AnimePropertiesPage({required this.animeController, Key? key})

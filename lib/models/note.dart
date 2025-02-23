@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/episode.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/episode.dart';
+import 'package:animetrace/models/relative_local_image.dart';
 
 class Note {
   int id;

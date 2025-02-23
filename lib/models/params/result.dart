@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class Result<T> {
   int code;

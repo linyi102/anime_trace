@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
+import 'package:animetrace/controllers/app_upgrade_controller.dart';
 
 class BangumiApi {
   static Map<String, dynamic> headers = {

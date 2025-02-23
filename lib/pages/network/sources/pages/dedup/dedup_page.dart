@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/operation_button.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/dedup/dedup_controller.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/operation_button.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/network/sources/pages/dedup/dedup_controller.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 import 'package:get/get.dart';
 
 /// 动漫去重页面

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/page_switch_animation.dart';
-import 'package:flutter_test_future/utils/settings.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/models/page_switch_animation.dart';
+import 'package:animetrace/utils/settings.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 
 class ThemeController extends GetxController {

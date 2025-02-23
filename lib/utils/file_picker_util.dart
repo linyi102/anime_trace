@@ -1,5 +1,5 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 Future<String?> selectFile() async {
   FilePickerResult? result = await FilePicker.platform.pickFiles();

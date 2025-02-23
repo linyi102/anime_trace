@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/models/page_switch_animation.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/models/page_switch_animation.dart';
+import 'package:animetrace/utils/log.dart';
 
 import 'sp_util.dart';
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:animetrace/components/anime_item_auto_load.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
   const NeedUpdateAnimeList({Key? key}) : super(key: key);

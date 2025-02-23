@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/app_upgrade_controller.dart';
-import 'package:flutter_test_future/models/enum/load_status.dart';
-import 'package:flutter_test_future/pages/changelog/view.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/rotated_logo.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
+import 'package:animetrace/controllers/app_upgrade_controller.dart';
+import 'package:animetrace/models/enum/load_status.dart';
+import 'package:animetrace/pages/changelog/view.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/rotated_logo.dart';
+import 'package:animetrace/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 
 class AboutVersion extends StatefulWidget {

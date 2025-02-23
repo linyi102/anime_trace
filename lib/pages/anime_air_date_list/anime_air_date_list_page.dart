@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
-import 'package:flutter_test_future/models/anime_grid_cover_config.dart';
-import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_controller.dart';
+import 'package:animetrace/components/anime_horizontal_cover.dart';
+import 'package:animetrace/models/anime_grid_cover_config.dart';
+import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_controller.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 

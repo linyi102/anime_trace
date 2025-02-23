@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 

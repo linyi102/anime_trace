@@ -1,17 +1,17 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/models/page_switch_animation.dart';
-import 'package:flutter_test_future/pages/settings/widgets/main_tab_layout_setting.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/settings.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/setting_card.dart';
+import 'package:animetrace/controllers/theme_controller.dart';
+import 'package:animetrace/models/page_switch_animation.dart';
+import 'package:animetrace/pages/settings/widgets/main_tab_layout_setting.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/settings.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/setting_card.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 class GeneralSettingPage extends StatefulWidget {
   const GeneralSettingPage({Key? key}) : super(key: key);

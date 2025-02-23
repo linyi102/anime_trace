@@ -1,9 +1,9 @@
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/dao/history_dao.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/dao/history_dao.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/global_data.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:get/get.dart';
 
 import '../../../dao/anime_dao.dart';

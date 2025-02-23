@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/pages/network/sources/aggregate_page.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/pages/network/climb/anime_climb_all_website.dart';
+import 'package:animetrace/pages/network/sources/aggregate_page.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 探索页

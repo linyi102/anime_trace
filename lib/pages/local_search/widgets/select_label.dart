@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/models/label.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/controllers/labels_controller.dart';
+import 'package:animetrace/models/label.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
 
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 
 class SelectLabelView extends StatefulWidget {

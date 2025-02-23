@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/pages/viewer/network_image/network_image_page.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 /// 自动根据动漫详细地址来获取封面和信息
 /// 注意配合List/Grid.builder懒加载时，后面的组件因没有渲染，所以暂时不会获取封面和信息

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class AnimeRatingBar extends StatelessWidget {

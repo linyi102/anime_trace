@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/repositories/bangumi_repository.dart';
-import 'package:flutter_test_future/models/bangumi/bangumi.dart';
+import 'package:animetrace/repositories/bangumi_repository.dart';
+import 'package:animetrace/models/bangumi/bangumi.dart';
 import 'package:get/get.dart';
 
 class BangumiSubjectDetailLogic extends GetxController {

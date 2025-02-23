@@ -1,15 +1,15 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/anime_update_record.dart';
-import 'package:flutter_test_future/controllers/update_record_controller.dart';
-import 'package:flutter_test_future/models/week_record.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/dao/update_record_dao.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/models/anime_update_record.dart';
+import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/models/week_record.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/dao/update_record_dao.dart';
+import 'package:animetrace/utils/global_data.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:queue/queue.dart';
 
 class ClimbAnimeUtil {

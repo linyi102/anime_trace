@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/widgets/animation/fade_in_up.dart';
+import 'package:animetrace/widgets/animation/fade_in_up.dart';
 
 class FloatingBottomActions extends StatelessWidget {
   const FloatingBottomActions({

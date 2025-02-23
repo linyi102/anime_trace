@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
 import 'package:path/path.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class ImageUtil {
   static ImageUtil? _instance;

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/main_screen/style.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
+import 'package:animetrace/pages/main_screen/style.dart';
+import 'package:animetrace/pages/settings/series/manage/view.dart';
 import 'package:get/get.dart';
 
-import 'package:flutter_test_future/pages/anime_collection/anime_list_page.dart';
-import 'package:flutter_test_future/pages/history/history_page.dart';
-import 'package:flutter_test_future/pages/network/explore_page.dart';
-import 'package:flutter_test_future/pages/note_list/note_list_page.dart';
-import 'package:flutter_test_future/pages/settings/settings_page.dart';
+import 'package:animetrace/pages/anime_collection/anime_list_page.dart';
+import 'package:animetrace/pages/history/history_page.dart';
+import 'package:animetrace/pages/network/explore_page.dart';
+import 'package:animetrace/pages/note_list/note_list_page.dart';
+import 'package:animetrace/pages/settings/settings_page.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../network/climb/anime_climb_all_website.dart';

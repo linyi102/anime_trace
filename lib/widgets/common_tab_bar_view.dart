@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/platform.dart';
+import 'package:animetrace/utils/platform.dart';
 
 class CommonTabBarView extends StatelessWidget {
   const CommonTabBarView({super.key, required this.children, this.controller});

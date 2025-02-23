@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_grid_cover_config.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/dialog/dialog_confirm_migrate.dart';
+import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_grid_cover_config.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/responsive.dart';
 
 /// 水平排列动漫封面
 class AnimeHorizontalCover extends StatefulWidget {

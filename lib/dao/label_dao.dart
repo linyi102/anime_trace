@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
-import 'package:flutter_test_future/models/label.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
+import 'package:animetrace/models/label.dart';
 
 import '../utils/log.dart';
 import '../utils/sqlite_util.dart';
@@ -65,7 +65,7 @@ class LabelDao {
   static Future<List<Label>> searchLabel(String kw) async {
     Log.info("sql:searchLabel(kw=$kw)");
     List<Map<String, Object?>> maps = await db.rawQuery('''
-    select * from $table where $columnName like '%$kw%';            
+    select * from $table where $columnName like '%$kw%';
     ''');
     return maps.map((e) => Label.fromMap(e)).toList();
   }

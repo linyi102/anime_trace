@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/pages/changelog/logic.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/pages/changelog/logic.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 

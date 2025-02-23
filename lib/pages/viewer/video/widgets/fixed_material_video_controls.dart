@@ -6,7 +6,7 @@
 // ignore_for_file: non_constant_identifier_names
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:screen_brightness/screen_brightness.dart';

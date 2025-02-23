@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/get_anime_grid_delegate.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 
 class AnimeGridView extends StatefulWidget {

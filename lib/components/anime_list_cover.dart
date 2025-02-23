@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/values/values.dart';
 
 import 'common_image.dart';
 

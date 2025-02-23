@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/dao/key_value_dao.dart';
+import 'package:animetrace/dao/key_value_dao.dart';
 
 class ConfigDao {
   /// 获取忽略的推荐系列

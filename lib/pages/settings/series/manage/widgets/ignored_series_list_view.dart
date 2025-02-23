@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/logic.dart';
+import 'package:animetrace/pages/settings/series/manage/logic.dart';
 import 'package:get/get.dart';
 
 class IgnoredSeriesListView extends StatelessWidget {

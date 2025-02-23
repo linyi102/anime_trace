@@ -1,11 +1,11 @@
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_test_future/utils/error_format_util.dart';
-import 'package:flutter_test_future/models/ping_result.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/network/dio_log_interceptor.dart';
+import 'package:animetrace/utils/error_format_util.dart';
+import 'package:animetrace/models/ping_result.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/network/dio_log_interceptor.dart';
 
 class DioUtil {
   static final BaseOptions _baseOptions = BaseOptions(

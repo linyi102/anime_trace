@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
 
 class EpisodeDesc {
   int id; // 唯一id

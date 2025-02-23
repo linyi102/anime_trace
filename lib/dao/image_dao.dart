@@ -1,7 +1,7 @@
-import 'package:flutter_test_future/utils/image_util.dart';
+import 'package:animetrace/utils/image_util.dart';
 
 import '../utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class ImageDao {
   static var database = SqliteUtil.database;

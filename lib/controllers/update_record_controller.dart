@@ -1,11 +1,11 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/anime_update_record.dart';
-import 'package:flutter_test_future/models/vo/update_record_vo.dart';
-import 'package:flutter_test_future/dao/update_record_dao.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/anime_update_record.dart';
+import 'package:animetrace/models/vo/update_record_vo.dart';
+import 'package:animetrace/dao/update_record_dao.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class UpdateRecordController extends GetxController {
   static UpdateRecordController get to => Get.find();

@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 class CommonUtil {
   static copyContent(String text,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/utils/extensions/color.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 
 class FloatButton extends StatelessWidget {
   const FloatButton({this.icon, this.onTap, this.active = false, Key? key})

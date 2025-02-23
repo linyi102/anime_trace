@@ -1,11 +1,11 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/climb/site_collection_tab.dart';
+import 'package:animetrace/utils/climb/user_collection.dart';
+import 'package:animetrace/utils/dio_util.dart';
 import 'package:html/dom.dart';
 
 class ClimbDouban with Climb {

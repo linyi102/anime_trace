@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
+import 'package:animetrace/dao/anime_dao.dart';
 
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/viewer/network_image/network_image_page.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/utils/log.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
   Log.info("迁移动漫$animeId");

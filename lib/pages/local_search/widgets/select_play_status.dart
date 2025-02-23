@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/pages/local_search/models/local_select_filter.dart';
 import 'package:get/get.dart';
 
 class SelectPlayStatusView extends StatefulWidget {
