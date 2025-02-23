@@ -1,3 +1,4 @@
+import 'package:animetrace/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
@@ -9,7 +10,6 @@ import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/pages/anime_detail/widgets/note_image_list.dart';
 import 'package:animetrace/pages/modules/note_edit.dart';
-import 'package:animetrace/pages/viewer/video/view_with_load_url.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/common_util.dart';
 import 'package:animetrace/utils/extensions/color.dart';
