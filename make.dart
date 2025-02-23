@@ -21,22 +21,21 @@ void main(List<String> arguments) async {
   String choice = stdin.readLineSync()!.trim();
   String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
   String buildDir = 'dist/manji_$timestamp';
-  Directory(buildDir).createSync(recursive: true);
 
   switch (choice) {
     case '1':
       print('Building Android...');
-      await generateCommitLog(buildDir);
+      await prepareBuildDir(buildDir);
       await buildAndroid(buildDir);
       break;
     case '2':
       print('Building Windows...');
-      await generateCommitLog(buildDir);
+      await prepareBuildDir(buildDir);
       await buildWindows(buildDir);
       break;
     case '3':
       print('Building All...');
-      await generateCommitLog(buildDir);
+      await prepareBuildDir(buildDir);
       await buildAll(buildDir);
       break;
     case 'q':
@@ -149,6 +148,11 @@ void copyDirectory(Directory source, Directory destination) {
           '${destination.path}/${entity.path.substring(source.path.length)}');
     }
   }
+}
+
+Future<void> prepareBuildDir(String dir) async {
+  Directory(dir).createSync(recursive: true);
+  await generateCommitLog(dir);
 }
 
 Future<void> generateCommitLog(String dir) async {
