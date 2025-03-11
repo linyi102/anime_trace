@@ -94,7 +94,7 @@ class ImageUtil {
   static String _removeRootDirPath(String path, String rootDirPath) {
     // Android选择图片后会缓存在/data/user/<package_name>/cache/file_picker/目录下
     // 所以这里只能取到文件名，无法获取相对路径
-    if (Platform.isAndroid) return p.basename(path);
+    if (Platform.isAndroid) return '/${p.basename(path)}';
     return path.replaceFirst(rootDirPath, "");
   }
 
