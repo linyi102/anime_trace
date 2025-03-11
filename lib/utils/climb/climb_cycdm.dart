@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/params/page_params.dart';
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/utils/dio_util.dart';
@@ -59,6 +60,9 @@ class ClimbCycdm with Climb {
     anime.premiereTime =
         exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
     anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
+    if (anime.playStatus.contains(RegExp('周.*后'))) {
+      anime.playStatus = PlayStatus.playing.text;
+    }
     return anime;
   }
 
