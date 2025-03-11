@@ -18,7 +18,7 @@ class SearchHistoryView extends StatelessWidget {
       builder: (context, child) {
         if (controller._keywords.isEmpty) return const SizedBox();
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
