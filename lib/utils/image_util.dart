@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:path/path.dart';
 import 'package:animetrace/utils/log.dart';
+import 'package:path/path.dart' as p;
 
 class ImageUtil {
   static ImageUtil? _instance;
@@ -91,12 +92,9 @@ class ImageUtil {
   }
 
   static String _removeRootDirPath(String path, String rootDirPath) {
-    String relativeImagePath = path;
     // Android选择图片后会缓存在/data/user/<package_name>/cache/file_picker/目录下
-    final cacheNameRegExp = RegExp(r'^\/data\/user.*\/cache\/file_picker');
-    if (Platform.isAndroid && relativeImagePath.contains(cacheNameRegExp)) {
-      return relativeImagePath.replaceFirst(cacheNameRegExp, '');
-    }
+    // 所以这里只能取到文件名，无法获取相对路径
+    if (Platform.isAndroid) p.basename(path);
     return path.replaceFirst(rootDirPath, "");
   }
 
