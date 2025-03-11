@@ -82,6 +82,14 @@ class ClimbQdm with Climb {
         .previousElementSibling!
         .innerHtml;
 
+    // 获取简介
+    anime.animeDesc = document
+        .getElementsByClassName("col-pd text-collapse content")[0]
+        .getElementsByClassName("data")[0]
+        .getElementsByTagName("p")[0]
+        .innerHtml
+        .replaceAll("<br>", "\n");
+
     // JOJO的奇妙冒险 第六部(石之海)Part.3：全集 / 2022-12-03
     // 海贼王：更新至1046集 / 2023-01-08
     // JOJO的奇妙冒险星尘斗士埃及篇：完结 / 2021-07-01
