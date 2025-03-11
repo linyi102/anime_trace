@@ -746,10 +746,18 @@ class SqliteUtil {
     }
   }
 
-  static Future<int> count(
-      {required String tableName, String? columnName = 'id'}) async {
-    final rows = await database
-        .query(tableName, columns: ['COUNT(${columnName ?? "*"})']);
+  static Future<int> count({
+    required String tableName,
+    String? columnName = 'id',
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    final rows = await database.query(
+      tableName,
+      columns: ['COUNT(${columnName ?? "*"})'],
+      where: where,
+      whereArgs: whereArgs,
+    );
     return firstIntValue(rows);
   }
 

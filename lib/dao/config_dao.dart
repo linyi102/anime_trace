@@ -10,4 +10,14 @@ class ConfigDao {
   static Future<void> setIgnoredRecommendSeries(List<String> names) async {
     await KeyValueDao.setStringList('ignoredRecommendSeries', names);
   }
+
+  /// 获取搜索历史
+  static Future<List<String>> getSearchHistoryKeywords() async {
+    return await KeyValueDao.getStringList('networkSearchHistoryKeyword') ?? [];
+  }
+
+  /// 设置搜索历史
+  static Future<void> setSearchHistoryKeywords(List<String> keywords) async {
+    await KeyValueDao.setStringList('networkSearchHistoryKeyword', keywords);
+  }
 }
