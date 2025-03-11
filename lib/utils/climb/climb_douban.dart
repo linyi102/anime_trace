@@ -132,7 +132,7 @@ class ClimbDouban with Climb {
         Anime(
             animeName: title,
             animeCoverUrl: coverUrl,
-            animeUrl: 'https://movie.douban.com/subject/$detailId'),
+            animeUrl: 'https://www.douban.com/subject/$detailId'),
       );
     }
     return animes;
