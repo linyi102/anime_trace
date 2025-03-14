@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/components/anime_grid_cover.dart';
@@ -190,6 +191,9 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           Anime anime = mixedAnimes[index];
           return InkWell(
               child: AnimeGridCover(anime),
+              onLongPress: () {
+                LaunchUrlUtil.launch(context: context, uriStr: anime.animeUrl);
+              },
               onTap: () {
                 // 迁移动漫
                 if (ismigrate) {

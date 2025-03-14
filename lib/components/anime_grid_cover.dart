@@ -23,6 +23,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool showSeries;
   final bool isSelected;
   final void Function()? onPressed;
+  final GestureLongPressCallback? onLongPress;
   final bool loading;
 
   const AnimeGridCover(
@@ -37,6 +38,7 @@ class AnimeGridCover extends StatelessWidget {
     this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
+    this.onLongPress,
     this.loading = false,
   }) : super(key: key);
 
@@ -52,6 +54,7 @@ class AnimeGridCover extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(AppTheme.imgRadius),
       onTap: onPressed,
+      onLongPress: onLongPress,
       // 监听是否显示进度、观看次数、原图
       child: Obx(() => Column(
             children: [

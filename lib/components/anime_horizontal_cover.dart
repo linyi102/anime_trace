@@ -16,12 +16,14 @@ class AnimeHorizontalCover extends StatefulWidget {
   final int animeId;
   final Future<bool> Function() callback;
   final AnimeGridCoverConfig coverConfig;
+  final void Function(Anime anime)? onLongPressItem;
 
   const AnimeHorizontalCover({
     Key? key,
     required this.animes,
     this.animeId = 0,
     required this.callback,
+    this.onLongPressItem,
     this.coverConfig = const AnimeGridCoverConfig(
       showCover: true,
       showName: true,
@@ -81,6 +83,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
                     anime,
                     coverWidth: coverWidth,
                     onPressed: () => _onTapAnime(anime, animeIndex),
+                    onLongPress: () => widget.onLongPressItem?.call(anime),
                     showName: widget.coverConfig.showName,
                     showProgress: widget.coverConfig.showProgress,
                     // 无法显示进度条，因此始终设置为false

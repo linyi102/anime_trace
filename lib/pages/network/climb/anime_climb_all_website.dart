@@ -1,4 +1,5 @@
 import 'package:animetrace/pages/network/climb/widgets/search_history_view.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/components/anime_horizontal_cover.dart';
@@ -251,6 +252,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                     animes: mixedAnimes[webstie.name] ?? [],
                     animeId: widget.animeId,
                     callback: _generateMixedAnimesAllWebsite,
+                    onLongPressItem: (anime) {
+                      LaunchUrlUtil.launch(
+                          context: context, uriStr: anime.animeUrl);
+                    },
                   )
                 : websiteClimbSearching[webstie.name] ?? false
                     ?
