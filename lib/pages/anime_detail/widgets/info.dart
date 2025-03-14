@@ -6,7 +6,6 @@ import 'package:animetrace/components/dialog/dialog_select_play_status.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/bangumi/subject_detail/view.dart';
-import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/pages/anime_detail/pages/anime_properties_page.dart';
@@ -177,8 +176,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 widget.animeController.reloadAnime(_anime);
               });
             }),
-      _buildSearchBtn(),
-      // _buildBangumiInfoBtn(),
+      // _buildSearchBtn(),
+      _buildBangumiInfoBtn(),
     ];
   }
 
@@ -232,25 +231,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   Widget _buildBangumiInfoBtn() {
     return _buildIconTextButton(
       iconData: MingCuteIcons.mgc_profile_line,
-      text: '信息',
+      text: '角色',
       onTap: () {
         RouteUtil.materialTo(context, const BangumiSubjectDetailPage());
-      },
-    );
-  }
-
-  _buildSearchBtn() {
-    return _buildIconTextButton(
-      iconData: MingCuteIcons.mgc_search_line,
-      text: '搜索',
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DbAnimeSearchPage(kw: _anime.animeName),
-            )).then((value) {
-          widget.animeController.reloadAnime(_anime);
-        });
       },
     );
   }

@@ -1,8 +1,8 @@
+import 'package:animetrace/models/bangumi/character.dart';
+import 'package:animetrace/modules/load_status/load_status.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/pages/bangumi/subject_detail/logic.dart';
-import 'package:animetrace/utils/string.dart';
-import 'package:animetrace/values/theme.dart';
 import 'package:get/get.dart' hide GetDynamicUtils;
 
 class BangumiSubjectDetailPage extends StatefulWidget {
@@ -28,58 +28,58 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
       init: logic,
       builder: (_) {
         return Scaffold(
-          appBar: AppBar(),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                GridView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, mainAxisExtent: 60),
-                  children: [
-                    for (final character in logic.characters
-                        // .sublist(0, 8.clamp(0, logic.characters.length))
-                        )
-                      ListTile(
-                        leading: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(AppTheme.imgRadius),
-                          child: SizedBox(
-                            height: 40,
-                            width: 40,
-                            child: CommonImage(
-                              character.images?.grid ?? '',
-                              alignment: Alignment.topCenter,
-                            ),
-                          ),
-                        ),
-                        title: Text(character.name ?? ''),
-                        subtitle: Row(
-                          children: [
-                            if (!character.relation.isNullOrBlank)
-                              Text('${character.relation} · '),
-                            Expanded(
-                              child: Text(
-                                character.actors?.isNotEmpty == true
-                                    ? character.actors!
-                                        .map((e) => e.name ?? '')
-                                        .where((name) => name.isNotEmpty)
-                                        .join(' / ')
-                                    : '',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                  ],
-                ),
-              ],
+          appBar: AppBar(
+            title: const Text('角色'),
+          ),
+          body: LoadStatusBuilder(
+            controller: logic.loadStatusController,
+            builder: (context) => GridView.builder(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 500,
+                mainAxisExtent: 72,
+              ),
+              itemCount: logic.characters.length,
+              itemBuilder: (BuildContext context, int index) {
+                final character = logic.characters[index];
+                return _buildCharacterItem(character);
+              },
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildCharacterItem(BgmCharacter character) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ListTile(
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(99),
+          child: SizedBox(
+            height: 42,
+            width: 42,
+            child: CommonImage(
+              character.images?.grid ?? '',
+              alignment: Alignment.topCenter,
+            ),
+          ),
+        ),
+        title: Text(
+          character.name ?? '',
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          character.actors?.isNotEmpty == true
+              ? character.actors!
+                  .map((e) => e.name ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .join(' / ')
+              : '',
+          overflow: TextOverflow.ellipsis,
+        ),
+        onTap: () => logic.toDetail(context, character),
+      ),
     );
   }
 }

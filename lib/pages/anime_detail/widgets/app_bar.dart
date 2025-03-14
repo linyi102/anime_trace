@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_cover.dart';
 import 'package:animetrace/components/anime_rating_bar.dart';
@@ -241,6 +242,22 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                         widget.animeController.loadAnime(_anime);
                         // NOTE 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
                         // widget.animeController.loadEpisode();
+                      });
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: const ListTile(
+                      leading: Icon(Icons.search),
+                      title: Text("搜索动漫"),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DbAnimeSearchPage(kw: _anime.animeName),
+                          )).then((value) {
+                        widget.animeController.reloadAnime(_anime);
                       });
                     },
                   ),

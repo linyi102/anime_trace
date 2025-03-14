@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_ping/dart_ping.dart';
@@ -63,6 +64,20 @@ class DioUtil {
       Response response = await dio.post(
         path,
         data: FormData.fromMap(data),
+      );
+
+      return Result.success(response);
+    } catch (e) {
+      String msg = ErrorFormatUtil.formatError(e);
+      return Result.failure(-1, msg);
+    }
+  }
+
+  static Future<Result> graphql(String path, String graphSQL) async {
+    try {
+      Response response = await dio.post(
+        path,
+        data: jsonEncode({"query": graphSQL}),
       );
 
       return Result.success(response);

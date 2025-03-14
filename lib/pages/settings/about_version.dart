@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/app_upgrade_controller.dart';
-import 'package:animetrace/models/enum/load_status.dart';
+import 'package:animetrace/modules/load_status/status.dart';
 import 'package:animetrace/pages/changelog/view.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/values/values.dart';

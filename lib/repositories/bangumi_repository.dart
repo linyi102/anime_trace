@@ -1,4 +1,5 @@
 import 'package:animetrace/models/bangumi/bangumi.dart';
+import 'package:animetrace/models/bangumi/character_graph.dart';
 import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
@@ -39,6 +40,33 @@ class BangumiRepository {
       transform: BgmCharacter.fromMap,
       dataType: ResultDataType.responseBody,
     );
+  }
+
+  Future<List<BgmCharacterGraph>> fetchCharacterGraphs(
+      List<int> characterIds) async {
+    final result = await DioUtil.graphql(BangumiApi.graphUrl, '''
+    query Query {
+      ${characterIds.map((id) => 'c$id: character(id: $id) { ...CharacterGraph }').join('\n')}
+    }
+
+    fragment CharacterGraph on Character {
+      id
+      infobox {
+        key
+        values {
+          k
+          v
+        }
+      }
+    }
+    ''');
+    return result
+        .toModel(
+          transform: BgmCharacterGraphList.fromMap,
+          dataType: ResultDataType.responseBodyData,
+          onError: () => BgmCharacterGraphList([]),
+        )
+        .characters;
   }
 
   Future<List<BgmPerson>> fetchPersons(String subjectId) async {

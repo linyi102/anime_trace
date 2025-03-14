@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/components/percent_bar.dart';
 import 'package:animetrace/global.dart';
 import 'package:animetrace/models/app_release.dart';
-import 'package:animetrace/models/enum/load_status.dart';
+import 'package:animetrace/modules/load_status/status.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
 import 'package:animetrace/utils/file_util.dart';

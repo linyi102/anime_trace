@@ -11,6 +11,9 @@ class BangumiApi {
 
   static String baseUrl = 'https://api.bgm.tv';
 
+  /// graph
+  static String graphUrl = '$baseUrl/v0/graphql';
+
   /// 每日放送
   static String calendar = '$baseUrl/calendar';
 
