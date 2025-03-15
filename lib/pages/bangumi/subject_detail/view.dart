@@ -3,7 +3,9 @@ import 'package:animetrace/models/bangumi/character.dart';
 import 'package:animetrace/modules/load_status/load_status.dart';
 import 'package:animetrace/modules/load_status/page.dart';
 import 'package:animetrace/pages/bangumi/bind_subject/view.dart';
+import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/pages/bangumi/subject_detail/logic.dart';
@@ -73,17 +75,23 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
   }
 
   Widget _buildCharacterItem(BgmCharacter character) {
+    final borderRadius = BorderRadius.circular(AppTheme.imgRadius);
     return Align(
       alignment: Alignment.centerLeft,
       child: ListTile(
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(99),
-          child: SizedBox(
-            height: 42,
-            width: 42,
-            child: CommonImage(
-              character.images?.grid ?? '',
-              alignment: Alignment.topCenter,
+        leading: InkWell(
+          borderRadius: borderRadius,
+          onTap: () => RouteUtil.toImageViewer(
+              context, NetworkImageViewPage(character.images?.large ?? '')),
+          child: ClipRRect(
+            borderRadius: borderRadius,
+            child: SizedBox(
+              height: 42,
+              width: 42,
+              child: CommonImage(
+                character.images?.grid ?? '',
+                alignment: Alignment.topCenter,
+              ),
             ),
           ),
         ),
