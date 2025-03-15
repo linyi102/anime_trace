@@ -233,7 +233,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       iconData: MingCuteIcons.mgc_profile_line,
       text: '角色',
       onTap: () {
-        RouteUtil.materialTo(context, const BangumiSubjectDetailPage());
+        RouteUtil.materialTo(context, BangumiSubjectDetailPage(_anime));
       },
     );
   }

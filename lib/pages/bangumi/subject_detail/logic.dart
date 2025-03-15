@@ -1,21 +1,28 @@
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/bangumi/character_graph.dart';
 import 'package:animetrace/modules/load_status/controller.dart';
 import 'package:animetrace/repositories/bangumi_repository.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class BangumiSubjectDetailLogic extends GetxController {
-  String subjectId = '428735';
+  String subjectId = '';
+  final Anime anime;
+  BangumiSubjectDetailLogic(this.anime);
+
   final repository = BangumiRepository();
   List<BgmCharacter> characters = [];
-  late final loadStatusController = LoadStatusController(refresh: loadData);
+  late final loadStatusController = LoadStatusController(refresh: _loadData);
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    loadData();
+    _loadData();
   }
 
   @override
@@ -24,8 +31,29 @@ class BangumiSubjectDetailLogic extends GetxController {
     loadStatusController.dispose();
   }
 
-  Future<void> loadData() async {
+  Future<void> _loadData() async {
     loadStatusController.setLoading();
+
+    final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(anime.animeUrl);
+    if (website?.climb is ClimbBangumi) {
+      // 先以bangumi动漫链接为准
+      final idStr = _extractSubjectId(anime.animeUrl);
+      if (idStr.isNotEmpty) {
+        subjectId = idStr;
+      } else {
+        _promptBindBgmSubject();
+        return;
+      }
+    } else {
+      // 如果不是bangumi，再从数据库中查找之前绑定的subjectId
+      final dbSubjectId = await AnimeDao.getBgmSubjectId(anime.animeId);
+      if (dbSubjectId.isEmpty) {
+        _promptBindBgmSubject();
+        return;
+      }
+      subjectId = dbSubjectId;
+    }
+
     characters = await repository.fetchCharacters(subjectId);
     await _covertToChineseName(characters);
     characters.sort((a, b) =>
@@ -33,12 +61,29 @@ class BangumiSubjectDetailLogic extends GetxController {
     loadStatusController.setSuccess();
   }
 
+  void _promptBindBgmSubject() {
+    subjectId = '';
+    loadStatusController.setSuccess();
+  }
+
+  Future<void> bindBgmSubject(Anime bgmAnime) async {
+    final idStr = _extractSubjectId(bgmAnime.animeUrl);
+    await AnimeDao.setBgmSubjectId(anime.animeId, idStr);
+    _loadData();
+  }
+
+  String _extractSubjectId(String animeUrl) {
+    return RegExp(r'\/subject\/(\d+)').firstMatch(animeUrl)?.group(1) ?? '';
+  }
+
   Future<void> _covertToChineseName(List<BgmCharacter> characters) async {
-    final characterGraphs = await repository.fetchCharacterGraphs(characters
+    final ids = characters
         .map((c) => c.id)
         .where((id) => id != null)
         .cast<int>()
-        .toList());
+        .toList();
+    if (ids.isEmpty) return;
+    final characterGraphs = await repository.fetchCharacterGraphs(ids);
     for (final c in characters) {
       final cn =
           characterGraphs.firstWhereOrNull((g) => g.id == c.id)?.chineseName;

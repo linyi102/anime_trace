@@ -53,6 +53,9 @@ class SqliteUtil {
     await SqliteUtil.addColumnCalEpisodeNumberFromOneToAnime();
     // 为动漫表增加搜索源
     await AnimeDao.addColumnSourceForAnime();
+    // 增加bangumi subjectId列
+    await AnimeDao.addColumnBgmSubjectId();
+
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序

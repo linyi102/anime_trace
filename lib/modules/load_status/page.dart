@@ -18,7 +18,8 @@ class EmptyPage extends BaseEmptyPage {
     super.key,
     super.icon = Icons.outlet_outlined,
     super.msg = '什么都没有~',
-    super.onClickRefresh,
+    super.onTap,
+    super.buttonText = '刷新',
   });
 }
 
@@ -27,7 +28,8 @@ class FailPage extends BaseEmptyPage {
     super.key,
     super.icon = Icons.error_outline,
     super.msg = '加载失败',
-    super.onClickRefresh,
+    super.onTap,
+    super.buttonText = '刷新',
   });
 }
 
@@ -36,15 +38,15 @@ class BaseEmptyPage extends StatelessWidget {
     this.icon = Icons.error_outline,
     this.imgAssetPath,
     required this.msg,
-    this.onClickRefresh,
-    this.refreshText = '刷新',
+    required this.onTap,
+    required this.buttonText,
     Key? key,
   }) : super(key: key);
   final IconData icon;
   final String? imgAssetPath;
   final String? msg;
-  final Function()? onClickRefresh;
-  final String refreshText;
+  final Function()? onTap;
+  final String buttonText;
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +68,10 @@ class BaseEmptyPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(msg!, style: TextStyle(color: color)),
             ),
-          if (onClickRefresh != null)
+          if (onTap != null)
             FilledButton(
-              onPressed: onClickRefresh,
-              child: Text(refreshText),
+              onPressed: onTap,
+              child: Text(buttonText),
             ),
         ],
       ),

@@ -23,13 +23,17 @@ class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
   final ClimbWebsite climbWebStie;
+  final bool enableSourceSelector;
+  final void Function(Anime anime)? onTap;
 
-  const AnimeClimbOneWebsite(
-      {this.animeId = 0,
-      this.keyword = "",
-      required this.climbWebStie,
-      Key? key})
-      : super(key: key);
+  const AnimeClimbOneWebsite({
+    this.animeId = 0,
+    this.keyword = "",
+    required this.climbWebStie,
+    this.enableSourceSelector = true,
+    this.onTap,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _AnimeClimbOneWebsiteState createState() => _AnimeClimbOneWebsiteState();
@@ -124,23 +128,13 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       body: CommonScaffoldBody(
           child: Column(
         children: [
-          ListTile(
-            title: Text(curWebsite.name),
-            leading: WebSiteLogo(url: curWebsite.iconUrl, size: 25),
-            trailing: const Icon(Icons.keyboard_arrow_down),
-            onTap: () => _showDialogSelectWebsite(context),
-          ),
-          // ListTile(
-          //   title: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       WebSiteLogo(url: curWebsite.iconUrl, size: 25),
-          //       const SizedBox(width: 10),
-          //       Text(curWebsite.name)
-          //     ],
-          //   ),
-          //   onTap: () => _showDialogSelectWebsite(context),
-          // ),
+          if (widget.enableSourceSelector)
+            ListTile(
+              title: Text(curWebsite.name),
+              leading: WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+              trailing: const Icon(Icons.keyboard_arrow_down),
+              onTap: () => _showDialogSelectWebsite(context),
+            ),
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
@@ -195,8 +189,11 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                 LaunchUrlUtil.launch(context: context, uriStr: anime.animeUrl);
               },
               onTap: () {
+                if (widget.onTap != null) {
+                  widget.onTap!(anime);
+                }
                 // 迁移动漫
-                if (ismigrate) {
+                else if (ismigrate) {
                   showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
                   Log.info("进入动漫详细页面${anime.animeId}");
