@@ -60,7 +60,7 @@ class ClimbCycdm with Climb {
     anime.premiereTime =
         exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09
     anime.playStatus = lis[1].getElementsByTagName("span")[0].innerHtml;
-    if (anime.playStatus.contains(RegExp('周.*后'))) {
+    if (anime.playStatus.contains(RegExp('周.*(后|更新)'))) {
       anime.playStatus = PlayStatus.playing.text;
     }
     return anime;
