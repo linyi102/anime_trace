@@ -51,6 +51,7 @@ class BangumiRepository {
 
     fragment CharacterGraph on Character {
       id
+      comment
       infobox {
         key
         values {

@@ -55,7 +55,7 @@ class BangumiSubjectDetailLogic extends GetxController {
     }
 
     characters = await repository.fetchCharacters(subjectId);
-    await _covertToChineseName(characters);
+    await _fillOtherInfo(characters);
     characters.sort((a, b) =>
         _getReleationPriority(b.relation) - _getReleationPriority(a.relation));
     loadStatusController.setSuccess();
@@ -76,7 +76,7 @@ class BangumiSubjectDetailLogic extends GetxController {
     return RegExp(r'\/subject\/(\d+)').firstMatch(animeUrl)?.group(1) ?? '';
   }
 
-  Future<void> _covertToChineseName(List<BgmCharacter> characters) async {
+  Future<void> _fillOtherInfo(List<BgmCharacter> characters) async {
     final ids = characters
         .map((c) => c.id)
         .where((id) => id != null)
@@ -85,11 +85,11 @@ class BangumiSubjectDetailLogic extends GetxController {
     if (ids.isEmpty) return;
     final characterGraphs = await repository.fetchCharacterGraphs(ids);
     for (final c in characters) {
-      final cn =
-          characterGraphs.firstWhereOrNull((g) => g.id == c.id)?.chineseName;
-      if (cn?.isNotEmpty == true) {
-        c.name = cn;
+      final graph = characterGraphs.firstWhereOrNull((g) => g.id == c.id);
+      if (graph?.chineseName?.isNotEmpty == true) {
+        c.name = graph?.chineseName;
       }
+      c.comment = graph?.comment;
     }
   }
 

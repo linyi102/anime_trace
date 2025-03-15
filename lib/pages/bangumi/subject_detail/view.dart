@@ -5,6 +5,7 @@ import 'package:animetrace/modules/load_status/page.dart';
 import 'package:animetrace/pages/bangumi/bind_subject/view.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/string.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
@@ -99,15 +100,26 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
           character.name ?? '',
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
-          character.actors?.isNotEmpty == true
-              ? character.actors!
-                  .map((e) => e.name ?? '')
-                  .where((name) => name.isNotEmpty)
-                  .join(' / ')
-              : '',
-          overflow: TextOverflow.ellipsis,
+        subtitle: Row(
+          children: [
+            if (character.relation?.isNullOrBlank == false)
+              Text('${character.relation} · '),
+            Expanded(
+              child: Text(
+                character.actors?.isNotEmpty == true
+                    ? character.actors!
+                        .map((e) => e.name ?? '')
+                        .where((name) => name.isNotEmpty)
+                        .join(' / ')
+                    : '',
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          ],
         ),
+        trailing: character.comment == null || character.comment == 0
+            ? null
+            : Text('(+${character.comment})'),
         onTap: () => logic.toDetail(context, character),
       ),
     );

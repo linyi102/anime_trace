@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 
 class BgmCharacterGraph {
   final int? id;
+  final int? comment;
   final List<_Infobox>? infobox;
 
   BgmCharacterGraph({
     this.id,
+    this.comment,
     this.infobox,
   });
 
@@ -19,6 +21,7 @@ class BgmCharacterGraph {
   factory BgmCharacterGraph.fromMap(Map<String, dynamic> json) =>
       BgmCharacterGraph(
         id: json["id"],
+        comment: json["comment"],
         infobox: json["infobox"] == null
             ? []
             : List<_Infobox>.from(
@@ -27,6 +30,7 @@ class BgmCharacterGraph {
 
   Map<String, dynamic> toMap() => {
         "id": id,
+        "comment": comment,
         "infobox": infobox == null
             ? []
             : List<dynamic>.from(infobox!.map((x) => x.toMap())),
