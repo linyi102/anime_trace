@@ -1,3 +1,4 @@
+import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_rating_bar.dart';
@@ -176,8 +177,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 widget.animeController.reloadAnime(_anime);
               });
             }),
-      // _buildSearchBtn(),
-      _buildBangumiInfoBtn(),
+      widget.animeController.isCollected
+          ? _buildBangumiInfoBtn()
+          : _buildSearchBtn(),
     ];
   }
 
@@ -234,6 +236,22 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       text: '角色',
       onTap: () {
         RouteUtil.materialTo(context, BangumiSubjectDetailPage(_anime));
+      },
+    );
+  }
+
+  _buildSearchBtn() {
+    return _buildIconTextButton(
+      iconData: MingCuteIcons.mgc_search_line,
+      text: '搜索',
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DbAnimeSearchPage(kw: _anime.animeName),
+            )).then((value) {
+          widget.animeController.reloadAnime(_anime);
+        });
       },
     );
   }
