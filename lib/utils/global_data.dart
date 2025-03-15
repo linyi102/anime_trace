@@ -72,6 +72,7 @@ final cycClimbWebsite = ClimbWebsite(
   spkey: "enableWebSiteCycdm",
   climb: ClimbCycdm(),
   desc: "高质量在线追番平台！",
+  defaultEnable: true,
 );
 
 final doubanClimbWebsite = ClimbWebsite(
