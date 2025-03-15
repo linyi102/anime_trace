@@ -100,28 +100,32 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
           character.name ?? '',
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Row(
-          children: [
-            if (character.relation?.isNullOrBlank == false)
-              Text('${character.relation} · '),
-            Expanded(
-              child: Text(
-                character.actors?.isNotEmpty == true
-                    ? character.actors!
-                        .map((e) => e.name ?? '')
-                        .where((name) => name.isNotEmpty)
-                        .join(' / ')
-                    : '',
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-          ],
-        ),
+        subtitle: _buildSubtitle(character),
         trailing: character.comment == null || character.comment == 0
             ? null
             : Text('(+${character.comment})'),
         onTap: () => logic.toDetail(context, character),
       ),
+    );
+  }
+
+  Row _buildSubtitle(BgmCharacter character) {
+    final actors = character.actors?.isNotEmpty == true
+        ? character.actors!
+            .map((e) => e.name ?? '')
+            .where((name) => name.isNotEmpty)
+            .join(' / ')
+        : '';
+    return Row(
+      children: [
+        if (character.relation?.isNullOrBlank == false) ...[
+          Text('${character.relation}'),
+          if (actors.isNotEmpty) const Text(' · '),
+        ],
+        Expanded(
+          child: Text(actors, overflow: TextOverflow.ellipsis),
+        )
+      ],
     );
   }
 }
