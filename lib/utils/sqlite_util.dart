@@ -63,6 +63,7 @@ class SqliteUtil {
 
     // 创建标签表、动漫标签表、集描述表
     await LabelDao.createTable();
+    await LabelDao.addColumnOrder();
     await AnimeLabelDao.createTable();
     await EpisodeDescDao.createTable();
     // 创建系列表、动漫系列表

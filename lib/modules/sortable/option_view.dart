@@ -1,12 +1,12 @@
-import 'package:animetrace/modules/sort_mode/controller.dart';
+import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:flutter/material.dart';
 
-class SortModeOptionView extends StatelessWidget {
-  const SortModeOptionView({
+class SortOptionView extends StatelessWidget {
+  const SortOptionView({
     super.key,
     required this.controller,
   });
-  final SortModeController controller;
+  final SortController controller;
 
   @override
   Widget build(BuildContext context) {

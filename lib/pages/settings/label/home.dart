@@ -1,4 +1,4 @@
-import 'package:animetrace/modules/sort_mode/view.dart';
+import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/search_app_bar.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
@@ -15,6 +15,7 @@ import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:reorderables/reorderables.dart';
 
 class LabelManagePage extends StatefulWidget {
   const LabelManagePage(
@@ -92,9 +93,13 @@ class _LabelManagePageState extends State<LabelManagePage> {
   }
 
   _buildLabelWrap() {
-    return Wrap(
+    return ReorderableWrap(
         spacing: AppTheme.wrapSacing,
         runSpacing: AppTheme.wrapRunSpacing,
+        enableReorder: labelsController.sortController.curMode ==
+            labelsController.customSortMode,
+        onReorder: labelsController.reorder,
+        buildDraggableFeedback: _buildDraggableLabel,
         children: labelsController.labels.map((label) {
           bool selected = false;
           if (widget.animeController != null) {
@@ -141,12 +146,27 @@ class _LabelManagePageState extends State<LabelManagePage> {
                 _showOpMenuDialog(label);
               }
             },
-            onLongPress: () {
-              // 长按时也要弹出操作菜单，这样为动漫选择标签时也能重命名和删除了
-              _showOpMenuDialog(label);
-            },
           );
         }).toList());
+  }
+
+  Transform _buildDraggableLabel(
+      BuildContext context, BoxConstraints constraints, Widget child) {
+    return Transform(
+      transform: Matrix4.rotationZ(0),
+      alignment: FractionalOffset.topLeft,
+      child: Container(
+          constraints: constraints,
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(24),
+              offset: const Offset(0, 8),
+              blurRadius: 8,
+              spreadRadius: 0,
+            ),
+          ]),
+          child: child),
+    );
   }
 
   _buildSearchBar() {
@@ -310,8 +330,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
       builder: (context) => Scaffold(
         appBar:
             AppBar(title: const Text('排序'), automaticallyImplyLeading: false),
-        body:
-            SortModeOptionView(controller: labelsController.sortModeController),
+        body: SortOptionView(controller: labelsController.sortController),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'mode.dart';
 
-class SortModeController<T> extends ChangeNotifier {
+class SortController<T> extends ChangeNotifier {
   final List<SortMode<T>> modes;
   late SortMode<T> curMode;
   late bool isReverse;
@@ -14,7 +14,7 @@ class SortModeController<T> extends ChangeNotifier {
   final void Function(SortMode mode) onModeChanged;
   final void Function(bool isReverse) onReverseChanged;
 
-  SortModeController({
+  SortController({
     required this.modes,
     required this.defaultModeIndex,
     required bool defaultReverse,
