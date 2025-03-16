@@ -58,7 +58,9 @@ class BangumiSubjectDetailLogic extends GetxController {
     await _fillOtherInfo(characters);
     characters.sort((a, b) =>
         _getReleationPriority(b.relation) - _getReleationPriority(a.relation));
-    loadStatusController.setSuccess();
+    characters.isEmpty
+        ? loadStatusController.setEmpty()
+        : loadStatusController.setSuccess();
   }
 
   void _promptBindBgmSubject() {

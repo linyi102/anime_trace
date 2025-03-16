@@ -38,6 +38,17 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('角色'),
+            actions: [
+              PopupMenuButton(
+                position: PopupMenuPosition.under,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: const Text('关联 Bangumi'),
+                    onTap: _bindBgm,
+                  ),
+                ],
+              )
+            ],
           ),
           body: LoadStatusBuilder(
             controller: logic.loadStatusController,
@@ -46,11 +57,7 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
                 return BaseEmptyPage(
                   msg: '非 Bangumi 动漫需要首次进行关联',
                   buttonText: '搜索',
-                  onTap: () async {
-                    final anime = await RouteUtil.materialTo<Anime>(
-                        context, BindBgmSubjectView(widget.anime.animeName));
-                    if (anime != null) logic.bindBgmSubject(anime);
-                  },
+                  onTap: _bindBgm,
                 );
               }
               return _buildCharacters();
@@ -59,6 +66,12 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
         );
       },
     );
+  }
+
+  void _bindBgm() async {
+    final anime = await RouteUtil.materialTo<Anime>(
+        context, BindBgmSubjectView(widget.anime.animeName));
+    if (anime != null) logic.bindBgmSubject(anime);
   }
 
   GridView _buildCharacters() {

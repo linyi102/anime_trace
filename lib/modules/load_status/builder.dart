@@ -30,7 +30,7 @@ class LoadStatusBuilder extends StatelessWidget {
         return FailPage(onTap: refresh, msg: controller.msg);
       case LoadStatus.loading:
         return const LoadingPage();
-      case LoadStatus.emptyData:
+      case LoadStatus.empty:
         return EmptyPage(onTap: refresh, msg: controller.msg);
       default:
         return const SizedBox();

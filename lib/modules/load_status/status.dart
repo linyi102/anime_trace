@@ -3,7 +3,7 @@ enum LoadStatus {
   loading,
   success,
   fail,
-  emptyData,
+  empty,
   netWorkError,
   ;
 }

@@ -28,6 +28,10 @@ class LoadStatusController extends ChangeNotifier {
     setStatus(LoadStatus.fail, msg: msg);
   }
 
+  void setEmpty() {
+    setStatus(LoadStatus.empty);
+  }
+
   void setSuccess() {
     setStatus(LoadStatus.success);
   }

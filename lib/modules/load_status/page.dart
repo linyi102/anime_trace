@@ -16,21 +16,21 @@ class LoadingPage extends StatelessWidget {
 class EmptyPage extends BaseEmptyPage {
   const EmptyPage({
     super.key,
-    super.icon = Icons.outlet_outlined,
-    super.msg = '什么都没有~',
+    super.icon = Icons.inbox,
+    String? msg,
     super.onTap,
     super.buttonText = '刷新',
-  });
+  }) : super(msg: msg ?? '什么都没有~');
 }
 
 class FailPage extends BaseEmptyPage {
   const FailPage({
     super.key,
     super.icon = Icons.error_outline,
-    super.msg = '加载失败',
+    String? msg,
     super.onTap,
     super.buttonText = '刷新',
-  });
+  }) : super(msg: msg ?? '加载失败');
 }
 
 class BaseEmptyPage extends StatelessWidget {
@@ -58,14 +58,14 @@ class BaseEmptyPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.all(4),
             child: imgAssetPath == null
                 ? Icon(icon, size: 60, color: color)
                 : Image.asset(imgAssetPath!, height: 60),
           ),
           if (msg?.isNotEmpty == true)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.all(8),
               child: Text(msg!, style: TextStyle(color: color)),
             ),
           if (onTap != null)
