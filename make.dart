@@ -72,7 +72,7 @@ Future<void> buildAndroid(String buildDir) async {
 
   copyApk('app-armeabi-v7a-release', 'manji-$androidVersion-android');
   copyApk('app-arm64-v8a-release', 'manji-$androidVersion-arm64-v8a');
-  copyApk('app-x86_64-release', 'manji-$androidVersion-x86_64.apk');
+  copyApk('app-x86_64-release', 'manji-$androidVersion-x86_64');
 }
 
 Future<void> buildWindows(String buildDir) async {
