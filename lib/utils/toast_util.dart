@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
+import 'package:animetrace/components/loading_dialog.dart';
+import 'package:animetrace/controllers/theme_controller.dart';
 
 class ToastUtil {
   /// 对话框

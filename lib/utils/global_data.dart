@@ -1,17 +1,17 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/utils/climb/climb_agemys.dart';
-import 'package:flutter_test_future/utils/climb/climb_aimii.dart';
-import 'package:flutter_test_future/utils/climb/climb_bangumi.dart';
-import 'package:flutter_test_future/utils/climb/climb_cycdm.dart';
-import 'package:flutter_test_future/utils/climb/climb_douban.dart';
-import 'package:flutter_test_future/utils/climb/climb_gugu.dart';
-import 'package:flutter_test_future/utils/climb/climb_nayfun.dart';
-import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
-import 'package:flutter_test_future/utils/climb/climb_qdm.dart';
-import 'package:flutter_test_future/utils/climb/climb_quqi.dart';
-import 'package:flutter_test_future/utils/climb/climb_yhdm.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/utils/climb/climb_agemys.dart';
+import 'package:animetrace/utils/climb/climb_aimii.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
+import 'package:animetrace/utils/climb/climb_cycdm.dart';
+import 'package:animetrace/utils/climb/climb_douban.dart';
+import 'package:animetrace/utils/climb/climb_gugu.dart';
+import 'package:animetrace/utils/climb/climb_nayfun.dart';
+import 'package:animetrace/utils/climb/climb_omofun.dart';
+import 'package:animetrace/utils/climb/climb_qdm.dart';
+import 'package:animetrace/utils/climb/climb_quqi.dart';
+import 'package:animetrace/utils/climb/climb_yhdm.dart';
 
 List<Anime> directory = []; // 目录动漫
 AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
@@ -72,6 +72,7 @@ final cycClimbWebsite = ClimbWebsite(
   spkey: "enableWebSiteCycdm",
   climb: ClimbCycdm(),
   desc: "高质量在线追番平台！",
+  defaultEnable: true,
 );
 
 final doubanClimbWebsite = ClimbWebsite(

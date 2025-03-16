@@ -12,8 +12,7 @@ class SelectViewAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const buttonStyle = ButtonStyle(
-        padding:
-            MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 20)));
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20)));
 
     return Container(
       margin: const EdgeInsets.all(12),

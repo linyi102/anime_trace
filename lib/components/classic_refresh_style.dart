@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
+import 'package:animetrace/components/loading_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyClassicHeader extends StatelessWidget {

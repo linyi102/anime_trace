@@ -1,10 +1,10 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
-import 'package:flutter_test_future/widgets/setting_card.dart';
+import 'package:animetrace/controllers/theme_controller.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/responsive.dart';
+import 'package:animetrace/widgets/setting_card.dart';
 import 'package:get/get.dart';
 
 class ThemePage extends StatefulWidget {

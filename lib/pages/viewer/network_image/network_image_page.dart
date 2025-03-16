@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/stack_appbar.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/stack_appbar.dart';
 import 'package:photo_view/photo_view.dart';
 
 class NetworkImageViewPage extends StatelessWidget {

@@ -1,14 +1,14 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/backup_service.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/pages/main_screen/logic.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/assets.gen.dart';
+import 'package:animetrace/controllers/backup_service.dart';
+import 'package:animetrace/controllers/theme_controller.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/pages/main_screen/logic.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/values/assets.gen.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 

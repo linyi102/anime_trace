@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/history_dao.dart';
-import 'package:flutter_test_future/dao/note_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/dao/history_dao.dart';
+import 'package:animetrace/dao/note_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/utils/time_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 总览

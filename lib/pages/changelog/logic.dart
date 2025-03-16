@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/models/app_release.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/models/app_release.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get.dart';
 
 class ChangelogLogic extends GetxController {

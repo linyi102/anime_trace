@@ -1,19 +1,21 @@
 import 'dart:ui';
 
+import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/anime_rating_bar.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/anime_cover_detail.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/ui_setting.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_all_website.dart';
-import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/anime_rating_bar.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/pages/anime_cover_detail.dart';
+import 'package:animetrace/pages/anime_detail/pages/ui_setting.dart';
+import 'package:animetrace/pages/network/climb/anime_climb_all_website.dart';
+import 'package:animetrace/pages/settings/image_wall/note_image_wall.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -131,16 +133,16 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                 ? [
                     // Colors.black.withOpacity(0),
                     // 最上面添加一点黑色，这样就能看清按钮了
-                    Colors.black.withOpacity(0.2),
+                    Colors.black.withOpacityFactor(0.2),
                     // Colors.white.withOpacity(0.2),
                     // 添加透明色，注意不要用Colors.transparent，否则白色主题会有些黑，过度不自然
-                    scaffoldBgColor.withOpacity(0),
+                    scaffoldBgColor.withOpacityFactor(0),
                     // 过渡到主体颜色
                     scaffoldBgColor,
                   ]
                 : [
-                    Colors.black.withOpacity(0.2),
-                    scaffoldBgColor.withOpacity(0),
+                    Colors.black.withOpacityFactor(0.2),
+                    scaffoldBgColor.withOpacityFactor(0),
                     // 最后1个换成透明色，就取消渐变了
                     Colors.transparent
                   ]),
@@ -240,6 +242,22 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                         widget.animeController.loadAnime(_anime);
                         // NOTE 集数也可能会变化，因此也需要重绘集页面，但会导致前面的集丢失了笔记
                         // widget.animeController.loadEpisode();
+                      });
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: const ListTile(
+                      leading: Icon(Icons.search),
+                      title: Text("搜索动漫"),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DbAnimeSearchPage(kw: _anime.animeName),
+                          )).then((value) {
+                        widget.animeController.reloadAnime(_anime);
                       });
                     },
                   ),

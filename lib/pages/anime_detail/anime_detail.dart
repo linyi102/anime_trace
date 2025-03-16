@@ -1,22 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/global.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/global.dart';
 
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/widgets/app_bar.dart';
-import 'package:flutter_test_future/pages/anime_detail/widgets/episode.dart';
-import 'package:flutter_test_future/pages/anime_detail/widgets/info.dart';
-import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/floating_bottom_actions.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/controllers/labels_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/widgets/app_bar.dart';
+import 'package:animetrace/pages/anime_detail/widgets/episode.dart';
+import 'package:animetrace/pages/anime_detail/widgets/info.dart';
+import 'package:animetrace/pages/viewer/video/view_with_load_url.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/floating_bottom_actions.dart';
+import 'package:animetrace/widgets/multi_platform.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 

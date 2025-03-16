@@ -1,19 +1,19 @@
 import 'dart:io';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
-import 'package:flutter_test_future/dao/anime_series_dao.dart';
-import 'package:flutter_test_future/dao/episode_desc_dao.dart';
-import 'package:flutter_test_future/dao/key_value_dao.dart';
-import 'package:flutter_test_future/dao/label_dao.dart';
-import 'package:flutter_test_future/dao/series_dao.dart';
-import 'package:flutter_test_future/models/params/anime_sort_cond.dart';
-import 'package:flutter_test_future/utils/episode.dart';
-import 'package:flutter_test_future/utils/escape_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/episode.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/platform.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
+import 'package:animetrace/dao/anime_series_dao.dart';
+import 'package:animetrace/dao/episode_desc_dao.dart';
+import 'package:animetrace/dao/key_value_dao.dart';
+import 'package:animetrace/dao/label_dao.dart';
+import 'package:animetrace/dao/series_dao.dart';
+import 'package:animetrace/models/params/anime_sort_cond.dart';
+import 'package:animetrace/utils/episode.dart';
+import 'package:animetrace/utils/escape_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/episode.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -53,6 +53,9 @@ class SqliteUtil {
     await SqliteUtil.addColumnCalEpisodeNumberFromOneToAnime();
     // 为动漫表增加搜索源
     await AnimeDao.addColumnSourceForAnime();
+    // 增加bangumi subjectId列
+    await AnimeDao.addColumnBgmSubjectId();
+
     // 为笔记增加创建时间和修改时间列，主要用于评分时显示
     await SqliteUtil.addColumnTwoTimeToEpisodeNote();
     // 为图片表增加顺序列，支持自定义排序
@@ -60,6 +63,7 @@ class SqliteUtil {
 
     // 创建标签表、动漫标签表、集描述表
     await LabelDao.createTable();
+    await LabelDao.addColumnOrder();
     await AnimeLabelDao.createTable();
     await EpisodeDescDao.createTable();
     // 创建系列表、动漫系列表
@@ -746,10 +750,18 @@ class SqliteUtil {
     }
   }
 
-  static Future<int> count(
-      {required String tableName, String? columnName = 'id'}) async {
-    final rows = await database
-        .query(tableName, columns: ['COUNT(${columnName ?? "*"})']);
+  static Future<int> count({
+    required String tableName,
+    String? columnName = 'id',
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    final rows = await database.query(
+      tableName,
+      columns: ['COUNT(${columnName ?? "*"})'],
+      where: where,
+      whereArgs: whereArgs,
+    );
     return firstIntValue(rows);
   }
 

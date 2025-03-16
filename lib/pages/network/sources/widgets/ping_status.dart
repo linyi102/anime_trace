@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/models/ping_result.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/models/ping_result.dart';
 
 buildPingStatusRow(BuildContext context, ClimbWebsite climbWebsite,
     {bool gridStyle = false}) {

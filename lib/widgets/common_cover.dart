@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/multi_platform.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/multi_platform.dart';
+import 'package:animetrace/widgets/responsive.dart';
 
 class CommonCover extends StatefulWidget {
   const CommonCover({

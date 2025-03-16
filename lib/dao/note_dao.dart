@@ -1,15 +1,15 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/utils/episode.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/episode.dart';
-import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
-import 'package:flutter_test_future/utils/escape_util.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/utils/episode.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/episode.dart';
+import 'package:animetrace/models/note_filter.dart';
+import 'package:animetrace/models/relative_local_image.dart';
+import 'package:animetrace/utils/escape_util.dart';
 
 class NoteDao {
   static var database = SqliteUtil.database;

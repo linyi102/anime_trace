@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/local_search/controllers/local_search_controller.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_search_filter.dart';
-import 'package:flutter_test_future/pages/local_search/views/local_filter_page.dart';
-import 'package:flutter_test_future/utils/keyboard_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
+import 'package:animetrace/pages/local_search/models/local_search_filter.dart';
+import 'package:animetrace/pages/local_search/views/local_filter_page.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/keyboard_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 
 class LocalFilterChip extends StatefulWidget {
   const LocalFilterChip({
@@ -38,11 +39,11 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
           },
           style: ButtonStyle(
             visualDensity: const VisualDensity(vertical: -2),
-            padding: const MaterialStatePropertyAll(
+            padding: const WidgetStatePropertyAll(
                 EdgeInsets.symmetric(horizontal: 16)),
             backgroundColor: selected
-                ? MaterialStatePropertyAll(
-                    Theme.of(context).primaryColor.withOpacity(0.2))
+                ? WidgetStatePropertyAll(
+                    Theme.of(context).primaryColor.withOpacityFactor(0.2))
                 : null,
           ),
           icon: Icon(widget.filter.icon, size: 16),
@@ -64,7 +65,9 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
                       width: 18,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        color: Theme.of(context)
+                            .primaryColor
+                            .withOpacityFactor(0.2),
                       ),
                       child: const Icon(Icons.close, size: 14)),
                 )

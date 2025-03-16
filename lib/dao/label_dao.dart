@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
-import 'package:flutter_test_future/models/label.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
+import 'package:animetrace/models/label.dart';
 
 import '../utils/log.dart';
 import '../utils/sqlite_util.dart';
@@ -9,6 +9,15 @@ class LabelDao {
   static const table = "label";
   static const columnId = "id";
   static const columnName = "name";
+  static const columnOrder = "order_idx";
+
+  static Label row2Bean(Map<String, Object?> map) {
+    return Label(
+      map[columnId] as int,
+      map[columnName] as String,
+      order: map[columnOrder] as int? ?? -1,
+    );
+  }
 
   // 建表
   static createTable() async {
@@ -24,7 +33,10 @@ class LabelDao {
   static Future<int> insert(Label label) async {
     Log.info("sql:insert($label)");
     // 插入除id以外的信息(因为id自增)
-    return await db.insert(table, {columnName: label.name});
+    return await db.insert(table, {
+      columnName: label.name,
+      columnOrder: label.order,
+    });
   }
 
   static Future<int> delete(int id) async {
@@ -65,7 +77,7 @@ class LabelDao {
   static Future<List<Label>> searchLabel(String kw) async {
     Log.info("sql:searchLabel(kw=$kw)");
     List<Map<String, Object?>> maps = await db.rawQuery('''
-    select * from $table where $columnName like '%$kw%';            
+    select * from $table where $columnName like '%$kw%';
     ''');
     return maps.map((e) => Label.fromMap(e)).toList();
   }
@@ -75,5 +87,30 @@ class LabelDao {
     Log.info("sql:existLabelName(name=$name)");
     return (await db.query(table, where: "$columnName = ?", whereArgs: [name]))
         .isNotEmpty;
+  }
+
+  /// 添加排序列
+  static Future<void> addColumnOrder() async {
+    await SqliteUtil.addColumnName(
+      tableName: table,
+      columnName: columnOrder,
+      columnType: 'INTEGER',
+      logName: 'addColumnOrderForLabel',
+    );
+  }
+
+  /// 保存自定义排序
+  static Future<void> updateColumnOrder(List<Label> labels) async {
+    final batch = db.batch();
+    batch.commit();
+    for (final label in labels) {
+      batch.update(
+        table,
+        {columnOrder: label.order},
+        where: '$columnId = ?',
+        whereArgs: [label.id],
+      );
+    }
+    await batch.apply();
   }
 }

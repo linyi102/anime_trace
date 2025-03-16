@@ -3,7 +3,6 @@
 
 #define MyAppName "Âþ¼£"
 #define MyAppNameEN "Manji"
-#define MyAppVersion "1.12.3"
 #define MyAppExeName "anime_footmark_windows.exe"
 
 [Setup]
@@ -15,23 +14,23 @@ AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 DefaultDirName={autopf}\{#MyAppNameEN}
 DisableProgramGroupPage=yes
-OutputDir=C:\Users\11580\Desktop\Âþ¼£·¢²¼ v{#MyAppVersion}
-OutputBaseFilename=manji-v{#MyAppVersion}-win-install
+OutputDir={#OutputDir}
+OutputBaseFilename=manji-{#MyAppVersion}-win-install
 SetupIconFile=.\windows\runner\resources\app_icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: ".\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

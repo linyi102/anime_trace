@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/components/note/note_card.dart';
-import 'package:flutter_test_future/dao/note_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/pages/modules/note_edit.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/components/note/note_card.dart';
+import 'package:animetrace/dao/note_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/pages/modules/note_edit.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 

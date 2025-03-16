@@ -41,7 +41,7 @@ class _ActionButtonState extends State<ActionButton> {
           ElevatedButton(
             style: ButtonStyle(
                 shape: widget.borderRadius != null
-                    ? MaterialStatePropertyAll(RoundedRectangleBorder(
+                    ? WidgetStatePropertyAll(RoundedRectangleBorder(
                         borderRadius: widget.borderRadius!))
                     : null),
             onPressed: () async {

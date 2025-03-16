@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/models/anime.dart';
+import 'package:animetrace/components/anime_list_cover.dart';
+import 'package:animetrace/models/anime.dart';
 
 enum AnimeTileSubTitle { nameAnother, twoLinesOfInfo }
 

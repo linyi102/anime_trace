@@ -1,39 +1,34 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dart_ping/dart_ping.dart';
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_test_future/utils/error_format_util.dart';
-import 'package:flutter_test_future/models/ping_result.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/network/dio_log_interceptor.dart';
+import 'package:animetrace/utils/error_format_util.dart';
+import 'package:animetrace/models/ping_result.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/network/dio_log_interceptor.dart';
+import 'package:dio/io.dart';
 
 class DioUtil {
   static final BaseOptions _baseOptions = BaseOptions(
     method: "get",
-    // 由5000改为8000，避免模拟器上趣动漫超时
-    connectTimeout: 8000,
-    sendTimeout: 8000,
+    connectTimeout: const Duration(milliseconds: 8000),
+    sendTimeout: const Duration(milliseconds: 8000),
     // 取消接收超时，避免下载文件过程中超时
-    // receiveTimeout: 8000,
+    // receiveTimeout: const Duration(milliseconds: 8000),
   );
   static late Dio dio;
 
   static void init() {
-    /**
-        I/flutter ( 1540): e.message=HandshakeException: Handshake error in client (OS Error:
-        I/flutter ( 1540):      CERTIFICATE_VERIFY_FAILED: certificate has expired(handshake.cc:359))
-     */
-    // 来源：https://www.cnblogs.com/MingGyGy-Castle/p/13761327.html
-    // OmoFun搜索动漫时会报错，因此添加证书验证，不再直接使用Response response = await Dio(_baseOptions).request(path);
     dio = Dio(_baseOptions);
     dio.interceptors.add(DioLogInterceptor(logger));
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (client) {
-      client.badCertificateCallback = (cert, host, port) {
-        return true;
-      };
-      return null;
-    };
+    dio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
+      final HttpClient client =
+          HttpClient(context: SecurityContext(withTrustedRoots: false));
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    });
   }
 
   static Future<Result> get<T>(
@@ -69,6 +64,20 @@ class DioUtil {
       Response response = await dio.post(
         path,
         data: FormData.fromMap(data),
+      );
+
+      return Result.success(response);
+    } catch (e) {
+      String msg = ErrorFormatUtil.formatError(e);
+      return Result.failure(-1, msg);
+    }
+  }
+
+  static Future<Result> graphql(String path, String graphSQL) async {
+    try {
+      Response response = await dio.post(
+        path,
+        data: jsonEncode({"query": graphSQL}),
       );
 
       return Result.success(response);

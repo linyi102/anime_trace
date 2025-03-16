@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/utils/episode.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/utils/episode.dart';
+import 'package:animetrace/utils/log.dart';
 
 import '../models/anime.dart';
 import '../models/anime_history_record.dart';

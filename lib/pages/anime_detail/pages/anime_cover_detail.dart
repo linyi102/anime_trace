@@ -4,17 +4,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/pages/settings/image_path_setting.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/pages/settings/image_path_setting.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 
 import '../../../global.dart';
@@ -58,7 +59,7 @@ class AnimeCoverDetail extends StatelessWidget {
     return AppBar(
       backgroundColor: enableOpacity
           // 获取当前context对应的Element的的scaffold背景，并调整不透明度
-          ? Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6)
+          ? Theme.of(context).scaffoldBackgroundColor.withOpacityFactor(0.6)
           : null,
       actions: [
         _buildInfoButton(context),

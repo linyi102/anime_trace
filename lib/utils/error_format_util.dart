@@ -1,37 +1,27 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/utils/log.dart';
 
 class ErrorFormatUtil {
-  /*
-   * error统一处理
-   */
   static String formatError(e) {
     String msg = "";
     Log.error(e);
-    if (e is DioError) {
-      if (e.type == DioErrorType.connectTimeout) {
-        // It occurs when url is opened timeout.
+    if (e is DioException) {
+      if (e.type == DioExceptionType.connectionTimeout) {
         Log.info(e.message);
         msg = "连接超时";
-      } else if (e.type == DioErrorType.sendTimeout) {
-        // It occurs when url is sent timeout.
+      } else if (e.type == DioExceptionType.sendTimeout) {
         msg = "请求超时";
-      } else if (e.type == DioErrorType.receiveTimeout) {
-        //It occurs when receiving timeout
+      } else if (e.type == DioExceptionType.receiveTimeout) {
         msg = "响应超时";
-      } else if (e.type == DioErrorType.response) {
-        // When the server response, but with a incorrect status, such as 404, 503...
-        // msg = "出现异常";
+      } else if (e.type == DioExceptionType.badResponse) {
         msg = getMsgByErrorCode(e);
-      } else if (e.type == DioErrorType.cancel) {
-        // When the request is cancelled, dio will throw a error with this type.
+      } else if (e.type == DioExceptionType.cancel) {
         msg = "请求取消";
       } else {
-        //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
         dynamic childE = e.error;
-        Log.info("e.message=" + e.message);
+        if (e.message != null) Log.info("e.message=" + e.message!);
         if (e.message ==
             "HandshakeException: Connection terminated during handshake") {
           msg = "连接失败";
@@ -41,10 +31,6 @@ class ErrorFormatUtil {
             msg = "信号灯超时";
           }
         } else {
-          /**
-        flutter: e.message=HttpException: Connection closed before full header was received, uri = https://www.yhdmp.cc/list/?region=&year=&season=&status=&label=&order=&genre=
-        flutter: 未知错误
-         */
           msg = "未知错误";
         }
       }

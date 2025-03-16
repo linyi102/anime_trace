@@ -1,7 +1,7 @@
-name: flutter_test_future
+name: animetrace
 description: 漫迹
 publish_to: "none"
-version: 1.12.3
+version: 1.13.0
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
@@ -10,10 +10,12 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  reorderables: ^0.6.0
+  pinyin: ^3.3.0
   flutter_logkit:
     git:
       url: https://github.com/linyi102/flutter_logkit.git
-      ref: v0.0.1
+      ref: b9848270
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
@@ -22,11 +24,6 @@ dependencies:
   emoji_picker_flutter: ^1.6.3
   version: ^3.0.2
   lottie: ^2.6.0
-  media_kit: 1.1.10+1
-  media_kit_video: 1.2.4
-  media_kit_libs_android_video: 1.3.6
-  media_kit_libs_windows_video: 1.0.9
-  media_kit_native_event_loop: 1.0.8
   desktop_drop: ^0.4.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
@@ -36,7 +33,7 @@ dependencies:
   bot_toast: ^4.0.3
   flex_color_scheme: ^7.2.0
   timer_count_down: ^2.2.2
-  file_saver: ^0.1.1
+  file_saver: ^0.2.14
   sliver_tools: ^0.2.9
   pull_to_refresh: ^2.0.0
   ming_cute_icons: ^0.0.2
@@ -55,7 +52,7 @@ dependencies:
   path_provider: ^2.0.8
   file_picker: ^9.0.0
   webdav_client: ^1.1.8
-  dio: ^4.0.4
+  dio: ^5.8.0+1
   html: ^0.15.0
   cached_network_image: ^3.2.3
   archive: ^3.1.8
@@ -69,9 +66,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^1.0.0
   flutter_launcher_icons: "^0.14.3"
-
-dependency_overrides:
-  intl: ^0.19.0
+  shell_executor:
+    git:
+      url: https://github.com/linyi102/shell_executor
+      ref: main
 
 flutter:
   uses-material-design: true

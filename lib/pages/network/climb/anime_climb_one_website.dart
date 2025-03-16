@@ -1,34 +1,39 @@
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/anime_grid_cover.dart';
-import 'package:flutter_test_future/components/dialog/dialog_confirm_migrate.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/get_anime_grid_delegate.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/pages/anime_detail/anime_detail.dart';
-import 'package:flutter_test_future/components/website_logo.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/dialog/dialog_confirm_migrate.dart';
+import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/get_anime_grid_delegate.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/components/search_app_bar.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/components/website_logo.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/global_data.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
   final int animeId;
   final String keyword;
   final ClimbWebsite climbWebStie;
+  final bool enableSourceSelector;
+  final void Function(Anime anime)? onTap;
 
-  const AnimeClimbOneWebsite(
-      {this.animeId = 0,
-      this.keyword = "",
-      required this.climbWebStie,
-      Key? key})
-      : super(key: key);
+  const AnimeClimbOneWebsite({
+    this.animeId = 0,
+    this.keyword = "",
+    required this.climbWebStie,
+    this.enableSourceSelector = true,
+    this.onTap,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _AnimeClimbOneWebsiteState createState() => _AnimeClimbOneWebsiteState();
@@ -123,23 +128,13 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       body: CommonScaffoldBody(
           child: Column(
         children: [
-          ListTile(
-            title: Text(curWebsite.name),
-            leading: WebSiteLogo(url: curWebsite.iconUrl, size: 25),
-            trailing: const Icon(Icons.keyboard_arrow_down),
-            onTap: () => _showDialogSelectWebsite(context),
-          ),
-          // ListTile(
-          //   title: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       WebSiteLogo(url: curWebsite.iconUrl, size: 25),
-          //       const SizedBox(width: 10),
-          //       Text(curWebsite.name)
-          //     ],
-          //   ),
-          //   onTap: () => _showDialogSelectWebsite(context),
-          // ),
+          if (widget.enableSourceSelector)
+            ListTile(
+              title: Text(curWebsite.name),
+              leading: WebSiteLogo(url: curWebsite.iconUrl, size: 25),
+              trailing: const Icon(Icons.keyboard_arrow_down),
+              onTap: () => _showDialogSelectWebsite(context),
+            ),
           searchOk
               ? Expanded(child: _displayClimbAnime())
               : searching
@@ -190,9 +185,15 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
           Anime anime = mixedAnimes[index];
           return InkWell(
               child: AnimeGridCover(anime),
+              onLongPress: () {
+                LaunchUrlUtil.launch(context: context, uriStr: anime.animeUrl);
+              },
               onTap: () {
+                if (widget.onTap != null) {
+                  widget.onTap!(anime);
+                }
                 // 迁移动漫
-                if (ismigrate) {
+                else if (ismigrate) {
                   showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
                   Log.info("进入动漫详细页面${anime.animeId}");

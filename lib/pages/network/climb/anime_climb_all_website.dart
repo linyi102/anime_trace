@@ -1,19 +1,21 @@
+import 'package:animetrace/pages/network/climb/widgets/search_history_view.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/anime_horizontal_cover.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/components/website_logo.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/pages/network/climb/anime_climb_one_website.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/anime_horizontal_cover.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/components/search_app_bar.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/components/website_logo.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/pages/network/climb/anime_climb_one_website.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/global_data.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 
 import '../../../dao/anime_dao.dart';
 
@@ -42,6 +44,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   Map<String, bool> websiteClimbSearching = {}; // true时显示进度圈
   List<Anime> localAnimes = []; // 本地动漫
   List<Anime> customAnimes = []; // 自定义动漫
+  final historyController = SearchHistoryController();
 
   @override
   void initState() {
@@ -107,13 +110,11 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   _generateCustomAnimes() async {
     // 迁移时不准备自定义动漫数据
     if (!ismigrate) {
-      // 先重置数据
-      customAnimes.clear();
-      setState(() {});
       // 添加以关键字为名字的自定义动漫
       // 从数据库中找同名的没有动漫地址的动漫，并赋值给该动漫(可能之前添加过以关键字为名字的自定义动漫)
       Anime customAnime =
           await SqliteUtil.getCustomAnimeByAnimeName(lastInputKeyword);
+      customAnimes.clear();
       customAnimes.add(customAnime);
       // 并在数据库中查找包含该名字的且没有动漫地址的动漫
       customAnimes.addAll(await SqliteUtil.getCustomAnimesIfContainAnimeName(
@@ -176,6 +177,16 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         },
         child: ListView(
           children: [
+            if (lastInputKeyword.isEmpty)
+              SearchHistoryView(
+                controller: historyController,
+                onTapKeyword: (keyword) {
+                  inputKeywordController.text = keyword;
+                  lastInputKeyword = keyword;
+                  _searchLocal(keyword);
+                  _climbAnime(keyword: keyword);
+                },
+              ),
             _buildLocalAnimes(),
             // 自定义动漫
             _buildCustomItem(),
@@ -189,8 +200,8 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     );
   }
 
-  _buildLocalAnimes() {
-    if (ismigrate) return const SizedBox.shrink();
+  Widget _buildLocalAnimes() {
+    if (ismigrate || lastInputKeyword.isEmpty) return const SizedBox.shrink();
     return Column(
       children: [
         const ListTile(title: Text("已收藏")),
@@ -241,6 +252,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                     animes: mixedAnimes[webstie.name] ?? [],
                     animeId: widget.animeId,
                     callback: _generateMixedAnimesAllWebsite,
+                    onLongPressItem: (anime) {
+                      LaunchUrlUtil.launch(
+                          context: context, uriStr: anime.animeUrl);
+                    },
                   )
                 : websiteClimbSearching[webstie.name] ?? false
                     ?
@@ -284,41 +299,55 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       hintText: ismigrate ? "迁移动漫" : "搜索动漫",
       useModernStyle: false,
       inputController: inputKeywordController..text,
-      onTapClear: () => inputKeywordController.clear(),
+      onTapClear: () {
+        inputKeywordController.clear();
+        _clearSearched();
+      },
       onEditingComplete: () {
-        String text = inputKeywordController.text;
+        String text = inputKeywordController.text.trim();
         // 如果输入的名字为空，则不再爬取
         if (text.isEmpty) return;
 
         lastInputKeyword = text; // 更新上一次输入的名字
         _climbAnime(keyword: text);
+        historyController.addKeyword(text);
       },
       onChanged: (inputStr) async {
+        inputStr = inputStr.trim();
+        if (inputStr.isEmpty) {
+          _clearSearched();
+          return;
+        }
         // 如果使用输入法，回车后该方法会执行两次，导致已收藏和自定义出现重复，因此判断如果和上一个关键一样，则直接返回
         if (lastInputKeyword == inputStr) {
           return;
         }
-
-        // 避免输入好后切换搜索源后，清空了输入的内容
         lastInputKeyword = inputStr;
-        // 输入时就查询本地和自定义
-        if (inputStr.isNotEmpty) {
-          localAnimes = await AnimeDao.getAnimesBySearch(inputStr);
-          _generateCustomAnimes();
-          if (mounted) setState(() {});
-        } else {
-          // 清空
-          customAnimes.clear();
-          localAnimes.clear();
-          if (mounted) setState(() {});
-        }
+        // 避免输入好后切换搜索源后，清空了输入的内容
+        await _searchLocal(inputStr);
       },
     );
   }
 
+  Future<void> _searchLocal(String inputStr) async {
+    localAnimes = await AnimeDao.getAnimesBySearch(inputStr);
+    _generateCustomAnimes();
+    if (mounted) setState(() {});
+  }
+
+  void _clearSearched() {
+    lastInputKeyword = '';
+    customAnimes.clear();
+    localAnimes.clear();
+    websiteClimbAnimes.clear();
+    mixedAnimes.clear();
+    websiteClimbSearchOk.clear();
+    websiteClimbSearching.clear();
+    if (mounted) setState(() {});
+  }
+
   _buildCustomItem() {
-    // 迁移时不显示自定义
-    if (ismigrate) return const SizedBox.shrink();
+    if (ismigrate || lastInputKeyword.isEmpty) return const SizedBox.shrink();
     return Column(
       children: [
         // 自定义添加的动漫

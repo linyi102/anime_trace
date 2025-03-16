@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class KeyValueDao {
@@ -28,12 +28,22 @@ class KeyValueDao {
   }
 
   static Future<String?>? getString(String key) async {
-    final rows = await db.query(tableName, columns: [columnValue]);
+    final rows = await db.query(
+      tableName,
+      columns: [columnValue],
+      where: '$columnKey = ?',
+      whereArgs: [key],
+    );
     return rows.isEmpty ? null : rows.first[columnValue] as String?;
   }
 
   static Future<int> setStringList(String key, List<String>? value) async {
-    if (await SqliteUtil.count(tableName: tableName, columnName: columnKey) ==
+    if (await SqliteUtil.count(
+          tableName: tableName,
+          columnName: columnKey,
+          where: '$columnKey = ?',
+          whereArgs: [key],
+        ) ==
         0) {
       return db.insert(tableName, {
         columnKey: key,
@@ -53,7 +63,12 @@ class KeyValueDao {
   }
 
   static Future<List<String>>? getStringList(String key) async {
-    final rows = await db.query(tableName, columns: [columnValue]);
+    final rows = await db.query(
+      tableName,
+      columns: [columnValue],
+      where: '$columnKey = ?',
+      whereArgs: [key],
+    );
     if (rows.isEmpty) return [];
     final String? value = rows.first[columnValue] as String? ?? '';
     if (value == null || value.isEmpty) return [];

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_item_auto_load.dart';
-import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/components/empty_data_hint.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/components/website_logo.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/import/import_collection_controller.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
-import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
+import 'package:animetrace/components/anime_item_auto_load.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
+import 'package:animetrace/components/empty_data_hint.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/components/search_app_bar.dart';
+import 'package:animetrace/components/website_logo.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/pages/network/sources/pages/import/import_collection_controller.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/climb/site_collection_tab.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
+import 'package:animetrace/widgets/common_divider.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -300,7 +301,8 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             width: size,
             child: CircularProgressIndicator(
               strokeWidth: 4,
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              backgroundColor:
+                  Theme.of(context).primaryColor.withOpacityFactor(0.3),
             ),
           ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)

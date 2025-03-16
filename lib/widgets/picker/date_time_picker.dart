@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/picker/flutter_picker_fix_mouse_scroll.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
+import 'package:animetrace/widgets/picker/flutter_picker_fix_mouse_scroll.dart';
 
 const _pickerHeight = 240.0;
 const _headerHeight = 60.0;
@@ -134,7 +135,7 @@ Positioned _buildBottomGradientLayer(BuildContext context) {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            _bg(context).withOpacity(0),
+            _bg(context).withOpacityFactor(0),
             _bg(context),
           ],
         )),
@@ -157,7 +158,7 @@ Positioned _buildTopGradientLayer(BuildContext context) {
           end: Alignment.bottomCenter,
           colors: [
             _bg(context),
-            _bg(context).withOpacity(0),
+            _bg(context).withOpacityFactor(0),
           ],
         )),
       ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/note/note_img_item.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/components/note/note_img_item.dart';
+import 'package:animetrace/models/relative_local_image.dart';
+import 'package:animetrace/widgets/responsive.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/values/values.dart';
 
 // 用于显示笔记图片网格
 // 使用：笔记列表页

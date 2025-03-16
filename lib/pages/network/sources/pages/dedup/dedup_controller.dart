@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
 import 'package:get/get.dart';
 
 class DedupController extends GetxController {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/note_dao.dart';
-import 'package:flutter_test_future/pages/modules/note_edit.dart';
-import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/components/anime_list_cover.dart';
-import 'package:flutter_test_future/components/note/note_img_grid.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/widgets/common_divider.dart';
+import 'package:animetrace/dao/note_dao.dart';
+import 'package:animetrace/pages/modules/note_edit.dart';
+import 'package:animetrace/utils/common_util.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/components/anime_list_cover.dart';
+import 'package:animetrace/components/note/note_img_grid.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/common_divider.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 /// 笔记卡片

@@ -1,9 +1,9 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/week_record.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/week_record.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/log.dart';
 
 class ClimbYhdm with Climb {
   // 单例，作用是曲奇动漫使用ClimbYhdm().方法时，不会再次创建ClimbYhdm对象

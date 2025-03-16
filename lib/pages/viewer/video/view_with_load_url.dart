@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/pages/viewer/video/view.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/widgets/common_outlined_button.dart';
-import 'package:flutter_test_future/widgets/stack_appbar.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/common_outlined_button.dart';
+import 'package:animetrace/widgets/stack_appbar.dart';
 
 class VideoPlayerWithLoadUrlPage extends StatefulWidget {
   const VideoPlayerWithLoadUrlPage(
@@ -98,12 +97,7 @@ class _VideoPlayerWithLoadUrlPageState
           child: CommonOutlinedButton(onPressed: () => _loadUrl(), text: '重试'));
     }
 
-    return VideoPlayerPage(
-      url: url,
-      title: widget.title,
-      leading: widget.leading,
-      whenDesktopToggleFullScreen: widget.whenDesktopToggleFullScreen,
-    );
+    return const SizedBox();
   }
 
   void _loadUrl() async {

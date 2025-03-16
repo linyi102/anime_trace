@@ -7,7 +7,7 @@ class BgmEpisode {
   String? duration;
   String? desc;
   int? ep;
-  int? sort;
+  num? sort;
   int? id;
   int? subjectId;
   int? comment;

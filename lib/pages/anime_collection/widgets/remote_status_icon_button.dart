@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/remote_controller.dart';
-import 'package:flutter_test_future/pages/settings/backup_restore/remote.dart';
-import 'package:flutter_test_future/values/theme.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/controllers/remote_controller.dart';
+import 'package:animetrace/pages/settings/backup_restore/remote.dart';
+import 'package:animetrace/values/theme.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
 
 class RemoteStatusIconButton extends StatelessWidget {

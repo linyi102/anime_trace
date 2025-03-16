@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/utils/number_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/utils/number_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 
 class TimeUtil {

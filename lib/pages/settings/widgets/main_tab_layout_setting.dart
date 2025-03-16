@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/main_screen/logic.dart';
+import 'package:animetrace/pages/main_screen/logic.dart';
 
 class MainTabLayoutSettingPage extends StatefulWidget {
   const MainTabLayoutSettingPage({super.key});

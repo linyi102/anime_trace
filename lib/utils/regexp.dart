@@ -7,7 +7,7 @@ class RegexpUtil {
   }
 
   static String? extractDate(String? text) {
-    if (text == null) return null;
+    if (text == null || text.isEmpty) return null;
     return RegExp(r'\d{4}(-\d{0,2}){0,2}').firstMatch(text)?[0];
   }
 }

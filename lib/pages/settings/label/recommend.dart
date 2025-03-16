@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/models/label.dart';
-import 'package:flutter_test_future/widgets/emoji_leading.dart';
+import 'package:animetrace/controllers/labels_controller.dart';
+import 'package:animetrace/models/label.dart';
+import 'package:animetrace/widgets/emoji_leading.dart';
 
 class RecommendedLabelListView extends StatefulWidget {
   const RecommendedLabelListView({super.key});
@@ -27,7 +27,7 @@ class _RecommendedLabelListViewState extends State<RecommendedLabelListView> {
 
           return ListTile(
             leading: EmojiLeading(emoji: Label.getEmoji(recommendedLabel)),
-            title: Text(Label.getNameWithoutEmoji(recommendedLabel) ?? ''),
+            title: Text(Label.getNameWithoutEmoji(recommendedLabel)),
             trailing: _buildAction(recommendedLabel),
           );
         },

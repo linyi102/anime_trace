@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/climb_website.dart';
-import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/utils/climb/site_collection_tab.dart';
+import 'package:animetrace/utils/climb/user_collection.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 

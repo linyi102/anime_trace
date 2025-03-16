@@ -1,11 +1,12 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/climb/site_collection_tab.dart';
+import 'package:animetrace/utils/climb/user_collection.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/regexp.dart';
 import 'package:html/dom.dart';
 
 class ClimbDouban with Climb {
@@ -50,6 +51,18 @@ class ClimbDouban with Climb {
         .getElementsByTagName("span")[0]
         .innerHtml;
 
+    // 简介
+    final intraEl = document.getElementById('link-report-intra');
+    if (intraEl != null) {
+      for (final el in intraEl.children) {
+        if (el.attributes['property'] == 'v:summary') {
+          anime.animeDesc =
+              el.innerHtml.split('<br>').map((e) => e.trim()).join('\n');
+          break;
+        }
+      }
+    }
+
     var infoElement = document.getElementById("info");
     // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
     RegExp(r'<span class="pl">.*<br')
@@ -76,13 +89,10 @@ class ClimbDouban with Climb {
       var plElements = infoElement.getElementsByClassName("pl");
       for (var plElement in plElements) {
         String innerHtml = plElement.innerHtml;
-        if (innerHtml.contains("首播")) {
-          // 1997-02-23(日本)
-          anime.premiereTime = plElement.nextElementSibling?.innerHtml ?? "";
-          // 1997-02-23
-          if (anime.premiereTime.contains("(")) {
-            anime.premiereTime = anime.premiereTime.split("(")[0];
-          }
+        if (innerHtml.contains(RegExp('上映日期|首播'))) {
+          anime.premiereTime =
+              RegexpUtil.extractDate(plElement.nextElementSibling?.innerHtml) ??
+                  '';
         } else if (innerHtml.contains("作者")) {
           anime.authorOri = plElement.nextElementSibling?.innerHtml ?? "";
         }
@@ -122,7 +132,7 @@ class ClimbDouban with Climb {
         Anime(
             animeName: title,
             animeCoverUrl: coverUrl,
-            animeUrl: 'https://movie.douban.com/subject/$detailId'),
+            animeUrl: 'https://www.douban.com/subject/$detailId'),
       );
     }
     return animes;

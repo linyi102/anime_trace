@@ -1,5 +1,5 @@
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/utils/sp_util.dart';
 import 'package:get/get.dart';
 
 class AnimeDisplayController extends GetxController {

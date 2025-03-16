@@ -1,13 +1,13 @@
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/data_state.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/widgets/progress.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/data_state.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/widgets/progress.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get.dart';
 import 'package:queue/queue.dart';
 

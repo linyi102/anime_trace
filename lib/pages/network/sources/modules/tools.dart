@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/anime_air_date_list/anime_air_date_list_page.dart';
-import 'package:flutter_test_future/pages/network/directory/directory_page.dart';
-import 'package:flutter_test_future/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
-import 'package:flutter_test_future/pages/network/weekly/weekly.dart';
-import 'package:flutter_test_future/pages/settings/image_wall/note_image_wall.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
+import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_page.dart';
+import 'package:animetrace/pages/network/directory/directory_page.dart';
+import 'package:animetrace/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
+import 'package:animetrace/pages/network/weekly/weekly.dart';
+import 'package:animetrace/pages/settings/image_wall/note_image_wall.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../pages/dedup/dedup_page.dart';

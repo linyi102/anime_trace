@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class PercentBar extends StatelessWidget {
@@ -21,7 +22,7 @@ class PercentBar extends StatelessWidget {
       animation: true,
       animateFromLastPercent: percent != 0,
       progressColor: Theme.of(context).primaryColor,
-      backgroundColor: Theme.of(context).disabledColor.withOpacity(0.1),
+      backgroundColor: Theme.of(context).disabledColor.withOpacityFactor(0.1),
       barRadius: const Radius.circular(99),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_list_tile.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/setting_title.dart';
+import 'package:animetrace/components/anime_list_tile.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/setting_title.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/anime_grid_cover.dart';

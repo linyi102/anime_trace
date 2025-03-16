@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_tab_bar.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/enum/note_type.dart';
-import 'package:flutter_test_future/models/note_filter.dart';
-import 'package:flutter_test_future/pages/note_list/note_search_page.dart';
-import 'package:flutter_test_future/pages/note_list/widgets/episode_note_list_page.dart';
-import 'package:flutter_test_future/pages/note_list/widgets/rate_note_list_page.dart';
-import 'package:flutter_test_future/pages/note_list/widgets/recently_create_note_anime_list_page.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
-import 'package:flutter_test_future/widgets/common_tab_bar_view.dart';
-import 'package:flutter_test_future/widgets/responsive.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/enum/note_type.dart';
+import 'package:animetrace/models/note_filter.dart';
+import 'package:animetrace/pages/note_list/note_search_page.dart';
+import 'package:animetrace/pages/note_list/widgets/episode_note_list_page.dart';
+import 'package:animetrace/pages/note_list/widgets/rate_note_list_page.dart';
+import 'package:animetrace/pages/note_list/widgets/recently_create_note_anime_list_page.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
+import 'package:animetrace/widgets/responsive.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);

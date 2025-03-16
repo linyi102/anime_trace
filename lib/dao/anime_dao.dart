@@ -1,16 +1,16 @@
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
-import 'package:flutter_test_future/dao/anime_series_dao.dart';
-import 'package:flutter_test_future/models/anime_episode_info.dart';
-import 'package:flutter_test_future/models/enum/anime_area.dart';
-import 'package:flutter_test_future/models/enum/anime_category.dart';
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/pages/local_search/models/local_select_filter.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/escape_util.dart';
-import 'package:flutter_test_future/utils/global_data.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
+import 'package:animetrace/dao/anime_series_dao.dart';
+import 'package:animetrace/models/anime_episode_info.dart';
+import 'package:animetrace/models/enum/anime_area.dart';
+import 'package:animetrace/models/enum/anime_category.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/pages/local_search/models/local_select_filter.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/escape_util.dart';
+import 'package:animetrace/utils/global_data.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/log.dart';
 
 import '../models/anime.dart';
 
@@ -21,6 +21,7 @@ class AnimeDao {
   static const String columnId = 'anime_id';
   static const String columnUrl = 'anime_url';
   static const String columnSource = 'anime_source';
+  static const String columnBgmSubjectId = 'bgm_subject_id';
 
   static Future<List<Anime>> getAnimes({
     List<String>? columns,
@@ -756,5 +757,37 @@ class AnimeDao {
       where: '$columnId = ?',
       whereArgs: [animeId],
     );
+  }
+
+  /// 新增Bangumi SubjectId列
+  static Future<void> addColumnBgmSubjectId() async {
+    await SqliteUtil.addColumnName(
+      tableName: table,
+      columnName: columnBgmSubjectId,
+      columnType: 'TEXT',
+      logName: 'addColumnBgmSubjectId',
+    );
+  }
+
+  static Future<String> getBgmSubjectId(int animeId) async {
+    final rows = await db.query(
+      table,
+      columns: [columnBgmSubjectId],
+      where: '$columnId = ?',
+      whereArgs: [animeId],
+    );
+    return rows.first[columnBgmSubjectId] as String? ?? '';
+  }
+
+  static Future<bool> setBgmSubjectId(int animeId, String subjectId) async {
+    final successCnt = await db.update(
+      table,
+      {
+        columnBgmSubjectId: subjectId,
+      },
+      where: '$columnId = ?',
+      whereArgs: [animeId],
+    );
+    return successCnt > 0;
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/climb/climb_anime_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 
 dialogSelectChecklist(
   setState,

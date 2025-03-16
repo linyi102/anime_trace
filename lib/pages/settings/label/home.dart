@@ -1,19 +1,21 @@
+import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/search_app_bar.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/controllers/labels_controller.dart';
-import 'package:flutter_test_future/dao/anime_label_dao.dart';
-import 'package:flutter_test_future/dao/label_dao.dart';
-import 'package:flutter_test_future/models/label.dart';
-import 'package:flutter_test_future/pages/settings/label/form.dart';
-import 'package:flutter_test_future/pages/settings/label/recommend.dart';
-import 'package:flutter_test_future/utils/delay_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/search_app_bar.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/controllers/labels_controller.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
+import 'package:animetrace/dao/label_dao.dart';
+import 'package:animetrace/models/label.dart';
+import 'package:animetrace/pages/settings/label/form.dart';
+import 'package:animetrace/pages/settings/label/recommend.dart';
+import 'package:animetrace/utils/delay_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:reorderables/reorderables.dart';
 
 class LabelManagePage extends StatefulWidget {
   const LabelManagePage(
@@ -47,6 +49,11 @@ class _LabelManagePageState extends State<LabelManagePage> {
               automaticallyImplyLeading:
                   widget.enableSelectLabelForAnime ? false : true,
               actions: [
+                IconButton(
+                    onPressed: () {
+                      _showLayoutBottomSheet();
+                    },
+                    icon: const Icon(Icons.layers_outlined)),
                 IconButton(
                     onPressed: () {
                       setState(() {
@@ -86,10 +93,14 @@ class _LabelManagePageState extends State<LabelManagePage> {
   }
 
   _buildLabelWrap() {
-    return Wrap(
+    return ReorderableWrap(
         spacing: AppTheme.wrapSacing,
         runSpacing: AppTheme.wrapRunSpacing,
-        children: labelsController.labels.reversed.map((label) {
+        enableReorder: labelsController.sortController.curMode ==
+            labelsController.customSortMode,
+        onReorder: labelsController.reorder,
+        buildDraggableFeedback: _buildDraggableLabel,
+        children: labelsController.labels.map((label) {
           bool selected = false;
           if (widget.animeController != null) {
             selected = widget.animeController!.labels
@@ -135,12 +146,27 @@ class _LabelManagePageState extends State<LabelManagePage> {
                 _showOpMenuDialog(label);
               }
             },
-            onLongPress: () {
-              // 长按时也要弹出操作菜单，这样为动漫选择标签时也能重命名和删除了
-              _showOpMenuDialog(label);
-            },
           );
         }).toList());
+  }
+
+  Transform _buildDraggableLabel(
+      BuildContext context, BoxConstraints constraints, Widget child) {
+    return Transform(
+      transform: Matrix4.rotationZ(0),
+      alignment: FractionalOffset.topLeft,
+      child: Container(
+          constraints: constraints,
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(24),
+              offset: const Offset(0, 8),
+              blurRadius: 8,
+              spreadRadius: 0,
+            ),
+          ]),
+          child: child),
+    );
   }
 
   _buildSearchBar() {
@@ -296,5 +322,16 @@ class _LabelManagePageState extends State<LabelManagePage> {
         searchAction = true;
       });
     }
+  }
+
+  void _showLayoutBottomSheet() {
+    showCommonModalBottomSheet(
+      context: context,
+      builder: (context) => Scaffold(
+        appBar:
+            AppBar(title: const Text('排序'), automaticallyImplyLeading: false),
+        body: SortOptionView(controller: labelsController.sortController),
+      ),
+    );
   }
 }

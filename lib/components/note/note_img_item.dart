@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/models/relative_local_image.dart';
-import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/values/theme.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/models/relative_local_image.dart';
+import 'package:animetrace/pages/modules/note_img_viewer.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/values/theme.dart';
 
 // 网格的单个笔记图片构建
 // 使用：笔记列表页

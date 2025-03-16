@@ -1,16 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/params/result.dart';
-import 'package:flutter_test_future/models/week_record.dart';
-import 'package:flutter_test_future/utils/climb/site_collection_tab.dart';
-import 'package:flutter_test_future/utils/climb/user_collection.dart';
-import 'package:flutter_test_future/utils/dio_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/models/week_record.dart';
+import 'package:animetrace/utils/climb/site_collection_tab.dart';
+import 'package:animetrace/utils/climb/user_collection.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 mixin Climb {
   late String idName;

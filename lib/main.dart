@@ -7,14 +7,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_logkit/logkit.dart';
-import 'package:flutter_test_future/components/classic_refresh_style.dart';
-import 'package:flutter_test_future/controllers/backup_service.dart';
-import 'package:flutter_test_future/global.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/controllers/theme_controller.dart';
-import 'package:flutter_test_future/pages/main_screen/view.dart';
-import 'package:flutter_test_future/utils/sp_profile.dart';
-import 'package:flutter_test_future/values/theme.dart';
+import 'package:animetrace/components/classic_refresh_style.dart';
+import 'package:animetrace/controllers/backup_service.dart';
+import 'package:animetrace/global.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/controllers/theme_controller.dart';
+import 'package:animetrace/pages/main_screen/view.dart';
+import 'package:animetrace/utils/sp_profile.dart';
+import 'package:animetrace/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
@@ -78,6 +79,7 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
         // 退出
         Navigator.of(context).pop();
         await windowManager.destroy();
+        exit(0);
       });
     }
   }
@@ -187,9 +189,9 @@ class MyAppState extends State<MyApp> {
             Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
       ),
       switchTheme: SwitchThemeData(
-        thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
-            (Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbIcon:
+            WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
             return Icon(Icons.check, color: theme.primaryColor);
           }
           return null;
@@ -363,13 +365,13 @@ class MyAppState extends State<MyApp> {
   ScrollbarThemeData _getScrollbarThemeData(BuildContext context,
       {bool isDark = false}) {
     return ScrollbarThemeData(
-      trackVisibility: MaterialStateProperty.all(true),
+      trackVisibility: WidgetStateProperty.all(true),
       // 粗细
-      thickness: MaterialStateProperty.all(5),
+      thickness: WidgetStateProperty.all(5),
       interactive: true,
       radius: const Radius.circular(10),
-      thumbColor: MaterialStateProperty.all(
-        isDark ? Colors.white.withOpacity(0.4) : Colors.black38,
+      thumbColor: WidgetStateProperty.all(
+        isDark ? Colors.white.withOpacityFactor(0.4) : Colors.black38,
       ),
     );
   }

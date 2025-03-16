@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/pages/modules/note_img_viewer.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/image_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/pages/modules/note_img_viewer.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/image_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/values/values.dart';
 
 class NoteImageHorizontalListView extends StatefulWidget {
   const NoteImageHorizontalListView({required this.note, super.key});
@@ -112,7 +113,7 @@ class _NoteImageHorizontalListViewState
             child: Icon(
               playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
               size: 18,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withOpacityFactor(0.8),
             ),
           ),
         ),

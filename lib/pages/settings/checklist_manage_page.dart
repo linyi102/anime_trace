@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class ChecklistManagePage extends StatefulWidget {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 
 Widget loadingWidget(BuildContext context) {
   return const LoadingWidget(center: true);
@@ -31,7 +32,7 @@ class LoadingWidget extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
                   backgroundColor:
-                      Theme.of(context).primaryColor.withOpacity(0.3),
+                      Theme.of(context).primaryColor.withOpacityFactor(0.3),
                 ),
               ),
               if (text.isNotEmpty)

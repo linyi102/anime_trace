@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/enum/play_status.dart';
-import 'package:flutter_test_future/utils/regexp.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/utils/regexp.dart';
 import 'package:html/dom.dart';
 
 class CycUIClimber {

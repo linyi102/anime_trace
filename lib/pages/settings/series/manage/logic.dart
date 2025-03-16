@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/dao/config_dao.dart';
-import 'package:flutter_test_future/dao/series_dao.dart';
-import 'package:flutter_test_future/models/series.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/style.dart';
-import 'package:flutter_test_future/utils/sqlite_util.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/dao/config_dao.dart';
+import 'package:animetrace/dao/series_dao.dart';
+import 'package:animetrace/models/series.dart';
+import 'package:animetrace/pages/settings/series/manage/style.dart';
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:get/get.dart';
 
 class SeriesManageLogic extends GetxController {
@@ -122,7 +122,9 @@ class SeriesManageLogic extends GetxController {
       // 为该动漫推荐了，则不在全部里展示
       if (animeRecommendSeriesList
               .indexWhere((element) => element.name == recommendSeriesName) >=
-          0) continue;
+          0) {
+        continue;
+      }
       // 忽略了该推荐
       if (ignoredSerieNames.contains(recommendSeriesName)) continue;
 
@@ -177,7 +179,6 @@ class SeriesManageLogic extends GetxController {
           },
         );
         break;
-      default:
     }
   }
 

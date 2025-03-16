@@ -1,25 +1,25 @@
+import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/anime_rating_bar.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_checklist.dart';
-import 'package:flutter_test_future/components/dialog/dialog_select_play_status.dart';
-import 'package:flutter_test_future/dao/anime_dao.dart';
-import 'package:flutter_test_future/pages/anime_collection/checklist_controller.dart';
-import 'package:flutter_test_future/pages/bangumi/subject_detail/view.dart';
-import 'package:flutter_test_future/pages/local_search/views/local_search_page.dart';
-import 'package:flutter_test_future/pages/anime_detail/controllers/anime_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/anime_properties_page.dart';
-import 'package:flutter_test_future/pages/anime_detail/pages/anime_rate_list_page.dart';
-import 'package:flutter_test_future/pages/anime_detail/widgets/labels.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/view.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/common_util.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/widgets/bottom_sheet.dart';
+import 'package:animetrace/components/anime_rating_bar.dart';
+import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
+import 'package:animetrace/components/dialog/dialog_select_play_status.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/pages/bangumi/subject_detail/view.dart';
+import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/pages/anime_detail/pages/anime_properties_page.dart';
+import 'package:animetrace/pages/anime_detail/pages/anime_rate_list_page.dart';
+import 'package:animetrace/pages/anime_detail/widgets/labels.dart';
+import 'package:animetrace/pages/settings/series/manage/view.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/common_util.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:get/get.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../widgets/icon_text_button.dart';
@@ -177,8 +177,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 widget.animeController.reloadAnime(_anime);
               });
             }),
-      _buildSearchBtn(),
-      // _buildBangumiInfoBtn(),
+      widget.animeController.isCollected
+          ? _buildBangumiInfoBtn()
+          : _buildSearchBtn(),
     ];
   }
 
@@ -232,9 +233,9 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
   Widget _buildBangumiInfoBtn() {
     return _buildIconTextButton(
       iconData: MingCuteIcons.mgc_profile_line,
-      text: '信息',
+      text: '角色',
       onTap: () {
-        RouteUtil.materialTo(context, const BangumiSubjectDetailPage());
+        RouteUtil.materialTo(context, BangumiSubjectDetailPage(_anime));
       },
     );
   }

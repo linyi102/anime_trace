@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 
 class BorderButton extends StatelessWidget {
   const BorderButton({
@@ -19,7 +20,7 @@ class BorderButton extends StatelessWidget {
       borderRadius: radius,
       child: Material(
         color: selected
-            ? Theme.of(context).primaryColor.withOpacity(0.2)
+            ? Theme.of(context).primaryColor.withOpacityFactor(0.2)
             : Theme.of(context).cardColor,
         child: Ink(
           child: InkWell(
@@ -30,7 +31,7 @@ class BorderButton extends StatelessWidget {
                     width: 1,
                     color: selected
                         ? Theme.of(context).primaryColor
-                        : Theme.of(context).hintColor.withOpacity(0.1)),
+                        : Theme.of(context).hintColor.withOpacityFactor(0.1)),
                 borderRadius: radius,
               ),
               child: child,

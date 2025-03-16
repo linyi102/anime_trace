@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test_future/utils/regexp.dart';
+import 'package:animetrace/utils/regexp.dart';
 
 void main() {
   test('extract date', () {
@@ -7,5 +7,7 @@ void main() {
     expect(RegexpUtil.extractDate('2024-04'), '2024-04');
     expect(RegexpUtil.extractDate('2024-4'), '2024-4');
     expect(RegexpUtil.extractDate('2024'), '2024');
+    expect(RegexpUtil.extractDate('none'), null);
+    expect(RegexpUtil.extractDate(''), null);
   });
 }

@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/models/anime.dart';
+import 'package:animetrace/models/anime.dart';
 
 class EpisodeUtil {
   static int getFixedEpisodeNumber(Anime anime, int episodeNumber) {

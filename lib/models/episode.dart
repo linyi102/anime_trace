@@ -1,6 +1,6 @@
-import 'package:flutter_test_future/dao/episode_desc_dao.dart';
-import 'package:flutter_test_future/models/note.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
+import 'package:animetrace/dao/episode_desc_dao.dart';
+import 'package:animetrace/models/note.dart';
+import 'package:animetrace/utils/time_util.dart';
 
 class Episode {
   final int _number; // 第几集

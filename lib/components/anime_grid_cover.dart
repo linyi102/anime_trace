@@ -1,12 +1,12 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/common_image.dart';
-import 'package:flutter_test_future/animation/fade_animated_switcher.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/controllers/anime_display_controller.dart';
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/utils/platform.dart';
-import 'package:flutter_test_future/values/values.dart';
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/animation/fade_animated_switcher.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -23,6 +23,7 @@ class AnimeGridCover extends StatelessWidget {
   final bool showSeries;
   final bool isSelected;
   final void Function()? onPressed;
+  final GestureLongPressCallback? onLongPress;
   final bool loading;
 
   const AnimeGridCover(
@@ -37,6 +38,7 @@ class AnimeGridCover extends StatelessWidget {
     this.isSelected = false,
     this.coverWidth = 0,
     this.onPressed,
+    this.onLongPress,
     this.loading = false,
   }) : super(key: key);
 
@@ -52,6 +54,7 @@ class AnimeGridCover extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(AppTheme.imgRadius),
       onTap: onPressed,
+      onLongPress: onLongPress,
       // 监听是否显示进度、观看次数、原图
       child: Obx(() => Column(
             children: [
@@ -92,7 +95,7 @@ class AnimeGridCover extends StatelessWidget {
                           : _anime.checkedEpisodeCnt / _anime.animeEpisodeCnt,
                       backgroundColor: Theme.of(context)
                           .unselectedWidgetColor
-                          .withOpacity(0.1),
+                          .withOpacityFactor(0.1),
                     ),
                   ),
                 ),
@@ -138,7 +141,7 @@ class AnimeGridCover extends StatelessWidget {
                     width: mqSize.width,
                     height: mqSize.height,
                     // color: Theme.of(context).primaryColor.withOpacity(0.4),
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withOpacityFactor(0.6),
                     child: const Center(
                         child: Icon(Icons.check, color: Colors.white)),
                   ),

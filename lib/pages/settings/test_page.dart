@@ -3,16 +3,13 @@ import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/components/loading_dialog.dart';
-import 'package:flutter_test_future/components/loading_widget.dart';
-import 'package:flutter_test_future/pages/viewer/video/view.dart';
-import 'package:flutter_test_future/pages/viewer/video/view_with_load_url.dart';
-import 'package:flutter_test_future/routes/get_route.dart';
-import 'package:flutter_test_future/utils/log.dart';
-import 'package:flutter_test_future/utils/time_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/common_scaffold_body.dart';
+import 'package:animetrace/components/loading_dialog.dart';
+import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -58,28 +55,6 @@ class _TestPageState extends State<TestPage> {
           Assets.lotties.playing,
           width: 24,
           height: 24,
-        ),
-        ListTile(
-          title: const Text('视频播放 (解析链接)'),
-          onTap: () {
-            RouteUtil.materialTo(context, VideoPlayerWithLoadUrlPage(
-              loadUrl: () async {
-                await Future.delayed(const Duration(seconds: 1));
-                return 'http://vjs.zencdn.net/v/oceans.mp4';
-              },
-            ));
-          },
-        ),
-        ListTile(
-          title: const Text('视频播放'),
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const VideoPlayerPage(
-                          url: 'http://vjs.zencdn.net/v/oceans.mp4',
-                        )));
-          },
         ),
         const SizedBox(height: 10),
         LinearPercentIndicator(

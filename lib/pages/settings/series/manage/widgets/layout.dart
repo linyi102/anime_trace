@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_future/pages/settings/series/manage/logic.dart';
-import 'package:flutter_test_future/utils/log.dart';
+import 'package:animetrace/pages/settings/series/manage/logic.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../../widgets/setting_title.dart';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animetrace/utils/extensions/color.dart';
 
 class EmojiLeading extends StatelessWidget {
   const EmojiLeading({super.key, required this.emoji});
@@ -11,7 +12,7 @@ class EmojiLeading extends StatelessWidget {
       width: 36,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        color: Theme.of(context).hintColor.withOpacity(0.06),
+        color: Theme.of(context).hintColor.withOpacityFactor(0.06),
       ),
       child: emoji == null
           ? Icon(

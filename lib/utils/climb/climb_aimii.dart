@@ -1,7 +1,7 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
-import 'package:flutter_test_future/utils/climb/climb_omofun.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/utils/climb/climb.dart';
+import 'package:animetrace/utils/climb/climb_omofun.dart';
 
 import '../../models/params/page_params.dart';
 

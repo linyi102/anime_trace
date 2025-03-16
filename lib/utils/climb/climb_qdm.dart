@@ -1,8 +1,8 @@
-import 'package:flutter_test_future/models/anime.dart';
-import 'package:flutter_test_future/models/anime_filter.dart';
-import 'package:flutter_test_future/models/params/page_params.dart';
-import 'package:flutter_test_future/models/week_record.dart';
-import 'package:flutter_test_future/utils/climb/climb.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/anime_filter.dart';
+import 'package:animetrace/models/params/page_params.dart';
+import 'package:animetrace/models/week_record.dart';
+import 'package:animetrace/utils/climb/climb.dart';
 
 class ClimbQdm with Climb {
   // 单例
@@ -81,6 +81,14 @@ class ClimbQdm with Climb {
         .previousElementSibling!
         .previousElementSibling!
         .innerHtml;
+
+    // 获取简介
+    anime.animeDesc = document
+        .getElementsByClassName("col-pd text-collapse content")[0]
+        .getElementsByClassName("data")[0]
+        .getElementsByTagName("p")[0]
+        .innerHtml
+        .replaceAll("<br>", "\n");
 
     // JOJO的奇妙冒险 第六部(石之海)Part.3：全集 / 2022-12-03
     // 海贼王：更新至1046集 / 2023-01-08

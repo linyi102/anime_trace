@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/models/anime_history_record.dart';
+import 'package:animetrace/models/anime_history_record.dart';
 
 class HistoryPlus {
   String date;

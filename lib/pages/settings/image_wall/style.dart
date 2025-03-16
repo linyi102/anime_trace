@@ -1,4 +1,4 @@
-import 'package:flutter_test_future/utils/sp_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
 
 class NoteImageWallStyle {
   static String get _groupCntKey => 'groupCntInNoteImageWallPage';

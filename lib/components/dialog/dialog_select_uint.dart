@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_test_future/utils/toast_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
 
 Future<int?> dialogSelectUint(context, String title,
     {int initialValue = 0, int minValue = 0, int maxValue = 1 << 32}) async {

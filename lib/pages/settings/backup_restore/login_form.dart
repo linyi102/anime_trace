@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test_future/models/enum/webdav_website.dart';
-import 'package:flutter_test_future/utils/launch_uri_util.dart';
-import 'package:flutter_test_future/utils/sp_util.dart';
-import 'package:flutter_test_future/utils/webdav_util.dart';
-import 'package:flutter_test_future/utils/toast_util.dart';
-import 'package:flutter_test_future/values/values.dart';
-import 'package:flutter_test_future/widgets/button/action_button.dart';
-import 'package:flutter_test_future/widgets/limit_width_center.dart';
-import 'package:flutter_test_future/widgets/svg_asset_icon.dart';
+import 'package:animetrace/models/enum/webdav_website.dart';
+import 'package:animetrace/utils/extensions/color.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
+import 'package:animetrace/utils/sp_util.dart';
+import 'package:animetrace/utils/webdav_util.dart';
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/values/values.dart';
+import 'package:animetrace/widgets/button/action_button.dart';
+import 'package:animetrace/widgets/limit_width_center.dart';
+import 'package:animetrace/widgets/svg_asset_icon.dart';
 
 class WebDavLoginForm extends StatefulWidget {
   const WebDavLoginForm({super.key});
@@ -145,8 +146,8 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
             borderRadius: BorderRadius.circular(12),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).hintColor.withOpacity(0.2)),
+            borderSide: BorderSide(
+                color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
             borderRadius: BorderRadius.circular(12),
           ),
         ),
