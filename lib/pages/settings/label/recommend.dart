@@ -27,7 +27,7 @@ class _RecommendedLabelListViewState extends State<RecommendedLabelListView> {
 
           return ListTile(
             leading: EmojiLeading(emoji: Label.getEmoji(recommendedLabel)),
-            title: Text(Label.getNameWithoutEmoji(recommendedLabel) ?? ''),
+            title: Text(Label.getNameWithoutEmoji(recommendedLabel)),
             trailing: _buildAction(recommendedLabel),
           );
         },

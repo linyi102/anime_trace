@@ -14,7 +14,7 @@ class ThemeController extends GetxController {
   Rx<bool> useCardStyle =
       SPUtil.getBool("useCardStyle", defaultValue: true).obs;
   Rx<bool> hideMobileBottomLabel =
-      SettingsUtil.getValue<bool>(SettingsEnum.hideMobileBottomLabel).obs;
+      SettingsUtil.get<bool>(SettingsEnum.hideMobileBottomLabel).obs;
 
   Rx<ThemeColor> lightThemeColor = getSelectedTheme();
   Rx<ThemeColor> darkThemeColor = getSelectedTheme(dark: true);

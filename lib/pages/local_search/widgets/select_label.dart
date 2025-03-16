@@ -83,7 +83,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
     return Obx(() => Wrap(
           spacing: AppTheme.wrapSacing,
           runSpacing: AppTheme.wrapRunSpacing,
-          children: labelsController.labels.reversed.map((label) {
+          children: labelsController.labels.map((label) {
             bool selected =
                 localSearchController.localSelectFilter.labels.contains(label);
 

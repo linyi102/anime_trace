@@ -1,3 +1,4 @@
+import 'package:animetrace/modules/sort_mode/view.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/search_app_bar.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
@@ -49,6 +50,11 @@ class _LabelManagePageState extends State<LabelManagePage> {
               actions: [
                 IconButton(
                     onPressed: () {
+                      _showLayoutBottomSheet();
+                    },
+                    icon: const Icon(Icons.layers_outlined)),
+                IconButton(
+                    onPressed: () {
                       setState(() {
                         searchAction = !searchAction;
                       });
@@ -89,7 +95,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
     return Wrap(
         spacing: AppTheme.wrapSacing,
         runSpacing: AppTheme.wrapRunSpacing,
-        children: labelsController.labels.reversed.map((label) {
+        children: labelsController.labels.map((label) {
           bool selected = false;
           if (widget.animeController != null) {
             selected = widget.animeController!.labels
@@ -296,5 +302,17 @@ class _LabelManagePageState extends State<LabelManagePage> {
         searchAction = true;
       });
     }
+  }
+
+  void _showLayoutBottomSheet() {
+    showCommonModalBottomSheet(
+      context: context,
+      builder: (context) => Scaffold(
+        appBar:
+            AppBar(title: const Text('排序'), automaticallyImplyLeading: false),
+        body:
+            SortModeOptionView(controller: labelsController.sortModeController),
+      ),
+    );
   }
 }

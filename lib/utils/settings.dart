@@ -1,7 +1,13 @@
 import 'package:animetrace/utils/sp_util.dart';
 
 enum SettingsEnum<T> {
-  hideMobileBottomLabel('hideMobileBottomNavigationBarLabel', false);
+  /// 主界面
+  hideMobileBottomLabel('hideMobileBottomNavigationBarLabel', false),
+
+  /// 标签
+  labelSortMode('labelSortMode', 0),
+  labelSortReverse('labelSortReverse', false),
+  ;
 
   final String key;
   final T defaultValue;
@@ -9,7 +15,7 @@ enum SettingsEnum<T> {
 }
 
 class SettingsUtil {
-  static T getValue<T>(SettingsEnum<T> setting) {
+  static T get<T>(SettingsEnum<T> setting) {
     if (T == bool) {
       return SPUtil.getBool(setting.key,
           defaultValue: setting.defaultValue as bool) as T;
@@ -27,7 +33,7 @@ class SettingsUtil {
     }
   }
 
-  static Future<bool> setValue<T>(SettingsEnum setting, T value) {
+  static Future<bool> set<T>(SettingsEnum<T> setting, T value) {
     if (T == bool) {
       return SPUtil.setBool(setting.key, value as bool);
     } else if (T == int) {

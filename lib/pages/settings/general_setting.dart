@@ -93,7 +93,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                   value: ThemeController.to.hideMobileBottomLabel.value,
                   onChanged: (value) {
                     ThemeController.to.hideMobileBottomLabel.value = value;
-                    SettingsUtil.setValue(
+                    SettingsUtil.set(
                         SettingsEnum.hideMobileBottomLabel, value);
                   },
                 ),
