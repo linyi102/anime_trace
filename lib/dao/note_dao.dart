@@ -43,11 +43,28 @@ class NoteDao {
     List<Note> rateNotes = [];
 
     int? animeId = noteFilter?.animeId;
-    List<Map<String, Object?>> list = await database.rawQuery('''
-    select anime_id, note_id, note_content, create_time, update_time from episode_note
-    where ${animeId != null ? 'anime_id=$animeId and' : ''} episode_number = 0 order by create_time desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
-    ''');
-    for (Map row in list) {
+    final rows = await database.query(
+      'episode_note',
+      columns: [
+        'anime_id',
+        'note_id',
+        'note_content',
+        'create_time',
+        'update_time'
+      ],
+      where: [
+        'episode_number = 0',
+        if (animeId != null) 'anime_id=$animeId',
+        if (noteFilter?.animeNameKeyword.isNotEmpty == true)
+          "anime_id in (select anime_id from anime where anime_name like '%${EscapeUtil.escapeStr(noteFilter!.animeNameKeyword)}%')",
+        if (noteFilter?.noteContentKeyword.isNotEmpty == true)
+          "note_content like '%${EscapeUtil.escapeStr(noteFilter!.noteContentKeyword)}%'"
+      ].join(' and '),
+      orderBy: 'create_time desc',
+      limit: pageParams.pageSize,
+      offset: pageParams.getOffset(),
+    );
+    for (final row in rows) {
       rateNotes.add(await row2bean(row, searchAnime: true));
     }
 

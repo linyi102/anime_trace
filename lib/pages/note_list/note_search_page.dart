@@ -1,3 +1,5 @@
+import 'package:animetrace/models/enum/note_type.dart';
+import 'package:animetrace/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/note_filter.dart';
 import 'package:animetrace/pages/note_list/widgets/episode_note_list_page.dart';
@@ -16,6 +18,7 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
   final noteContentController = TextEditingController();
   bool inputOk = false;
   NoteFilter noteFilter = NoteFilter();
+  NoteType noteType = NoteType.episode;
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +27,26 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
         child: Column(
           children: [
             _buildFormCard(),
-            if (inputOk)
-              Expanded(
-                  child: EpisodeNoteListPage(
-                noteFilter: noteFilter,
-                key: ValueKey(noteFilter.valueKeyStr),
-              ))
+            if (inputOk) Expanded(child: _buildSearchResult())
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSearchResult() {
+    switch (noteType) {
+      case NoteType.episode:
+        return EpisodeNoteListPage(
+          noteFilter: noteFilter,
+          key: ValueKey(noteFilter.valueKeyStr),
+        );
+      case NoteType.rate:
+        return RateNoteListPage(
+          noteFilter: noteFilter,
+          key: ValueKey(noteFilter.valueKeyStr),
+        );
+    }
   }
 
   bool isExpanded = true;
@@ -53,15 +66,16 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
             canTapOnHeader: true,
             headerBuilder: (context, isExpanded) {
               return ListTile(
-                  leading: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Theme.of(context).appBarTheme.iconTheme?.color,
-                      )),
-                  title: const Text('搜索笔记'));
+                leading: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Theme.of(context).appBarTheme.iconTheme?.color,
+                    )),
+                title: Text('搜索${noteType.title}'),
+              );
             },
             body: _buildSearchForm())
       ],
@@ -96,9 +110,21 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
           const SizedBox(height: 20),
           Row(
             children: [
-              Text(
-                '* 暂不支持搜索评价',
-                style: Theme.of(context).textTheme.bodySmall,
+              const Text('搜索类型：'),
+              DropdownButton<NoteType>(
+                value: noteType,
+                items: NoteType.values
+                    .map((e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e.title),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    noteType = value;
+                  });
+                },
               ),
               const Spacer(),
               FilledButton(
@@ -119,7 +145,7 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
   TextField _buildContentTextField() {
     return _buildCommonTextField(
       inputController: noteContentController,
-      title: '笔记内容',
+      title: '${noteType.title}内容',
     );
   }
 
