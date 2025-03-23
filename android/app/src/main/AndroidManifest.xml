@@ -24,22 +24,11 @@
     <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.provider;${applicationId}.fileProvider" android:exported="false" android:grantUriPermissions="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
     </provider>
+
+    <meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false" />
   </application>
 
-  <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
   <uses-permission android:name="android.permission.INTERNET" />
-  <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> -->
-
-  <!-- images_picker -->
-  <!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO" /> -->
-  <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> -->
-  <!-- <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" /> -->
-  <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> -->
-  <!-- <uses-permission android:name="android.permission.accessMediaLocation" /> -->
 
   <queries>
     <intent>
