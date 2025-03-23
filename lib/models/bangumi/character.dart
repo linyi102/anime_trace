@@ -10,6 +10,12 @@ class BgmCharacter {
   int? type;
   int? id;
   int? comment;
+  String? gender;
+  String? birthday;
+  String? bloodType;
+  String? height;
+  String? weight;
+  String? bwh;
 
   BgmCharacter({
     this.images,
@@ -19,6 +25,12 @@ class BgmCharacter {
     this.type,
     this.id,
     this.comment,
+    this.gender,
+    this.birthday,
+    this.bloodType,
+    this.height,
+    this.weight,
+    this.bwh,
   });
 
   factory BgmCharacter.fromJson(String str) =>
@@ -38,6 +50,12 @@ class BgmCharacter {
         type: json["type"],
         id: json["id"],
         comment: json["comment"],
+        gender: json["gender"],
+        birthday: json["birthday"],
+        bloodType: json["bloodType"],
+        height: json["height"],
+        weight: json["weight"],
+        bwh: json["bwh"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -50,5 +68,20 @@ class BgmCharacter {
         "type": type,
         "id": id,
         "comment": comment,
+        "gender": gender,
+        "birthday": birthday,
+        "bloodType": bloodType,
+        "height": height,
+        "weight": weight,
+        "bwh": bwh,
       };
+}
+
+extension BgmCharacterX on BgmCharacter {
+  String get actorsText =>
+      actors
+          ?.map((e) => e.name ?? '')
+          .where((name) => name.isNotEmpty)
+          .join(' / ') ??
+      '';
 }
