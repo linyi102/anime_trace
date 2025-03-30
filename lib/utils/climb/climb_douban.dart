@@ -7,6 +7,7 @@ import 'package:animetrace/utils/climb/site_collection_tab.dart';
 import 'package:animetrace/utils/climb/user_collection.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/regexp.dart';
+import 'package:darty_json/darty_json.dart';
 import 'package:html/dom.dart';
 
 class ClimbDouban with Climb {
@@ -108,17 +109,21 @@ class ClimbDouban with Climb {
 
     Result result = await DioUtil.get(
       'https://m.douban.com/rexxar/api/v2/search?q=$keyword&type=&loc_id=&start=0&count=10&sort=relevance',
-      referer: 'https://www.douban.com/search?q=jojo',
+      referer: 'https://www.douban.com/search',
     );
 
-    dynamic json = result.data.data;
-    if (json is! Map || !json.containsKey('subjects')) return [];
+    final json = Json.fromDynamic(result.data.data);
+    if (json.exception != null) return [];
 
-    List<dynamic>? items = json['subjects']['items'];
-    for (var item in items ?? []) {
-      if (item is! Map) continue;
+    final items = [
+      ...json['subjects']['items'].listOf<Map>() ?? [],
+      ...json['smart_box'].listOf<Map>() ?? [],
+    ];
 
-      var target = item['target'];
+    for (final item in items) {
+      if (item['layout'] != 'subject' || item['target'] is! Map) continue;
+
+      final target = item['target'];
       String? title = target['title'];
       String? coverUrl = target['cover_url'];
       String? detailId = target['id'];
@@ -127,7 +132,6 @@ class ClimbDouban with Climb {
       }
 
       coverUrl = coverUrl.replaceFirst(RegExp(r'h\/[0-9]+'), 'h/600');
-
       animes.add(
         Anime(
             animeName: title,

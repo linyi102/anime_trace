@@ -99,9 +99,19 @@ class BgmCharacterGraphList {
 }
 
 extension BgmCharacterGraphX on BgmCharacterGraph {
-  String? get chineseName => infobox
-      ?.firstWhereOrNull((info) => info.key == '简体中文名')
-      ?.values
-      ?.firstOrNull
-      ?.v;
+  String? get chineseName => _getValueFromInfobox('简体中文名');
+  String? get gender => _getValueFromInfobox('性别');
+  String? get birthday => _getValueFromInfobox('生日');
+  String? get bloodType => _getValueFromInfobox('血型');
+  String? get height => _getValueFromInfobox('身高');
+  String? get weight => _getValueFromInfobox('体重');
+  String? get bwh => _getValueFromInfobox('BWH');
+
+  _getValueFromInfobox(String key) {
+    return infobox
+        ?.firstWhereOrNull((info) => info.key == key)
+        ?.values
+        ?.firstOrNull
+        ?.v;
+  }
 }

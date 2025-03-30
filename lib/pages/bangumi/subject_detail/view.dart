@@ -3,6 +3,7 @@ import 'package:animetrace/models/bangumi/character.dart';
 import 'package:animetrace/modules/load_status/load_status.dart';
 import 'package:animetrace/modules/load_status/page.dart';
 import 'package:animetrace/pages/bangumi/bind_subject/view.dart';
+import 'package:animetrace/pages/bangumi/character_detail/view.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/string.dart';
@@ -89,25 +90,14 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
   }
 
   Widget _buildCharacterItem(BgmCharacter character) {
-    final borderRadius = BorderRadius.circular(AppTheme.imgRadius);
     return Align(
       alignment: Alignment.centerLeft,
       child: ListTile(
         leading: InkWell(
-          borderRadius: borderRadius,
+          borderRadius: BorderRadius.circular(AppTheme.imgRadius),
           onTap: () => RouteUtil.toImageViewer(
               context, NetworkImageViewPage(character.images?.large ?? '')),
-          child: ClipRRect(
-            borderRadius: borderRadius,
-            child: SizedBox(
-              height: 42,
-              width: 42,
-              child: CommonImage(
-                character.images?.grid ?? '',
-                alignment: Alignment.topCenter,
-              ),
-            ),
-          ),
+          child: _buildAvatar(character),
         ),
         title: Text(
           character.name ?? '',
@@ -117,26 +107,41 @@ class BangumiSubjectDetailPageState extends State<BangumiSubjectDetailPage> {
         trailing: character.comment == null || character.comment == 0
             ? null
             : Text('(+${character.comment})'),
-        onTap: () => logic.toDetail(context, character),
+        onTap: () => showDialog(
+          context: context,
+          builder: (context) => CharacterDetailView(
+            characters: logic.characters,
+            selectedIndex: logic.characters.indexOf(character),
+          ),
+        ),
       ),
     );
   }
 
-  Row _buildSubtitle(BgmCharacter character) {
-    final actors = character.actors?.isNotEmpty == true
-        ? character.actors!
-            .map((e) => e.name ?? '')
-            .where((name) => name.isNotEmpty)
-            .join(' / ')
-        : '';
+  ClipRRect _buildAvatar(BgmCharacter character) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+      child: SizedBox(
+        height: 42,
+        width: 42,
+        child: CommonImage(
+          character.images?.grid ?? '',
+          alignment: Alignment.topCenter,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(BgmCharacter character) {
+    final actorsText = character.actorsText;
     return Row(
       children: [
         if (character.relation?.isNullOrBlank == false) ...[
           Text('${character.relation}'),
-          if (actors.isNotEmpty) const Text(' · '),
+          if (actorsText.isNotEmpty) const Text(' · '),
         ],
         Expanded(
-          child: Text(actors, overflow: TextOverflow.ellipsis),
+          child: Text(actorsText, overflow: TextOverflow.ellipsis),
         )
       ],
     );

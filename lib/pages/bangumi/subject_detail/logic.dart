@@ -6,8 +6,6 @@ import 'package:animetrace/repositories/bangumi_repository.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/climb/climb_bangumi.dart';
-import 'package:animetrace/utils/launch_uri_util.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class BangumiSubjectDetailLogic extends GetxController {
@@ -90,6 +88,12 @@ class BangumiSubjectDetailLogic extends GetxController {
       final graph = characterGraphs.firstWhereOrNull((g) => g.id == c.id);
       if (graph?.chineseName?.isNotEmpty == true) {
         c.name = graph?.chineseName;
+        c.gender = graph?.gender;
+        c.birthday = graph?.birthday;
+        c.bloodType = graph?.bloodType;
+        c.height = graph?.height;
+        c.weight = graph?.weight;
+        c.bwh = graph?.bwh;
       }
       c.comment = graph?.comment;
     }
@@ -106,10 +110,5 @@ class BangumiSubjectDetailLogic extends GetxController {
       default:
         return 0;
     }
-  }
-
-  void toDetail(BuildContext context, BgmCharacter character) {
-    LaunchUrlUtil.launch(
-        context: context, uriStr: 'https://bgm.tv/character/${character.id}');
   }
 }

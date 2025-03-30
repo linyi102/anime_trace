@@ -1,21 +1,17 @@
 import 'package:animetrace/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/note.dart';
-import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/pages/anime_detail/widgets/note_image_list.dart';
 import 'package:animetrace/pages/modules/note_edit.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/common_util.dart';
 import 'package:animetrace/utils/extensions/color.dart';
-import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/platform.dart';
-import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/values/values.dart';
@@ -52,7 +48,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   Episode get _episode => widget.episode;
   Anime get _anime => widget.animeController.anime;
-  List<String> get tags => ChecklistController.to.tags;
 
   late Color checkedColor;
 
@@ -464,38 +459,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               _anime.animeId, _episode.number, date, _anime.reviewNumber);
           _episode.dateTime = date;
           setState(() {});
-
-          // 如果完成了最后一集(完结+当前集号为最大集号)，则提示是否要修改清单
-          if (_episode.number == _anime.animeEpisodeCnt &&
-              _anime.playStatus.contains("完结")) {
-            // 之前点击了不再提示
-            bool showModifyChecklistDialog =
-                SPUtil.getBool("showModifyChecklistDialog", defaultValue: true);
-            if (!showModifyChecklistDialog) return;
-
-            // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
-            String selectedFinishedTag =
-                SPUtil.getString("selectedFinishedTag");
-            bool existSelectedFinishedTag =
-                tags.indexWhere((element) => selectedFinishedTag == element) !=
-                    -1;
-            if (!existSelectedFinishedTag) {
-              selectedFinishedTag = tags[0];
-            }
-
-            // 之前点击了总是。那么就修改清单而不需要弹出对话框了
-            if (existSelectedFinishedTag &&
-                SPUtil.getBool("autoMoveToFinishedTag", defaultValue: false)) {
-              _anime.tagName = selectedFinishedTag;
-              AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-              Log.info("修改清单为${_anime.tagName}");
-              setState(() {});
-              return;
-            }
-
-            // 弹出对话框
-            _showDialogAutoMoveChecklist(selectedFinishedTag);
-          }
+          widget.animeController.tryShowDialogMoveChecklist(context, _episode);
         }
       },
       icon: _episode.isChecked()
@@ -504,77 +468,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
               color: checkedColor)
           : SvgAssetIcon(assetPath: Assets.icons.evaSquareOutline),
     );
-  }
-
-  _showDialogAutoMoveChecklist(String selectedFinishedTag) {
-    showDialog(
-        context: context,
-        builder: (dialogContext) {
-          return StatefulBuilder(builder: (context, dialogState) {
-            return AlertDialog(
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("已看完最后一集，\n是否需要移动清单？"),
-                    DropdownButton<String>(
-                        value: selectedFinishedTag,
-                        items: tags
-                            .map((e) => DropdownMenuItem(
-                                  child: Text(e),
-                                  value: e,
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          selectedFinishedTag = value ?? selectedFinishedTag;
-                          dialogState(() {});
-                        })
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      SPUtil.setBool("showModifyChecklistDialog", false);
-                      Navigator.pop(dialogContext);
-                    },
-                    child: const Text("不再提醒")),
-                TextButton(
-                    onPressed: () {
-                      SPUtil.setBool("autoMoveToFinishedTag", true);
-
-                      _anime.tagName = selectedFinishedTag;
-                      SPUtil.setString(
-                          "selectedFinishedTag", selectedFinishedTag);
-                      AnimeDao.updateTagByAnimeId(
-                          _anime.animeId, _anime.tagName);
-                      Log.info("修改清单为${_anime.tagName}");
-                      // 更新info
-                      widget.animeController
-                          .update([widget.animeController.infoId]);
-
-                      Navigator.pop(dialogContext);
-                    },
-                    child: const Text("总是")),
-                TextButton(
-                  onPressed: () {
-                    _anime.tagName = selectedFinishedTag;
-                    SPUtil.setString(
-                        "selectedFinishedTag", selectedFinishedTag);
-                    AnimeDao.updateTagByAnimeId(_anime.animeId, _anime.tagName);
-                    Log.info("修改清单为${_anime.tagName}");
-                    // 更新info
-                    widget.animeController
-                        .update([widget.animeController.infoId]);
-
-                    Navigator.pop(dialogContext);
-                  },
-                  child: const Text("仅本次"),
-                )
-              ],
-            );
-          });
-        });
   }
 
   /// 单击某集

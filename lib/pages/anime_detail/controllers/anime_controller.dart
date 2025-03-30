@@ -1,3 +1,6 @@
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
+import 'package:animetrace/pages/anime_detail/widgets/auto_move_checklist_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/controllers/update_record_controller.dart';
@@ -278,15 +281,16 @@ class AnimeController extends GetxController {
 
     // 遍历选中的下标
     mapSelected.forEach((episodeIndex, value) {
-      int episodeNumber = episodes[episodeIndex].number;
-      if (episodes[episodeIndex].isChecked()) {
+      final episode = episodes[episodeIndex];
+      if (episode.isChecked()) {
         SqliteUtil.updateHistoryItem(
-            anime.animeId, episodeNumber, dateTimeStr, anime.reviewNumber);
+            anime.animeId, episode.number, dateTimeStr, anime.reviewNumber);
       } else {
         SqliteUtil.insertHistoryItem(
-            anime.animeId, episodeNumber, dateTimeStr, anime.reviewNumber);
+            anime.animeId, episode.number, dateTimeStr, anime.reviewNumber);
       }
-      episodes[episodeIndex].dateTime = dateTimeStr;
+      episode.dateTime = dateTimeStr;
+      tryShowDialogMoveChecklist(context, episode);
     });
   }
 
@@ -562,5 +566,50 @@ class AnimeController extends GetxController {
   unfoldRightDetailScreen() {
     rightDetailScreenIsFolded = false;
     update();
+  }
+
+  /// 完成最后一集时提示移动清单
+  void tryShowDialogMoveChecklist(BuildContext context, Episode episode) {
+    final watchedLastEpisode = episode.number == anime.animeEpisodeCnt &&
+        anime.getPlayStatus() == PlayStatus.finished;
+    if (!watchedLastEpisode) return;
+
+    // 之前点击了不再提示
+    bool showModifyChecklistDialog =
+        SPUtil.getBool("showModifyChecklistDialog", defaultValue: true);
+    if (!showModifyChecklistDialog) return;
+
+    // 获取之前选择的清单，如果是第一次则默认选中第一个清单，如果之前选的清单后来删除了，不在列表中，也要选中第一个清单
+    String selectedFinishedTag = SPUtil.getString("selectedFinishedTag");
+    final tags = ChecklistController.to.tags;
+    bool existSelectedFinishedTag =
+        tags.indexWhere((element) => selectedFinishedTag == element) != -1;
+    if (!existSelectedFinishedTag) {
+      selectedFinishedTag = tags[0];
+    }
+
+    // 之前点击了总是。那么就修改清单而不需要弹出对话框了
+    if (existSelectedFinishedTag &&
+        SPUtil.getBool("autoMoveToFinishedTag", defaultValue: false)) {
+      anime.tagName = selectedFinishedTag;
+      AnimeDao.updateTagByAnimeId(anime.animeId, anime.tagName);
+      Log.info("修改清单为${anime.tagName}");
+      updateAnimeInfo();
+      return;
+    }
+
+    // 弹出对话框
+    showDialog(
+      context: context,
+      builder: (context) => AutoMoveChecklistDialog(
+        initialTag: selectedFinishedTag,
+        onSelected: (String tag) {
+          anime.tagName = tag;
+          AnimeDao.updateTagByAnimeId(anime.animeId, tag);
+          Log.info("修改清单为${anime.tagName}");
+          updateAnimeInfo();
+        },
+      ),
+    );
   }
 }
