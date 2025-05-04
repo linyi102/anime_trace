@@ -1,5 +1,6 @@
 import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/dao/anime_series_dao.dart';
+import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
 import 'package:animetrace/models/enum/anime_category.dart';
@@ -22,6 +23,7 @@ class AnimeDao {
   static const String columnUrl = 'anime_url';
   static const String columnSource = 'anime_source';
   static const String columnBgmSubjectId = 'bgm_subject_id';
+  static const String columnRate = 'rate';
 
   static Future<List<Anime>> getAnimes({
     List<String>? columns,
@@ -789,5 +791,19 @@ class AnimeDao {
       whereArgs: [animeId],
     );
     return successCnt > 0;
+  }
+
+  /// 支持半星
+  static Future<void> doubleRateToSupportHalfStar() async {
+    final supportHalfStar =
+        await KeyValueDao.getBool('supportHalfStar') ?? false;
+    if (supportHalfStar) return;
+
+    logger.info('[table $table] double rate');
+    await db.rawUpdate('''
+      UPDATE $table SET $columnRate = $columnRate * 2
+      WHERE $columnRate IS NOT NULL and $columnRate != 0;
+    ''');
+    await KeyValueDao.setBool('supportHalfStar', true);
   }
 }
