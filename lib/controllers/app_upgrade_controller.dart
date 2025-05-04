@@ -377,7 +377,7 @@ class AppUpgradeController extends GetxController {
 
   Asset? _getAndroidAsset(List<Asset> assets) {
     for (var asset in latestRelease!.assets) {
-      if (Platform.isAndroid && asset.name.endsWith("-android.apk")) {
+      if (Platform.isAndroid && asset.name.endsWith("-arm64-v8a.apk")) {
         return asset;
       }
     }
