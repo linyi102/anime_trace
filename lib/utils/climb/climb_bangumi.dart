@@ -1,3 +1,4 @@
+import 'package:animetrace/models/enum/anime_area.dart';
 import 'package:darty_json/darty_json.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
@@ -77,6 +78,12 @@ class ClimbBangumi with Climb {
     anime.premiereTime =
         TimeUtil.getYMDByDateTime(bgmSubject.date, delimiter: '-');
     anime.category = bgmSubject.platform ?? anime.category;
+    for (final area in AnimeArea.values) {
+      if ((bgmSubject.metaTags ?? []).contains(area.label)) {
+        anime.area = area.label;
+        break;
+      }
+    }
 
     final allEpisodes = await repository.fetchEpisodes(subjectId);
     final needEpisodeTypeValues = [
