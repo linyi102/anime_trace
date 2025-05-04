@@ -143,9 +143,14 @@ class ClimbQdm with Climb {
       for (var li in lis) {
         Anime anime = Anime(animeName: "");
         var a = li.getElementsByTagName("a")[0];
-        anime.animeName = a.innerHtml;
+        if (a.getElementsByTagName('span').isNotEmpty) {
+          anime.animeName =
+              a.innerHtml.substring(0, a.innerHtml.indexOf('<span')).trim();
+        } else {
+          anime.animeName = a.innerHtml.trim();
+        }
         anime.animeUrl = "$baseUrl${a.attributes['href']}";
-        String info = li.getElementsByTagName("span")[0].innerHtml;
+        String info = li.getElementsByClassName("pull-right")[0].innerHtml;
 
         WeekRecord weekRecord = WeekRecord(anime: anime, info: info);
         records.add(weekRecord);
