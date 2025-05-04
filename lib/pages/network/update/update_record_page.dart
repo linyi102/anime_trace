@@ -97,7 +97,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
           itemBuilder: (context, index) {
             String date = dateList[index];
             PageParams pageParams = updateRecordController.pageParams;
-            // Log.info("$index, ${pageParams.getQueriedSize()}");
+            // logger.info("$index, ${pageParams.getQueriedSize()}");
             if (index + 2 == pageParams.getQueriedSize()) {
               updateRecordController.loadMore();
             }
