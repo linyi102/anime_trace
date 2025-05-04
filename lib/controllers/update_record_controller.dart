@@ -110,4 +110,14 @@ class UpdateRecordController extends GetxController {
     // updateRecordVos
     //     .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
   }
+
+  void removeAnime(int animeId) {
+    updateRecordVos.removeWhere(
+      (record) =>
+          record.anime.animeId == animeId ||
+          // 如果从更新页进入的动漫详情页，删除动漫后id为置为0，导致该动漫id为0无法删除，因此这里统一删除未收藏的动漫
+          !record.anime.isCollected(),
+    );
+    needUpdateAnimes.removeWhere((anime) => anime.animeId == animeId);
+  }
 }

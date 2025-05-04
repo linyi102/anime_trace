@@ -19,22 +19,23 @@ class SearchHistoryView extends StatelessWidget {
         if (controller._keywords.isEmpty) return const SizedBox();
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListTile(
-                  title: const Text(
-                    '搜索历史',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  trailing: IconButton(
-                      onPressed: () => _showClearAllDialog(context),
-                      icon: const Icon(Icons.delete)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                title: const Text(
+                  '搜索历史',
+                  style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-                Container(
-                  constraints: const BoxConstraints(maxHeight: 120),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                trailing: IconButton(
+                    onPressed: () => _showClearAllDialog(context),
+                    icon: const Icon(Icons.delete)),
+              ),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 120),
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: SingleChildScrollView(
                   child: Wrap(
                     spacing: AppTheme.wrapSacing,
                     runSpacing: AppTheme.wrapRunSpacing,
@@ -45,12 +46,13 @@ class SearchHistoryView extends StatelessWidget {
                           onPressed: () => onTapKeyword(keyword),
                           onDeleted: () => controller.removeKeyword(keyword),
                           deleteIconColor: Theme.of(context).hintColor,
+                          deleteIcon: const Icon(Icons.close, size: 16),
                         )
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

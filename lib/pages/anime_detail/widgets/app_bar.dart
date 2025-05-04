@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_cover.dart';
@@ -298,7 +299,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   child: const Text("取消")),
               TextButton(
                   onPressed: () {
-                    AnimeDao.deleteAnimeByAnimeId(_anime.animeId);
+                    AnimeService.to.deleteAnime(_anime.animeId);
                     // 关闭当前对话框
                     Navigator.of(context).pop();
                     // 退出当前页，没必要不退出，而且搜索源详情页的详细列表进入后取消收藏后返回没有删除
