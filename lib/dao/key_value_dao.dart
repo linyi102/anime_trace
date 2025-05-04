@@ -37,6 +37,14 @@ class KeyValueDao {
     return rows.isEmpty ? null : rows.first[columnValue] as String?;
   }
 
+  static Future<void> setBool(String key, bool value) {
+    return setString(key, value.toString());
+  }
+
+  static Future<bool?> getBool(String key) async {
+    return bool.tryParse(await getString(key) ?? '');
+  }
+
   static Future<int> setStringList(String key, List<String>? value) async {
     if (await SqliteUtil.count(
           tableName: tableName,

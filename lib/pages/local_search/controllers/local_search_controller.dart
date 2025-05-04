@@ -147,7 +147,13 @@ class LocalSearchController extends GetxController {
 
   void setRate(int? rate) {
     localSelectFilter.rate = rate;
-    _setSelectedLabelTitle(_rateFilter, rate?.toInt().toString());
+    _setSelectedLabelTitle(
+        _rateFilter,
+        rate != null
+            ? rate % 2 == 0
+                ? (rate ~/ 2).toString()
+                : (rate / 2).toString()
+            : null);
   }
 
   void setArea(AnimeArea? area) {

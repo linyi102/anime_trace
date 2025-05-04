@@ -45,8 +45,12 @@ class SqliteUtil {
 
     // 创建动漫更新表
     await SqliteUtil.createTableUpdateRecord();
+    // 创建键值对表
+    await KeyValueDao.createTable();
     // 为动漫表增加评分列
     await SqliteUtil.addColumnRateToAnime();
+    // 评分列支持半星
+    await AnimeDao.doubleRateToSupportHalfStar();
     // 为动漫表增加起始集数列
     await SqliteUtil.addColumnEpisodeStartNumberToAnime();
     // 为动漫表增加集号是否从第1集计算
@@ -69,8 +73,6 @@ class SqliteUtil {
     // 创建系列表、动漫系列表
     await SeriesDao.createTable();
     await AnimeSeriesDao.createTable();
-    // 创建键值对表
-    await KeyValueDao.createTable();
     return true;
   }
 
