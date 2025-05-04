@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/anime_service.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
@@ -560,7 +561,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
                 for (var anime in checklistController.selectedAnimes) {
                   checklistController.animesInTag[checklistIdx].removeWhere(
                       (element) => element.animeId == anime.animeId);
-                  AnimeDao.deleteAnimeByAnimeId(anime.animeId);
+                  AnimeService.to.deleteAnime(anime.animeId);
                 }
                 animeCntPerTag[checklistIdx] -=
                     checklistController.selectedAnimes.length;

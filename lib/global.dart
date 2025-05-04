@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/controllers/anime_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -67,6 +68,7 @@ class Global {
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => BackupService());
     Get.lazyPut(() => RemoteController());
+    Get.lazyPut(() => AnimeService());
     Get.put(AppUpgradeController());
 
     final checklistController = ChecklistController();

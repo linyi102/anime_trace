@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:get/get.dart';
@@ -82,7 +83,7 @@ class DedupController extends GetxController {
   deleteSelectedAnimes() async {
     for (var id in selectedIds) {
       // 从数据库中移除
-      await AnimeDao.deleteAnimeByAnimeId(id);
+      await AnimeService.to.deleteAnime(id);
       // 从map中移除
       bool find = false;
       var iterable = animeMap.values;
