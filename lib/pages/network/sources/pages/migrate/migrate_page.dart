@@ -219,14 +219,6 @@ class MigrateFormView extends StatelessWidget {
               ),
             ),
             SwitchListTile(
-              title: const Text('精确匹配'),
-              subtitle: Text(controller.precise
-                  ? '精确匹配时，只有当动漫名完全匹配时才进行迁移'
-                  : '非精确匹配时，会选择搜索的第一个动漫进行迁移'),
-              value: controller.precise,
-              onChanged: controller.updatePrecise,
-            ),
-            SwitchListTile(
               title: const Text('只迁移连载动漫'),
               subtitle: Text(
                   controller.skipFinishedAnime ? '已完结的动漫不会被迁移' : '所有动漫都会被迁移'),

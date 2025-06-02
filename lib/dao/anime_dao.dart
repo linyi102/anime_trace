@@ -95,7 +95,7 @@ class AnimeDao {
 
     // id用于表示动漫，name和cover用于显示，url用于确定是否已迁移
     List<Map<String, Object?>> list = await db.rawQuery('''
-      select anime_id, anime_name, name_another, anime_cover_url, anime_url, play_status
+      select anime_id, anime_name, name_another, anime_cover_url, anime_url, play_status, premiere_time
       from anime
       where $columnSource = $sourceId
       order by anime_id desc ${pageParams != null ? 'limit ${pageParams.pageSize} offset ${pageParams.getOffset()}' : ''};
@@ -112,6 +112,7 @@ class AnimeDao {
         animeCoverUrl: row['anime_cover_url'],
         animeUrl: row['anime_url'],
         playStatus: row['play_status'] as String? ?? '',
+        premiereTime: row['premiere_time'] as String? ?? '',
       );
       animes.add(anime);
     }

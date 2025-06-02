@@ -127,6 +127,7 @@ class ClimbDouban with Climb {
       String? title = target['title'];
       String? coverUrl = target['cover_url'];
       String? detailId = target['id'];
+      String? premiereTime = target['year'];
       if (title == null || coverUrl == null || detailId == null) {
         continue;
       }
@@ -134,9 +135,11 @@ class ClimbDouban with Climb {
       coverUrl = coverUrl.replaceFirst(RegExp(r'h\/[0-9]+'), 'h/600');
       animes.add(
         Anime(
-            animeName: title,
-            animeCoverUrl: coverUrl,
-            animeUrl: 'https://www.douban.com/subject/$detailId'),
+          animeName: title,
+          animeCoverUrl: coverUrl,
+          animeUrl: 'https://www.douban.com/subject/$detailId',
+          premiereTime: premiereTime ?? '',
+        ),
       );
     }
     return animes;

@@ -23,9 +23,6 @@ class MigrateController extends GetxController {
   /// 在迁移过程中，每次迁移的间隔时间(单位秒)
   int spacingSeconds = 3;
 
-  /// 是否精确匹配，精确匹配时只有当动漫名或别名完全匹配时才进行迁移
-  bool precise = true;
-
   /// 只迁移连载中或播放状态未知的动漫
   bool skipFinishedAnime = true;
 
@@ -68,11 +65,6 @@ class MigrateController extends GetxController {
 
   void updateSpacingDuration(int seconds) {
     spacingSeconds = seconds;
-    update();
-  }
-
-  void updatePrecise(bool precise) {
-    this.precise = precise;
     update();
   }
 
@@ -192,16 +184,26 @@ class MigrateController extends GetxController {
 
   Future<Anime?> _searchMatchedAnime(Anime anime) async {
     if (destWebsite == null) return null;
-    // TODO 更好的匹配方法：首播时间一致则说明是同一部动漫，但这需要爬取动漫列表时就要获取到首播时间
+
     final animes = await ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(
         anime.animeName, destWebsite!);
     if (animes.isEmpty) return null;
 
-    final matchedAnime = precise
-        ? animes.firstWhereOrNull((a) =>
-            a.animeName == anime.animeName ||
-            a.nameAnother.contains(anime.animeName))
-        : animes.first;
+    Anime? matchedAnime = animes.firstWhereOrNull((s) {
+      // 首播时间一致则说明是同一部动漫，注意需要爬取动漫列表时就要获取到首播时间
+      // 部分搜索源搜索只能获取到年份，因此时间不一致时再比较年份是否一致
+      if (anime.premiereTime.isNotEmpty) {
+        return s.premiereTime == anime.premiereTime ||
+            anime.premiereTime.startsWith(s.premiereTime) ||
+            s.premiereTime.startsWith(anime.premiereTime);
+      } else {
+        // 如果没有首播时间，则通过动漫名称进行精确匹配
+        return s.animeName == anime.animeName ||
+            s.nameAnother.contains(anime.animeName);
+      }
+    });
+    // 最后如果还是没有匹配到，若搜索列表只有一个，则匹配该动漫
+    if (matchedAnime == null && animes.length == 1) matchedAnime = animes.first;
     if (matchedAnime == null) return null;
     // 获取动漫详情
     return ClimbAnimeUtil.climbAnimeInfoByUrl(matchedAnime, showMessage: false);

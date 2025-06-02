@@ -140,6 +140,10 @@ class ClimbAgemys with Climb {
           element.getElementsByTagName("a")[0].attributes["href"];
       String? episodeCntStr =
           element.getElementsByClassName("video_play_status")[0].innerHtml;
+      String? premiereTime = element
+          .getElementsByClassName("video_detail_info")[3]
+          .innerHtml
+          .replaceFirst(RegExp(r'<span.*<\/span>'), '');
       // AGE动漫的集表示和樱花动漫的一致，因此也使用这个解析
       int episodeCnt = ClimbYhdm.parseEpisodeCntOfyhdm(episodeCntStr);
       if (coverUrl != null) {
@@ -150,6 +154,7 @@ class ClimbAgemys with Climb {
         animeEpisodeCnt: episodeCnt,
         animeCoverUrl: coverUrl ?? "",
         animeUrl: animeUrl?.replaceFirst("http://", "https://") ?? "",
+        premiereTime: premiereTime,
       ));
     }
     return animes;

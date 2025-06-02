@@ -184,6 +184,16 @@ class ClimbBangumi with Climb {
 
       String tempInfo =
           inner.getElementsByClassName("info tip")[0].innerHtml.trim();
+      String premiereTime = (RegExp(r'(\d{4}[年\-]\d{1,2}[月\-]\d{1,2}[日]?)')
+                  .firstMatch(tempInfo)
+                  ?.group(0) ??
+              '')
+          .replaceAll('年', '-')
+          .replaceAll('月', '-')
+          .replaceAll('日', '')
+          .split('-')
+          .map((e) => e.padLeft(2, '0'))
+          .join('-');
 
       Anime anime = Anime(
         animeName: name,
@@ -191,6 +201,7 @@ class ClimbBangumi with Climb {
         animeCoverUrl: img,
         animeUrl: animeUrl,
         tempInfo: tempInfo,
+        premiereTime: premiereTime,
       );
       animes.add(anime);
     }

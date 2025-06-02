@@ -67,6 +67,13 @@ class CycUIClimber {
       animes[i].animeName = name;
       String? animeUrl = urlEs[i].attributes["href"];
       animes[i].animeUrl = animeUrl == null ? "" : baseUrl + animeUrl;
+      animes[i].premiereTime = document
+              .getElementsByClassName('thumb-else cor5 hide')
+              .elementAtOrNull(i)
+              ?.getElementsByTagName('a')
+              .elementAtOrNull(0)
+              ?.innerHtml ??
+          '';
     }
     return animes;
   }
