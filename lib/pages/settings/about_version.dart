@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/app_upgrade_controller.dart';
 import 'package:animetrace/modules/load_status/status.dart';
@@ -77,6 +78,7 @@ class _AboutVersionState extends State<AboutVersion> {
                       uriStr: "https://wwc.lanzouw.com/b01uyqcrg?password=eocv",
                       inApp: false);
                 }),
+            ListTile(title: const Text("导出日志"), onTap: logger.shareLogs),
             ListTile(
                 title: const Text("QQ 交流群"),
                 subtitle: const Text("414226908"),

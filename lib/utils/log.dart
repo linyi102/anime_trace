@@ -4,7 +4,7 @@ import 'package:flutter_logkit/logkit.dart';
 final logger = LogkitLogger(
   logkitSettings: const LogkitSettings(
     disableAttachOverlay: kReleaseMode,
-    disableRecordLog: kReleaseMode,
+    disableRecordLog: false,
     maxLogCount: 500,
     printToConsole: true,
     printTime: true,
