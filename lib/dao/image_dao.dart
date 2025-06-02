@@ -1,10 +1,11 @@
 import 'package:animetrace/utils/image_util.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
 
 class ImageDao {
-  static var database = SqliteUtil.database;
+  static Database get database => SqliteUtil.database;
 
   /// 编辑好笔记后，退出时更新图片的顺序
   static updateImageOrderIdxById(int imageId, int newOrderIdx) {

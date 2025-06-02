@@ -3,9 +3,10 @@ import 'package:animetrace/models/anime_update_record.dart';
 import 'package:animetrace/models/vo/update_record_vo.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class UpdateRecordDao {
-  static var db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
 
   static String table = "update_record";
 
@@ -56,7 +57,6 @@ class UpdateRecordDao {
     for (var map in list) {
       String date = map["day"] as String;
       dates.add(date);
-      Log.info("📅 $date");
       List<Map<String, Object?>> updateRecordsMap =
           await SqliteUtil.database.rawQuery('''
           select * from update_record
@@ -72,7 +72,6 @@ class UpdateRecordDao {
             oldEpisodeCnt: updateRecordMap["old_episode_cnt"] as int,
             newEpisodeCnt: updateRecordMap["new_episode_cnt"] as int,
             manualUpdateTime: date);
-        Log.info(updateRecordVo.toString());
         updateRecordVos.add(updateRecordVo);
       }
     }

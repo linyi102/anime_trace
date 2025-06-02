@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/dao/anime_label_dao.dart';
@@ -31,17 +32,19 @@ class SqliteUtil {
   static const sqlFileName = 'mydb.db';
   static late Database database;
   static late String dbPath;
+  static const dbVersion = 1;
 
   static Future<bool> ensureDBTable() async {
-    // 大多都要用await，才返回true，否则会提前返回，导致表还未创建等错误
     await ImageUtil.getInstance();
     await SqliteUtil.getInstance();
+
     // 先创建表，再添加列
     await SqliteUtil.createTableEpisodeNote();
     await SqliteUtil.createTableImage();
-
-    await SqliteUtil.addColumnReviewNumberToHistoryAndNote(); // 添加回顾号列
-    await SqliteUtil.addColumnInfoToAnime(); // 为动漫表添加列
+    // 添加回顾号列
+    await SqliteUtil.addColumnReviewNumberToHistoryAndNote();
+    // 为动漫表添加列
+    await SqliteUtil.addColumnInfoToAnime();
 
     // 创建动漫更新表
     await SqliteUtil.createTableUpdateRecord();
@@ -77,46 +80,40 @@ class SqliteUtil {
   }
 
   static _initDatabase() async {
+    dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
+    Log.info("💾 db path: $dbPath");
+    try {
+      await database.close();
+    } catch (e) {
+      if (!e.toString().contains('LateInitializationError')) {
+        logger.warning("关闭数据库失败：$e");
+      }
+    }
     if (PlatformUtil.isMobile) {
-      // dbPath = "${(await getExternalStorageDirectory())!.path}/$sqlFileName";
-      dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
-      Log.info("👉Android/iOS: path=$dbPath");
-      // await deleteDatabase(dbPath); // 删除Android数据库
       return await openDatabase(
         dbPath,
-        onCreate: (Database db, int version) {
-          Future(() {
-            _createInitTable(db); // 只会在数据库创建时才会创建表，记得传入的是db，而不是databse
-          }).then((value) async {
-            await _insertInitData(db); // await确保加载数据后再执行后面的语句
-          });
-        },
-        version: 1, // onCreate must be null if no version is specified
+        onCreate: _createDb,
+        version: dbVersion,
       );
     } else if (Platform.isWindows) {
-      dbPath =
-          "${(await getApplicationSupportDirectory()).path}/$sqlFileName"; // 使用
-      // await deleteDatabase(dbPath); // 删除桌面端数据库，然而并不能删除
-      Log.info("👉Windows: path=$dbPath");
-      var databaseFactory = databaseFactoryFfi;
-      return await databaseFactory.openDatabase(dbPath,
-          // onCreate、version都封装到了options中
-          options: OpenDatabaseOptions(
-            onCreate: (Database db, int version) {
-              Future(() {
-                _createInitTable(db);
-              }).then((value) async {
-                await _insertInitData(db);
-              });
-            },
-            version: 1,
-          ));
+      return await databaseFactoryFfi.openDatabase(
+        dbPath,
+        options: OpenDatabaseOptions(
+          onCreate: _createDb,
+          version: dbVersion,
+        ),
+      );
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
   }
 
-  static void _createInitTable(Database db) async {
+  static FutureOr<void> _createDb(Database db, int version) async {
+    await _createInitTable(db);
+    await _insertInitData(db);
+  }
+
+  static Future<void> _createInitTable(Database db) async {
     logger.info('init db');
     await db.execute('''
       CREATE TABLE tag (

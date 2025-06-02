@@ -1,10 +1,12 @@
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 import '../models/series.dart';
 import '../utils/log.dart';
 import '../utils/sqlite_util.dart';
 import 'anime_series_dao.dart';
 
 class SeriesDao {
-  static final db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
   static const table = "series";
   static const columnId = "id";
   static const columnName = "name";
@@ -15,7 +17,7 @@ class SeriesDao {
 
   // 建表
   static createTable() async {
-    Log.info('sql:create table $table');
+    Log.info('sql: create table $table');
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $table (
       $columnId          INTEGER PRIMARY KEY AUTOINCREMENT,

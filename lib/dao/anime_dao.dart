@@ -12,11 +12,12 @@ import 'package:animetrace/utils/escape_util.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../models/anime.dart';
 
 class AnimeDao {
-  static final db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
 
   static const String table = 'anime';
   static const String columnId = 'anime_id';

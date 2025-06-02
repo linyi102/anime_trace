@@ -63,9 +63,9 @@ class BackupUtil {
     // 因为要打开历史页，才会创建HistoryController，所以此处可能还未创建，因此使用dao
     desc += "历史：${await HistoryDao.getCount()}条记录";
     descFile.writeAsStringSync(desc);
-    encoder.addFile(descFile);
+    await encoder.addFile(descFile);
 
-    encoder.close();
+    await encoder.close();
     return File(tempZipFilePath);
   }
 
@@ -198,8 +198,6 @@ class BackupUtil {
     bool delete = false,
     bool recordBeforeRestore = true,
   }) async {
-    final UpdateRecordController updateRecordController = Get.find();
-    final LabelsController labelsController = Get.find();
     bool restoreOk = false;
 
     // 1.还原前先备份当前数据库文件
@@ -246,9 +244,9 @@ class BackupUtil {
 
     if (restoreOk) {
       // 重新获取动漫更新记录
-      updateRecordController.updateData();
+      UpdateRecordController.to.updateData();
       // 重新获取标签信息
-      labelsController.getAllLabels();
+      LabelsController.to.getAllLabels();
       // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
       Get.delete<DedupController>();
 

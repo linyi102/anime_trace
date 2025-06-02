@@ -1,4 +1,5 @@
 import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class EpisodeDesc {
   int id; // 唯一id
@@ -24,7 +25,7 @@ class EpisodeDesc {
 }
 
 class EpisodeDescDao {
-  static final db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
   static const table = "episode_desc";
   static const columnId = "id";
   static const columnAnimeId = "anime_id";
