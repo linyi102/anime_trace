@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
 import 'package:animetrace/utils/platform.dart';
@@ -102,9 +102,14 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
                 task: () {
                   return BackupUtil.restoreFromLocal(selectedFilePath);
                 },
-                onTaskComplete: (taskValue) {
-                  taskValue as Result;
+                onTaskSuccess: (taskValue) {
                   ToastUtil.showText(taskValue.msg);
+                  if (taskValue.isFailure) {
+                    showShareErrorLog();
+                  }
+                },
+                onTaskError: (e) {
+                  showShareErrorLog();
                 },
               );
             }

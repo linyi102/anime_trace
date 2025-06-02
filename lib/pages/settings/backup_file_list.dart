@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
 import 'package:animetrace/components/loading_widget.dart';
-import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_util.dart';
@@ -172,16 +171,17 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                   // 开始还原
                   ToastUtil.showLoading(
                     msg: "还原数据中",
-                    task: () {
-                      return BackupUtil.restoreFromWebDav(file);
-                    },
-                    onTaskComplete: (taskValue) {
-                      taskValue as Result;
+                    task: () => BackupUtil.restoreFromWebDav(file),
+                    onTaskSuccess: (taskValue) {
+                      ToastUtil.showText(taskValue.msg);
                       if (taskValue.isFailure) {
                         showShareErrorLog();
+                      } else {
+                        ChecklistController.to.restore();
                       }
-                      // 重新获取动漫
-                      ChecklistController.to.restore();
+                    },
+                    onTaskError: (_) {
+                      showShareErrorLog();
                     },
                   );
                 },

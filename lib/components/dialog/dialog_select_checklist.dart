@@ -47,7 +47,7 @@ dialogSelectChecklist(
                   anime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
                       showMessage: false);
                 },
-                onTaskComplete: (taskValue) async {
+                onTaskSuccess: (_) async {
                   // 插入数据库
                   anime.animeId = await AnimeDao.insertAnime(anime);
                   // 更新父级页面
