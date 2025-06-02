@@ -11,6 +11,7 @@ import 'package:animetrace/utils/climb/climb_nayfun.dart';
 import 'package:animetrace/utils/climb/climb_omofun.dart';
 import 'package:animetrace/utils/climb/climb_qdm.dart';
 import 'package:animetrace/utils/climb/climb_quqi.dart';
+import 'package:animetrace/utils/climb/climb_xifan.dart';
 import 'package:animetrace/utils/climb/climb_yhdm.dart';
 
 List<Anime> directory = []; // 目录动漫
@@ -24,6 +25,7 @@ List<ClimbWebsite> climbWebsites = [
   doubanClimbWebsite,
   quClimbWebsite,
   bangumiClimbWebsite,
+  xifanWebsite,
   omofunClimbWebsite,
   aimiWebsite,
   yhdmClimbWebsite,
@@ -164,4 +166,13 @@ final guguWebsite = ClimbWebsite(
   spkey: "enableWebSiteGugu",
   climb: ClimbGugu(),
   desc: "咕咕番 - 为广大二次元爱好者提供免费、高质量无广告的新番、老番、特摄动画在线观看！",
+);
+
+final xifanWebsite = ClimbWebsite(
+  id: 12,
+  name: "稀饭",
+  iconUrl: "assets/images/website/xifan.png",
+  regexp: "gugu",
+  spkey: "enableWebSiteXifan",
+  climb: ClimbXifan(),
 );
