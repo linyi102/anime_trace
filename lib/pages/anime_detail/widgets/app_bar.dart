@@ -216,6 +216,16 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   ),
                   PopupMenuItem(
                     child: const ListTile(
+                      leading: Icon(Icons.mode_edit_outline_outlined),
+                      title: Text("修改集数"),
+                    ),
+                    onTap: () {
+                      widget.animeController
+                          .showDialogModEpisodeCntAndStartNumber(context);
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: const ListTile(
                       leading: Icon(Icons.update),
                       title: Text("更新动漫"),
                     ),
