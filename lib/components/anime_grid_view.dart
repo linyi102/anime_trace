@@ -1,5 +1,5 @@
+import 'package:animetrace/components/anime_cover.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_grid_cover.dart';
 import 'package:animetrace/components/get_anime_grid_delegate.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/values/values.dart';
@@ -56,8 +56,8 @@ class _AnimeGridViewState extends State<AnimeGridView>
                   ? () => widget.onLongClick!(anime)
                   : null,
               borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-              child: AnimeGridCover(anime,
-                  showProgressBar: widget.showProgressBar,
+              child: AnimeCover(
+                  anime: anime,
                   isSelected: widget.isSelected == null
                       ? false
                       : widget.isSelected!(animeIdx)),
