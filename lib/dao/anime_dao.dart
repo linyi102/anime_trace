@@ -429,30 +429,31 @@ class AnimeDao {
     }
     final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(newAnime.animeUrl);
 
-    if (newAnime.reviewNumber == 0) {
-      if (oldAnime.reviewNumber <= 0) oldAnime.reviewNumber = 1;
-      newAnime.reviewNumber = oldAnime.reviewNumber;
-    }
-
     return db.update(
         'anime',
         {
-          'anime_name': newAnime.animeName,
-          'anime_desc': newAnime.animeDesc,
-          'tag_name': newAnime.tagName,
-          'anime_cover_url': newAnime.animeCoverUrl,
-          'anime_episode_cnt': newAnime.animeEpisodeCnt,
-          'premiere_time': newAnime.premiereTime,
-          'name_another': newAnime.nameAnother,
-          'name_ori': newAnime.nameOri,
+          if (newAnime.animeName.isNotEmpty) 'anime_name': newAnime.animeName,
+          if (newAnime.animeDesc.isNotEmpty) 'anime_desc': newAnime.animeDesc,
+          if (newAnime.tagName.isNotEmpty) 'tag_name': newAnime.tagName,
+          if (newAnime.animeCoverUrl.isNotEmpty)
+            'anime_cover_url': newAnime.animeCoverUrl,
+          if (newAnime.animeEpisodeCnt > 0)
+            'anime_episode_cnt': newAnime.animeEpisodeCnt,
+          if (newAnime.premiereTime.isNotEmpty)
+            'premiere_time': newAnime.premiereTime,
+          if (newAnime.nameAnother.isNotEmpty)
+            'name_another': newAnime.nameAnother,
+          if (newAnime.nameOri.isNotEmpty) 'name_ori': newAnime.nameOri,
           'author_ori': newAnime.authorOri,
-          'area': newAnime.area,
-          'play_status': newAnime.playStatus,
-          'production_company': newAnime.productionCompany,
-          'official_site': newAnime.officialSite,
-          'category': newAnime.category,
-          'anime_url': newAnime.animeUrl,
-          'review_number': newAnime.reviewNumber,
+          if (newAnime.area.isNotEmpty) 'area': newAnime.area,
+          if (newAnime.playStatus.isNotEmpty)
+            'play_status': newAnime.playStatus,
+          if (newAnime.productionCompany.isNotEmpty)
+            'production_company': newAnime.productionCompany,
+          if (newAnime.officialSite.isNotEmpty)
+            'official_site': newAnime.officialSite,
+          if (newAnime.category.isNotEmpty) 'category': newAnime.category,
+          if (newAnime.animeUrl.isNotEmpty) 'anime_url': newAnime.animeUrl,
           columnSource: website?.id,
         },
         where: 'anime_id = ?',
