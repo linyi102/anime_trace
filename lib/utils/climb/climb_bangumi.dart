@@ -178,9 +178,13 @@ class ClimbBangumi with Climb {
 
       var inner = li.getElementsByClassName("inner")[0];
       String name = inner.getElementsByTagName("a")[0].innerHtml;
-      var smallEs = inner.getElementsByTagName("small");
-      String nameAnother = "";
-      if (smallEs.isNotEmpty) nameAnother = smallEs.first.innerHtml;
+      String nameAnother = inner
+              .getElementsByTagName("h3")
+              .elementAtOrNull(0)
+              ?.getElementsByTagName("small")
+              .elementAtOrNull(0)
+              ?.innerHtml ??
+          '';
 
       String tempInfo =
           inner.getElementsByClassName("info tip")[0].innerHtml.trim();
