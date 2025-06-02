@@ -1,11 +1,12 @@
 import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/models/label.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../utils/log.dart';
 import '../utils/sqlite_util.dart';
 
 class LabelDao {
-  static final db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
   static const table = "label";
   static const columnId = "id";
   static const columnName = "name";
@@ -21,6 +22,7 @@ class LabelDao {
 
   // 建表
   static createTable() async {
+    Log.info('sql: create table $table');
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $table (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,

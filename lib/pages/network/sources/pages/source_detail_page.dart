@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:animetrace/pages/network/sources/pages/migrate/migrate_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -219,7 +220,20 @@ class _SourceDetailState extends State<SourceDetail> {
                   }));
                 },
               ),
-              if (curClimbWebsite.supportImport) _buildImportDataTile()
+              if (curClimbWebsite.supportImport) _buildImportDataTile(),
+              ListTile(
+                title: const Text("迁移动漫"),
+                leading: Icon(
+                  MingCuteIcons.mgc_transfer_line,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return MigratePage(website: curClimbWebsite);
+                  }));
+                },
+              ),
             ],
           ),
         ),

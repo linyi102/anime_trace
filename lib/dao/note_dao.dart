@@ -10,9 +10,10 @@ import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/note_filter.dart';
 import 'package:animetrace/models/relative_local_image.dart';
 import 'package:animetrace/utils/escape_util.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class NoteDao {
-  static var database = SqliteUtil.database;
+  static Database get database => SqliteUtil.database;
 
   // map转为对象
   static Future<Note> row2bean(Map row, {bool searchAnime = false}) async {
@@ -111,7 +112,6 @@ class NoteDao {
   // order by case when order_idx is null then 1 else 0 end, order_idx, image_id limit 10;
   static Future<List<RelativeLocalImage>> getRelativeLocalImgsByNoteId(
       int noteId) async {
-    var db = SqliteUtil.database;
     // 还是不行
     // 假设图片id都为null，此时把第9个图片移到第2个，保存到数据库后，第1个图片的order_idx仍为null，那么下次这个第1张图片就会跑到后面，而不会是第1张
     // var lm = await db.rawQuery('''
@@ -120,7 +120,7 @@ class NoteDao {
     // order by case when order_idx is null then 1 else 0 end, order_idx, note_id; -- 先按照指定顺序升序，如果还没有顺序，则按照id升序
     // ''');
     // 还是每次把所有图片又重新设置下标吧
-    var lm = await db.rawQuery('''
+    var lm = await database.rawQuery('''
     select image_id, image_local_path from image
     where note_id = $noteId
     order by order_idx, note_id; -- 先按照指定顺序升序，如果还没有顺序，则按照id升序

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
 import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
@@ -126,23 +126,8 @@ class BackupService extends GetxService {
       },
       onTaskComplete: (taskValue) {
         taskValue as Result;
-        if (taskValue.code != 200) {
-          // 还原失败
-          ToastUtil.showDialog(
-            builder: (cancel) => AlertDialog(
-              title: const Text("还原失败"),
-              content: Text(taskValue.msg),
-              actions: [
-                TextButton(onPressed: () => cancel(), child: const Text("关闭")),
-                TextButton(
-                    onPressed: () {
-                      cancel();
-                      restoreRemoteFile(latestBackupFile);
-                    },
-                    child: const Text("重试")),
-              ],
-            ),
-          );
+        if (taskValue.isFailure) {
+          showShareErrorLog();
         } else {
           // 还原成功
           ToastUtil.showText("已还原最新备份");
@@ -204,11 +189,11 @@ class BackupService extends GetxService {
 
   int clickCloseCnt = 0;
 
-  tryBackupBeforeExitApp(
-      {required Function exitApp, bool retry = false}) async {
+  tryBackupBeforeExitApp({
+    required Function exitApp,
+  }) async {
     // 对于Windows端，如果点击关闭后，再次点击关闭时不再进行备份，而是直接退出应用
-    // 若是备份失败后点击重试，则再次尝试备份
-    if (clickCloseCnt > 0 && !retry) {
+    if (clickCloseCnt > 0) {
       exitApp();
       return;
     }
@@ -225,29 +210,12 @@ class BackupService extends GetxService {
         },
         onTaskComplete: (taskValue) {
           taskValue as Result;
-          if (taskValue.code == 200) {
+          if (taskValue.isSuccess) {
             // 备份成功，直接退出app
             exitApp();
           } else {
             // 备份失败，弹出对话框
-            ToastUtil.showDialog(
-              builder: (cancel) => AlertDialog(
-                title: const Text("备份失败"),
-                content: Text(taskValue.msg),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        // 关闭对话框
-                        cancel();
-                        // 重新备份
-                        tryBackupBeforeExitApp(exitApp: exitApp, retry: true);
-                      },
-                      child: const Text("重试")),
-                  TextButton(
-                      onPressed: () => exitApp(), child: const Text("退出")),
-                ],
-              ),
-            );
+            showShareErrorLog();
           }
         },
       );

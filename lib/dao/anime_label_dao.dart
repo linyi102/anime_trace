@@ -2,11 +2,12 @@ import 'package:animetrace/dao/label_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/label.dart';
 import 'package:animetrace/utils/log.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../utils/sqlite_util.dart';
 
 class AnimeLabelDao {
-  static final db = SqliteUtil.database;
+  static Database get db => SqliteUtil.database;
   static const table = "anime_label";
   static const columnId = "id";
   static const columnAnimeId = "anime_id";

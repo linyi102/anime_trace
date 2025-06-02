@@ -81,6 +81,14 @@ class ClimbXifan with Climb {
       animes[i].animeName = name;
       String? animeUrl = nameEs[i].parent?.attributes["href"];
       animes[i].animeUrl = animeUrl == null ? "" : baseUrl + animeUrl;
+      animes[i].premiereTime = document
+              .getElementsByClassName('slide-info-remarks cor5')
+              .elementAtOrNull(i)
+              ?.nextElementSibling
+              ?.getElementsByTagName('a')
+              .elementAtOrNull(0)
+              ?.innerHtml ??
+          '';
     }
     return animes;
   }
