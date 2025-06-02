@@ -105,10 +105,6 @@ class $AssetsLottiesGen {
 class $AssetsImagesWebsiteGen {
   const $AssetsImagesWebsiteGen();
 
-  /// File path: assets/images/website/OmoFun.jpg
-  AssetGenImage get omoFun =>
-      const AssetGenImage('assets/images/website/OmoFun.jpg');
-
   /// File path: assets/images/website/agemys.jpg
   AssetGenImage get agemys =>
       const AssetGenImage('assets/images/website/agemys.jpg');
@@ -139,18 +135,25 @@ class $AssetsImagesWebsiteGen {
   AssetGenImage get nayfun =>
       const AssetGenImage('assets/images/website/nayfun.png');
 
+  /// File path: assets/images/website/omofun.png
+  AssetGenImage get omofun =>
+      const AssetGenImage('assets/images/website/omofun.png');
+
   /// File path: assets/images/website/qdm.png
   AssetGenImage get qdm => const AssetGenImage('assets/images/website/qdm.png');
 
   /// File path: assets/images/website/quqi.ico
   String get quqi => 'assets/images/website/quqi.ico';
 
+  /// File path: assets/images/website/xifan.png
+  AssetGenImage get xifan =>
+      const AssetGenImage('assets/images/website/xifan.png');
+
   /// File path: assets/images/website/yhdm.ico
   String get yhdm => 'assets/images/website/yhdm.ico';
 
   /// List of all assets
   List<dynamic> get values => [
-    omoFun,
     agemys,
     aimi,
     bangumi,
@@ -159,8 +162,10 @@ class $AssetsImagesWebsiteGen {
     fzff,
     gugu,
     nayfun,
+    omofun,
     qdm,
     quqi,
+    xifan,
     yhdm,
   ];
 }

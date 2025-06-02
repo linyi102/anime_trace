@@ -126,7 +126,7 @@ final bangumiClimbWebsite = ClimbWebsite(
 final omofunClimbWebsite = ClimbWebsite(
   id: 8,
   name: "OmoFun",
-  iconUrl: "assets/images/website/omofun.jpg",
+  iconUrl: "assets/images/website/omofun.png",
   regexp: "omofun",
   spkey: "enableWebSiteOmofun",
   discard: true,
