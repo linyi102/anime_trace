@@ -90,24 +90,29 @@ class AnimeDao {
 
   /// 查询某个搜索源下的所有动漫
   static Future<List<Anime>> getAnimesInSource(
-      {required int sourceId, required PageParams pageParams}) async {
+      {required int sourceId, PageParams? pageParams}) async {
     List<Anime> animes = [];
 
     // id用于表示动漫，name和cover用于显示，url用于确定是否已迁移
     List<Map<String, Object?>> list = await db.rawQuery('''
-      select anime_id, anime_name, anime_cover_url, anime_url
+      select anime_id, anime_name, name_another, anime_cover_url, anime_url, play_status
       from anime
       where $columnSource = $sourceId
-      order by anime_id desc limit ${pageParams.pageSize} offset ${pageParams.getOffset()};
+      order by anime_id desc ${pageParams != null ? 'limit ${pageParams.pageSize} offset ${pageParams.getOffset()}' : ''};
     ''');
-    Log.info(
-        "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceId下的动漫");
+    if (pageParams != null) {
+      Log.info(
+          "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceId下的动漫");
+    }
     for (Map row in list) {
       Anime anime = Anime(
-          animeId: row['anime_id'],
-          animeName: row['anime_name'],
-          animeCoverUrl: row['anime_cover_url'],
-          animeUrl: row['anime_url']);
+        animeId: row['anime_id'],
+        animeName: row['anime_name'],
+        nameAnother: row['name_another'] as String? ?? '',
+        animeCoverUrl: row['anime_cover_url'],
+        animeUrl: row['anime_url'],
+        playStatus: row['play_status'] as String? ?? '',
+      );
       animes.add(anime);
     }
 
