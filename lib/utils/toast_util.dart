@@ -1,3 +1,5 @@
+import 'package:animetrace/models/params/result.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_dialog.dart';
@@ -60,16 +62,21 @@ class ToastUtil {
     Function(dynamic taskValue)? onTaskComplete,
     required void Function() cancelFunc,
   }) async {
-    var start = DateTime.now();
-    var taskValue = await task();
-    var end = DateTime.now();
-    if (end.difference(start).inMilliseconds < 300) {
-      await Future.delayed(const Duration(milliseconds: 300));
+    final start = DateTime.now();
+    try {
+      final taskValue = await task();
+      final end = DateTime.now();
+      if (end.difference(start).inMilliseconds < 300) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+      onTaskComplete?.call(taskValue);
+    } catch (e, st) {
+      logger.error('Toast Loading doTask error', error: e, stackTrace: st);
+      onTaskComplete?.call(Result.failure(-1, '任务执行失败'));
+    } finally {
+      // 关闭加载框
+      cancelFunc();
     }
-    // 关闭加载框
-    cancelFunc();
-    // 回调
-    if (onTaskComplete != null) onTaskComplete(taskValue);
   }
 
   static showText(String msg) {

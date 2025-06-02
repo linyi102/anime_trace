@@ -117,6 +117,7 @@ class SqliteUtil {
   }
 
   static void _createInitTable(Database db) async {
+    logger.info('init db');
     await db.execute('''
       CREATE TABLE tag (
           -- tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,

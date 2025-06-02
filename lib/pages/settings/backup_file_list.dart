@@ -1,3 +1,4 @@
+import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
@@ -176,7 +177,9 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                     },
                     onTaskComplete: (taskValue) {
                       taskValue as Result;
-                      ToastUtil.showText(taskValue.msg);
+                      if (taskValue.isFailure) {
+                        showShareErrorLog();
+                      }
                       // 重新获取动漫
                       ChecklistController.to.restore();
                     },
