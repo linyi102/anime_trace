@@ -1,4 +1,3 @@
-import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -34,48 +33,47 @@ class ToastUtil {
     );
   }
 
-  static void Function() showLoading({
-    String msg = "加载中",
+  static void Function() showLoading<R>({
+    String msg = '加载中',
+    Future<R> Function()? task,
+    void Function(R taskValue)? onTaskSuccess,
+    void Function(Object e)? onTaskError,
+    void Function()? onTaskComplete,
     bool clickClose = true,
-    Future<dynamic> Function()? task,
-    Function(dynamic taskValue)? onTaskComplete,
   }) {
     return BotToast.showCustomLoading(
-      toastBuilder: (void Function() cancelFunc) {
+      toastBuilder: (void Function() cancel) {
         if (task == null) {
           return LoadingDialog(msg);
         }
 
-        doTask(
-          task: task,
-          onTaskComplete: onTaskComplete,
-          cancelFunc: cancelFunc,
-        );
+        _doTask(task, onTaskSuccess, onTaskError, onTaskComplete, cancel);
         return LoadingDialog(msg);
       },
       clickClose: clickClose,
     );
   }
 
-  static doTask({
-    required Future<dynamic> Function() task,
-    Function(dynamic taskValue)? onTaskComplete,
-    required void Function() cancelFunc,
-  }) async {
-    final start = DateTime.now();
+  static void _doTask<R>(
+      Future<R> Function() task,
+      void Function(R taskValue)? onTaskSuccess,
+      void Function(Object e)? onTaskError,
+      void Function()? onTaskComplete,
+      void Function() cancel) async {
     try {
-      final taskValue = await task();
-      final end = DateTime.now();
-      if (end.difference(start).inMilliseconds < 300) {
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
-      onTaskComplete?.call(taskValue);
-    } catch (e, st) {
-      logger.error('Toast Loading doTask error', error: e, stackTrace: st);
-      onTaskComplete?.call(Result.failure(-1, '任务执行失败'));
+      final value = (await Future.wait([
+        task(),
+        Future.delayed(const Duration(milliseconds: 500)),
+      ]))
+          .first;
+
+      onTaskSuccess?.call(value);
+    } catch (e) {
+      logger.error('toast loading task error：$e');
+      onTaskError?.call(e);
     } finally {
-      // 关闭加载框
-      cancelFunc();
+      onTaskComplete?.call();
+      cancel();
     }
   }
 

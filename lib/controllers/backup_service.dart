@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
-import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/log.dart';
@@ -124,9 +123,9 @@ class BackupService extends GetxService {
       task: () async {
         return BackupUtil.restoreFromWebDav(latestBackupFile);
       },
-      onTaskComplete: (taskValue) {
-        taskValue as Result;
+      onTaskSuccess: (taskValue) {
         if (taskValue.isFailure) {
+          ToastUtil.showText(taskValue.msg);
           showShareErrorLog();
         } else {
           // 还原成功
@@ -134,6 +133,9 @@ class BackupService extends GetxService {
           // 重绘动漫收藏页，显示最新添加的动漫
           ChecklistController.to.restore();
         }
+      },
+      onTaskError: (e) {
+        showShareErrorLog();
       },
     );
   }
@@ -208,15 +210,15 @@ class BackupService extends GetxService {
           // await Future.delayed(const Duration(seconds: 2));
           return BackupUtil.autoBackupRemote();
         },
-        onTaskComplete: (taskValue) {
-          taskValue as Result;
+        onTaskSuccess: (taskValue) {
           if (taskValue.isSuccess) {
-            // 备份成功，直接退出app
             exitApp();
           } else {
-            // 备份失败，弹出对话框
             showShareErrorLog();
           }
+        },
+        onTaskError: (e) {
+          showShareErrorLog();
         },
       );
     } else {

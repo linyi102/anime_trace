@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
-import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_util.dart';
@@ -222,15 +222,20 @@ class _RBRPageState extends State<RBRPage> {
                             recordBeforeRestore: recordBeforeRestore,
                           );
                         },
-                        onTaskComplete: (taskValue) {
-                          taskValue as Result;
+                        onTaskSuccess: (taskValue) {
                           ToastUtil.showText(taskValue.msg);
+                          if (taskValue.isFailure) {
+                            showShareErrorLog();
+                            return;
+                          }
                           ChecklistController.to.restore();
-
                           if (recordBeforeRestore) {
                             // 重新获取所有记录文件
                             loadData();
                           }
+                        },
+                        onTaskError: (e) {
+                          showShareErrorLog();
                         },
                       );
                     },
