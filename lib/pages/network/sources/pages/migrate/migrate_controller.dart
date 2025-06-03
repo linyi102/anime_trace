@@ -1,16 +1,4 @@
-import 'dart:async';
-
-import 'package:animetrace/dao/anime_dao.dart';
-import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/models/climb_website.dart';
-import 'package:animetrace/models/data_state.dart';
-import 'package:animetrace/models/enum/play_status.dart';
-import 'package:animetrace/pages/network/sources/pages/migrate/migrate_page.dart';
-import 'package:animetrace/utils/climb/climb_anime_util.dart';
-import 'package:animetrace/utils/log.dart';
-import 'package:animetrace/widgets/progress.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+part of 'migrate_page.dart';
 
 class MigrateController extends GetxController {
   /// 源搜索源
@@ -100,7 +88,10 @@ class MigrateController extends GetxController {
       return;
     }
 
-    showDialog(context: context, builder: (context) => const MigrateFormView());
+    if (destWebsite == null) {
+      await _showSelectWebsite(context);
+    }
+    showDialog(context: context, builder: (context) => const _MigrateFormView());
   }
 
   Future<void> startMigrate() async {

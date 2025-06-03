@@ -1,15 +1,23 @@
+import 'dart:async';
+
 import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/website_logo.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/data_state.dart';
 import 'package:animetrace/pages/anime_detail/anime_detail.dart';
-import 'package:animetrace/pages/network/sources/pages/migrate/migrate_controller.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/widgets/button/action_button.dart';
 import 'package:animetrace/widgets/progress.dart';
+import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+part 'migrate_controller.dart';
 
 class MigratePage extends StatefulWidget {
   const MigratePage({super.key, required this.website});
@@ -150,8 +158,8 @@ class _MigratePageState extends State<MigratePage> {
   }
 }
 
-class MigrateFormView extends StatelessWidget {
-  const MigrateFormView({super.key});
+class _MigrateFormView extends StatelessWidget {
+  const _MigrateFormView();
 
   @override
   Widget build(BuildContext context) {
@@ -168,27 +176,7 @@ class MigrateFormView extends StatelessWidget {
                 title: const Text('迁移到'),
                 subtitle: Text(controller.destWebsite?.name ?? '未选择'),
                 onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => SimpleDialog(
-                      children: climbWebsites
-                          .where((e) =>
-                              !e.discard && e != controller.sourceWebsite)
-                          .map((e) {
-                        return ListTile(
-                          title: Text(e.name),
-                          leading: WebSiteLogo(url: e.iconUrl, size: 25),
-                          trailing: e.name == controller.destWebsite?.name
-                              ? const Icon(Icons.check)
-                              : null,
-                          onTap: () {
-                            Navigator.pop(context);
-                            controller.updateDestWebsite(e);
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  );
+                  _showSelectWebsite(context);
                 },
                 trailing: controller.destWebsite != null
                     ? WebSiteLogo(
@@ -248,4 +236,28 @@ class MigrateFormView extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _showSelectWebsite(BuildContext context) {
+  final controller = Get.find<MigrateController>();
+  return showDialog(
+    context: context,
+    builder: (context) => SimpleDialog(
+      children: climbWebsites
+          .where((e) => !e.discard && e != controller.sourceWebsite)
+          .map((e) {
+        return ListTile(
+          title: Text(e.name),
+          leading: WebSiteLogo(url: e.iconUrl, size: 25),
+          trailing: e.name == controller.destWebsite?.name
+              ? const Icon(Icons.check)
+              : null,
+          onTap: () {
+            Navigator.pop(context);
+            controller.updateDestWebsite(e);
+          },
+        );
+      }).toList(),
+    ),
+  );
 }
