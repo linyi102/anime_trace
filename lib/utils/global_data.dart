@@ -22,7 +22,7 @@ List<ClimbWebsite> climbWebsites = [
   guguWebsite,
   doubanClimbWebsite,
   bangumiClimbWebsite,
-  xifanWebsite,
+  // xifanWebsite,
   cycClimbWebsite,
   nyaFunWebsite,
   quClimbWebsite,
@@ -172,7 +172,7 @@ final xifanWebsite = ClimbWebsite(
   id: 12,
   name: "稀饭",
   iconUrl: "assets/images/website/xifan.png",
-  regexp: "gugu",
+  regexp: "xifan",
   spkey: "enableWebSiteXifan",
   climb: ClimbXifan(),
 );
