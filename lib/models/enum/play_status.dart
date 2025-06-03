@@ -12,13 +12,15 @@ enum PlayStatus {
   const PlayStatus(this.text, this.iconData);
 
   static PlayStatus text2PlayStatus(String text) {
-    if (text.contains("完结")) {
+    if (text.contains("完结") || text.contains(RegExp(r"全\d+集"))) {
       return PlayStatus.finished;
     } else if (text.contains("未知")) {
       return PlayStatus.unknown;
     } else if (text.contains("未")) {
       return PlayStatus.notStarted;
-    } else if (text.contains("第") || text.contains("连载") || text.contains('更新至')) {
+    } else if (text.contains("第") ||
+        text.contains("连载") ||
+        text.contains('更新至')) {
       return PlayStatus.playing;
     } else {
       return PlayStatus.unknown;

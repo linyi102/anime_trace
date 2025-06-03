@@ -150,7 +150,7 @@ final nyaFunWebsite = ClimbWebsite(
   id: 10,
   name: "NyaFun",
   iconUrl: "assets/images/website/nayfun.png",
-  regexp: "nyacg",
+  regexp: "nya",
   spkey: "enableWebSiteNayfun",
   defaultEnable: true,
   climb: ClimbNyaFun(),
