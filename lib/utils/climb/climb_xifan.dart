@@ -11,7 +11,7 @@ class ClimbXifan with Climb {
   String get defaultBaseUrl => "https://dm.xifanacg.com";
 
   @override
-  String get sourceName => "Xifan";
+  String get sourceName => "稀饭";
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime) async {

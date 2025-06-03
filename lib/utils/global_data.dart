@@ -19,13 +19,13 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 
 List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
-  cycClimbWebsite,
-  nyaFunWebsite,
   guguWebsite,
   doubanClimbWebsite,
-  quClimbWebsite,
   bangumiClimbWebsite,
   xifanWebsite,
+  cycClimbWebsite,
+  nyaFunWebsite,
+  quClimbWebsite,
   omofunClimbWebsite,
   aimiWebsite,
   yhdmClimbWebsite,
