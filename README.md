@@ -14,7 +14,7 @@
 
 </div>
 
-![](./assets/images/example-android.png)
+<img alt="preview" src="https://github.com/user-attachments/assets/91c9e722-25e1-4083-bdbf-d9e6da075a2f" />
 
 ## 下载
 
