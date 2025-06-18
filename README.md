@@ -1,5 +1,3 @@
-
-
 <div align="center">
   <img width="200" src="./assets/images/logo-round.png" alt="漫迹"/>
 </div>
@@ -10,11 +8,11 @@
 
 <div align="center">
 
-![最新版本](https://img.shields.io/github/v/release/linyi102/anime_trace) ![支持平台](https://img.shields.io/badge/support%20platform-android%20%7C%20ios%20%7C%20window-green) ![开源协议](https://img.shields.io/github/license/linyi102/anime_trace) ![下载量](https://img.shields.io/github/downloads/linyi102/anime_trace/total)
+![最新版本](https://img.shields.io/github/v/release/linyi102/anime_trace) ![开源协议](https://img.shields.io/github/license/linyi102/anime_trace) ![下载量](https://img.shields.io/github/downloads/linyi102/anime_trace/total)
 
 </div>
 
-<img alt="preview" src="https://github.com/user-attachments/assets/91c9e722-25e1-4083-bdbf-d9e6da075a2f" />
+<img alt="screenshot" src="./assets/images/screenshot.png" />
 
 ## 下载
 
