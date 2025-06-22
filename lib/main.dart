@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:animetrace/widgets/device_preview_screenshot_section.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -23,7 +25,17 @@ import 'package:window_manager/window_manager.dart';
 void main() {
   runLogkitZonedGuarded(logger, () async {
     await Global.init();
-    runApp(const MyApp());
+    runApp(
+      Global.enableDevicePreview
+          ? DevicePreview(
+              builder: (context) => const MyApp(),
+              tools: const [
+                DevicePreviewScreenshotSection(),
+                ...DevicePreview.defaultTools,
+              ],
+            )
+          : const MyApp(),
+    );
   });
 }
 

@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:animetrace/global.dart';
 import 'package:flutter_logkit/logkit.dart';
 
 final logger = LogkitLogger(
-  logkitSettings: const LogkitSettings(
-    disableAttachOverlay: kReleaseMode,
+  logkitSettings: LogkitSettings(
+    disableAttachOverlay: !Global.enableLogEntry,
     disableRecordLog: false,
     maxLogCount: 500,
     printToConsole: true,

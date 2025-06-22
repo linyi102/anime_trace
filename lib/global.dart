@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -27,6 +28,12 @@ class Global {
 
   /// 是否 release
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
+
+  /// 日志入口
+  static bool get enableLogEntry => kDebugMode && !enableDevicePreview;
+
+  /// 设备预览
+  static bool get enableDevicePreview => true;
 
   /// 修改了笔记图片根路径
   static bool modifiedImgRootPath = false;

@@ -10,6 +10,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  device_preview: ^1.2.0
   reorderables: ^0.6.0
   pinyin: ^3.3.0
   flutter_logkit:

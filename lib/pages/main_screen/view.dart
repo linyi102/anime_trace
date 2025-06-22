@@ -4,7 +4,6 @@ import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/global.dart';
 import 'package:animetrace/pages/main_screen/logic.dart';
-import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/utils/log.dart';
@@ -25,7 +24,6 @@ class _MainScreenState extends State<MainScreen> {
   final logic = Get.put(MainScreenLogic());
   int _clickBackCnt = 0;
   bool get enableAnimation => false;
-  bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
   bool get hideMobileBottomLabel =>
@@ -37,10 +35,8 @@ class _MainScreenState extends State<MainScreen> {
       onWillPop: clickTwiceToExitApp,
       child: GetBuilder(
         init: logic,
-        builder: (_) => alwaysPortrait
-            ? _buildPortraitScreen()
-            : PlatformUtil.isMobile &&
-                    MediaQuery.of(context).orientation == Orientation.portrait
+        builder: (_) =>
+            MediaQuery.of(context).orientation == Orientation.portrait
                 ? _buildPortraitScreen()
                 : _buildLandscapeScreen(),
       ),
