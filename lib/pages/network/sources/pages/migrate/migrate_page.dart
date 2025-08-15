@@ -42,7 +42,7 @@ class _MigratePageState extends State<MigratePage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         if (didPop) return;
         _onWillPop(context);
       },

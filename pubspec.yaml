@@ -15,51 +15,64 @@ dependencies:
   flutter_logkit:
     git:
       url: https://github.com/linyi102/flutter_logkit.git
-      ref: b9848270
+      ref: 4c99a6e9
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
   flex_color_picker: ^3.3.0
-  emoji_picker_flutter: ^1.6.3
   version: ^3.0.2
   lottie: ^2.6.0
   desktop_drop: ^0.4.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
-  app_installer: ^1.1.0
   flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6
   bot_toast: ^4.0.3
   flex_color_scheme: ^7.2.0
   timer_count_down: ^2.2.2
-  file_saver: ^0.2.14
   sliver_tools: ^0.2.9
   pull_to_refresh: ^2.0.0
   ming_cute_icons: ^0.0.2
   reorderable_grid_view: ^2.2.7
-  webview_flutter: ^3.0.4
   photo_view: ^0.14.0
   flutter_rating_bar: ^4.0.1
   window_manager: ^0.2.5
   percent_indicator: ^4.2.2
-  dart_ping: ^6.1.2
   expand_widget: ^3.1.1
   get: ^4.6.5
-  shared_preferences: ^2.0.9
+  shared_preferences:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/shared_preferences/shared_preferences
   sqflite: ^2.0.1
   sqflite_common_ffi: ^2.1.0
-  path_provider: ^2.0.8
-  file_picker: ^9.0.0
+  file_picker:
+    git:
+      url: https://gitcode.com/openharmony-sig/fluttertpc_file_picker
   webdav_client: ^1.1.8
   dio: ^5.8.0+1
   html: ^0.15.0
   cached_network_image: ^3.2.3
   archive: ^3.1.8
   path: ^1.8.0
-  package_info_plus: ^4.0.2
-  url_launcher: ^6.1.0
+  package_info_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/package_info_plus/package_info_plus
+  url_launcher:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/url_launcher/url_launcher
   transparent_image: ^2.0.0
+
+dependency_overrides:
+  # 覆盖cached_network_image等其他包使用的path_provider
+  path_provider:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      ref: HEAD
+      path: packages/path_provider/path_provider
 
 dev_dependencies:
   flutter_test:

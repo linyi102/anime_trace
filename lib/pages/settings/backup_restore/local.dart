@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
-import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/widgets/setting_card.dart';
@@ -27,20 +25,6 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
     return SettingCard(
       title: '本地备份',
       children: [
-        if (PlatformUtil.isMobile)
-          ListTile(
-            title: const Text("立即备份"),
-            onTap: () async {
-              String zipName = await BackupUtil.generateZipName();
-              File tmpZipFile = await BackupUtil.createTempBackUpFile(zipName);
-              await FileSaver.instance.saveAs(
-                  name: zipName,
-                  ext: '',
-                  bytes: tmpZipFile.readAsBytesSync(),
-                  mimeType: MimeType.zip);
-              tmpZipFile.delete();
-            },
-          ),
         if (Platform.isWindows)
           ListTile(
             title: const Text("立即备份"),

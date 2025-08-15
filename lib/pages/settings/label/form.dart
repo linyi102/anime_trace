@@ -1,13 +1,9 @@
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/dao/label_dao.dart';
 import 'package:animetrace/models/label.dart';
 import 'package:animetrace/pages/settings/label/home.dart';
-import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/toast_util.dart';
-import 'package:flutter/foundation.dart' as foundation;
-import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/emoji_leading.dart';
 
 class LabelForm extends StatefulWidget {
@@ -52,15 +48,6 @@ class _LabelFormState extends State<LabelForm> {
             child: EmojiLeading(emoji: emoji),
             onLongPress: () {
               _cancelEmoji();
-            },
-            onTap: () {
-              _showEmojiPicker(
-                onEmojiSelected: (emoji) {
-                  Navigator.pop(context);
-                  this.emoji = emoji;
-                  setState(() {});
-                },
-              );
             },
           ),
           const SizedBox(width: 15),
@@ -122,47 +109,5 @@ class _LabelFormState extends State<LabelForm> {
     setState(() {
       emoji = null;
     });
-  }
-
-  Future<dynamic> _showEmojiPicker(
-      {required void Function(String emoji) onEmojiSelected}) {
-    return showCommonModalBottomSheet(
-      context: context,
-      builder: (context) => EmojiPicker(
-        onEmojiSelected: (Category? category, Emoji emoji) {
-          onEmojiSelected(emoji.emoji);
-        },
-        config: Config(
-          columns: 7,
-          emojiSizeMax: 32 *
-              (foundation.defaultTargetPlatform == TargetPlatform.iOS
-                  ? 1.30
-                  : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
-          verticalSpacing: 0,
-          horizontalSpacing: 0,
-          gridPadding: EdgeInsets.zero,
-          initCategory: Category.RECENT,
-          bgColor: Theme.of(context).scaffoldBackgroundColor,
-          indicatorColor: Theme.of(context).primaryColor,
-          iconColor: Colors.grey,
-          iconColorSelected: Theme.of(context).primaryColor,
-          backspaceColor: Theme.of(context).primaryColor,
-          skinToneDialogBgColor: Colors.white,
-          skinToneIndicatorColor: Colors.grey,
-          enableSkinTones: true,
-          recentTabBehavior: RecentTabBehavior.RECENT,
-          recentsLimit: 28,
-          noRecents: const Text(
-            'No Recents',
-            style: TextStyle(fontSize: 20, color: Colors.black26),
-            textAlign: TextAlign.center,
-          ), // Needs to be const Widget
-          loadingIndicator: const SizedBox.shrink(), // Needs to be const Widget
-          tabIndicatorAnimDuration: PlatformUtil.tabControllerAnimationDuration,
-          categoryIcons: const CategoryIcons(),
-          buttonMode: ButtonMode.CUPERTINO,
-        ),
-      ),
-    );
   }
 }
