@@ -156,12 +156,12 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
       showTrailingProgress: selectAction ? false : true,
       trailing: selectAction
           ? hasSelected
-              ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+              ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
               : Icon(
                   selected
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
-                  color: selected ? Theme.of(context).primaryColor : null,
+                  color: selected ? Theme.of(context).colorScheme.primary : null,
                 )
           : null,
       onTap: () {
@@ -202,9 +202,9 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("网络搜索更多 ",
-                style: TextStyle(color: Theme.of(context).primaryColor)),
+                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
             Icon(Icons.manage_search_outlined,
-                color: Theme.of(context).primaryColor)
+                color: Theme.of(context).colorScheme.primary)
           ],
         ),
         onTap: () {

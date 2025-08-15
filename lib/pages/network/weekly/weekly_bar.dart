@@ -79,7 +79,7 @@ class _WeeklyBarState extends State<WeeklyBar> {
                     decoration: isSelected
                         ? BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Theme.of(context).primaryColor)
+                            color: Theme.of(context).colorScheme.primary)
                         : const BoxDecoration(),
                   )
                 ],

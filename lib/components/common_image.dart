@@ -82,7 +82,7 @@ class CommonImage extends StatelessWidget {
     context, {
     bool isError = false,
   }) {
-    final baseColor = Theme.of(context).primaryColor;
+    final baseColor = Theme.of(context).colorScheme.primary;
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(

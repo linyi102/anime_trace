@@ -225,7 +225,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                 widget.animeController.loadEpisode();
               },
               child: Container(
-                color: cur ? Theme.of(context).primaryColor : null,
+                color: cur ? Theme.of(context).colorScheme.primary : null,
                 child: Center(
                   child: Text(
                     _getEpisodeRangeStr((startEpisodeNumber)),

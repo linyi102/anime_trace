@@ -195,7 +195,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
           )
         : CommonStatusPrompt(
             icon: Icon(Icons.cloud_outlined,
-                color: Theme.of(context).primaryColor),
+                color: Theme.of(context).colorScheme.primary),
             titleText: '自动备份已开启',
             // subtitleText: '开启自动备份后，可在打开应用时或关闭应用前自动进行备份',
             subtitle: Column(

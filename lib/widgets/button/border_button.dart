@@ -20,7 +20,7 @@ class BorderButton extends StatelessWidget {
       borderRadius: radius,
       child: Material(
         color: selected
-            ? Theme.of(context).primaryColor.withOpacityFactor(0.2)
+            ? Theme.of(context).colorScheme.primary.withOpacityFactor(0.2)
             : Theme.of(context).cardColor,
         child: Ink(
           child: InkWell(
@@ -30,7 +30,7 @@ class BorderButton extends StatelessWidget {
                 border: Border.all(
                     width: 1,
                     color: selected
-                        ? Theme.of(context).primaryColor
+                        ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).hintColor.withOpacityFactor(0.1)),
                 borderRadius: radius,
               ),

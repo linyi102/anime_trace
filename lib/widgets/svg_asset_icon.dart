@@ -21,7 +21,7 @@ class SvgAssetIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     var destColor = color ??
         Theme.of(context).iconTheme.color ??
-        Theme.of(context).primaryColor;
+        Theme.of(context).colorScheme.primary;
 
     if (useUnselectedItemColor) {
       destColor =

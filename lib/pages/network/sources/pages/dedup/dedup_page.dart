@@ -251,7 +251,7 @@ class DedupPage extends StatelessWidget {
                       width: 24,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Theme.of(context).primaryColor),
+                          color: Theme.of(context).colorScheme.primary),
                       child: const Icon(Icons.check,
                           color: Colors.white, size: 18)))
               : Center(

@@ -166,7 +166,7 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
         labelText: title,
         labelStyle: TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
           borderRadius: BorderRadius.circular(12),
         ),
         enabledBorder: OutlineInputBorder(

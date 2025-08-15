@@ -78,7 +78,7 @@ class _TracePageState extends State<TracePage> {
   }
 
   Card _buildCountRow() {
-    Color? iconColor = Theme.of(context).primaryColor;
+    Color? iconColor = Theme.of(context).colorScheme.primary;
     // iconColor = null;
 
     return Card(

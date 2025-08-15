@@ -74,7 +74,7 @@ class SettingCard extends StatelessWidget {
           Theme.of(context)
               .textTheme
               .titleSmall
-              ?.copyWith(color: Theme.of(context).primaryColor),
+              ?.copyWith(color: Theme.of(context).colorScheme.primary),
     );
   }
 }

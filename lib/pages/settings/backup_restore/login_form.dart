@@ -142,7 +142,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
                   icon: const Icon(Icons.remove_red_eye))
               : null,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
             borderRadius: BorderRadius.circular(12),
           ),
           enabledBorder: OutlineInputBorder(
@@ -198,7 +198,7 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
     switch (website) {
       case WebDAVWebSite.common:
         return Icon(Icons.cloud,
-            size: 80, color: Theme.of(context).primaryColor);
+            size: 80, color: Theme.of(context).colorScheme.primary);
       case WebDAVWebSite.jianguoyun:
         return Image.asset(Assets.icons.jianguoyun.path);
       case WebDAVWebSite.infiniCloud:

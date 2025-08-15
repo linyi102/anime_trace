@@ -157,7 +157,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
         borderRadius: BorderRadius.circular(radius),
         borderSide: BorderSide(
           color: isFocused
-              ? Theme.of(context).primaryColor
+              ? Theme.of(context).colorScheme.primary
               : Theme.of(context).dividerColor,
           width: 1.0,
         ));

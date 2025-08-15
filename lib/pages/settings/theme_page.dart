@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:animetrace/widgets/responsive.dart';
 import 'package:animetrace/widgets/setting_card.dart';
 import 'package:get/get.dart';
 
@@ -26,47 +25,11 @@ class _ThemePageState extends State<ThemePage> {
         children: [
           SettingCard(
             title: '主题',
-            children: [
-              if (!Responsive.isMobile(context)) ...[
-                ListTile(
-                  title: const Text('主题模式'),
-                  trailing: _buildThemeSelector(),
-                ),
-                ListTile(
-                  title: const Text('夜间主题'),
-                  trailing: _buildColorSelector(),
-                ),
-              ]
-            ],
+            children: [_buildThemeSelector()],
           ),
-          if (Responsive.isMobile(context)) ...[
-            _buildThemeMode(),
-            _buildDarkTheme(),
-          ]
         ],
       )),
     );
-  }
-
-  Widget _buildColorSelector() {
-    return Obx(() => SegmentedButton<ThemeColor>(
-          segments: [
-            for (final themeColor in AppTheme.darkColors)
-              ButtonSegment(
-                icon: Icon(Icons.circle, color: themeColor.representativeColor),
-                value: themeColor,
-                label: Text(themeColor.name),
-              ),
-          ],
-          // showSelectedIcon: false,
-          emptySelectionAllowed: true,
-          selected: {ThemeController.to.darkThemeColor.value},
-          onSelectionChanged: (value) {
-            if (value.isEmpty) return;
-            final themeColor = value.first;
-            ThemeController.to.changeTheme(themeColor.key, dark: true);
-          },
-        ));
   }
 
   Widget _buildThemeSelector() {
@@ -98,19 +61,6 @@ class _ThemePageState extends State<ThemePage> {
         Container(
           margin: const EdgeInsets.only(top: 8, left: 16),
           child: _buildThemeSelector(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDarkTheme() {
-    return SettingCard(
-      title: '夜间主题',
-      useCard: false,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 8, left: 16),
-          child: _buildColorSelector(),
         ),
       ],
     );

@@ -55,7 +55,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         },
       )),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         onPressed: () {
           showDialog(

@@ -71,7 +71,7 @@ class _AirDatePickerState extends State<AirDatePicker> {
         },
         child: Container(
             decoration: BoxDecoration(
-              color: selected ? Theme.of(context).primaryColor : null,
+              color: selected ? Theme.of(context).colorScheme.primary : null,
               borderRadius: BorderRadius.circular(99),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -103,7 +103,7 @@ class _AirDatePickerState extends State<AirDatePicker> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
-              color: selected ? Theme.of(context).primaryColor : null,
+              color: selected ? Theme.of(context).colorScheme.primary : null,
               borderRadius: BorderRadius.circular(99),
             ),
             child: Center(

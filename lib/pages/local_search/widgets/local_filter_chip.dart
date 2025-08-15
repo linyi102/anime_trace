@@ -43,7 +43,7 @@ class _LocalFilterChipState extends State<LocalFilterChip> {
                 EdgeInsets.symmetric(horizontal: 16)),
             backgroundColor: selected
                 ? WidgetStatePropertyAll(
-                    Theme.of(context).primaryColor.withOpacityFactor(0.2))
+                    Theme.of(context).colorScheme.primary.withOpacityFactor(0.2))
                 : null,
           ),
           icon: Icon(widget.filter.icon, size: 16),

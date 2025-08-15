@@ -164,7 +164,6 @@ class MyAppState extends State<MyApp> {
             ?.copyWith(fontSize: 13, color: Theme.of(context).hintColor),
         iconColor: iconColor,
       ),
-      iconTheme: theme.iconTheme.copyWith(color: iconColor),
       scrollbarTheme: _getScrollbarThemeData(context, isDark: isDark),
       // 不在底部添加margin是为了避免相邻卡片向下间距变大
       // 在顶部添加margin是为了保证不紧挨AppBar
@@ -173,16 +172,8 @@ class MyAppState extends State<MyApp> {
             ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
             : const EdgeInsets.only(top: 10),
         elevation: 0,
-        color:
-            isDark ? curDarkThemeColor.cardColor : curLightThemeColor.cardColor,
       ),
       pageTransitionsTheme: _getPageTransitionsTheme(),
-      floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-      ),
-      chipTheme: theme.chipTheme.copyWith(side: BorderSide.none),
-      // 202308052321
       appBarTheme: theme.appBarTheme.copyWith(
         titleTextStyle:
             Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
@@ -232,41 +223,27 @@ class MyAppState extends State<MyApp> {
   }
 
   ThemeData _getFlexThemeDataLight() {
-    final primary = themeController.customPrimaryColor.value ??
-        curLightThemeColor.primaryColor;
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
-          seedColor: primary, brightness: Brightness.light),
+          seedColor: Colors.blueAccent, brightness: Brightness.light),
       useMaterial3: themeController.useM3.value,
-      fontFamilyFallback: textStyle.fontFamilyFallback,
-      primaryColor: primary,
-      scaffoldBackgroundColor: curLightThemeColor.bodyColor,
-      cardColor: curLightThemeColor.cardColor,
-      appBarTheme: AppBarTheme(
-        backgroundColor: curLightThemeColor.appBarColor,
-        foregroundColor: Colors.white,
-        titleTextStyle:
-            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
+      cardTheme: CardTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
 
   ThemeData _getFlexThemeDataDark() {
-    final primary = themeController.customPrimaryColor.value ??
-        curDarkThemeColor.primaryColor;
     return ThemeData(
-      colorScheme:
-          ColorScheme.fromSeed(seedColor: primary, brightness: Brightness.dark),
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blueAccent, brightness: Brightness.dark),
       useMaterial3: themeController.useM3.value,
-      fontFamilyFallback: textStyle.fontFamilyFallback,
-      primaryColor: primary,
-      scaffoldBackgroundColor: curLightThemeColor.bodyColor,
-      cardColor: curLightThemeColor.cardColor,
-      appBarTheme: AppBarTheme(
-        backgroundColor: curLightThemeColor.appBarColor,
-        foregroundColor: Colors.white,
-        titleTextStyle:
-            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
+      cardTheme: CardTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }

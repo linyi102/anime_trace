@@ -27,7 +27,7 @@ dialogSelectChecklist(
         title: Text(tags[i]),
         leading: tags[i] == anime.tagName
             ? Icon(Icons.radio_button_on_outlined,
-                color: Theme.of(context).primaryColor)
+                color: Theme.of(context).colorScheme.primary)
             : const Icon(Icons.radio_button_off_outlined),
         onTap: () async {
           // 不能只传入tagName，需要把对象的引用传进来，然后修改就会生效

@@ -182,7 +182,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       child: InkWell(
         onTap: () => _toAllRecommendSeriesPage(context),
         child: Container(
-          color: Theme.of(context).primaryColor.withOpacityFactor(0.15),
+          color: Theme.of(context).colorScheme.primary.withOpacityFactor(0.15),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
           child: Row(
             children: [
@@ -192,7 +192,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   '为你找到了 ${logic.allRecommendSeriesList.length} 个可能需要添加的系列',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -463,7 +463,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
     var color = status == isAdded
         ? Theme.of(context).colorScheme.error
-        : Theme.of(context).primaryColor;
+        : Theme.of(context).colorScheme.primary;
 
     // 进入系列管理页时：推荐的系列显示创建按钮，已创建的系列显示更多按钮
     // 从动漫详情页中进入该页时：推荐的系列显示创建按钮，已创建的系列显示加入按钮，已加入的系列显示退出按钮

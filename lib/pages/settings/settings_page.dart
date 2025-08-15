@@ -82,6 +82,7 @@ class _SettingPageState extends State<SettingPage> {
         Card(child: _buildSettingGroup()),
         if (enableDivider) const CommonDivider(),
         Card(child: _buildOtherGroup()),
+        const ListTile(),
       ],
     );
   }
@@ -90,7 +91,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.info_outlined,
             MingCuteIcons.mgc_information_line,
@@ -102,13 +103,13 @@ class _SettingPageState extends State<SettingPage> {
         ),
         if (!Global.isRelease)
           ListTile(
-            iconColor: Theme.of(context).primaryColor,
+            iconColor: Theme.of(context).colorScheme.primary,
             leading: const Icon(Icons.bug_report_outlined),
             title: const Text("测试页面"),
             onTap: () {
               _enterDetail(const TestPage());
             },
-          )
+          ),
       ],
     );
   }
@@ -117,7 +118,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.settings,
             MingCuteIcons.mgc_settings_1_line,
@@ -128,7 +129,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.photo_size_select_actual_outlined,
             // Icons.image_outlined,
@@ -141,7 +142,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.color_lens_outlined,
             MingCuteIcons.mgc_palette_line,
@@ -159,7 +160,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(Icons.settings_backup_restore_rounded),
           title: const Text("备份还原"),
           onTap: () {
@@ -167,7 +168,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             Icons.checklist_rounded,
             // MingCuteIcons.mgc_check_line,
@@ -178,7 +179,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.label_outline,
             MingCuteIcons.mgc_tag_line,
@@ -189,11 +190,11 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(MingCuteIcons.mgc_book_3_line),
           // leading: SvgAssetIcon(
           //   assetPath: Assets.iconsCollections24Regular,
-          //   color: Theme.of(context).primaryColor,
+          //   color: Theme.of(context).colorScheme.primary,
           // ),
           title: const Text("系列管理"),
           onTap: () {
@@ -285,7 +286,7 @@ class _SettingPageState extends State<SettingPage> {
       title: Text(title),
       leading: _selectedImageTypeIdx == imageTypeIdx
           ? Icon(Icons.radio_button_checked,
-              color: Theme.of(context).primaryColor)
+              color: Theme.of(context).colorScheme.primary)
           : const Icon(Icons.radio_button_off),
       trailing: trailing,
     );

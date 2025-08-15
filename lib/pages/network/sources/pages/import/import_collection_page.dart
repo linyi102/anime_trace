@@ -302,7 +302,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             child: CircularProgressIndicator(
               strokeWidth: 4,
               backgroundColor:
-                  Theme.of(context).primaryColor.withOpacityFactor(0.3),
+                  Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
             ),
           ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)
