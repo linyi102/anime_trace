@@ -79,9 +79,23 @@ class SqliteUtil {
     return true;
   }
 
-  static _initDatabase() async {
-    dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
+  static Future<String> getLocalRootDirPath() async {
+    String rootPath;
+    if (Platform.isOhos) {
+      rootPath = "/data/storage/el2/database/rdb";
+    } else if (PlatformUtil.isMobile || Platform.isWindows) {
+      rootPath =
+          "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
+    return rootPath;
+  }
+
+  static Future<Database> _initDatabase() async {
+    dbPath = "${await getLocalRootDirPath()}/$sqlFileName";
     Log.info("💾 db path: $dbPath");
+    Log.info("db size: ${File(dbPath).lengthSync()} bytes");
     try {
       await database.close();
     } catch (e) {
@@ -89,15 +103,11 @@ class SqliteUtil {
         logger.warning("关闭数据库失败：$e");
       }
     }
-    if (PlatformUtil.isMobile) {
-      return await openDatabase(
-        dbPath,
-        onCreate: _createDb,
-        version: dbVersion,
-      );
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
-    }
+    return openDatabase(
+      dbPath,
+      onCreate: _createDb,
+      version: dbVersion,
+    );
   }
 
   static FutureOr<void> _createDb(Database db, int version) async {

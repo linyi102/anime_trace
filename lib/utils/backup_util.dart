@@ -8,7 +8,6 @@ import 'package:animetrace/dao/history_dao.dart';
 import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/network/sources/pages/dedup/dedup_controller.dart';
-import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/webdav_util.dart';
@@ -23,16 +22,6 @@ class BackupUtil {
   static String backupZipNamePrefix = "backup";
   static String descFileName = "desc";
   static int rbrMaxCnt = 20;
-
-  static Future<String> getLocalRootDirPath() async {
-    String localRootDirPath;
-    if (PlatformUtil.isMobile || Platform.isWindows) {
-      localRootDirPath = (await getApplicationSupportDirectory()).path;
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
-    }
-    return localRootDirPath;
-  }
 
   /// 备份时，用于生成文件名
   static Future<String> generateZipName() async {
@@ -257,7 +246,7 @@ class BackupUtil {
   }
 
   static Future<Result> restoreFromWebDav(dav_client.File file) async {
-    String localRootDirPath = await getLocalRootDirPath();
+    String localRootDirPath = await SqliteUtil.getLocalRootDirPath();
 
     if (file.path == null) {
       return Result.failure(404, "空文件路径，无法还原");
@@ -273,7 +262,7 @@ class BackupUtil {
   }
 
   static Future<void> unzip(String localZipPath) async {
-    String localRootDirPath = await getLocalRootDirPath();
+    String localRootDirPath = await SqliteUtil.getLocalRootDirPath();
 
     // Read the Zip file from disk.
     final bytes = File(localZipPath).readAsBytesSync();
@@ -342,7 +331,7 @@ class BackupUtil {
   /// 获取还原时备份当前数据所应存放的目录路径
   static Future<String> getRBRPath() async {
     String dirPath =
-        "${await BackupUtil.getLocalRootDirPath()}/backup_before_restore";
+        "${(await getApplicationSupportDirectory()).path}/backup_before_restore";
     Directory(dirPath).createSync();
     return dirPath;
   }

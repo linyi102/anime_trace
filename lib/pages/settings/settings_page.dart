@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -239,14 +241,15 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildImageTypeOption(
                   title: "默认图片", imageTypeIdx: 0, setDialogState: setState),
-              _buildImageTypeOption(
-                title: "本地图片",
-                imageTypeIdx: 1,
-                setDialogState: setState,
-                trailing: TextButton(
-                    onPressed: () => _handleProvideLocalImage(),
-                    child: const Text("指定")),
-              ),
+              if (!Platform.isIOS && !Platform.isOhos)
+                _buildImageTypeOption(
+                  title: "本地图片",
+                  imageTypeIdx: 1,
+                  setDialogState: setState,
+                  trailing: TextButton(
+                      onPressed: () => _handleProvideLocalImage(),
+                      child: const Text("指定")),
+                ),
               _buildImageTypeOption(
                 title: "网络图片",
                 imageTypeIdx: 2,
