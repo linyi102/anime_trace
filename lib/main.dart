@@ -5,7 +5,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_logkit/logkit.dart';
 import 'package:animetrace/components/classic_refresh_style.dart';
 import 'package:animetrace/controllers/backup_service.dart';
@@ -235,130 +234,40 @@ class MyAppState extends State<MyApp> {
   ThemeData _getFlexThemeDataLight() {
     final primary = themeController.customPrimaryColor.value ??
         curLightThemeColor.primaryColor;
-
-    return FlexThemeData.light(
+    return ThemeData(
       colorScheme: ColorScheme.fromSeed(
           seedColor: primary, brightness: Brightness.light),
       useMaterial3: themeController.useM3.value,
       fontFamilyFallback: textStyle.fontFamilyFallback,
-      primary: primary,
-      scaffoldBackground: curLightThemeColor.bodyColor,
-      surface: curLightThemeColor.cardColor,
-      // BottomNavigationBar
-      background: curLightThemeColor.appBarColor,
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 9,
-      tabBarStyle: FlexTabBarStyle.forBackground,
-      appBarBackground: curLightThemeColor.appBarColor,
-      appBarStyle: FlexAppBarStyle.scaffoldBackground,
-      tooltipsMatchBackground: true,
-      subThemesData: FlexSubThemesData(
-        // chip颜色
-        chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
-        useM2StyleDividerInM3: true,
-        // 悬浮、按压等颜色不受主颜色影响
-        interactionEffects: false,
-        useTextTheme: true,
-        // true会导致文字和按钮颜色受主色影响
-        blendTextTheme: false,
-        // 隐藏输入框底部边界
-        inputDecoratorUnfocusedHasBorder: false,
-        blendOnLevel: 10,
-        blendOnColors: false,
-        inputDecoratorIsFilled: false,
-        inputDecoratorBorderType: FlexInputBorderType.underline,
-        bottomSheetRadius: AppTheme.bottomSheetRadius,
-        cardRadius:
-            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
-        chipRadius: AppTheme.chipRadius,
-        dialogRadius: AppTheme.dialogRadius,
-        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
-        popupMenuRadius: 8.0,
-        textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 2.0,
-        elevatedButtonSchemeColor: SchemeColor.onPrimary,
-        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
-        // 对话框背景色
-        dialogElevation: 0.0,
-        // 滚动时AppBar背景色
-        appBarScrolledUnderElevation: 0.0,
-        // 底部面板背景色
-        bottomSheetElevation: 0.0,
-        bottomSheetModalElevation: 0.0,
-        tabBarDividerColor: Colors.transparent,
-        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-        popupMenuElevation: 1,
-        fabUseShape: true,
-        fabAlwaysCircular: true,
+      primaryColor: primary,
+      scaffoldBackgroundColor: curLightThemeColor.bodyColor,
+      cardColor: curLightThemeColor.cardColor,
+      appBarTheme: AppBarTheme(
+        backgroundColor: curLightThemeColor.appBarColor,
+        foregroundColor: Colors.white,
+        titleTextStyle:
+            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
       ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
   }
 
   ThemeData _getFlexThemeDataDark() {
     final primary = themeController.customPrimaryColor.value ??
         curDarkThemeColor.primaryColor;
-
-    return FlexThemeData.dark(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: primary,
-          onPrimary: Colors.white,
-          brightness: Brightness.dark),
+    return ThemeData(
+      colorScheme:
+          ColorScheme.fromSeed(seedColor: primary, brightness: Brightness.dark),
       useMaterial3: themeController.useM3.value,
       fontFamilyFallback: textStyle.fontFamilyFallback,
-      primary: primary,
-      scaffoldBackground: curDarkThemeColor.bodyColor,
-      surface: curDarkThemeColor.cardColor,
-      // BottomNavigationBar
-      background: curDarkThemeColor.appBarColor,
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 15,
-      tabBarStyle: FlexTabBarStyle.forBackground,
-      appBarBackground: curDarkThemeColor.appBarColor,
-      appBarStyle: FlexAppBarStyle.scaffoldBackground,
-      tooltipsMatchBackground: true,
-      subThemesData: FlexSubThemesData(
-        // chip颜色
-        chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
-        // 悬浮、按压等颜色不受主颜色影响
-        interactionEffects: false,
-        useTextTheme: true,
-        // true会导致文字和按钮颜色受主色影响
-        blendTextTheme: false,
-        // 隐藏输入框底部边界
-        inputDecoratorUnfocusedHasBorder: false,
-        blendOnLevel: 20,
-        inputDecoratorIsFilled: false,
-        inputDecoratorBorderType: FlexInputBorderType.underline,
-        bottomSheetRadius: AppTheme.bottomSheetRadius,
-        cardRadius:
-            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
-        chipRadius: AppTheme.chipRadius,
-        dialogRadius: AppTheme.dialogRadius,
-        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
-        popupMenuRadius: 8.0,
-        textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 2.0,
-        elevatedButtonSchemeColor: SchemeColor.onPrimary,
-        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
-        // 对话框背景色
-        dialogElevation: 0.0,
-        // 滚动时AppBar背景色
-        appBarScrolledUnderElevation: 0.0,
-        // 底部面板背景色
-        bottomSheetElevation: 0.0,
-        bottomSheetModalElevation: 0.0,
-        tabBarDividerColor: Colors.transparent,
-        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-        popupMenuElevation: 1,
-        fabUseShape: true,
-        fabAlwaysCircular: true,
+      primaryColor: primary,
+      scaffoldBackgroundColor: curLightThemeColor.bodyColor,
+      cardColor: curLightThemeColor.cardColor,
+      appBarTheme: AppBarTheme(
+        backgroundColor: curLightThemeColor.appBarColor,
+        foregroundColor: Colors.white,
+        titleTextStyle:
+            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
       ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
     );
   }
 

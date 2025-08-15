@@ -20,7 +20,6 @@ dependencies:
   queue: ^3.1.0+2
   darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
-  flex_color_picker: ^3.3.0
   version: ^3.0.2
   lottie: ^2.6.0
   desktop_drop: ^0.4.4
@@ -29,7 +28,6 @@ dependencies:
   flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6
   bot_toast: ^4.0.3
-  flex_color_scheme: ^7.2.0
   timer_count_down: ^2.2.2
   sliver_tools: ^0.2.9
   pull_to_refresh: ^2.0.0

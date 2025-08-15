@@ -1,4 +1,3 @@
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/values/values.dart';
@@ -28,26 +27,6 @@ class _ThemePageState extends State<ThemePage> {
           SettingCard(
             title: '主题',
             children: [
-              ListTile(
-                title: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('选择主题色'),
-                    SizedBox(width: 8),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: themeController.resetCustomPrimaryColor,
-                      child: const Text('重置'),
-                    ),
-                    _buildColorIndicator(),
-                  ],
-                ),
-                onTap: _showColorPicker,
-              ),
               if (!Responsive.isMobile(context)) ...[
                 ListTile(
                   title: const Text('主题模式'),
@@ -135,53 +114,5 @@ class _ThemePageState extends State<ThemePage> {
         ),
       ],
     );
-  }
-
-  Future<void> _showColorPicker() async {
-    final Color newColor = await showColorPickerDialog(
-      context,
-      _getCurPrimaryColor(),
-      title: Text('主题色', style: Theme.of(context).textTheme.titleLarge),
-      width: 40,
-      height: 40,
-      spacing: 0,
-      runSpacing: 0,
-      borderRadius: 0,
-      wheelDiameter: 165,
-      enableOpacity: true,
-      showColorCode: true,
-      colorCodeHasColor: true,
-      pickersEnabled: <ColorPickerType, bool>{
-        ColorPickerType.wheel: true,
-      },
-      copyPasteBehavior: const ColorPickerCopyPasteBehavior(
-        copyButton: true,
-        pasteButton: true,
-        longPressMenu: true,
-      ),
-      actionButtons: const ColorPickerActionButtons(
-        okButton: false,
-        closeButton: false,
-        dialogActionButtons: true,
-      ),
-      constraints:
-          const BoxConstraints(minHeight: 480, minWidth: 320, maxWidth: 320),
-    );
-    themeController.changeCustomPrimaryColor(newColor);
-  }
-
-  Widget _buildColorIndicator() {
-    return Obx(() => ColorIndicator(
-        width: 24,
-        height: 24,
-        borderRadius: 99,
-        color: _getCurPrimaryColor(),
-        elevation: 1,
-        onSelectFocus: false));
-  }
-
-  Color _getCurPrimaryColor() {
-    return themeController.customPrimaryColor.value ??
-        Theme.of(context).primaryColor;
   }
 }
