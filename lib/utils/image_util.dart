@@ -32,7 +32,7 @@ class ImageUtil {
           SPUtil.getString(noteImageRootDirPathKeyInWindows, defaultValue: "");
       coverImageRootDirPath =
           SPUtil.getString(coverImageRootDirPathKeyInWindows, defaultValue: "");
-    } else if (Platform.isIOS) {
+    } else if (Platform.isIOS || Platform.isOhos) {
       noteImageRootDirPath = '';
       coverImageRootDirPath = '';
     } else {

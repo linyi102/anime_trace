@@ -1,6 +1,6 @@
 import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/models/label.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../utils/log.dart';
 import '../utils/sqlite_util.dart';

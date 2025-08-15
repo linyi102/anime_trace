@@ -1,5 +1,5 @@
 import 'package:animetrace/utils/sqlite_util.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class EpisodeDesc {
   int id; // 唯一id

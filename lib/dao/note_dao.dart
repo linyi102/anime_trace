@@ -10,7 +10,7 @@ import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/note_filter.dart';
 import 'package:animetrace/models/relative_local_image.dart';
 import 'package:animetrace/utils/escape_util.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class NoteDao {
   static Database get database => SqliteUtil.database;

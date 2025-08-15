@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +12,6 @@ import 'package:animetrace/pages/settings/image_path_setting.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/utils/image_util.dart';
-import 'package:animetrace/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
@@ -152,14 +150,11 @@ class AnimeCoverDetail extends StatelessWidget {
     ImageProvider imageProvider;
     // 网络封面
     if (coverUrl.startsWith("http")) {
-      imageProvider = CachedNetworkImageProvider(
+      imageProvider = NetworkImage(
         coverUrl,
         headers: coverUrl.contains("douban")
             ? Global.getHeadersToGetDoubanPic()
             : null,
-        errorListener: (e) {
-          Log.error("缓存网络图片错误：$coverUrl");
-        },
       );
     } else {
       imageProvider =
@@ -229,8 +224,8 @@ class AnimeCoverDetail extends StatelessWidget {
                 leading: const Icon(Icons.image),
                 title: const Text("从本地图库中选择"),
                 onTap: () {
-                  if (Platform.isIOS) {
-                    ToastUtil.showText('iOS 暂不支持选择本地图片');
+                  if (Platform.isIOS || Platform.isOhos) {
+                    ToastUtil.showText('暂不支持选择本地图片');
                     return;
                   }
                   _selectCoverFromLocal(

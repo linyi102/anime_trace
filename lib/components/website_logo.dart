@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -18,14 +17,16 @@ class WebSiteLogo extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(size),
           child: url.startsWith("http")
-              ? CachedNetworkImage(
-                  imageUrl: url,
+              ? Image.network(
+                  url,
                   fit: BoxFit.cover,
                   // 占位符为透明图。否则显示先前缓存的图片时，不是圆形，加载完毕后又会显示圆形导致显得很突兀
-                  placeholder: (context, str) =>
-                      Image.memory(kTransparentImage),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Image.memory(kTransparentImage);
+                  },
                   // 获取不到图片时，显示空Container
-                  errorWidget: (context, str, dynamic) => Container(),
+                  errorBuilder: (_, __, ___) => Container(),
                 )
               : Image.asset(url, fit: BoxFit.cover),
         ),

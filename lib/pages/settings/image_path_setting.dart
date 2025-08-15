@@ -35,9 +35,9 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (Platform.isIOS) {
+    if (Platform.isIOS || Platform.isOhos) {
       return const Center(
-        child: Text('iOS暂不支持进行图片设置'),
+        child: Text('暂不支持进行图片设置'),
       );
     }
     return ListView(

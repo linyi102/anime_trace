@@ -16,7 +16,7 @@ import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/utils/image_util.dart';
 import 'package:animetrace/utils/platform.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SqliteUtil {
   // 单例模式
@@ -94,14 +94,6 @@ class SqliteUtil {
         dbPath,
         onCreate: _createDb,
         version: dbVersion,
-      );
-    } else if (Platform.isWindows) {
-      return await databaseFactoryFfi.openDatabase(
-        dbPath,
-        options: OpenDatabaseOptions(
-          onCreate: _createDb,
-          version: dbVersion,
-        ),
       );
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");

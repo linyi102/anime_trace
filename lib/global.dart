@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -16,8 +17,6 @@ import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:get/get.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 import 'values/values.dart';
 
@@ -45,20 +44,17 @@ class Global {
     // MediaKit.ensureInitialized();
     // 获取SharedPreferences
     await SPUtil.getInstance();
-    // 桌面应用的sqflite初始化
-    sqfliteFfiInit();
     // 网络
     DioUtil.init();
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
+    await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 30));
     // put常用的getController
     await _putGetController();
     // 设置Windows窗口
     _handleWindowsManager();
     // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
     HttpOverrides.global = MyHttpOverrides();
-    // 热键
-    if (Platform.isWindows) await hotKeyManager.unregisterAll();
   }
 
   static _putGetController() async {

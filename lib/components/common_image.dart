@@ -1,9 +1,9 @@
 // 本地笔记图片、本地封面、网络封面
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:animetrace/global.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:animetrace/utils/extensions/color.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -35,14 +35,14 @@ class CommonImage extends StatelessWidget {
     // 网络图片
     if (url.startsWith("http")) {
       // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
-      return CachedNetworkImage(
-        httpHeaders:
+      return FastCachedImage(
+        headers:
             url.contains("douban") ? Global.getHeadersToGetDoubanPic() : null,
-        memCacheWidth: reduceMemCache ? memCacheWidth : null,
-        imageUrl: url,
+        cacheWidth: reduceMemCache ? memCacheWidth : null,
+        url: url,
         fadeInDuration: fadeInDuration,
-        errorWidget: (_, __, ___) => _buildDefaultImage(context, isError: true),
-        placeholder: (_, __) => _buildDefaultImage(context),
+        errorBuilder: (_, __, ___) => _buildDefaultImage(context, isError: true),
+        loadingBuilder: (_, __) => _buildDefaultImage(context),
         fit: fit,
         alignment: alignment,
       );

@@ -3,7 +3,7 @@ import 'package:animetrace/models/anime_update_record.dart';
 import 'package:animetrace/models/vo/update_record_vo.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class UpdateRecordDao {
   static Database get db => SqliteUtil.database;

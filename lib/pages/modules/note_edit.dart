@@ -361,8 +361,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
         String absoluteImagePath = platformFile.path ?? "";
         await _addImage(absoluteImagePath);
       }
-    } else if (Platform.isIOS) {
-      ToastUtil.showText('iOS 暂不支持选择本地图片');
+    } else if (Platform.isIOS || Platform.isOhos) {
+      ToastUtil.showText('暂不支持选择本地图片');
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
