@@ -25,7 +25,7 @@ class CommonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Duration fadeInDuration = const Duration(milliseconds: 400);
+    Duration fadeInDuration = const Duration(milliseconds: 200);
 
     // 没有图片
     if (url.isEmpty) {
@@ -36,12 +36,14 @@ class CommonImage extends StatelessWidget {
     if (url.startsWith("http")) {
       // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
       return FastCachedImage(
+        key: Key(url),
         headers:
             url.contains("douban") ? Global.getHeadersToGetDoubanPic() : null,
         cacheWidth: reduceMemCache ? memCacheWidth : null,
         url: url,
         fadeInDuration: fadeInDuration,
-        errorBuilder: (_, __, ___) => _buildDefaultImage(context, isError: true),
+        errorBuilder: (_, __, ___) =>
+            _buildDefaultImage(context, isError: true),
         loadingBuilder: (_, __) => _buildDefaultImage(context),
         fit: fit,
         alignment: alignment,
