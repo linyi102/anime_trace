@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "E:/Syncworld/Work/android-key/manji_harmony.p12",
+          "storePassword": "0000001E1D71DC5E4D740D3E06517D4FE201B33515DBAEF0DCA78309C8BBB0A97D395D057A58D551406F928B163A",
+          "keyAlias": "manji",
+          "keyPassword": "0000001ED6A6B6487C3F14143E4029A1CB55E9E9C8BB13F2CCB606B6550759C1A6F63AB9849ACAF97E8D7049DA2A",
+          "signAlg": "SHA256withECDSA",
+          "profile": "E:/Syncworld/Work/android-key/releaseRelease.p7b",
+          "certpath": "E:/Syncworld/Work/android-key/漫迹_dev.cer"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
