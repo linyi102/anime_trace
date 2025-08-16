@@ -95,7 +95,6 @@ class SqliteUtil {
   static Future<Database> _initDatabase() async {
     dbPath = "${await getLocalRootDirPath()}/$sqlFileName";
     Log.info("💾 db path: $dbPath");
-    Log.info("db size: ${File(dbPath).lengthSync()} bytes");
     try {
       await database.close();
     } catch (e) {

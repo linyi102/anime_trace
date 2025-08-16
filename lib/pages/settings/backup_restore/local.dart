@@ -74,31 +74,34 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
               setState(() {});
             },
           ),
-        ListTile(
-          title: const Text("还原本地备份"),
-          subtitle: const Text("还原动漫记录"),
-          onTap: () async {
-            // 获取备份文件
-            String? selectedFilePath = await selectFile();
-            if (selectedFilePath != null) {
-              ToastUtil.showLoading(
-                msg: "还原数据中",
-                task: () {
-                  return BackupUtil.restoreFromLocal(selectedFilePath);
-                },
-                onTaskSuccess: (taskValue) {
-                  ToastUtil.showText(taskValue.msg);
-                  if (taskValue.isFailure) {
+        // 鸿蒙插件未进行适配，暂时隐藏
+        // UnimplementedError: The current platform "ohos" is not supported by this plugin.
+        if (!Platform.isOhos)
+          ListTile(
+            title: const Text("还原本地备份"),
+            subtitle: const Text("还原动漫记录"),
+            onTap: () async {
+              // 获取备份文件
+              String? selectedFilePath = await selectFile();
+              if (selectedFilePath != null) {
+                ToastUtil.showLoading(
+                  msg: "还原数据中",
+                  task: () {
+                    return BackupUtil.restoreFromLocal(selectedFilePath);
+                  },
+                  onTaskSuccess: (taskValue) {
+                    ToastUtil.showText(taskValue.msg);
+                    if (taskValue.isFailure) {
+                      showShareErrorLog();
+                    }
+                  },
+                  onTaskError: (e) {
                     showShareErrorLog();
-                  }
-                },
-                onTaskError: (e) {
-                  showShareErrorLog();
-                },
-              );
-            }
-          },
-        ),
+                  },
+                );
+              }
+            },
+          ),
       ],
     );
   }
