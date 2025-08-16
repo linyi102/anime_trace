@@ -53,7 +53,7 @@ class AppUpgradeController extends GetxController {
       Log.info("Windows exe path: ${Platform.resolvedExecutable}");
     }
     packageInfo = await PackageInfo.fromPlatform();
-    getLatestVersion(autoCheck: true);
+    if (!Platform.isOhos) getLatestVersion(autoCheck: true);
     super.onInit();
   }
 
