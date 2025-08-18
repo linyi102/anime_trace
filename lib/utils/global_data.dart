@@ -19,13 +19,13 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 
 List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
-  guguWebsite,
-  doubanClimbWebsite,
   bangumiClimbWebsite,
-  // xifanWebsite,
+  guguWebsite,
+  quClimbWebsite,
+  xifanWebsite,
+  doubanClimbWebsite,
   cycClimbWebsite,
   nyaFunWebsite,
-  quClimbWebsite,
   omofunClimbWebsite,
   aimiWebsite,
   yhdmClimbWebsite,
@@ -57,32 +57,32 @@ final yhdmClimbWebsite = ClimbWebsite(
 
 final ageClimbWebsite = ClimbWebsite(
   id: 2,
+  defaultEnable: true,
   name: "AGE动漫",
   iconUrl: "assets/images/website/agemys.jpg",
   regexp: "age",
   spkey: "enableWebSiteAgemys",
   climb: ClimbAgemys(),
   desc: "AGE动漫专注于资源收集整理 海量的有效的高质量的动漫资源下载 动漫百度网盘下载",
-  defaultEnable: true,
 );
 
 final cycClimbWebsite = ClimbWebsite(
   id: 3,
+  defaultEnable: false,
   name: "次元城",
   iconUrl: "assets/images/website/cyc.png",
   regexp: "cyc",
   spkey: "enableWebSiteCycdm",
   climb: ClimbCycdm(),
   desc: "高质量在线追番平台！",
-  defaultEnable: true,
 );
 
 final doubanClimbWebsite = ClimbWebsite(
   id: 4,
+  defaultEnable: false,
   name: "豆瓣",
   // iconUrl: "https://www.douban.com/favicon.ico",
   iconUrl: "assets/images/website/douban.ico",
-  defaultEnable: false,
   spkey: "enableWebSiteDouban",
   regexp: "douban",
   climb: ClimbDouban(),
@@ -91,9 +91,9 @@ final doubanClimbWebsite = ClimbWebsite(
 
 final quClimbWebsite = ClimbWebsite(
   id: 5,
+  defaultEnable: false,
   name: "趣动漫",
   iconUrl: "assets/images/website/qdm.png",
-  defaultEnable: false,
   spkey: "enableWebSiteQdm",
   regexp: "qdm",
   climb: ClimbQdm(),
@@ -114,6 +114,7 @@ final quqiClimbWebsite = ClimbWebsite(
 
 final bangumiClimbWebsite = ClimbWebsite(
   id: 7,
+  defaultEnable: true,
   name: "Bangumi",
   iconUrl: "assets/images/website/bangumi.png",
   regexp: "bangumi\\.tv", // 因为次元城的动漫详细页链接包含bangumi，所以要添加.tv
@@ -148,11 +149,11 @@ final aimiWebsite = ClimbWebsite(
 
 final nyaFunWebsite = ClimbWebsite(
   id: 10,
+  defaultEnable: false,
   name: "NyaFun",
   iconUrl: "assets/images/website/nayfun.png",
   regexp: "nya",
   spkey: "enableWebSiteNayfun",
-  defaultEnable: true,
   climb: ClimbNyaFun(),
   desc:
       "NyaFun专注于资源收集整理 海量的有效的高质量的动漫，资源下载，最新电影，观看完全免费、高速播放、更新及时在线，我们致力为所有动漫迷们提供最好看的动漫",
@@ -160,6 +161,7 @@ final nyaFunWebsite = ClimbWebsite(
 
 final guguWebsite = ClimbWebsite(
   id: 11,
+  defaultEnable: true,
   name: "咕咕番",
   iconUrl: "assets/images/website/gugu.png",
   regexp: "gugu",
