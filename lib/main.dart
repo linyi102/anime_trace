@@ -196,8 +196,13 @@ class MyAppState extends State<MyApp> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         filled: true,
+        fillColor: theme.colorScheme.surfaceContainer,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
