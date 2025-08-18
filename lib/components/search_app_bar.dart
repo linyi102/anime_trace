@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/clear_button.dart';
 
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SearchAppBar(
@@ -51,7 +50,11 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 自动弹出键盘
       autofocus: autofocus,
       controller: inputController,
-      decoration: _generateInputDecoration(context),
+      decoration: InputDecoration(
+        hintText: hintText,
+        // border: InputBorder.none,
+        filled: false,
+      ),
       onEditingComplete: () {
         if (onEditingComplete != null) {
           onEditingComplete!();
@@ -62,48 +65,23 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  _generateInputDecoration(BuildContext context) {
-    return InputDecoration(
-      prefixIcon: useModernStyle ? const Icon(Icons.search) : null,
-      contentPadding: useModernStyle ? const EdgeInsets.all(0) : null,
-      filled: useModernStyle ? true : false,
-      focusedBorder: useModernStyle
-          ? const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.transparent),
-              borderRadius: BorderRadius.all(Radius.circular(100)),
-            )
-          // 隐藏下划线
-          : const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.transparent)),
-      enabledBorder: useModernStyle
-          ? const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.transparent,
-                // color: Theme.of(context).dividerColor,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(100)),
-            )
-          : null,
-      hintText: hintText,
-      hintStyle: const TextStyle(fontSize: 14),
-      border: InputBorder.none,
-      suffixIcon: ClearButton(onTapClear: onTapClear),
-      suffixIconColor: Theme.of(context).hintColor,
-    );
-  }
-
-  _buildCancelButton(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(6),
-      onTap: onTapCancelButton,
-      child: Container(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child: const Center(child: Text("取消"))),
+  Widget _buildCancelButton(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(6),
+          onTap: onTapCancelButton,
+          child: Container(
+              padding: const EdgeInsets.all(8),
+              child: const Center(child: Text("取消"))),
+        ),
+      ],
     );
   }
 
   // 取消键盘聚焦
-  _cancelFocus(context) {
+  void _cancelFocus(context) {
     FocusNode blankFocusNode = FocusNode(); // 空白焦点
     FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/models/enum/webdav_website.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/webdav_util.dart';
@@ -141,15 +140,6 @@ class _WebDavLoginFormState extends State<WebDavLoginForm> {
                   onPressed: onTapPwdEye,
                   icon: const Icon(Icons.remove_red_eye))
               : null,
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
-            borderRadius: BorderRadius.circular(12),
-          ),
         ),
         autofillHints: autofillHints,
       ),

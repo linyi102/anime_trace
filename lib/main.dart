@@ -196,6 +196,9 @@ class MyAppState extends State<MyApp> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
         ),
       ),
+      inputDecorationTheme: const InputDecorationTheme(
+        filled: true,
+      ),
     );
   }
 
