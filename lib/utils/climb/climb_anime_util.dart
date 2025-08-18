@@ -132,7 +132,7 @@ class ClimbAnimeUtil {
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
     Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
-    await queue.onComplete;
+    if (needUpdateCnt > 0) await queue.onComplete;
     updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");
   }
