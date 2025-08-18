@@ -189,5 +189,8 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 class FeatureFlag {
-  static final enableSelectLocalImage = Platform.isWindows || Platform.isAndroid;
+  static final enableSelectLocalImage =
+      Platform.isWindows || Platform.isAndroid;
+
+  static const enableFixCover = false;
 }
