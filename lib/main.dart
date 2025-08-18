@@ -207,7 +207,7 @@ class MyAppState extends State<MyApp> {
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
           color: theme.colorScheme.secondaryFixed,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(8),
         ),
         textStyle: TextStyle(
           color: theme.colorScheme.onSecondaryFixed,
