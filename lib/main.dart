@@ -199,6 +199,15 @@ class MyAppState extends State<MyApp> {
       inputDecorationTheme: const InputDecorationTheme(
         filled: true,
       ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.secondaryFixed,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        textStyle: TextStyle(
+          color: theme.colorScheme.onSecondaryFixed,
+        ),
+      ),
     );
   }
 
