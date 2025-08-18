@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -283,7 +284,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
           elevation: 12,
           child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
-      footer: [_buildAddButton()],
+      footer: [
+        if (FeatureFlag.enableSelectLocalImage) _buildAddButton(),
+      ],
     );
   }
 

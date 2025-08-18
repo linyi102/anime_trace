@@ -128,19 +128,17 @@ class _SettingPageState extends State<SettingPage> {
             _enterDetail(const GeneralSettingPage());
           },
         ),
-        ListTile(
-          iconColor: Theme.of(context).colorScheme.primary,
-          leading: const Icon(
-            // Icons.photo_size_select_actual_outlined,
-            // Icons.image_outlined,
-            MingCuteIcons.mgc_pic_2_line,
-            // MingCuteIcons.mgc_photo_album_line,
+        if (FeatureFlag.enableSelectLocalImage)
+          ListTile(
+            iconColor: Theme.of(context).colorScheme.primary,
+            leading: const Icon(
+              MingCuteIcons.mgc_pic_2_line,
+            ),
+            title: const Text("图片设置"),
+            onTap: () {
+              _enterDetail(const ImagePathSetting());
+            },
           ),
-          title: const Text("图片设置"),
-          onTap: () {
-            _enterDetail(const ImagePathSetting());
-          },
-        ),
         ListTile(
           iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(

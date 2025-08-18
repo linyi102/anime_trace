@@ -187,3 +187,7 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
+class FeatureFlag {
+  static final enableSelectLocalImage = Platform.isWindows || Platform.isAndroid;
+}

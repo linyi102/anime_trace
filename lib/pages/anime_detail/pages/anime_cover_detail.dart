@@ -220,35 +220,36 @@ class AnimeCoverDetail extends StatelessWidget {
         builder: (howToEditCoverUrlDialogContext) {
           return SimpleDialog(
             children: [
-              ListTile(
-                leading: const Icon(Icons.image),
-                title: const Text("从本地图库中选择"),
-                onTap: () {
-                  if (Platform.isIOS || Platform.isOhos) {
-                    ToastUtil.showText('暂不支持选择本地图片');
-                    return;
-                  }
-                  _selectCoverFromLocal(
-                      context, howToEditCoverUrlDialogContext);
-                },
-              ),
-              ListTile(
-                  dense: true,
-                  style: ListTileStyle.drawer,
-                  leading: const SizedBox.shrink(),
-                  title: const Text("前往设置本地封面目录"),
+              if (FeatureFlag.enableSelectLocalImage) ...[
+                ListTile(
+                  leading: const Icon(Icons.image),
+                  title: const Text("从本地图库中选择"),
                   onTap: () {
-                    Navigator.pop(howToEditCoverUrlDialogContext);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return const ImagePathSetting();
-                        },
-                      ),
-                    );
-                  }),
-              // const SizedBox(height: 20),
-              const Divider(),
+                    if (Platform.isIOS || Platform.isOhos) {
+                      ToastUtil.showText('暂不支持选择本地图片');
+                      return;
+                    }
+                    _selectCoverFromLocal(
+                        context, howToEditCoverUrlDialogContext);
+                  },
+                ),
+                ListTile(
+                    dense: true,
+                    style: ListTileStyle.drawer,
+                    leading: const SizedBox.shrink(),
+                    title: const Text("前往设置本地封面目录"),
+                    onTap: () {
+                      Navigator.pop(howToEditCoverUrlDialogContext);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ImagePathSetting();
+                          },
+                        ),
+                      );
+                    }),
+                const Divider(),
+              ],
               ListTile(
                 leading: const Icon(Icons.link),
                 title: const Text("提供封面链接"),
