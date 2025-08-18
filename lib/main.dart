@@ -190,6 +190,12 @@ class MyAppState extends State<MyApp> {
       textTheme: theme.textTheme.copyWith(
         bodySmall: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
       ),
+      bottomSheetTheme: theme.bottomSheetTheme.copyWith(
+        clipBehavior: Clip.antiAlias,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+        ),
+      ),
     );
   }
 

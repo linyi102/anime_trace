@@ -44,11 +44,7 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
   @override
   void initState() {
     super.initState();
-    // SPUtil.clear();
-    // 获取最新情况，更新SP中的online
-    WebDavUtil.pingWebDav().then((pingOk) {
-      if (mounted) setState(() {});
-    });
+    WebDavUtil.pingWebDav();
   }
 
   @override

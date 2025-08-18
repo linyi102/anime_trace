@@ -19,10 +19,7 @@ class RemoteStatusIconButton extends StatelessWidget {
             showCommonModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (context) => Material(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: const RemoteBackupPage(fromHome: true),
-              ),
+              builder: (context) => const RemoteBackupPage(fromHome: true),
             );
           },
           icon: const Icon(Icons.cloud_outlined),

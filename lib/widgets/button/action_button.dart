@@ -38,7 +38,7 @@ class _ActionButtonState extends State<ActionButton> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ElevatedButton(
+          FilledButton(
             style: ButtonStyle(
                 shape: widget.borderRadius != null
                     ? WidgetStatePropertyAll(RoundedRectangleBorder(

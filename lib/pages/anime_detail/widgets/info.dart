@@ -386,7 +386,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 title: const Text("选择清单"),
                 centerTitle: true,
                 automaticallyImplyLeading: false,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               body: ListView.builder(
                 itemCount: tags.length,
