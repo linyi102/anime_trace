@@ -182,8 +182,12 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       child: InkWell(
         onTap: () => _toAllRecommendSeriesPage(context),
         child: Container(
-          color: Theme.of(context).colorScheme.primary.withOpacityFactor(0.15),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).colorScheme.primary.withOpacityFactor(0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Row(
             children: [
               const Text('🥰 ', style: TextStyle(fontSize: 20)),
