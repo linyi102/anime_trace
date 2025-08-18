@@ -224,6 +224,10 @@ class MyAppState extends State<MyApp> {
       builders: <TargetPlatform, PageTransitionsBuilder>{
         TargetPlatform.android:
             themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
+        TargetPlatform.iOS:
+            themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
+        TargetPlatform.ohos:
+            themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
         TargetPlatform.windows: const SharedAxisPageTransitionsBuilder(
           transitionType: SharedAxisTransitionType.horizontal,
         ),
