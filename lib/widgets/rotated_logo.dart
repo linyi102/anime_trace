@@ -4,8 +4,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class RotatedLogo extends StatefulWidget {
-  const RotatedLogo({super.key, this.size = 64});
+  const RotatedLogo({super.key, this.size = 64, this.color});
   final double size;
+  final Color? color;
 
   @override
   State<RotatedLogo> createState() => _RotatedLogoState();
@@ -35,7 +36,7 @@ class _RotatedLogoState extends State<RotatedLogo>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: widget.color,
         borderRadius: BorderRadius.circular(widget.size * 0.24),
       ),
       child: RotationTransition(
@@ -45,9 +46,12 @@ class _RotatedLogoState extends State<RotatedLogo>
           child: Transform.rotate(
             angle: pi / 3,
             // RepaintBoundary可以解决shouldRepaint为false时仍然一直paint的问题
-            child: const RepaintBoundary(
+            child: RepaintBoundary(
               child: CustomPaint(
-                painter: _LogoPainter(centerDot: true),
+                painter: _LogoPainter(
+                  centerDot: true,
+                  isDark: Theme.of(context).brightness == Brightness.dark,
+                ),
               ),
             ),
           ),
@@ -59,19 +63,26 @@ class _RotatedLogoState extends State<RotatedLogo>
 
 class _LogoPainter extends CustomPainter {
   final bool centerDot;
-  const _LogoPainter({this.centerDot = true});
+  final bool isDark;
+  const _LogoPainter({
+    this.centerDot = true,
+    this.isDark = false,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final radius = size.width * 0.5;
     final centerOffset = Offset(size.width * 0.5, size.height * 0.5);
+    final borderColor =
+        isDark ? const Color(0xFFCBCADA) : const Color(0xFF474E55);
+
     canvas.drawCircle(
       centerOffset,
       radius,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = size.width * 0.03
-        ..color = const Color(0xFF474E55),
+        ..color = borderColor,
     );
 
     if (centerDot) {
@@ -82,8 +93,8 @@ class _LogoPainter extends CustomPainter {
         ],
         Paint()
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = size.width * 0.3
-          ..color = const Color(0xFF474E55),
+          ..strokeWidth = size.width * 0.24
+          ..color = borderColor,
       );
     }
 
@@ -105,7 +116,8 @@ class _LogoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_LogoPainter oldDelegate) => false;
+  bool shouldRepaint(_LogoPainter oldDelegate) =>
+      centerDot != oldDelegate.centerDot || isDark != oldDelegate.isDark;
 
   @override
   bool shouldRebuildSemantics(_LogoPainter oldDelegate) => false;

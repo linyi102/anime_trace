@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/widgets/rotated_logo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,7 +77,6 @@ class _SettingPageState extends State<SettingPage> {
     return ListView(
       children: [
         _buildBanner(),
-        if (enableDivider) const CommonDivider(),
         Card(child: _buildFunctionGroup()),
         if (enableDivider) const CommonDivider(),
         Card(child: _buildSettingGroup()),
@@ -213,20 +213,14 @@ class _SettingPageState extends State<SettingPage> {
       url = _networkImageUrl;
     }
 
-    final screenHeight = MediaQuery.of(context).size.height;
-    return SizedBox(
-      height: screenHeight / 4,
-      child: Card(
-        child: InkWell(
-          onTap: () => _showDialogBanner(),
-          child: _selectedImageTypeIdx == 0
-              ? Center(
-                  child: Image.asset(
-                  "assets/images/logo-round.png",
-                  width: screenHeight / 8,
-                ))
-              : CommonImage(url, reduceMemCache: false),
-        ),
+    return Container(
+      height: 160,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _showDialogBanner(),
+        child: _selectedImageTypeIdx == 0
+            ? const Center(child: RotatedLogo())
+            : CommonImage(url, reduceMemCache: false),
       ),
     );
   }
@@ -313,9 +307,6 @@ class _SettingPageState extends State<SettingPage> {
         title: const Text("图片链接"),
         content: TextField(
           controller: textController..text = _networkImageUrl,
-          minLines: 1,
-          maxLines: 5,
-          maxLength: 999,
         ),
         actions: [
           Row(
