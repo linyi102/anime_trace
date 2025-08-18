@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "E:/Syncworld/Work/android-key/manji_harmony.p12",
-          "storePassword": "0000001EC4D7102FCF37AD90F3FB54D3D6BCA41A34D6B620AB4C97F3D3F7E8629183560C698297F9C494CB3DE7B7",
+          "storePassword": "0000001E7F71A9D5BF15BBB0952D9AB081CB7DA1A9B9862A836D1638E9C7A520EC06CE52A7FFED74C5432E0FEDF9",
           "keyAlias": "manji",
-          "keyPassword": "0000001EC2737A836584EF750275A8192555F691D524D2702CD933410B6E2BC9DA62F6A7DD5486812749B2D1687F",
+          "keyPassword": "0000001E76448A6924AF34A03DB74029D25A63ADAD1316B9DD867BA28D281232AFB3297006A51990D91ED080BB45",
           "signAlg": "SHA256withECDSA",
           "profile": "E:/Syncworld/Work/android-key/releaseRelease.p7b",
           "certpath": "E:/Syncworld/Work/android-key/漫迹.cer"
