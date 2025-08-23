@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:animetrace/global.dart';
-import 'package:fast_cached_network_image/fast_cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/utils/extensions/color.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -29,24 +29,19 @@ class CommonImage extends StatelessWidget {
 
     // 没有图片
     if (url.isEmpty) {
-      return _buildDefaultImage(context);
+      return const _DefaultImage();
     }
 
     // 网络图片
     if (url.startsWith("http")) {
-      // 断网后访问不了图片，所以使用CachedNetworkImage缓存起来
-      return FastCachedImage(
-        key: Key(url),
+      return CacheNetworImage(
+        url,
         headers:
             url.contains("douban") ? Global.getHeadersToGetDoubanPic() : null,
-        cacheWidth: reduceMemCache ? memCacheWidth : null,
-        url: url,
-        fadeInDuration: fadeInDuration,
-        errorBuilder: (_, __, ___) =>
-            _buildDefaultImage(context, isError: true),
-        loadingBuilder: (_, __) => _buildDefaultImage(context),
         fit: fit,
         alignment: alignment,
+        cacheWidth: reduceMemCache ? memCacheWidth : null,
+        fadeInDuration: fadeInDuration,
       );
     }
 
@@ -58,7 +53,7 @@ class CommonImage extends StatelessWidget {
       return Stack(
         fit: StackFit.expand,
         children: [
-          _buildDefaultImage(context),
+          const _DefaultImage(),
           FadeInImage(
             image: reduceMemCache
                 ? ResizeImage(fileImage, width: memCacheWidth)
@@ -68,20 +63,21 @@ class CommonImage extends StatelessWidget {
             alignment: alignment,
             fadeInDuration: fadeInDuration,
             placeholder: MemoryImage(kTransparentImage),
-            imageErrorBuilder: (_, __, ___) =>
-                _buildDefaultImage(context, isError: true),
+            imageErrorBuilder: (_, __, ___) => const _DefaultImage(),
           )
         ],
       );
     } else {
-      return _buildDefaultImage(context, isError: true);
+      return const _DefaultImage();
     }
   }
+}
 
-  Widget _buildDefaultImage(
-    context, {
-    bool isError = false,
-  }) {
+class _DefaultImage extends StatelessWidget {
+  const _DefaultImage();
+
+  @override
+  Widget build(BuildContext context) {
     final baseColor = Theme.of(context).colorScheme.primary;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -97,6 +93,87 @@ class CommonImage extends StatelessWidget {
           )),
         );
       },
+    );
+  }
+}
+
+class CacheNetworImage extends StatefulWidget {
+  const CacheNetworImage(
+    this.url, {
+    super.key,
+    this.fadeInDuration,
+    this.cacheWidth,
+    this.cacheHeight,
+    this.fit = BoxFit.cover,
+    this.alignment = Alignment.center,
+    this.headers,
+  });
+  final String url;
+  final Duration? fadeInDuration;
+  final int? cacheWidth;
+  final int? cacheHeight;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final Map<String, String>? headers;
+
+  @override
+  State<CacheNetworImage> createState() => _CacheNetworImageState();
+}
+
+class _CacheNetworImageState extends State<CacheNetworImage>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
+  Animation<double>? _animation;
+
+  @override
+  void initState() {
+    if (widget.fadeInDuration != null) {
+      _controller =
+          AnimationController(vsync: this, duration: widget.fadeInDuration);
+      _animation = CurvedAnimation(parent: _controller!, curve: Curves.easeIn);
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        if (_animation != null && !_animation!.isCompleted)
+          const _DefaultImage(),
+        ExtendedImage.network(
+          widget.url,
+          headers: widget.headers,
+          cache: true,
+          fit: widget.fit,
+          alignment: widget.alignment,
+          cacheWidth: widget.cacheWidth,
+          cacheHeight: widget.cacheHeight,
+          loadStateChanged: (state) {
+            if (state.extendedImageLoadState == LoadState.completed) {
+              if (state.wasSynchronouslyLoaded) return state.completedWidget;
+
+              _controller?.forward();
+              return _animation == null
+                  ? state.completedWidget
+                  : FadeTransition(
+                      opacity: _animation!,
+                      child: state.completedWidget,
+                    );
+            } else {
+              // 这里使用占位图渐变效果不是很好，因为从default->image没有渐变，因此改用Stack
+              return const SizedBox();
+            }
+          },
+        ),
+      ],
     );
   }
 }

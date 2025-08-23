@@ -52,7 +52,7 @@ dependencies:
   webdav_client: ^1.1.8
   dio: ^5.8.0+1
   html: ^0.15.0
-  fast_cached_network_image: 1.2.9
+  extended_image: 9.1.0
   archive: ^3.1.8
   path: ^1.8.0
   package_info_plus:

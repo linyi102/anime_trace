@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
-import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -48,7 +47,6 @@ class Global {
     DioUtil.init();
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
-    await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 30));
     // put常用的getController
     await _putGetController();
     // 设置Windows窗口
