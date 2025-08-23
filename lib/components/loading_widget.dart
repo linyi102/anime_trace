@@ -32,7 +32,7 @@ class LoadingWidget extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
                   backgroundColor:
-                      Theme.of(context).primaryColor.withOpacityFactor(0.3),
+                      Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
                 ),
               ),
               if (text.isNotEmpty)

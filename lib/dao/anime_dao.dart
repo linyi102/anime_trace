@@ -12,7 +12,7 @@ import 'package:animetrace/utils/escape_util.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/anime.dart';
 

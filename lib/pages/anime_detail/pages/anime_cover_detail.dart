@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/utils/log.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:animetrace/pages/settings/image_path_setting.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/utils/image_util.dart';
-import 'package:animetrace/utils/log.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
@@ -225,35 +225,32 @@ class AnimeCoverDetail extends StatelessWidget {
         builder: (howToEditCoverUrlDialogContext) {
           return SimpleDialog(
             children: [
-              ListTile(
-                leading: const Icon(Icons.image),
-                title: const Text("从本地图库中选择"),
-                onTap: () {
-                  if (Platform.isIOS) {
-                    ToastUtil.showText('iOS 暂不支持选择本地图片');
-                    return;
-                  }
-                  _selectCoverFromLocal(
-                      context, howToEditCoverUrlDialogContext);
-                },
-              ),
-              ListTile(
-                  dense: true,
-                  style: ListTileStyle.drawer,
-                  leading: const SizedBox.shrink(),
-                  title: const Text("前往设置本地封面目录"),
+              if (FeatureFlag.enableSelectLocalImage) ...[
+                ListTile(
+                  leading: const Icon(Icons.image),
+                  title: const Text("从本地图库中选择"),
                   onTap: () {
-                    Navigator.pop(howToEditCoverUrlDialogContext);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return const ImagePathSetting();
-                        },
-                      ),
-                    );
-                  }),
-              // const SizedBox(height: 20),
-              const Divider(),
+                    _selectCoverFromLocal(
+                        context, howToEditCoverUrlDialogContext);
+                  },
+                ),
+                ListTile(
+                    dense: true,
+                    style: ListTileStyle.drawer,
+                    leading: const SizedBox.shrink(),
+                    title: const Text("前往设置本地封面目录"),
+                    onTap: () {
+                      Navigator.pop(howToEditCoverUrlDialogContext);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ImagePathSetting();
+                          },
+                        ),
+                      );
+                    }),
+                const Divider(),
+              ],
               ListTile(
                 leading: const Icon(Icons.link),
                 title: const Text("提供封面链接"),

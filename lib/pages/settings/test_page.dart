@@ -62,7 +62,7 @@ class _TestPageState extends State<TestPage> {
           animation: true,
           animateFromLastPercent: true,
           percent: percent,
-          progressColor: Theme.of(context).primaryColor,
+          progressColor: Theme.of(context).colorScheme.primary,
           backgroundColor: Theme.of(context).disabledColor,
           barRadius: const Radius.circular(24),
         ),

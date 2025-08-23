@@ -67,7 +67,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
     return SliverList.builder(
       itemCount: recommendAnimes.length,
       itemBuilder: (context, index) {
-        var color = Theme.of(context).primaryColor;
+        var color = Theme.of(context).colorScheme.primary;
 
         return AnimeListTile(
           anime: recommendAnimes[index],
@@ -126,7 +126,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         child: Text(
           '添加全部',
           style: TextStyle(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 14,
           ),
         ),

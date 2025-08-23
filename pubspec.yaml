@@ -39,12 +39,10 @@ dependencies:
   pull_to_refresh: ^2.0.0
   ming_cute_icons: ^0.0.2
   reorderable_grid_view: ^2.2.7
-  webview_flutter: ^3.0.4
   photo_view: ^0.14.0
   flutter_rating_bar: ^4.0.1
   window_manager: ^0.2.5
   percent_indicator: ^4.2.2
-  dart_ping: ^6.1.2
   expand_widget: ^3.1.1
   get: ^4.6.5
   shared_preferences: ^2.0.9

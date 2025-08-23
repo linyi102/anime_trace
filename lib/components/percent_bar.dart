@@ -21,7 +21,7 @@ class PercentBar extends StatelessWidget {
       lineHeight: lineHeight,
       animation: true,
       animateFromLastPercent: percent != 0,
-      progressColor: Theme.of(context).primaryColor,
+      progressColor: Theme.of(context).colorScheme.primary,
       backgroundColor: Theme.of(context).disabledColor.withOpacityFactor(0.1),
       barRadius: const Radius.circular(99),
     );

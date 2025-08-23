@@ -296,7 +296,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
         Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
           selectedTileColor:
-              Theme.of(context).primaryColor.withOpacityFactor(0.25),
+              Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
           selected: selectedAnimes.contains(anime),
           title: Text(
             anime.animeName,
@@ -450,7 +450,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
           leading: tags[i] == defaultTagName
               ? Icon(
                   Icons.radio_button_on_outlined,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 )
               : const Icon(
                   Icons.radio_button_off_outlined,

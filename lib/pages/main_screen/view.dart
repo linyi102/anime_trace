@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
             // color: isSelected && expandSideBar
-            //     ? Theme.of(context).primaryColor.withOpacity(0.1)
+            //     ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
             //     : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
@@ -145,7 +145,7 @@ class _MainScreenState extends State<MainScreen> {
                     isSelected
                         ? IconTheme.merge(
                             data: IconThemeData(
-                                color: Theme.of(context).primaryColor),
+                                color: Theme.of(context).colorScheme.primary),
                             child: mainTab.selectedIcon ?? mainTab.icon)
                         : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
@@ -159,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: isSelected
-                                ? Theme.of(context).primaryColor
+                                ? Theme.of(context).colorScheme.primary
                                 : null,
                             fontSize: 15,
                           ),

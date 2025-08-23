@@ -3,7 +3,6 @@ import 'package:animetrace/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/note_filter.dart';
 import 'package:animetrace/pages/note_list/widgets/episode_note_list_page.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/widgets/responsive.dart';
 
 class NoteSearchPage extends StatefulWidget {
@@ -164,16 +163,6 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
       controller: inputController,
       decoration: InputDecoration(
         labelText: title,
-        labelStyle: TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).primaryColor),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
-          borderRadius: BorderRadius.circular(12),
-        ),
       ),
     );
   }

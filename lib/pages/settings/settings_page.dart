@@ -1,3 +1,4 @@
+import 'package:animetrace/widgets/rotated_logo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,12 +75,12 @@ class _SettingPageState extends State<SettingPage> {
     return ListView(
       children: [
         _buildBanner(),
-        if (enableDivider) const CommonDivider(),
         Card(child: _buildFunctionGroup()),
         if (enableDivider) const CommonDivider(),
         Card(child: _buildSettingGroup()),
         if (enableDivider) const CommonDivider(),
         Card(child: _buildOtherGroup()),
+        const ListTile(),
       ],
     );
   }
@@ -88,7 +89,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.info_outlined,
             MingCuteIcons.mgc_information_line,
@@ -100,13 +101,13 @@ class _SettingPageState extends State<SettingPage> {
         ),
         if (!Global.isRelease)
           ListTile(
-            iconColor: Theme.of(context).primaryColor,
+            iconColor: Theme.of(context).colorScheme.primary,
             leading: const Icon(Icons.bug_report_outlined),
             title: const Text("测试页面"),
             onTap: () {
               _enterDetail(const TestPage());
             },
-          )
+          ),
       ],
     );
   }
@@ -115,7 +116,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.settings,
             MingCuteIcons.mgc_settings_1_line,
@@ -125,21 +126,19 @@ class _SettingPageState extends State<SettingPage> {
             _enterDetail(const GeneralSettingPage());
           },
         ),
-        ListTile(
-          iconColor: Theme.of(context).primaryColor,
-          leading: const Icon(
-            // Icons.photo_size_select_actual_outlined,
-            // Icons.image_outlined,
-            MingCuteIcons.mgc_pic_2_line,
-            // MingCuteIcons.mgc_photo_album_line,
+        if (FeatureFlag.enableSelectLocalImage)
+          ListTile(
+            iconColor: Theme.of(context).colorScheme.primary,
+            leading: const Icon(
+              MingCuteIcons.mgc_pic_2_line,
+            ),
+            title: const Text("图片设置"),
+            onTap: () {
+              _enterDetail(const ImagePathSetting());
+            },
           ),
-          title: const Text("图片设置"),
-          onTap: () {
-            _enterDetail(const ImagePathSetting());
-          },
-        ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.color_lens_outlined,
             MingCuteIcons.mgc_palette_line,
@@ -157,7 +156,7 @@ class _SettingPageState extends State<SettingPage> {
     return Column(
       children: [
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(Icons.settings_backup_restore_rounded),
           title: const Text("备份还原"),
           onTap: () {
@@ -165,7 +164,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             Icons.checklist_rounded,
             // MingCuteIcons.mgc_check_line,
@@ -176,7 +175,7 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(
             // Icons.label_outline,
             MingCuteIcons.mgc_tag_line,
@@ -187,11 +186,11 @@ class _SettingPageState extends State<SettingPage> {
           },
         ),
         ListTile(
-          iconColor: Theme.of(context).primaryColor,
+          iconColor: Theme.of(context).colorScheme.primary,
           leading: const Icon(MingCuteIcons.mgc_book_3_line),
           // leading: SvgAssetIcon(
           //   assetPath: Assets.iconsCollections24Regular,
-          //   color: Theme.of(context).primaryColor,
+          //   color: Theme.of(context).colorScheme.primary,
           // ),
           title: const Text("系列管理"),
           onTap: () {
@@ -212,20 +211,14 @@ class _SettingPageState extends State<SettingPage> {
       url = _networkImageUrl;
     }
 
-    final screenHeight = MediaQuery.of(context).size.height;
-    return SizedBox(
-      height: screenHeight / 4,
-      child: Card(
-        child: InkWell(
-          onTap: () => _showDialogBanner(),
-          child: _selectedImageTypeIdx == 0
-              ? Center(
-                  child: Image.asset(
-                  "assets/images/logo-round.png",
-                  width: screenHeight / 8,
-                ))
-              : CommonImage(url, reduceMemCache: false),
-        ),
+    return Container(
+      height: 160,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _showDialogBanner(),
+        child: _selectedImageTypeIdx == 0
+            ? const Center(child: RotatedLogo())
+            : CommonImage(url, reduceMemCache: false),
       ),
     );
   }
@@ -239,14 +232,15 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildImageTypeOption(
                   title: "默认图片", imageTypeIdx: 0, setDialogState: setState),
-              _buildImageTypeOption(
-                title: "本地图片",
-                imageTypeIdx: 1,
-                setDialogState: setState,
-                trailing: TextButton(
-                    onPressed: () => _handleProvideLocalImage(),
-                    child: const Text("指定")),
-              ),
+              if (FeatureFlag.enableSelectLocalImage)
+                _buildImageTypeOption(
+                  title: "本地图片",
+                  imageTypeIdx: 1,
+                  setDialogState: setState,
+                  trailing: TextButton(
+                      onPressed: () => _handleProvideLocalImage(),
+                      child: const Text("指定")),
+                ),
               _buildImageTypeOption(
                 title: "网络图片",
                 imageTypeIdx: 2,
@@ -282,7 +276,7 @@ class _SettingPageState extends State<SettingPage> {
       title: Text(title),
       leading: _selectedImageTypeIdx == imageTypeIdx
           ? Icon(Icons.radio_button_checked,
-              color: Theme.of(context).primaryColor)
+              color: Theme.of(context).colorScheme.primary)
           : const Icon(Icons.radio_button_off),
       trailing: trailing,
     );
@@ -311,9 +305,6 @@ class _SettingPageState extends State<SettingPage> {
         title: const Text("图片链接"),
         content: TextField(
           controller: textController..text = _networkImageUrl,
-          minLines: 1,
-          maxLines: 5,
-          maxLength: 999,
         ),
         actions: [
           Row(

@@ -90,7 +90,7 @@ class _SingleSegmentButtonState extends State<SingleSegmentButton> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
               color:
-                  selectedIdx == index ? Theme.of(context).primaryColor : null,
+                  selectedIdx == index ? Theme.of(context).colorScheme.primary : null,
               child: Text(
                 widget.titles[index],
                 style: TextStyle(

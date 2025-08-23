@@ -212,6 +212,9 @@ class MyAppState extends State<MyApp> {
       textTheme: theme.textTheme.copyWith(
         bodySmall: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
       ),
+      inputDecorationTheme: const InputDecorationTheme(
+        filled: true,
+      ),
     );
   }
 

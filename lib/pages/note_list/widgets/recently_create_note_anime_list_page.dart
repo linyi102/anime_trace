@@ -69,7 +69,7 @@ class _RecentlyCreateNoteAnimeListPageState
       decoration: BoxDecoration(
         borderRadius: radius,
         color: isSelected
-            ? Theme.of(context).primaryColor.withOpacityFactor(0.2)
+            ? Theme.of(context).colorScheme.primary.withOpacityFactor(0.2)
             : null,
       ),
       child: InkWell(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/clear_button.dart';
 
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SearchAppBar(
@@ -87,7 +86,14 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       hintText: hintText,
       hintStyle: const TextStyle(fontSize: 14),
       border: InputBorder.none,
-      suffixIcon: ClearButton(onTapClear: onTapClear),
+      suffixIcon: Container(
+          height: 15,
+          width: 15,
+          decoration: const BoxDecoration(shape: BoxShape.circle),
+          child: InkWell(
+              borderRadius: BorderRadius.circular(50),
+              onTap: onTapClear,
+              child: const Icon(Icons.close, size: 18))),
       suffixIconColor: Theme.of(context).hintColor,
     );
   }

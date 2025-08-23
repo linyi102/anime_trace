@@ -33,7 +33,7 @@ class Global {
   static bool get enableLogEntry => kDebugMode && !enableDevicePreview;
 
   /// 设备预览
-  static bool get enableDevicePreview => true;
+  static bool get enableDevicePreview => false;
 
   /// 修改了笔记图片根路径
   static bool modifiedImgRootPath = false;
@@ -197,4 +197,11 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+class FeatureFlag {
+  static final enableSelectLocalImage =
+      Platform.isWindows || Platform.isAndroid;
+
+  static const enableFixCover = false;
 }

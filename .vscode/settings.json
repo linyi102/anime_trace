@@ -72,5 +72,6 @@
     "xutility": "cpp"
   },
   "svg.preview.background": "transparent",
+  "dart.addSdkToTerminalPath": true,
   "dart.flutterSdkPath": ".fvm/versions/3.27.0"
 }

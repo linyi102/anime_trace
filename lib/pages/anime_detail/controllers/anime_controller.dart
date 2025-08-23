@@ -328,7 +328,7 @@ class AnimeController extends GetxController {
               title: Text(sortMethodsName[i]),
               leading: sortMethods[i] == SPUtil.getString("episodeSortMethod")
                   ? Icon(Icons.radio_button_on_outlined,
-                      color: Theme.of(context).primaryColor)
+                      color: Theme.of(context).colorScheme.primary)
                   : const Icon(Icons.radio_button_off_outlined),
               onTap: () {
                 Log.info("修改排序方式为${sortMethods[i]}");

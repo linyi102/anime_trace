@@ -98,7 +98,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               height: 36,
               width: 36,
               decoration: BoxDecoration(
-                color: Theme.of(context).appBarTheme.backgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: icon),
@@ -184,12 +184,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       _buildAppBarIconButton(
         context: context,
         onTap: () => _showLayoutBottomSheet(),
-        // icon: const Icon(Icons.filter_list),
-        icon: const Icon(
-          // Icons.filter_list,
-          Icons.layers_outlined,
-          // MingCuteIcons.mgc_layout_line,
-        ),
+        icon: const Icon(Icons.layers_outlined),
       ),
       _buildAppBarIconButton(
           context: context,
@@ -199,10 +194,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               tooltip: '',
               padding: EdgeInsets.zero,
               position: PopupMenuPosition.under,
-              icon: const Icon(
-                // MingCuteIcons.mgc_more_2_line,
-                Icons.more_vert,
-              ),
+              icon: const Icon(Icons.more_vert),
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(

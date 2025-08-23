@@ -1,3 +1,4 @@
+import 'package:animetrace/global.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_page.dart';
 import 'package:animetrace/pages/network/directory/directory_page.dart';
@@ -28,24 +29,26 @@ class ToolsPage extends StatelessWidget {
               onTap: () => _toDedupPage(context),
               child: const Chip(
                   avatar: Icon(Icons.filter_alt), label: Text('动漫去重'))),
-          GestureDetector(
-            onTap: () {
-              RouteUtil.materialTo(context, const LapseCoverAnimesPage());
-            },
-            child: const Chip(
-              avatar: Icon(Icons.broken_image_outlined),
-              label: Text('修复封面'),
+          if (FeatureFlag.enableFixCover)
+            GestureDetector(
+              onTap: () {
+                RouteUtil.materialTo(context, const LapseCoverAnimesPage());
+              },
+              child: const Chip(
+                avatar: Icon(Icons.broken_image_outlined),
+                label: Text('修复封面'),
+              ),
             ),
-          ),
           GestureDetector(
               onTap: () => _toTracePage(context),
               child:
                   const Chip(avatar: Icon(Icons.timeline), label: Text('总览'))),
-          GestureDetector(
-              onTap: () => _toNoteImageWallPage(context),
-              child: const Chip(
-                  avatar: Icon(MingCuteIcons.mgc_film_line),
-                  label: Text('照片墙'))),
+          if (FeatureFlag.enableSelectLocalImage)
+            GestureDetector(
+                onTap: () => _toNoteImageWallPage(context),
+                child: const Chip(
+                    avatar: Icon(MingCuteIcons.mgc_film_line),
+                    label: Text('照片墙'))),
           GestureDetector(
               onTap: () {
                 RouteUtil.materialTo(context, const AnimeAirDateListPage());

@@ -79,8 +79,18 @@ class SqliteUtil {
     return true;
   }
 
-  static _initDatabase() async {
-    dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
+  static Future<String> getLocalRootDirPath() async {
+    String rootPath;
+    if (PlatformUtil.isMobile || Platform.isWindows) {
+      rootPath = (await getApplicationSupportDirectory()).path;
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
+    return rootPath;
+  }
+
+  static Future<Database> _initDatabase() async {
+    dbPath = "${await getLocalRootDirPath()}/$sqlFileName";
     Log.info("💾 db path: $dbPath");
     try {
       await database.close();

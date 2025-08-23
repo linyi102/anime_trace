@@ -140,7 +140,7 @@ class AnimeGridCover extends StatelessWidget {
                   Container(
                     width: mqSize.width,
                     height: mqSize.height,
-                    // color: Theme.of(context).primaryColor.withOpacity(0.4),
+                    // color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                     color: Colors.black.withOpacityFactor(0.6),
                     child: const Center(
                         child: Icon(Icons.check, color: Colors.white)),

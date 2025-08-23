@@ -67,7 +67,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
               : loadingWidget(context)),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
       ),
     );

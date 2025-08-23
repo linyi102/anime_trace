@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -283,7 +284,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
           elevation: 12,
           child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
-      footer: [_buildAddButton()],
+      footer: [
+        if (FeatureFlag.enableSelectLocalImage) _buildAddButton(),
+      ],
     );
   }
 
@@ -361,10 +364,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
         String absoluteImagePath = platformFile.path ?? "";
         await _addImage(absoluteImagePath);
       }
-    } else if (Platform.isIOS) {
-      ToastUtil.showText('iOS 暂不支持选择本地图片');
     } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
+      ToastUtil.showText('暂不支持选择本地图片');
     }
     setState(() {});
   }

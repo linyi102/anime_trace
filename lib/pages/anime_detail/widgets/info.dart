@@ -386,7 +386,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 title: const Text("选择清单"),
                 centerTitle: true,
                 automaticallyImplyLeading: false,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               body: ListView.builder(
                 itemCount: tags.length,
@@ -396,7 +395,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                     leading: tags[index] == _anime.tagName
                         ? Icon(
                             Icons.radio_button_on_outlined,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           )
                         : const Icon(
                             Icons.radio_button_off_outlined,

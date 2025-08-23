@@ -518,7 +518,7 @@ class SelectNumberPage extends StatelessWidget {
                       border: Border.all(
                           width: 0.6,
                           color: isCur
-                              ? Theme.of(context).primaryColor
+                              ? Theme.of(context).colorScheme.primary
                               : Theme.of(context)
                                   .hintColor
                                   .withOpacityFactor(0.1)),
@@ -528,7 +528,7 @@ class SelectNumberPage extends StatelessWidget {
                         child: Text(
                       '$number',
                       style: isCur
-                          ? TextStyle(color: Theme.of(context).primaryColor)
+                          ? TextStyle(color: Theme.of(context).colorScheme.primary)
                           : null,
                     )),
                   ),

@@ -18,7 +18,7 @@ class CommonOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var color = Theme.of(context).primaryColor;
+    var color = Theme.of(context).colorScheme.primary;
     if (onPressed == null) color = Theme.of(context).disabledColor;
 
     return InkWell(
