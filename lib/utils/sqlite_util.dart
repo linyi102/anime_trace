@@ -15,8 +15,8 @@ import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/utils/image_util.dart';
 import 'package:animetrace/utils/platform.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as p;
 
 class SqliteUtil {
   // 单例模式
@@ -25,7 +25,7 @@ class SqliteUtil {
   SqliteUtil._();
 
   static Future<SqliteUtil> getInstance() async {
-    database = await _initDatabase();
+    await _initDatabase();
     return _instance ??= SqliteUtil._();
   }
 
@@ -81,19 +81,19 @@ class SqliteUtil {
 
   static Future<String> getLocalRootDirPath() async {
     String rootPath;
-    if (Platform.isOhos) {
-      rootPath = "/data/storage/el2/database/rdb";
-    } else if (PlatformUtil.isMobile || Platform.isWindows) {
-      rootPath =
-          "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
+    if (PlatformUtil.isMobile || Platform.isWindows) {
+      rootPath = await getDatabasesPath();
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
     return rootPath;
   }
 
-  static Future<Database> _initDatabase() async {
-    dbPath = "${await getLocalRootDirPath()}/$sqlFileName";
+  static Future<void> _initDatabase() async {
+    if (!Platform.isOhos) throw 'init db error: invalid platform';
+
+    final dbDir = await getLocalRootDirPath();
+    dbPath = p.join(dbDir, sqlFileName);
     Log.info("💾 db path: $dbPath");
     try {
       await database.close();
@@ -102,11 +102,18 @@ class SqliteUtil {
         logger.warning("关闭数据库失败：$e");
       }
     }
-    return openDatabase(
+    database = await openDatabase(
+      // 只传入文件名也可以，会始终保存在/data/storage/el2/database/rdb/$sqlFileName下
       dbPath,
       onCreate: _createDb,
       version: dbVersion,
     );
+  }
+
+  /// 重新连接数据库
+  /// 用于wal数据同步到db
+  static Future<void> reOpenDb() async {
+    await _initDatabase();
   }
 
   static FutureOr<void> _createDb(Database db, int version) async {
@@ -156,6 +163,12 @@ class SqliteUtil {
     await db.execute('''
       CREATE INDEX index_date ON history (date);
       ''');
+  }
+
+  // 检查当前日志模式
+  static Future<void> _getJournalMode(Database db) async {
+    final result = await db.rawQuery('PRAGMA journal_mode;');
+    print(result);
   }
 
   static Future<void> _insertInitData(Database db) async {

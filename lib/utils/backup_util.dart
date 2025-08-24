@@ -44,6 +44,7 @@ class BackupUtil {
     String tempZipFilePath = "$dirPath/$zipName";
     encoder.create(tempZipFilePath);
     // 添加数据库文件
+    await SqliteUtil.reOpenDb();
     encoder.addFile(File(SqliteUtil.dbPath));
     // 添加描述信息
     File descFile = File("$dirPath/desc");
@@ -187,8 +188,6 @@ class BackupUtil {
     bool delete = false,
     bool recordBeforeRestore = true,
   }) async {
-    bool restoreOk = false;
-
     // 1.还原前先备份当前数据库文件
     if (recordBeforeRestore) {
       String dirPath = await getRBRPath();
@@ -214,7 +213,19 @@ class BackupUtil {
       });
     }
 
-    // 2.然后进行还原
+    // 2.关闭数据库连接，删除db、wal和shm等文件
+    try {
+      await SqliteUtil.database.close();
+      final dbDir = Directory(await SqliteUtil.getLocalRootDirPath());
+      Log.info('Delete:');
+      Log.info(dbDir.listSync(recursive: true).map((e) => e.path));
+      dbDir.deleteSync(recursive: true);
+    } catch (e) {
+      Log.warn('清理数据库失败：$e');
+      return Result.failure(500, '清理数据库失败');
+    }
+
+    // 3.然后进行还原
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
       // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
@@ -222,31 +233,27 @@ class BackupUtil {
       // 可以直接在里面写入即可，writeAsBytes会清空原先内容
       var content = await File(localBackupFilePath).readAsBytes();
       await File(SqliteUtil.dbPath).writeAsBytes(content);
-      await SqliteUtil.ensureDBTable();
-      restoreOk = true;
     } else if (localBackupFilePath.endsWith(".zip")) {
       await unzip(localBackupFilePath);
-      await SqliteUtil.ensureDBTable();
-      if (delete) File(localBackupFilePath).delete(); // Windows端还原本地备份时不删除
-      restoreOk = true;
-    }
-
-    if (restoreOk) {
-      // 重新获取动漫更新记录
-      UpdateRecordController.to.updateData();
-      // 重新获取标签信息
-      LabelsController.to.getAllLabels();
-      // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
-      Get.delete<DedupController>();
-
-      return Result.success("", msg: "还原成功");
     } else {
       return Result.failure(404, "备份文件不正确，无法还原");
     }
+    await SqliteUtil.getInstance();
+    await SqliteUtil.ensureDBTable();
+    if (delete) File(localBackupFilePath).delete();
+
+    // 重新获取动漫更新记录
+    UpdateRecordController.to.updateData();
+    // 重新获取标签信息
+    LabelsController.to.getAllLabels();
+    // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
+    Get.delete<DedupController>();
+
+    return Result.success("", msg: "还原成功");
   }
 
   static Future<Result> restoreFromWebDav(dav_client.File file) async {
-    String localRootDirPath = await SqliteUtil.getLocalRootDirPath();
+    String localRootDirPath = (await getTemporaryDirectory()).path;
 
     if (file.path == null) {
       return Result.failure(404, "空文件路径，无法还原");

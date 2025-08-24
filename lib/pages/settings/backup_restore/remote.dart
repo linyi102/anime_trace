@@ -44,7 +44,9 @@ class _RemoteBackupPageState extends State<RemoteBackupPage> {
   @override
   void initState() {
     super.initState();
-    WebDavUtil.pingWebDav();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WebDavUtil.pingWebDav();
+    });
   }
 
   @override

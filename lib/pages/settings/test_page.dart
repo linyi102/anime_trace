@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_dialog.dart';
@@ -35,6 +37,35 @@ class _TestPageState extends State<TestPage> {
       if (mounted) setState(() {});
     });
     super.initState();
+
+    testDb();
+  }
+
+  void testDb() async {
+    void printDir(String dirPath) {
+      final dir = Directory(dirPath);
+      Log.info('$dir list: ');
+      if (dir.existsSync()) {
+        final files = dir.listSync(recursive: true);
+        for (var file in files) {
+          final stat = file.statSync();
+          debugPrint(
+              "${stat.type}: ${file.path}, size: ${stat.size}, modified: ${stat.modified}");
+        }
+      } else {
+        Log.info("目录不存在: $dirPath");
+      }
+    }
+
+    void printDbDirInfo() async {
+      printDir(await SqliteUtil.getLocalRootDirPath());
+      Log.info(
+          'db size: ${File(SqliteUtil.dbPath).statSync().size.toString()}');
+    }
+
+    printDbDirInfo();
+    await SqliteUtil.reOpenDb();
+    printDbDirInfo();
   }
 
   @override
