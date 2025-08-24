@@ -1,17 +1,19 @@
 import 'package:animetrace/models/week_record.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 
-class WeeklyController extends GetxController {
-  List<List<WeekRecord>> weeks = []; // 下标范围[0,6]，分别对应周一到周日
+class WeeklyController extends ChangeNotifier {
+  /// 下标范围[0,6]，分别对应周一到周日
+  List<List<WeekRecord>> weeks = List.generate(7, (index) => []);
 
-  int selectedWeekday = DateTime.now().weekday; // 默认选中当天，范围[1,7]
+  /// 默认选中当天，范围[1,7]
+  int _selectedWeekday = DateTime.now().weekday;
 
-  @override
-  void onInit() {
-    super.onInit();
-    for (int i = 0; i < 7; ++i) {
-      weeks.add([]);
-    }
+  int get selectedWeekday => _selectedWeekday;
+
+  set selectedWeekday(int newWeekday) {
+    assert(1 <= newWeekday && newWeekday <= 7);
+    _selectedWeekday = newWeekday;
+    notifyListeners();
   }
 
   void clearWeeks() {

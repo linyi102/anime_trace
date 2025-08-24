@@ -12,7 +12,6 @@ import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/values/values.dart';
-import 'package:get/get.dart';
 
 /// 周表
 class WeeklyPage extends StatefulWidget {
@@ -23,7 +22,7 @@ class WeeklyPage extends StatefulWidget {
 }
 
 class _WeeklyPageState extends State<WeeklyPage> {
-  final weeklyController = Get.put(WeeklyController());
+  final weeklyController = WeeklyController();
   int get selectedWeekdayIdx => weeklyController.selectedWeekday - 1;
 
   final List<ClimbWebsite> usableWebsites = [
@@ -76,6 +75,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
   @override
   void dispose() {
     scrollController.dispose();
+    weeklyController.dispose();
     super.dispose();
   }
 
@@ -184,20 +184,9 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
   _buildWeeklyBar() {
     return WeeklyBar(
-      selectedWeekday: weeklyController.selectedWeekday,
+      controller: weeklyController,
       onChanged: (newWeekday) {
         Log.info("newWeekday=$newWeekday");
-        weeklyController.selectedWeekday = newWeekday;
-        // 动画移动至指定页(页号从0开始，所以传入的是selectedWeekdayIdx而非selectedWeekday)
-        // pageController
-        //     .animateToPage(selectedWeekdayIdx,
-        //         duration: const Duration(milliseconds: 2000),
-        //         curve: Curves.linear).then((value) {
-        //   // 动画播放完毕后，如果当前页没有数据，则进行加载
-        //   if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
-        //     _loadData();
-        //   }
-        // });
         // 切换页面较大时，短时间内播完动画有些卡顿，所以改用jump
         pageController.jumpToPage(selectedWeekdayIdx);
         // 跳转或动画到某页时，会指定pageView里的代码，所以把加载数据放在那里
