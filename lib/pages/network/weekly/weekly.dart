@@ -30,7 +30,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
     quClimbWebsite,
   ];
   late ClimbWebsite curWebsite;
-  bool get needClimbDetail => [quClimbWebsite].contains(curWebsite);
+  bool get needClimbDetail =>
+      [bangumiClimbWebsite, quClimbWebsite].contains(curWebsite);
 
   late bool loading;
 

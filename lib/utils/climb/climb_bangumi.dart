@@ -230,6 +230,7 @@ class ClimbBangumi with Climb {
         if (name.isEmpty) name = item.mapObjectValue['name'] ?? '';
         String detailUrl = item.mapObjectValue['url'] ?? '';
         detailUrl = detailUrl.replaceFirst('bgm.tv', 'bangumi.tv');
+        detailUrl = detailUrl.replaceFirst('http:', 'https:');
 
         records.add(WeekRecord(
           anime: Anime(
