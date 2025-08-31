@@ -57,15 +57,15 @@ class _TestPageState extends State<TestPage> {
       }
     }
 
-    void printDbDirInfo() async {
+    Future<void> printDbDirInfo() async {
       printDir(await SqliteUtil.getLocalRootDirPath());
       Log.info(
           'db size: ${File(SqliteUtil.dbPath).statSync().size.toString()}');
     }
 
-    printDbDirInfo();
+    await printDbDirInfo();
     await SqliteUtil.reOpenDb();
-    printDbDirInfo();
+    await printDbDirInfo();
   }
 
   @override
