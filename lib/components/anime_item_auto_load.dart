@@ -42,7 +42,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
 
 class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
   late Anime anime;
-  bool loading = true;
+  bool loading = false;
 
   double get coverWidth => 90.0;
 
@@ -54,22 +54,15 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
     // 如果没有收藏，则从数据库中根据动漫链接查询是否已添加
     // 在查询过程中显示加载圈，不允许进入详情页
     // 如果数据库中没有，则根据动漫链接爬取动漫信息
-    if (anime.isCollected()) {
-      setState(() {
-        loading = false;
-      });
-    } else {
-      if (widget.climbDetail) {
-        _load();
-      } else {
-        setState(() {
-          loading = false;
-        });
-      }
+    if (!anime.isCollected() && widget.climbDetail) {
+      _load();
     }
   }
 
   void _load() async {
+    setState(() {
+      loading = true;
+    });
     // dbAnime指向一个对象，而anime和widget.anime指向一个对象。所以会导致出现很多奇怪现象
     // 解决方法就是当anime变化时，widget.anime也跟着anime指向最新对象
     Anime dbAnime = await SqliteUtil.getAnimeByAnimeUrl(anime);

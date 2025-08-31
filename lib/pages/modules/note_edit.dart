@@ -223,8 +223,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       controller: noteContentController..text,
       decoration: const InputDecoration(
         hintText: "描述",
-        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
+        contentPadding: EdgeInsets.all(16),
         border: InputBorder.none,
+        filled: false,
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.transparent)),
       ),
