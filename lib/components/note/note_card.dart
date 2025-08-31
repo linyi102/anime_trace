@@ -117,18 +117,16 @@ class _NoteCardState extends State<NoteCard> {
           ),
         ],
       ),
-      subtitle: Row(
-        children: [
-          GestureDetector(
-            onTap: _enterAnimeDetailPage,
-            child: Text(
-              widget.isRateNote
-                  ? rateTimeStr
-                  : "${note.episode.caption} ${note.episode.getDate()}",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        ],
+      subtitle: GestureDetector(
+        onTap: _enterAnimeDetailPage,
+        child: Text(
+          widget.isRateNote
+              ? rateTimeStr
+              : "${note.episode.caption} ${note.episode.getDate()}",
+          style: Theme.of(context).textTheme.bodySmall,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

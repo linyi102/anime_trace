@@ -212,6 +212,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
             ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
             : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
         style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
