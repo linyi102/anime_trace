@@ -105,11 +105,6 @@ class ChecklistController extends GetxController
   }
 
   void loadAnimes() async {
-    // 首次或重新渲染时，重置页号，就能保证之后也能加载更多数据了
-    for (int i = 0; i < pageIndexList.length; ++i) {
-      pageIndexList[i] = 1;
-    }
-
     Log.info("开始加载数据");
     animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
     for (int i = 0; i < tags.length; ++i) {
@@ -119,6 +114,12 @@ class ChecklistController extends GetxController
       // Log.info("animesInTag[$i].length=${animesInTag[i].length}");
     }
     Log.info("数据加载完毕");
+
+    // 获取首页数据后重置页号，避免同时加载更多时覆盖页号
+    for (int i = 0; i < pageIndexList.length; ++i) {
+      pageIndexList[i] = 1;
+    }
+
     loadOk = true;
     update();
     // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面

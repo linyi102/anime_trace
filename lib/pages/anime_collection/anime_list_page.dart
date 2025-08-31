@@ -319,26 +319,24 @@ class _AnimeListPageState extends State<AnimeListPage> {
     );
   }
 
-  void _loadExtraData(i, index) {
+  void _loadExtraData(int tagIdx, int animeIdx) async {
     // Log.info("index=$index");
-    // 直接使用index会导致重复请求
-    // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
+    // 直接使用index会导致重复请求，增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
-    // 当到达100(50*2)时，会再次请求50个数据
-    if (index + 10 == pageSize * (pageIndexList[i])) {
-      // +10提前请求
-      pageIndexList[i]++;
-      Log.info("再次请求$pageSize个数据");
-      Future(() {
-        return SqliteUtil.getAllAnimeBytagName(
-            tags[i], animesInTag[i].length, pageSize,
-            animeSortCond: animeSortCond);
-      }).then((value) {
-        Log.info("请求结束");
-        animesInTag[i].addAll(value);
-        Log.info("添加并更新状态，animesInTag[$i].length=${animesInTag[i].length}");
-        setState(() {});
-      });
+    // +10提前请求，当到达100(50*2)时，会再次请求50个数据
+    if (animeIdx + 10 == pageSize * (pageIndexList[tagIdx])) {
+      pageIndexList[tagIdx]++;
+      Log.info("tag: ${tags[tagIdx]}，pageIdx: ${pageIndexList[tagIdx]}");
+      // 获取当前动漫列表，只对该动漫添加追加新列表，避免和重新刷新后的动漫列表冲突
+      final tagAnimes = animesInTag[tagIdx];
+      final offset = tagAnimes.length;
+      final nextAnimes = await SqliteUtil.getAllAnimeBytagName(
+          tags[tagIdx], offset, pageSize,
+          animeSortCond: animeSortCond);
+      tagAnimes.addAll(nextAnimes);
+      Log.info(
+          "添加并更新状态，animesInTag[$tagIdx].length=${animesInTag[tagIdx].length}");
+      setState(() {});
     }
   }
 

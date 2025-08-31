@@ -542,9 +542,14 @@ class SqliteUtil {
     return checkedEpisodeCntList[0]["cnt"] as int;
   }
 
-  static getAllAnimeBytagName(String tagName, int offset, int number,
-      {required AnimeSortCond animeSortCond}) async {
-    Log.info("sql: getAllAnimeBytagName");
+  static Future<List<Anime>> getAllAnimeBytagName(
+    String tagName,
+    int offset,
+    int number, {
+    required AnimeSortCond animeSortCond,
+  }) async {
+    Log.info(
+        "sql: getAllAnimeBytagName($tagName, offset=$offset, number=$number)");
 
     dynamic list;
     SortCondItem sortCond =
