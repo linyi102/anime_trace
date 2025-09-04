@@ -316,6 +316,7 @@ class _DirectoryPageState extends State<DirectoryPage>
           animationDuration: kThemeAnimationDuration,
           children: <ExpansionPanel>[
             ExpansionPanel(
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
               headerBuilder: (context, isExpanded) {
                 return _buildSourceTile();
               },

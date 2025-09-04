@@ -60,7 +60,6 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
       elevation: 0,
       children: [
         ExpansionPanel(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             isExpanded: isExpanded,
             canTapOnHeader: true,
             headerBuilder: (context, isExpanded) {

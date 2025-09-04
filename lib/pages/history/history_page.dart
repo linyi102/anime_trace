@@ -13,7 +13,6 @@ import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:animetrace/widgets/common_divider.dart';
-import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/responsive.dart';
 import 'package:animetrace/widgets/setting_title.dart';
 import 'package:get/get.dart';
@@ -44,7 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CommonScaffoldBody(
+      body: SafeArea(
         child: Column(
           children: [
             _buildMaterialViewSwitch(),
@@ -124,9 +123,9 @@ class _HistoryPageState extends State<HistoryPage> {
             historyController.loadMoreData();
           }
 
-          String date = views[selectedViewIndex].historyRecords[cardIndex].date;
-          final records =
-              views[selectedViewIndex].historyRecords[cardIndex].records;
+        String date = views[selectedViewIndex].historyRecords[cardIndex].date;
+        final records =
+            views[selectedViewIndex].historyRecords[cardIndex].records;
 
           return Card(
             child: Column(
