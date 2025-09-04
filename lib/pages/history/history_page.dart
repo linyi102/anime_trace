@@ -43,21 +43,20 @@ class _HistoryPageState extends State<HistoryPage> {
           children: [
             _buildMaterialViewSwitch(),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async => await historyController.loadData(),
-                child: GetBuilder<HistoryController>(
-                  init: historyController,
-                  builder: (_) => PageView(
-                    controller: historyController.pageController,
-                    children: historyController.views
-                        .map((e) => _buildHistoryPage(e))
-                        .toList(),
-                    onPageChanged: (index) {
-                      setState(() {
-                        historyController.curViewIndex = index;
-                      });
-                    },
-                  ),
+              child: GetBuilder<HistoryController>(
+                init: historyController,
+                builder: (_) => PageView(
+                  // 后期如果需要滑动切换视图可以放开
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: historyController.pageController,
+                  children: historyController.views
+                      .map((e) => _buildHistoryPage(e))
+                      .toList(),
+                  onPageChanged: (index) {
+                    setState(() {
+                      historyController.curViewIndex = index;
+                    });
+                  },
                 ),
               ),
             ),
@@ -69,7 +68,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildMaterialViewSwitch() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -101,9 +100,12 @@ class _HistoryPageState extends State<HistoryPage> {
       loadOk: historyController.loadOk,
       destWidget: view.historyRecords.isEmpty
           ? emptyDataHint(msg: "没有历史。")
-          : _RecordListView(
-              view: view,
-              loadMoreData: historyController.loadMoreData,
+          : RefreshIndicator(
+              onRefresh: () async => await historyController.loadData(),
+              child: _RecordListView(
+                view: view,
+                loadMoreData: historyController.loadMoreData,
+              ),
             ),
     );
   }
