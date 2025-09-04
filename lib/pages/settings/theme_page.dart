@@ -29,7 +29,7 @@ class _ThemePageState extends State<ThemePage> {
             title: '主题',
             children: [
               ListTile(
-                title: const Text('选择主题色'),
+                title: const Text('主题色'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -43,7 +43,7 @@ class _ThemePageState extends State<ThemePage> {
                 onTap: _showColorPicker,
               ),
               ListTile(
-                title: const Text('选择配色方案'),
+                title: const Text('配色方案'),
                 trailing: Obx(() => Text(
                       themeController.dynamicSchemeVariant.value.displayName,
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -153,7 +153,7 @@ class _ThemePageState extends State<ThemePage> {
     return Obx(() => ColorIndicator(
         width: 24,
         height: 24,
-        borderRadius: 99,
+        borderRadius: 12,
         color: themeController.primaryColor.value,
         elevation: 1,
         onSelectFocus: false));
