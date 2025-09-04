@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.debug('build main screen');
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
       child: GetBuilder(

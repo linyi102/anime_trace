@@ -62,22 +62,24 @@ class _RecentlyCreateNoteAnimeListPageState
     bool isSelected = false,
     Anime? anime,
   }) {
-    var radius = BorderRadius.circular(6);
+    var radius = BorderRadius.circular(16);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(10, 2, 15, 2),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: radius,
-        color: isSelected
-            ? Theme.of(context).colorScheme.primary.withOpacityFactor(0.2)
-            : null,
+        color:
+            isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
       ),
       child: InkWell(
         borderRadius: radius,
         onTap: () {
           widget.onTapItem?.call(anime);
         },
-        child: child,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: child,
+        ),
       ),
     );
   }

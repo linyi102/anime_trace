@@ -39,8 +39,7 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
+    logger.debug('build test page');
     return Scaffold(
       appBar: AppBar(title: const Text("测试")),
       body: CommonScaffoldBody(child: _buildBody(context)),
@@ -50,6 +49,20 @@ class _TestPageState extends State<TestPage> {
   ListView _buildBody(BuildContext context) {
     return ListView(
       children: [
+        ListTile(
+          title: const Text('loading mask'),
+          onTap: () {
+            ToastUtil.showLoading(
+              task: () async {
+                logger.info('do task');
+                await 3.delay();
+              },
+              onTaskComplete: () {
+                logger.info('task complete');
+              },
+            );
+          },
+        ),
         const LoadingWidget(),
         LottieBuilder.asset(
           Assets.lotties.playing,

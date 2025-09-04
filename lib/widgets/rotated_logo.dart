@@ -4,9 +4,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class RotatedLogo extends StatefulWidget {
-  const RotatedLogo({super.key, this.size = 64, this.color});
+  const RotatedLogo({
+    super.key,
+    this.size = 64,
+    this.color,
+    this.rotate = true,
+  });
   final double size;
   final Color? color;
+  final bool rotate;
 
   @override
   State<RotatedLogo> createState() => _RotatedLogoState();
@@ -22,13 +28,25 @@ class _RotatedLogoState extends State<RotatedLogo>
   @override
   void initState() {
     super.initState();
-    animationController.repeat();
+    if (widget.rotate) animationController.repeat();
   }
 
   @override
   void dispose() {
     animationController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant RotatedLogo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rotate != widget.rotate) {
+      if (oldWidget.rotate) {
+        animationController.reset();
+      } else {
+        animationController.repeat();
+      }
+    }
   }
 
   @override
