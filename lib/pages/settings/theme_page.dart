@@ -1,3 +1,4 @@
+import 'package:animetrace/widgets/connected_button_groups.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
@@ -82,13 +83,13 @@ class _ThemePageState extends State<ThemePage> {
   }
 
   Widget _buildThemeSelector() {
-    return Obx(() => SegmentedButton<int>(
-          segments: [
+    return Obx(() => ConnectedButtonGroups<int>(
+          items: [
             for (int i = 0; i < AppTheme.darkModes.length; i++)
-              ButtonSegment(
+              ConnectedButtonItem(
                 icon: Icon(AppTheme.darkModeIcons[i]),
+                label: AppTheme.darkModes[i],
                 value: i,
-                label: Text(AppTheme.darkModes[i]),
               ),
           ],
           // showSelectedIcon: false,
@@ -108,7 +109,7 @@ class _ThemePageState extends State<ThemePage> {
       useCard: false,
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 8, left: 16),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: _buildThemeSelector(),
         ),
       ],

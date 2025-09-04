@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:animetrace/widgets/connected_button_groups.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/components/anime_list_cover.dart';
@@ -44,58 +44,42 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("历史"),
-        actions: [
-          _buildCupertinoViewSwitch(),
-          // buildMaterialViewSwitch(),
-        ],
-      ),
       body: CommonScaffoldBody(
-        child: RefreshIndicator(
-          onRefresh: () async => await historyController.refreshData(),
-          child: GetBuilder<HistoryController>(
-            init: historyController,
-            builder: (_) => FadeAnimatedSwitcher(
-              loadOk: historyController.loadOk,
-              destWidget: Column(
-                children: [
-                  // _buildViewSwitch(),
-                  views[selectedViewIndex].historyRecords.isEmpty
-                      ? Expanded(child: emptyDataHint(msg: "没有历史。"))
-                      : Expanded(
-                          // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
-                          child: _buildHistoryPage(),
-                        ),
-                ],
+        child: Column(
+          children: [
+            _buildMaterialViewSwitch(),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async => await historyController.refreshData(),
+                child: GetBuilder<HistoryController>(
+                  init: historyController,
+                  builder: (_) => FadeAnimatedSwitcher(
+                    loadOk: historyController.loadOk,
+                    destWidget: views[selectedViewIndex].historyRecords.isEmpty
+                        ? emptyDataHint(msg: "没有历史。")
+                        : _buildHistoryPage(),
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  buildMaterialViewSwitch() {
+  Widget _buildMaterialViewSwitch() {
     return Padding(
-      padding: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SegmentedButton(
-            showSelectedIcon: false,
-            style: ButtonStyle(
-                visualDensity: const VisualDensity(
-                  horizontal: VisualDensity.minimumDensity,
-                  vertical: VisualDensity.minimumDensity,
-                ),
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(99)))),
-            segments: historyController.views
-                .map((e) => ButtonSegment(
-                      value: e.label,
-                      label: Text(e.label.title),
+          ConnectedButtonGroups(
+            items: historyController.views
+                .map((e) => ConnectedButtonItem(
                       // icon: Icon(e.label.iconData),
+                      label: e.label.title,
+                      value: e.label,
                     ))
                 .toList(),
             selected: {historyController.selectedHistoryLabel},
@@ -114,38 +98,6 @@ class _HistoryPageState extends State<HistoryPage> {
             },
           ),
         ],
-      ),
-    );
-  }
-
-  _buildCupertinoViewSwitch() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: CupertinoSlidingSegmentedControl(
-        groupValue: historyController.selectedHistoryLabel,
-        children: () {
-          Map<HistoryLabel, Widget> map = {};
-          for (int i = 0; i < historyController.views.length; ++i) {
-            var view = historyController.views[i];
-            map[view.label] = Text(view.label.title);
-          }
-          return map;
-        }(),
-        onValueChanged: (HistoryLabel? value) {
-          if (value != null) {
-            Log.info("value=$value");
-            setState(() {
-              // 先重绘进度圈和开关
-              historyController.loadOk = false;
-              historyController.selectedHistoryLabel = value;
-            });
-            historyController.selectedViewIndex =
-                views.indexWhere((element) => element.label == value);
-            SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
-            // 重置页号刷新数据，避免页号不是从0开始导致加载直接加载后面的数据
-            historyController.refreshData();
-          }
-        },
       ),
     );
   }
