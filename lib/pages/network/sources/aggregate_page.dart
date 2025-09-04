@@ -130,6 +130,7 @@ class _AggregatePageState extends State<AggregatePage> {
                   radius: 10,
                   lineWidth: 3,
                   percent: updateProgress,
+                  progressColor: Theme.of(context).colorScheme.primary,
                   animation: true,
                   animateFromLastPercent: updateProgress != 0,
                 ))

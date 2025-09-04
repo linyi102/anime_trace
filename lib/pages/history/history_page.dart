@@ -68,7 +68,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildMaterialViewSwitch() {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
