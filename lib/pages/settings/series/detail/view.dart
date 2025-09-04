@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_list_tile.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/setting_title.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../components/anime_grid_cover.dart';
 import '../../../../components/get_anime_grid_delegate.dart';
@@ -227,7 +226,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
               ),
             ));
       },
-      child: const Icon(MingCuteIcons.mgc_add_line),
+      child: const Icon(Icons.add),
     );
   }
 

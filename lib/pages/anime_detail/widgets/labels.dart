@@ -39,7 +39,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
   }
 
   // 构建标签chips，最后添加增加标签和管理删除chip
-  _getLabelChips() {
+  List<Widget> _getLabelChips() {
     List<Widget> chips =
         // Get.find<LabelsController>()
         //     .labelsInAnimeDetail
@@ -74,12 +74,6 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
       ),
       onTap: () {
         AppLog.info("添加标签");
-        // 弹出底部菜单，提供搜索和查询列表
-        // Navigator.of(context).push(MaterialPageRoute(
-        //     builder: (context) => LabelManagePage(
-        //           enableSelectLabelForAnime: true,
-        //           animeController: widget.animeController,
-        //         )));
         showCommonModalBottomSheet(
           context: context,
           builder: (context) => LabelManagePage(
@@ -87,32 +81,6 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
             animeController: widget.animeController,
           ),
         );
-
-        // 不适配主题，且搜索时显示空白
-        // Get.bottomSheet(
-        //   const LabelManagePage(enableSelectLabelForAnime: true),
-        // );
-
-        // 可以
-        // showCommonBottomSheet(
-        //     context: context,
-        //     expanded: true,
-        //     child: LabelManagePage(
-        //       enableSelectLabelForAnime: true,
-        //       animeController: widget.animeController,
-        //     ));
-
-        // 弹出软键盘时报错，尽管可以正常运行
-        // showFlexibleBottomSheet(
-        //     context: context,
-        //     duration: const Duration(milliseconds: 200),
-        //     builder: (
-        //       BuildContext context,
-        //       ScrollController scrollController,
-        //       double bottomSheetOffset,
-        //     ) =>
-        //         const LabelManagePage(enableSelectLabelForAnime: true),
-        //     );
       },
     ));
 

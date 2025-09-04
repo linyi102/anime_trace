@@ -14,7 +14,6 @@ import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:get/get.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:reorderables/reorderables.dart';
 
 class LabelManagePage extends StatefulWidget {
@@ -108,14 +107,11 @@ class _LabelManagePageState extends State<LabelManagePage> {
                 -1;
           }
 
-          return GestureDetector(
-            child: Chip(
-              label: Text(label.name),
-              backgroundColor: widget.enableSelectLabelForAnime && selected
-                  ? Theme.of(context).chipTheme.selectedColor
-                  : null,
-            ),
-            onTap: () async {
+          return FilterChip(
+            showCheckmark: false,
+            selected: widget.enableSelectLabelForAnime && selected,
+            label: Text(label.name),
+            onSelected: (_) async {
               if (widget.enableSelectLabelForAnime) {
                 if (selected) {
                   // 为这个动漫移除该标签
@@ -283,7 +279,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
               return const LabelForm();
             });
       },
-      child: const Icon(MingCuteIcons.mgc_add_line),
+      child: const Icon(Icons.add),
     );
   }
 

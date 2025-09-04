@@ -129,9 +129,7 @@ class _SettingPageState extends State<SettingPage> {
         if (FeatureFlag.enableSelectLocalImage)
           ListTile(
             iconColor: Theme.of(context).colorScheme.primary,
-            leading: const Icon(
-              MingCuteIcons.mgc_pic_2_line,
-            ),
+            leading: const Icon(Icons.image_outlined),
             title: const Text("图片设置"),
             onTap: () {
               _enterDetail(const ImagePathSetting());

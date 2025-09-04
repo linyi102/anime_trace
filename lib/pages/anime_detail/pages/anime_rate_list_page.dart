@@ -8,7 +8,6 @@ import 'package:animetrace/models/note.dart';
 import 'package:animetrace/pages/modules/note_edit.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 // 动漫详细页的评价列表页
@@ -65,8 +64,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
               : loadingWidget(context)),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:animetrace/global.dart';
+import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_page.dart';
 import 'package:animetrace/pages/network/directory/directory_page.dart';
@@ -23,7 +24,8 @@ class ToolsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 5, 15, 20),
       child: Wrap(
-        spacing: 4,
+        spacing: AppTheme.wrapSacing,
+        runSpacing: AppTheme.wrapRunSpacing,
         children: [
           GestureDetector(
               onTap: () => _toDedupPage(context),

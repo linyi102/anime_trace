@@ -694,7 +694,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           logic.getAllSeries();
         });
       },
-      child: const Icon(MingCuteIcons.mgc_add_line),
+      child: const Icon(Icons.add),
     );
   }
 
