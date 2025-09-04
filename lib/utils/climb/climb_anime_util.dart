@@ -60,7 +60,7 @@ class ClimbAnimeUtil {
   static Future<Anime> climbAnimeInfoByUrl(Anime anime,
       {bool showMessage = true}) async {
     if (anime.animeUrl.isEmpty) {
-      Log.info("无来源，无法更新，返回旧动漫对象");
+      AppLog.info("无来源，无法更新，返回旧动漫对象");
       return anime;
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
@@ -77,7 +77,7 @@ class ClimbAnimeUtil {
           anime.animeEpisodeCnt, anime.episodeStartNumber);
       if (showMessage) ToastUtil.showText("更新完毕");
     } catch (err, stack) {
-      logger.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',
+      AppLog.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',
           error: err, stackTrace: stack);
     }
     return anime;
@@ -108,7 +108,7 @@ class ClimbAnimeUtil {
     // 异步更新所有动漫信息
     for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
-      Log.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
+      AppLog.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
       Anime oldAnime = anime.copyWith();
       // 爬取
@@ -124,14 +124,14 @@ class ClimbAnimeUtil {
             // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
             updateRecordController.incrementUpdateOkCnt();
             int updateOkCnt = updateRecordController.updateOkCnt.value;
-            Log.info("updateOkCnt=$updateOkCnt");
+            AppLog.info("updateOkCnt=$updateOkCnt");
           });
         }),
       );
     }
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
-    Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
+    AppLog.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     if (needUpdateCnt > 0) await queue.onComplete;
     updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");

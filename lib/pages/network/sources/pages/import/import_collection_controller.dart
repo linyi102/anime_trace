@@ -142,7 +142,7 @@ class ImportCollectionController extends GetxController {
   quickCollect(BuildContext context, int collIdx, String tag) async {
     // 关闭底部面板
     Navigator.pop(context);
-    Log.info("collIdx=$collIdx");
+    AppLog.info("collIdx=$collIdx");
 
     resetQuickCollectStatus();
     quickCollecting = true;
@@ -172,9 +172,9 @@ class ImportCollectionController extends GetxController {
       }
 
       if (existPageAnimes) {
-        Log.info("查询第$curPage页(已有，不再请求该页)");
+        AppLog.info("查询第$curPage页(已有，不再请求该页)");
       } else {
-        Log.info("查询第$curPage页");
+        AppLog.info("查询第$curPage页");
         pageAnimes = (await climbWebsite.climb.climbUserCollection(
           userId,
           siteCollectionTab[collIdx],
@@ -184,7 +184,7 @@ class ImportCollectionController extends GetxController {
       }
 
       if (pageAnimes.isEmpty) {
-        Log.info("查询数量为空，退出循环");
+        AppLog.info("查询数量为空，退出循环");
         break;
       }
       queryAnimeCnt += pageAnimes.length;
@@ -213,7 +213,7 @@ class ImportCollectionController extends GetxController {
 
       update([bottomBarId]);
       if (queryAnimeCnt >= userCollection[collIdx].totalCnt) {
-        Log.info(
+        AppLog.info(
             "查询数量($queryAnimeCnt) >= 当前tab总数量(${userCollection[collIdx].totalCnt})，退出循环");
         break;
       }
@@ -223,7 +223,7 @@ class ImportCollectionController extends GetxController {
         curPage++;
         update([bottomBarId]);
       } else {
-        Log.info("要查询的页($curPage)>总页数($totalPage)，跳出循环");
+        AppLog.info("要查询的页($curPage)>总页数($totalPage)，跳出循环");
         break;
       }
       // 如果该页查询了，那么需要等待一段时间再查询，避免频繁查询导致受限访问
@@ -302,7 +302,7 @@ class ImportCollectionController extends GetxController {
     int page = (userCollection[collIdx].animes.length ~/
             climbWebsite.climb.userCollPageSize) +
         1;
-    Log.info("查询第$page页");
+    AppLog.info("查询第$page页");
     var newPageAnimes = (await climbWebsite.climb.climbUserCollection(
       userId,
       siteCollectionTab[collIdx],

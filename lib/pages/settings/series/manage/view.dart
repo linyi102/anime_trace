@@ -82,8 +82,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return Scaffold(
       appBar: searchAction ? _buildSearchBar() : _buildCommonAppBar(),
       body: GetBuilder(
@@ -582,7 +580,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       inputController: logic.inputKeywordController,
       hintText: "搜索系列",
       onChanged: (kw) async {
-        Log.info("搜索系列关键字：$kw");
+        AppLog.info("搜索系列关键字：$kw");
         // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
         DelayUtil.delaySearch(() async {
           logic.allSeriesList = await SeriesDao.searchSeries(kw);
@@ -626,7 +624,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   title: const Text("编辑"),
                   leading: const Icon(Icons.edit),
                   onTap: () {
-                    Log.info("编辑系列：$series");
+                    AppLog.info("编辑系列：$series");
                     Navigator.of(context).pop();
 
                     int index = logic.allSeriesList
@@ -638,7 +636,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   title: const Text("删除"),
                   leading: const Icon(Icons.delete_outline),
                   onTap: () {
-                    Log.info("删除系列：$series");
+                    AppLog.info("删除系列：$series");
                     Navigator.of(context).pop();
                     _showDialogConfirmDelete(context, series);
                   },

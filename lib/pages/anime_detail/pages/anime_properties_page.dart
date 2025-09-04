@@ -51,7 +51,7 @@ class AnimePropertiesPage extends StatelessWidget {
                 ToastUtil.showText("动漫名不允许为空");
                 return;
               }
-              Log.info("更新名称：$newName");
+              AppLog.info("更新名称：$newName");
 
               animeController.anime.animeName = newName;
               animeController.updateAnimeInfo();
@@ -64,7 +64,7 @@ class AnimePropertiesPage extends StatelessWidget {
             _showDialogAboutEdit(context,
                 title: "别名",
                 initialValue: anime.nameAnother, confirm: (newNameAnother) {
-              Log.info("更新别名：$newNameAnother");
+              AppLog.info("更新别名：$newNameAnother");
 
               animeController.anime.nameAnother = newNameAnother;
               animeController.updateAnimeInfo();
@@ -110,7 +110,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   title: "动漫链接",
                   initialValue: anime.animeUrl,
                   helperText: "修改可能导致下拉刷新失效", confirm: (value) {
-                Log.info("更新封面：$value");
+                AppLog.info("更新封面：$value");
 
                 animeController.anime.animeUrl = value;
                 animeController.updateAnimeInfo();
@@ -126,7 +126,7 @@ class AnimePropertiesPage extends StatelessWidget {
               _showDialogAboutEdit(context,
                   title: "封面链接",
                   initialValue: anime.animeCoverUrl, confirm: (value) {
-                Log.info("更新封面：$value");
+                AppLog.info("更新封面：$value");
 
                 animeController.anime.animeCoverUrl = value;
                 animeController.updateAnimeInfo();
@@ -143,7 +143,7 @@ class AnimePropertiesPage extends StatelessWidget {
               _showDialogAboutEdit(context,
                   title: "简介",
                   initialValue: anime.animeDesc, confirm: (newDesc) {
-                Log.info("更新简介：$newDesc");
+                AppLog.info("更新简介：$newDesc");
 
                 animeController.anime.animeDesc = newDesc;
                 animeController.updateAnimeInfo();

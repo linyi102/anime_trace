@@ -4,7 +4,6 @@ import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/dao/episode_note_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/enum/note_type.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class RecentlyCreateNoteAnimeListPage extends StatefulWidget {

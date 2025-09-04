@@ -40,7 +40,7 @@ class NoteDao {
   // 所有评价列表。分页
   static Future<List<Note>> getRateNotes(
       {required PageParams pageParams, NoteFilter? noteFilter}) async {
-    Log.info("sql: getRateNotes");
+    AppLog.info("sql: getRateNotes");
     List<Note> rateNotes = [];
 
     int? animeId = noteFilter?.animeId;
@@ -74,7 +74,7 @@ class NoteDao {
 
   // 获取某个动漫的笔记数量
   static Future<int> getRateNoteCountByAnimeId(int animeId) async {
-    Log.info("sql: getRateNoteCountByAnimeId");
+    AppLog.info("sql: getRateNoteCountByAnimeId");
     List<Map<String, Object?>> list = await database.rawQuery('''
       select count(*) cnt from episode_note
       where anime_id = $animeId and episode_number = 0;
@@ -84,7 +84,7 @@ class NoteDao {
 
   // 获取某个动漫的所有笔记
   static Future<List<Note>> getRateNotesByAnimeId(int animeId) async {
-    Log.info("sql: getRateNotesByAnimeId");
+    AppLog.info("sql: getRateNotesByAnimeId");
     List<Note> rateNotes = [];
     List<Map<String, Object?>> list = await database.rawQuery('''
       select note_id, note_content, create_time, update_time from episode_note
@@ -134,8 +134,8 @@ class NoteDao {
   }
 
   static updateNoteContentByNoteId(int noteId, String noteContent) async {
-    Log.info("sql: updateEpisodeNoteContent($noteId)");
-    // Log.info("sql: updateEpisodeNoteContent($noteId, $noteContent)");
+    AppLog.info("sql: updateEpisodeNoteContent($noteId)");
+    // AppLog.info("sql: updateEpisodeNoteContent($noteId, $noteContent)");
     noteContent = EscapeUtil.escapeStr(noteContent);
     database.rawUpdate('''
     update episode_note
@@ -162,7 +162,7 @@ class NoteDao {
 
   // 添加评价笔记
   static Future<int> insertRateNote(int animeId) async {
-    Log.info("sql: insertRateNote(animeId=$animeId)");
+    AppLog.info("sql: insertRateNote(animeId=$animeId)");
     String createTime = TimeUtil.getDateTimeNowStr();
 
     return await database.rawInsert('''
@@ -173,7 +173,7 @@ class NoteDao {
 
   // 添加集笔记
   static Future<int> insertEpisodeNote(Note episodeNote) async {
-    Log.info(
+    AppLog.info(
         "sql: insertEpisodeNote(animeId=${episodeNote.anime.animeId}, episodeNumber=${episodeNote.episode.number}, reviewNumber=${episodeNote.episode.reviewNumber})");
     String createTime = TimeUtil.getDateTimeNowStr();
 
@@ -184,7 +184,7 @@ class NoteDao {
   }
 
   static Future<Note> getNoteContentAndImagesByNoteId(int noteId) async {
-    Log.info("getNoteByNoteId(noteId=$noteId)");
+    AppLog.info("getNoteByNoteId(noteId=$noteId)");
     var lm1 = await database.rawQuery('''
       select anime_id, note_id, episode_number, review_number, note_content from episode_note
       where note_id = $noteId;
@@ -209,7 +209,7 @@ class NoteDao {
 
   static Future<Note?> getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
       Anime anime, Episode episode) async {
-    Log.info(
+    AppLog.info(
         "sql: getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(episodeNumber=${episode.number}, review_number=${anime.reviewNumber})");
     // 查询内容
     var lm1 = await database.rawQuery('''
@@ -226,7 +226,7 @@ class NoteDao {
     // 获取笔记内容
     episodeNote.noteContent = lm1[0]['note_content'] as String;
 
-    // Log.info("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
+    // AppLog.info("笔记${episodeNote.episodeNoteId}内容：${episodeNote.noteContent}");
     // 查询图片
     episodeNote.relativeLocalImages =
         await getRelativeLocalImgsByNoteId(episodeNote.id);
@@ -235,7 +235,7 @@ class NoteDao {
   }
 
   static Future<List<Note>> getAllNotesByTableHistory() async {
-    Log.info("sql: getAllNotesByTableHistory");
+    AppLog.info("sql: getAllNotesByTableHistory");
     List<Note> episodeNotes = [];
     // 根据history表中的anime_id和episode_number来获取相应的笔记，并按时间倒序排序
     var lm1 = await database.rawQuery('''
@@ -259,7 +259,7 @@ class NoteDao {
           await getEpisodeNoteByAnimeIdAndEpisodeNumberAndReviewNumber(
               anime, episode);
       if (episodeNote != null) {
-        // Log.info(episodeNote);
+        // AppLog.info(episodeNote);
         episodeNote.relativeLocalImages =
             await getRelativeLocalImgsByNoteId(episodeNote.id);
         episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
@@ -271,7 +271,7 @@ class NoteDao {
   //↓优化
   static Future<List<Note>> getAllNotesByTableNoteAndKeyword(
       int offset, int number, NoteFilter noteFilter) async {
-    Log.info("sql: getAllNotesByTableNote");
+    AppLog.info("sql: getAllNotesByTableNote");
     List<Note> episodeNotes = [];
     // 根据笔记中的动漫id和集数number(还有回顾号review_number)，即可获取到完成时间，根据动漫id，获取动漫封面
     // 因为pageSize个笔记中有些笔记没有内容和图片，在之后会过滤掉，所以并不会得到pageSize个笔记，从而导致滑动到最下面也不够pageSize个，而无法再次请求
@@ -345,24 +345,24 @@ class NoteDao {
   // 删除评价笔记/集笔记
   // 先删除与笔记相关的图片，再删除该笔记(id唯一，不用在意reviewNumber，而且删除集笔记后当进入详情页会自动创建空笔记)
   static Future<bool> deleteNoteById(int noteId) async {
-    Log.info("deleteNoteById(noteId=$noteId)");
+    AppLog.info("deleteNoteById(noteId=$noteId)");
 
     int num = await database.rawDelete('''
     delete from image
     where note_id = $noteId;
     ''');
-    Log.info("删除了$num个与该笔记相关的图片");
+    AppLog.info("删除了$num个与该笔记相关的图片");
     num = await database.rawDelete('''
     delete from episode_note
     where note_id = $noteId;
     ''');
-    Log.info("删除了$num条笔记(id=$noteId)");
+    AppLog.info("删除了$num条笔记(id=$noteId)");
     return true;
   }
 
   /// 笔记数量
   static Future<int> getEpisodeNoteTotal() async {
-    Log.info('sql: getEpisodeNoteTotal');
+    AppLog.info('sql: getEpisodeNoteTotal');
 
     var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number > 0;
@@ -372,7 +372,7 @@ class NoteDao {
 
   /// 非空的笔记数量
   static Future<int> getNotEmptyEpisodeNoteTotal() async {
-    Log.info('sql: getEpisodeNoteTotal');
+    AppLog.info('sql: getEpisodeNoteTotal');
 
     // 内容不为空的笔记数量
     final rows1 = await database.rawQuery('''
@@ -392,7 +392,7 @@ class NoteDao {
 
   /// 评价数量
   static Future<int> getRateNoteTotal() async {
-    Log.info('sql: getRateNoteTotal');
+    AppLog.info('sql: getRateNoteTotal');
 
     var rows = await database.rawQuery('''
       select count(note_id) total from episode_note where episode_number == 0;

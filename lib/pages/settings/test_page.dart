@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:animetrace/utils/sp_profile.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_dialog.dart';
@@ -15,6 +16,7 @@ import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+import 'package:window_manager/window_manager.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -39,7 +41,7 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    logger.debug('build test page');
+    AppLog.debug('build test page');
     return Scaffold(
       appBar: AppBar(title: const Text("测试")),
       body: CommonScaffoldBody(child: _buildBody(context)),
@@ -50,15 +52,21 @@ class _TestPageState extends State<TestPage> {
     return ListView(
       children: [
         ListTile(
+          title: const Text('保存当前窗口大小'),
+          onTap: () async {
+            SpProfile.setWindowSize(await windowManager.getSize());
+          },
+        ),
+        ListTile(
           title: const Text('loading mask'),
           onTap: () {
             ToastUtil.showLoading(
               task: () async {
-                logger.info('do task');
+                AppLog.info('do task');
                 await 3.delay();
               },
               onTaskComplete: () {
-                logger.info('task complete');
+                AppLog.info('task complete');
               },
             );
           },
@@ -97,7 +105,7 @@ class _TestPageState extends State<TestPage> {
                 appBar: AppBar(),
                 body: ListView.builder(
                   itemBuilder: (context, index) {
-                    Log.info('build $index');
+                    AppLog.info('build $index');
                     var realIndex = index % arr.length;
                     return ListTile(
                       title: Text(arr[realIndex]),
@@ -132,7 +140,7 @@ class _TestPageState extends State<TestPage> {
                         setState(() {});
                       },
                       onLoading: () async {
-                        Log.info("加载更多");
+                        AppLog.info("加载更多");
                         list.addAll(List.generate(
                             pageSize, (index) => list.length + index));
                         await Future.delayed(const Duration(seconds: 1));
@@ -142,7 +150,7 @@ class _TestPageState extends State<TestPage> {
                       child: ListView.builder(
                         itemCount: list.length,
                         itemBuilder: (context, index) {
-                          Log.info("build $index");
+                          AppLog.info("build $index");
                           return ListTile(
                             title: Text("$index"),
                           );
@@ -166,7 +174,7 @@ class _TestPageState extends State<TestPage> {
                     timer?.cancel();
 
                     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      Log.info("timer=${timer.tick}");
+                      AppLog.info("timer=${timer.tick}");
                     });
                   },
                   child: const Text("开启")),
@@ -205,9 +213,9 @@ class _TestPageState extends State<TestPage> {
             //     "https://proxy-tf-all-ws.bilivideo.com/?url=https://lain.bgm.tv/pic/cover/l/d6/4f/332261_szZEK.jpg";
             // DioPackage.urlResponseOk(url).then((value) {
             //   if (value) {
-            //     Log.info("有效");
+            //     AppLog.info("有效");
             //   } else {
-            //     Log.info("失效");
+            //     AppLog.info("失效");
             //   }
             // });
           },
@@ -289,7 +297,7 @@ class _TestPageState extends State<TestPage> {
               },
               clickClose: true,
               onClose: () {
-                Log.info("close");
+                AppLog.info("close");
               },
             );
 

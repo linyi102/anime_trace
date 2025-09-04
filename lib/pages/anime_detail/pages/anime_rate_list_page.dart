@@ -55,8 +55,6 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return Scaffold(
       appBar: AppBar(title: const Text("动漫评价")),
       body: CommonScaffoldBody(
@@ -74,7 +72,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
   }
 
   void _createRateNote() async {
-    Log.info("添加评价");
+    AppLog.info("添加评价");
     Note episodeNote = Note.createRateNote(widget.anime);
     episodeNote.id = await NoteDao.insertRateNote(widget.anime.animeId);
     final note = await Navigator.push(context,
@@ -91,7 +89,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
           controller: scrollController,
           itemCount: notes.length,
           itemBuilder: (context, index) {
-            Log.info("$runtimeType: index=$index");
+            AppLog.info("$runtimeType: index=$index");
             Note note = notes[index];
 
             return NoteCard(

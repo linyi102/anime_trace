@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    logger.debug('build main screen');
+    AppLog.debug('build main screen');
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
       child: GetBuilder(
@@ -71,7 +71,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     Future.delayed(const Duration(seconds: 2)).then((value) {
       _clickBackCnt = 0;
-      Log.info("点击返回次数重置为0");
+      AppLog.info("点击返回次数重置为0");
     });
     ToastUtil.showText("再次点击退出应用");
     return false;

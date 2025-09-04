@@ -44,7 +44,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   @override
   void initState() {
     super.initState();
-    Log.info("进入笔记${widget.note.id}");
+    AppLog.info("进入笔记${widget.note.id}");
     _loadData();
   }
 
@@ -55,7 +55,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   _loadData() async {
-    Log.info("note.id=${widget.note.id}");
+    AppLog.info("note.id=${widget.note.id}");
     // 已经能保证是最新的了，所以不需要重新获取
     // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
     //   if (value.id == 0) {
@@ -242,7 +242,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
-    Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
+    AppLog.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
 
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -268,9 +268,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       dragStartDelay: const Duration(milliseconds: 200),
       onReorder: (oldIndex, newIndex) {
         // 下标没变直接返回
-        Log.info("oldIndex=$oldIndex, newIndex=$newIndex");
+        AppLog.info("oldIndex=$oldIndex, newIndex=$newIndex");
         if (oldIndex == newIndex) {
-          Log.info("拖拽了，但未改变顺序，直接返回");
+          AppLog.info("拖拽了，但未改变顺序，直接返回");
           return;
         }
 
@@ -279,7 +279,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
         changeOrderIdx = true;
-        Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
+        AppLog.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Material(

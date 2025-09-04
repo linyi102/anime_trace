@@ -127,7 +127,7 @@ class LabelsController extends GetxController {
     Label newLabel = Label(0, labelName, order: labels.length);
     int newId = await LabelDao.insert(newLabel);
     if (newId > 0) {
-      Log.info("添加标签成功，新插入的id=$newId");
+      AppLog.info("添加标签成功，新插入的id=$newId");
       // 指定新id，并添加到controller中
       newLabel.id = newId;
       if (searchKeyword.isEmpty) {
@@ -149,7 +149,7 @@ class LabelsController extends GetxController {
   Future<bool> updateLabel(Label label, String newLabelName) async {
     int updateCnt = await LabelDao.update(label.id, newLabelName);
     if (updateCnt > 0) {
-      Log.info("修改标签成功");
+      AppLog.info("修改标签成功");
       _sortLabels([
         for (final e in labels)
           e == label ? label.copyWith(name: newLabelName) : e

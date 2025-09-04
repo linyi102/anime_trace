@@ -21,7 +21,7 @@ class DioUtil {
 
   static void init() {
     dio = Dio(_baseOptions);
-    dio.interceptors.add(DioLogInterceptor(logger));
+    dio.interceptors.add(DioLogInterceptor());
     dio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
       final HttpClient client =
           HttpClient(context: SecurityContext(withTrustedRoots: false));
@@ -94,11 +94,11 @@ class DioUtil {
       if (statusCode == 200) {
         return true;
       } else {
-        Log.info("$url返回码：$statusCode");
+        AppLog.info("$url返回码：$statusCode");
         return false;
       }
     } catch (e) {
-      // Log.error(e.toString());
+      // AppLog.error(e.toString());
       // 400会报异常，这里捕捉到后返回false
       return false;
     }
@@ -121,15 +121,15 @@ class DioUtil {
       }
     } catch (e) {
       String msg = ErrorFormatUtil.formatError(e);
-      Log.info(msg);
+      AppLog.info(msg);
     }
 
     if (connectable) {
       pingStatus.connectable = true;
-      Log.info("ping ok: $path");
+      AppLog.info("ping ok: $path");
     } else {
       pingStatus.connectable = false;
-      Log.info("ping false: $path");
+      AppLog.info("ping false: $path");
     }
 
     // 更新状态并返回

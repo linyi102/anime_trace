@@ -156,7 +156,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
             },
           ),
         ).then((value) {
-          Log.info("更新在搜索页面里进行的修改");
+          AppLog.info("更新在搜索页面里进行的修改");
           checklistController.loadAnimes();
         });
       },
@@ -291,7 +291,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
       itemBuilder: (BuildContext context, int animeIdx) {
         _loadExtraData(tagIdx, animeIdx);
 
-        // Log.info("$index");
+        // AppLog.info("$index");
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
@@ -320,13 +320,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
   }
 
   void _loadExtraData(int tagIdx, int animeIdx) async {
-    // Log.info("index=$index");
+    // AppLog.info("index=$index");
     // 直接使用index会导致重复请求，增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
     // +10提前请求，当到达100(50*2)时，会再次请求50个数据
     if (animeIdx + 10 == pageSize * (pageIndexList[tagIdx])) {
       pageIndexList[tagIdx]++;
-      Log.info("tag: ${tags[tagIdx]}，pageIdx: ${pageIndexList[tagIdx]}");
+      AppLog.info("tag: ${tags[tagIdx]}，pageIdx: ${pageIndexList[tagIdx]}");
       // 获取当前动漫列表，只对该动漫添加追加新列表，避免和重新刷新后的动漫列表冲突
       final tagAnimes = animesInTag[tagIdx];
       final offset = tagAnimes.length;
@@ -334,7 +334,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
           tags[tagIdx], offset, pageSize,
           animeSortCond: animeSortCond);
       tagAnimes.addAll(nextAnimes);
-      Log.info(
+      AppLog.info(
           "添加并更新状态，animesInTag[$tagIdx].length=${animesInTag[tagIdx].length}");
       setState(() {});
     }
@@ -344,14 +344,14 @@ class _AnimeListPageState extends State<AnimeListPage> {
     // 多选
     if (multiSelected) {
       if (selectedAnimes.contains(anime)) {
-        Log.info("[多选模式]移除anime=${anime.animeName}");
+        AppLog.info("[多选模式]移除anime=${anime.animeName}");
         selectedAnimes.remove(anime); // 选过，再选就会取消
         // 如果取消后一个都没选，就自动退出多选状态
         if (selectedAnimes.isEmpty) {
           checklistController.multi = false;
         }
       } else {
-        Log.info("[多选模式]添加anime=${anime.animeName}");
+        AppLog.info("[多选模式]添加anime=${anime.animeName}");
         selectedAnimes.add(anime);
       }
       setState(() {});
@@ -366,7 +366,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
     if (multiSelected == false) {
       checklistController.multi = true;
       selectedAnimes.add(anime);
-      Log.info("[多选模式]添加anime=${anime.animeName}");
+      AppLog.info("[多选模式]添加anime=${anime.animeName}");
       setState(() {}); // 添加操作按钮
     } else {
       // 多选模式下，应提供范围选择

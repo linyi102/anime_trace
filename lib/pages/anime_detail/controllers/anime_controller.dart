@@ -141,7 +141,7 @@ class AnimeController extends GetxController {
 
     // await Future.delayed(const Duration(seconds: 2));
     if (existDbAnime) {
-      Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
+      AppLog.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
       // 最新动漫指向数据库动漫
       newAnime = dbAnime;
     }
@@ -181,7 +181,7 @@ class AnimeController extends GetxController {
   void loadLabels() async {
     labels.clear();
     if (isCollected) {
-      Log.info("查询当前动漫(id=${anime.animeId})的所有标签");
+      AppLog.info("查询当前动漫(id=${anime.animeId})的所有标签");
       labels.addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.animeId));
     }
   }
@@ -331,7 +331,7 @@ class AnimeController extends GetxController {
                       color: Theme.of(context).colorScheme.primary)
                   : const Icon(Icons.radio_button_off_outlined),
               onTap: () {
-                Log.info("修改排序方式为${sortMethods[i]}");
+                AppLog.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
                 // 重绘
                 update([episodeId]);
@@ -398,7 +398,7 @@ class AnimeController extends GetxController {
     );
 
     if (result == null) {
-      Log.info("未选择，直接返回");
+      AppLog.info("未选择，直接返回");
       return;
     }
 
@@ -432,14 +432,14 @@ class AnimeController extends GetxController {
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
     Anime oldAnime = anime.copyWith();
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
-    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    AppLog.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
     Anime newAnime =
         await ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false);
     // 如果更新后动漫集数比原来的集数小，则不更新集数
     // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
     // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
     // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
-    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    AppLog.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
     if (newAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = anime.animeEpisodeCnt;
     }
@@ -593,7 +593,7 @@ class AnimeController extends GetxController {
         SPUtil.getBool("autoMoveToFinishedTag", defaultValue: false)) {
       anime.tagName = selectedFinishedTag;
       AnimeDao.updateTagByAnimeId(anime.animeId, anime.tagName);
-      Log.info("修改清单为${anime.tagName}");
+      AppLog.info("修改清单为${anime.tagName}");
       updateAnimeInfo();
       return;
     }
@@ -606,7 +606,7 @@ class AnimeController extends GetxController {
         onSelected: (String tag) {
           anime.tagName = tag;
           AnimeDao.updateTagByAnimeId(anime.animeId, tag);
-          Log.info("修改清单为${anime.tagName}");
+          AppLog.info("修改清单为${anime.tagName}");
           updateAnimeInfo();
         },
       ),

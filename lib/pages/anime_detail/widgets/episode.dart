@@ -46,7 +46,6 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
     return _buildSliverListBody();
   }
 
@@ -61,7 +60,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
         init: widget.animeController,
         initState: (_) {},
         builder: (_) {
-          Log.info("build ${widget.animeController.episodeId}");
+          AppLog.info("build ${widget.animeController.episodeId}");
 
           // 如果没有收藏，则不展示集信息，注意需要放在GetBuilder里
           // 这样收藏后，其他地方执行animeController.loadEpisode()更新时就会看到变化
@@ -82,7 +81,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                     delegate:
                         SliverChildBuilderDelegate((context, episodeIndex) {
                       var episode = _episodes[episodeIndex];
-                      Log.info(
+                      AppLog.info(
                           "episodeIndex=$episodeIndex, episode.noteLoaded=${episode.noteLoaded}");
 
                       List<Widget> episodeInfo = [];

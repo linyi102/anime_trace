@@ -244,7 +244,7 @@ class AnimeGridCover extends StatelessWidget {
 
   String _getEllipsisMiddleAnimeName(String name, BoxConstraints constraints) {
     // return name;
-    // Log.info(constraints.toString());
+    // AppLog.info(constraints.toString());
     if ((name.length > 3 && name[name.length - 3] == "第") ||
         name.endsWith("OVA")) {
       String testName = name;
@@ -269,7 +269,7 @@ class AnimeGridCover extends StatelessWidget {
         textDirection: TextDirection.ltr);
     textPainter.layout(maxWidth: constraints.maxWidth);
     if (textPainter.didExceedMaxLines) {
-      // Log.info("动漫名字溢出：$name");
+      // AppLog.info("动漫名字溢出：$name");
       return false;
     }
     return true;

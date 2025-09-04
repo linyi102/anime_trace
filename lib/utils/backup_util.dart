@@ -105,7 +105,7 @@ class BackupUtil {
     }
     if (remoteBackupDirPath.isNotEmpty) {
       if (RemoteController.to.isOffline) {
-        Log.info("远程备份失败，请检查网络状态");
+        AppLog.info("远程备份失败，请检查网络状态");
         ToastUtil.showText("远程备份失败，请检查网络状态");
         tempZipFile.delete(); // 备份失败后需要删掉临时备份文件
         return "";
@@ -167,7 +167,7 @@ class BackupUtil {
           // "/animetrace/automatic/animetrace-backup") && // 以animetrace-backup开头
           // "/animetrace/automatic/$backupZipNamePrefix") && // 以$backupZipNamePrefix开头
           path.endsWith(".zip")) {
-        Log.info("删除文件：$path");
+        AppLog.info("删除文件：$path");
         WebDavUtil.client.remove(path);
       }
     }
@@ -251,11 +251,11 @@ class BackupUtil {
     if (file.path == null) {
       return Result.failure(404, "空文件路径，无法还原");
     }
-    Log.info("latestFilePath: ${file.path}");
+    AppLog.info("latestFilePath: ${file.path}");
     String localBackupFilePath = "$localRootDirPath/${file.name}";
     await WebDavUtil.client.read2File(file.path as String, localBackupFilePath);
 
-    Log.info(
+    AppLog.info(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
     return restoreFromLocal(localBackupFilePath, delete: true);
@@ -271,25 +271,25 @@ class BackupUtil {
     // Decode the Zip file
     final archive = ZipDecoder().decodeBytes(bytes);
 
-    Log.info("开始解压");
+    AppLog.info("开始解压");
     // Extract the contents of the Zip archive to disk.
     for (final file in archive) {
       final filename = file.name;
-      Log.info("filename: $filename");
+      AppLog.info("filename: $filename");
       if (file.isFile) {
         // 先判断该图片是否存在，如果不存在再解压出来。否则会闪退
         String filePath = "$localRootDirPath/$filename";
         if (filename.startsWith("images") && File(filePath).existsSync()) {
-          Log.info("已存在图片：$filePath");
+          AppLog.info("已存在图片：$filePath");
           continue;
         }
-        Log.info("解压文件：$localRootDirPath/$filename");
+        AppLog.info("解压文件：$localRootDirPath/$filename");
         final data = file.content as List<int>;
         File("$localRootDirPath/$filename")
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       } else {
-        Log.info("非文件：$localRootDirPath/$filename");
+        AppLog.info("非文件：$localRootDirPath/$filename");
         Directory("$localRootDirPath/$filename").createSync(recursive: true);
       }
     }
@@ -301,7 +301,7 @@ class BackupUtil {
 
     String backupDir = await WebDavUtil.getRemoteDirPath();
     if (backupDir.isEmpty) {
-      Log.info("远程备份路径为空");
+      AppLog.info("远程备份路径为空");
       return [];
     }
 
@@ -313,7 +313,7 @@ class BackupUtil {
     files.removeWhere(
         (element) => element.isDir ?? element.path?.endsWith("/") ?? false);
 
-    Log.info("获取完毕，共${files.length}个文件");
+    AppLog.info("获取完毕，共${files.length}个文件");
     files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
     return files;
   }

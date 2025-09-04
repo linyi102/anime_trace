@@ -78,15 +78,13 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return WillPopScope(
       onWillPop: () async {
-        Log.info("按返回键，返回anime");
+        AppLog.info("按返回键，返回anime");
         _popPage();
         // 返回的_anime用到了id(列表页面和搜索页面)和name(爬取页面)
         // 完成集数因为切换到小的回顾号会导致不是最大回顾号完成的集数，所以那些页面会通过传回的id来获取最新动漫信息
-        Log.info("返回true");
+        AppLog.info("返回true");
         return true;
       },
       child: MultiPlatform(
@@ -170,7 +168,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               init: animeController,
               initState: (_) {},
               builder: (_) {
-                Log.info("build ${animeController.detailPageId}");
+                AppLog.info("build ${animeController.detailPageId}");
 
                 if (animeController.loadingAnime) {
                   return Scaffold(

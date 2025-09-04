@@ -104,7 +104,7 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
       // 迁移动漫提示
       showDialogOfConfirmMigrate(context, widget.animeId, anime);
     } else if (anime.isCollected()) {
-      Log.info("进入动漫详细页面${anime.animeId}");
+      AppLog.info("进入动漫详细页面${anime.animeId}");
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
@@ -118,12 +118,12 @@ class _AnimeHorizontalCoverState extends State<AnimeHorizontalCover> {
         // setState(() {});
         widget.animes[animeIndex] = value;
         widget.callback().then((value) {
-          Log.info("callback.then");
+          AppLog.info("callback.then");
           setState(() {});
         });
       });
     } else {
-      Log.info("");
+      AppLog.info("");
       dialogSelectChecklist(setState, context, anime);
     }
   }

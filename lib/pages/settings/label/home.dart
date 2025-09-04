@@ -121,24 +121,24 @@ class _LabelManagePageState extends State<LabelManagePage> {
                   // 为这个动漫移除该标签
                   if (await AnimeLabelDao.deleteAnimeLabel(
                       widget.animeController!.anime.animeId, label.id)) {
-                    Log.info(
+                    AppLog.info(
                         "移除动漫标签记录成功(animeId=${widget.animeController!.anime.animeId}, labelId=${label.id})");
                     // 从controller中移除
                     widget.animeController!.labels
                         .removeWhere((element) => element.id == label.id);
                   } else {
-                    Log.info("移除动漫标签记录失败");
+                    AppLog.info("移除动漫标签记录失败");
                   }
                 } else {
                   // 为这个动漫添加该标签
                   int newId = await AnimeLabelDao.insertAnimeLabel(
                       widget.animeController!.anime.animeId, label.id);
                   if (newId > 0) {
-                    Log.info("添加新动漫标签纪录成功：$newId");
+                    AppLog.info("添加新动漫标签纪录成功：$newId");
                     // 添加到controller
                     widget.animeController!.labels.add(label);
                   } else {
-                    Log.info("添加新动漫标签纪录失败");
+                    AppLog.info("添加新动漫标签纪录失败");
                   }
                 }
               } else {
@@ -199,7 +199,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
   }
 
   void _search(String kw) {
-    Log.info("搜索标签关键字：$kw");
+    AppLog.info("搜索标签关键字：$kw");
 
     // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
     DelayUtil.delaySearch(() async {
@@ -217,7 +217,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
                   title: const Text("重命名"),
                   leading: const Icon(Icons.edit),
                   onTap: () {
-                    Log.info("重命名标签：$label");
+                    AppLog.info("重命名标签：$label");
                     Navigator.of(context).pop();
 
                     int index = labelsController.labels
@@ -229,7 +229,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
                   title: const Text("删除"),
                   leading: const Icon(Icons.delete_outline),
                   onTap: () {
-                    Log.info("删除标签：$label");
+                    AppLog.info("删除标签：$label");
                     Navigator.of(context).pop();
 
                     int index = labelsController.labels

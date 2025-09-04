@@ -244,7 +244,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                         builder: (context) => const ImagePathSetting()))
                     .then((dirChanged) {
                   if (dirChanged) {
-                    Log.info("修改了图片目录，重新获取本地图片");
+                    AppLog.info("修改了图片目录，重新获取本地图片");
                     _getImageLocalPaths();
                     setState(() {});
                     // 用于图片浏览器的上级页面更新状态

@@ -163,7 +163,7 @@ class NoteImgGrid extends StatelessWidget {
           ? relativeLocalImages.length
           : _getGridItemCount(maxDisplayCount),
       itemBuilder: (context, index) {
-        // Log.info("$runtimeType: index=$index");
+        // AppLog.info("$runtimeType: index=$index");
         return NoteImgItem(
             useCustomAspectRatio: useFillStyle,
             aspectRatio: childAspectRatio,

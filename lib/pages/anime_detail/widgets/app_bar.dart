@@ -51,7 +51,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
-        Log.info("build ${widget.animeController.appbarId}");
+        AppLog.info("build ${widget.animeController.appbarId}");
 
         return SliverAppBar(
           // 下滑后显示收缩后的AppBar
@@ -408,7 +408,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     setState(() {});
                   },
                   onChanged: (value) {
-                    Log.info("拖动中，value=$value");
+                    AppLog.info("拖动中，value=$value");
 
                     coverBgHeightRatio = value;
                     setBottomSheetState(() {});
@@ -416,7 +416,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   },
                   onChangeEnd: (value) {
                     // 拖动结束后，保存
-                    Log.info("拖动结束，value=$value");
+                    AppLog.info("拖动结束，value=$value");
                     SpProfile.setCoverBgHeightRatio(value);
 
                     transparentBottomSheet = false;
@@ -453,7 +453,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
         rate: _anime.rate,
         iconSize: 15,
         onRatingUpdate: (v) {
-          Log.info("评价分数：$v");
+          AppLog.info("评价分数：$v");
           _anime.rate = v.toInt();
           AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
         });

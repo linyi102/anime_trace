@@ -119,7 +119,7 @@ class _HistoryPageState extends State<HistoryPage> {
         itemBuilder: (context, cardIndex) {
           int threshold = views[selectedViewIndex].pageParams.getQueriedSize();
           if (cardIndex + 2 == threshold) {
-            Log.info("index=$cardIndex, threshold=$threshold");
+            AppLog.info("index=$cardIndex, threshold=$threshold");
             views[selectedViewIndex].pageParams.pageIndex++;
             historyController.loadMoreData();
           }

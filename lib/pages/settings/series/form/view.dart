@@ -106,11 +106,11 @@ class _SeriesFormPageState extends State<SeriesFormPage> {
     int updateCnt =
         await SeriesDao.update(widget.series!.id, newSeriesName, newDesc);
     if (updateCnt > 0) {
-      Log.info("修改系列成功");
+      AppLog.info("修改系列成功");
       widget.series!.name = newSeriesName;
       widget.series!.desc = newDesc;
     } else {
-      Log.info("修改失败");
+      AppLog.info("修改失败");
     }
     Navigator.pop(context);
   }
@@ -133,12 +133,12 @@ class _SeriesFormPageState extends State<SeriesFormPage> {
 
     int newId = await SeriesDao.insert(newSeries);
     if (newId > 0) {
-      Log.info("添加系列成功，新插入的id=$newId");
+      AppLog.info("添加系列成功，新插入的id=$newId");
       // 指定新id，并添加到controller中
       newSeries.id = newId;
       Navigator.pop(context);
     } else {
-      Log.info("添加失败");
+      AppLog.info("添加失败");
     }
   }
 }

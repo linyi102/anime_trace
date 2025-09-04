@@ -49,7 +49,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
   void _loadEpisodeNoteData() async {
     loadEpisodeNoteOk = false;
     episodeNotePageParams.resetPageIndex();
-    Log.info("note_list_page: 开始加载数据");
+    AppLog.info("note_list_page: 开始加载数据");
     // 获取集笔记
     episodeNotes = await NoteDao.getAllNotesByTableNoteAndKeyword(
         0, episodeNotePageParams.pageSize, widget.noteFilter);
@@ -61,8 +61,8 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     }
 
     loadEpisodeNoteOk = true;
-    Log.info("note_list_page: 数据加载完成");
-    Log.info("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
+    AppLog.info("note_list_page: 数据加载完成");
+    AppLog.info("当前笔记数量(不包括空笔记)：${episodeNotes.length}");
     if (mounted) setState(() {});
   }
 
@@ -70,14 +70,14 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     if (index + 5 ==
         episodeNotePageParams.pageSize * episodeNotePageParams.pageIndex) {
       episodeNotePageParams.pageIndex++;
-      Log.info("再次请求${episodeNotePageParams.pageSize}个数据");
+      AppLog.info("再次请求${episodeNotePageParams.pageSize}个数据");
       Future(() {
         return NoteDao.getAllNotesByTableNoteAndKeyword(episodeNotes.length,
             episodeNotePageParams.pageSize, widget.noteFilter); // 偏移量为当前页面显示的数量
       }).then((value) {
-        Log.info("请求结束");
+        AppLog.info("请求结束");
         episodeNotes.addAll(value);
-        Log.info("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
+        AppLog.info("添加并更新状态，episodeNotes.length=${episodeNotes.length}");
         if (mounted) setState(() {});
       });
     }
@@ -104,7 +104,7 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
               controller: _noteScrollController,
               itemCount: episodeNotes.length,
               itemBuilder: (BuildContext context, int index) {
-                // Log.info("$runtimeType: index=$index");
+                // AppLog.info("$runtimeType: index=$index");
                 _loadMoreEpisodeNoteData(index);
                 Note note = episodeNotes[index];
 

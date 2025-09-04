@@ -6,17 +6,11 @@ environment:
   sdk: ">=3.3.4 <4.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
+  logger:
+  share_plus:
   device_preview: ^1.2.0
   reorderables: ^0.6.0
   pinyin: ^3.3.0
-  flutter_logkit:
-    git:
-      url: https://github.com/linyi102/flutter_logkit.git
-      ref: b9848270
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
@@ -59,6 +53,10 @@ dependencies:
   package_info_plus: ^4.0.2
   url_launcher: ^6.1.0
   transparent_image: ^2.0.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

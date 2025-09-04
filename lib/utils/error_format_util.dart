@@ -6,10 +6,10 @@ import 'package:animetrace/utils/log.dart';
 class ErrorFormatUtil {
   static String formatError(e) {
     String msg = "";
-    Log.error(e);
+    AppLog.error(e);
     if (e is DioException) {
       if (e.type == DioExceptionType.connectionTimeout) {
-        Log.info(e.message);
+        AppLog.info(e.message);
         msg = "连接超时";
       } else if (e.type == DioExceptionType.sendTimeout) {
         msg = "请求超时";
@@ -21,7 +21,7 @@ class ErrorFormatUtil {
         msg = "请求取消";
       } else {
         dynamic childE = e.error;
-        if (e.message != null) Log.info("e.message=" + e.message!);
+        if (e.message != null) AppLog.info("e.message=" + e.message!);
         if (e.message ==
             "HandshakeException: Connection terminated during handshake") {
           msg = "连接失败";
@@ -36,12 +36,12 @@ class ErrorFormatUtil {
       }
     } else {
       msg = "未知错误";
-      Log.info("捕获到非DioEoor");
+      AppLog.info("捕获到非DioEoor");
     }
     if (msg.length > 300) {
-      Log.info(msg.substring(0, 300)); // 限制打印长度
+      AppLog.info(msg.substring(0, 300)); // 限制打印长度
     } else {
-      Log.info(msg);
+      AppLog.info(msg);
     }
     return msg;
   }

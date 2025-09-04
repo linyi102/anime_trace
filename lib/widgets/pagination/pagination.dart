@@ -58,7 +58,7 @@ class PaginationController<T> extends ChangeNotifier {
         _pageNo++;
       }
     } catch (err) {
-      logger.error('fetch pageNo $_pageNo error: $err');
+      AppLog.error('fetch pageNo $_pageNo error: $err');
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -69,7 +69,7 @@ class ToastUtil {
 
       onTaskSuccess?.call(value);
     } catch (e) {
-      logger.error('toast loading task error：$e');
+      AppLog.error('toast loading task error：$e');
       onTaskError?.call(e);
     } finally {
       onTaskComplete?.call();

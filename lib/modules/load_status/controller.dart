@@ -41,7 +41,7 @@ class LoadStatusController extends ChangeNotifier {
       action();
       setStatus(LoadStatus.success);
     } catch (e, st) {
-      logger.error('trySetSuccess error: $e', stackTrace: st);
+      AppLog.error('trySetSuccess error: $e', stackTrace: st);
       setStatus(LoadStatus.fail, msg: failMsg);
     }
   }

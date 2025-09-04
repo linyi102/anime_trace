@@ -99,7 +99,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
                   maxValue: 10)
               .then((value) {
             if (value == null) {
-              Log.info("未选择，直接返回");
+              AppLog.info("未选择，直接返回");
               return;
             }
             animeDisplayController.setGridColumnCnt(value);

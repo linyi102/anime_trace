@@ -2,12 +2,12 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:animetrace/routes/route_log_observer.dart';
 import 'package:animetrace/widgets/device_preview_screenshot_section.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter_logkit/logkit.dart';
 import 'package:animetrace/components/classic_refresh_style.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/global.dart';
@@ -20,7 +20,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
-  runLogkitZonedGuarded(logger, () async {
+  runZonedGuardedWithLog(() async {
     await Global.init();
     runApp(
       Global.enableDevicePreview
@@ -95,7 +95,7 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
 
   @override
   void onWindowMaximize() async {
-    Log.info("全屏");
+    AppLog.info("全屏");
   }
 }
 
@@ -117,11 +117,8 @@ class MyAppState extends State<MyApp> {
       hideFooterWhenNotFull: true,
       child: Obx(() {
         return GetMaterialApp(
-          home: LogkitOverlayAttacher(
-            logger: logger,
-            child: const WindowWrapper(
-              child: MainScreen(),
-            ),
+          home: const WindowWrapper(
+            child: MainScreen(),
           ),
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
@@ -139,7 +136,10 @@ class MyAppState extends State<MyApp> {
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
             return child;
           },
-          navigatorObservers: [BotToastNavigatorObserver()],
+          navigatorObservers: [
+            BotToastNavigatorObserver(),
+            RouteLogObserver(),
+          ],
           // 后台应用显示名称
           title: '漫迹',
           // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)

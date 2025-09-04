@@ -15,7 +15,7 @@ class AnimeSeriesDao {
 
   // 建表
   static createTable() async {
-    Log.info('sql: create table $table');
+    AppLog.info('sql: create table $table');
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $table (
       $columnId         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +27,7 @@ class AnimeSeriesDao {
 
   // 查询某个动漫下的所有系列id
   static Future<List<int>> getSeriesIdListByAnimeId(int animeId) async {
-    // Log.info("sql:getSeriesIdListByAnimeId(animeId=$animeId)");
+    // AppLog.info("sql:getSeriesIdListByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有系列id
     List<Map<String, Object?>> maps = await db.query(table,
         columns: [columnSeriesId],
@@ -46,7 +46,7 @@ class AnimeSeriesDao {
   // 查询某个动漫下的所有系列
   static Future<List<Series>> getSeriesListByAnimeId(int animeId,
       {bool needAnimes = true}) async {
-    Log.info("sql:getSeriesByAnimeId(animeId=$animeId)");
+    AppLog.info("sql:getSeriesByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有系列id
     List<int> seriesIds = await getSeriesIdListByAnimeId(animeId);
     // 再根据系列id查询完整系列信息
@@ -64,7 +64,7 @@ class AnimeSeriesDao {
 
   // 查询含有指定多个系列的所有动漫
   static Future<List<Anime>> getAnimesBySeriesIds(List<int> seriesIds) async {
-    Log.info("sql:getAnimesBySeriesId(seriesIds=$seriesIds)");
+    AppLog.info("sql:getAnimesBySeriesId(seriesIds=$seriesIds)");
     // 先获取该系列下的所有动漫id
     List<Map<String, Object?>> maps = await db.rawQuery('''
     SELECT anime_id
@@ -97,7 +97,7 @@ class AnimeSeriesDao {
 
   // 某个动漫添加系列，返回新插入记录的id(id用不上)
   static Future<int> insertAnimeSeries(int animeId, int seriesId) async {
-    Log.info("sql:insertAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
+    AppLog.info("sql:insertAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
     return await db.insert(table, {
       columnAnimeId: animeId,
       columnSeriesId: seriesId,
@@ -105,7 +105,7 @@ class AnimeSeriesDao {
   }
 
   static Future<bool> deleteAnimeSeries(int animeId, int seriesId) async {
-    Log.info("sql:deleteAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
+    AppLog.info("sql:deleteAnimeSeries(animeId=$animeId, seriesId=$seriesId)");
     return (await db.delete(table,
             where: "$columnAnimeId = ? and $columnSeriesId = ?",
             whereArgs: [animeId, seriesId])) >
@@ -114,7 +114,7 @@ class AnimeSeriesDao {
 
   // 删除系列时，需要这里的相关信息，也可能还没有和任意一个动漫关联，所以不返回删除行数
   static Future<void> deleteBySeriesId(int seriesId) async {
-    Log.info("sql:deleteBySeriesId(seriesId=$seriesId)");
+    AppLog.info("sql:deleteBySeriesId(seriesId=$seriesId)");
     await db.delete(table, where: "$columnSeriesId = ?", whereArgs: [seriesId]);
   }
 }

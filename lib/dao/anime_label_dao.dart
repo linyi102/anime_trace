@@ -26,7 +26,7 @@ class AnimeLabelDao {
 
   // 查询某个动漫下的所有标签
   static Future<List<Label>> getLabelsByAnimeId(int animeId) async {
-    Log.info("sql:getLabelsByAnimeId(animeId=$animeId)");
+    AppLog.info("sql:getLabelsByAnimeId(animeId=$animeId)");
     // 先获取该动漫的所有标签id
     List<Map<String, Object?>> maps = await db.query(table,
         columns: [columnLabelId],
@@ -47,7 +47,7 @@ class AnimeLabelDao {
 
   // 查询含有指定多个标签的所有动漫
   static Future<List<Anime>> getAnimesByLabelIds(List<int> labelIds) async {
-    Log.info("sql:getAnimesByLabelId(labelIds=$labelIds)");
+    AppLog.info("sql:getAnimesByLabelId(labelIds=$labelIds)");
     // 先获取该标签下的所有动漫id
     List<Map<String, Object?>> maps = await db.rawQuery('''
     SELECT anime_id
@@ -72,7 +72,7 @@ class AnimeLabelDao {
 
   // 某个动漫添加标签，返回新插入记录的id(id用不上)
   static Future<int> insertAnimeLabel(int animeId, int labelId) async {
-    Log.info("sql:insertAnimeLabel(animeId=$animeId, labelId=$labelId)");
+    AppLog.info("sql:insertAnimeLabel(animeId=$animeId, labelId=$labelId)");
     return await db.insert(table, {
       columnAnimeId: animeId,
       columnLabelId: labelId,
@@ -85,7 +85,7 @@ class AnimeLabelDao {
   //       0;
   // }
   static Future<bool> deleteAnimeLabel(int animeId, int labelId) async {
-    Log.info("sql:deleteAnimeLabel(animeId=$animeId, labelId=$labelId)");
+    AppLog.info("sql:deleteAnimeLabel(animeId=$animeId, labelId=$labelId)");
     return (await db.delete(table,
             where: "$columnAnimeId = ? and $columnLabelId = ?",
             whereArgs: [animeId, labelId])) >
@@ -94,7 +94,7 @@ class AnimeLabelDao {
 
   // 删除标签时，需要这里的相关信息，也可能还没有和任意一个动漫关联，所以不返回删除行数
   static Future<void> deleteByLabelId(int labelId) async {
-    Log.info("sql:deleteByLabelId(labelId=$labelId)");
+    AppLog.info("sql:deleteByLabelId(labelId=$labelId)");
     await db.delete(table, where: "$columnLabelId = ?", whereArgs: [labelId]);
   }
 }

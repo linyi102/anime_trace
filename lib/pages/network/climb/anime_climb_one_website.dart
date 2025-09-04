@@ -69,7 +69,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   }
 
   _climbAnime({String keyword = ""}) {
-    Log.info("开始爬取动漫封面");
+    AppLog.info("开始爬取动漫封面");
     searchOk = false;
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
@@ -78,7 +78,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       return ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(keyword, curWebsite);
     }).then((value) async {
       websiteClimbAnimes = value;
-      Log.info("爬取结束");
+      AppLog.info("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
 
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
@@ -196,7 +196,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
                 else if (ismigrate) {
                   showDialogOfConfirmMigrate(context, widget.animeId, anime);
                 } else if (anime.isCollected()) {
-                  Log.info("进入动漫详细页面${anime.animeId}");
+                  AppLog.info("进入动漫详细页面${anime.animeId}");
                   // 不为0，说明已添加，点击进入动漫详细页面
                   Navigator.of(context).push(
                     // MaterialPageRoute(

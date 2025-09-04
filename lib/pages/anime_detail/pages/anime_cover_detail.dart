@@ -158,7 +158,7 @@ class AnimeCoverDetail extends StatelessWidget {
             ? Global.getHeadersToGetDoubanPic()
             : null,
         errorListener: (e) {
-          Log.error("缓存网络图片错误：$coverUrl");
+          AppLog.error("缓存网络图片错误：$coverUrl");
         },
       );
     } else {

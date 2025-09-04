@@ -11,7 +11,7 @@ import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/utils/log.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
-  Log.info("迁移动漫$animeId");
+  AppLog.info("迁移动漫$animeId");
   bool updateName =
       SPUtil.getBool("updateNameInMigratePage", defaultValue: true);
   bool updateCover =

@@ -53,7 +53,7 @@ class AppUpgradeController extends GetxController {
   @override
   void onInit() async {
     if (Platform.isWindows) {
-      Log.info("Windows exe path: ${Platform.resolvedExecutable}");
+      AppLog.info("Windows exe path: ${Platform.resolvedExecutable}");
     }
     packageInfo = await PackageInfo.fromPlatform();
     getLatestVersion(autoCheck: true);
@@ -78,18 +78,18 @@ class AppUpgradeController extends GetxController {
       latestRelease = AppRelease.fromJson(response.data);
       if (latestRelease == null) {
         status = LoadStatus.fail;
-        Log.info('解析最新版本失败');
+        AppLog.info('解析最新版本失败');
         return;
       }
       status = LoadStatus.success;
-      Log.info('最新版本：${latestRelease?.tagName}');
+      AppLog.info('最新版本：${latestRelease?.tagName}');
       // if (!Global.isRelease) latestRelease?.tagName = "1.10.1-beta";
 
       if (Version.parse(latestVersion) > Version.parse(curVersion)) {
         // 检测到新版本
         if (autoCheck && SPUtil.getBool(ignoreVersionKey)) {
           // 自动检查时若忽略了该新版本，则不提示
-          Log.info('忽略了新版本：$latestVersion');
+          AppLog.info('忽略了新版本：$latestVersion');
         } else {
           _showDialogUpgrade(autoCheck);
         }
@@ -109,7 +109,7 @@ class AppUpgradeController extends GetxController {
       }
     } else {
       status = LoadStatus.fail;
-      Log.info('获取最新版本失败');
+      AppLog.info('获取最新版本失败');
     }
 
     if (status == LoadStatus.fail && showToast) {
@@ -310,7 +310,7 @@ class AppUpgradeController extends GetxController {
     // 显示进度下载框
     _showDownloadDialog();
 
-    Log.info('下载链接：$url');
+    AppLog.info('下载链接：$url');
     // 开始下载
     _download(
       urlPath: url,
@@ -466,7 +466,7 @@ class AppUpgradeController extends GetxController {
       onReceiveProgress: (count, total) {
         this.count = count;
         this.total = total;
-        // Log.info('下载进度：$count/$total');
+        // AppLog.info('下载进度：$count/$total');
         update();
         if (count == total) {
           downloading = false;

@@ -66,7 +66,7 @@ class HistoryController extends GetxController {
   }
 
   Future<void> refreshData() {
-    Log.info("刷新历史页");
+    AppLog.info("刷新历史页");
     // 恢复为初始状态
     for (var view in views) {
       // 初始页号
@@ -91,7 +91,7 @@ class HistoryController extends GetxController {
   }
 
   loadMoreData() async {
-    Log.info("加载更多数据");
+    AppLog.info("加载更多数据");
     views[selectedViewIndex].historyRecords.addAll(
         await HistoryDao.getHistoryPageable(
             pageParams: views[selectedViewIndex].pageParams,

@@ -46,7 +46,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
         widget.animeController.labels
             .map((label) => GestureDetector(
                   onTap: () async {
-                    Log.info("点按标签：$label");
+                    AppLog.info("点按标签：$label");
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -57,7 +57,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
                     });
                   },
                   onLongPress: () {
-                    Log.info("长按标签：$label");
+                    AppLog.info("长按标签：$label");
                   },
                   child: Chip(
                       visualDensity: VisualDensity.compact,
@@ -73,7 +73,7 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
         label: Text("  +  "),
       ),
       onTap: () {
-        Log.info("添加标签");
+        AppLog.info("添加标签");
         // 弹出底部菜单，提供搜索和查询列表
         // Navigator.of(context).push(MaterialPageRoute(
         //     builder: (context) => LabelManagePage(

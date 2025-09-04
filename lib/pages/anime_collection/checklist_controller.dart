@@ -105,15 +105,15 @@ class ChecklistController extends GetxController
   }
 
   void loadAnimes() async {
-    Log.info("开始加载数据");
+    AppLog.info("开始加载数据");
     animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
     for (int i = 0; i < tags.length; ++i) {
       animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(
           tags[i], 0, pageSize,
           animeSortCond: animeSortCond);
-      // Log.info("animesInTag[$i].length=${animesInTag[i].length}");
+      // AppLog.info("animesInTag[$i].length=${animesInTag[i].length}");
     }
-    Log.info("数据加载完毕");
+    AppLog.info("数据加载完毕");
 
     // 获取首页数据后重置页号，避免同时加载更多时覆盖页号
     for (int i = 0; i < pageIndexList.length; ++i) {

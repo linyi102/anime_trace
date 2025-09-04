@@ -79,10 +79,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
     // _generateCustomAnimes();
 
-    Log.info("开始爬取动漫封面");
+    AppLog.info("开始爬取动漫封面");
     // 遍历所有搜索源
     for (var climbWebsite in climbWebsites) {
-      Log.info(climbWebsite.toString());
+      AppLog.info(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源
       if (!climbWebsite.enable || climbWebsite.discard) continue; // 不是break啊...
 
@@ -146,7 +146,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     if (lastInputKeyword.isEmpty) return true;
     _generateCustomAnimes(); // 也可能会迁移自定义动漫
 
-    Log.info("mixing...");
+    AppLog.info("mixing...");
     mixedAnimes = websiteClimbAnimes;
 
     for (var climbWebsite in climbWebsites) {
