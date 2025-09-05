@@ -72,12 +72,18 @@ class HistoryController extends GetxController {
     // 切换导航后重新渲染State中的PageView时，展示的页号始终是initialPage(可能和curViewIndex不对应)，所以此处重新创建PageController
     pageController?.dispose();
     pageController = PageController(initialPage: curViewIndex);
+
+    final futures = <Future>[];
     for (var view in views) {
       // 重置页号
       view.pageParams.pageIndex = view.pageParams.baseIndex;
-      view.historyRecords = await HistoryDao.getHistoryPageable(
-          pageParams: view.pageParams, dateLength: view.dateLength);
+      futures.add(Future(() async {
+        view.historyRecords = await HistoryDao.getHistoryPageable(
+            pageParams: view.pageParams, dateLength: view.dateLength);
+      }));
     }
+    await Future.wait(futures);
+
     loadOk = true;
     update();
   }
