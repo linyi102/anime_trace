@@ -62,11 +62,10 @@ class AnimeGridCover extends StatelessWidget {
               Stack(
                 children: [
                   _buildCover(
-                      context,
-                      _animeDisplayController.showGridAnimeName.value &&
-                          _animeDisplayController.showNameInCover.value,
-                      reduceMemCache:
-                          !_animeDisplayController.showOriCover.value),
+                    context,
+                    _animeDisplayController.showGridAnimeName.value &&
+                        _animeDisplayController.showNameInCover.value,
+                  ),
                   if (showProgress &&
                       _anime.isCollected() &&
                       _animeDisplayController.showGridAnimeProgress.value)

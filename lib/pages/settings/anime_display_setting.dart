@@ -1,3 +1,5 @@
+import 'package:animetrace/pages/settings/anime_cover_custom_page.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/dialog/dialog_select_uint.dart';
@@ -107,6 +109,13 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
         },
       ));
 
+      list.add(ListTile(
+        title: const Text("封面样式"),
+        onTap: () {
+          RouteUtil.materialTo(context, const AnimeCoverCustomPage());
+        },
+      ));
+
       list.add(SwitchListTile(
         title: const Text("显示动漫名称"),
         value: animeDisplayController.showGridAnimeName.value,
@@ -165,14 +174,6 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     //     animeDisplayController.turnShowReviewNumber();
     //   },
     // ));
-
-    list.add(SwitchListTile(
-      title: const Text("封面显示原图"),
-      subtitle: const Text("开启后可能会导致页面切换时卡顿"),
-      value: animeDisplayController.showOriCover.value,
-      onChanged: (bool value) => animeDisplayController.turnShowOriCover(),
-    ));
-
     return list;
   }
 }

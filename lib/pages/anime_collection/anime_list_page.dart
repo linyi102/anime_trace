@@ -1,10 +1,9 @@
 import 'package:animetrace/controllers/anime_service.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_grid_view.dart';
+import 'package:animetrace/pages/anime_collection/widgets/anime_grid_view.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/loading_widget.dart';
-
 import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/dao/anime_dao.dart';
