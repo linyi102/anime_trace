@@ -7,8 +7,9 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 class AppTheme {
   /// 圆角
   static double get cardRadius => 8.0;
-  static double get imgRadius => 8.0;
-  static double get noteImgRadius => 8.0; // 笔记图片
+  static double get imgRadius => 12.0; // 封面网格圆角
+  static double get coverListRadius => 8.0; // 封面列表圆角
+  static double get noteImgRadius => 12.0; // 笔记图片
   static double get noteImageSpacing => 6.0; // 笔记图片间隔
   static double get stateRadius => 6.0; // 集数、观看次数
   static double get bottomSheetRadius => 16.0;

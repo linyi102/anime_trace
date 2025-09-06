@@ -2,7 +2,6 @@ import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -174,114 +173,130 @@ class CustomAnimeCover extends StatelessWidget {
 
     return Container(
       width: width,
-      margin: margin ?? const EdgeInsets.all(4),
+      margin: margin ?? const EdgeInsets.all(2),
       child: InkWell(
         borderRadius: borderRadius,
         onTap: onTap,
         onLongPress: onLongPress,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: borderRadius,
-              child: AspectRatio(
-                aspectRatio: 0.72,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    FadeAnimatedSwitcher(
-                      loadOk: !showLoading,
-                      duration: const Duration(milliseconds: 400),
-                      specifiedLoadingWidget: const LoadingWidget(center: true),
-                      destWidget: CommonImage(anime.getCommonCoverUrl()),
-                      // 保证图片填充
-                      stackFit: StackFit.expand,
-                    ),
-                    if (selected)
-                      Material(
-                        color: Colors.black.withOpacityFactor(0.6),
-                        child: const Center(
-                            child: Icon(Icons.check, color: Colors.white)),
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+            border: Border.all(
+              color: selected
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: borderRadius,
+                child: AspectRatio(
+                  aspectRatio: 0.72,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      FadeAnimatedSwitcher(
+                        loadOk: !showLoading,
+                        duration: const Duration(milliseconds: 400),
+                        specifiedLoadingWidget:
+                            const LoadingWidget(center: true),
+                        destWidget: CommonImage(anime.getCommonCoverUrl()),
+                        // 保证图片填充
+                        stackFit: StackFit.expand,
                       ),
-                    // 左上角组件
-                    if (topLeftStatusWidgets.isNotEmpty)
-                      Positioned(
-                        left: 0,
-                        top: 8,
-                        child: Row(
-                            children: topLeftStatusWidgets
-                                .map((e) => Padding(
-                                    padding: const EdgeInsets.only(left: 4),
-                                    child: e))
-                                .toList()),
-                      ),
-                    // 右上角组件
-                    if (topRightStatusWidgets.isNotEmpty)
-                      Positioned(
-                        right: 0,
-                        top: 8,
-                        child: Row(
-                            children: topRightStatusWidgets
-                                .map((e) => Padding(
-                                    padding: const EdgeInsets.only(right: 4),
-                                    child: e))
-                                .toList()),
-                      ),
-                    // 封面内底部组件
-                    if (style.namePlacement == Placement.bottomInCover ||
-                        style.progressLinearPlacement ==
-                            Placement.bottomInCover)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: [Colors.black54, Colors.transparent],
-                            ),
-                          ),
+
+                      if (selected)
+                        Material(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(80),
+                        ),
+
+                      // 左上角组件
+                      if (topLeftStatusWidgets.isNotEmpty)
+                        Positioned(
+                          left: 0,
+                          top: 8,
+                          child: Row(
+                              children: topLeftStatusWidgets
+                                  .map((e) => Padding(
+                                      padding: const EdgeInsets.only(left: 4),
+                                      child: e))
+                                  .toList()),
+                        ),
+                      // 右上角组件
+                      if (topRightStatusWidgets.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 8,
+                          child: Row(
+                              children: topRightStatusWidgets
+                                  .map((e) => Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: e))
+                                  .toList()),
+                        ),
+                      // 封面内底部组件
+                      if (style.namePlacement == Placement.bottomInCover ||
+                          style.progressLinearPlacement ==
+                              Placement.bottomInCover)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
                           child: Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (style.namePlacement ==
-                                    Placement.bottomInCover)
-                                  _buildName(enableShadow: true),
-                                if (style.progressLinearPlacement ==
-                                    Placement.bottomInCover)
-                                  _buildLinearProgress(),
-                              ],
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [Colors.black54, Colors.transparent],
+                              ),
+                            ),
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (style.namePlacement ==
+                                      Placement.bottomInCover)
+                                    _buildName(enableShadow: true),
+                                  if (style.progressLinearPlacement ==
+                                      Placement.bottomInCover)
+                                    _buildLinearProgress(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            // 封面下方组件
-            if (style.namePlacement == Placement.bottomOutCover ||
-                style.progressLinearPlacement == Placement.bottomOutCover)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (style.progressLinearPlacement ==
-                        Placement.bottomOutCover)
-                      _buildLinearProgress(),
-                    if (style.namePlacement == Placement.bottomOutCover)
-                      _buildName(),
-                  ],
+              // 封面下方组件
+              if (style.namePlacement == Placement.bottomOutCover ||
+                  style.progressLinearPlacement == Placement.bottomOutCover)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (style.progressLinearPlacement ==
+                          Placement.bottomOutCover)
+                        _buildLinearProgress(),
+                      if (style.namePlacement == Placement.bottomOutCover)
+                        _buildName(),
+                    ],
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
