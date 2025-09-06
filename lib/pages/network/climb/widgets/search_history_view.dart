@@ -29,12 +29,12 @@ class SearchHistoryView extends StatelessWidget {
                 ),
                 trailing: IconButton(
                     onPressed: () => _showClearAllDialog(context),
-                    icon: const Icon(Icons.delete)),
+                    icon: const Icon(Icons.delete_outline_outlined)),
               ),
               Container(
-                constraints: const BoxConstraints(maxHeight: 120),
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                constraints: BoxConstraints(
+                    maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: SingleChildScrollView(
                   child: Wrap(
                     spacing: AppTheme.wrapSacing,
@@ -42,11 +42,13 @@ class SearchHistoryView extends StatelessWidget {
                     children: [
                       for (final keyword in controller._keywords.reversed)
                         InputChip(
-                          label: Text(keyword),
+                          label: Text(keyword,
+                              style: const TextStyle(fontSize: 14, height: 1)),
                           onPressed: () => onTapKeyword(keyword),
                           onDeleted: () => controller.removeKeyword(keyword),
                           deleteIconColor: Theme.of(context).hintColor,
                           deleteIcon: const Icon(Icons.close, size: 16),
+                          deleteButtonTooltipMessage: '',
                         )
                     ],
                   ),
@@ -85,7 +87,7 @@ class SearchHistoryView extends StatelessWidget {
 
 class SearchHistoryController extends ChangeNotifier {
   List<String> _keywords = [];
-  final int maxKeywordCnt = 100;
+  final int maxKeywordCnt = 5;
 
   SearchHistoryController() {
     _init();
@@ -101,7 +103,9 @@ class SearchHistoryController extends ChangeNotifier {
       _keywords.remove(keyword);
     }
     _keywords.add(keyword);
-    if (_keywords.length > maxKeywordCnt) _keywords.removeAt(0);
+    if (_keywords.length > maxKeywordCnt) {
+      _keywords = _keywords.sublist(_keywords.length - maxKeywordCnt);
+    }
     notifyListeners();
     ConfigDao.setSearchHistoryKeywords(_keywords);
   }

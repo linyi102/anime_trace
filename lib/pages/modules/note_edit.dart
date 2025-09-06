@@ -293,20 +293,16 @@ class _NoteEditPageState extends State<NoteEditPage> {
     );
   }
 
-  Container _buildAddButton() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        color: Theme.of(context).hoverColor,
-        // border: Border.all(
-        //   style: BorderStyle.solid,
-        //   color: Theme.of(context).hintColor,
-        // ),
-      ),
+  Widget _buildAddButton() {
+    final radius = BorderRadius.circular(AppTheme.noteImgRadius);
+    return Material(
+      color: Theme.of(context).colorScheme.tertiaryContainer,
+      borderRadius: radius,
       child: InkWell(
         onTap: () => _pickLocalImages(),
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        child: Icon(Icons.add, color: Theme.of(context).hintColor),
+        borderRadius: radius,
+        child: Icon(Icons.add,
+            color: Theme.of(context).colorScheme.onTertiaryContainer),
       ),
     );
   }
