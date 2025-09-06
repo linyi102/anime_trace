@@ -41,10 +41,6 @@ class AppTheme {
   /// 可连接的颜色
   static Color connectableColor = const Color.fromRGBO(8, 241, 117, 1);
 
-  /// 观看次数的颜色
-  static Color reviewNumberBg = Colors.orange;
-  static Color reviewNumberFg = Colors.white;
-
   /// 主题
   static List<ThemeMode> themeModes = [
     ThemeMode.system,

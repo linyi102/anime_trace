@@ -299,10 +299,11 @@ class _AnimeListPageState extends State<AnimeListPage> {
             anime.animeName,
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
-          leading: Obx(() => AnimeListCover(
-                anime,
-                reviewNumber: anime.reviewNumber,
-              )),
+          leading: AnimeListCover(
+            anime,
+            reviewNumber: anime.reviewNumber,
+            showReviewNumber: true,
+          ),
           trailing: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
             style: Theme.of(context).textTheme.bodySmall,
