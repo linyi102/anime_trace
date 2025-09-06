@@ -201,6 +201,9 @@ class MyAppState extends State<MyApp> {
         margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         elevation: 0,
       ),
+      listTileTheme: const ListTileThemeData(
+        visualDensity: VisualDensity.standard,
+      ),
       pageTransitionsTheme: _getPageTransitionsTheme(),
       bottomSheetTheme: const BottomSheetThemeData(
         clipBehavior: Clip.antiAlias,
@@ -226,6 +229,20 @@ class MyAppState extends State<MyApp> {
         ),
       ),
       fontFamilyFallback: themeController.fontFamilyFallback,
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: MenuStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: colorScheme.surfaceContainerHigh,
+        ),
+      ),
     );
   }
 }

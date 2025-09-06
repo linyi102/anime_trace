@@ -1,5 +1,4 @@
 import 'package:animetrace/components/anime_custom_cover.dart';
-import 'package:animetrace/widgets/picker/single_select_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/dialog/dialog_select_uint.dart';
@@ -52,12 +51,12 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
           tabs: tabStr.map((e) => Tab(text: e)).toList()),
       body: CommonTabBarView(controller: tabController, children: [
         widget.sortPage,
-        Obx(() => SingleChildScrollView(
-              child: Column(
-                children:
-                    _buildListTiles(context, animeDisplayController).toList(),
-              ),
-            ))
+        Obx(
+          () => ListView(
+              padding: const EdgeInsets.only(bottom: 40),
+              children:
+                  _buildListTiles(context, animeDisplayController).toList()),
+        )
       ]),
     );
   }
@@ -112,98 +111,96 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
 
       yield ListTile(
         title: const Text('名字位置'),
-        subtitle: Text(style.namePlacement.label),
-        onTap: () async {
-          final r = await SingleSelectDialog(
-            title: const Text('选择位置'),
-            value: style.namePlacement,
-            options: const [
-              Placement.bottomInCover,
-              Placement.bottomOutCover,
-              Placement.none
-            ],
-            labelBuilder: (placement) => Text(placement.label),
-          ).show(context);
-          if (r != null) {
-            displayController
-                .updateCoverStyle(style.copyWith(namePlacement: r));
-          }
-        },
+        trailing: DropdownMenu(
+          width: 160,
+          requestFocusOnTap: false,
+          initialSelection: style.namePlacement,
+          dropdownMenuEntries: [
+            Placement.bottomInCover,
+            Placement.bottomOutCover,
+            Placement.none
+          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+          onSelected: (r) {
+            if (r != null) {
+              displayController
+                  .updateCoverStyle(style.copyWith(namePlacement: r));
+            }
+          },
+        ),
       );
       yield ListTile(
         title: const Text('进度条'),
-        subtitle: Text(style.progressLinearPlacement.label),
-        onTap: () async {
-          final r = await SingleSelectDialog(
-            title: const Text('选择位置'),
-            value: style.progressLinearPlacement,
-            options: const [
-              Placement.bottomInCover,
-              Placement.bottomOutCover,
-              Placement.none
-            ],
-            labelBuilder: (placement) => Text(placement.label),
-          ).show(context);
-          if (r != null) {
-            displayController
-                .updateCoverStyle(style.copyWith(progressLinearPlacement: r));
-          }
-        },
+        trailing: DropdownMenu(
+          width: 160,
+          requestFocusOnTap: false,
+          initialSelection: style.progressLinearPlacement,
+          dropdownMenuEntries: [
+            Placement.bottomInCover,
+            Placement.bottomOutCover,
+            Placement.none
+          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+          onSelected: (r) {
+            if (r != null) {
+              displayController
+                  .updateCoverStyle(style.copyWith(progressLinearPlacement: r));
+            }
+          },
+        ),
       );
       yield ListTile(
         title: const Text('进度'),
-        subtitle: Text(style.progressNumberPlacement.label),
-        onTap: () async {
-          final r = await SingleSelectDialog(
-            title: const Text('选择位置'),
-            value: style.progressNumberPlacement,
-            options: const [
-              Placement.topLeft,
-              Placement.topRight,
-              Placement.none
-            ],
-            labelBuilder: (placement) => Text(placement.label),
-          ).show(context);
-          if (r != null) {
-            displayController
-                .updateCoverStyle(style.copyWith(progressNumberPlacement: r));
-          }
-        },
+        trailing: DropdownMenu(
+          width: 160,
+          requestFocusOnTap: false,
+          initialSelection: style.progressNumberPlacement,
+          dropdownMenuEntries: [
+            Placement.topLeft,
+            Placement.topRight,
+            Placement.none
+          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+          onSelected: (r) {
+            if (r != null) {
+              displayController
+                  .updateCoverStyle(style.copyWith(progressNumberPlacement: r));
+            }
+          },
+        ),
       );
       yield ListTile(
         title: const Text('系列'),
-        subtitle: Text(style.seriesPlacement.label),
-        onTap: () async {
-          final r = await SingleSelectDialog(
-            title: const Text('选择位置'),
-            value: style.seriesPlacement,
-            options: const [
-              Placement.topLeft,
-              Placement.topRight,
-              Placement.none
-            ],
-            labelBuilder: (placement) => Text(placement.label),
-          ).show(context);
-          if (r != null) {
-            displayController
-                .updateCoverStyle(style.copyWith(seriesPlacement: r));
-          }
-        },
+        trailing: DropdownMenu(
+          width: 160,
+          requestFocusOnTap: false,
+          initialSelection: style.seriesPlacement,
+          dropdownMenuEntries: [
+            Placement.topLeft,
+            Placement.topRight,
+            Placement.none
+          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+          onSelected: (r) {
+            if (r != null) {
+              displayController
+                  .updateCoverStyle(style.copyWith(seriesPlacement: r));
+            }
+          },
+        ),
       );
       yield ListTile(
         title: const Text('名字行数'),
-        subtitle: Text(style.maxNameLines.toString()),
-        onTap: () async {
-          final r = await SingleSelectDialog(
-            title: const Text('选择行数'),
-            value: style.maxNameLines,
-            options: const [1, 2, 3],
-            labelBuilder: (line) => Text(line.toString()),
-          ).show(context);
-          if (r != null) {
-            displayController.updateCoverStyle(style.copyWith(maxNameLines: r));
-          }
-        },
+        trailing: DropdownMenu(
+          width: 160,
+          requestFocusOnTap: false,
+          initialSelection: style.maxNameLines,
+          dropdownMenuEntries: [1, 2]
+              .map((e) => DropdownMenuEntry(label: e.toString(), value: e))
+              .toList(),
+          onSelected: (r) {
+            if (r != null) {
+              displayController
+                  .updateCoverStyle(style.copyWith(maxNameLines: r));
+            }
+          },
+        ),
       );
     }
 
