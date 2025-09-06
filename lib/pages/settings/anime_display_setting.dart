@@ -1,5 +1,5 @@
-import 'package:animetrace/pages/settings/anime_cover_custom_page.dart';
-import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/components/anime_custom_cover.dart';
+import 'package:animetrace/widgets/picker/single_select_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/dialog/dialog_select_uint.dart';
@@ -54,49 +54,50 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
         widget.sortPage,
         Obx(() => SingleChildScrollView(
               child: Column(
-                  children: _buildListTiles(context, animeDisplayController)),
+                children:
+                    _buildListTiles(context, animeDisplayController).toList(),
+              ),
             ))
       ]),
     );
   }
 
-  _buildListTiles(
-      BuildContext context, AnimeDisplayController animeDisplayController) {
-    bool displayList = animeDisplayController.displayList.value;
-    List<Widget> list = [];
+  Iterable<Widget> _buildListTiles(
+      BuildContext context, AnimeDisplayController displayController) sync* {
+    bool displayList = displayController.displayList.value;
+    final style = displayController.coverStyle.value;
 
-    list.add(SwitchListTile(
+    yield SwitchListTile(
       title: const Text("显示清单数量"),
-      value: animeDisplayController.showAnimeCntAfterTag.value,
-      onChanged: (bool value) =>
-          animeDisplayController.turnShowAnimeCntAfterTag(),
-    ));
+      value: displayController.showAnimeCntAfterTag.value,
+      onChanged: (bool value) => displayController.turnShowAnimeCntAfterTag(),
+    );
 
-    list.add(ListTile(
+    yield ListTile(
       title: displayList ? const Text("列表样式") : const Text("网格样式"),
       subtitle: const Text("点击切换列表/网格样式"),
       onTap: () {
-        animeDisplayController.turnDisplayList();
+        displayController.turnDisplayList();
       },
-    ));
+    );
 
     // 如果显示网格，则添加更多修改选项
     if (!displayList) {
-      list.add(SwitchListTile(
+      yield SwitchListTile(
         title: const Text("列数自适应"),
-        value: animeDisplayController.enableResponsiveGridColumnCnt.value,
+        value: displayController.enableResponsiveGridColumnCnt.value,
         onChanged: (bool value) {
-          animeDisplayController.turnEnableResponsiveGridColumnCnt();
+          displayController.turnEnableResponsiveGridColumnCnt();
         },
-      ));
+      );
 
-      list.add(ListTile(
+      yield ListTile(
         title: const Text("修改列数"),
-        subtitle: Text("${animeDisplayController.gridColumnCnt}"),
-        enabled: !animeDisplayController.enableResponsiveGridColumnCnt.value,
+        subtitle: Text("${displayController.gridColumnCnt}"),
+        enabled: !displayController.enableResponsiveGridColumnCnt.value,
         onTap: () {
           dialogSelectUint(context, "选择列数",
-                  initialValue: animeDisplayController.gridColumnCnt.value,
+                  initialValue: displayController.gridColumnCnt.value,
                   minValue: 1,
                   maxValue: 10)
               .then((value) {
@@ -104,76 +105,115 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
               AppLog.info("未选择，直接返回");
               return;
             }
-            animeDisplayController.setGridColumnCnt(value);
+            displayController.setGridColumnCnt(value);
           });
         },
-      ));
+      );
 
-      list.add(ListTile(
-        title: const Text("封面样式"),
-        onTap: () {
-          RouteUtil.materialTo(context, const AnimeCoverCustomPage());
+      yield ListTile(
+        title: const Text('名字位置'),
+        subtitle: Text(style.namePlacement.label),
+        onTap: () async {
+          final r = await SingleSelectDialog(
+            title: const Text('选择位置'),
+            value: style.namePlacement,
+            options: const [
+              Placement.bottomInCover,
+              Placement.bottomOutCover,
+              Placement.none
+            ],
+            labelBuilder: (placement) => Text(placement.label),
+          ).show(context);
+          if (r != null) {
+            displayController
+                .updateCoverStyle(style.copyWith(namePlacement: r));
+          }
         },
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("显示动漫名称"),
-        value: animeDisplayController.showGridAnimeName.value,
-        onChanged: (bool value) {
-          animeDisplayController.turnShowGridAnimeName();
+      );
+      yield ListTile(
+        title: const Text('进度条'),
+        subtitle: Text(style.progressLinearPlacement.label),
+        onTap: () async {
+          final r = await SingleSelectDialog(
+            title: const Text('选择位置'),
+            value: style.progressLinearPlacement,
+            options: const [
+              Placement.bottomInCover,
+              Placement.bottomOutCover,
+              Placement.none
+            ],
+            labelBuilder: (placement) => Text(placement.label),
+          ).show(context);
+          if (r != null) {
+            displayController
+                .updateCoverStyle(style.copyWith(progressLinearPlacement: r));
+          }
         },
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("动漫名称显示在封面内部"),
-        value: animeDisplayController.showNameInCover.value,
-        // 开启显示动漫名称后才能修改是否显示在内部
-        onChanged: animeDisplayController.showGridAnimeName.value
-            ? (bool value) {
-                animeDisplayController.turnShowNameInCover();
-              }
-            : null,
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("动漫名称只显示一行(默认两行)"),
-        value: animeDisplayController.nameMaxLines.value == 1,
-        onChanged: (bool value) {
-          animeDisplayController.turnNameMaxLines();
+      );
+      yield ListTile(
+        title: const Text('进度'),
+        subtitle: Text(style.progressNumberPlacement.label),
+        onTap: () async {
+          final r = await SingleSelectDialog(
+            title: const Text('选择位置'),
+            value: style.progressNumberPlacement,
+            options: const [
+              Placement.topLeft,
+              Placement.topRight,
+              Placement.none
+            ],
+            labelBuilder: (placement) => Text(placement.label),
+          ).show(context);
+          if (r != null) {
+            displayController
+                .updateCoverStyle(style.copyWith(progressNumberPlacement: r));
+          }
         },
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("封面右上角显示是否已加入系列"),
-        value: animeDisplayController.showSeriesFlagInGridStyle.value,
-        onChanged: (bool value) {
-          animeDisplayController.turnShowSeriesFlagInGridStyle();
+      );
+      yield ListTile(
+        title: const Text('系列'),
+        subtitle: Text(style.seriesPlacement.label),
+        onTap: () async {
+          final r = await SingleSelectDialog(
+            title: const Text('选择位置'),
+            value: style.seriesPlacement,
+            options: const [
+              Placement.topLeft,
+              Placement.topRight,
+              Placement.none
+            ],
+            labelBuilder: (placement) => Text(placement.label),
+          ).show(context);
+          if (r != null) {
+            displayController
+                .updateCoverStyle(style.copyWith(seriesPlacement: r));
+          }
         },
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("封面左上角显示进度"),
-        value: animeDisplayController.showGridAnimeProgress.value,
-        onChanged: (bool value) {
-          animeDisplayController.turnShowGridAnimeProgress();
+      );
+      yield ListTile(
+        title: const Text('名字行数'),
+        subtitle: Text(style.maxNameLines.toString()),
+        onTap: () async {
+          final r = await SingleSelectDialog(
+            title: const Text('选择行数'),
+            value: style.maxNameLines,
+            options: const [1, 2, 3],
+            labelBuilder: (line) => Text(line.toString()),
+          ).show(context);
+          if (r != null) {
+            displayController.updateCoverStyle(style.copyWith(maxNameLines: r));
+          }
         },
-      ));
-
-      list.add(SwitchListTile(
-        title: const Text("封面底部显示进度条"),
-        value: animeDisplayController.showProgressBar.value,
-        onChanged: (bool value) => animeDisplayController.turnShowProgressBar(),
-      ));
+      );
     }
 
     // 其他公共选项
-    // list.add(SwitchListTile(
+    // yield SwitchListTile(
     //   title: const Text("显示第几次观看"),
     //   value: animeDisplayController.showReviewNumber.value,
     //   onChanged: (bool value) {
     //     animeDisplayController.turnShowReviewNumber();
     //   },
-    // ));
-    return list;
+    // );
   }
 }

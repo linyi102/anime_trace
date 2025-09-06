@@ -18,7 +18,7 @@ class ClimbAgemys with Climb {
   String get idName => "age";
 
   @override
-  String get defaultBaseUrl => "https://www.agedm.org";
+  String get defaultBaseUrl => "https://www.agedm.vip";
 
   @override
   String get sourceName => "AGE动漫";

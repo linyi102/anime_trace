@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:animetrace/components/anime_cover.dart';
+import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/sp_profile.dart';

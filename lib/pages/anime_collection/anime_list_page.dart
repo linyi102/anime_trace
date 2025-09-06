@@ -1,6 +1,6 @@
 import 'package:animetrace/controllers/anime_service.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/pages/anime_collection/widgets/anime_grid_view.dart';
+import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/loading_widget.dart';
@@ -266,15 +266,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return AnimeGridView(
         scrollController: _scrollControllers[checklistIdx],
         animes: animesInTag[checklistIdx],
-        tagIdx: checklistIdx,
-        showProgressBar: true,
-        loadMore: (int tagIdx, int animeIdx) {
-          _loadExtraData(tagIdx, animeIdx);
+        loadMore: (int animeIdx) {
+          _loadExtraData(checklistIdx, animeIdx);
         },
-        onClick: (Anime anime) {
+        onTap: (Anime anime) {
           onPress(anime);
         },
-        onLongClick: (Anime anime) {
+        onLongPress: (Anime anime) {
           onLongPress(anime);
         },
         isSelected: (int animeIdx) {
@@ -303,8 +301,6 @@ class _AnimeListPageState extends State<AnimeListPage> {
           ),
           leading: Obx(() => AnimeListCover(
                 anime,
-                showReviewNumber:
-                    _animeDisplayController.showReviewNumber.value,
                 reviewNumber: anime.reviewNumber,
               )),
           trailing: Text(

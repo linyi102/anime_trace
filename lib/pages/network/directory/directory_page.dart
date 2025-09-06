@@ -204,19 +204,10 @@ class _DirectoryPageState extends State<DirectoryPage>
         delegate: SliverChildBuilderDelegate((context, index) {
       Anime anime = directory[index];
       return AnimeItemAutoLoad(
-        // 需要指定key，否则看不出来变化
-        key: UniqueKey(),
         anime: anime,
         onChanged: (newAnime) => anime = newAnime,
-        style: AnimeItemStyle.list,
-        // 不会实时变化
-        // subtitles: [
-        //   anime.getAnimeInfoFirstLine(),
-        //   anime.getAnimeInfoSecondLine()
-        // ],
         showAnimeInfo: true,
         showProgress: true,
-        showReviewNumber: true,
         climbDetail: false,
       );
     }, childCount: directory.length));

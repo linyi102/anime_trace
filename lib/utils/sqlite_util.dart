@@ -437,7 +437,7 @@ class SqliteUtil {
   }
 
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
-    AppLog.debug("sql: getAnimeByAnimeId($animeId)");
+    // AppLog.debug("sql: getAnimeByAnimeId($animeId)");
     var list = await database.rawQuery('''
     select *
     from anime

@@ -115,8 +115,6 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList>
     return AnimeItemAutoLoad(
       anime: anime,
       showProgress: false,
-      showReviewNumber: false,
-      showWeekday: true,
       showAnimeInfo: true,
       onChanged: (Anime newAnime) {},
     );

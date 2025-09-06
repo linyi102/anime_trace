@@ -1,5 +1,6 @@
+import 'package:animetrace/components/anime_custom_cover.dart';
+import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_grid_cover.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/pages/anime_detail/anime_detail.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
@@ -14,11 +15,8 @@ class AnimeItemAutoLoad extends StatefulWidget {
   const AnimeItemAutoLoad(
       {required this.anime,
       required this.onChanged,
-      this.style = AnimeItemStyle.list,
       this.subtitles = const [],
       this.showProgress = false,
-      this.showReviewNumber = false,
-      this.showWeekday = false,
       this.showAnimeInfo = false,
       this.mixDb = true,
       this.climbDetail = true,
@@ -27,10 +25,7 @@ class AnimeItemAutoLoad extends StatefulWidget {
   final Anime anime;
   final void Function(Anime newAnime) onChanged;
   final List<String> subtitles;
-  final AnimeItemStyle style;
   final bool showProgress;
-  final bool showReviewNumber;
-  final bool showWeekday;
   final bool showAnimeInfo; // 显示与动漫相关的两行信息
   final bool mixDb; // 如果数据库已收藏，则混入
   final bool climbDetail; // 爬取详细信息
@@ -92,11 +87,7 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.style == AnimeItemStyle.grid) {
-      return _buildGridItem();
-    } else {
-      return _buildListItem();
-    }
+    return _buildListItem();
   }
 
   _buildListItem() {
@@ -110,16 +101,19 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
             children: [
               // 封面
               FittedBox(
-                child: SizedBox(
+                child: CustomAnimeCover(
+                  anime: anime,
+                  showLoading: loading,
                   width: coverWidth,
-                  child: AnimeGridCover(
-                    anime,
-                    loading: loading,
-                    showName: false,
-                    showProgress: widget.showProgress,
-                    showReviewNumber: widget.showReviewNumber,
-                    onPressed: _openImage,
+                  // 只展示进度
+                  style: AnimeDisplayController.to.coverStyle.value.copyWith(
+                    namePlacement: Placement.none,
+                    progressLinearPlacement: Placement.none,
+                    seriesPlacement: Placement.none,
+                    progressNumberPlacement:
+                        widget.showProgress ? null : Placement.none,
                   ),
+                  onTap: _openImage,
                 ),
               ),
               const SizedBox(width: 10),
@@ -142,16 +136,6 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
           ),
         ),
       ),
-    );
-  }
-
-  AnimeGridCover _buildGridItem() {
-    return AnimeGridCover(
-      anime,
-      onPressed: _enterDetailPage,
-      loading: loading,
-      showProgress: widget.showProgress,
-      showReviewNumber: widget.showReviewNumber,
     );
   }
 
@@ -239,9 +223,4 @@ class _AnimeItemAutoLoadState extends State<AnimeItemAutoLoad> {
       widget.onChanged(anime);
     });
   }
-}
-
-enum AnimeItemStyle {
-  list,
-  grid;
 }

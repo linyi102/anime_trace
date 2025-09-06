@@ -1,4 +1,6 @@
+import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/values/theme.dart';
@@ -34,11 +36,20 @@ class AnimeCoverStyle {
 
   const AnimeCoverStyle({
     this.namePlacement = Placement.bottomOutCover,
-    this.progressLinearPlacement = Placement.bottomOutCover,
+    this.progressLinearPlacement = Placement.none,
     this.progressNumberPlacement = Placement.topLeft,
     this.seriesPlacement = Placement.topRight,
     this.maxNameLines = 1,
   });
+
+  factory AnimeCoverStyle.none() {
+    return const AnimeCoverStyle(
+      namePlacement: Placement.none,
+      progressLinearPlacement: Placement.none,
+      progressNumberPlacement: Placement.none,
+      seriesPlacement: Placement.none,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'namePlacement': namePlacement.name,
@@ -97,6 +108,7 @@ class CustomAnimeCover extends StatelessWidget {
   final bool selected;
   final GestureTapCallback? onTap;
   final GestureLongPressCallback? onLongPress;
+  final bool showLoading;
 
   const CustomAnimeCover({
     super.key,
@@ -107,6 +119,7 @@ class CustomAnimeCover extends StatelessWidget {
     this.selected = false,
     this.onTap,
     this.onLongPress,
+    this.showLoading = false,
   });
 
   @override
@@ -177,7 +190,16 @@ class CustomAnimeCover extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    CommonImage(anime.getCommonCoverUrl()),
+                    FadeAnimatedSwitcher(
+                      loadOk: !showLoading,
+                      duration: const Duration(milliseconds: 400),
+                      specifiedLoadingWidget: const LoadingWidget(center: true),
+                      destWidget: SizedBox(
+                        child: CommonImage(
+                          anime.getCommonCoverUrl(),
+                        ),
+                      ),
+                    ),
                     if (selected)
                       Material(
                         color: Colors.black.withOpacityFactor(0.6),
@@ -225,16 +247,19 @@ class CustomAnimeCover extends StatelessWidget {
                               colors: [Colors.black54, Colors.transparent],
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (style.namePlacement ==
-                                  Placement.bottomInCover)
-                                _buildName(enableShadow: true),
-                              if (style.progressLinearPlacement ==
-                                  Placement.bottomInCover)
-                                _buildLinearProgress(),
-                            ],
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (style.namePlacement ==
+                                    Placement.bottomInCover)
+                                  _buildName(enableShadow: true),
+                                if (style.progressLinearPlacement ==
+                                    Placement.bottomInCover)
+                                  _buildLinearProgress(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -276,18 +301,20 @@ class CustomAnimeCover extends StatelessWidget {
     );
   }
 
-  Padding _buildLinearProgress() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(4),
-        child: LinearProgressIndicator(
-          value: anime.animeEpisodeCnt == 0
-              ? 0
-              : anime.checkedEpisodeCnt / anime.animeEpisodeCnt,
-        ),
-      ),
-    );
+  Widget _buildLinearProgress() {
+    return !anime.isCollected()
+        ? const SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: anime.animeEpisodeCnt == 0
+                    ? 0
+                    : anime.checkedEpisodeCnt / anime.animeEpisodeCnt,
+              ),
+            ),
+          );
   }
 }
 
