@@ -24,7 +24,7 @@ class AnimeListCover extends StatelessWidget {
             height: 40,
             width: 40,
             child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+                borderRadius: BorderRadius.circular(AppTheme.coverListRadius),
                 child: CommonImage(_anime.getCommonCoverUrl())),
           ),
           showReviewNumber && reviewNumber > 1

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/utils/event.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/models/anime.dart';
@@ -126,10 +127,12 @@ class ChecklistController extends GetxController
   }
 
   void quitMulti() {
+    AppLog.debug('退出多选');
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
     multi = false;
     selectedAnimes.clear();
     update();
+    Event(EventName.setNavigator).send(true);
   }
 
   /// 生成描述

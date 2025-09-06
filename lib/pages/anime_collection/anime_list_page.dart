@@ -1,4 +1,5 @@
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:animetrace/utils/event.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
@@ -22,7 +23,6 @@ import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/common_tab_bar_view.dart';
-import 'package:animetrace/widgets/floating_bottom_actions.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -246,16 +246,12 @@ class _AnimeListPageState extends State<AnimeListPage> {
       list.add(
         Scrollbar(
           controller: _scrollControllers[checklistIdx],
-          child: Stack(children: [
-            SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage)
-                ? RefreshIndicator(
-                    onRefresh: () => BackupService.to.tryRestoreRemoteFile(),
-                    child: animeView,
-                  )
-                : animeView,
-            // 一定要叠放在ListView上面，否则点击按钮没有反应
-            _buildBottomActions(checklistIdx),
-          ]),
+          child: SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage)
+              ? RefreshIndicator(
+                  onRefresh: () => BackupService.to.tryRestoreRemoteFile(),
+                  child: animeView,
+                )
+              : animeView,
         ),
       );
     }
@@ -350,6 +346,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
         AppLog.info("[多选模式]添加anime=${anime.animeName}");
         selectedAnimes.add(anime);
       }
+      Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
       setState(() {});
       return;
     } else {
@@ -367,6 +364,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
     } else {
       // 多选模式下，应提供范围选择
     }
+    Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
   }
 
   void _enterPageAnimeDetail(Anime anime) {
@@ -466,6 +464,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
             animeCntPerTag[newTagindex] += modifiedCnt;
             checklistController.quitMulti();
             Navigator.pop(context);
+            // 重新查询动漫会导致丢失分页状态，因此只在当前清单已查询动漫为空时再重新查询
+            if (animesInTag[oldTagindex].isEmpty) {
+              checklistController.loadData();
+            }
           },
         ),
       );
@@ -519,26 +521,6 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return list;
   }
 
-  Widget _buildBottomActions(int checklistIdx) {
-    return FloatingBottomActions(
-        display: multiSelected,
-        itemPadding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          IconButton(
-            onPressed: () {
-              _dialogModifyTag(tags[checklistIdx]);
-            },
-            icon: const Icon(Icons.checklist),
-            tooltip: '移动清单',
-          ),
-          IconButton(
-            onPressed: () => _dialogDeleteAnime(checklistIdx),
-            icon: const Icon(Icons.delete_outline),
-            tooltip: '删除动漫',
-          ),
-        ]);
-  }
-
   _dialogDeleteAnime(int checklistIdx) {
     return showDialog(
       context: context,
@@ -570,20 +552,33 @@ class _AnimeListPageState extends State<AnimeListPage> {
     );
   }
 
-  _getActionsOnMulti() {
+  List<Widget> _getActionsOnMulti() {
+    final checklistIdx = checklistController.tabController!.index;
     List<Widget> actions = [
-      // IconButton(
-      //     onPressed: () {
-      //       if (checklistController.tabController == null) return;
+      IconButton(
+        onPressed: () {
+          if (checklistController.tabController == null) return;
 
-      //       int checklistIdx = checklistController.tabController!.index;
-      //       checklistController.selectedAnimes.clear();
-      //       checklistController.selectedAnimes
-      //           .addAll(animesInTag[checklistIdx]);
-      //       setState(() {});
-      //       // 缺点：全选后修改菜单，会导致无法加载下一页
-      //     },
-      //     icon: const Icon(Icons.select_all))
+          int checklistIdx = checklistController.tabController!.index;
+          checklistController.selectedAnimes.clear();
+          checklistController.selectedAnimes.addAll(animesInTag[checklistIdx]);
+          setState(() {});
+          // 缺点：全选后修改菜单，会导致无法加载下一页，如果重新加载也会丢失分页状态
+        },
+        icon: const Icon(Icons.select_all),
+      ),
+      IconButton(
+        onPressed: () {
+          _dialogModifyTag(tags[checklistIdx]);
+        },
+        icon: const Icon(Icons.checklist),
+        tooltip: '移动清单',
+      ),
+      IconButton(
+        onPressed: () => _dialogDeleteAnime(checklistIdx),
+        icon: const Icon(Icons.delete_outline),
+        tooltip: '删除动漫',
+      ),
     ];
     return actions;
   }

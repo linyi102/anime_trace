@@ -1,4 +1,6 @@
 import 'package:animations/animations.dart';
+import 'package:animetrace/utils/event.dart';
+import 'package:animetrace/widgets/animation/fade_in_up.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
@@ -20,7 +22,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
   final logic = Get.put(MainScreenLogic());
   int _clickBackCnt = 0;
   bool get enableAnimation => false;
@@ -28,6 +30,18 @@ class _MainScreenState extends State<MainScreen> {
   bool expandSideBar = SpProfile.getExpandSideBar();
   bool get hideMobileBottomLabel =>
       ThemeController.to.hideMobileBottomLabel.value;
+
+  bool hideBottomNavigator = false;
+
+  @override
+  List<VoidCallback> get initialListeners => [
+        Event(EventName.setNavigator).listen<bool>((to) {
+          AppLog.debug('${to ? '显示' : '隐藏'}导航栏状态');
+          setState(() {
+            hideBottomNavigator = !to;
+          });
+        }),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -207,12 +221,10 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: _buildMainPage(),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // const CommonDivider(),
-          _buildBottomNavigationBar(),
-        ],
+      // TODO 隐藏时仍然会占用位置(背景色)，只有为null时才会彻底隐藏
+      bottomNavigationBar: FadeInUp(
+        animate: !hideBottomNavigator,
+        child: _buildBottomNavigationBar(),
       ),
     );
   }
