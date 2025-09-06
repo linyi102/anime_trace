@@ -194,11 +194,9 @@ class CustomAnimeCover extends StatelessWidget {
                       loadOk: !showLoading,
                       duration: const Duration(milliseconds: 400),
                       specifiedLoadingWidget: const LoadingWidget(center: true),
-                      destWidget: SizedBox(
-                        child: CommonImage(
-                          anime.getCommonCoverUrl(),
-                        ),
-                      ),
+                      destWidget: CommonImage(anime.getCommonCoverUrl()),
+                      // 保证图片填充
+                      stackFit: StackFit.expand,
                     ),
                     if (selected)
                       Material(

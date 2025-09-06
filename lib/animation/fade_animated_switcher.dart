@@ -8,6 +8,7 @@ class FadeAnimatedSwitcher extends StatelessWidget {
   final Widget? specifiedLoadingWidget;
   final Duration? duration;
   final bool sliver;
+  final StackFit stackFit;
 
   const FadeAnimatedSwitcher({
     Key? key,
@@ -16,6 +17,7 @@ class FadeAnimatedSwitcher extends StatelessWidget {
     this.specifiedLoadingWidget,
     this.duration,
     this.sliver = false,
+    this.stackFit = StackFit.loose,
   }) : super(key: key);
 
   @override
@@ -27,6 +29,18 @@ class FadeAnimatedSwitcher extends StatelessWidget {
 
     return sliver
         ? SliverAnimatedSwitcher(duration: resolvedDuration, child: child)
-        : AnimatedSwitcher(duration: resolvedDuration, child: child);
+        : AnimatedSwitcher(
+            duration: resolvedDuration,
+            child: child,
+            layoutBuilder: (currentChild, previousChildren) {
+              return Stack(
+                alignment: Alignment.center,
+                fit: stackFit,
+                children: <Widget>[
+                  ...previousChildren,
+                  if (currentChild != null) currentChild,
+                ],
+              );
+            });
   }
 }
