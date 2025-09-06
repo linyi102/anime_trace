@@ -111,7 +111,6 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     return Scaffold(
       appBar: SearchAppBar(
         hintText: "搜索动漫",
-        useModernStyle: false,
         // 自动弹出键盘，如果是修改封面，则为false
         autofocus: widget.keyword.isEmpty ? true : false,
         inputController: animeNameController..text,

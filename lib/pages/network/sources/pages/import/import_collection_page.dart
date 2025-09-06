@@ -151,7 +151,6 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
     return AppBar(
       title: SearchAppBar(
         inputController: icc.inputController,
-        useModernStyle: false,
         hintText: "用户ID",
         isAppBar: false,
         autofocus: icc.showTip, // 如果显示提示，则自动聚焦输入框

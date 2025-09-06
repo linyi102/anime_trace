@@ -161,7 +161,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   selected
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
-                  color: selected ? Theme.of(context).colorScheme.primary : null,
+                  color:
+                      selected ? Theme.of(context).colorScheme.primary : null,
                 )
           : null,
       onTap: () {
@@ -182,7 +183,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   _buildSearchBar() {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
-      useModernStyle: false,
       autofocus: autofocusSearchInput,
       inputController: _inputController,
       onTapClear: () {

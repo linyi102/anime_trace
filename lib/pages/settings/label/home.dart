@@ -169,7 +169,6 @@ class _LabelManagePageState extends State<LabelManagePage> {
     return SearchAppBar(
       isAppBar: true,
       autofocus: true,
-      useModernStyle: false,
       showCancelButton: true,
       inputController: labelsController.inputKeywordController,
       automaticallyImplyLeading:

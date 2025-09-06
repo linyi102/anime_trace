@@ -575,7 +575,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     return SearchAppBar(
       isAppBar: true,
       autofocus: true,
-      useModernStyle: false,
       showCancelButton: true,
       inputController: logic.inputKeywordController,
       hintText: "搜索系列",
