@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/values/values.dart';
-import 'package:animetrace/widgets/multi_platform.dart';
 import 'package:animetrace/widgets/responsive.dart';
 
 class CommonCover extends StatefulWidget {
@@ -27,39 +26,18 @@ class CommonCover extends StatefulWidget {
 }
 
 class _CommonCoverState extends State<CommonCover> {
-  bool hovering = false;
-
   @override
   Widget build(BuildContext context) {
+    final inner = InkWell(
+      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+      onTap: widget.onTap,
+      child: _buildItem(),
+    );
     return Responsive(
-        mobile: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: _buildMultiPlatform(),
-        ),
-        desktop: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _buildMultiPlatform(),
-        ));
-  }
-
-  MultiPlatform _buildMultiPlatform() {
-    return MultiPlatform(
-      mobile: GestureDetector(
-        onTap: widget.onTap,
-        onTapDown: (_) => _zoomInCover(),
-        onTapUp: (_) => _zoomOutCover(),
-        onTapCancel: () => _zoomOutCover(),
-        child: _buildItem(),
-      ),
-      desktop: GestureDetector(
-        onTap: widget.onTap,
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          onHover: (_) => _zoomInCover(),
-          onExit: (_) => _zoomOutCover(),
-          child: _buildItem(),
-        ),
-      ),
+      mobile: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4), child: inner),
+      desktop: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8), child: inner),
     );
   }
 
@@ -103,14 +81,9 @@ class _CommonCoverState extends State<CommonCover> {
   ClipRRect _buildImage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-      child: AnimatedScale(
-        scale: hovering ? 1.1 : 1.0,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutQuart,
-        child: CommonImage(
-          widget.coverUrl!,
-          reduceMemCache: true,
-        ),
+      child: CommonImage(
+        widget.coverUrl!,
+        reduceMemCache: true,
       ),
     );
   }
@@ -154,17 +127,5 @@ class _CommonCoverState extends State<CommonCover> {
         ),
       ],
     );
-  }
-
-  void _zoomOutCover() {
-    setState(() {
-      hovering = false;
-    });
-  }
-
-  void _zoomInCover() {
-    setState(() {
-      hovering = true;
-    });
   }
 }
