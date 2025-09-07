@@ -37,7 +37,7 @@ class ChecklistController extends GetxController
 
   // 多选
   List<Anime> selectedAnimes = [];
-  bool multi = false;
+  bool get multi => selectedAnimes.isNotEmpty;
 
   init() async {
     // 不要放在loadData中，因为要保证收藏页在initState中loadData执行完毕
@@ -93,9 +93,7 @@ class ChecklistController extends GetxController
       // lastTopTabIndex = tabController.index;
       SPUtil.setInt("last_top_tab_index", tabController!.index);
       // 取消多选
-      if (multi) {
-        quitMulti();
-      }
+      quitMulti();
     }
   }
 
@@ -127,9 +125,10 @@ class ChecklistController extends GetxController
   }
 
   void quitMulti() {
+    if (selectedAnimes.isEmpty) return;
+
     AppLog.debug('退出多选');
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    multi = false;
     selectedAnimes.clear();
     update();
     Event(EventName.setNavigator).send(true);

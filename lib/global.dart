@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -92,7 +93,7 @@ class Global {
         minimumSize: const Size(400, 400),
         fullScreen: false,
         // 需要居中，否则会偏右
-        center: true,
+        center: !kDebugMode,
         // 透明会导致新版Win11的标题栏看不到最小化、最大化和关闭按钮
         // backgroundColor: Colors.transparent,
         skipTaskbar: false,

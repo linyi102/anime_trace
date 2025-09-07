@@ -74,14 +74,11 @@ class _AnimeListPageState extends State<AnimeListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      // 不生效的原因可能是因为被其他的WillPopScope监听到了
-      onWillPop: () async {
-        if (checklistController.multi) {
-          checklistController.quitMulti();
-          return false;
-        }
-        return true;
+    return PopScope(
+      canPop: checklistController.multi,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        checklistController.quitMulti();
       },
       child: GetBuilder(
         init: checklistController,
@@ -333,38 +330,29 @@ class _AnimeListPageState extends State<AnimeListPage> {
   }
 
   void onPress(Anime anime) {
-    // 多选
     if (multiSelected) {
-      if (selectedAnimes.contains(anime)) {
-        AppLog.info("[多选模式]移除anime=${anime.animeName}");
-        selectedAnimes.remove(anime); // 选过，再选就会取消
-        // 如果取消后一个都没选，就自动退出多选状态
-        if (selectedAnimes.isEmpty) {
-          checklistController.multi = false;
-        }
-      } else {
-        AppLog.info("[多选模式]添加anime=${anime.animeName}");
-        selectedAnimes.add(anime);
-      }
-      Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
-      setState(() {});
-      return;
+      _toggleSelect(anime);
     } else {
       _enterPageAnimeDetail(anime);
     }
   }
 
   void onLongPress(Anime anime) {
-    // 非多选状态下才需要进入多选状态
-    if (multiSelected == false) {
-      checklistController.multi = true;
-      selectedAnimes.add(anime);
-      AppLog.info("[多选模式]添加anime=${anime.animeName}");
-      setState(() {}); // 添加操作按钮
-    } else {
-      // 多选模式下，应提供范围选择
-    }
+    _toggleSelect(anime);
     Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
+  }
+
+  void _toggleSelect(Anime anime) {
+    if (selectedAnimes.contains(anime)) {
+      AppLog.info("[多选模式]移除anime=${anime.animeName}");
+      selectedAnimes.remove(anime); // 选过，再选就会取消
+    } else {
+      AppLog.info("[多选模式]添加anime=${anime.animeName}");
+      selectedAnimes.add(anime);
+    }
+    setState(() {});
+    if (selectedAnimes.length == 1) Event(EventName.setNavigator).send(false);
+    if (selectedAnimes.isEmpty) Event(EventName.setNavigator).send(true);
   }
 
   void _enterPageAnimeDetail(Anime anime) {

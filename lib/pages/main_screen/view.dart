@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:animetrace/utils/event.dart';
 import 'package:animetrace/widgets/animation/fade_in_up.dart';
 import 'package:flutter/material.dart';
@@ -51,14 +50,15 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
       child: GetBuilder(
         init: logic,
         builder: (_) =>
-            MediaQuery.of(context).orientation == Orientation.portrait
+            // FIXME Windows应用窗口宽小于高时首次启动会先是landscape，然后是portrait，导致创建两次动漫收藏页
+            MediaQuery.orientationOf(context) == Orientation.portrait
                 ? _buildPortraitScreen()
                 : _buildLandscapeScreen(),
       ),
     );
   }
 
-  _buildLandscapeScreen() {
+  Widget _buildLandscapeScreen() {
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -91,7 +91,7 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     return false;
   }
 
-  _buildSideBar() {
+  Widget _buildSideBar() {
     return Material(
       color: Theme.of(context).appBarTheme.backgroundColor,
       child: AnimatedContainer(
@@ -113,7 +113,7 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     );
   }
 
-  _buildSideMenu() {
+  List<Widget> _buildSideMenu() {
     List<Widget> widgets = [];
 
     widgets.add(Container(
@@ -217,7 +217,7 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     return widgets;
   }
 
-  _buildPortraitScreen() {
+  Widget _buildPortraitScreen() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: _buildMainPage(),
@@ -258,21 +258,9 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     );
   }
 
-  _buildMainPage() {
+  Widget _buildMainPage() {
     if (!enableAnimation) return logic.tabs[logic.selectedTabIdx].page;
 
-    return PageTransitionSwitcher(
-        transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          );
-        },
-        child: logic.tabs[logic.selectedTabIdx].page);
+    return logic.tabs[logic.selectedTabIdx].page;
   }
 }
