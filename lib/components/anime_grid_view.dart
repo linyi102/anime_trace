@@ -1,5 +1,6 @@
 import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -69,17 +70,20 @@ class _AnimeGridViewState extends State<AnimeGridView>
         );
       }
 
+      int calCrossAxisCount(double maxWidth) {
+        if (enableResponsive) {
+          return maxWidth ~/ (PlatformUtil.isDesktop ? 160 : 120);
+        }
+        return gridColumnCnt;
+      }
+
       if (widget.sliver) {
         return SliverPadding(
           padding: padding,
           sliver: SliverLayoutBuilder(
             builder: (context, constraints) {
-              final crossAxisCount = enableResponsive
-                  ? constraints.crossAxisExtent ~/ 120
-                  : gridColumnCnt;
-
               return SliverAlignedGrid.count(
-                crossAxisCount: crossAxisCount,
+                crossAxisCount: calCrossAxisCount(constraints.crossAxisExtent),
                 itemCount: widget.animes.length,
                 itemBuilder: (context, index) {
                   widget.loadMore?.call(index);
@@ -95,13 +99,10 @@ class _AnimeGridViewState extends State<AnimeGridView>
       // Note: AlignedGridView可以在固定列数时不用指定比例
       return LayoutBuilder(
         builder: (context, constraints) {
-          final crossAxisCount =
-              enableResponsive ? constraints.maxWidth ~/ 120 : gridColumnCnt;
-
           return AlignedGridView.count(
             controller: widget.scrollController,
             padding: padding,
-            crossAxisCount: crossAxisCount,
+            crossAxisCount: calCrossAxisCount(constraints.maxWidth),
             itemCount: widget.animes.length,
             itemBuilder: (context, index) {
               widget.loadMore?.call(index);
