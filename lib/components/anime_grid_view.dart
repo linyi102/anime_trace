@@ -52,9 +52,6 @@ class _AnimeGridViewState extends State<AnimeGridView>
       final gridColumnCnt = _displayController.gridColumnCnt.value;
       final style = _displayController.coverStyle.value;
       const padding = EdgeInsets.fromLTRB(10, 5, 10, 30);
-      final crossAxisCount = enableResponsive
-          ? MediaQuery.sizeOf(context).width ~/ 160
-          : gridColumnCnt;
 
       Widget buildItem(int index) {
         // AppLog.debug('build anime $index');
@@ -75,7 +72,36 @@ class _AnimeGridViewState extends State<AnimeGridView>
       if (widget.sliver) {
         return SliverPadding(
           padding: padding,
-          sliver: SliverAlignedGrid.count(
+          sliver: SliverLayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = enableResponsive
+                  ? constraints.crossAxisExtent ~/ 160
+                  : gridColumnCnt;
+
+              return SliverAlignedGrid.count(
+                crossAxisCount: crossAxisCount,
+                itemCount: widget.animes.length,
+                itemBuilder: (context, index) {
+                  widget.loadMore?.call(index);
+
+                  return buildItem(index);
+                },
+              );
+            },
+          ),
+        );
+      }
+
+      // Note: AlignedGridView可以在固定列数时不用指定比例
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = enableResponsive
+              ? constraints.maxWidth ~/ 160
+              : gridColumnCnt;
+
+          return AlignedGridView.count(
+            controller: widget.scrollController,
+            padding: padding,
             crossAxisCount: crossAxisCount,
             itemCount: widget.animes.length,
             itemBuilder: (context, index) {
@@ -83,20 +109,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
 
               return buildItem(index);
             },
-          ),
-        );
-      }
-
-      // Note: AlignedGridView可以在固定列数时不用指定比例
-      return AlignedGridView.count(
-        controller: widget.scrollController,
-        padding: padding,
-        crossAxisCount: crossAxisCount,
-        itemCount: widget.animes.length,
-        itemBuilder: (context, index) {
-          widget.loadMore?.call(index);
-
-          return buildItem(index);
+          );
         },
       );
     });

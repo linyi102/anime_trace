@@ -1,4 +1,5 @@
 import 'package:animetrace/utils/event.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/widgets/animation/fade_in_up.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/backup_service.dart';
@@ -45,13 +46,17 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
   @override
   Widget build(BuildContext context) {
     AppLog.debug('build main screen');
+    final size = MediaQuery.sizeOf(context);
+
     return WillPopScope(
       onWillPop: clickTwiceToExitApp,
       child: GetBuilder(
         init: logic,
         builder: (_) =>
-            // FIXME Windows应用窗口宽小于高时首次启动会先是landscape，然后是portrait，导致创建两次动漫收藏页
-            MediaQuery.orientationOf(context) == Orientation.portrait
+            // FIXME Windows首次启动应用时第一次获取的宽高并不是设置的宽高
+            (PlatformUtil.isDesktop
+                    ? size.height / size.width > 1.5
+                    : MediaQuery.orientationOf(context) == Orientation.portrait)
                 ? _buildPortraitScreen()
                 : _buildLandscapeScreen(),
       ),
