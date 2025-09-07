@@ -164,7 +164,7 @@ class __RecordListViewState extends State<_RecordListView>
                       ? '其他'
                       : date.replaceAll("-", "/"),
                   // trailing: Text(
-                  //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
+                  //   "${view.historyRecords[cardIndex].records.length}个动漫",
                   //   style: Theme.of(context).textTheme.bodySmall,
                   // ),
                 ),

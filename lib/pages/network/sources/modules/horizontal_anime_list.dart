@@ -28,13 +28,13 @@ class HorizontalAnimeListPage extends StatelessWidget {
     );
   }
 
-  Container _buildListView(double coverWidth) {
+  Widget _buildListView(double coverWidth) {
     final itemHeight = (coverWidth / 0.72) + 40;
 
-    return Container(
+    return SizedBox(
       height: itemHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         scrollDirection: Axis.horizontal,
         itemCount: animes.length,
         itemBuilder: (context, index) {

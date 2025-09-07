@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/values/values.dart';
-import 'package:animetrace/widgets/responsive.dart';
 
 class CommonCover extends StatefulWidget {
   const CommonCover({
@@ -28,22 +27,20 @@ class CommonCover extends StatefulWidget {
 class _CommonCoverState extends State<CommonCover> {
   @override
   Widget build(BuildContext context) {
-    final inner = InkWell(
-      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-      onTap: widget.onTap,
-      child: _buildItem(),
-    );
-    return Responsive(
-      mobile: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4), child: inner),
-      desktop: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8), child: inner),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        onTap: widget.onTap,
+        child: _buildItem(),
+      ),
     );
   }
 
   Widget _buildItem() {
-    return SizedBox(
+    return Container(
       width: widget.width,
+      padding: const EdgeInsets.all(3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
