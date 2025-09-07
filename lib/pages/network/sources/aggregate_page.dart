@@ -68,7 +68,7 @@ class _AggregatePageState extends State<AggregatePage> {
     return Column(
       children: [
         Obx(
-          () => _buildAnimesListItem(
+          () => _buildAnimesSection(
             title: '最近更新',
             loading: logic.loadingRecentUpdateAnimes,
             animes: logic.recentUpdateAnimes,
@@ -76,8 +76,9 @@ class _AggregatePageState extends State<AggregatePage> {
             trailing: _buildUpdateTrailing(),
           ),
         ),
-        _buildAnimesListItem(
+        _buildAnimesSection(
           title: '最近观看',
+          hideWhenEmpty: true,
           loading: logic.loadingRecentWatchedAnimes,
           animes: logic.recentWatchedAnimes,
           specifyItemSubtitle: (anime) {
@@ -86,8 +87,9 @@ class _AggregatePageState extends State<AggregatePage> {
             return TimeUtil.getTimeAgo(time, pattern: 'yyyy-MM-dd') + ' 观看';
           },
         ),
-        _buildAnimesListItem(
+        _buildAnimesSection(
           title: '今日开播',
+          hideWhenEmpty: true,
           loading: logic.loadingAnimesNYearsAgoTodayBroadcast,
           animes: logic.animesNYearsAgoTodayBroadcast,
           specifyItemSubtitle: _parseAnimeYearDistance,
@@ -168,13 +170,18 @@ class _AggregatePageState extends State<AggregatePage> {
     return text;
   }
 
-  _buildAnimesListItem({
+  Widget _buildAnimesSection({
     required String title,
     required List<Anime> animes,
     required bool loading,
     Widget? trailing,
     String? Function(Anime anime)? specifyItemSubtitle,
+    bool hideWhenEmpty = false,
   }) {
+    if (animes.isEmpty && hideWhenEmpty) {
+      return const SizedBox.shrink();
+    }
+
     const defaultHeight = 50.0;
 
     return Column(

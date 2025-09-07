@@ -17,45 +17,42 @@ class SearchHistoryView extends StatelessWidget {
       listenable: controller,
       builder: (context, child) {
         if (controller._keywords.isEmpty) return const SizedBox();
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                title: const Text(
-                  '搜索历史',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                trailing: IconButton(
-                    onPressed: () => _showClearAllDialog(context),
-                    icon: const Icon(Icons.delete_outline_outlined)),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              title: const Text(
+                '搜索历史',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              Container(
-                constraints: BoxConstraints(
-                    maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    spacing: AppTheme.wrapSacing,
-                    runSpacing: AppTheme.wrapRunSpacing,
-                    children: [
-                      for (final keyword in controller._keywords.reversed)
-                        InputChip(
-                          label: Text(keyword,
-                              style: const TextStyle(fontSize: 14, height: 1)),
-                          onPressed: () => onTapKeyword(keyword),
-                          onDeleted: () => controller.removeKeyword(keyword),
-                          deleteIconColor: Theme.of(context).hintColor,
-                          deleteIcon: const Icon(Icons.close, size: 16),
-                          deleteButtonTooltipMessage: '',
-                        )
-                    ],
-                  ),
+              trailing: IconButton(
+                  onPressed: () => _showClearAllDialog(context),
+                  icon: const Icon(Icons.delete_outline_outlined)),
+            ),
+            Container(
+              constraints: BoxConstraints(
+                  maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: AppTheme.wrapSacing,
+                  runSpacing: AppTheme.wrapRunSpacing,
+                  children: [
+                    for (final keyword in controller._keywords.reversed)
+                      InputChip(
+                        label: Text(keyword,
+                            style: const TextStyle(fontSize: 14, height: 1)),
+                        onPressed: () => onTapKeyword(keyword),
+                        onDeleted: () => controller.removeKeyword(keyword),
+                        deleteIconColor: Theme.of(context).hintColor,
+                        deleteIcon: const Icon(Icons.close, size: 16),
+                        deleteButtonTooltipMessage: '',
+                      )
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

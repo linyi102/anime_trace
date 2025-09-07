@@ -200,17 +200,19 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   }
 
   Widget _buildLocalAnimes() {
-    if (ismigrate || lastInputKeyword.isEmpty) return const SizedBox.shrink();
+    if (ismigrate || lastInputKeyword.isEmpty || localAnimes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
         const ListTile(title: Text("已收藏")),
-        if (localAnimes.isNotEmpty)
-          AnimeHorizontalListView(
-            animes: localAnimes,
-            callback: () async {
-              return true;
-            },
-          ),
+        AnimeHorizontalListView(
+          animes: localAnimes,
+          callback: () async {
+            return true;
+          },
+        ),
       ],
     );
   }
