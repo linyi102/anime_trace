@@ -29,6 +29,7 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
       ThemeController.to.hideMobileBottomLabel.value;
 
   bool hideBottomNavigator = false;
+  bool isTakeOverHomePop = false;
 
   @override
   List<VoidCallback> get initialListeners => [
@@ -38,6 +39,10 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
             hideBottomNavigator = !to;
           });
         }),
+        Event(EventName.takeOverHomePop).listen<bool>((to) {
+          AppLog.debug('${to ? '' : '取消'}接管主页返回事件');
+          isTakeOverHomePop = to;
+        }),
       ];
 
   @override
@@ -45,8 +50,17 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     AppLog.debug('build main screen');
     final size = MediaQuery.sizeOf(context);
 
-    return WillPopScope(
-      onWillPop: clickTwiceToExitApp,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        if (isTakeOverHomePop) {
+          Event(EventName.onHomePop).send();
+        } else {
+          clickTwiceToExitApp();
+        }
+      },
       child: GetBuilder(
         init: logic,
         builder: (_) =>

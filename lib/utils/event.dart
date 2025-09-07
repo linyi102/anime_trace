@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 
@@ -7,6 +6,13 @@ enum EventName {
   /// 设置底部导航栏
   /// `bool` true显示 false隐藏
   setNavigator,
+
+  /// 接管主页返回事件
+  /// `bool` true接管 false取消接管
+  takeOverHomePop,
+
+  /// 接管主页返回事件后进行监听
+  onHomePop;
 }
 
 class Event {
@@ -25,7 +31,7 @@ class Event {
         _events.putIfAbsent(name, () => StreamController.broadcast()));
   }
 
-  void send(dynamic data) => _controller.add(data);
+  void send([dynamic data]) => _controller.add(data);
 
   VoidCallback listen<T>(void Function(T) handler) {
     return _controller.stream.listen((event) {

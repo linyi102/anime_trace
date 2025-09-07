@@ -132,6 +132,7 @@ class ChecklistController extends GetxController
     selectedAnimes.clear();
     update();
     Event(EventName.setNavigator).send(true);
+    Event(EventName.takeOverHomePop).send(false);
   }
 
   /// 生成描述

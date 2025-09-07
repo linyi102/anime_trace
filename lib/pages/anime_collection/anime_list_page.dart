@@ -36,7 +36,8 @@ class AnimeListPage extends StatefulWidget {
   _AnimeListPageState createState() => _AnimeListPageState();
 }
 
-class _AnimeListPageState extends State<AnimeListPage> {
+class _AnimeListPageState extends State<AnimeListPage>
+    with MultiEventsStateMixin {
   final checklistController = ChecklistController.to;
   List<String> get tags => checklistController.tags;
   List<int> get animeCntPerTag => checklistController.animeCntPerTag;
@@ -59,6 +60,15 @@ class _AnimeListPageState extends State<AnimeListPage> {
   final AnimeDisplayController _animeDisplayController = Get.find();
 
   @override
+  List<VoidCallback> get initialListeners => [
+        Event(EventName.onHomePop).listen(
+          (_) {
+            checklistController.quitMulti();
+          },
+        )
+      ];
+
+  @override
   void initState() {
     super.initState();
     checklistController.loadData();
@@ -74,52 +84,42 @@ class _AnimeListPageState extends State<AnimeListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      // FIXME 并不会触发退出多选
-      canPop: checklistController.multi,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        checklistController.quitMulti();
-      },
-      child: GetBuilder(
-        init: checklistController,
-        builder: (_) => AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
-          // 然后再通过_loadData覆盖掉旧数据
-          child: !loadOk && animeCntPerTag.isEmpty
-              ? _waitDataScaffold()
-              : Scaffold(
-                  backgroundColor:
-                      Theme.of(context).appBarTheme.backgroundColor,
-                  // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-                  appBar: AppBar(
-                    title: Text(
-                      multiSelected ? "${selectedAnimes.length}" : "动漫",
-                    ),
-                    leading: multiSelected
-                        ? IconButton(
-                            onPressed: () => checklistController.quitMulti(),
-                            icon: const Icon(Icons.close))
-                        : null,
-                    actions:
-                        multiSelected ? _getActionsOnMulti() : _getActions(),
-                    bottom: CommonBottomTabBar(
-                      tabs: _buildTagAndAnimeCnt(),
-                      tabController: _tabController,
-                      isScrollable: true,
-                    ),
+    return GetBuilder(
+      init: checklistController,
+      builder: (_) => AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+        // 然后再通过_loadData覆盖掉旧数据
+        child: !loadOk && animeCntPerTag.isEmpty
+            ? _waitDataScaffold()
+            : Scaffold(
+                backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+                appBar: AppBar(
+                  title: Text(
+                    multiSelected ? "${selectedAnimes.length}" : "动漫",
                   ),
-                  body: CommonScaffoldBody(
-                    child: loadOk
-                        ? CommonTabBarView(
-                            controller: _tabController,
-                            children: _getAnimesPlus(),
-                          )
-                        : const LoadingWidget(center: true),
+                  leading: multiSelected
+                      ? IconButton(
+                          onPressed: () => checklistController.quitMulti(),
+                          icon: const Icon(Icons.close))
+                      : null,
+                  actions: multiSelected ? _getActionsOnMulti() : _getActions(),
+                  bottom: CommonBottomTabBar(
+                    tabs: _buildTagAndAnimeCnt(),
+                    tabController: _tabController,
+                    isScrollable: true,
                   ),
                 ),
-        ),
+                body: CommonScaffoldBody(
+                  child: loadOk
+                      ? CommonTabBarView(
+                          controller: _tabController,
+                          children: _getAnimesPlus(),
+                        )
+                      : const LoadingWidget(center: true),
+                ),
+              ),
       ),
     );
   }
@@ -352,8 +352,14 @@ class _AnimeListPageState extends State<AnimeListPage> {
       selectedAnimes.add(anime);
     }
     setState(() {});
-    if (selectedAnimes.length == 1) Event(EventName.setNavigator).send(false);
-    if (selectedAnimes.isEmpty) Event(EventName.setNavigator).send(true);
+    if (selectedAnimes.length == 1) {
+      Event(EventName.setNavigator).send(false);
+      Event(EventName.takeOverHomePop).send(true);
+    }
+    if (selectedAnimes.isEmpty) {
+      Event(EventName.setNavigator).send(true);
+      Event(EventName.takeOverHomePop).send(false);
+    }
   }
 
   void _enterPageAnimeDetail(Anime anime) {
