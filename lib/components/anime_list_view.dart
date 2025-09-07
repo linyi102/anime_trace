@@ -58,10 +58,19 @@ class _AnimeHorizontalListViewState extends State<AnimeHorizontalListView> {
 
   Container _buildListView({required double coverWidth}) {
     final style = AnimeDisplayController.to.coverStyle.value;
+    final resolvedStyle = widget.styleBuilder?.call(style) ?? style;
+    double height = coverWidth / 0.72 + 30;
+    if (resolvedStyle.namePlacement == Placement.bottomOutCover) {
+      height += 14 * resolvedStyle.maxNameLines;
+    }
+    if (resolvedStyle.progressLinearPlacement == Placement.bottomOutCover) {
+      height += 10;
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       child: SizedBox(
-        height: coverWidth * 2.1,
+        height: height,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: widget.animes.length,
