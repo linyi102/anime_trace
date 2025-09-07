@@ -244,7 +244,7 @@ class _TracePageState extends State<TracePage> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.imgRadius),
                 child: SizedBox(
-                  width: 120,
+                  width: 100,
                   child: CommonImage(anime.animeCoverUrl),
                 ),
               )

@@ -109,98 +109,66 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
         },
       );
 
-      yield ListTile(
-        title: const Text('名字位置'),
-        trailing: DropdownMenu(
-          width: 160,
-          requestFocusOnTap: false,
-          initialSelection: style.namePlacement,
-          dropdownMenuEntries: [
-            Placement.bottomInCover,
-            Placement.bottomOutCover,
-            Placement.none
-          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
-          onSelected: (r) {
-            if (r != null) {
-              displayController
-                  .updateCoverStyle(style.copyWith(namePlacement: r));
-            }
-          },
-        ),
-      );
-      yield ListTile(
-        title: const Text('进度条'),
-        trailing: DropdownMenu(
-          width: 160,
-          requestFocusOnTap: false,
-          initialSelection: style.progressLinearPlacement,
-          dropdownMenuEntries: [
-            Placement.bottomInCover,
-            Placement.bottomOutCover,
-            Placement.none
-          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
-          onSelected: (r) {
-            if (r != null) {
-              displayController
-                  .updateCoverStyle(style.copyWith(progressLinearPlacement: r));
-            }
-          },
-        ),
-      );
-      yield ListTile(
-        title: const Text('进度'),
-        trailing: DropdownMenu(
-          width: 160,
-          requestFocusOnTap: false,
-          initialSelection: style.progressNumberPlacement,
-          dropdownMenuEntries: [
-            Placement.topLeft,
-            Placement.topRight,
-            Placement.none
-          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
-          onSelected: (r) {
-            if (r != null) {
-              displayController
-                  .updateCoverStyle(style.copyWith(progressNumberPlacement: r));
-            }
-          },
-        ),
-      );
-      yield ListTile(
-        title: const Text('系列'),
-        trailing: DropdownMenu(
-          width: 160,
-          requestFocusOnTap: false,
-          initialSelection: style.seriesPlacement,
-          dropdownMenuEntries: [
-            Placement.topLeft,
-            Placement.topRight,
-            Placement.none
-          ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
-          onSelected: (r) {
-            if (r != null) {
-              displayController
-                  .updateCoverStyle(style.copyWith(seriesPlacement: r));
-            }
-          },
-        ),
-      );
-      yield ListTile(
+      yield _DropdownMenuTile(
         title: const Text('名字行数'),
-        trailing: DropdownMenu(
-          width: 160,
-          requestFocusOnTap: false,
-          initialSelection: style.maxNameLines,
-          dropdownMenuEntries: [1, 2]
-              .map((e) => DropdownMenuEntry(label: e.toString(), value: e))
-              .toList(),
-          onSelected: (r) {
-            if (r != null) {
-              displayController
-                  .updateCoverStyle(style.copyWith(maxNameLines: r));
-            }
-          },
-        ),
+        initialSelection: style.maxNameLines,
+        dropdownMenuEntries: [1, 2]
+            .map((e) => DropdownMenuEntry(label: e.toString(), value: e))
+            .toList(),
+        onSelected: (r) {
+          displayController.updateCoverStyle(style.copyWith(maxNameLines: r));
+        },
+      );
+      yield _DropdownMenuTile(
+        title: const Text('名字位置'),
+        initialSelection: style.namePlacement,
+        dropdownMenuEntries: [
+          Placement.bottomInCover,
+          Placement.bottomOutCover,
+          Placement.none
+        ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+        onSelected: (r) {
+          displayController.updateCoverStyle(style.copyWith(namePlacement: r));
+        },
+      );
+      yield _DropdownMenuTile(
+        title: const Text('进度条'),
+        initialSelection: style.progressLinearPlacement,
+        dropdownMenuEntries: [
+          Placement.bottomInCover,
+          Placement.bottomOutCover,
+          Placement.none
+        ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+        onSelected: (r) {
+          displayController
+              .updateCoverStyle(style.copyWith(progressLinearPlacement: r));
+        },
+      );
+      yield _DropdownMenuTile(
+        title: const Text('进度'),
+        initialSelection: style.progressNumberPlacement,
+        dropdownMenuEntries: [
+          Placement.topLeft,
+          Placement.topRight,
+          Placement.none
+        ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+        onSelected: (r) {
+          displayController
+              .updateCoverStyle(style.copyWith(progressNumberPlacement: r));
+        },
+      );
+      yield _DropdownMenuTile(
+        title: const Text('系列'),
+        initialSelection: style.seriesPlacement,
+        dropdownMenuEntries: [
+          Placement.topLeft,
+          Placement.topRight,
+          Placement.none
+        ].map((e) => DropdownMenuEntry(label: e.label, value: e)).toList(),
+        onSelected: (r) {
+          displayController
+              .updateCoverStyle(style.copyWith(seriesPlacement: r));
+        },
       );
     }
 
@@ -212,5 +180,50 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     //     animeDisplayController.turnShowReviewNumber();
     //   },
     // );
+  }
+}
+
+class _DropdownMenuTile<T> extends StatelessWidget {
+  const _DropdownMenuTile({
+    super.key,
+    required this.title,
+    required this.initialSelection,
+    required this.dropdownMenuEntries,
+    required this.onSelected,
+  });
+  final Widget title;
+  final T initialSelection;
+  final List<DropdownMenuEntry<T>> dropdownMenuEntries;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(
+          start: 16.0, end: 24.0, top: 4, bottom: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: AnimatedDefaultTextStyle(
+              duration: kThemeAnimationDuration,
+              style: textTheme.bodyLarge!.copyWith(color: colors.onSurface),
+              child: title,
+            ),
+          ),
+          DropdownMenu<T>(
+            width: 160,
+            requestFocusOnTap: false,
+            initialSelection: initialSelection,
+            dropdownMenuEntries: dropdownMenuEntries,
+            onSelected: (r) {
+              if (r != null) onSelected(r);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
