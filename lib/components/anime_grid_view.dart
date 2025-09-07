@@ -51,7 +51,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
           _displayController.enableResponsiveGridColumnCnt.value;
       final gridColumnCnt = _displayController.gridColumnCnt.value;
       final style = _displayController.coverStyle.value;
-      const padding = EdgeInsets.fromLTRB(10, 5, 10, 30);
+      const padding = EdgeInsets.fromLTRB(8, 4, 8, 30);
 
       Widget buildItem(int index) {
         // AppLog.debug('build anime $index');
@@ -75,7 +75,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
           sliver: SliverLayoutBuilder(
             builder: (context, constraints) {
               final crossAxisCount = enableResponsive
-                  ? constraints.crossAxisExtent ~/ 160
+                  ? constraints.crossAxisExtent ~/ 120
                   : gridColumnCnt;
 
               return SliverAlignedGrid.count(
@@ -95,9 +95,8 @@ class _AnimeGridViewState extends State<AnimeGridView>
       // Note: AlignedGridView可以在固定列数时不用指定比例
       return LayoutBuilder(
         builder: (context, constraints) {
-          final crossAxisCount = enableResponsive
-              ? constraints.maxWidth ~/ 160
-              : gridColumnCnt;
+          final crossAxisCount =
+              enableResponsive ? constraints.maxWidth ~/ 120 : gridColumnCnt;
 
           return AlignedGridView.count(
             controller: widget.scrollController,

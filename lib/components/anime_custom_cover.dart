@@ -179,7 +179,7 @@ class CustomAnimeCover extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppTheme.imgRadius),
             border: Border.all(
@@ -386,19 +386,13 @@ class _AnimeName extends StatelessWidget {
       String tmpName = name;
       int endIdx = name.length - 3;
 
-      final textPainter = TextPainter(
-        text: TextSpan(text: name),
-        maxLines: maxLines,
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout(maxWidth: constraints.maxWidth);
-
       while (isOverflow(tmpName) && endIdx > 0) {
         tmpName =
             '${name.substring(0, endIdx)}...${name.substring(name.length - 3)}';
         endIdx--;
       }
-      return tmpName;
+      // endIdx为0时说明可能还是溢出状态，此时直接展示全名
+      return endIdx == 0 ? name : tmpName;
     } else {
       return name;
     }
