@@ -11,9 +11,6 @@ import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/values/assets.gen.dart';
 import 'package:get/get.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
-
-import '../../widgets/common_divider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -193,28 +190,22 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
     }
 
     widgets.add(const Spacer());
-    widgets.add(const CommonDivider(
-      padding: EdgeInsets.symmetric(vertical: 5),
-    ));
     widgets.add(Row(
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
       children: [
-        IconButton(
-          splashRadius: 24,
-          icon: Icon(
-            expandSideBar
-                ? MingCuteIcons.mgc_left_line
-                : MingCuteIcons.mgc_right_line,
-            // 不适合暗色主题
-            // color: Colors.black54,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: Icon(
+                expandSideBar ? Icons.menu_open_rounded : Icons.menu_rounded),
+            onPressed: () {
+              SpProfile.turnExpandSideBar();
+              setState(() {
+                expandSideBar = !expandSideBar;
+              });
+            },
           ),
-          onPressed: () {
-            SpProfile.turnExpandSideBar();
-            setState(() {
-              expandSideBar = !expandSideBar;
-            });
-          },
         ),
       ],
     ));
