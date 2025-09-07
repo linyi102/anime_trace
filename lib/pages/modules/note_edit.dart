@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -352,21 +351,19 @@ class _NoteEditPageState extends State<NoteEditPage> {
       );
       return;
     }
-    if (Platform.isWindows || Platform.isAndroid) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
-        allowMultiple: true,
-      );
-      if (result == null) return;
-      List<PlatformFile> platformFiles = result.files;
-      for (var platformFile in platformFiles) {
-        String absoluteImagePath = platformFile.path ?? "";
-        await _addImage(absoluteImagePath);
-      }
-    } else {
-      ToastUtil.showText('暂不支持选择本地图片');
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+      allowMultiple: true,
+    );
+    if (result == null) return;
+    List<PlatformFile> platformFiles = result.files;
+    for (var platformFile in platformFiles) {
+      String absoluteImagePath = platformFile.path ?? "";
+      await _addImage(absoluteImagePath);
     }
+
     setState(() {});
   }
 

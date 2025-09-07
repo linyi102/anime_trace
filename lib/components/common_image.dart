@@ -56,6 +56,7 @@ class CommonImage extends StatelessWidget {
       return Stack(
         fit: StackFit.expand,
         children: [
+          // TODO 图片加载错误时，与默认图片重叠导致颜色会加深
           _buildDefaultImage(context),
           FadeInImage(
             image: reduceMemCache

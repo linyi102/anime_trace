@@ -6,6 +6,8 @@ environment:
   sdk: ">=3.3.4 <4.0.0"
 
 dependencies:
+  device_info_plus: ^11.3.0
+  permission_handler: ^12.0.1
   flutter_staggered_grid_view: ^0.7.0
   logger:
   share_plus:
@@ -17,7 +19,7 @@ dependencies:
   darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
   flex_color_picker: ^3.3.0
-  emoji_picker_flutter: ^1.6.3
+  emoji_picker_flutter: ^4.3.0
   version: ^3.0.2
   lottie: ^2.6.0
   desktop_drop: ^0.4.4

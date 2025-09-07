@@ -1,4 +1,7 @@
+import 'dart:io';
 
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/global.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
@@ -6,6 +9,7 @@ import 'package:animetrace/utils/image_util.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/setting_card.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ImagePathSetting extends StatefulWidget {
   const ImagePathSetting({Key? key}) : super(key: key);
@@ -15,14 +19,28 @@ class ImagePathSetting extends StatefulWidget {
 }
 
 class _ImagePathSettingState extends State<ImagePathSetting> {
+  bool hasReadImagePerm = false;
+  Permission? imagePerm;
+
   @override
   void initState() {
     super.initState();
+    _setup();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void _setup() async {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      imagePerm = androidInfo.version.sdkInt <= 32
+          ? Permission.storage
+          : Permission.photos;
+      _getReadImagePerm();
+    }
+  }
+
+  void _getReadImagePerm() async {
+    hasReadImagePerm = await imagePerm!.status.isGranted;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -44,6 +62,25 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
         SettingCard(
           title: '根目录设置',
           children: [
+            if (imagePerm != null)
+              ListTile(
+                title: const Text('读取图片权限'),
+                subtitle: const Text('未授权时应用会无法访问图片'),
+                trailing: TextButton(
+                  onPressed: () async {
+                    if (hasReadImagePerm) return;
+
+                    final r = await imagePerm!.request();
+                    if (r.isDenied) {
+                      ToastUtil.showText('权限被拒绝');
+                    } else if (r.isGranted) {
+                      ToastUtil.showText('权限成功');
+                    }
+                    _getReadImagePerm();
+                  },
+                  child: Text(hasReadImagePerm ? '已授权' : '去授权'),
+                ),
+              ),
             ListTile(
               title: const Text('本地笔记图片存放目录'),
               subtitle: Text(ImageUtil.noteImageRootDirPath.isEmpty
