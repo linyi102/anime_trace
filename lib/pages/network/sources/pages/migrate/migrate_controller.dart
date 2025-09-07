@@ -126,7 +126,7 @@ class MigrateController extends GetxController {
 
     for (int i = 0; i < animes.length; i++) {
       if (completer?.isCompleted == true) {
-        logger.info('迁移任务已取消');
+        AppLog.info('迁移任务已取消');
         break;
       }
       final anime = animes[i];
@@ -148,7 +148,7 @@ class MigrateController extends GetxController {
                 updateInfo: true,
                 updateAnimeUrl: true,
                 updateName: true);
-            logger.info(
+            AppLog.info(
                 '迁移动漫[${anime.animeId}]${anime.animeName}：${anime.animeUrl} -> ${newAnime.animeUrl}');
             animes[i] = newAnime.copyWith(
               animeId: anime.animeId, // 保持原有的animeId

@@ -1,11 +1,9 @@
-import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
-
-import 'package:animetrace/components/anime_grid_cover.dart';
+import 'package:animetrace/components/anime_grid_view.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/components/dialog/dialog_confirm_migrate.dart';
 import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
-import 'package:animetrace/components/get_anime_grid_delegate.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/components/search_app_bar.dart';
 import 'package:animetrace/models/anime.dart';
@@ -69,7 +67,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
   }
 
   _climbAnime({String keyword = ""}) {
-    Log.info("开始爬取动漫封面");
+    AppLog.info("开始爬取动漫封面");
     searchOk = false;
     searching = true;
     setState(() {}); // 显示加载圈，注意会暂时导致光标移到行首
@@ -78,7 +76,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       return ClimbAnimeUtil.climbAnimesByKeywordAndWebSite(keyword, curWebsite);
     }).then((value) async {
       websiteClimbAnimes = value;
-      Log.info("爬取结束");
+      AppLog.info("爬取结束");
       FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
 
       // 对爬取的动漫找数据库中是否已经添加了，若已添加则覆盖
@@ -113,7 +111,6 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     return Scaffold(
       appBar: SearchAppBar(
         hintText: "搜索动漫",
-        useModernStyle: false,
         // 自动弹出键盘，如果是修改封面，则为false
         autofocus: widget.keyword.isEmpty ? true : false,
         inputController: animeNameController..text,
@@ -177,49 +174,37 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
       onRefresh: () async {
         _onEditingComplete();
       },
-      child: GridView.builder(
-        padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-        gridDelegate: getAnimeGridDelegate(context),
-        itemCount: mixedAnimes.length,
-        itemBuilder: (BuildContext context, int index) {
-          Anime anime = mixedAnimes[index];
-          return InkWell(
-              child: AnimeGridCover(anime),
-              onLongPress: () {
-                LaunchUrlUtil.launch(context: context, uriStr: anime.animeUrl);
-              },
-              onTap: () {
-                if (widget.onTap != null) {
-                  widget.onTap!(anime);
-                }
-                // 迁移动漫
-                else if (ismigrate) {
-                  showDialogOfConfirmMigrate(context, widget.animeId, anime);
-                } else if (anime.isCollected()) {
-                  Log.info("进入动漫详细页面${anime.animeId}");
-                  // 不为0，说明已添加，点击进入动漫详细页面
-                  Navigator.of(context).push(
-                    // MaterialPageRoute(
-                    //   builder: (context) =>
-                    //       AnimeDetailPlus(anime.animeId),
-                    // ),
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return AnimeDetailPage(anime);
-                      },
-                    ),
-                  ).then((value) {
-                    // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
-                    _generateMixedAnimes().then((value) {
-                      setState(() {});
-                    });
-                  });
-                } else {
-                  dialogSelectChecklist(setState, context, anime);
-                }
+      child: AnimeGridView(
+          animes: mixedAnimes,
+          onLongPress: (anime) {
+            LaunchUrlUtil.launch(context: context, uriStr: anime.animeUrl);
+          },
+          onTap: (anime) {
+            if (widget.onTap != null) {
+              widget.onTap!(anime);
+            }
+            // 迁移动漫
+            else if (ismigrate) {
+              showDialogOfConfirmMigrate(context, widget.animeId, anime);
+            } else if (anime.isCollected()) {
+              AppLog.info("进入动漫详细页面${anime.animeId}");
+              // 不为0，说明已添加，点击进入动漫详细页面
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AnimeDetailPage(anime);
+                  },
+                ),
+              ).then((value) {
+                // 可能迁移到了其他搜索源，因此需要从数据库中全部重新查找
+                _generateMixedAnimes().then((value) {
+                  setState(() {});
+                });
               });
-        },
-      ),
+            } else {
+              dialogSelectChecklist(setState, context, anime);
+            }
+          }),
     );
   }
 

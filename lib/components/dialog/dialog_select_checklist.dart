@@ -27,7 +27,7 @@ dialogSelectChecklist(
         title: Text(tags[i]),
         leading: tags[i] == anime.tagName
             ? Icon(Icons.radio_button_on_outlined,
-                color: Theme.of(context).primaryColor)
+                color: Theme.of(context).colorScheme.primary)
             : const Icon(Icons.radio_button_off_outlined),
         onTap: () async {
           // 不能只传入tagName，需要把对象的引用传进来，然后修改就会生效
@@ -52,7 +52,7 @@ dialogSelectChecklist(
                   anime.animeId = await AnimeDao.insertAnime(anime);
                   // 更新父级页面
                   setState(() {});
-                  Log.info("收藏成功！");
+                  AppLog.info("收藏成功！");
                   if (callback != null) callback(anime);
                 },
               );
@@ -60,13 +60,13 @@ dialogSelectChecklist(
               // 直接收藏
               anime.animeId = await AnimeDao.insertAnime(anime);
               setState(() {});
-              Log.info("收藏成功！");
+              AppLog.info("收藏成功！");
               if (callback != null) callback(anime);
             }
           } else {
             AnimeDao.updateTagByAnimeId(anime.animeId, tags[i]);
             anime.tagName = tags[i];
-            Log.info("修改成功！");
+            AppLog.info("修改成功！");
             setState(() {});
 
             // 关闭选择清单框

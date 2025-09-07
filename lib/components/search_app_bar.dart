@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/clear_button.dart';
 
 class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SearchAppBar(
@@ -11,7 +10,6 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.onTapClear,
       this.showCancelButton = false,
       this.onTapCancelButton,
-      this.useModernStyle = true,
       this.isAppBar = true,
       this.automaticallyImplyLeading = true,
       this.bottom,
@@ -24,7 +22,6 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final void Function()? onTapClear;
   final String hintText;
 
-  final bool useModernStyle;
   final bool automaticallyImplyLeading;
   final bool showCancelButton;
   final bool isAppBar;
@@ -64,42 +61,24 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   _generateInputDecoration(BuildContext context) {
     return InputDecoration(
-      prefixIcon: useModernStyle ? const Icon(Icons.search) : null,
-      contentPadding: useModernStyle ? const EdgeInsets.all(0) : null,
-      filled: useModernStyle ? true : false,
-      focusedBorder: useModernStyle
-          ? const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.transparent),
-              borderRadius: BorderRadius.all(Radius.circular(100)),
-            )
-          // 隐藏下划线
-          : const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.transparent)),
-      enabledBorder: useModernStyle
-          ? const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.transparent,
-                // color: Theme.of(context).dividerColor,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(100)),
-            )
-          : null,
-      hintText: hintText,
-      hintStyle: const TextStyle(fontSize: 14),
-      border: InputBorder.none,
-      suffixIcon: ClearButton(onTapClear: onTapClear),
-      suffixIconColor: Theme.of(context).hintColor,
-    );
+        filled: false,
+        hintText: hintText,
+        suffixIcon: inputController == null
+            ? null
+            : ValueListenableBuilder(
+                valueListenable: inputController!,
+                builder: (context, value, child) {
+                  if (value.text.isEmpty) return const SizedBox.shrink();
+                  return IconButton(
+                    onPressed: onTapClear,
+                    icon: const Icon(Icons.close, size: 18),
+                  );
+                },
+              ));
   }
 
-  _buildCancelButton(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(6),
-      onTap: onTapCancelButton,
-      child: Container(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child: const Center(child: Text("取消"))),
-    );
+  Widget _buildCancelButton(BuildContext context) {
+    return TextButton(onPressed: onTapCancelButton, child: const Text('取消'));
   }
 
   // 取消键盘聚焦

@@ -56,6 +56,7 @@ class CommonImage extends StatelessWidget {
       return Stack(
         fit: StackFit.expand,
         children: [
+          // TODO 图片加载错误时，与默认图片重叠导致颜色会加深
           _buildDefaultImage(context),
           FadeInImage(
             image: reduceMemCache
@@ -80,11 +81,11 @@ class CommonImage extends StatelessWidget {
     context, {
     bool isError = false,
   }) {
-    final baseColor = Theme.of(context).primaryColor;
+    final baseColor = Theme.of(context).colorScheme.primary;
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          color: baseColor.withOpacityFactor(0.08),
+          color: baseColor.withOpacityFactor(0.1),
           child: Center(
               child: Icon(
             // TODO 放大效果导致图标重复切换

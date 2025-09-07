@@ -79,14 +79,24 @@ class SqliteUtil {
     return true;
   }
 
-  static _initDatabase() async {
-    dbPath = "${(await getApplicationSupportDirectory()).path}/$sqlFileName";
-    Log.info("💾 db path: $dbPath");
+  static Future<String> getLocalRootDirPath() async {
+    String rootPath;
+    if (PlatformUtil.isMobile || Platform.isWindows) {
+      rootPath = (await getApplicationSupportDirectory()).path;
+    } else {
+      throw ("未适配平台：${Platform.operatingSystem}");
+    }
+    return rootPath;
+  }
+
+  static Future<Database> _initDatabase() async {
+    dbPath = "${await getLocalRootDirPath()}/$sqlFileName";
+    AppLog.info("💾 db path: $dbPath");
     try {
       await database.close();
     } catch (e) {
       if (!e.toString().contains('LateInitializationError')) {
-        logger.warning("关闭数据库失败：$e");
+        AppLog.warn("关闭数据库失败：$e");
       }
     }
     if (PlatformUtil.isMobile) {
@@ -114,7 +124,7 @@ class SqliteUtil {
   }
 
   static Future<void> _createInitTable(Database db) async {
-    logger.info('init db');
+    AppLog.info('init db');
     await db.execute('''
       CREATE TABLE tag (
           -- tag_id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -189,7 +199,7 @@ class SqliteUtil {
           add column $key $value;
         ''').then((value) async {
           if (key == 'review_number') {
-            Log.info("修改回顾号为1");
+            AppLog.info("修改回顾号为1");
             // 新增的回顾号列才会修改NULL→1，之后插入新动漫默认回顾号为1
             await database.rawUpdate('''
               update anime
@@ -210,7 +220,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnReviewNumberToHistoryAndNote");
+      AppLog.info("sql: addColumnReviewNumberToHistoryAndNote");
       await database.execute('''
       alter table history
       add column review_number INTEGER;
@@ -228,7 +238,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnReviewNumberToHistoryAndNote");
+      AppLog.info("sql: addColumnReviewNumberToHistoryAndNote");
       await database.execute('''
       alter table episode_note
       add column review_number INTEGER;
@@ -248,7 +258,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnRateToAnime");
+      AppLog.info("sql: addColumnRateToAnime");
       await database.execute('''
       alter table anime
       add column rate INTEGER;
@@ -294,7 +304,7 @@ class SqliteUtil {
       ''');
     if (list.isNotEmpty) return;
     // 没有列时添加
-    Log.info("sql: $logName");
+    AppLog.info("sql: $logName");
     await database.execute('''
       alter table $tableName
       add column $columnName $columnType;
@@ -316,7 +326,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnCreateTimeToAnime");
+      AppLog.info("sql: addColumnCreateTimeToAnime");
       await database.execute('''
       alter table episode_note
       add column create_time TEXT;
@@ -328,7 +338,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnUpdateTimeToAnime");
+      AppLog.info("sql: addColumnUpdateTimeToAnime");
       await database.execute('''
       alter table episode_note
       add column update_time TEXT;
@@ -338,7 +348,7 @@ class SqliteUtil {
 
   static void insertHistoryItem(
       int animeId, int episodeNumber, String date, int reviewNumber) async {
-    Log.info(
+    AppLog.info(
         "sql: insertHistoryItem(animeId=$animeId, episodeNumber=$episodeNumber, date=$date, reviewNumber=$reviewNumber)");
     await database.rawInsert('''
     insert into history(date, anime_id, episode_number, review_number)
@@ -348,7 +358,7 @@ class SqliteUtil {
 
   static void updateHistoryItem(
       int animeId, int episodeNumber, String date, int reviewNumber) async {
-    Log.info("sql: updateHistoryItem");
+    AppLog.info("sql: updateHistoryItem");
 
     await database.rawInsert('''
     update history
@@ -359,7 +369,7 @@ class SqliteUtil {
 
   static void deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(
       int animeId, int episodeNumber, int reviewNumber) async {
-    Log.info(
+    AppLog.info(
         "sql: deleteHistoryItemByAnimeIdAndEpisodeNumberAndReviewNumber(animeId=$animeId, episodeNumber=$episodeNumber)");
     await database.rawDelete('''
       delete from history
@@ -368,7 +378,7 @@ class SqliteUtil {
   }
 
   static void insertTagName(String tagName, int tagOrder) async {
-    Log.info("sql: insertTagName");
+    AppLog.info("sql: insertTagName");
     await database.rawInsert('''
     insert into tag(tag_name, tag_order)
     values('$tagName', $tagOrder);
@@ -376,7 +386,7 @@ class SqliteUtil {
   }
 
   static void updateTagName(String oldTagName, String newTagName) async {
-    Log.info("sql: updateTagNameByTagId");
+    AppLog.info("sql: updateTagNameByTagId");
     await database.rawUpdate('''
       update tag
       set tag_name = '$newTagName'
@@ -391,7 +401,7 @@ class SqliteUtil {
   }
 
   static Future<bool> updateTagOrder(List<String> tagNames) async {
-    Log.info("sql: updateTagOrder");
+    AppLog.info("sql: updateTagOrder");
     // 错误：把表中标签的名字和list中对应起来即可。这样会导致动漫标签不匹配
     // 应该重建一个order列，从0开始
     for (int i = 0; i < tagNames.length; ++i) {
@@ -405,7 +415,7 @@ class SqliteUtil {
   }
 
   static void deleteTagByTagName(String tagName) async {
-    Log.info("sql: deleteTagByTagName");
+    AppLog.info("sql: deleteTagByTagName");
     await database.rawDelete('''
     delete from tag
     where tag_name = '$tagName';
@@ -413,7 +423,7 @@ class SqliteUtil {
   }
 
   static Future<List<String>> getAllTags() async {
-    Log.info("sql: getAllTags");
+    AppLog.info("sql: getAllTags");
     var list = await database.rawQuery('''
     select tag_name
     from tag
@@ -427,7 +437,7 @@ class SqliteUtil {
   }
 
   static Future<Anime> getAnimeByAnimeId(int animeId) async {
-    Log.info("sql: getAnimeByAnimeId($animeId)");
+    // AppLog.debug("sql: getAnimeByAnimeId($animeId)");
     var list = await database.rawQuery('''
     select *
     from anime
@@ -445,7 +455,7 @@ class SqliteUtil {
   static Future<Anime> getAnimeByAnimeUrl(Anime anime) async {
     // 不需要根据animeName查找，只根据动漫地址就能知道数据库是否添加了该搜索源下的这个动漫
     // 不能使用的animeName的原因：如果网络搜索fate，可能会找到带有单引号的动漫名，如果按这个动漫名查找，则会出错，需要进行转义。
-    // Log.info("sql: getAnimeIdByAnimeNameAndSource()");
+    // AppLog.info("sql: getAnimeIdByAnimeNameAndSource()");
     if (anime.animeUrl.isEmpty) {
       anime.animeId = 0;
       anime.tagName = "";
@@ -471,7 +481,7 @@ class SqliteUtil {
   }
 
   static Future<String> getTagNameByAnimeId(int animeId) async {
-    Log.info("sql: getTagNameByAnimeId");
+    AppLog.info("sql: getTagNameByAnimeId");
     var list = await database.rawQuery('''
     select tag_name
     from anime
@@ -483,7 +493,7 @@ class SqliteUtil {
   // 获取该动漫的[startEpisodeNumber, endEpisodeNumber]集信息
   static Future<List<Episode>> getEpisodeHistoryByAnimeIdAndRange(
       Anime anime, int startEpisodeNumber, int endEpisodeNumber) async {
-    Log.info(
+    AppLog.info(
         "sql: getEpisodeHistoryByAnimeIdAndRange(animeId=${anime.animeId}), range=[$startEpisodeNumber, $endEpisodeNumber]");
 
     var list = await database.rawQuery('''
@@ -492,7 +502,7 @@ class SqliteUtil {
         on anime.anime_id = ${anime.animeId} and anime.anime_id = history.anime_id and history.review_number = ${anime.reviewNumber}
       where history.episode_number >= $startEpisodeNumber and history.episode_number <= $endEpisodeNumber;
       ''');
-    // Log.info("查询结果：$list");
+    // AppLog.info("查询结果：$list");
     List<Episode> episodes = [];
     for (int episodeNumber = startEpisodeNumber;
         episodeNumber <= endEpisodeNumber;
@@ -511,7 +521,7 @@ class SqliteUtil {
   }
 
   static Future<int> getAnimesCntBytagName(String tagName) async {
-    Log.info("sql: getAnimesCntBytagName");
+    AppLog.info("sql: getAnimesCntBytagName");
     var list = await database.rawQuery('''
       select count(anime.anime_id) cnt from anime
       where anime.tag_name = '$tagName';
@@ -521,20 +531,25 @@ class SqliteUtil {
 
   static Future<int> getCheckedEpisodeCntByAnimeId(int animeId,
       {int reviewNumber = 0}) async {
-    // Log.info("getCheckedEpisodeCntByAnimeId(animeId=$animeId)");
+    // AppLog.info("getCheckedEpisodeCntByAnimeId(animeId=$animeId)");
     var checkedEpisodeCntList = await database.rawQuery('''
       select count(anime.anime_id) cnt
       from anime inner join history
           on anime.anime_id = $animeId and anime.anime_id = history.anime_id and history.review_number = $reviewNumber;
       ''');
-    // Log.info(
+    // AppLog.info(
     //     "最大回顾号$maxReviewNumber的进度：checkedEpisodeCnt=${checkedEpisodeCntList[0]["cnt"] as int}");
     return checkedEpisodeCntList[0]["cnt"] as int;
   }
 
-  static getAllAnimeBytagName(String tagName, int offset, int number,
-      {required AnimeSortCond animeSortCond}) async {
-    Log.info("sql: getAllAnimeBytagName");
+  static Future<List<Anime>> getAllAnimeBytagName(
+    String tagName,
+    int offset,
+    int number, {
+    required AnimeSortCond animeSortCond,
+  }) async {
+    AppLog.info(
+        "sql: getAllAnimeBytagName($tagName, offset=$offset, number=$number)");
 
     dynamic list;
     SortCondItem sortCond =
@@ -613,7 +628,7 @@ class SqliteUtil {
   }
 
   static getAnimeCntPerTag() async {
-    Log.info("sql: getAnimeCntPerTag");
+    AppLog.info("sql: getAnimeCntPerTag");
 
     var list = await database.rawQuery('''
     select count(anime_id) as anime_cnt, tag.tag_name, tag.tag_order
@@ -625,7 +640,7 @@ class SqliteUtil {
 
     List<int> res = [];
     for (var item in list) {
-      // Log.info(
+      // AppLog.info(
       //     '${item['tag_name']}-${item['anime_cnt']}-${item['tag_order']}');
       res.add(item['anime_cnt'] as int);
     }
@@ -659,7 +674,7 @@ class SqliteUtil {
 
   static Future<int> insertNoteIdAndImageLocalPath(
       int noteId, String imageLocalPath, int orderIdx) async {
-    Log.info(
+    AppLog.info(
         "sql: insertNoteIdAndLocalImg(noteId=$noteId, imageLocalPath=$imageLocalPath, orderIdx=$orderIdx)");
     return await database.rawInsert('''
     insert into image (note_id, image_local_path, order_idx)
@@ -668,7 +683,7 @@ class SqliteUtil {
   }
 
   static deleteLocalImageByImageId(int imageId) async {
-    Log.info("sql: deleteLocalImageByImageLocalPath($imageId)");
+    AppLog.info("sql: deleteLocalImageByImageLocalPath($imageId)");
     await database.rawDelete('''
     delete from image
     where image_id = $imageId;
@@ -677,7 +692,7 @@ class SqliteUtil {
 
   static Future<Anime> getCustomAnimeByAnimeName(String animeName) async {
     animeName = EscapeUtil.escapeStr(animeName); // 先转义
-    Log.info("sql: getCustomAnimeByAnimeName($animeName)");
+    AppLog.info("sql: getCustomAnimeByAnimeName($animeName)");
 
     var list = await database.rawQuery('''
     select *
@@ -702,7 +717,7 @@ class SqliteUtil {
   static Future<List<Anime>> getCustomAnimesIfContainAnimeName(
       String animeName) async {
     animeName = EscapeUtil.escapeStr(animeName); // 先转义
-    Log.info("sql: getCustomAnimeByAnimeName($animeName)");
+    AppLog.info("sql: getCustomAnimeByAnimeName($animeName)");
 
     var list = await database.rawQuery('''
     select *
@@ -742,7 +757,7 @@ class SqliteUtil {
     ''');
     // 没有列时添加
     if (list.isEmpty) {
-      Log.info("sql: addColumnOrderIdxToImage");
+      AppLog.info("sql: addColumnOrderIdxToImage");
       await database.execute('''
       alter table image
       add column order_idx INTEGER;

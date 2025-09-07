@@ -8,7 +8,6 @@ import 'package:animetrace/models/note.dart';
 import 'package:animetrace/pages/modules/note_edit.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 // 动漫详细页的评价列表页
@@ -55,8 +54,6 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return Scaffold(
       appBar: AppBar(title: const Text("动漫评价")),
       body: CommonScaffoldBody(
@@ -67,14 +64,13 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
               : loadingWidget(context)),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createRateNote(),
-        backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(MingCuteIcons.mgc_add_line, color: Colors.white),
+        child: const Icon(Icons.add),
       ),
     );
   }
 
   void _createRateNote() async {
-    Log.info("添加评价");
+    AppLog.info("添加评价");
     Note episodeNote = Note.createRateNote(widget.anime);
     episodeNote.id = await NoteDao.insertRateNote(widget.anime.animeId);
     final note = await Navigator.push(context,
@@ -91,7 +87,7 @@ class _AnimeRateListPageState extends State<AnimeRateListPage> {
           controller: scrollController,
           itemCount: notes.length,
           itemBuilder: (context, index) {
-            Log.info("$runtimeType: index=$index");
+            AppLog.info("$runtimeType: index=$index");
             Note note = notes[index];
 
             return NoteCard(

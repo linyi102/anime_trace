@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_ping/dart_ping.dart';
 import 'package:dio/dio.dart';
 import 'package:animetrace/utils/error_format_util.dart';
 import 'package:animetrace/models/ping_result.dart';
@@ -22,7 +21,7 @@ class DioUtil {
 
   static void init() {
     dio = Dio(_baseOptions);
-    dio.interceptors.add(DioLogInterceptor(logger));
+    dio.interceptors.add(DioLogInterceptor());
     dio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
       final HttpClient client =
           HttpClient(context: SecurityContext(withTrustedRoots: false));
@@ -87,8 +86,6 @@ class DioUtil {
     }
   }
 
-  static const bool _enablePing = false;
-
   // 查询链接状态
   static Future<bool> urlResponseOk(String url) async {
     try {
@@ -97,11 +94,11 @@ class DioUtil {
       if (statusCode == 200) {
         return true;
       } else {
-        Log.info("$url返回码：$statusCode");
+        AppLog.info("$url返回码：$statusCode");
         return false;
       }
     } catch (e) {
-      // Log.error(e.toString());
+      // AppLog.error(e.toString());
       // 400会报异常，这里捕捉到后返回false
       return false;
     }
@@ -112,56 +109,27 @@ class DioUtil {
     PingStatus pingStatus = PingStatus();
     pingStatus.needPing = false; // 先设置为false，这样在ping的过程中来回切换页面后，不会再次ping
 
-    if (_enablePing) {
-      // 使用ping第三方包
-      // 缺点：打包后win端始终超时
-      /**加上https://会提示错误
-          flutter: PingError(response:null, error:UnknownHost)
-          flutter: PingSummary(transmitted:0, received:0), time: 0 ms, Errors: [Unknown: Ping process exited with code: 1]
-       */
-      List<String> prefixs = ["https://", "http://"];
-      for (String prefix in prefixs) {
-        if (path.startsWith(prefix)) {
-          path = path.replaceFirst(prefix, ""); // 删除前缀
-          break;
-        }
+    // 使用dio方法
+    bool connectable = false;
+    try {
+      var start = DateTime.now();
+      bool responseOk = await urlResponseOk(path);
+      var end = DateTime.now();
+      pingStatus.time = end.difference(start).inMilliseconds;
+      if (responseOk) {
+        connectable = true; // 只有不抛出异常且状态码为200时才说明可以连接
       }
-      final ping = Ping(path, count: 3, timeout: 8);
-      await ping.stream.listen((event) {
-        // 只需要看Summary，忽略Response
-        if (event.toString().contains("PingSummary")) {
-          // 3次有1次回复，则返回true
-          int reveived = event.summary?.received ?? 0;
-          Log.info("$event, reveived=$reveived");
-          if (reveived >= 1) {
-            pingStatus.connectable = true;
-            pingStatus.time = event.summary?.time?.inMilliseconds ?? -1;
-          }
-        }
-      }).asFuture(); // stream改为futrue，并await
-    } else {
-      // 使用dio方法
-      bool connectable = false;
-      try {
-        var start = DateTime.now();
-        bool responseOk = await urlResponseOk(path);
-        var end = DateTime.now();
-        pingStatus.time = end.difference(start).inMilliseconds;
-        if (responseOk) {
-          connectable = true; // 只有不抛出异常且状态码为200时才说明可以连接
-        }
-      } catch (e) {
-        String msg = ErrorFormatUtil.formatError(e);
-        Log.info(msg);
-      }
+    } catch (e) {
+      String msg = ErrorFormatUtil.formatError(e);
+      AppLog.info(msg);
+    }
 
-      if (connectable) {
-        pingStatus.connectable = true;
-        Log.info("ping ok: $path");
-      } else {
-        pingStatus.connectable = false;
-        Log.info("ping false: $path");
-      }
+    if (connectable) {
+      pingStatus.connectable = true;
+      AppLog.info("ping ok: $path");
+    } else {
+      pingStatus.connectable = false;
+      AppLog.info("ping false: $path");
     }
 
     // 更新状态并返回

@@ -11,7 +11,7 @@ class UpdateRecordDao {
   static String table = "update_record";
 
   static Future<int> insert(AnimeUpdateRecord updateRecord) {
-    Log.info("sql:insertUpdateRecord(updateRecord=$updateRecord)");
+    AppLog.info("sql:insertUpdateRecord(updateRecord=$updateRecord)");
     return db.insert(table, {
       "anime_id": updateRecord.animeId,
       "old_episode_cnt": updateRecord.oldEpisodeCnt,
@@ -24,7 +24,7 @@ class UpdateRecordDao {
       List<AnimeUpdateRecord> updateRecords) async {
     var batchInsert = db.batch();
     for (var updateRecord in updateRecords) {
-      Log.info("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
+      AppLog.info("sql batch:insertUpdateRecord(updateRecord=$updateRecord)");
       batchInsert.insert(table, {
         "anime_id": updateRecord.animeId,
         "old_episode_cnt": updateRecord.oldEpisodeCnt,
@@ -37,7 +37,7 @@ class UpdateRecordDao {
 
   // 先获取最近更新的pageSize个日期，然后循环查询当前日期下的所有记录
   static Future<List<UpdateRecordVo>> findAll(PageParams pageParams) async {
-    Log.info("UpdateRecordDao: findAll(pageParams=$pageParams)");
+    AppLog.info("UpdateRecordDao: findAll(pageParams=$pageParams)");
     List<UpdateRecordVo> updateRecordVos = [];
     List<Map<String, Object?>> list = await db.rawQuery('''
     select substr(manual_update_time, 1, 10) day from update_record
@@ -53,7 +53,7 @@ class UpdateRecordDao {
     //     groupBy: "manual_update_time",
     //     orderBy: "manual_update_time desc");
     List<String> dates = [];
-    Log.info("最近${pageParams.pageSize}(${list.length})个日期：");
+    AppLog.info("最近${pageParams.pageSize}(${list.length})个日期：");
     for (var map in list) {
       String date = map["day"] as String;
       dates.add(date);

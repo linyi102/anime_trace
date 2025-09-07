@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 
 class CommonTextFormField extends StatelessWidget {
   const CommonTextFormField(
@@ -10,7 +9,6 @@ class CommonTextFormField extends StatelessWidget {
       this.formWidth,
       this.controller,
       this.labelWidth = 70,
-      this.labelDisplayLeft = false,
       this.validator,
       this.inputFormatters,
       this.suffix,
@@ -25,7 +23,6 @@ class CommonTextFormField extends StatelessWidget {
   final double? formWidth;
   final TextEditingController? controller;
   final double labelWidth;
-  final bool labelDisplayLeft;
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
   final Widget? suffix;
@@ -38,40 +35,19 @@ class CommonTextFormField extends StatelessWidget {
     return Center(
       child: SizedBox(
         width: formWidth,
-        child: Row(
-          children: [
-            if (labelDisplayLeft)
-              SizedBox(width: labelWidth, child: Text(labelText)),
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                autofocus: autofocus,
-                obscureText: isPassword,
-                maxLength: maxLength,
-                decoration: labelDisplayLeft
-                    ? null
-                    : InputDecoration(
-                        labelText: isRequired ? labelText : '$labelText (选填)',
-                        suffix: suffix,
-                        suffixIcon: suffixIcon,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme.of(context)
-                                  .hintColor
-                                  .withOpacityFactor(0.2)),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                validator: validator,
-                inputFormatters: inputFormatters,
-              ),
-            ),
-          ],
+        child: TextFormField(
+          controller: controller,
+          autofocus: autofocus,
+          obscureText: isPassword,
+          maxLength: maxLength,
+          decoration: InputDecoration(
+            labelText: isRequired ? labelText : '$labelText (选填)',
+            suffix: suffix,
+            suffixIcon: suffixIcon,
+            counterText: '',
+          ),
+          validator: validator,
+          inputFormatters: inputFormatters,
         ),
       ),
     );

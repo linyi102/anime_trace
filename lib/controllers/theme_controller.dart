@@ -1,46 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:animetrace/models/page_switch_animation.dart';
 import 'package:animetrace/utils/settings.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
 
+const _primaryColorKey = 'customPrimaryColor';
+
 class ThemeController extends GetxController {
   static ThemeController get to => Get.find();
 
-  Rx<int> themeModeIdx = SPUtil.getInt("darkMode", defaultValue: 0).obs;
-  Rx<bool> useM3 = SPUtil.getBool("useM3", defaultValue: true).obs;
-  Rx<bool> useCardStyle =
-      SPUtil.getBool("useCardStyle", defaultValue: true).obs;
-  Rx<bool> hideMobileBottomLabel =
-      SettingsUtil.get<bool>(SettingsEnum.hideMobileBottomLabel).obs;
-
-  Rx<ThemeColor> lightThemeColor = getSelectedTheme();
-  Rx<ThemeColor> darkThemeColor = getSelectedTheme(dark: true);
-
-  static String customPrimaryColorKey = 'customPrimaryColor';
-  Rx<Color?> customPrimaryColor = getCustomPrimaryColor().obs;
-
-  Rx<PageSwitchAnimation> pageSwitchAnimation =
-      SpProfile.getPageSwitchAnimation().obs;
+  /// 主题模式
+  final themeModeIdx = SPUtil.getInt("darkMode", defaultValue: 0).obs;
 
   bool isDark(context) => Theme.of(context).brightness == Brightness.dark;
 
-  /// 风格
-  setM3(bool enable) {
-    useM3.value = enable;
-    SPUtil.setBool("useM3", enable);
-  }
+  /// 主题色
+  late final primaryColor = getPrimaryColor().obs;
 
-  setUseCardStyle(bool enable) {
-    useCardStyle.value = enable;
-    SPUtil.setBool("useCardStyle", enable);
-  }
+  /// 配色方案
+  late final dynamicSchemeVariant = getDynamicSchemeVariant().obs;
+
+  /// 隐藏移动端底部标签栏
+  final hideMobileBottomLabel =
+      SettingsUtil.get<bool>(SettingsEnum.hideMobileBottomLabel).obs;
+
+  /// 页面切换动画
+  final pageSwitchAnimation = SpProfile.getPageSwitchAnimation().obs;
 
   /// 字体
-  RxList<String> fontFamilyFallback = [
-    SPUtil.getString("customFontFamily"),
+  final fontFamilyFallback = [
     '苹方-简',
     'PingFang SC',
     'HarmonyOS Sans SC',
@@ -49,58 +38,33 @@ class ThemeController extends GetxController {
     '微软雅黑',
   ].obs;
 
-  /// 从sp中获取用户选择的主题，如果没有，则是white，然后根据这个key从color map中获取相应的ThemeColor
-  static getSelectedTheme({bool dark = false}) {
-    String themeColorKey = SPUtil.getString(
-      dark ? "darkThemeColor" : "lighThemeColor",
-      defaultValue: dark ? "lightBlack" : "white",
-    );
-    return getThemeColorByKey(themeColorKey, dark: dark).obs;
+  Future<bool> changePrimaryColor(Color color) async {
+    primaryColor.value = color;
+    return SPUtil.setInt(_primaryColorKey, color.value);
   }
 
-  void changeTheme(String themeColorKey, {bool dark = false}) {
-    if (dark) {
-      darkThemeColor.value = getThemeColorByKey(themeColorKey, dark: dark);
-    } else {
-      lightThemeColor.value = getThemeColorByKey(themeColorKey, dark: dark);
-    }
-    SPUtil.setString(
-      dark ? "darkThemeColor" : "lighThemeColor",
-      themeColorKey,
-    );
+  Future<bool> resetPrimaryColor() async {
+    primaryColor.value = Colors.blueAccent;
+    return SPUtil.remove(_primaryColorKey);
   }
 
-  /// 更新主题色
-  Future<bool> changeCustomPrimaryColor(Color color) async {
-    customPrimaryColor.value = color;
-    return SPUtil.setInt(customPrimaryColorKey, color.value);
-  }
-
-  Future<bool> resetCustomPrimaryColor() async {
-    customPrimaryColor.value = null;
-    return SPUtil.remove(customPrimaryColorKey);
-  }
-
-  static Color? getCustomPrimaryColor() {
-    final colorValue = SPUtil.getInt(customPrimaryColorKey);
-    if (colorValue == 0) return null;
+  Color getPrimaryColor() {
+    final colorValue = SPUtil.getInt(_primaryColorKey);
+    if (colorValue == 0) return Colors.blueAccent;
     return Color(colorValue);
   }
 
-  /// 根据key从list中查找主题
-  static ThemeColor getThemeColorByKey(String key, {bool dark = false}) {
-    var colors = dark ? AppTheme.darkColors : AppTheme.lightColors;
-
-    return colors.firstWhereOrNull((themeColor) => themeColor.key == key) ??
-        getDefaultThemeColor(dark: dark);
+  void setDynamicSchemeVariant(DynamicSchemeVariant variant) {
+    dynamicSchemeVariant.value = variant;
+    SPUtil.setString('dynamicSchemeVariant', variant.name);
   }
 
-  /// 没有找到时，以第1个作为主题
-  static ThemeColor getDefaultThemeColor({bool dark = false}) {
-    return dark ? AppTheme.darkColors[0] : AppTheme.lightColors[0];
+  DynamicSchemeVariant getDynamicSchemeVariant() {
+    final variant = SPUtil.getString('dynamicSchemeVariant');
+    return DynamicSchemeVariant.values.firstWhere((e) => e.name == variant,
+        orElse: () => DynamicSchemeVariant.fruitSalad);
   }
 
-  /// 深色模式
   void setThemeMode(int themeModeIdx) {
     this.themeModeIdx.value = themeModeIdx;
     SPUtil.setInt("darkMode", themeModeIdx);
@@ -109,15 +73,18 @@ class ThemeController extends GetxController {
   ThemeMode getThemeMode() {
     return AppTheme.themeModes[themeModeIdx.value];
   }
+}
 
-  /// 字体
-  changeFontFamily(String fontFamily) {
-    fontFamilyFallback[0] = fontFamily;
-    SPUtil.setString("customFontFamily", fontFamily);
-  }
-
-  restoreFontFamily() {
-    fontFamilyFallback[0] = '';
-    SPUtil.setString("customFontFamily", '');
-  }
+extension DynamicSchemeVariantX on DynamicSchemeVariant {
+  String get displayName => switch (this) {
+        DynamicSchemeVariant.tonalSpot => '色调点',
+        DynamicSchemeVariant.fidelity => '保真',
+        DynamicSchemeVariant.monochrome => '单色',
+        DynamicSchemeVariant.neutral => '中性',
+        DynamicSchemeVariant.vibrant => '鲜艳',
+        DynamicSchemeVariant.expressive => '表现力',
+        DynamicSchemeVariant.content => '内容',
+        DynamicSchemeVariant.rainbow => '彩虹',
+        DynamicSchemeVariant.fruitSalad => '水果沙拉',
+      };
 }

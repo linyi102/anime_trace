@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:animetrace/utils/toast_util.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/global.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
@@ -7,6 +9,7 @@ import 'package:animetrace/utils/image_util.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/setting_card.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ImagePathSetting extends StatefulWidget {
   const ImagePathSetting({Key? key}) : super(key: key);
@@ -16,14 +19,28 @@ class ImagePathSetting extends StatefulWidget {
 }
 
 class _ImagePathSettingState extends State<ImagePathSetting> {
+  bool hasReadImagePerm = false;
+  Permission? imagePerm;
+
   @override
   void initState() {
     super.initState();
+    _setup();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void _setup() async {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      imagePerm = androidInfo.version.sdkInt <= 32
+          ? Permission.storage
+          : Permission.photos;
+      _getReadImagePerm();
+    }
+  }
+
+  void _getReadImagePerm() async {
+    hasReadImagePerm = await imagePerm!.status.isGranted;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -35,9 +52,9 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (Platform.isIOS) {
+    if (!FeatureFlag.enableSelectLocalImage) {
       return const Center(
-        child: Text('iOS暂不支持进行图片设置'),
+        child: Text('暂不支持进行图片设置'),
       );
     }
     return ListView(
@@ -45,6 +62,25 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
         SettingCard(
           title: '根目录设置',
           children: [
+            if (imagePerm != null)
+              ListTile(
+                title: const Text('读取图片权限'),
+                subtitle: const Text('未授权时应用会无法访问图片'),
+                trailing: TextButton(
+                  onPressed: () async {
+                    if (hasReadImagePerm) return;
+
+                    final r = await imagePerm!.request();
+                    if (r.isDenied) {
+                      ToastUtil.showText('授权被拒绝');
+                    } else if (r.isGranted) {
+                      ToastUtil.showText('授权成功');
+                    }
+                    _getReadImagePerm();
+                  },
+                  child: Text(hasReadImagePerm ? '已授权' : '去授权'),
+                ),
+              ),
             ListTile(
               title: const Text('本地笔记图片存放目录'),
               subtitle: Text(ImageUtil.noteImageRootDirPath.isEmpty
@@ -80,7 +116,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
           children: [
             ListTile(
               title: const Text('无法显示图片？'),
-              subtitle: const Text("点击查看使用帮助"),
+              subtitle: const Text("点击查看帮助"),
               onTap: () => LaunchUrlUtil.launch(
                   context: context,
                   uriStr: "https://www.yuque.com/linyi517/fzfxr0/xpx4xq"),
@@ -99,7 +135,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
               ),
               const SizedBox(height: 5),
               Text(
-                "在笔记中添加图片后，请不要移动图片或修改图片名称，否则无法显示。",
+                '应用只会记录选择图片的路径，并不会保存图片文件，所以在选择后尽量不要移动图片文件或修改名称，否则选择的图片无法正常展示。',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],

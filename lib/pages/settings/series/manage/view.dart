@@ -82,8 +82,6 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return Scaffold(
       appBar: searchAction ? _buildSearchBar() : _buildCommonAppBar(),
       body: GetBuilder(
@@ -182,8 +180,12 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
       child: InkWell(
         onTap: () => _toAllRecommendSeriesPage(context),
         child: Container(
-          color: Theme.of(context).primaryColor.withOpacityFactor(0.15),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).colorScheme.primary.withOpacityFactor(0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Row(
             children: [
               const Text('🥰 ', style: TextStyle(fontSize: 20)),
@@ -192,7 +194,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   '为你找到了 ${logic.allRecommendSeriesList.length} 个可能需要添加的系列',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -463,7 +465,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
 
     var color = status == isAdded
         ? Theme.of(context).colorScheme.error
-        : Theme.of(context).primaryColor;
+        : Theme.of(context).colorScheme.primary;
 
     // 进入系列管理页时：推荐的系列显示创建按钮，已创建的系列显示更多按钮
     // 从动漫详情页中进入该页时：推荐的系列显示创建按钮，已创建的系列显示加入按钮，已加入的系列显示退出按钮
@@ -573,12 +575,11 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
     return SearchAppBar(
       isAppBar: true,
       autofocus: true,
-      useModernStyle: false,
       showCancelButton: true,
       inputController: logic.inputKeywordController,
       hintText: "搜索系列",
       onChanged: (kw) async {
-        Log.info("搜索系列关键字：$kw");
+        AppLog.info("搜索系列关键字：$kw");
         // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
         DelayUtil.delaySearch(() async {
           logic.allSeriesList = await SeriesDao.searchSeries(kw);
@@ -622,7 +623,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   title: const Text("编辑"),
                   leading: const Icon(Icons.edit),
                   onTap: () {
-                    Log.info("编辑系列：$series");
+                    AppLog.info("编辑系列：$series");
                     Navigator.of(context).pop();
 
                     int index = logic.allSeriesList
@@ -634,7 +635,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
                   title: const Text("删除"),
                   leading: const Icon(Icons.delete_outline),
                   onTap: () {
-                    Log.info("删除系列：$series");
+                    AppLog.info("删除系列：$series");
                     Navigator.of(context).pop();
                     _showDialogConfirmDelete(context, series);
                   },
@@ -692,7 +693,7 @@ class _SeriesManagePageState extends State<SeriesManagePage> {
           logic.getAllSeries();
         });
       },
-      child: const Icon(MingCuteIcons.mgc_add_line),
+      child: const Icon(Icons.add),
     );
   }
 

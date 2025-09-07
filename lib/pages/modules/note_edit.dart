@@ -1,5 +1,5 @@
-import 'dart:io';
 
+import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +43,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   @override
   void initState() {
     super.initState();
-    Log.info("进入笔记${widget.note.id}");
+    AppLog.info("进入笔记${widget.note.id}");
     _loadData();
   }
 
@@ -54,7 +54,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   _loadData() async {
-    Log.info("note.id=${widget.note.id}");
+    AppLog.info("note.id=${widget.note.id}");
     // 已经能保证是最新的了，所以不需要重新获取
     // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
     //   if (value.id == 0) {
@@ -211,6 +211,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
             ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
             : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
         style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -222,8 +224,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       controller: noteContentController..text,
       decoration: const InputDecoration(
         hintText: "描述",
-        contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 15),
+        contentPadding: EdgeInsets.all(16),
         border: InputBorder.none,
+        filled: false,
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.transparent)),
       ),
@@ -238,7 +241,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
-    Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
+    AppLog.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
 
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -264,9 +267,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       dragStartDelay: const Duration(milliseconds: 200),
       onReorder: (oldIndex, newIndex) {
         // 下标没变直接返回
-        Log.info("oldIndex=$oldIndex, newIndex=$newIndex");
+        AppLog.info("oldIndex=$oldIndex, newIndex=$newIndex");
         if (oldIndex == newIndex) {
-          Log.info("拖拽了，但未改变顺序，直接返回");
+          AppLog.info("拖拽了，但未改变顺序，直接返回");
           return;
         }
 
@@ -275,7 +278,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
         changeOrderIdx = true;
-        Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
+        AppLog.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
       },
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Material(
@@ -283,24 +286,23 @@ class _NoteEditPageState extends State<NoteEditPage> {
           elevation: 12,
           child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
-      footer: [_buildAddButton()],
+      footer: [
+        if (FeatureFlag.enableSelectLocalImage) _buildAddButton(),
+      ],
     );
   }
 
-  Container _buildAddButton() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        color: Theme.of(context).hoverColor,
-        // border: Border.all(
-        //   style: BorderStyle.solid,
-        //   color: Theme.of(context).hintColor,
-        // ),
-      ),
+  Widget _buildAddButton() {
+    final radius = BorderRadius.circular(AppTheme.noteImgRadius);
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Material(
+      color: primary.withOpacityFactor(0.1),
+      borderRadius: radius,
       child: InkWell(
         onTap: () => _pickLocalImages(),
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        child: Icon(Icons.add, color: Theme.of(context).hintColor),
+        borderRadius: radius,
+        child: Icon(Icons.add, color: primary.withOpacityFactor(0.5)),
       ),
     );
   }
@@ -349,23 +351,19 @@ class _NoteEditPageState extends State<NoteEditPage> {
       );
       return;
     }
-    if (Platform.isWindows || Platform.isAndroid) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
-        allowMultiple: true,
-      );
-      if (result == null) return;
-      List<PlatformFile> platformFiles = result.files;
-      for (var platformFile in platformFiles) {
-        String absoluteImagePath = platformFile.path ?? "";
-        await _addImage(absoluteImagePath);
-      }
-    } else if (Platform.isIOS) {
-      ToastUtil.showText('iOS 暂不支持选择本地图片');
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+      allowMultiple: true,
+    );
+    if (result == null) return;
+    List<PlatformFile> platformFiles = result.files;
+    for (var platformFile in platformFiles) {
+      String absoluteImagePath = platformFile.path ?? "";
+      await _addImage(absoluteImagePath);
     }
+
     setState(() {});
   }
 

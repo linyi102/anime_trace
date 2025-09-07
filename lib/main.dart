@@ -2,28 +2,37 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:animetrace/routes/route_log_observer.dart';
+import 'package:animetrace/widgets/device_preview_screenshot_section.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:flutter_logkit/logkit.dart';
 import 'package:animetrace/components/classic_refresh_style.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/global.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/pages/main_screen/view.dart';
 import 'package:animetrace/utils/sp_profile.dart';
-import 'package:animetrace/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
-  runLogkitZonedGuarded(logger, () async {
+  runZonedGuardedWithLog(() async {
     await Global.init();
-    runApp(const MyApp());
+    runApp(
+      Global.enableDevicePreview
+          ? DevicePreview(
+              builder: (context) => const MyApp(),
+              tools: const [
+                DevicePreviewScreenshotSection(),
+                ...DevicePreview.defaultTools,
+              ],
+            )
+          : const MyApp(),
+    );
   });
 }
 
@@ -86,7 +95,7 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
 
   @override
   void onWindowMaximize() async {
-    Log.info("全屏");
+    AppLog.info("全屏");
   }
 }
 
@@ -98,11 +107,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  final ThemeController themeController = Get.put(ThemeController());
-  TextStyle get textStyle =>
-      TextStyle(fontFamilyFallback: themeController.fontFamilyFallback);
-  ThemeColor get curLightThemeColor => themeController.lightThemeColor.value;
-  ThemeColor get curDarkThemeColor => themeController.darkThemeColor.value;
+  final themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
@@ -112,11 +117,8 @@ class MyAppState extends State<MyApp> {
       hideFooterWhenNotFull: true,
       child: Obx(() {
         return GetMaterialApp(
-          home: LogkitOverlayAttacher(
-            logger: logger,
-            child: const WindowWrapper(
-              child: MainScreen(),
-            ),
+          home: const WindowWrapper(
+            child: MainScreen(),
           ),
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
@@ -132,74 +134,22 @@ class MyAppState extends State<MyApp> {
             child = BotToastInit()(context, child);
             // 全局点击空白处隐藏软键盘
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
-            return Obx(() => Theme(
-                  data: _getFixedTheme(context),
-                  child: child ?? const SizedBox(),
-                ));
+            return child;
           },
-          navigatorObservers: [BotToastNavigatorObserver()],
+          navigatorObservers: [
+            BotToastNavigatorObserver(),
+            RouteLogObserver(),
+          ],
           // 后台应用显示名称
           title: '漫迹',
           // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
           scrollBehavior: MyCustomScrollBehavior(),
           // 主题
           themeMode: themeController.getThemeMode(),
-          theme: _getFlexThemeDataLight(),
-          darkTheme: _getFlexThemeDataDark(),
+          theme: _genThemeData(),
+          darkTheme: _genThemeData(isDark: true),
         );
       }),
-    );
-  }
-
-  ThemeData _getFixedTheme(BuildContext context) {
-    final isDark = Global.isDark(context);
-    final theme = Theme.of(context);
-    final iconColor = isDark
-        ? const Color.fromRGBO(169, 169, 169, 1)
-        : const Color.fromRGBO(60, 60, 60, 1);
-
-    return theme.copyWith(
-      listTileTheme: theme.listTileTheme.copyWith(
-        titleTextStyle: theme.textTheme.bodyMedium?.copyWith(fontSize: 15),
-        subtitleTextStyle: theme.textTheme.bodySmall
-            ?.copyWith(fontSize: 13, color: Theme.of(context).hintColor),
-        iconColor: iconColor,
-      ),
-      iconTheme: theme.iconTheme.copyWith(color: iconColor),
-      scrollbarTheme: _getScrollbarThemeData(context, isDark: isDark),
-      // 不在底部添加margin是为了避免相邻卡片向下间距变大
-      // 在顶部添加margin是为了保证不紧挨AppBar
-      cardTheme: theme.cardTheme.copyWith(
-        margin: themeController.useCardStyle.value
-            ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
-            : const EdgeInsets.only(top: 10),
-        elevation: 0,
-        color:
-            isDark ? curDarkThemeColor.cardColor : curLightThemeColor.cardColor,
-      ),
-      pageTransitionsTheme: _getPageTransitionsTheme(),
-      floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-      ),
-      chipTheme: theme.chipTheme.copyWith(side: BorderSide.none),
-      // 202308052321
-      appBarTheme: theme.appBarTheme.copyWith(
-        titleTextStyle:
-            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
-      ),
-      switchTheme: SwitchThemeData(
-        thumbIcon:
-            WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return Icon(Icons.check, color: theme.primaryColor);
-          }
-          return null;
-        }),
-      ),
-      textTheme: theme.textTheme.copyWith(
-        bodySmall: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
-      ),
     );
   }
 
@@ -225,6 +175,8 @@ class MyAppState extends State<MyApp> {
       builders: <TargetPlatform, PageTransitionsBuilder>{
         TargetPlatform.android:
             themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
+        TargetPlatform.iOS:
+            themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
         TargetPlatform.windows: const SharedAxisPageTransitionsBuilder(
           transitionType: SharedAxisTransitionType.horizontal,
         ),
@@ -232,146 +184,64 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  ThemeData _getFlexThemeDataLight() {
-    final primary = themeController.customPrimaryColor.value ??
-        curLightThemeColor.primaryColor;
-
-    return FlexThemeData.light(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: primary, brightness: Brightness.light),
-      useMaterial3: themeController.useM3.value,
-      fontFamilyFallback: textStyle.fontFamilyFallback,
-      primary: primary,
-      scaffoldBackground: curLightThemeColor.bodyColor,
-      surface: curLightThemeColor.cardColor,
-      // BottomNavigationBar
-      background: curLightThemeColor.appBarColor,
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 9,
-      tabBarStyle: FlexTabBarStyle.forBackground,
-      appBarBackground: curLightThemeColor.appBarColor,
-      appBarStyle: FlexAppBarStyle.scaffoldBackground,
-      tooltipsMatchBackground: true,
-      subThemesData: FlexSubThemesData(
-        // chip颜色
-        chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
-        useM2StyleDividerInM3: true,
-        // 悬浮、按压等颜色不受主颜色影响
-        interactionEffects: false,
-        useTextTheme: true,
-        // true会导致文字和按钮颜色受主色影响
-        blendTextTheme: false,
-        // 隐藏输入框底部边界
-        inputDecoratorUnfocusedHasBorder: false,
-        blendOnLevel: 10,
-        blendOnColors: false,
-        inputDecoratorIsFilled: false,
-        inputDecoratorBorderType: FlexInputBorderType.underline,
-        bottomSheetRadius: AppTheme.bottomSheetRadius,
-        cardRadius:
-            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
-        chipRadius: AppTheme.chipRadius,
-        dialogRadius: AppTheme.dialogRadius,
-        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
-        popupMenuRadius: 8.0,
-        textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 2.0,
-        elevatedButtonSchemeColor: SchemeColor.onPrimary,
-        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
-        // 对话框背景色
-        dialogElevation: 0.0,
-        // 滚动时AppBar背景色
-        appBarScrolledUnderElevation: 0.0,
-        // 底部面板背景色
-        bottomSheetElevation: 0.0,
-        bottomSheetModalElevation: 0.0,
-        tabBarDividerColor: Colors.transparent,
-        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-        popupMenuElevation: 1,
-        fabUseShape: true,
-        fabAlwaysCircular: true,
-      ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+  ThemeData _genThemeData({bool isDark = false}) {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: themeController.primaryColor.value,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      dynamicSchemeVariant: themeController.dynamicSchemeVariant.value,
     );
-  }
 
-  ThemeData _getFlexThemeDataDark() {
-    final primary = themeController.customPrimaryColor.value ??
-        curDarkThemeColor.primaryColor;
-
-    return FlexThemeData.dark(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: primary,
-          onPrimary: Colors.white,
-          brightness: Brightness.dark),
-      useMaterial3: themeController.useM3.value,
-      fontFamilyFallback: textStyle.fontFamilyFallback,
-      primary: primary,
-      scaffoldBackground: curDarkThemeColor.bodyColor,
-      surface: curDarkThemeColor.cardColor,
-      // BottomNavigationBar
-      background: curDarkThemeColor.appBarColor,
-      surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-      blendLevel: 15,
-      tabBarStyle: FlexTabBarStyle.forBackground,
-      appBarBackground: curDarkThemeColor.appBarColor,
-      appBarStyle: FlexAppBarStyle.scaffoldBackground,
-      tooltipsMatchBackground: true,
-      subThemesData: FlexSubThemesData(
-        // chip颜色
-        chipSchemeColor: SchemeColor.primaryContainer,
-        chipSelectedSchemeColor: SchemeColor.secondaryContainer,
-        // 悬浮、按压等颜色不受主颜色影响
-        interactionEffects: false,
-        useTextTheme: true,
-        // true会导致文字和按钮颜色受主色影响
-        blendTextTheme: false,
-        // 隐藏输入框底部边界
-        inputDecoratorUnfocusedHasBorder: false,
-        blendOnLevel: 20,
-        inputDecoratorIsFilled: false,
-        inputDecoratorBorderType: FlexInputBorderType.underline,
-        bottomSheetRadius: AppTheme.bottomSheetRadius,
-        cardRadius:
-            themeController.useCardStyle.value ? AppTheme.cardRadius : 0,
-        chipRadius: AppTheme.chipRadius,
-        dialogRadius: AppTheme.dialogRadius,
-        timePickerDialogRadius: AppTheme.timePickerDialogRadius,
-        popupMenuRadius: 8.0,
-        textButtonRadius: AppTheme.textButtonRadius,
-        splashType: FlexSplashType.inkSparkle,
-        elevatedButtonElevation: 2.0,
-        elevatedButtonSchemeColor: SchemeColor.onPrimary,
-        elevatedButtonSecondarySchemeColor: SchemeColor.primary,
-        // 对话框背景色
-        dialogElevation: 0.0,
-        // 滚动时AppBar背景色
-        appBarScrolledUnderElevation: 0.0,
-        // 底部面板背景色
-        bottomSheetElevation: 0.0,
-        bottomSheetModalElevation: 0.0,
-        tabBarDividerColor: Colors.transparent,
-        outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-        popupMenuElevation: 1,
-        fabUseShape: true,
-        fabAlwaysCircular: true,
+    return ThemeData(
+      colorScheme: colorScheme,
+      cardTheme: CardTheme(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        elevation: 0,
       ),
-      visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    );
-  }
-
-  ScrollbarThemeData _getScrollbarThemeData(BuildContext context,
-      {bool isDark = false}) {
-    return ScrollbarThemeData(
-      trackVisibility: WidgetStateProperty.all(true),
-      // 粗细
-      thickness: WidgetStateProperty.all(5),
-      interactive: true,
-      radius: const Radius.circular(10),
-      thumbColor: WidgetStateProperty.all(
-        isDark ? Colors.white.withOpacityFactor(0.4) : Colors.black38,
+      listTileTheme: const ListTileThemeData(
+        visualDensity: VisualDensity.standard,
+      ),
+      pageTransitionsTheme: _getPageTransitionsTheme(),
+      bottomSheetTheme: const BottomSheetThemeData(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainer,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryFixed,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        textStyle: TextStyle(
+          color: colorScheme.onSecondaryFixed,
+        ),
+      ),
+      fontFamilyFallback: themeController.fontFamilyFallback,
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: MenuStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: colorScheme.surfaceContainerHigh,
+        ),
       ),
     );
   }

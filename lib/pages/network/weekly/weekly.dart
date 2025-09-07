@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_item_auto_load.dart';
-import 'package:animetrace/components/get_anime_grid_delegate.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/components/website_logo.dart';
 import 'package:animetrace/models/climb_website.dart';
@@ -12,7 +11,6 @@ import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/values/values.dart';
-import 'package:get/get.dart';
 
 /// 周表
 class WeeklyPage extends StatefulWidget {
@@ -23,7 +21,7 @@ class WeeklyPage extends StatefulWidget {
 }
 
 class _WeeklyPageState extends State<WeeklyPage> {
-  final weeklyController = Get.put(WeeklyController());
+  final weeklyController = WeeklyController();
   int get selectedWeekdayIdx => weeklyController.selectedWeekday - 1;
 
   final List<ClimbWebsite> usableWebsites = [
@@ -31,7 +29,8 @@ class _WeeklyPageState extends State<WeeklyPage> {
     quClimbWebsite,
   ];
   late ClimbWebsite curWebsite;
-  bool get needClimbDetail => [quClimbWebsite].contains(curWebsite);
+  bool get needClimbDetail =>
+      [bangumiClimbWebsite, quClimbWebsite].contains(curWebsite);
 
   late bool loading;
 
@@ -76,13 +75,12 @@ class _WeeklyPageState extends State<WeeklyPage> {
   @override
   void dispose() {
     scrollController.dispose();
+    weeklyController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
     return Scaffold(
       appBar: AppBar(title: const Text('周表')),
       body: Column(
@@ -115,7 +113,7 @@ class _WeeklyPageState extends State<WeeklyPage> {
           });
         },
         itemBuilder: (context, pageIndex) {
-          Log.info("pageIndex=$pageIndex");
+          AppLog.info("pageIndex=$pageIndex");
 
           if (loading) {
             return const LoadingWidget(center: true);
@@ -133,49 +131,18 @@ class _WeeklyPageState extends State<WeeklyPage> {
     );
   }
 
-  // ignore: unused_element
-  GridView _buildAnimeGrid(int pageIndex) {
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(10, 5, 10, 40),
-      controller: scrollController,
-      gridDelegate: getAnimeGridDelegate(context),
-      // 不要使用selectedWeekdayIdx，而应使用pageIndex，否则生成的都是同一个页面
-      itemCount: weeklyController.weeks[pageIndex].length,
-      itemBuilder: (context, recordIdx) {
-        // Log.info("recordIdx=$recordIdx");
-        WeekRecord record = weeklyController.weeks[pageIndex][recordIdx];
-
-        return Column(
-          children: [
-            AnimeItemAutoLoad(
-              anime: record.anime,
-              onChanged: (newAnime) => record.anime = newAnime,
-              style: AnimeItemStyle.grid,
-              showProgress: true,
-              showReviewNumber: true,
-              climbDetail: needClimbDetail,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   _buildAnimeList(int pageIndex) {
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 40),
       controller: scrollController,
       itemCount: weeklyController.weeks[pageIndex].length,
       itemBuilder: (context, recordIdx) {
-        // Log.info("recordIdx=$recordIdx");
+        // AppLog.info("recordIdx=$recordIdx");
         WeekRecord record = weeklyController.weeks[pageIndex][recordIdx];
         return AnimeItemAutoLoad(
           anime: record.anime,
           onChanged: (newAnime) => record.anime = newAnime,
-          style: AnimeItemStyle.list,
           subtitles: [record.info],
-          showProgress: true,
-          showReviewNumber: true,
           climbDetail: needClimbDetail,
         );
       },
@@ -184,20 +151,9 @@ class _WeeklyPageState extends State<WeeklyPage> {
 
   _buildWeeklyBar() {
     return WeeklyBar(
-      selectedWeekday: weeklyController.selectedWeekday,
+      controller: weeklyController,
       onChanged: (newWeekday) {
-        Log.info("newWeekday=$newWeekday");
-        weeklyController.selectedWeekday = newWeekday;
-        // 动画移动至指定页(页号从0开始，所以传入的是selectedWeekdayIdx而非selectedWeekday)
-        // pageController
-        //     .animateToPage(selectedWeekdayIdx,
-        //         duration: const Duration(milliseconds: 2000),
-        //         curve: Curves.linear).then((value) {
-        //   // 动画播放完毕后，如果当前页没有数据，则进行加载
-        //   if (weeklyController.weeks[selectedWeekdayIdx].isEmpty) {
-        //     _loadData();
-        //   }
-        // });
+        AppLog.info("newWeekday=$newWeekday");
         // 切换页面较大时，短时间内播完动画有些卡顿，所以改用jump
         pageController.jumpToPage(selectedWeekdayIdx);
         // 跳转或动画到某页时，会指定pageView里的代码，所以把加载数据放在那里

@@ -110,7 +110,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 border: Border.all(
                   width: 1.5,
                   color: website == curClimbWebsite
-                      ? Theme.of(context).primaryColor
+                      ? Theme.of(context).colorScheme.primary
                       : Colors.transparent,
                 ),
                 borderRadius: BorderRadius.circular(99),
@@ -162,10 +162,10 @@ class _SourceDetailState extends State<SourceDetail> {
                 title: const Text("启动搜索"),
                 leading: !curClimbWebsite.discard && curClimbWebsite.enable
                     ? Icon(Icons.check_box,
-                        color: Theme.of(context).primaryColor)
+                        color: Theme.of(context).colorScheme.primary)
                     : Icon(
                         Icons.check_box_outline_blank,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                 onTap: () {
                   if (curClimbWebsite.discard) {
@@ -183,7 +183,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 title: const Text("搜索动漫"),
                 leading: Icon(
                   MingCuteIcons.mgc_search_2_line,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 onTap: () {
                   Navigator.of(context)
@@ -196,7 +196,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 ListTile(
                   leading: Icon(
                     Icons.filter_alt_outlined,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('搜索类型'),
                   subtitle: Text(
@@ -211,7 +211,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 title: const Text("收藏列表"),
                 leading: Icon(
                   MingCuteIcons.mgc_heart_line,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 onTap: () {
                   Navigator.of(context)
@@ -225,7 +225,7 @@ class _SourceDetailState extends State<SourceDetail> {
                 title: const Text("迁移动漫"),
                 leading: Icon(
                   MingCuteIcons.mgc_transfer_line,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 onTap: () {
                   Navigator.of(context)
@@ -377,7 +377,7 @@ class _SourceDetailState extends State<SourceDetail> {
         // Icons.add_chart_outlined,
         // Icons.bar_chart_rounded,
         MingCuteIcons.mgc_file_import_line,
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).colorScheme.primary,
       ),
       onTap: () {
         Navigator.push(

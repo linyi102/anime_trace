@@ -120,7 +120,7 @@ class LocalSearchController extends GetxController {
   }
 
   Future<void> search() async {
-    Log.info(localSelectFilter);
+    AppLog.info(localSelectFilter);
     searchOk = false;
     update();
 

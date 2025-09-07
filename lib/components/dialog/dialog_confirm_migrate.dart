@@ -11,7 +11,7 @@ import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/utils/log.dart';
 
 showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
-  Log.info("迁移动漫$animeId");
+  AppLog.info("迁移动漫$animeId");
   bool updateName =
       SPUtil.getBool("updateNameInMigratePage", defaultValue: true);
   bool updateCover =
@@ -52,7 +52,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       },
                       icon: updateName
                           ? Icon(Icons.check_box,
-                              color: Theme.of(context).primaryColor)
+                              color: Theme.of(context).colorScheme.primary)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
                   ),
@@ -76,7 +76,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                         },
                         icon: updateCover
                             ? Icon(Icons.check_box,
-                                color: Theme.of(context).primaryColor)
+                                color: Theme.of(context).colorScheme.primary)
                             : const Icon(Icons.check_box_outline_blank)),
                   ),
                   ListTile(
@@ -93,7 +93,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       },
                       icon: updateInfo
                           ? Icon(Icons.check_box,
-                              color: Theme.of(context).primaryColor)
+                              color: Theme.of(context).colorScheme.primary)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
                   ),
@@ -112,7 +112,7 @@ showDialogOfConfirmMigrate(parentContext, int animeId, Anime newAnime) {
                       },
                       icon: updateAnimeUrl
                           ? Icon(Icons.check_box,
-                              color: Theme.of(context).primaryColor)
+                              color: Theme.of(context).colorScheme.primary)
                           : const Icon(Icons.check_box_outline_blank),
                     ),
                   )

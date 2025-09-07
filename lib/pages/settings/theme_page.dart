@@ -1,9 +1,9 @@
+import 'package:animetrace/widgets/connected_button_groups.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:animetrace/widgets/responsive.dart';
 import 'package:animetrace/widgets/setting_card.dart';
 import 'package:get/get.dart';
 
@@ -29,18 +29,12 @@ class _ThemePageState extends State<ThemePage> {
             title: '主题',
             children: [
               ListTile(
-                title: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('选择主题色'),
-                    SizedBox(width: 8),
-                  ],
-                ),
+                title: const Text('主题色'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextButton(
-                      onPressed: themeController.resetCustomPrimaryColor,
+                      onPressed: themeController.resetPrimaryColor,
                       child: const Text('重置'),
                     ),
                     _buildColorIndicator(),
@@ -48,56 +42,54 @@ class _ThemePageState extends State<ThemePage> {
                 ),
                 onTap: _showColorPicker,
               ),
-              if (!Responsive.isMobile(context)) ...[
-                ListTile(
-                  title: const Text('主题模式'),
-                  trailing: _buildThemeSelector(),
-                ),
-                ListTile(
-                  title: const Text('夜间主题'),
-                  trailing: _buildColorSelector(),
-                ),
-              ]
+              ListTile(
+                title: const Text('配色方案'),
+                trailing: Obx(() => Text(
+                      themeController.dynamicSchemeVariant.value.displayName,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    )),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                      title: const Text('选择配色方案'),
+                      children: DynamicSchemeVariant.values
+                          .map(
+                            (e) => RadioListTile<DynamicSchemeVariant>(
+                              title: Text(e.displayName),
+                              value: e,
+                              groupValue:
+                                  themeController.dynamicSchemeVariant.value,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  themeController
+                                      .setDynamicSchemeVariant(value);
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
-          if (Responsive.isMobile(context)) ...[
-            _buildThemeMode(),
-            _buildDarkTheme(),
-          ]
+          _buildThemeMode(),
         ],
       )),
     );
   }
 
-  Widget _buildColorSelector() {
-    return Obx(() => SegmentedButton<ThemeColor>(
-          segments: [
-            for (final themeColor in AppTheme.darkColors)
-              ButtonSegment(
-                icon: Icon(Icons.circle, color: themeColor.representativeColor),
-                value: themeColor,
-                label: Text(themeColor.name),
-              ),
-          ],
-          // showSelectedIcon: false,
-          emptySelectionAllowed: true,
-          selected: {ThemeController.to.darkThemeColor.value},
-          onSelectionChanged: (value) {
-            if (value.isEmpty) return;
-            final themeColor = value.first;
-            ThemeController.to.changeTheme(themeColor.key, dark: true);
-          },
-        ));
-  }
-
   Widget _buildThemeSelector() {
-    return Obx(() => SegmentedButton<int>(
-          segments: [
+    return Obx(() => ConnectedButtonGroups<int>(
+          items: [
             for (int i = 0; i < AppTheme.darkModes.length; i++)
-              ButtonSegment(
+              ConnectedButtonItem(
                 icon: Icon(AppTheme.darkModeIcons[i]),
+                label: AppTheme.darkModes[i],
                 value: i,
-                label: Text(AppTheme.darkModes[i]),
               ),
           ],
           // showSelectedIcon: false,
@@ -117,21 +109,8 @@ class _ThemePageState extends State<ThemePage> {
       useCard: false,
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 8, left: 16),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: _buildThemeSelector(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDarkTheme() {
-    return SettingCard(
-      title: '夜间主题',
-      useCard: false,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 8, left: 16),
-          child: _buildColorSelector(),
         ),
       ],
     );
@@ -140,7 +119,7 @@ class _ThemePageState extends State<ThemePage> {
   Future<void> _showColorPicker() async {
     final Color newColor = await showColorPickerDialog(
       context,
-      _getCurPrimaryColor(),
+      themeController.primaryColor.value,
       title: Text('主题色', style: Theme.of(context).textTheme.titleLarge),
       width: 40,
       height: 40,
@@ -167,21 +146,16 @@ class _ThemePageState extends State<ThemePage> {
       constraints:
           const BoxConstraints(minHeight: 480, minWidth: 320, maxWidth: 320),
     );
-    themeController.changeCustomPrimaryColor(newColor);
+    themeController.changePrimaryColor(newColor);
   }
 
   Widget _buildColorIndicator() {
     return Obx(() => ColorIndicator(
         width: 24,
         height: 24,
-        borderRadius: 99,
-        color: _getCurPrimaryColor(),
+        borderRadius: 12,
+        color: themeController.primaryColor.value,
         elevation: 1,
         onSelectFocus: false));
-  }
-
-  Color _getCurPrimaryColor() {
-    return themeController.customPrimaryColor.value ??
-        Theme.of(context).primaryColor;
   }
 }

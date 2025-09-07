@@ -1,6 +1,6 @@
+import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_horizontal_cover.dart';
-import 'package:animetrace/models/anime_grid_cover_config.dart';
+import 'package:animetrace/components/anime_list_view.dart';
 import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_controller.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -125,12 +125,12 @@ class _AnimeAirDateListPageState extends State<AnimeAirDateListPage> {
             ],
           ),
         ),
-        AnimeHorizontalCover(
+        AnimeHorizontalListView(
           animes: airDateItem.animes,
           callback: () async => false,
-          coverConfig: AnimeGridCoverConfig.noneShow().copyWith(
-            showCover: true,
-            showName: true,
+          styleBuilder: (style) => style.copyWith(
+            progressLinearPlacement: Placement.none,
+            progressNumberPlacement: Placement.none,
           ),
         ),
       ],

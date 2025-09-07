@@ -1,27 +1,25 @@
 name: animetrace
 description: 漫迹
 publish_to: "none"
-version: 1.14.0
+version: 1.15.0
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
+  device_info_plus: ^11.3.0
+  permission_handler: ^12.0.1
+  flutter_staggered_grid_view: ^0.7.0
+  logger:
+  share_plus:
+  device_preview: ^1.2.0
   reorderables: ^0.6.0
   pinyin: ^3.3.0
-  flutter_logkit:
-    git:
-      url: https://github.com/linyi102/flutter_logkit.git
-      ref: b9848270
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
   hotkey_manager: ^0.1.8
   flex_color_picker: ^3.3.0
-  emoji_picker_flutter: ^1.6.3
+  emoji_picker_flutter: ^4.3.0
   version: ^3.0.2
   lottie: ^2.6.0
   desktop_drop: ^0.4.4
@@ -31,22 +29,20 @@ dependencies:
   flutter_markdown: ^0.6.15
   get_time_ago: ^1.1.6
   bot_toast: ^4.0.3
-  flex_color_scheme: ^7.2.0
   timer_count_down: ^2.2.2
   file_saver: ^0.2.14
   sliver_tools: ^0.2.9
   pull_to_refresh: ^2.0.0
+  easy_refresh: ^3.4.0
   ming_cute_icons: ^0.0.2
   reorderable_grid_view: ^2.2.7
-  webview_flutter: ^3.0.4
   photo_view: ^0.14.0
   flutter_rating_bar: ^4.0.1
   window_manager: ^0.2.5
   percent_indicator: ^4.2.2
-  dart_ping: ^6.1.2
   expand_widget: ^3.1.1
   get: ^4.6.5
-  shared_preferences: ^2.0.9
+  shared_preferences: 2.5.2
   sqflite: ^2.0.1
   sqflite_common_ffi: ^2.1.0
   path_provider: ^2.0.8
@@ -60,6 +56,10 @@ dependencies:
   package_info_plus: ^4.0.2
   url_launcher: ^6.1.0
   transparent_image: ^2.0.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

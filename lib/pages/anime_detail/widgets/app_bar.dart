@@ -3,10 +3,7 @@ import 'dart:ui';
 import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_grid_cover.dart';
-import 'package:animetrace/components/anime_rating_bar.dart';
 import 'package:animetrace/components/common_image.dart';
-import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/pages/anime_detail/pages/anime_cover_detail.dart';
@@ -51,7 +48,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
-        Log.info("build ${widget.animeController.appbarId}");
+        AppLog.info("build ${widget.animeController.appbarId}");
 
         return SliverAppBar(
           // 下滑后显示收缩后的AppBar
@@ -98,7 +95,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               height: 36,
               width: 36,
               decoration: BoxDecoration(
-                color: Theme.of(context).appBarTheme.backgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: icon),
@@ -184,12 +181,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
       _buildAppBarIconButton(
         context: context,
         onTap: () => _showLayoutBottomSheet(),
-        // icon: const Icon(Icons.filter_list),
-        icon: const Icon(
-          // Icons.filter_list,
-          Icons.layers_outlined,
-          // MingCuteIcons.mgc_layout_line,
-        ),
+        icon: const Icon(Icons.layers_outlined),
       ),
       _buildAppBarIconButton(
           context: context,
@@ -199,10 +191,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
               tooltip: '',
               padding: EdgeInsets.zero,
               position: PopupMenuPosition.under,
-              icon: const Icon(
-                // MingCuteIcons.mgc_more_2_line,
-                Icons.more_vert,
-              ),
+              icon: const Icon(Icons.more_vert),
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
@@ -416,7 +405,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                     setState(() {});
                   },
                   onChanged: (value) {
-                    Log.info("拖动中，value=$value");
+                    AppLog.info("拖动中，value=$value");
 
                     coverBgHeightRatio = value;
                     setBottomSheetState(() {});
@@ -424,7 +413,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   },
                   onChangeEnd: (value) {
                     // 拖动结束后，保存
-                    Log.info("拖动结束，value=$value");
+                    AppLog.info("拖动结束，value=$value");
                     SpProfile.setCoverBgHeightRatio(value);
 
                     transparentBottomSheet = false;
@@ -441,124 +430,5 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
             ],
           ),
         ));
-  }
-
-  buildCoverAndInfo() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          _showAnimeRow(),
-        ],
-      ),
-    );
-  }
-
-  _buildRatingStars() {
-    return AnimeRatingBar(
-        enableRate: widget.animeController.isCollected, // 未收藏时不能评分
-        rate: _anime.rate,
-        iconSize: 15,
-        onRatingUpdate: (v) {
-          Log.info("评价分数：$v");
-          _anime.rate = v.toInt();
-          AnimeDao.updateAnimeRate(_anime.animeId, _anime.rate);
-        });
-  }
-
-  _showAnimeRow() {
-    return Row(
-      children: [
-        // 动漫封面
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: SizedBox(
-                width: 120,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: MaterialButton(
-                    padding: const EdgeInsets.all(0),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => AnimeCoverDetail(
-                                animeController: widget.animeController,
-                              )));
-                    },
-                    child: AnimeGridCover(widget.animeController.anime,
-                        onlyShowCover: true),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        // 动漫信息
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.only(left: 15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _showAnimeName(widget.animeController.anime.animeName),
-                _showNameAnother(widget.animeController.anime.nameAnother),
-                _showAnimeInfo(
-                    widget.animeController.anime.getAnimeInfoFirstLine()),
-                _showAnimeInfo(
-                    widget.animeController.anime.getAnimeInfoSecondLine()),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
-                  child: _buildRatingStars(),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  _showAnimeName(animeName) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
-      child: SelectableText(
-        animeName,
-        // maxLines: 1,
-        style: const TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  _showNameAnother(String nameAnother) {
-    return nameAnother.isEmpty
-        ? Container()
-        : Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(0, 5, 35, 0),
-            child: SelectableText(
-              nameAnother,
-              style: const TextStyle(height: 1.1),
-              maxLines: 1,
-            ),
-          );
-  }
-
-  _showAnimeInfo(String animeInfo) {
-    return animeInfo.isEmpty
-        ? Container()
-        : Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(0, 5, 15, 0),
-            child: SelectableText(
-              animeInfo,
-              style: const TextStyle(height: 1.1),
-              maxLines: 1,
-            ),
-          );
   }
 }

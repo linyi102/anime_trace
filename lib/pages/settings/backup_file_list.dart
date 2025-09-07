@@ -36,7 +36,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   void _initData() async {
-    Log.info("获取备份文件中");
+    AppLog.info("获取备份文件中");
     files = await BackupUtil.getAllBackupFiles();
     _loadOk = true;
     if (mounted) setState(() {});
@@ -70,7 +70,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   _buildFileItem(BuildContext context, int index) {
-    // Log.info("index=$index");
+    // AppLog.info("index=$index");
     String fileName = "";
     File file = files[index];
     // 获取文件名

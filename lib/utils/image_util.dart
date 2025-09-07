@@ -75,12 +75,12 @@ class ImageUtil {
 
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
-    Log.info("绝对路径absoluteImagePath=$absoluteImagePath");
+    AppLog.info("绝对路径absoluteImagePath=$absoluteImagePath");
     String relativeImagePath =
         _removeRootDirPath(absoluteImagePath, ImageUtil.coverImageRootDirPath);
-    Log.info(
+    AppLog.info(
         "图片根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
-    Log.info("去除图片根路径后，relativeImagePath: $relativeImagePath");
+    AppLog.info("去除图片根路径后，relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
 
@@ -111,10 +111,10 @@ class ImageUtil {
   }
 
   static String _fixPathSeparator(String path) {
-    // Log.info("修复前，路径为$path");
+    // AppLog.info("修复前，路径为$path");
     path = path.replaceAll("/", separator);
     path = path.replaceAll("\\", separator);
-    // Log.info("修复后，路径为$path");
+    // AppLog.info("修复后，路径为$path");
     return path;
   }
 }

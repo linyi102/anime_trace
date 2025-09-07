@@ -13,7 +13,7 @@ class HistoryDao {
   // 新增回顾号列后，最小值和最大值应该属于同一回顾号
   static Future<List<HistoryPlus>> getHistoryPageable(
       {required PageParams pageParams, required int dateLength}) async {
-    Log.info("sql: getHistoryPageable");
+    AppLog.info("sql: getHistoryPageable");
     // await Future.delayed(Duration(seconds: 2));
     // 获取有数据的最近几天/月
     List<Map<String, Object?>> dayList = await SqliteUtil.database.rawQuery('''
@@ -58,7 +58,7 @@ class HistoryDao {
     // 因此需要先找出该月存在的该动漫的所有回顾号(注意去重)，对与每个回顾号
     // 都要找出min和max，并添加到records中
     for (var anime in animes) {
-      // Log.info(anime);
+      // AppLog.info(anime);
       var reviewNumberList = await SqliteUtil.database.rawQuery('''
         select distinct review_number
         from history
@@ -90,7 +90,7 @@ class HistoryDao {
           where date like '$date%' and anime_id = ${anime.animeId} and review_number = $reviewNumber;
           ''');
     int endEpisodeNumber = list[0]['end'] as int;
-    // Log.info("$date: [$startEpisodeNumber-$endEpisodeNumber]");
+    // AppLog.info("$date: [$startEpisodeNumber-$endEpisodeNumber]");
     AnimeHistoryRecord record = AnimeHistoryRecord(
       anime,
       reviewNumber,
@@ -109,7 +109,7 @@ class HistoryDao {
 
   /// 第一条观看的历史记录
   static Future<Map<String, dynamic>?> getFirstHistory() async {
-    Log.info('sql: getFirstHistory');
+    AppLog.info('sql: getFirstHistory');
 
     var cols = await SqliteUtil.database.rawQuery('''
       select min(date) min_date, anime_id from history

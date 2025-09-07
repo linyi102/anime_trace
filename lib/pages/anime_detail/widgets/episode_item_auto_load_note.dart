@@ -152,7 +152,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   ListTile _buildEpisodeTile() {
     return ListTile(
-      selectedTileColor: Theme.of(context).primaryColor.withOpacityFactor(0.25),
+      selectedTileColor: Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
       title: Align(

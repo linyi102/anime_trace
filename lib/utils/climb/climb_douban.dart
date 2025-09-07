@@ -65,7 +65,7 @@ class ClimbDouban with Climb {
     }
 
     var infoElement = document.getElementById("info");
-    // Log.info("infoElement.innerHtml=${infoElement?.innerHtml}");
+    // AppLog.info("infoElement.innerHtml=${infoElement?.innerHtml}");
     RegExp(r'<span class="pl">.*<br')
         .allMatches(infoElement?.innerHtml ?? "")
         .forEach((regExpMatch) {
@@ -75,13 +75,13 @@ class ClimbDouban with Climb {
       int start = line.lastIndexOf("> ") + 2, end = line.lastIndexOf("<br");
       if (line.contains("集数")) {
         // <span class="pl">集数:</span> 13<br
-        // Log.info("集数=${line.substring(start, end)}");
+        // AppLog.info("集数=${line.substring(start, end)}");
         anime.animeEpisodeCnt = int.parse(line.substring(start, end));
       } else if (line.contains("又名")) {
-        // Log.info("又名=${line.substring(start, end)}");
+        // AppLog.info("又名=${line.substring(start, end)}");
         anime.nameAnother = line.substring(start, end);
       } else if (line.contains("制片国家/地区")) {
-        // Log.info("地区=${line.substring(start, end)}");
+        // AppLog.info("地区=${line.substring(start, end)}");
         anime.area = line.substring(start, end);
       }
     });

@@ -1,5 +1,6 @@
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/components/anime_grid_cover.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/dao/history_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
@@ -78,7 +79,7 @@ class _TracePageState extends State<TracePage> {
   }
 
   Card _buildCountRow() {
-    Color? iconColor = Theme.of(context).primaryColor;
+    Color? iconColor = Theme.of(context).colorScheme.primary;
     // iconColor = null;
 
     return Card(
@@ -240,7 +241,13 @@ class _TracePageState extends State<TracePage> {
                   )
                 ]),
               ),
-              AnimeGridCover(anime, onlyShowCover: true),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+                child: SizedBox(
+                  width: 100,
+                  child: CommonImage(anime.animeCoverUrl),
+                ),
+              )
             ],
           ),
         ),

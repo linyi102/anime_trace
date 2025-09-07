@@ -1,18 +1,16 @@
-import 'package:animations/animations.dart';
+import 'package:animetrace/utils/event.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/animation/fade_in_up.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/global.dart';
 import 'package:animetrace/pages/main_screen/logic.dart';
-import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/values/assets.gen.dart';
 import 'package:get/get.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
-
-import '../../widgets/common_divider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,33 +19,62 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
   final logic = Get.put(MainScreenLogic());
   int _clickBackCnt = 0;
   bool get enableAnimation => false;
-  bool get alwaysPortrait => false;
 
   bool expandSideBar = SpProfile.getExpandSideBar();
   bool get hideMobileBottomLabel =>
       ThemeController.to.hideMobileBottomLabel.value;
 
+  bool hideBottomNavigator = false;
+  bool isTakeOverHomePop = false;
+
+  @override
+  List<VoidCallback> get initialListeners => [
+        Event(EventName.setNavigator).listen<bool>((to) {
+          AppLog.debug('${to ? '显示' : '隐藏'}导航栏状态');
+          setState(() {
+            hideBottomNavigator = !to;
+          });
+        }),
+        Event(EventName.takeOverHomePop).listen<bool>((to) {
+          AppLog.debug('${to ? '' : '取消'}接管主页返回事件');
+          isTakeOverHomePop = to;
+        }),
+      ];
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: clickTwiceToExitApp,
+    AppLog.debug('build main screen');
+    final size = MediaQuery.sizeOf(context);
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        if (isTakeOverHomePop) {
+          Event(EventName.onHomePop).send();
+        } else {
+          clickTwiceToExitApp();
+        }
+      },
       child: GetBuilder(
         init: logic,
-        builder: (_) => alwaysPortrait
-            ? _buildPortraitScreen()
-            : PlatformUtil.isMobile &&
-                    MediaQuery.of(context).orientation == Orientation.portrait
+        builder: (_) =>
+            // FIXME Windows首次启动应用时第一次获取的宽高并不是设置的宽高
+            (PlatformUtil.isDesktop
+                    ? size.height / size.width > 1.5
+                    : MediaQuery.orientationOf(context) == Orientation.portrait)
                 ? _buildPortraitScreen()
                 : _buildLandscapeScreen(),
       ),
     );
   }
 
-  _buildLandscapeScreen() {
+  Widget _buildLandscapeScreen() {
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -74,13 +101,13 @@ class _MainScreenState extends State<MainScreen> {
     }
     Future.delayed(const Duration(seconds: 2)).then((value) {
       _clickBackCnt = 0;
-      Log.info("点击返回次数重置为0");
+      AppLog.info("点击返回次数重置为0");
     });
     ToastUtil.showText("再次点击退出应用");
     return false;
   }
 
-  _buildSideBar() {
+  Widget _buildSideBar() {
     return Material(
       color: Theme.of(context).appBarTheme.backgroundColor,
       child: AnimatedContainer(
@@ -102,7 +129,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  _buildSideMenu() {
+  List<Widget> _buildSideMenu() {
     List<Widget> widgets = [];
 
     widgets.add(Container(
@@ -125,7 +152,7 @@ class _MainScreenState extends State<MainScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
             // color: isSelected && expandSideBar
-            //     ? Theme.of(context).primaryColor.withOpacity(0.1)
+            //     ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
             //     : null,
           ),
           margin: const EdgeInsets.fromLTRB(8, 4, 8, 4),
@@ -149,7 +176,7 @@ class _MainScreenState extends State<MainScreen> {
                     isSelected
                         ? IconTheme.merge(
                             data: IconThemeData(
-                                color: Theme.of(context).primaryColor),
+                                color: Theme.of(context).colorScheme.primary),
                             child: mainTab.selectedIcon ?? mainTab.icon)
                         : mainTab.icon,
                     // 使用Spacer而不是固定宽度，这样展开时文字就不会溢出的
@@ -163,7 +190,7 @@ class _MainScreenState extends State<MainScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: isSelected
-                                ? Theme.of(context).primaryColor
+                                ? Theme.of(context).colorScheme.primary
                                 : null,
                             fontSize: 15,
                           ),
@@ -177,28 +204,22 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     widgets.add(const Spacer());
-    widgets.add(const CommonDivider(
-      padding: EdgeInsets.symmetric(vertical: 5),
-    ));
     widgets.add(Row(
       mainAxisAlignment:
           expandSideBar ? MainAxisAlignment.end : MainAxisAlignment.center,
       children: [
-        IconButton(
-          splashRadius: 24,
-          icon: Icon(
-            expandSideBar
-                ? MingCuteIcons.mgc_left_line
-                : MingCuteIcons.mgc_right_line,
-            // 不适合暗色主题
-            // color: Colors.black54,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: Icon(
+                expandSideBar ? Icons.menu_open_rounded : Icons.menu_rounded),
+            onPressed: () {
+              SpProfile.turnExpandSideBar();
+              setState(() {
+                expandSideBar = !expandSideBar;
+              });
+            },
           ),
-          onPressed: () {
-            SpProfile.turnExpandSideBar();
-            setState(() {
-              expandSideBar = !expandSideBar;
-            });
-          },
         ),
       ],
     ));
@@ -206,16 +227,14 @@ class _MainScreenState extends State<MainScreen> {
     return widgets;
   }
 
-  _buildPortraitScreen() {
+  Widget _buildPortraitScreen() {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: _buildMainPage(),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // const CommonDivider(),
-          _buildBottomNavigationBar(),
-        ],
+      // TODO 隐藏时仍然会占用位置(背景色)，只有为null时才会彻底隐藏
+      bottomNavigationBar: FadeInUp(
+        animate: !hideBottomNavigator,
+        child: _buildBottomNavigationBar(),
       ),
     );
   }
@@ -230,7 +249,6 @@ class _MainScreenState extends State<MainScreen> {
               ? NavigationDestinationLabelBehavior.alwaysHide
               : null,
           indicatorColor: hideMobileBottomLabel ? Colors.transparent : null,
-          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           onDestinationSelected: (value) {
             if (logic.searchTabIdx == value && logic.selectedTabIdx == value) {
               // 如果点击的是探索页，且当前已在探索页，则进入聚合搜索页
@@ -250,21 +268,9 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  _buildMainPage() {
+  Widget _buildMainPage() {
     if (!enableAnimation) return logic.tabs[logic.selectedTabIdx].page;
 
-    return PageTransitionSwitcher(
-        transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return FadeThroughTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            child: child,
-          );
-        },
-        child: logic.tabs[logic.selectedTabIdx].page);
+    return logic.tabs[logic.selectedTabIdx].page;
   }
 }

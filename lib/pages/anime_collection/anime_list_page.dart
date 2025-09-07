@@ -1,10 +1,10 @@
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:animetrace/utils/event.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/loading_widget.dart';
-
 import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/dao/anime_dao.dart';
@@ -23,7 +23,6 @@ import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/common_tab_bar_view.dart';
-import 'package:animetrace/widgets/floating_bottom_actions.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -37,7 +36,8 @@ class AnimeListPage extends StatefulWidget {
   _AnimeListPageState createState() => _AnimeListPageState();
 }
 
-class _AnimeListPageState extends State<AnimeListPage> {
+class _AnimeListPageState extends State<AnimeListPage>
+    with MultiEventsStateMixin {
   final checklistController = ChecklistController.to;
   List<String> get tags => checklistController.tags;
   List<int> get animeCntPerTag => checklistController.animeCntPerTag;
@@ -60,6 +60,15 @@ class _AnimeListPageState extends State<AnimeListPage> {
   final AnimeDisplayController _animeDisplayController = Get.find();
 
   @override
+  List<VoidCallback> get initialListeners => [
+        Event(EventName.onHomePop).listen(
+          (_) {
+            checklistController.quitMulti();
+          },
+        )
+      ];
+
+  @override
   void initState() {
     super.initState();
     checklistController.loadData();
@@ -75,54 +84,42 @@ class _AnimeListPageState extends State<AnimeListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      // 不生效的原因可能是因为被其他的WillPopScope监听到了
-      onWillPop: () async {
-        if (checklistController.multi) {
-          checklistController.quitMulti();
-          return false;
-        }
-        return true;
-      },
-      child: GetBuilder(
-        init: checklistController,
-        builder: (_) => AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
-          // 然后再通过_loadData覆盖掉旧数据
-          child: !loadOk && animeCntPerTag.isEmpty
-              ? _waitDataScaffold()
-              : Scaffold(
-                  backgroundColor:
-                      Theme.of(context).appBarTheme.backgroundColor,
-                  // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
-                  appBar: AppBar(
-                    title: Text(
-                      multiSelected ? "${selectedAnimes.length}" : "动漫",
-                    ),
-                    leading: multiSelected
-                        ? IconButton(
-                            onPressed: () => checklistController.quitMulti(),
-                            icon: const Icon(Icons.close))
-                        : null,
-                    actions:
-                        multiSelected ? _getActionsOnMulti() : _getActions(),
-                    bottom: CommonBottomTabBar(
-                      tabs: _buildTagAndAnimeCnt(),
-                      tabController: _tabController,
-                      isScrollable: true,
-                    ),
+    return GetBuilder(
+      init: checklistController,
+      builder: (_) => AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        // 仅在第一次加载(animeCntPerTag为空)时才显示空白，之后切换到该页面时先显示旧数据
+        // 然后再通过_loadData覆盖掉旧数据
+        child: !loadOk && animeCntPerTag.isEmpty
+            ? _waitDataScaffold()
+            : Scaffold(
+                backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
+                appBar: AppBar(
+                  title: Text(
+                    multiSelected ? "${selectedAnimes.length}" : "动漫",
                   ),
-                  body: CommonScaffoldBody(
-                    child: loadOk
-                        ? CommonTabBarView(
-                            controller: _tabController,
-                            children: _getAnimesPlus(),
-                          )
-                        : const LoadingWidget(center: true),
+                  leading: multiSelected
+                      ? IconButton(
+                          onPressed: () => checklistController.quitMulti(),
+                          icon: const Icon(Icons.close))
+                      : null,
+                  actions: multiSelected ? _getActionsOnMulti() : _getActions(),
+                  bottom: CommonBottomTabBar(
+                    tabs: _buildTagAndAnimeCnt(),
+                    tabController: _tabController,
+                    isScrollable: true,
                   ),
                 ),
-        ),
+                body: CommonScaffoldBody(
+                  child: loadOk
+                      ? CommonTabBarView(
+                          controller: _tabController,
+                          children: _getAnimesPlus(),
+                        )
+                      : const LoadingWidget(center: true),
+                ),
+              ),
       ),
     );
   }
@@ -156,7 +153,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
             },
           ),
         ).then((value) {
-          Log.info("更新在搜索页面里进行的修改");
+          AppLog.info("更新在搜索页面里进行的修改");
           checklistController.loadAnimes();
         });
       },
@@ -247,16 +244,12 @@ class _AnimeListPageState extends State<AnimeListPage> {
       list.add(
         Scrollbar(
           controller: _scrollControllers[checklistIdx],
-          child: Stack(children: [
-            SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage)
-                ? RefreshIndicator(
-                    onRefresh: () => BackupService.to.tryRestoreRemoteFile(),
-                    child: animeView,
-                  )
-                : animeView,
-            // 一定要叠放在ListView上面，否则点击按钮没有反应
-            _buildBottomActions(checklistIdx),
-          ]),
+          child: SPUtil.getBool(pullDownRestoreLatestBackupInChecklistPage)
+              ? RefreshIndicator(
+                  onRefresh: () => BackupService.to.tryRestoreRemoteFile(),
+                  child: animeView,
+                )
+              : animeView,
         ),
       );
     }
@@ -267,15 +260,13 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return AnimeGridView(
         scrollController: _scrollControllers[checklistIdx],
         animes: animesInTag[checklistIdx],
-        tagIdx: checklistIdx,
-        showProgressBar: true,
-        loadMore: (int tagIdx, int animeIdx) {
-          _loadExtraData(tagIdx, animeIdx);
+        loadMore: (int animeIdx) {
+          _loadExtraData(checklistIdx, animeIdx);
         },
-        onClick: (Anime anime) {
+        onTap: (Anime anime) {
           onPress(anime);
         },
-        onLongClick: (Anime anime) {
+        onLongPress: (Anime anime) {
           onLongPress(anime);
         },
         isSelected: (int animeIdx) {
@@ -291,23 +282,22 @@ class _AnimeListPageState extends State<AnimeListPage> {
       itemBuilder: (BuildContext context, int animeIdx) {
         _loadExtraData(tagIdx, animeIdx);
 
-        // Log.info("$index");
+        // AppLog.info("$index");
         // return AnimeItem(animesInTag[i][index]);
         Anime anime = animesInTag[tagIdx][animeIdx];
         return ListTile(
           selectedTileColor:
-              Theme.of(context).primaryColor.withOpacityFactor(0.25),
+              Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
           selected: selectedAnimes.contains(anime),
           title: Text(
             anime.animeName,
             overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
           ),
-          leading: Obx(() => AnimeListCover(
-                anime,
-                showReviewNumber:
-                    _animeDisplayController.showReviewNumber.value,
-                reviewNumber: anime.reviewNumber,
-              )),
+          leading: AnimeListCover(
+            anime,
+            reviewNumber: anime.reviewNumber,
+            showReviewNumber: true,
+          ),
           trailing: Text(
             "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
             style: Theme.of(context).textTheme.bodySmall,
@@ -319,59 +309,56 @@ class _AnimeListPageState extends State<AnimeListPage> {
     );
   }
 
-  void _loadExtraData(i, index) {
-    // Log.info("index=$index");
-    // 直接使用index会导致重复请求
-    // 增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
+  void _loadExtraData(int tagIdx, int animeIdx) async {
+    // AppLog.info("index=$index");
+    // 直接使用index会导致重复请求，增加pageIndex变量，每当index增加到pageSize*pageIndex，就开始请求一页数据
     // 例：最开始，pageIndex=1，有pageSize=50个数据，当index到达50(50*1)时，会再次请求50个数据
-    // 当到达100(50*2)时，会再次请求50个数据
-    if (index + 10 == pageSize * (pageIndexList[i])) {
-      // +10提前请求
-      pageIndexList[i]++;
-      Log.info("再次请求$pageSize个数据");
-      Future(() {
-        return SqliteUtil.getAllAnimeBytagName(
-            tags[i], animesInTag[i].length, pageSize,
-            animeSortCond: animeSortCond);
-      }).then((value) {
-        Log.info("请求结束");
-        animesInTag[i].addAll(value);
-        Log.info("添加并更新状态，animesInTag[$i].length=${animesInTag[i].length}");
-        setState(() {});
-      });
+    // +10提前请求，当到达100(50*2)时，会再次请求50个数据
+    if (animeIdx + 10 == pageSize * (pageIndexList[tagIdx])) {
+      pageIndexList[tagIdx]++;
+      AppLog.info("tag: ${tags[tagIdx]}，pageIdx: ${pageIndexList[tagIdx]}");
+      // 获取当前动漫列表，只对该动漫添加追加新列表，避免和重新刷新后的动漫列表冲突
+      final tagAnimes = animesInTag[tagIdx];
+      final offset = tagAnimes.length;
+      final nextAnimes = await SqliteUtil.getAllAnimeBytagName(
+          tags[tagIdx], offset, pageSize,
+          animeSortCond: animeSortCond);
+      tagAnimes.addAll(nextAnimes);
+      AppLog.info(
+          "添加并更新状态，animesInTag[$tagIdx].length=${animesInTag[tagIdx].length}");
+      setState(() {});
     }
   }
 
   void onPress(Anime anime) {
-    // 多选
     if (multiSelected) {
-      if (selectedAnimes.contains(anime)) {
-        Log.info("[多选模式]移除anime=${anime.animeName}");
-        selectedAnimes.remove(anime); // 选过，再选就会取消
-        // 如果取消后一个都没选，就自动退出多选状态
-        if (selectedAnimes.isEmpty) {
-          checklistController.multi = false;
-        }
-      } else {
-        Log.info("[多选模式]添加anime=${anime.animeName}");
-        selectedAnimes.add(anime);
-      }
-      setState(() {});
-      return;
+      _toggleSelect(anime);
     } else {
       _enterPageAnimeDetail(anime);
     }
   }
 
   void onLongPress(Anime anime) {
-    // 非多选状态下才需要进入多选状态
-    if (multiSelected == false) {
-      checklistController.multi = true;
-      selectedAnimes.add(anime);
-      Log.info("[多选模式]添加anime=${anime.animeName}");
-      setState(() {}); // 添加操作按钮
+    _toggleSelect(anime);
+    Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
+  }
+
+  void _toggleSelect(Anime anime) {
+    if (selectedAnimes.contains(anime)) {
+      AppLog.info("[多选模式]移除anime=${anime.animeName}");
+      selectedAnimes.remove(anime); // 选过，再选就会取消
     } else {
-      // 多选模式下，应提供范围选择
+      AppLog.info("[多选模式]添加anime=${anime.animeName}");
+      selectedAnimes.add(anime);
+    }
+    setState(() {});
+    if (selectedAnimes.length == 1) {
+      Event(EventName.setNavigator).send(false);
+      Event(EventName.takeOverHomePop).send(true);
+    }
+    if (selectedAnimes.isEmpty) {
+      Event(EventName.setNavigator).send(true);
+      Event(EventName.takeOverHomePop).send(false);
     }
   }
 
@@ -450,7 +437,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
           leading: tags[i] == defaultTagName
               ? Icon(
                   Icons.radio_button_on_outlined,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 )
               : const Icon(
                   Icons.radio_button_off_outlined,
@@ -472,6 +459,10 @@ class _AnimeListPageState extends State<AnimeListPage> {
             animeCntPerTag[newTagindex] += modifiedCnt;
             checklistController.quitMulti();
             Navigator.pop(context);
+            // 重新查询动漫会导致丢失分页状态，因此只在当前清单已查询动漫为空时再重新查询
+            if (animesInTag[oldTagindex].isEmpty) {
+              checklistController.loadData();
+            }
           },
         ),
       );
@@ -525,26 +516,6 @@ class _AnimeListPageState extends State<AnimeListPage> {
     return list;
   }
 
-  Widget _buildBottomActions(int checklistIdx) {
-    return FloatingBottomActions(
-        display: multiSelected,
-        itemPadding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          IconButton(
-            onPressed: () {
-              _dialogModifyTag(tags[checklistIdx]);
-            },
-            icon: const Icon(Icons.checklist),
-            tooltip: '移动清单',
-          ),
-          IconButton(
-            onPressed: () => _dialogDeleteAnime(checklistIdx),
-            icon: const Icon(Icons.delete_outline),
-            tooltip: '删除动漫',
-          ),
-        ]);
-  }
-
   _dialogDeleteAnime(int checklistIdx) {
     return showDialog(
       context: context,
@@ -576,20 +547,33 @@ class _AnimeListPageState extends State<AnimeListPage> {
     );
   }
 
-  _getActionsOnMulti() {
+  List<Widget> _getActionsOnMulti() {
+    final checklistIdx = checklistController.tabController!.index;
     List<Widget> actions = [
-      // IconButton(
-      //     onPressed: () {
-      //       if (checklistController.tabController == null) return;
+      IconButton(
+        onPressed: () {
+          if (checklistController.tabController == null) return;
 
-      //       int checklistIdx = checklistController.tabController!.index;
-      //       checklistController.selectedAnimes.clear();
-      //       checklistController.selectedAnimes
-      //           .addAll(animesInTag[checklistIdx]);
-      //       setState(() {});
-      //       // 缺点：全选后修改菜单，会导致无法加载下一页
-      //     },
-      //     icon: const Icon(Icons.select_all))
+          int checklistIdx = checklistController.tabController!.index;
+          checklistController.selectedAnimes.clear();
+          checklistController.selectedAnimes.addAll(animesInTag[checklistIdx]);
+          setState(() {});
+          // 缺点：全选后修改菜单，会导致无法加载下一页，如果重新加载也会丢失分页状态
+        },
+        icon: const Icon(Icons.select_all),
+      ),
+      IconButton(
+        onPressed: () {
+          _dialogModifyTag(tags[checklistIdx]);
+        },
+        icon: const Icon(Icons.checklist),
+        tooltip: '移动清单',
+      ),
+      IconButton(
+        onPressed: () => _dialogDeleteAnime(checklistIdx),
+        icon: const Icon(Icons.delete_outline),
+        tooltip: '删除动漫',
+      ),
     ];
     return actions;
   }

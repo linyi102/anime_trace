@@ -16,8 +16,9 @@ class CommonTitleTabBar extends StatelessWidget {
       indicatorSize: TabBarIndicatorSize.label,
       indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
       indicator: MaterialIndicator(
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).colorScheme.primary,
       ),
+      dividerHeight: 0,
       splashBorderRadius: BorderRadius.circular(6),
       unselectedLabelColor: Theme.of(context).hintColor,
       labelStyle: Theme.of(context)
@@ -63,8 +64,9 @@ class CommonBottomTabBar extends StatelessWidget
         indicatorSize: TabBarIndicatorSize.label,
         indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
         indicator: MaterialIndicator(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
         ),
+        dividerHeight: 0,
         splashBorderRadius: BorderRadius.circular(6),
         unselectedLabelColor: Theme.of(context).hintColor,
       ),

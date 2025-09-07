@@ -146,6 +146,7 @@ class ClimbBangumi with Climb {
     var navSubTabs = document.getElementsByClassName("navSubTabs")[0];
     var str = RegExp("${siteCollectionTab.word}.*?\\([0-9]*\\)")
         .firstMatch(navSubTabs.innerHtml)?[0];
+    // TODO 获取数量失败，改为API查询用户收藏
     if (str != null) {
       str = str.substring(str.indexOf("(") + 1, str.indexOf(")"));
       userCollection.totalCnt = int.tryParse(str) ?? 0;
@@ -230,6 +231,7 @@ class ClimbBangumi with Climb {
         if (name.isEmpty) name = item.mapObjectValue['name'] ?? '';
         String detailUrl = item.mapObjectValue['url'] ?? '';
         detailUrl = detailUrl.replaceFirst('bgm.tv', 'bangumi.tv');
+        detailUrl = detailUrl.replaceFirst('http:', 'https:');
 
         records.add(WeekRecord(
           anime: Anime(

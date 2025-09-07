@@ -53,7 +53,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
-        Log.info("build ${widget.animeController.infoId}");
+        AppLog.info("build ${widget.animeController.infoId}");
 
         return SliverPadding(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -118,7 +118,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         enableRate: widget.animeController.isCollected, // 未收藏时不能评分
         rate: _anime.rate,
         onRatingUpdate: (v) {
-          Log.info("评价分数：$v");
+          AppLog.info("评价分数：$v");
           setState(() {
             _anime.rate = v.toInt();
           });
@@ -386,7 +386,6 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 title: const Text("选择清单"),
                 centerTitle: true,
                 automaticallyImplyLeading: false,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               body: ListView.builder(
                 itemCount: tags.length,
@@ -396,7 +395,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                     leading: tags[index] == _anime.tagName
                         ? Icon(
                             Icons.radio_button_on_outlined,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           )
                         : const Icon(
                             Icons.radio_button_off_outlined,
@@ -405,7 +404,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                       _anime.tagName = tags[index];
                       AnimeDao.updateTagByAnimeId(
                           _anime.animeId, _anime.tagName);
-                      Log.info("修改清单为${_anime.tagName}");
+                      AppLog.info("修改清单为${_anime.tagName}");
                       setState(() {});
                       Navigator.pop(context);
                     },

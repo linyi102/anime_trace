@@ -3,7 +3,6 @@ import 'package:animetrace/pages/note_list/widgets/rate_note_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/note_filter.dart';
 import 'package:animetrace/pages/note_list/widgets/episode_note_list_page.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/widgets/responsive.dart';
 
 class NoteSearchPage extends StatefulWidget {
@@ -61,7 +60,6 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
       elevation: 0,
       children: [
         ExpansionPanel(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             isExpanded: isExpanded,
             canTapOnHeader: true,
             headerBuilder: (context, isExpanded) {
@@ -107,19 +105,16 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Row(
             children: [
-              const Text('搜索类型：'),
-              DropdownButton<NoteType>(
-                value: noteType,
-                items: NoteType.values
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e.title),
-                        ))
+              DropdownMenu<NoteType>(
+                requestFocusOnTap: false,
+                initialSelection: noteType,
+                dropdownMenuEntries: NoteType.values
+                    .map((e) => DropdownMenuEntry(value: e, label: e.title))
                     .toList(),
-                onChanged: (value) {
+                onSelected: (value) {
                   if (value == null) return;
                   setState(() {
                     noteType = value;
@@ -164,16 +159,6 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
       controller: inputController,
       decoration: InputDecoration(
         labelText: title,
-        labelStyle: TextStyle(fontSize: 14, color: Theme.of(context).hintColor),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).primaryColor),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-              color: Theme.of(context).hintColor.withOpacityFactor(0.2)),
-          borderRadius: BorderRadius.circular(12),
-        ),
       ),
     );
   }

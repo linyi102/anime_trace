@@ -50,52 +50,50 @@ class HistoryController extends GetxController {
         pageParams: PageParams(pageIndex: 0, pageSize: 15),
         dateLength: 10)
   ];
-  int selectedViewIndex = SPUtil.getInt("selectedViewIndexInHistoryPage",
-      defaultValue: 1); // 默认为1，也就是月视图
+
   bool loadOk = false;
-  bool initOk = false;
-  late HistoryLabel selectedHistoryLabel;
+
+  int curViewIndex =
+      SPUtil.getInt("selectedViewIndexInHistoryPage", defaultValue: 1);
+  HistoryLabel get selectedHistoryLabel => views[curViewIndex].label;
+
+  PageController? pageController;
 
   @override
-  void onInit() {
-    selectedHistoryLabel = views[selectedViewIndex].label;
-    loadData();
-    // 下次打开历史页，则会根据initOk来确定是否需要refreshData
-    initOk = true;
-    super.onInit();
-  }
-
-  Future<void> refreshData() {
-    Log.info("刷新历史页");
-    // 恢复为初始状态
+  void onClose() {
     for (var view in views) {
-      // 初始页号
-      view.pageParams.pageIndex = view.pageParams.baseIndex;
-      // 显示旧数据，不要清空
-      // view.historyRecords.clear();
+      view.scrollController.dispose();
     }
-    // update();
-    // 加载数据
-    return loadData();
+    pageController?.dispose();
+    super.onClose();
   }
 
   Future<void> loadData() async {
-    // await Future.delayed(const Duration(seconds: 1));
+    // 切换导航后重新渲染State中的PageView时，展示的页号始终是initialPage(可能和curViewIndex不对应)，所以此处重新创建PageController
+    pageController?.dispose();
+    pageController = PageController(initialPage: curViewIndex);
 
-    views[selectedViewIndex].historyRecords =
-        await HistoryDao.getHistoryPageable(
-            pageParams: views[selectedViewIndex].pageParams,
-            dateLength: views[selectedViewIndex].dateLength);
+    final futures = <Future>[];
+    for (var view in views) {
+      // 重置页号
+      view.pageParams.pageIndex = view.pageParams.baseIndex;
+      futures.add(Future(() async {
+        view.historyRecords = await HistoryDao.getHistoryPageable(
+            pageParams: view.pageParams, dateLength: view.dateLength);
+      }));
+    }
+    await Future.wait(futures);
+
     loadOk = true;
     update();
   }
 
-  loadMoreData() async {
-    Log.info("加载更多数据");
-    views[selectedViewIndex].historyRecords.addAll(
+  Future<void> loadMoreData() async {
+    AppLog.debug("加载更多数据");
+    views[curViewIndex].historyRecords.addAll(
         await HistoryDao.getHistoryPageable(
-            pageParams: views[selectedViewIndex].pageParams,
-            dateLength: views[selectedViewIndex].dateLength));
+            pageParams: views[curViewIndex].pageParams,
+            dateLength: views[curViewIndex].dateLength));
     update();
   }
 }

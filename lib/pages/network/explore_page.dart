@@ -17,7 +17,6 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -35,23 +34,21 @@ class _ExplorePageState extends State<ExplorePage> {
 
   Widget _buildSearchBar() {
     final fg = Theme.of(context).hintColor;
-    final radius = BorderRadius.circular(16);
+    final radius = BorderRadius.circular(32);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
       child: Material(
         borderRadius: radius,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         child: InkWell(
           borderRadius: radius,
           onTap: _enterAnimeClimbAllWebsitePage,
           child: ClipRRect(
             borderRadius: radius,
             child: Container(
-              height: 46,
-              decoration: BoxDecoration(
-                borderRadius: radius,
-                border: Border.all(color: Theme.of(context).dividerColor),
-              ),
+              height: 52,
+              decoration: BoxDecoration(borderRadius: radius),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(

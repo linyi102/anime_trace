@@ -12,7 +12,7 @@ class KeyValueDao {
   static const columnValue = 'value';
 
   static Future<void> createTable() async {
-    Log.info('sql: create table $tableName');
+    AppLog.info('sql: create table $tableName');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS $tableName (
         $columnKey      TEXT PRIMARY KEY,
@@ -84,7 +84,7 @@ class KeyValueDao {
     try {
       return (jsonDecode(value) as List<dynamic>).cast<String>();
     } catch (exception) {
-      Log.error(exception);
+      AppLog.error(exception);
       return [];
     }
   }

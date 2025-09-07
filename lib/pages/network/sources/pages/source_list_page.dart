@@ -94,7 +94,7 @@ class _SourceListPageState extends State<SourceListPage> {
         _invertSource(climbWebsite);
       },
       icon: climbWebsite.enable
-          ? Icon(Icons.check_box, color: Theme.of(context).primaryColor)
+          ? Icon(Icons.check_box, color: Theme.of(context).colorScheme.primary)
           : const Icon(Icons.check_box_outline_blank),
     );
   }

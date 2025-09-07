@@ -17,7 +17,7 @@ class SeriesDao {
 
   // 建表
   static createTable() async {
-    Log.info('sql: create table $table');
+    AppLog.info('sql: create table $table');
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $table (
       $columnId          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +32,7 @@ class SeriesDao {
 
   // 新建系列，并返回新插入记录的id，返回0表示插入失败
   static Future<int> insert(Series series) async {
-    Log.info("sql:insert($series)");
+    AppLog.info("sql:insert($series)");
     var now = DateTime.now().toString();
     // 插入除id以外的信息(因为id自增)
     return await db.insert(table, {
@@ -45,7 +45,7 @@ class SeriesDao {
   }
 
   static Future<int> delete(int id) async {
-    Log.info("sql:delete($id)");
+    AppLog.info("sql:delete($id)");
     // 先删除动漫系列表中有该系列的记录
     await AnimeSeriesDao.deleteBySeriesId(id);
     // 再删除该系列
@@ -53,7 +53,7 @@ class SeriesDao {
   }
 
   static Future<int> update(int id, String newName, String newDesc) async {
-    Log.info("sql:update(id=$id, newName=$newName)");
+    AppLog.info("sql:update(id=$id, newName=$newName)");
     var now = DateTime.now().toString();
     return await db.rawUpdate('''
     update $table set $columnName = '$newName', $columnDesc = '$newDesc', $columnUpdateTime = '$now' where $columnId = $id;
@@ -62,7 +62,7 @@ class SeriesDao {
 
   // 获取所有系列列表
   static Future<List<Series>> getAllSeries() async {
-    Log.info("sql:getAllSeries");
+    AppLog.info("sql:getAllSeries");
     List<Map<String, Object?>> maps = await db.query(table);
     List<Series> seriesList = maps.map((e) => Series.fromMap(e)).toList();
     // 获取每个系列中的动漫
@@ -74,7 +74,7 @@ class SeriesDao {
 
   // 根据id获取系列
   static Future<Series> getSeriesById(int id, {bool needAnimes = true}) async {
-    Log.info("sql:getSeriesById(id=$id)");
+    AppLog.info("sql:getSeriesById(id=$id)");
     List<Map<String, Object?>> maps =
         await db.query(table, where: "$columnId = ?", whereArgs: [id]);
 
@@ -91,7 +91,7 @@ class SeriesDao {
 
   // 搜索系列
   static Future<List<Series>> searchSeries(String kw) async {
-    Log.info("sql:searchSeries(kw=$kw)");
+    AppLog.info("sql:searchSeries(kw=$kw)");
     List<Map<String, Object?>> maps = await db.rawQuery('''
     select * from $table where $columnName like '%$kw%';
     ''');
@@ -105,7 +105,7 @@ class SeriesDao {
 
   // 查询是否存在系列名
   static Future<bool> existSeriesName(String name) async {
-    Log.info("sql:existSeriesName(name=$name)");
+    AppLog.info("sql:existSeriesName(name=$name)");
     return (await db.query(table, where: "$columnName = ?", whereArgs: [name]))
         .isNotEmpty;
   }

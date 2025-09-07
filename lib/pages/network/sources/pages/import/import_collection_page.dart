@@ -151,7 +151,6 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
     return AppBar(
       title: SearchAppBar(
         inputController: icc.inputController,
-        useModernStyle: false,
         hintText: "用户ID",
         isAppBar: false,
         autofocus: icc.showTip, // 如果显示提示，则自动聚焦输入框
@@ -302,7 +301,7 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
             child: CircularProgressIndicator(
               strokeWidth: 4,
               backgroundColor:
-                  Theme.of(context).primaryColor.withOpacityFactor(0.3),
+                  Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
             ),
           ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)

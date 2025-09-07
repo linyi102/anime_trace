@@ -1,11 +1,9 @@
+import 'package:animetrace/components/anime_custom_cover.dart';
+import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_list_tile.dart';
-import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/setting_title.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
-import '../../../../components/anime_grid_cover.dart';
-import '../../../../components/get_anime_grid_delegate.dart';
 import '../../../../controllers/anime_display_controller.dart';
 import '../../../../dao/anime_dao.dart';
 import '../../../../dao/anime_series_dao.dart';
@@ -67,11 +65,11 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
     return SliverList.builder(
       itemCount: recommendAnimes.length,
       itemBuilder: (context, index) {
-        var color = Theme.of(context).primaryColor;
+        var color = Theme.of(context).colorScheme.primary;
 
         return AnimeListTile(
           anime: recommendAnimes[index],
-          onTap: () => _toAnimeDetailPage(context, recommendAnimes, index),
+          onTap: () => _toAnimeDetailPage(context, recommendAnimes[index]),
           trailing: InkWell(
             borderRadius: BorderRadius.circular(99),
             onTap: () async {
@@ -126,7 +124,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         child: Text(
           '添加全部',
           style: TextStyle(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 14,
           ),
         ),
@@ -143,7 +141,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           return AnimeListTile(
             anime: anime,
             onTap: () {
-              _toAnimeDetailPage(context, widget.series.animes, index);
+              _toAnimeDetailPage(context, widget.series.animes[index]);
             },
             onLongPress: () {
               _showMoreOpDialog(context, anime);
@@ -154,25 +152,16 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
       );
     }
 
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5), // 整体的填充
-      sliver: SliverGrid.builder(
-        gridDelegate: getAnimeGridDelegate(context),
-        itemCount: widget.series.animes.length,
-        itemBuilder: (context, index) {
-          var anime = widget.series.animes[index];
-          return InkWell(
-            borderRadius: BorderRadius.circular(AppTheme.imgRadius),
-            onTap: () {
-              _toAnimeDetailPage(context, widget.series.animes, index);
-            },
-            onLongPress: () {
-              _showMoreOpDialog(context, anime);
-            },
-            child: AnimeGridCover(anime),
-          );
-        },
-      ),
+    return AnimeGridView(
+      animes: widget.series.animes,
+      sliver: true,
+      onTap: (anime) {
+        _toAnimeDetailPage(context, anime);
+      },
+      onLongPress: (anime) {
+        _showMoreOpDialog(context, anime);
+      },
+      styleBuilder: (style) => style.copyWith(seriesPlacement: Placement.none),
     );
   }
 
@@ -227,15 +216,15 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
               ),
             ));
       },
-      child: const Icon(MingCuteIcons.mgc_add_line),
+      child: const Icon(Icons.add),
     );
   }
 
-  void _toAnimeDetailPage(BuildContext context, List<Anime> animes, int index) {
+  void _toAnimeDetailPage(BuildContext context, Anime anime) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AnimeDetailPage(animes[index]),
+          builder: (context) => AnimeDetailPage(anime),
         )).then((value) {
       getAnimes();
       // 不能简单替换动漫，因为可能会在里面进入系列修改数据了

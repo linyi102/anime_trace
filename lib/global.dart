@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
@@ -27,6 +28,9 @@ class Global {
 
   /// 是否 release
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
+
+  /// 设备预览
+  static bool get enableDevicePreview => false;
 
   /// 修改了笔记图片根路径
   static bool modifiedImgRootPath = false;
@@ -89,7 +93,7 @@ class Global {
         minimumSize: const Size(400, 400),
         fullScreen: false,
         // 需要居中，否则会偏右
-        center: true,
+        center: !kDebugMode,
         // 透明会导致新版Win11的标题栏看不到最小化、最大化和关闭按钮
         // backgroundColor: Colors.transparent,
         skipTaskbar: false,
@@ -190,4 +194,11 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+class FeatureFlag {
+  static final enableSelectLocalImage =
+      Platform.isWindows || Platform.isAndroid;
+
+  static const enableFixCover = false;
 }

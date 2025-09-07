@@ -109,7 +109,7 @@ class _FavWebsiteListPageState extends State<FavWebsiteListPage> {
                               subtitle: const Text("仅对Android端有效"),
                               trailing: openWebInApp
                                   ? Icon(Icons.toggle_on,
-                                      color: Theme.of(context).primaryColor)
+                                      color: Theme.of(context).colorScheme.primary)
                                   : const Icon(Icons.toggle_off),
                               onTap: () {
                                 setState(() {

@@ -9,7 +9,7 @@ class ImageDao {
 
   /// 编辑好笔记后，退出时更新图片的顺序
   static updateImageOrderIdxById(int imageId, int newOrderIdx) {
-    Log.info(
+    AppLog.info(
         "updateImageOrderIdxById(imageId=$imageId, newOrderIdx=$newOrderIdx)");
     // 只有调用await updateImageOrderIdxById，才有延时效果，而直接调用updateImageOrderIdxById，才有延时效果，而没有
     // await Future.delayed(const Duration(seconds: 2));
@@ -23,7 +23,7 @@ class ImageDao {
 
   /// 获取所有图片
   static Future<List<String>> getAllImages() async {
-    Log.info('sql: getAllImages');
+    AppLog.info('sql: getAllImages');
 
     List<String> images = [];
     List<Map> rows =
@@ -39,7 +39,7 @@ class ImageDao {
 
   /// 获取某个动漫的所有图片
   static Future<List<String>> getImages(int animeId) async {
-    Log.info('sql: getImages(animeId=$animeId)');
+    AppLog.info('sql: getImages(animeId=$animeId)');
 
     List<String> images = [];
     List<Map> rows = await database.rawQuery('''

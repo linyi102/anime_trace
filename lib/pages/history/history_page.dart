@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:animetrace/widgets/connected_button_groups.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/components/anime_list_cover.dart';
@@ -13,7 +13,6 @@ import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:animetrace/widgets/common_divider.dart';
-import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/responsive.dart';
 import 'package:animetrace/widgets/setting_title.dart';
 import 'package:get/get.dart';
@@ -28,89 +27,67 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   HistoryController historyController = Get.put(HistoryController());
-
   List<HistoryView> get views => historyController.views;
-  int get selectedViewIndex => historyController.selectedViewIndex;
 
   @override
   void initState() {
-    if (historyController.initOk) {
-      // 如果已经初始化完毕，则说明之前已经打开过历史页，那么这次需要刷新数据来保证最新数据
-      historyController.refreshData();
-    }
+    historyController.loadData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("历史"),
-        actions: [
-          _buildCupertinoViewSwitch(),
-          // buildMaterialViewSwitch(),
-        ],
-      ),
-      body: CommonScaffoldBody(
-        child: RefreshIndicator(
-          onRefresh: () async => await historyController.refreshData(),
-          child: GetBuilder<HistoryController>(
-            init: historyController,
-            builder: (_) => FadeAnimatedSwitcher(
-              loadOk: historyController.loadOk,
-              destWidget: Column(
-                children: [
-                  // _buildViewSwitch(),
-                  views[selectedViewIndex].historyRecords.isEmpty
-                      ? Expanded(child: emptyDataHint(msg: "没有历史。"))
-                      : Expanded(
-                          // 不能嵌套PageView，因为这样无法保证点击上面的视图实现切换，而是左右滑动切换
-                          child: _buildHistoryPage(),
-                        ),
-                ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildMaterialViewSwitch(),
+            Expanded(
+              child: GetBuilder<HistoryController>(
+                init: historyController,
+                builder: (_) => PageView(
+                  // 后期如果需要滑动切换视图可以放开
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: historyController.pageController,
+                  children: historyController.views
+                      .map((e) => _buildHistoryPage(e))
+                      .toList(),
+                  onPageChanged: (index) {
+                    setState(() {
+                      historyController.curViewIndex = index;
+                    });
+                  },
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  buildMaterialViewSwitch() {
+  Widget _buildMaterialViewSwitch() {
     return Padding(
-      padding: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SegmentedButton(
-            showSelectedIcon: false,
-            style: ButtonStyle(
-                visualDensity: const VisualDensity(
-                  horizontal: VisualDensity.minimumDensity,
-                  vertical: VisualDensity.minimumDensity,
-                ),
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(99)))),
-            segments: historyController.views
-                .map((e) => ButtonSegment(
-                      value: e.label,
-                      label: Text(e.label.title),
+          ConnectedButtonGroups<int>(
+            items: historyController.views
+                .map((e) => ConnectedButtonItem(
                       // icon: Icon(e.label.iconData),
+                      label: e.label.title,
+                      value: e.label.index,
                     ))
                 .toList(),
-            selected: {historyController.selectedHistoryLabel},
+            selected: {historyController.selectedHistoryLabel.index},
             onSelectionChanged: (newSelection) {
+              final to = newSelection.first;
               setState(() {
-                // 先重绘进度圈和开关
-                historyController.loadOk = false;
-                historyController.selectedHistoryLabel = newSelection.first;
+                historyController.curViewIndex = to;
               });
-              historyController.selectedViewIndex = views
-                  .indexWhere((element) => element.label == newSelection.first);
-              SPUtil.setInt(
-                  "selectedViewIndexInHistoryPage", selectedViewIndex);
-              // 重置页号刷新数据，避免页号不是从0开始导致加载直接加载后面的数据
-              historyController.refreshData();
+              historyController.pageController?.jumpToPage(to);
+              SPUtil.setInt("selectedViewIndexInHistoryPage", to);
             },
           ),
         ],
@@ -118,41 +95,44 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  _buildCupertinoViewSwitch() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: CupertinoSlidingSegmentedControl(
-        groupValue: historyController.selectedHistoryLabel,
-        children: () {
-          Map<HistoryLabel, Widget> map = {};
-          for (int i = 0; i < historyController.views.length; ++i) {
-            var view = historyController.views[i];
-            map[view.label] = Text(view.label.title);
-          }
-          return map;
-        }(),
-        onValueChanged: (HistoryLabel? value) {
-          if (value != null) {
-            Log.info("value=$value");
-            setState(() {
-              // 先重绘进度圈和开关
-              historyController.loadOk = false;
-              historyController.selectedHistoryLabel = value;
-            });
-            historyController.selectedViewIndex =
-                views.indexWhere((element) => element.label == value);
-            SPUtil.setInt("selectedViewIndexInHistoryPage", selectedViewIndex);
-            // 重置页号刷新数据，避免页号不是从0开始导致加载直接加载后面的数据
-            historyController.refreshData();
-          }
-        },
-      ),
+  Widget _buildHistoryPage(HistoryView view) {
+    return FadeAnimatedSwitcher(
+      loadOk: historyController.loadOk,
+      destWidget: view.historyRecords.isEmpty
+          ? emptyDataHint(msg: "没有历史。")
+          : RefreshIndicator(
+              onRefresh: () async => await historyController.loadData(),
+              child: _RecordListView(
+                view: view,
+                loadMoreData: historyController.loadMoreData,
+              ),
+            ),
     );
   }
+}
 
-  Scrollbar _buildHistoryPage() {
+class _RecordListView extends StatefulWidget {
+  const _RecordListView({required this.view, required this.loadMoreData});
+  final HistoryView view;
+  final VoidCallback loadMoreData;
+
+  @override
+  State<_RecordListView> createState() => __RecordListViewState();
+}
+
+class __RecordListViewState extends State<_RecordListView>
+    with AutomaticKeepAliveClientMixin {
+  HistoryView get view => widget.view;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
     return Scrollbar(
-      controller: views[selectedViewIndex].scrollController,
+      controller: view.scrollController,
       child: SuperListView.separated(
         separatorBuilder: (context, index) => const CommonDivider(thinkness: 0),
         // 保留滚动位置，注意：如果滚动位置在加载更多的数据中，那么重新打开当前页面若重新加载数据，则恢复滚动位置不合适，故不采用
@@ -162,19 +142,18 @@ class _HistoryPageState extends State<HistoryPage> {
         // 但不能指定为UniqueKey，否则加载更多时会直接跳转到顶部。可是指定这个下面key又会导致没有显示最新数据，并且新增历史后不匹配
         // 推测是RecordItem的key问题，后来为RecordItem添加UniqueKey后正确。
         // key: Key("history-page-view-$selectedViewIndex"),
-        controller: views[selectedViewIndex].scrollController,
-        itemCount: views[selectedViewIndex].historyRecords.length,
+        controller: view.scrollController,
+        itemCount: view.historyRecords.length,
         itemBuilder: (context, cardIndex) {
-          int threshold = views[selectedViewIndex].pageParams.getQueriedSize();
+          int threshold = view.pageParams.getQueriedSize();
           if (cardIndex + 2 == threshold) {
-            Log.info("index=$cardIndex, threshold=$threshold");
-            views[selectedViewIndex].pageParams.pageIndex++;
-            historyController.loadMoreData();
+            AppLog.info("index=$cardIndex, threshold=$threshold");
+            view.pageParams.pageIndex++;
+            widget.loadMoreData();
           }
 
-          String date = views[selectedViewIndex].historyRecords[cardIndex].date;
-          final records =
-              views[selectedViewIndex].historyRecords[cardIndex].records;
+          String date = view.historyRecords[cardIndex].date;
+          final records = view.historyRecords[cardIndex].records;
 
           return Card(
             child: Column(
@@ -185,7 +164,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ? '其他'
                       : date.replaceAll("-", "/"),
                   // trailing: Text(
-                  //   "${views[selectedViewIndex].historyRecords[index].records.length}个动漫",
+                  //   "${view.historyRecords[cardIndex].records.length}个动漫",
                   //   style: Theme.of(context).textTheme.bodySmall,
                   // ),
                 ),
@@ -197,7 +176,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     itemCount: records.length,
                     itemBuilder: (context, recordIndex) {
                       final record = records[recordIndex];
-                      return _buildRecordItem(record, date, useCard: false);
+                      return _RecordItem(
+                          record: record, date: date, useCard: false);
                     },
                   ),
                   desktop: GridView.builder(
@@ -209,7 +189,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     itemCount: records.length,
                     itemBuilder: (context, recordIndex) {
                       final record = records[recordIndex];
-                      return _buildRecordItem(record, date, useCard: true);
+                      return _RecordItem(
+                          record: record, date: date, useCard: true);
                     },
                   ),
                 ),
@@ -222,19 +203,6 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
     );
   }
-
-  _RecordItem _buildRecordItem(
-    AnimeHistoryRecord record,
-    String date, {
-    bool useCard = false,
-  }) {
-    return _RecordItem(
-      record: record,
-      date: date,
-      key: ObjectKey(record),
-      useCard: useCard,
-    );
-  }
 }
 
 class _RecordItem extends StatefulWidget {
@@ -243,17 +211,14 @@ class _RecordItem extends StatefulWidget {
   final bool useCard;
 
   const _RecordItem(
-      {required this.record,
-      required this.date,
-      this.useCard = true,
-      super.key});
+      {required this.record, required this.date, this.useCard = true});
 
   @override
   State<_RecordItem> createState() => _RecordItemState();
 }
 
 class _RecordItemState extends State<_RecordItem> {
-  late AnimeHistoryRecord record = widget.record;
+  AnimeHistoryRecord get record => widget.record;
 
   @override
   Widget build(BuildContext context) {

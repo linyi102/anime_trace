@@ -79,12 +79,12 @@ class _SeriesManageLayoutStateSettingPage
                     logic.update();
                   },
                   onChanged: (value) {
-                    Log.info("拖动中，value=$value");
+                    AppLog.info("拖动中，value=$value");
                     coverHeight = value;
                     setState(() {});
                   },
                   onChangeEnd: (value) {
-                    Log.info("拖动结束，value=$value");
+                    AppLog.info("拖动结束，value=$value");
                     SeriesStyle.setItemCoverHeight(value);
                     setState(() {});
                     logic.update();
