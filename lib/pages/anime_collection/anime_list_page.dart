@@ -75,6 +75,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
+      // FIXME 并不会触发退出多选
       canPop: checklistController.multi,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;

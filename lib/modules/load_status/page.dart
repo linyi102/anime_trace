@@ -1,3 +1,4 @@
+import 'package:animetrace/components/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoadingPage extends StatelessWidget {
@@ -5,11 +6,7 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(
-        strokeCap: StrokeCap.round,
-      ),
-    );
+    return const LoadingWidget(center: true);
   }
 }
 
