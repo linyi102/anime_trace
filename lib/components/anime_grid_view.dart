@@ -72,7 +72,7 @@ class _AnimeGridViewState extends State<AnimeGridView>
 
       int calCrossAxisCount(double maxWidth) {
         if (enableResponsive) {
-          return maxWidth ~/ (PlatformUtil.isDesktop ? 160 : 120);
+          return maxWidth ~/ (PlatformUtil.isDesktop ? 160 : 100);
         }
         return gridColumnCnt;
       }

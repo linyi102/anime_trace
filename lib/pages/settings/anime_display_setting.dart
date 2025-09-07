@@ -112,7 +112,7 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
       yield _DropdownMenuTile(
         title: const Text('名字行数'),
         initialSelection: style.maxNameLines,
-        dropdownMenuEntries: [1, 2]
+        dropdownMenuEntries: [1, 2, 3]
             .map((e) => DropdownMenuEntry(label: e.toString(), value: e))
             .toList(),
         onSelected: (r) {

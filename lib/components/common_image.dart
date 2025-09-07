@@ -80,11 +80,11 @@ class CommonImage extends StatelessWidget {
     context, {
     bool isError = false,
   }) {
-    final baseColor = Theme.of(context).primaryColor;
+    final baseColor = Theme.of(context).colorScheme.primary;
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          color: baseColor.withOpacityFactor(0.08),
+          color: baseColor.withOpacityFactor(0.1),
           child: Center(
               child: Icon(
             // TODO 放大效果导致图标重复切换

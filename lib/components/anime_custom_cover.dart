@@ -38,7 +38,7 @@ class AnimeCoverStyle {
     this.progressLinearPlacement = Placement.none,
     this.progressNumberPlacement = Placement.topLeft,
     this.seriesPlacement = Placement.topRight,
-    this.maxNameLines = 1,
+    this.maxNameLines = 2,
   });
 
   factory AnimeCoverStyle.none() {
@@ -221,26 +221,20 @@ class CustomAnimeCover extends StatelessWidget {
                       // 左上角组件
                       if (topLeftStatusWidgets.isNotEmpty)
                         Positioned(
-                          left: 0,
-                          top: 8,
+                          left: 6,
+                          top: 6,
                           child: Row(
-                              children: topLeftStatusWidgets
-                                  .map((e) => Padding(
-                                      padding: const EdgeInsets.only(left: 4),
-                                      child: e))
-                                  .toList()),
+                              children:
+                                  topLeftStatusWidgets.map((e) => e).toList()),
                         ),
                       // 右上角组件
                       if (topRightStatusWidgets.isNotEmpty)
                         Positioned(
-                          right: 0,
-                          top: 8,
+                          right: 6,
+                          top: 6,
                           child: Row(
-                              children: topRightStatusWidgets
-                                  .map((e) => Padding(
-                                      padding: const EdgeInsets.only(right: 4),
-                                      child: e))
-                                  .toList()),
+                              children:
+                                  topRightStatusWidgets.map((e) => e).toList()),
                         ),
                       // 封面内底部组件
                       if (style.namePlacement == Placement.bottomInCover ||

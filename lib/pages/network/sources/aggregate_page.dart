@@ -1,3 +1,7 @@
+import 'package:animetrace/components/common_image.dart';
+import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/values/theme.dart';
+import 'package:animetrace/widgets/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/components/website_logo.dart';
@@ -6,7 +10,6 @@ import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/ping_result.dart';
 import 'package:animetrace/pages/network/sources/aggregate_logic.dart';
-import 'package:animetrace/pages/network/sources/modules/horizontal_anime_list.dart';
 import 'package:animetrace/pages/network/sources/modules/tools.dart';
 import 'package:animetrace/pages/network/sources/pages/source_detail_page.dart';
 import 'package:animetrace/pages/network/sources/pages/source_list_page.dart';
@@ -198,7 +201,7 @@ class _AggregatePageState extends State<AggregatePage> {
                     child: const Row(
                       children: [Text('无')],
                     ))
-                : HorizontalAnimeListPage(
+                : _HorizontalAnimeListPage(
                     animes: animes,
                     specifyItemSubtitle: specifyItemSubtitle,
                   ),
@@ -276,5 +279,184 @@ class _AggregatePageState extends State<AggregatePage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return SourceDetail(climbWebsite);
     }));
+  }
+}
+
+class _HorizontalAnimeListPage extends StatelessWidget {
+  const _HorizontalAnimeListPage({
+    required this.animes,
+    this.specifyItemSubtitle,
+  });
+  final List<Anime> animes;
+  final String? Function(Anime anime)? specifyItemSubtitle;
+
+  AggregateLogic get logic => AggregateLogic.to;
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder(
+      init: logic,
+      builder: (_) => Responsive(
+        mobile: _buildListView(110),
+        desktop: _buildListView(140),
+      ),
+    );
+  }
+
+  Widget _buildListView(double coverWidth) {
+    final itemHeight = (coverWidth / 0.72) + 40;
+
+    return SizedBox(
+      height: itemHeight,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        scrollDirection: Axis.horizontal,
+        itemCount: animes.length,
+        itemBuilder: (context, index) {
+          final anime = animes[index];
+          return _CommonCover(
+            width: coverWidth,
+            coverUrl: anime.animeCoverUrl,
+            title: anime.animeName,
+            subtitle: specifyItemSubtitle?.call(anime),
+            onTap: () async {
+              Anime value = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AnimeDetailPage(anime),
+                  ));
+              anime.animeName = value.animeName;
+              anime.animeCoverUrl = value.animeCoverUrl;
+              logic.update();
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CommonCover extends StatefulWidget {
+  const _CommonCover({
+    this.onTap,
+    this.width = 100,
+    this.coverUrl,
+    this.title,
+    this.subtitle,
+    // ignore: unused_element
+    this.bottomRightText,
+  });
+
+  final GestureTapCallback? onTap;
+  final double? width;
+  final String? coverUrl;
+  final String? title;
+  final String? subtitle;
+  final String? bottomRightText;
+
+  @override
+  State<_CommonCover> createState() => _CommonCoverState();
+}
+
+class _CommonCoverState extends State<_CommonCover> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+        onTap: widget.onTap,
+        child: _buildItem(),
+      ),
+    );
+  }
+
+  Widget _buildItem() {
+    return Container(
+      width: widget.width,
+      padding: const EdgeInsets.all(3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (widget.coverUrl != null) _buildImage(),
+                if (widget.bottomRightText != null) _buildBottomShadow(),
+                if (widget.bottomRightText != null) _buildBottomRightText()
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          if (widget.title != null)
+            Text(
+              widget.title ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14),
+            ),
+          if (widget.subtitle != null)
+            Text(
+              widget.subtitle ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
+            ),
+        ],
+      ),
+    );
+  }
+
+  ClipRRect _buildImage() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppTheme.imgRadius),
+      child: CommonImage(
+        widget.coverUrl!,
+        reduceMemCache: true,
+      ),
+    );
+  }
+
+  Container _buildBottomRightText() {
+    return Container(
+      // 使用Align替换Positioned，可以保证在Stack下自适应父元素宽度
+      alignment: Alignment.bottomRight,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(5, 0, 10, 5),
+        child: Text(
+          widget.bottomRightText ?? '',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            shadows: [
+              Shadow(blurRadius: 3, color: Colors.black),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Column _buildBottomShadow() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(AppTheme.imgRadius)),
+              gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Color.fromRGBO(0, 0, 0, 0.6),
+                  ])),
+        ),
+      ],
+    );
   }
 }

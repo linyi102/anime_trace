@@ -295,14 +295,15 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   Widget _buildAddButton() {
     final radius = BorderRadius.circular(AppTheme.noteImgRadius);
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Material(
-      color: Theme.of(context).colorScheme.tertiaryContainer,
+      color: primary.withOpacityFactor(0.1),
       borderRadius: radius,
       child: InkWell(
         onTap: () => _pickLocalImages(),
         borderRadius: radius,
-        child: Icon(Icons.add,
-            color: Theme.of(context).colorScheme.onTertiaryContainer),
+        child: Icon(Icons.add, color: primary.withOpacityFactor(0.5)),
       ),
     );
   }
