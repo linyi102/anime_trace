@@ -72,9 +72,9 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
 
                     final r = await imagePerm!.request();
                     if (r.isDenied) {
-                      ToastUtil.showText('权限被拒绝');
+                      ToastUtil.showText('授权被拒绝');
                     } else if (r.isGranted) {
-                      ToastUtil.showText('权限成功');
+                      ToastUtil.showText('授权成功');
                     }
                     _getReadImagePerm();
                   },
@@ -116,7 +116,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
           children: [
             ListTile(
               title: const Text('无法显示图片？'),
-              subtitle: const Text("点击查看使用帮助"),
+              subtitle: const Text("点击查看帮助"),
               onTap: () => LaunchUrlUtil.launch(
                   context: context,
                   uriStr: "https://www.yuque.com/linyi517/fzfxr0/xpx4xq"),
@@ -135,7 +135,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
               ),
               const SizedBox(height: 5),
               Text(
-                "在笔记中添加图片后，请不要移动图片或修改图片名称，否则无法显示。",
+                '应用只会记录选择图片的路径，并不会保存图片文件，所以在选择后尽量不要移动图片文件或修改名称，否则选择的图片无法正常展示。',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
