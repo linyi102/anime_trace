@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animetrace/pages/settings/series/manage/logic.dart';
 import 'package:animetrace/utils/log.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../../../widgets/setting_title.dart';
 import '../style.dart';
@@ -107,14 +106,13 @@ class _SeriesManageLayoutStateSettingPage
       selected: selected,
       leading: selected
           ? Icon(SeriesStyle.sortRule.desc
-              ? MingCuteIcons.mgc_arrow_down_line
-              : MingCuteIcons.mgc_arrow_up_line)
+              ? Icons.arrow_downward
+              : Icons.arrow_upward)
           : const SizedBox(),
       onTap: () {
         // 如果还没选中，则选择该排序，并重置为升序
         if (SeriesStyle.sortRule.cond != cond) {
           SeriesStyle.setSortCond(cond);
-          SeriesStyle.resetSortDesc();
         } else {
           // 如果已选中，再次点击时进行升降序
           SeriesStyle.toggleSortDesc();

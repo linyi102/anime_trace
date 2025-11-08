@@ -169,50 +169,48 @@ class _AnimeListPageState extends State<AnimeListPage>
   StatefulBuilder _buildSortPage({bool dialog = true}) {
     return StatefulBuilder(
       builder: (context, setState) {
-        List<Widget> sortCondList = [];
+        final sortConds = AnimeSortCond.sortConds;
+        final currentIdx = animeSortCond.specSortColumnIdx;
+        final isDesc = animeSortCond.desc;
 
-        sortCondList.add(CheckboxListTile(
-          title: const Text("降序"),
-          value: animeSortCond.desc,
-          controlAffinity: ListTileControlAffinity.leading,
-          onChanged: (bool? value) {
-            if (value == null) return;
-            animeSortCond.desc = value;
-            SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
-            setState(() {}); // 更新对话框里的状态
-            // 改变排序时，需要滚动到顶部，否则会加载很多页
-            _scrollControllers[_tabController!.index].jumpTo(0);
-            checklistController.loadAnimes();
-          },
-        ));
+        final body = SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+              sortConds.length,
+              (index) {
+                final cond = sortConds[index];
+                final selected = index == currentIdx;
 
-        for (int i = 0; i < AnimeSortCond.sortConds.length; ++i) {
-          var sortCondItem = AnimeSortCond.sortConds[i];
-          sortCondList.add(RadioListTile(
-            title: Text(sortCondItem.showName),
-            onChanged: (value) {
-              // 不相等时才设置
-              if (value == null) return;
+                return ListTile(
+                  title: Text(cond.showName),
+                  selected: selected,
+                  leading: selected
+                      ? Icon(isDesc ? Icons.arrow_downward : Icons.arrow_upward)
+                      : const SizedBox(width: 24),
+                  onTap: () {
+                    if (!selected) {
+                      animeSortCond.specSortColumnIdx = index;
+                      SPUtil.setInt("AnimeSortCondSpecSortColumnIdx",
+                          animeSortCond.specSortColumnIdx);
+                    } else {
+                      animeSortCond.desc = !animeSortCond.desc;
+                      SPUtil.setBool("AnimeSortCondDesc", animeSortCond.desc);
+                    }
+                    setState(() {});
 
-              animeSortCond.specSortColumnIdx = value;
-              SPUtil.setInt("AnimeSortCondSpecSortColumnIdx", value);
-              setState(() {}); // 更新对话框里的状态
-              // 改变排序时，需要滚动到顶部，否则会加载很多页
-              _scrollControllers[_tabController!.index].jumpTo(0);
-              checklistController.loadAnimes();
-            },
-            value: i,
-            groupValue: animeSortCond.specSortColumnIdx,
-          ));
-        }
+                    // 改变排序时，需要滚动到顶部，否则会加载很多页
+                    _scrollControllers[_tabController!.index].jumpTo(0);
+                    checklistController.loadAnimes();
+                  },
+                );
+              },
+            ),
+          ),
+        );
 
-        Widget body =
-            SingleChildScrollView(child: Column(children: sortCondList));
-        if (dialog) {
-          return AlertDialog(title: const Text("动漫排序"), content: body);
-        } else {
-          return body;
-        }
+        return dialog
+            ? AlertDialog(title: const Text("动漫排序"), content: body)
+            : body;
       },
     );
   }
