@@ -14,7 +14,7 @@ class ClimbQdm with Climb {
   String get idName => "qdm";
 
   @override
-  String get defaultBaseUrl => "https://www.qdm66.com";
+  String get defaultBaseUrl => "https://www.qdm8.com";
 
   @override
   String get sourceName => "趣动漫";
