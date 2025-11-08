@@ -6,6 +6,7 @@ import 'package:animetrace/utils/climb/climb_aimii.dart';
 import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/climb/climb_cycdm.dart';
 import 'package:animetrace/utils/climb/climb_douban.dart';
+import 'package:animetrace/utils/climb/climb_girigirilove.dart';
 import 'package:animetrace/utils/climb/climb_gugu.dart';
 import 'package:animetrace/utils/climb/climb_nayfun.dart';
 import 'package:animetrace/utils/climb/climb_omofun.dart';
@@ -21,10 +22,11 @@ List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
   bangumiClimbWebsite,
   guguWebsite,
+  ggloveWebsite,
   quClimbWebsite,
-  xifanWebsite,
   doubanClimbWebsite,
   cycClimbWebsite,
+  xifanWebsite,
   nyaFunWebsite,
   omofunClimbWebsite,
   aimiWebsite,
@@ -177,4 +179,15 @@ final xifanWebsite = ClimbWebsite(
   regexp: "xifan",
   spkey: "enableWebSiteXifan",
   climb: ClimbXifan(),
+);
+
+final ggloveWebsite = ClimbWebsite(
+  id: 13,
+  defaultEnable: true,
+  name: "girigiri愛",
+  iconUrl: "assets/images/website/girigirilove.png",
+  regexp: "girigirilove",
+  spkey: "enableWebSiteGirigirilove",
+  climb: ClimbGGLove(),
+  desc: "這是家彈幕視頻網站，這裡有各式各樣的動漫新番，友好的彈幕氛圍，有趣的評論，年輕人都在用。girigiri愛٩( >ω< )و 好耶~",
 );
