@@ -232,7 +232,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                         MaterialPageRoute(
                           builder: (context) {
                             return AnimeClimbAllWebsite(
-                              animeId: _anime.animeId,
+                              oldAnime: _anime,
                               keyword: _anime.animeName,
                             );
                           },

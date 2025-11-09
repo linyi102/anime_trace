@@ -5,6 +5,7 @@ import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
 import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/params/page_params.dart';
 import 'package:animetrace/pages/local_search/models/local_select_filter.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
@@ -362,11 +363,13 @@ class AnimeDao {
   }
 
   /// 迁移动漫、全局更新动漫
-  static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
-      {bool updateCover = false,
-      bool updateName = true,
-      bool updateInfo = true,
-      bool updateAnimeUrl = true}) async {
+  static Future<int> updateAnime(
+    Anime oldAnime,
+    Anime newAnime, {
+    MigrateConfig? config,
+  }) async {
+    config ??= MigrateConfig();
+
     AppLog.info("sql: updateAnime");
     String datetime = DateTime.now().toString();
     AppLog.info("oldAnime=$oldAnime, newAnime=$newAnime");
@@ -385,47 +388,48 @@ class AnimeDao {
     if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
     }
-
-    if (!updateName) {
-      newAnime.animeName = oldAnime.animeName;
-    }
-
-    // 如果新动漫某些属性为空字符串，则把旧的赋值上去
-    if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
     if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
 
-    // 如果没有新封面，或者不迁移封面，就使用旧的
-    if (newAnime.animeCoverUrl.isEmpty || !updateCover) {
+    // 如果新信息为空，或者不迁移信息，就使用旧的
+    if (newAnime.animeName.isEmpty || !config.nameIsNew) {
+      newAnime.animeName = oldAnime.animeName;
+    }
+    if (newAnime.animeDesc.isEmpty || !config.descIsNew) {
+      newAnime.animeDesc = oldAnime.animeDesc;
+    }
+    if (newAnime.animeCoverUrl.isEmpty || !config.coverIsNew) {
       newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
     }
-    // 如果新信息为空，或者不迁移信息，就使用旧的
-    if (newAnime.premiereTime.isEmpty | !updateInfo) {
+    if (newAnime.premiereTime.isEmpty || !config.premiereTimeIsNew) {
       newAnime.premiereTime = oldAnime.premiereTime;
     }
-    if (newAnime.nameAnother.isEmpty | !updateInfo) {
+    if (newAnime.nameAnother.isEmpty || !config.anotherNameIsNew) {
       newAnime.nameAnother = oldAnime.nameAnother;
     }
-    if (newAnime.nameOri.isEmpty | !updateInfo) {
-      newAnime.nameOri = oldAnime.nameOri;
+    if (newAnime.area.isEmpty || !config.areaIsNew) {
+      newAnime.area = oldAnime.area;
     }
-    if (newAnime.authorOri.isEmpty | !updateInfo) {
-      newAnime.authorOri = oldAnime.authorOri;
-    }
-    if (newAnime.area.isEmpty | !updateInfo) newAnime.area = oldAnime.area;
-    if (newAnime.playStatus.isEmpty | !updateInfo) {
+    if (newAnime.playStatus.isEmpty || !config.playStatusIsNew) {
       newAnime.playStatus = oldAnime.playStatus;
     }
-    if (newAnime.productionCompany.isEmpty | !updateInfo) {
-      newAnime.productionCompany = oldAnime.productionCompany;
-    }
-    if (newAnime.officialSite.isEmpty | !updateInfo) {
-      newAnime.officialSite = oldAnime.officialSite;
-    }
-    if (newAnime.category.isEmpty | !updateInfo) {
+    if (newAnime.category.isEmpty || !config.categoryIsNew) {
       newAnime.category = oldAnime.category;
     }
-    if (newAnime.animeUrl.isEmpty | !updateAnimeUrl) {
+    if (newAnime.animeUrl.isEmpty || !config.urlIsNew) {
       newAnime.animeUrl = oldAnime.animeUrl;
+    }
+
+    if (newAnime.nameOri.isEmpty) {
+      newAnime.nameOri = oldAnime.nameOri;
+    }
+    if (newAnime.authorOri.isEmpty) {
+      newAnime.authorOri = oldAnime.authorOri;
+    }
+    if (newAnime.productionCompany.isEmpty) {
+      newAnime.productionCompany = oldAnime.productionCompany;
+    }
+    if (newAnime.officialSite.isEmpty) {
+      newAnime.officialSite = oldAnime.officialSite;
     }
     final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(newAnime.animeUrl);
 

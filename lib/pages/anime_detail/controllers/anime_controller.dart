@@ -1,4 +1,5 @@
 import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/anime_detail/widgets/auto_move_checklist_dialog.dart';
 import 'package:flutter/material.dart';
@@ -471,7 +472,7 @@ class AnimeController extends GetxController {
       }
 
       await AnimeDao.updateAnime(oldAnime, newAnime,
-              updateCover: shouldUpdateCover)
+              config: MigrateConfig(coverIsNew: shouldUpdateCover))
           .then((value) {
         // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
         if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {

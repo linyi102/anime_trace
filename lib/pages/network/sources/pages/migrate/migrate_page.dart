@@ -4,7 +4,10 @@ import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/website_logo.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/data_state.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/network/sources/pages/migrate/migrate_config_page.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/widgets/button/action_button.dart';
@@ -213,6 +216,17 @@ class _MigrateFormView extends StatelessWidget {
               value: controller.skipFinishedAnime,
               onChanged: controller.updateOnlyMirgratePlaying,
             ),
+            ListTile(
+              title: const Text('迁移配置'),
+              subtitle: Text(controller.config == null ? '未配置' : '已配置'),
+              onTap: () async {
+                final config = await RouteUtil.materialTo<MigrateConfig>(
+                    context, MigrateConfigPage(config: controller.config));
+                if (config == null) return;
+
+                controller.updateConfig(config);
+              },
+            ),
           ],
         ),
         actions: [
@@ -224,6 +238,10 @@ class _MigrateFormView extends StatelessWidget {
             onPressed: () {
               if (controller.destWebsite == null) {
                 ToastUtil.showText("请先选择搜索源");
+                return;
+              }
+              if (controller.config == null) {
+                ToastUtil.showText("请先设置迁移配置");
                 return;
               }
 
