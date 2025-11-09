@@ -1,7 +1,9 @@
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/values/sp_key.dart';
 import 'package:animetrace/values/theme.dart';
@@ -56,7 +58,7 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('迁移配置')),
+      appBar: AppBar(title: const Text('迁移动漫')),
       body: ListView(
         children: [
           _CompareTile(
@@ -100,23 +102,29 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             value: config.premiereTimeIsNew,
             onChanged: (value) =>
                 setState(() => config.premiereTimeIsNew = value),
-            oldWidget: Text(widget.oldAnime.premiereTime),
-            newWidget: Text(widget.newAnime.premiereTime),
+            oldWidget: Text(TimeUtil.getYMD(widget.oldAnime.premiereTime)),
+            newWidget: Text(TimeUtil.getYMD(widget.newAnime.premiereTime)),
           ),
           _CompareTile(
             title: '播放状态',
             value: config.playStatusIsNew,
             onChanged: (value) =>
                 setState(() => config.playStatusIsNew = value),
-            oldWidget: Text(widget.oldAnime.playStatus),
-            newWidget: Text(widget.newAnime.playStatus),
+            oldWidget: Text(widget.oldAnime.getPlayStatus().text),
+            newWidget: Text(widget.newAnime.getPlayStatus().text),
           ),
           _CompareTile(
-            title: '链接',
+            title: '搜索源',
             value: config.urlIsNew,
             onChanged: (value) => setState(() => config.urlIsNew = value),
-            oldWidget: Text(widget.oldAnime.animeUrl),
-            newWidget: Text(widget.newAnime.animeUrl),
+            oldWidget: GestureDetector(
+                onTap: () => LaunchUrlUtil.launch(
+                    context: context, uriStr: widget.oldAnime.animeUrl),
+                child: Text(widget.oldAnime.getAnimeSource())),
+            newWidget: GestureDetector(
+                onTap: () => LaunchUrlUtil.launch(
+                    context: context, uriStr: widget.newAnime.animeUrl),
+                child: Text(widget.newAnime.getAnimeSource())),
           ),
           _CompareTile(
             title: '简介',
@@ -149,12 +157,14 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
 
   Widget _buildCover(String url) {
     return Container(
-      height: 280,
       width: 200,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppTheme.imgRadius)),
-      child: CommonImage(url),
+      child: AspectRatio(
+        aspectRatio: 0.72,
+        child: CommonImage(url),
+      ),
     );
   }
 }
