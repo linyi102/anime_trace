@@ -14,7 +14,8 @@ class CycUIClimber {
             .firstOrNull
             ?.getElementsByTagName('img')
             .firstOrNull
-            ?.attributes["data-src"] ??
+            ?.attributes["data-src"]
+            ?.replaceFirst(RegExp(r'.*url='), '') ??
         anime.animeCoverUrl;
 
     String parseMoreItemValue(String? html) {
@@ -53,6 +54,7 @@ class CycUIClimber {
       String? coverUrl = coverE.attributes["data-src"];
       if (coverUrl == null) continue;
       if (coverUrl.startsWith("//")) coverUrl = "https:$coverUrl";
+      coverUrl = coverUrl.replaceFirst(RegExp(r'.*url='), '');
       animes.add(
           Anime(animeName: "", animeEpisodeCnt: 0, animeCoverUrl: coverUrl));
     }

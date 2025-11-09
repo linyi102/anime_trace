@@ -44,7 +44,9 @@ class ClimbQdm with Climb {
       climbAnimes.add(Anime(
           animeName: nameElement.innerHtml,
           animeEpisodeCnt: 0,
-          animeCoverUrl: coverElement.attributes["data-original"] ?? "",
+          animeCoverUrl: coverElement.attributes["data-original"]
+                  ?.replaceFirst(RegExp(r'.*url='), '') ??
+              "",
           animeUrl: animeUrl));
     }
 
@@ -58,8 +60,10 @@ class ClimbQdm with Climb {
 
     // 获取封面
     anime.animeCoverUrl = document
-            .getElementsByClassName("lazyload")[0]
-            .attributes["data-original"] ??
+            .getElementsByClassName("lazyload")
+            .firstOrNull
+            ?.attributes["data-original"]
+            ?.replaceFirst(RegExp(r'.*url='), '') ??
         anime.animeCoverUrl;
 
     // 获取首播时间
