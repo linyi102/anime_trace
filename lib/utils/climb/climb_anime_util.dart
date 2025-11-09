@@ -3,6 +3,7 @@ import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/anime_update_record.dart';
 import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/week_record.dart';
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/dao/update_record_dao.dart';
@@ -120,7 +121,13 @@ class ClimbAnimeUtil {
 
           // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
           // 爬取完毕后，更新数据库中的动漫
-          AnimeDao.updateAnime(oldAnime, anime).then((value) {
+          AnimeDao.updateAnime(oldAnime, anime,
+              config: MigrateConfig(
+                defaultValue: false,
+                playStatusIsNew: true,
+                premiereTimeIsNew: true,
+                urlIsNew: true,
+              )).then((value) {
             // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
             updateRecordController.incrementUpdateOkCnt();
             int updateOkCnt = updateRecordController.updateOkCnt.value;

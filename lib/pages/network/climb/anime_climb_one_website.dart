@@ -1,7 +1,8 @@
+import 'package:animetrace/pages/network/sources/pages/migrate/migrate_compare_page.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_view.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
-import 'package:animetrace/components/dialog/dialog_confirm_migrate.dart';
 import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
 import 'package:animetrace/components/loading_widget.dart';
@@ -18,14 +19,14 @@ import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 
 class AnimeClimbOneWebsite extends StatefulWidget {
-  final int animeId;
+  final Anime? oldAnime;
   final String keyword;
   final ClimbWebsite climbWebStie;
   final bool enableSourceSelector;
   final void Function(Anime anime)? onTap;
 
   const AnimeClimbOneWebsite({
-    this.animeId = 0,
+    this.oldAnime,
     this.keyword = "",
     required this.climbWebStie,
     this.enableSourceSelector = true,
@@ -56,7 +57,7 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
     super.initState();
     addDefaultTag = tags[0];
     curWebsite = widget.climbWebStie;
-    ismigrate = widget.animeId > 0 ? true : false;
+    ismigrate = widget.oldAnime?.isCollected() == true;
 
     // 如果传入了关键字，说明是更新封面，此时需要直接爬取
     if (widget.keyword.isNotEmpty) {
@@ -185,7 +186,10 @@ class _AnimeClimbOneWebsiteState extends State<AnimeClimbOneWebsite> {
             }
             // 迁移动漫
             else if (ismigrate) {
-              showDialogOfConfirmMigrate(context, widget.animeId, anime);
+              RouteUtil.materialTo(
+                  context,
+                  MigrateComparePage(
+                      oldAnime: widget.oldAnime!, newAnime: anime));
             } else if (anime.isCollected()) {
               AppLog.info("进入动漫详细页面${anime.animeId}");
               // 不为0，说明已添加，点击进入动漫详细页面

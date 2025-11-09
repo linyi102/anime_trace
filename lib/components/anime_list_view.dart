@@ -1,6 +1,7 @@
+import 'package:animetrace/pages/network/sources/pages/migrate/migrate_compare_page.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_custom_cover.dart';
-import 'package:animetrace/components/dialog/dialog_confirm_migrate.dart';
 import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/models/anime.dart';
@@ -10,7 +11,7 @@ import 'package:animetrace/widgets/responsive.dart';
 
 class AnimeHorizontalListView extends StatefulWidget {
   final List<Anime> animes;
-  final int animeId;
+  final Anime? oldAnime;
   final Future<bool> Function() callback;
   final void Function(Anime anime)? onLongPressItem;
   final AnimeCoverStyle Function(AnimeCoverStyle style)? styleBuilder;
@@ -18,7 +19,7 @@ class AnimeHorizontalListView extends StatefulWidget {
   const AnimeHorizontalListView({
     Key? key,
     required this.animes,
-    this.animeId = 0,
+    this.oldAnime,
     required this.callback,
     this.onLongPressItem,
     this.styleBuilder,
@@ -35,7 +36,7 @@ class _AnimeHorizontalListViewState extends State<AnimeHorizontalListView> {
   @override
   void initState() {
     super.initState();
-    ismigrate = widget.animeId > 0 ? true : false;
+    ismigrate = widget.oldAnime?.isCollected() == true;
   }
 
   @override
@@ -76,7 +77,7 @@ class _AnimeHorizontalListViewState extends State<AnimeHorizontalListView> {
           itemCount: widget.animes.length,
           itemBuilder: (context, index) {
             final anime = widget.animes[index];
-            AppLog.debug('$coverWidth listview horizontal build $index');
+            // AppLog.debug('$coverWidth listview horizontal build $index');
             return Column(
               // 使用Column保证封面靠上
               children: [
@@ -97,8 +98,8 @@ class _AnimeHorizontalListViewState extends State<AnimeHorizontalListView> {
 
   void _onTapAnime(Anime anime, int animeIndex) {
     if (ismigrate) {
-      // 迁移动漫提示
-      showDialogOfConfirmMigrate(context, widget.animeId, anime);
+      RouteUtil.materialTo(context,
+          MigrateComparePage(oldAnime: widget.oldAnime!, newAnime: anime));
     } else if (anime.isCollected()) {
       AppLog.info("进入动漫详细页面${anime.animeId}");
       Navigator.of(context).push(

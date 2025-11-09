@@ -6,6 +6,7 @@ class AnimeSortCond {
     SortCondItem(showName: "最后修改清单时间", columnName: "last_mode_tag_time"),
     SortCondItem(showName: "第1集观看时间", columnName: "first_episode_watch_time"),
     SortCondItem(showName: "最近观看时间", columnName: "recent_watch_time"),
+    SortCondItem(showName: "集数", columnName: "anime_episode_cnt"),
   ]; // 给出所有排序条件
   bool desc; // 是否倒序
   int specSortColumnIdx; // 指定按照哪个列排序

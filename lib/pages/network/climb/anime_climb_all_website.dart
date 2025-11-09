@@ -19,10 +19,10 @@ import 'package:animetrace/widgets/common_scaffold_body.dart';
 import '../../../dao/anime_dao.dart';
 
 class AnimeClimbAllWebsite extends StatefulWidget {
-  final int animeId; // 需要迁移的动漫id
+  final Anime? oldAnime; // 需要迁移的动漫
   final String keyword; // 搜索关键字
 
-  const AnimeClimbAllWebsite({this.animeId = 0, this.keyword = "", Key? key})
+  const AnimeClimbAllWebsite({this.oldAnime, this.keyword = "", Key? key})
       : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   void initState() {
     super.initState();
     addDefaultTag = tags[0];
-    ismigrate = widget.animeId > 0 ? true : false;
+    ismigrate = widget.oldAnime?.isCollected() == true;
     lastInputKeyword = widget.keyword;
     inputKeywordController.text = lastInputKeyword;
 
@@ -251,7 +251,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                 // 查询好后显示结果
                 ? AnimeHorizontalListView(
                     animes: mixedAnimes[webstie.name] ?? [],
-                    animeId: widget.animeId,
+                    oldAnime: widget.oldAnime,
                     callback: _generateMixedAnimesAllWebsite,
                     onLongPressItem: (anime) {
                       LaunchUrlUtil.launch(
@@ -274,7 +274,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     // 进入详细搜索页
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return AnimeClimbOneWebsite(
-        animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
+        oldAnime: widget.oldAnime, // 进入详细搜索页迁移动漫，也需要传入动漫id
         keyword: lastInputKeyword,
         climbWebStie: climbWebsites[websiteIndex],
       );
@@ -372,7 +372,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
         if (customAnimes.isNotEmpty)
           AnimeHorizontalListView(
             animes: customAnimes,
-            animeId: widget.animeId,
+            oldAnime: widget.oldAnime,
             callback: _generateMixedAnimesAllWebsite,
           )
       ],
