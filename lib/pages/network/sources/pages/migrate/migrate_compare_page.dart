@@ -65,6 +65,8 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             title: '封面',
             value: config.coverIsNew,
             onChanged: (value) => setState(() => config.coverIsNew = value),
+            isEqual:
+                widget.oldAnime.animeCoverUrl == widget.newAnime.animeCoverUrl,
             oldWidget: _buildCover(widget.oldAnime.animeCoverUrl),
             newWidget: _buildCover(widget.newAnime.animeCoverUrl),
           ),
@@ -72,6 +74,7 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             title: '名字',
             value: config.nameIsNew,
             onChanged: (value) => setState(() => config.nameIsNew = value),
+            isEqual: widget.oldAnime.animeName == widget.newAnime.animeName,
             oldWidget: Text(widget.oldAnime.animeName),
             newWidget: Text(widget.newAnime.animeName),
           ),
@@ -80,6 +83,7 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             value: config.anotherNameIsNew,
             onChanged: (value) =>
                 setState(() => config.anotherNameIsNew = value),
+            isEqual: widget.oldAnime.nameAnother == widget.newAnime.nameAnother,
             oldWidget: Text(widget.oldAnime.nameAnother),
             newWidget: Text(widget.newAnime.nameAnother),
           ),
@@ -87,6 +91,7 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             title: '地区',
             value: config.areaIsNew,
             onChanged: (value) => setState(() => config.areaIsNew = value),
+            isEqual: widget.oldAnime.area == widget.newAnime.area,
             oldWidget: Text(widget.oldAnime.area),
             newWidget: Text(widget.newAnime.area),
           ),
@@ -94,6 +99,7 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             title: '分类',
             value: config.categoryIsNew,
             onChanged: (value) => setState(() => config.categoryIsNew = value),
+            isEqual: widget.oldAnime.category == widget.newAnime.category,
             oldWidget: Text(widget.oldAnime.category),
             newWidget: Text(widget.newAnime.category),
           ),
@@ -102,6 +108,8 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             value: config.premiereTimeIsNew,
             onChanged: (value) =>
                 setState(() => config.premiereTimeIsNew = value),
+            isEqual: TimeUtil.getYMD(widget.oldAnime.premiereTime) ==
+                TimeUtil.getYMD(widget.newAnime.premiereTime),
             oldWidget: Text(TimeUtil.getYMD(widget.oldAnime.premiereTime)),
             newWidget: Text(TimeUtil.getYMD(widget.newAnime.premiereTime)),
           ),
@@ -110,6 +118,8 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             value: config.playStatusIsNew,
             onChanged: (value) =>
                 setState(() => config.playStatusIsNew = value),
+            isEqual: widget.oldAnime.getPlayStatus() ==
+                widget.newAnime.getPlayStatus(),
             oldWidget: Text(widget.oldAnime.getPlayStatus().text),
             newWidget: Text(widget.newAnime.getPlayStatus().text),
           ),
@@ -117,19 +127,39 @@ class _MigrateComparePageState extends State<MigrateComparePage> {
             title: '搜索源',
             value: config.urlIsNew,
             onChanged: (value) => setState(() => config.urlIsNew = value),
-            oldWidget: GestureDetector(
-                onTap: () => LaunchUrlUtil.launch(
-                    context: context, uriStr: widget.oldAnime.animeUrl),
-                child: Text(widget.oldAnime.getAnimeSource())),
-            newWidget: GestureDetector(
-                onTap: () => LaunchUrlUtil.launch(
-                    context: context, uriStr: widget.newAnime.animeUrl),
-                child: Text(widget.newAnime.getAnimeSource())),
+            isEqual: widget.oldAnime.animeUrl == widget.newAnime.animeUrl,
+            oldWidget: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(widget.oldAnime.getAnimeSource()),
+                IconButton(
+                  onPressed: () {
+                    LaunchUrlUtil.launch(
+                        context: context, uriStr: widget.oldAnime.animeUrl);
+                  },
+                  icon: const Icon(Icons.open_in_new, size: 20),
+                )
+              ],
+            ),
+            newWidget: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(widget.newAnime.getAnimeSource()),
+                IconButton(
+                  onPressed: () {
+                    LaunchUrlUtil.launch(
+                        context: context, uriStr: widget.newAnime.animeUrl);
+                  },
+                  icon: const Icon(Icons.open_in_new, size: 20),
+                )
+              ],
+            ),
           ),
           _CompareTile(
             title: '简介',
             value: config.descIsNew,
             onChanged: (value) => setState(() => config.descIsNew = value),
+            isEqual: widget.oldAnime.animeDesc == widget.newAnime.animeDesc,
             oldWidget: Text(widget.oldAnime.animeDesc),
             newWidget: Text(widget.newAnime.animeDesc),
           ),
@@ -174,15 +204,17 @@ class _CompareTile extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
-    this.oldWidget,
-    this.newWidget,
-  }) : assert((oldWidget == null) == (newWidget == null));
+    required this.isEqual,
+    required this.oldWidget,
+    required this.newWidget,
+  });
 
   final String title;
   final bool value;
   final ValueChanged<bool> onChanged;
-  final Widget? oldWidget;
-  final Widget? newWidget;
+  final Widget oldWidget;
+  final Widget newWidget;
+  final bool isEqual;
 
   @override
   Widget build(BuildContext context) {
@@ -202,38 +234,50 @@ class _CompareTile extends StatelessWidget {
                 Expanded(
                     child: GestureDetector(
                   onTap: () => onChanged(false),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Radio(
-                        value: false,
-                        groupValue: value,
-                        onChanged: (value) {
-                          if (value == null) return;
-                          onChanged(value);
-                        },
-                      ),
-                      if (oldWidget != null) oldWidget!,
-                    ],
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Radio(
+                          value: false,
+                          groupValue: value,
+                          onChanged: (value) {
+                            if (value == null) return;
+                            onChanged(value);
+                          },
+                        ),
+                        Flexible(child: oldWidget),
+                      ],
+                    ),
                   ),
                 )),
                 const SizedBox(width: 16),
                 Expanded(
                     child: GestureDetector(
                   onTap: () => onChanged(true),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Radio(
-                        value: true,
-                        groupValue: value,
-                        onChanged: (value) {
-                          if (value == null) return;
-                          onChanged(value);
-                        },
-                      ),
-                      if (newWidget != null) newWidget!,
-                    ],
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isEqual
+                          ? null
+                          : Theme.of(context).colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Radio(
+                          value: true,
+                          groupValue: value,
+                          onChanged: (value) {
+                            if (value == null) return;
+                            onChanged(value);
+                          },
+                        ),
+                        Flexible(child: newWidget)
+                      ],
+                    ),
                   ),
                 )),
               ],
