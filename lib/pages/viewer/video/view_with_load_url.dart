@@ -42,10 +42,12 @@ class _VideoPlayerWithLoadUrlPageState
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
         await Global.restoreDevice();
-        return true;
+        Navigator.pop(context);
       },
       child: Theme(
         data: Theme.of(context).copyWith(scaffoldBackgroundColor: Colors.black),
