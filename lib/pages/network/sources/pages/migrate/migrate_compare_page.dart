@@ -234,38 +234,37 @@ class _CompareTile extends StatelessWidget {
                 Expanded(
                     child: GestureDetector(
                   onTap: () => onChanged(false),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Radio(
-                          value: false,
-                          groupValue: value,
-                          onChanged: (value) {
-                            if (value == null) return;
-                            onChanged(value);
-                          },
-                        ),
-                        Flexible(child: oldWidget),
-                      ],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Radio(
+                        value: false,
+                        groupValue: value,
+                        onChanged: (value) {
+                          if (value == null) return;
+                          onChanged(value);
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                        child: oldWidget,
+                      ),
+                    ],
                   ),
                 )),
                 const SizedBox(width: 16),
                 Expanded(
                     child: GestureDetector(
                   onTap: () => onChanged(true),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: isEqual
                           ? null
                           : Theme.of(context).colorScheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(AppTheme.cardRadius),
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Radio(
                           value: true,
@@ -275,7 +274,10 @@ class _CompareTile extends StatelessWidget {
                             onChanged(value);
                           },
                         ),
-                        Flexible(child: newWidget)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                          child: newWidget,
+                        )
                       ],
                     ),
                   ),
