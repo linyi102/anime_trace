@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
-import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sp_util.dart';
@@ -130,8 +129,6 @@ class BackupService extends GetxService {
         } else {
           // 还原成功
           ToastUtil.showText("已还原最新备份");
-          // 重绘动漫收藏页，显示最新添加的动漫
-          ChecklistController.to.restore();
         }
       },
       onTaskError: (e) {
