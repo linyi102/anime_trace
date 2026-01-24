@@ -128,33 +128,45 @@ class ClimbBangumi with Climb {
   /// 查询用户某个收藏下的列表
   @override
   Future<UserCollection> climbUserCollection(
-      String userId, SiteCollectionTab siteCollectionTab,
-      {int page = 1}) async {
-    String url =
-        "$userCollBaseUrl/$userId/${siteCollectionTab.word}?page=$page";
+    String userId,
+    SiteCollectionTab siteCollectionTab, {
+    int page = 1,
+  }) async {
+    final collection = UserCollection(totalCnt: 0, animes: []);
+    // TODO 重构
+    final type = switch (siteCollectionTab.word) {
+      'wish' => 1,
+      'collect' => 2,
+      'do' => 3,
+      'on_hold' => 4,
+      'dropped' => 5,
+      _ => 0,
+    };
 
-    UserCollection userCollection = UserCollection(totalCnt: 0, animes: []);
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return userCollection;
-    }
+    final r = await repository.fetchCollections(
+        username: userId, type: type, pageNo: page - 1, pageSize: 30);
+    collection.totalCnt = r.total;
+    collection.animes = r.list.map((e) {
+      String info = [
+        if (e.date != null) TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
+        if (e.eps != null) '${e.eps.toString()} 集',
+      ].join(' / ');
 
-    // 获取该tab动漫数量
-    // <li><a href="/anime/list/509755/wish" ><span>想看        (44)</span></a></li>                        <li><a href="/anime/list/509755/collect" class="focus"><span>看过        (138)</span></a></li>                        <li><a href="/anime/list/509755/do" ><span>在看        (56)</span></a></li>                        <li><a href="/anime/list/509755/on_hold" ><span>搁置        (6)</span></a></li>                        <li><a href="/anime/list/509755/dropped" ><span>抛弃        (1)</span></a></li>        </ul>
-    // 懒惰匹配 wish.*?\([0-9]*\)
-    // 可以匹配到 wish" ><span>想看        (44)
-    var navSubTabs = document.getElementsByClassName("navSubTabs")[0];
-    var str = RegExp("${siteCollectionTab.word}.*?\\([0-9]*\\)")
-        .firstMatch(navSubTabs.innerHtml)?[0];
-    // TODO 获取数量失败，改为API查询用户收藏
-    if (str != null) {
-      str = str.substring(str.indexOf("(") + 1, str.indexOf(")"));
-      userCollection.totalCnt = int.tryParse(str) ?? 0;
-    }
+      return Anime(
+        animeName: (e.nameCn ?? '').isNotEmpty ? e.nameCn! : (e.name ?? ''),
+        nameOri: e.name ?? '',
+        animeCoverUrl: e.images?.medium ?? '',
+        animeUrl: '$baseUrl/subject/${e.id}',
+        premiereTime: e.date == null
+            ? ''
+            : TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
+        animeDesc: e.summary ?? '',
+        tempInfo: info,
+      );
+    }).toList();
 
-    // 在原来基础上添加(加载更多)，所以使用addAll，而非赋值
-    userCollection.animes.addAll(parseAnimeListByBrowserItemList(document));
-    return userCollection;
+    // TODO 收藏过多时400
+    return collection;
   }
 
   List<Anime> parseAnimeListByBrowserItemList(Document document) {

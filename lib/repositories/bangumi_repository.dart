@@ -78,4 +78,34 @@ class BangumiRepository {
       dataType: ResultDataType.responseBody,
     );
   }
+
+  /// 获取用户收藏
+  ///
+  /// - [type] 1: 想看 2: 看过 3: 在看 4: 搁置 5: 抛弃
+  /// - [pageNo] 从0开始
+  Future<({List<BgmSubject> list, int total})> fetchCollections({
+    required String username,
+    required int type,
+    required int pageNo,
+    required int pageSize,
+  }) async {
+    final r = await DioUtil.get(
+        '${BangumiApi.baseUrl}/v0/users/$username/collections',
+        headers: BangumiApi.headers,
+        query: {
+          'type': type,
+          'limit': pageSize,
+          'offset': pageNo * pageSize,
+        });
+    if (r.isFailure) return (list: <BgmSubject>[], total: 0);
+
+    return (
+      list: r.toModelList<BgmSubject>(
+        transform: (json) => BgmSubject.fromMap(json['subject']),
+        dataType: ResultDataType.responseBodyData,
+        onError: () => [],
+      ),
+      total: r.data.data['total'] as int? ?? 0,
+    );
+  }
 }

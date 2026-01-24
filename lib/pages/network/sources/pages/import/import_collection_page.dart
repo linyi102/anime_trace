@@ -294,16 +294,18 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       width: size,
       child: Stack(
         children: [
-          // if (icc.quickCollecting)
-          SizedBox(
-            height: size,
-            width: size,
-            child: CircularProgressIndicator(
-              strokeWidth: 4,
-              backgroundColor:
-                  Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
+          if (icc.quickCollecting)
+            SizedBox(
+              height: size,
+              width: size,
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacityFactor(0.3),
+              ),
             ),
-          ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)
         ],
       ),
