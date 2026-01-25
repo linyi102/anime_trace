@@ -1,4 +1,4 @@
-import 'package:animetrace/dao/config_dao.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -91,7 +91,7 @@ class SearchHistoryController extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    _keywords = await ConfigDao.getSearchHistoryKeywords();
+    _keywords = await SettingService.to.getSearchHistoryKeywords();
     notifyListeners();
   }
 
@@ -104,18 +104,18 @@ class SearchHistoryController extends ChangeNotifier {
       _keywords = _keywords.sublist(_keywords.length - maxKeywordCnt);
     }
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 
   void removeKeyword(String keyword) {
     _keywords.remove(keyword);
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 
   void clearKeywords() {
     _keywords.clear();
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 }
