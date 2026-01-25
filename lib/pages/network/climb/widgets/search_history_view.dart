@@ -18,7 +18,7 @@ class SearchHistoryView extends StatelessWidget {
       builder: (context, child) {
         if (controller._keywords.isEmpty) return const SizedBox();
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
               title: const Text(
@@ -30,8 +30,8 @@ class SearchHistoryView extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline_outlined)),
             ),
             Container(
-              constraints: BoxConstraints(
-                  maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
+              constraints:
+                  BoxConstraints(maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SingleChildScrollView(
                 child: Wrap(
@@ -84,7 +84,7 @@ class SearchHistoryView extends StatelessWidget {
 
 class SearchHistoryController extends ChangeNotifier {
   List<String> _keywords = [];
-  final int maxKeywordCnt = 5;
+  final int maxKeywordCnt = 20;
 
   SearchHistoryController() {
     _init();
