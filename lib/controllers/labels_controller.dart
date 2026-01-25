@@ -1,6 +1,6 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:animetrace/utils/extensions/list.dart';
-import 'package:animetrace/utils/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/label_dao.dart';
 import 'package:animetrace/utils/log.dart';
@@ -31,14 +31,14 @@ class LabelsController extends GetxController {
       SortMode(label: '名称', storeIndex: 1, sort: _sortByName),
       customSortMode,
     ],
-    defaultModeIndex: SettingsUtil.get(SettingsEnum.labelSortMode),
-    defaultReverse: SettingsUtil.get(SettingsEnum.labelSortReverse),
+    defaultModeIndex: SettingService.to.getLabelSortMode(),
+    defaultReverse: SettingService.to.getLabelSortReverse(),
     getOriList: () => labels,
     onSorted: (sortedList) => labels.value = sortedList,
     onModeChanged: (mode) =>
-        SettingsUtil.set(SettingsEnum.labelSortMode, mode.storeIndex),
+        SettingService.to.setLabelSortMode(mode.storeIndex),
     onReverseChanged: (isReverse) =>
-        SettingsUtil.set(SettingsEnum.labelSortReverse, isReverse),
+        SettingService.to.setLabelSortReverse(isReverse),
   );
 
   List<String> get recommendedLabels => [
