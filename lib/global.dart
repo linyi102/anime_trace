@@ -112,9 +112,11 @@ class Global {
   }
 
   static exitApp() {
-    SystemNavigator.pop();
-    // 不推荐
-    // exit(0);
+    if (PlatformUtil.isDesktop) {
+      exit(0);
+    } else {
+      SystemNavigator.pop();
+    }
   }
 
   /// 获取用于访问豆瓣图片的header，避免403
