@@ -63,6 +63,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       // 迁移或者网络搜索更多
       if (ismigrate || widget.keyword.isNotEmpty) {
         _climbAnime(keyword: widget.keyword);
+        _generateCustomAnimes();
       }
     });
   }

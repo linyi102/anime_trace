@@ -115,7 +115,6 @@ class _AnimeHorizontalListViewState extends State<AnimeHorizontalListView> {
         // setState(() {});
         widget.animes[animeIndex] = value;
         widget.callback().then((value) {
-          AppLog.info("callback.then");
           setState(() {});
         });
       });

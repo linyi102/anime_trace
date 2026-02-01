@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:animations/animations.dart';
 import 'package:animetrace/routes/route_log_observer.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/widgets/device_preview_screenshot_section.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -108,6 +110,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   final themeController = Get.put(ThemeController());
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +120,7 @@ class MyAppState extends State<MyApp> {
       hideFooterWhenNotFull: true,
       child: Obx(() {
         return GetMaterialApp(
+          navigatorKey: navigatorKey,
           home: const WindowWrapper(
             child: MainScreen(),
           ),
@@ -134,6 +138,16 @@ class MyAppState extends State<MyApp> {
             child = BotToastInit()(context, child);
             // 全局点击空白处隐藏软键盘
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
+            // 桌面端监听鼠标侧键返回路由
+            if (PlatformUtil.isDesktop) {
+              child = _MouseEventWrapper(
+                child: child,
+                onBackMouseButtonUp: () {
+                  final c = navigatorKey.currentContext;
+                  if (c != null) Navigator.maybePop(c);
+                },
+              );
+            }
             return child;
           },
           navigatorObservers: [
@@ -143,7 +157,7 @@ class MyAppState extends State<MyApp> {
           // 后台应用显示名称
           title: '漫迹',
           // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-          scrollBehavior: MyCustomScrollBehavior(),
+          scrollBehavior: _MyCustomScrollBehavior(),
           // 主题
           themeMode: themeController.getThemeMode(),
           theme: _genThemeData(),
@@ -247,11 +261,38 @@ class MyAppState extends State<MyApp> {
   }
 }
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
+class _MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Enable scrolling with mouse dragging
   @override
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       };
+}
+
+class _MouseEventWrapper extends StatelessWidget {
+  const _MouseEventWrapper({
+    required this.child,
+    this.onBackMouseButtonUp,
+  });
+  final Widget child;
+  final void Function()? onBackMouseButtonUp;
+
+  @override
+  Widget build(BuildContext context) {
+    int? lastButton;
+
+    return Listener(
+      onPointerDown: (event) {
+        lastButton = event.buttons;
+      },
+      onPointerUp: (event) {
+        if (lastButton == kBackMouseButton) {
+          onBackMouseButtonUp?.call();
+        }
+        lastButton = null;
+      },
+      child: child,
+    );
+  }
 }

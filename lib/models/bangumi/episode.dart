@@ -37,13 +37,14 @@ class BgmEpisode {
   String toJson() => json.encode(toMap());
 
   factory BgmEpisode.fromMap(Map<String, dynamic> json) => BgmEpisode(
-        airdate:
-            json["airdate"] == null ? null : DateTime.tryParse(json["airdate"]),
+        // NOTE: 部分放送时间的月或日只有一位，因此无法使用 DateTime.tryParse
+        airdate: _parseDate(json["airdate"]),
         name: json["name"],
         nameCn: json["name_cn"],
         duration: json["duration"],
         desc: json["desc"],
-        ep: json["ep"],
+        // NOTE: 部分 type 为 0 的 ep 是浮点数 (例如 762.5)
+        ep: json["ep"] is int ? json["ep"] : 0,
         sort: json["sort"],
         id: json["id"],
         subjectId: json["subject_id"],
@@ -84,4 +85,17 @@ enum BgmEpisodeType {
   final String label;
   final int value;
   const BgmEpisodeType(this.label, this.value);
+}
+
+DateTime? _parseDate(String? input) {
+  if (input == null || !input.contains('-')) return null;
+
+  final parts = input.split('-');
+  if (parts.length != 3) return null;
+
+  final y = int.parse(parts[0]);
+  final m = int.parse(parts[1]);
+  final d = int.parse(parts[2]);
+
+  return DateTime(y, m, d);
 }

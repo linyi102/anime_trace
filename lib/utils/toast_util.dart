@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_dialog.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
+import 'package:get/get.dart';
 
 class ToastUtil {
   /// 对话框
@@ -15,21 +16,17 @@ class ToastUtil {
     required Widget Function(void Function() close) builder,
     bool clickClose = true,
   }) {
-    BotToast.showCustomLoading(
-      animationDuration: const Duration(milliseconds: 200),
-      animationReverseDuration: const Duration(milliseconds: 200),
-      clickClose: clickClose,
-      toastBuilder: (cancelFunc) {
-        return WillPopScope(
-          child: builder(cancelFunc),
-          onWillPop: () async {
-            // 如果允许点击对话框外区域，或点击虚拟返回键关闭对话框，则执行关闭
-            if (clickClose) cancelFunc();
-            // 始终返回false，避免退出页面
-            return false;
-          },
-        );
-      },
+    Get.dialog(
+      PopScope(
+        child: builder(Get.back),
+        canPop: clickClose,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          // 如果允许点击对话框外区域，或点击虚拟返回键关闭对话框，则执行关闭
+          if (clickClose) Get.back();
+        },
+      ),
+      barrierDismissible: clickClose,
     );
   }
 

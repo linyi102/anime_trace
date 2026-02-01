@@ -220,6 +220,7 @@ class _SourceDetailState extends State<SourceDetail> {
                   }));
                 },
               ),
+              // NOTE: 暂时隐藏导入功能，等后续支持 Bangumi 后放开
               if (curClimbWebsite.supportImport) _buildImportDataTile(),
               ListTile(
                 title: const Text("迁移动漫"),
