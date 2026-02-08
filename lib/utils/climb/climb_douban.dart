@@ -40,65 +40,51 @@ class ClimbDouban with Climb {
 
   @override
   Future<Anime> climbAnimeInfo(Anime anime) async {
-    var document = await dioGetAndParse(anime.animeUrl);
-    if (document == null) return anime;
+    final idMatch = RegExp(r'subject/(\d+)').firstMatch(anime.animeUrl);
+    if (idMatch == null) return anime;
 
-    var mainpicElement = document.getElementById("mainpic");
-    anime.animeCoverUrl =
-        mainpicElement?.getElementsByTagName("img")[0].attributes["src"] ?? "";
+    final subjectId = idMatch.group(1)!;
 
-    anime.animeName = document
-        .getElementsByTagName("h1")[0]
-        .getElementsByTagName("span")[0]
-        .innerHtml;
+    final result = await DioUtil.get(
+      'https://m.douban.com/rexxar/api/v2/subject/$subjectId',
+      referer: 'https://www.douban.com/search',
+    );
 
-    // 简介
-    final intraEl = document.getElementById('link-report-intra');
-    if (intraEl != null) {
-      for (final el in intraEl.children) {
-        if (el.attributes['property'] == 'v:summary') {
-          anime.animeDesc =
-              el.innerHtml.split('<br>').map((e) => e.trim()).join('\n');
-          break;
-        }
-      }
+    final json = Json.fromDynamic(result.data.data);
+    if (json.exception != null) return anime;
+
+    // 基础信息
+    anime.animeName = json['title'].string ?? anime.animeName;
+    anime.animeDesc = json['intro'].string ?? '';
+    anime.animeCoverUrl = json['cover_url'].string ??
+        json['pic']['large'].string ??
+        anime.animeCoverUrl;
+
+    // 集数
+    anime.animeEpisodeCnt =
+        json['episodes_count'].integer ?? anime.animeEpisodeCnt;
+
+    // 首播时间
+    final pubdates = json['pubdate'].listOf<String>();
+    if (pubdates != null && pubdates.isNotEmpty) {
+      // 例如：2014-04-04(日本)
+      anime.premiereTime = RegexpUtil.extractDate(pubdates.first) ?? '';
+    } else {
+      anime.premiereTime = json['year'].string ?? '';
     }
 
-    var infoElement = document.getElementById("info");
-    // AppLog.info("infoElement.innerHtml=${infoElement?.innerHtml}");
-    RegExp(r'<span class="pl">.*<br')
-        .allMatches(infoElement?.innerHtml ?? "")
-        .forEach((regExpMatch) {
-      String line = regExpMatch[0] ?? "";
-      // 集数可能不止2位数，因此通过以下方式定位。其他同理
-      // start+2是为了跳过"> "
-      int start = line.lastIndexOf("> ") + 2, end = line.lastIndexOf("<br");
-      if (line.contains("集数")) {
-        // <span class="pl">集数:</span> 13<br
-        // AppLog.info("集数=${line.substring(start, end)}");
-        anime.animeEpisodeCnt = int.parse(line.substring(start, end));
-      } else if (line.contains("又名")) {
-        // AppLog.info("又名=${line.substring(start, end)}");
-        anime.nameAnother = line.substring(start, end);
-      } else if (line.contains("制片国家/地区")) {
-        // AppLog.info("地区=${line.substring(start, end)}");
-        anime.area = line.substring(start, end);
-      }
-    });
-
-    if (infoElement != null) {
-      var plElements = infoElement.getElementsByClassName("pl");
-      for (var plElement in plElements) {
-        String innerHtml = plElement.innerHtml;
-        if (innerHtml.contains(RegExp('上映日期|首播'))) {
-          anime.premiereTime =
-              RegexpUtil.extractDate(plElement.nextElementSibling?.innerHtml) ??
-                  '';
-        } else if (innerHtml.contains("作者")) {
-          anime.authorOri = plElement.nextElementSibling?.innerHtml ?? "";
-        }
-      }
+    // 地区
+    final countries = json['countries'].listOf<String>();
+    if (countries != null && countries.isNotEmpty) {
+      anime.area = countries.first;
     }
+
+    // 别名
+    final akaList = json['aka'].listOf<String>();
+    if (akaList != null && akaList.isNotEmpty) {
+      anime.nameAnother = akaList.join(' / ');
+    }
+
     return anime;
   }
 
