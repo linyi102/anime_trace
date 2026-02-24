@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,13 +67,15 @@ class Global {
   }
 
   static _putGetController() async {
+    Get.lazyPut(() => BackupService());
+    Get.lazyPut(() => AnimeService());
+    Get.lazyPut(() => SettingService());
+
     Get.lazyPut(
         () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
-    Get.lazyPut(() => BackupService());
     Get.lazyPut(() => RemoteController());
-    Get.lazyPut(() => AnimeService());
     Get.put(AppUpgradeController());
 
     final checklistController = ChecklistController();
@@ -109,9 +112,11 @@ class Global {
   }
 
   static exitApp() {
-    SystemNavigator.pop();
-    // 不推荐
-    // exit(0);
+    if (PlatformUtil.isDesktop) {
+      exit(0);
+    } else {
+      SystemNavigator.pop();
+    }
   }
 
   /// 获取用于访问豆瓣图片的header，避免403

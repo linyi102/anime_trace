@@ -1,10 +1,9 @@
-
 import 'package:flutter/material.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/models/page_switch_animation.dart';
 import 'package:animetrace/pages/settings/widgets/main_tab_layout_setting.dart';
 import 'package:animetrace/utils/platform.dart';
-import 'package:animetrace/utils/settings.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/time_util.dart';
@@ -86,18 +85,16 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                 ToastUtil.showText("重置成功");
               },
             ),
-            if (PlatformUtil.isMobile)
-              Obx(
-                () => SwitchListTile(
-                  title: const Text('隐藏底部栏文字'),
-                  value: ThemeController.to.hideMobileBottomLabel.value,
-                  onChanged: (value) {
-                    ThemeController.to.hideMobileBottomLabel.value = value;
-                    SettingsUtil.set(
-                        SettingsEnum.hideMobileBottomLabel, value);
-                  },
-                ),
+            Obx(
+              () => SwitchListTile(
+                title: const Text('隐藏底部栏文字'),
+                value: ThemeController.to.hideMobileBottomLabel.value,
+                onChanged: (value) {
+                  ThemeController.to.hideMobileBottomLabel.value = value;
+                  SettingService.to.setHideMobileBottomLabel(value);
+                },
               ),
+            ),
           ],
         ),
         SettingCard(

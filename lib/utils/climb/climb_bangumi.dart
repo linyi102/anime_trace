@@ -92,19 +92,20 @@ class ClimbBangumi with Climb {
     ];
     final now = DateTime.now();
     final episodes = allEpisodes
-        .where((episode) => needEpisodeTypeValues.contains(episode.type));
+        .where((episode) => needEpisodeTypeValues.contains(episode.type))
+        // 去除 type=0 的 sort=*.5 的特殊集。type=1 (sp) 正常解析
+        // 例如：名侦探柯南 ep 762.5 sort 762.5 type 0
+        .where((episode) => !(episode.type == BgmEpisodeType.main.value &&
+            episode.sort.toString().endsWith('.5')));
     final playedEpisodes =
         episodes.where((episode) => episode.airdate?.isBefore(now) ?? false);
-    if (allEpisodes.length >= repository.episodesLimit) {
-      anime.playStatus = PlayStatus.unknown.text;
-    } else {
-      anime.animeEpisodeCnt = playedEpisodes.length;
-      anime.playStatus = playedEpisodes.isEmpty
-          ? PlayStatus.notStarted.text
-          : playedEpisodes.length < episodes.length
-              ? PlayStatus.playing.text
-              : PlayStatus.finished.text;
-    }
+
+    anime.animeEpisodeCnt = playedEpisodes.length;
+    anime.playStatus = playedEpisodes.isEmpty
+        ? PlayStatus.notStarted.text
+        : playedEpisodes.length < episodes.length
+            ? PlayStatus.playing.text
+            : PlayStatus.finished.text;
 
     return anime;
   }

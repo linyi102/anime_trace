@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:animetrace/utils/settings.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/values/values.dart';
@@ -23,7 +23,7 @@ class ThemeController extends GetxController {
 
   /// 隐藏移动端底部标签栏
   final hideMobileBottomLabel =
-      SettingsUtil.get<bool>(SettingsEnum.hideMobileBottomLabel).obs;
+      SettingService.to.getHideMobileBottomLabel().obs;
 
   /// 页面切换动画
   final pageSwitchAnimation = SpProfile.getPageSwitchAnimation().obs;

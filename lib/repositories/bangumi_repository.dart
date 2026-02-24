@@ -5,7 +5,7 @@ import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
 
 class BangumiRepository {
-  final episodesLimit = 100;
+  final episodesLimit = 1000;
 
   Future<BgmSubject?> fetchSubject(String subjectId) async {
     final result = await DioUtil.get(BangumiApi.subject(subjectId),
@@ -18,19 +18,29 @@ class BangumiRepository {
   }
 
   Future<List<BgmEpisode>> fetchEpisodes(String subjectId) async {
-    final result = await DioUtil.get(
-      BangumiApi.episodes,
-      headers: BangumiApi.headers,
-      query: {
-        'subject_id': subjectId,
-        'limit': episodesLimit,
-        'offset': 0,
-      },
-    );
-    return result.toModelList(
-      transform: BgmEpisode.fromMap,
-      dataType: ResultDataType.responseBodyData,
-    );
+    final List<BgmEpisode> episodes = [];
+
+    while (true) {
+      final r = await DioUtil.get(
+        BangumiApi.episodes,
+        headers: BangumiApi.headers,
+        query: {
+          'subject_id': subjectId,
+          'limit': episodesLimit,
+          'offset': episodes.length,
+        },
+      );
+      final eps = r.toModelList(
+        transform: BgmEpisode.fromMap,
+        dataType: ResultDataType.responseBodyData,
+      );
+      episodes.addAll(eps);
+
+      if (eps.length < episodesLimit || episodes.length > 5000) break;
+    }
+
+
+    return episodes;
   }
 
   Future<List<BgmCharacter>> fetchCharacters(String subjectId) async {

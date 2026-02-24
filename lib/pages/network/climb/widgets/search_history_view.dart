@@ -1,4 +1,4 @@
-import 'package:animetrace/dao/config_dao.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,7 @@ class SearchHistoryView extends StatelessWidget {
       builder: (context, child) {
         if (controller._keywords.isEmpty) return const SizedBox();
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
               title: const Text(
@@ -30,8 +30,8 @@ class SearchHistoryView extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline_outlined)),
             ),
             Container(
-              constraints: BoxConstraints(
-                  maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
+              constraints:
+                  BoxConstraints(maxHeight: 96 + (AppTheme.wrapRunSpacing * 2)),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: SingleChildScrollView(
                 child: Wrap(
@@ -84,14 +84,14 @@ class SearchHistoryView extends StatelessWidget {
 
 class SearchHistoryController extends ChangeNotifier {
   List<String> _keywords = [];
-  final int maxKeywordCnt = 5;
+  final int maxKeywordCnt = 20;
 
   SearchHistoryController() {
     _init();
   }
 
   Future<void> _init() async {
-    _keywords = await ConfigDao.getSearchHistoryKeywords();
+    _keywords = await SettingService.to.getSearchHistoryKeywords();
     notifyListeners();
   }
 
@@ -104,18 +104,18 @@ class SearchHistoryController extends ChangeNotifier {
       _keywords = _keywords.sublist(_keywords.length - maxKeywordCnt);
     }
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 
   void removeKeyword(String keyword) {
     _keywords.remove(keyword);
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 
   void clearKeywords() {
     _keywords.clear();
     notifyListeners();
-    ConfigDao.setSearchHistoryKeywords(_keywords);
+    SettingService.to.setSearchHistoryKeywords(_keywords);
   }
 }
