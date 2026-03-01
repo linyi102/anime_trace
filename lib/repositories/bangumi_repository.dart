@@ -93,6 +93,7 @@ class BangumiRepository {
   ///
   /// - [type] 1: 想看 2: 看过 3: 在看 4: 搁置 5: 抛弃
   /// - [pageNo] 从0开始
+  /// - [pageSize] 最大100
   Future<({List<BgmSubject> list, int total})> fetchCollections({
     required String username,
     required int type,

@@ -1,4 +1,5 @@
 import 'package:animetrace/models/enum/anime_area.dart';
+import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:darty_json/darty_json.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
@@ -33,18 +34,18 @@ class ClimbBangumi with Climb {
 
   @override
   List<SiteCollectionTab> get siteCollectionTabs => [
-        SiteCollectionTab(title: "想看", word: "wish"),
-        SiteCollectionTab(title: "看过", word: "collect"),
-        SiteCollectionTab(title: "在看", word: "do"),
-        SiteCollectionTab(title: "搁置", word: "on_hold"),
-        SiteCollectionTab(title: "放弃", word: "dropped"),
+        SiteCollectionTab(title: "想看", identity: 1),
+        SiteCollectionTab(title: "看过", identity: 2),
+        SiteCollectionTab(title: "在看", identity: 3),
+        SiteCollectionTab(title: "搁置", identity: 4),
+        SiteCollectionTab(title: "放弃", identity: 5),
       ];
 
   @override
   String get userCollBaseUrl => "$baseUrl/anime/list";
 
   @override
-  int get userCollPageSize => 24;
+  int get userCollPageSize => 100;
 
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   @override
@@ -134,18 +135,12 @@ class ClimbBangumi with Climb {
     int page = 1,
   }) async {
     final collection = UserCollection(totalCnt: 0, animes: []);
-    // TODO 重构
-    final type = switch (siteCollectionTab.word) {
-      'wish' => 1,
-      'collect' => 2,
-      'do' => 3,
-      'on_hold' => 4,
-      'dropped' => 5,
-      _ => 0,
-    };
 
     final r = await repository.fetchCollections(
-        username: userId, type: type, pageNo: page - 1, pageSize: 30);
+        username: userId,
+        type: siteCollectionTab.identity,
+        pageNo: page - 1,
+        pageSize: userCollPageSize);
     collection.totalCnt = r.total;
     collection.animes = r.list.map((e) {
       String info = [
@@ -153,7 +148,7 @@ class ClimbBangumi with Climb {
         if (e.eps != null) '${e.eps.toString()} 集',
       ].join(' / ');
 
-      return Anime(
+      final anime = Anime(
         animeName: (e.nameCn ?? '').isNotEmpty ? e.nameCn! : (e.name ?? ''),
         nameOri: e.name ?? '',
         animeCoverUrl: e.images?.medium ?? '',
@@ -163,10 +158,25 @@ class ClimbBangumi with Climb {
             : TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
         animeDesc: e.summary ?? '',
         tempInfo: info,
+        animeEpisodeCnt: e.eps ?? 0,
       );
+
+      for (final area in AnimeArea.values) {
+        if ((e.metaTags ?? []).contains(area.label)) {
+          anime.area = area.label;
+          break;
+        }
+      }
+      for (final category in AnimeCategory.values) {
+        if ((e.metaTags ?? []).contains(category.label)) {
+          anime.category = category.label;
+          break;
+        }
+      }
+
+      return anime;
     }).toList();
 
-    // TODO 收藏过多时400
     return collection;
   }
 

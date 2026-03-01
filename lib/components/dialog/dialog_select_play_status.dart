@@ -27,3 +27,25 @@ showDialogSelectPlayStatus(
         );
       });
 }
+
+Future<PlayStatus?> showPlayStatusPicker(
+    {required BuildContext context, PlayStatus? playStatus}) async {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        title: const Text("播放状态"),
+        children: PlayStatus.values
+            .map((e) => RadioListTile(
+                  title: Text(e.text),
+                  value: e,
+                  groupValue: playStatus,
+                  onChanged: (PlayStatus? value) {
+                    Navigator.pop(context, value);
+                  },
+                ))
+            .toList(),
+      );
+    },
+  );
+}

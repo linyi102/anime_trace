@@ -47,14 +47,17 @@ class BgmSubject {
         platform: json["platform"],
         images:
             json["images"] == null ? null : BgmImages.fromMap(json["images"]),
-        summary: json["summary"],
+        summary: json["summary"] ?? json["short_summary"],
         name: json["name"],
         nameCn: json["name_cn"],
         totalEpisodes: json["total_episodes"],
         id: json["id"],
         eps: json["eps"],
         metaTags: json["meta_tags"] == null
-            ? []
+            ? json["tags"] == null
+                ? null
+                // 用户收藏列表接口会返回该属性
+                : List<String>.from(json["tags"]!.map((e) => e["name"]))
             : List<String>.from(json["meta_tags"]!.map((x) => x)),
         volumes: json["volumes"],
         series: json["series"],

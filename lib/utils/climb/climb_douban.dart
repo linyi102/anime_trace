@@ -27,9 +27,9 @@ class ClimbDouban with Climb {
 
   @override
   List<SiteCollectionTab> get siteCollectionTabs => [
-        SiteCollectionTab(title: "在看", word: "do"),
-        SiteCollectionTab(title: "想看", word: "wish"),
-        SiteCollectionTab(title: "看过", word: "collect"),
+        SiteCollectionTab(title: "在看", identity: "do"),
+        SiteCollectionTab(title: "想看", identity: "wish"),
+        SiteCollectionTab(title: "看过", identity: "collect"),
       ];
 
   @override
@@ -166,7 +166,7 @@ class ClimbDouban with Climb {
       String userId, SiteCollectionTab siteCollectionTab,
       {int page = 1}) async {
     String url =
-        "$userCollBaseUrl/$userId/${siteCollectionTab.word}?start=${(page - 1) * userCollPageSize}";
+        "$userCollBaseUrl/$userId/${siteCollectionTab.identity}?start=${(page - 1) * userCollPageSize}";
 
     var document = await dioGetAndParse(url);
     if (document == null) {
