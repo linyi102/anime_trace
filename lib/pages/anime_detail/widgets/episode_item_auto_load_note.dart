@@ -1,3 +1,4 @@
+import 'package:animetrace/components/anime_rating_bar.dart';
 import 'package:animetrace/pages/viewer/video/view_with_load_url.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
@@ -152,7 +153,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
 
   ListTile _buildEpisodeTile() {
     return ListTile(
-      selectedTileColor: Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
+      selectedTileColor:
+          Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
       selected:
           widget.animeController.mapSelected.containsKey(widget.episodeIndex),
       title: Align(
@@ -202,16 +204,33 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildPlayButton(),
-        GestureDetector(
-          // 避免长按穿透到ListTile导致多选
-          onLongPress: () {},
-          child: IconButton(
-            splashRadius: 24,
-            icon: const Icon(Icons.more_horiz),
-            onPressed: () {
-              _showLongPressDialog();
-            },
+        if (_episode.desc?.rate != null)
+          IconButton(
+            onPressed: showRatingDialog,
+            icon: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(Icons.star_border_rounded, size: 20),
+                SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    value: _episode.desc!.rate! / 5,
+                    strokeWidth: 2.5,
+                    color: Theme.of(context).colorScheme.primary,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                ),
+              ],
+            ),
           ),
+        IconButton(
+          splashRadius: 24,
+          icon: const Icon(Icons.more_horiz),
+          onPressed: () {
+            _showLongPressDialog();
+          },
         ),
       ],
     );
@@ -303,6 +322,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     _dialogRemoveDate();
                   },
                 ),
+              const Divider(),
               ListTile(
                 title: const Text("编辑标题"),
                 leading: const Icon(MingCuteIcons.mgc_text_2_line, size: 22),
@@ -310,14 +330,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   Navigator.pop(dialogContext);
 
                   _showDialogDescForm(dialogContext);
-                },
-              ),
-              ListTile(
-                title: Text("${_episode.note == null ? '创建' : '编辑'}笔记"),
-                leading: const Icon(MingCuteIcons.mgc_edit_4_line, size: 22),
-                onTap: () {
-                  Navigator.pop(dialogContext);
-                  _enterNoteEditPage(needCreate: true);
                 },
               ),
               if (_episode.note != null)
@@ -337,10 +349,47 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                   onTap: () {
                     _dialogDeleteConfirm();
                   },
-                )
+                ),
+              ListTile(
+                title: const Text("评分"),
+                leading: const Icon(Icons.star_border_rounded),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  showRatingDialog();
+                },
+              ),
             ],
           );
         });
+  }
+
+  void showRatingDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('第 ${_episode.numberWithStartNumber} 集评分'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: EpisodeRatingBar(
+                anime: _anime,
+                episode: _episode,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                animeRateOnChanged: (value) {
+                  _anime.rate = value;
+                  widget.animeController.updateAnimeInfo();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> completeEpisode({DateTime? dateTime}) async {
