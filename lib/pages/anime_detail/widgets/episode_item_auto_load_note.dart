@@ -166,6 +166,8 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
           child: Text(
             _episode.caption,
             style: TextStyle(color: _episode.isChecked() ? checkedColor : null),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),

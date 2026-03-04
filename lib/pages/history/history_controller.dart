@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/dao/history_dao.dart';
 import 'package:animetrace/models/history_plus.dart';
 import 'package:animetrace/models/params/page_params.dart';
-import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -56,6 +55,7 @@ class HistoryController extends GetxController {
   int curViewIndex =
       SPUtil.getInt("selectedViewIndexInHistoryPage", defaultValue: 1);
   HistoryLabel get selectedHistoryLabel => views[curViewIndex].label;
+  bool _loadingFirst = false;
 
   PageController? pageController;
 
@@ -72,11 +72,11 @@ class HistoryController extends GetxController {
     // 切换导航后重新渲染State中的PageView时，展示的页号始终是initialPage(可能和curViewIndex不对应)，所以此处重新创建PageController
     pageController?.dispose();
     pageController = PageController(initialPage: curViewIndex);
+    _loadingFirst = true;
 
     final futures = <Future>[];
     for (var view in views) {
-      // 重置页号
-      view.pageParams.pageIndex = view.pageParams.baseIndex;
+      view.pageParams.resetPageIndex();
       futures.add(Future(() async {
         view.historyRecords = await HistoryDao.getHistoryPageable(
             pageParams: view.pageParams, dateLength: view.dateLength);
@@ -85,15 +85,18 @@ class HistoryController extends GetxController {
     await Future.wait(futures);
 
     loadOk = true;
+    _loadingFirst = false;
     update();
   }
 
   Future<void> loadMoreData() async {
-    AppLog.debug("加载更多数据");
+    if (_loadingFirst) return;
+
+    final view = views[curViewIndex];
+    view.pageParams.pageIndex++;
     views[curViewIndex].historyRecords.addAll(
         await HistoryDao.getHistoryPageable(
-            pageParams: views[curViewIndex].pageParams,
-            dateLength: views[curViewIndex].dateLength));
+            pageParams: view.pageParams, dateLength: view.dateLength));
     update();
   }
 }
