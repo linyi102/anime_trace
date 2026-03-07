@@ -88,7 +88,7 @@ final doubanClimbWebsite = ClimbWebsite(
   spkey: "enableWebSiteDouban",
   regexp: "douban",
   climb: ClimbDouban(),
-  supportImport: true,
+  supportImport: false,
 );
 
 final quClimbWebsite = ClimbWebsite(

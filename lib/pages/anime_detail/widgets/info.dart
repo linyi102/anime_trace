@@ -267,29 +267,27 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         // 而收藏后，三个按钮会撑高一些，导致收藏后信息行位置变了，所以在上下添加10高度box
         const SizedBox(height: 10),
         // 第一行信息
-        if (_anime.isCollected())
-          GestureDetector(
-            onTap: _toPropertiesPage,
-            child: Row(
-              children: [
-                Text(_anime.getAnimeInfoFirstLine()),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 2),
-                //   child: Icon(Icons.edit, size: smallIconSize),
-                //   // Icon(Icons.chevron_right_outlined,
-                //   //     size: 16, color: Theme.of(context).hintColor),
-                // ),
-                const Spacer(),
-                Text(
-                  '编辑',
-                  style: TextStyle(
-                      fontSize: 12, color: Theme.of(context).hintColor),
+        Row(
+          children: [
+            Text(_anime.getAnimeInfoFirstLine()),
+            const Spacer(),
+            if (_anime.isCollected())
+              GestureDetector(
+                onTap: _toPropertiesPage,
+                child: Row(
+                  children: [
+                    Text(
+                      '编辑',
+                      style: TextStyle(
+                          fontSize: 12, color: Theme.of(context).hintColor),
+                    ),
+                    Icon(Icons.chevron_right_outlined,
+                        size: 16, color: Theme.of(context).hintColor),
+                  ],
                 ),
-                Icon(Icons.chevron_right_outlined,
-                    size: 16, color: Theme.of(context).hintColor),
-              ],
-            ),
-          ),
+              )
+          ],
+        ),
         // 第二行信息
         Row(
           children: [

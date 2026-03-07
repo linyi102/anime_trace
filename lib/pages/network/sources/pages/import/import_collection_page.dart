@@ -12,7 +12,6 @@ import 'package:animetrace/pages/network/sources/pages/import/import_collection_
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/utils/climb/site_collection_tab.dart';
 import 'package:animetrace/utils/extensions/color.dart';
-import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_divider.dart';
@@ -205,13 +204,13 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                     ),
                   ),
                   const CommonDivider(),
-                  StatefulBuilder(
-                    builder: (context, setState) => SwitchListTile(
-                      title: const Text("若已收藏同名动漫，则跳过"),
-                      value: SpProfile.getSkipDupNameAnime(),
+                  Obx(
+                    () => SwitchListTile(
+                      title: const Text('是否已完结'),
+                      subtitle: const Text('建议在已完结列表中开启，以避免全局更新时不必要的检查'),
+                      value: icc.playStatusIsFinished.value,
                       onChanged: (value) {
-                        SpProfile.setSkipDupNameAnime(value);
-                        setState(() {});
+                        icc.playStatusIsFinished.value = value;
                       },
                     ),
                   ),
@@ -294,16 +293,18 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       width: size,
       child: Stack(
         children: [
-          // if (icc.quickCollecting)
-          SizedBox(
-            height: size,
-            width: size,
-            child: CircularProgressIndicator(
-              strokeWidth: 4,
-              backgroundColor:
-                  Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
+          if (icc.quickCollecting)
+            SizedBox(
+              height: size,
+              width: size,
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacityFactor(0.3),
+              ),
             ),
-          ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)
         ],
       ),

@@ -81,4 +81,8 @@ class SPUtil {
     AppLog.info("删除key：$key");
     return await _sharedPreferences.remove(key);
   }
+
+  static bool hasKey(String key) {
+    return _sharedPreferences.get(key) != null;
+  }
 }

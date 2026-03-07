@@ -13,7 +13,7 @@ class HistoryDao {
   // 新增回顾号列后，最小值和最大值应该属于同一回顾号
   static Future<List<HistoryPlus>> getHistoryPageable(
       {required PageParams pageParams, required int dateLength}) async {
-    AppLog.info("sql: getHistoryPageable");
+    AppLog.info("sql: getHistoryPageable: pageParams=$pageParams, dateLength=$dateLength");
     // await Future.delayed(Duration(seconds: 2));
     // 获取有数据的最近几天/月
     List<Map<String, Object?>> dayList = await SqliteUtil.database.rawQuery('''

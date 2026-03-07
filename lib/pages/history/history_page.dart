@@ -148,7 +148,6 @@ class __RecordListViewState extends State<_RecordListView>
           int threshold = view.pageParams.getQueriedSize();
           if (cardIndex + 2 == threshold) {
             AppLog.info("index=$cardIndex, threshold=$threshold");
-            view.pageParams.pageIndex++;
             widget.loadMoreData();
           }
 

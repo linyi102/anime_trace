@@ -497,6 +497,8 @@ class AnimeDao {
   }
 
   static void updateAnimeRate(int animeId, int rate) async {
+    assert(0 <= rate && rate <= 10, 'invalid rate: $rate ([0, 10])');
+
     AppLog.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
     db.rawUpdate('''
     update anime

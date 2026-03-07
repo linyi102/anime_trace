@@ -1,11 +1,10 @@
 class PageParams {
   int pageIndex;
-  int pageSize;
-  late int baseIndex;
+  final int pageSize;
+  final int baseIndex;
 
-  PageParams({this.pageIndex = 0, required this.pageSize}) {
-    baseIndex = pageIndex;
-  }
+  PageParams({this.pageIndex = 0, required this.pageSize})
+      : baseIndex = pageIndex;
 
   int getFixedPageIndex({int firstPageIndex = 0}) {
     if (baseIndex == 0) {

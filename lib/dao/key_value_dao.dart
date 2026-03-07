@@ -21,11 +21,33 @@ class KeyValueDao {
     ''');
   }
 
-  static Future<void> setString(String key, String? value) {
-    return db.insert(tableName, {
-      columnKey: key,
-      columnValue: value,
-    });
+  static Future<bool> hasKey(String key) async {
+    return await SqliteUtil.count(
+          tableName: tableName,
+          columnName: columnKey,
+          where: '$columnKey = ?',
+          whereArgs: [key],
+        ) >
+        0;
+  }
+
+  static Future<int> setString(String key, String? value) async {
+    if (!await hasKey(key)) {
+      return db.insert(tableName, {
+        columnKey: key,
+        columnValue: value,
+      });
+    } else {
+      return db.update(
+        tableName,
+        {
+          columnKey: key,
+          columnValue: value,
+        },
+        where: '$columnKey = ?',
+        whereArgs: [key],
+      );
+    }
   }
 
   static Future<String?>? getString(String key) async {
@@ -47,13 +69,7 @@ class KeyValueDao {
   }
 
   static Future<int> setStringList(String key, List<String>? value) async {
-    if (await SqliteUtil.count(
-          tableName: tableName,
-          columnName: columnKey,
-          where: '$columnKey = ?',
-          whereArgs: [key],
-        ) ==
-        0) {
+    if (!await hasKey(key)) {
       return db.insert(tableName, {
         columnKey: key,
         columnValue: jsonEncode(value),

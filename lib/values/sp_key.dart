@@ -49,6 +49,7 @@ class SPKey {
   static get migrageConfig => 'migrateConfig';
 }
 
+@Deprecated('use SettingService instead')
 class Config {
   static String get selectedBangumiSearchCategoryKey =>
       SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,

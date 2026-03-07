@@ -2,6 +2,10 @@ import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:get/get.dart';
 
+/// 设置服务
+///
+/// - [KeyValueDao] 基于 Sqlite 数据库，用于永久存储
+/// - [SPUtil] 基于 SharedPreferences，用于临时存储
 class SettingService extends GetxService {
   static SettingService get to => Get.find();
 
@@ -25,9 +29,20 @@ class SettingService extends GetxService {
     await KeyValueDao.setStringList('networkSearchHistoryKeyword', keywords);
   }
 
+  /// 获取是否根据集评分自动计算动漫评分
+  Future<bool?> getAutoCalcAnimeRateByEpisode() async {
+    return KeyValueDao.getBool('autoCalcAnimeRateByEpisode');
+  }
+
+  /// 设置是否根据集评分自动计算动漫评分
+  Future<void> setAutoCalcAnimeRateByEpisode(bool value) {
+    return KeyValueDao.setBool('autoCalcAnimeRateByEpisode', value);
+  }
+
   /// 获取隐藏底部标签栏
   bool getHideMobileBottomLabel() {
-    return SPUtil.getBool('hideMobileBottomNavigationBarLabel', defaultValue: false);
+    return SPUtil.getBool('hideMobileBottomNavigationBarLabel',
+        defaultValue: false);
   }
 
   /// 设置隐藏底部标签栏

@@ -27,6 +27,8 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
   bool showModifyChecklistDialog =
       SPUtil.getBool("showModifyChecklistDialog", defaultValue: true);
 
+  final enableAutoCalcAnimeRateByEpisode = ValueNotifier(false);
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +43,10 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
     }
     curYearTimeExample = tmpDT.toString();
     todayTimeExample = now.toString();
+
+    SettingService.to.getAutoCalcAnimeRateByEpisode().then((value) {
+      enableAutoCalcAnimeRateByEpisode.value = value ?? false;
+    });
   }
 
   @override
@@ -95,6 +101,17 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                 },
               ),
             ),
+            ValueListenableBuilder(
+              valueListenable: enableAutoCalcAnimeRateByEpisode,
+              builder: (context, value, child) => SwitchListTile(
+                title: const Text('根据集评分计算动漫评分'),
+                value: value,
+                onChanged: (to) {
+                  enableAutoCalcAnimeRateByEpisode.value = to;
+                  SettingService.to.setAutoCalcAnimeRateByEpisode(to);
+                },
+              ),
+            )
           ],
         ),
         SettingCard(

@@ -119,12 +119,17 @@ class LocalSearchController extends GetxController {
     search();
   }
 
+  int _requestToken = 0;
+
   Future<void> search() async {
     AppLog.info(localSelectFilter);
     searchOk = false;
     update();
 
+    final token = ++_requestToken;
     animes = await AnimeDao.complexSearch(localSelectFilter);
+    if (token != _requestToken) return;
+
     searchOk = true;
     update();
   }
