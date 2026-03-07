@@ -151,7 +151,7 @@ class ClimbBangumi with Climb {
       final anime = Anime(
         animeName: (e.nameCn ?? '').isNotEmpty ? e.nameCn! : (e.name ?? ''),
         nameOri: e.name ?? '',
-        animeCoverUrl: e.images?.medium ?? '',
+        animeCoverUrl: e.images?.large ?? '',
         animeUrl: '$baseUrl/subject/${e.id}',
         premiereTime: e.date == null
             ? ''
