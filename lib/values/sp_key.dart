@@ -35,10 +35,6 @@ class SPKey {
   static get showRecommendedAnimesInSeriesPage =>
       "showRecommendedAnimesInSeriesPage";
 
-  // bangumi搜索类型
-  static get selectedBangumiSearchCategoryKey =>
-      "selectedBangumiSearchCategoryKey";
-
   // 开启热键恢复最新备份文件
   static get enableRestoreLatestHotkey => "enableRestoreLatestHotkey";
 
@@ -51,14 +47,6 @@ class SPKey {
 
 @Deprecated('use SettingService instead')
 class Config {
-  static String get selectedBangumiSearchCategoryKey =>
-      SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,
-          defaultValue: 'all');
-
-  static void setSelectedBangumiSearchCategoryKey(String value) {
-    SPUtil.setString(SPKey.selectedBangumiSearchCategoryKey, value);
-  }
-
   static bool get enableRestoreLatestHotkey =>
       SPUtil.getBool(SPKey.enableRestoreLatestHotkey);
 

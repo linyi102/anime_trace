@@ -1,11 +1,12 @@
 import 'package:animations/animations.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/pages/network/sources/pages/migrate/migrate_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/components/website_logo.dart';
-import 'package:animetrace/models/enum/bangumi_search_category.dart';
+import 'package:animetrace/models/bangumi/subject_type.dart';
 import 'package:animetrace/pages/network/climb/anime_climb_one_website.dart';
 import 'package:animetrace/pages/network/sources/pages/import/import_collection_page.dart';
 import 'package:animetrace/utils/common_util.dart';
@@ -14,7 +15,6 @@ import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
-import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/common_divider.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
 import 'package:animetrace/widgets/common_text_field.dart';
@@ -199,12 +199,8 @@ class _SourceDetailState extends State<SourceDetail> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('搜索类型'),
-                  subtitle: Text(
-                    BangumiSearchCategory.getCategoryByKey(
-                                Config.selectedBangumiSearchCategoryKey)
-                            ?.label ??
-                        '',
-                  ),
+                  subtitle:
+                      Text(SettingService.to.getBgmSearchCategory().label),
                   onTap: _showDialogSelectBangumiCategory,
                 ),
               ListTile(
@@ -262,19 +258,21 @@ class _SourceDetailState extends State<SourceDetail> {
   }
 
   void _showDialogSelectBangumiCategory() {
-    String categoryKey = Config.selectedBangumiSearchCategoryKey;
+    final category = SettingService.to.getBgmSearchCategory();
 
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('搜索类型'),
-        children: BangumiSearchCategory.values
+        children: BgmSubjectType.values
             .map((e) => RadioListTile(
                 title: Text(e.label),
-                groupValue: categoryKey,
-                value: e.key,
+                groupValue: category,
+                value: e,
                 onChanged: (value) {
-                  Config.setSelectedBangumiSearchCategoryKey(e.key);
+                  if (value == null) return;
+
+                  SettingService.to.setBgmSearchCategory(value);
                   Navigator.pop(context);
                   setState(() {});
                 }))
