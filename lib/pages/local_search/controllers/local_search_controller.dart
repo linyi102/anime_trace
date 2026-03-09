@@ -3,7 +3,6 @@ import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/label.dart';
 import 'package:animetrace/pages/local_search/models/local_search_filter.dart';
@@ -166,9 +165,9 @@ class LocalSearchController extends GetxController {
     _setSelectedLabelTitle(_areaFilter, area?.label);
   }
 
-  void setCategory(AnimeCategory? category) {
+  void setCategory(String? category) {
     localSelectFilter.category = category;
-    _setSelectedLabelTitle(_categoryFilter, category?.label);
+    _setSelectedLabelTitle(_categoryFilter, category);
   }
 
   void setAirDate(int? year, int? month) {

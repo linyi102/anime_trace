@@ -1,6 +1,6 @@
+import 'package:animetrace/controllers/category_controller.dart';
 import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:darty_json/darty_json.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
@@ -168,9 +168,9 @@ class ClimbBangumi with Climb {
           break;
         }
       }
-      for (final category in AnimeCategory.values) {
-        if ((e.metaTags ?? []).contains(category.label)) {
-          anime.category = category.label;
+      for (final category in CategoryController.to.categories) {
+        if ((e.metaTags ?? []).contains(category)) {
+          anime.category = category;
           break;
         }
       }

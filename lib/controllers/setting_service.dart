@@ -82,4 +82,13 @@ class SettingService extends GetxService {
   void setBgmSearchCategory(BgmSubjectType category) {
     SPUtil.setString('selectedBangumiSearchCategoryKey', category.value);
   }
+
+  /// 自定义类别
+  Future<List<String>?> getAnimeCategories() async {
+    return KeyValueDao.getStringList('anime_categories');
+  }
+
+  Future<bool> setAnimeCategories(List<String> categries) async {
+    return (await KeyValueDao.setStringList('anime_categories', categries)) > 0;
+  }
 }

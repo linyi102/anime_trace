@@ -3,7 +3,6 @@ import 'package:animetrace/dao/anime_series_dao.dart';
 import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/params/page_params.dart';
@@ -280,7 +279,7 @@ class AnimeDao {
         : 'area = "${filter.area == AnimeArea.unknown ? '' : filter.area!.label}"';
     final categorySql = filter.category == null
         ? ''
-        : 'category = "${filter.category == AnimeCategory.unknown ? '' : filter.category!.label}"';
+        : 'category = "${filter.category == '未知' ? '' : filter.category}"';
     final airDateSql = filter.airDate == null
         ? ''
         : 'premiere_time like "%${filter.airDate}%"';
@@ -486,6 +485,15 @@ class AnimeDao {
     set category = '$value'
     where anime_id = $animeId;
     ''');
+  }
+
+  static void batchUpdateCategory(String oldCategory, String newCategory) {
+    db.update(
+      table,
+      {'category': newCategory},
+      where: 'category = ?',
+      whereArgs: [oldCategory],
+    );
   }
 
   static void updatePremiereTime(int animeId, String value) {

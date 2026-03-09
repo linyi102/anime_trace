@@ -1,12 +1,12 @@
+import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/pages/anime_detail/pages/category_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/components/dialog/dialog_select_play_status.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/pages/common/category_intro_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/widgets/picker/date_time_picker.dart';
@@ -183,15 +183,17 @@ class AnimePropertiesPage extends StatelessWidget {
           children: [
             const Text("类别"),
             const Spacer(),
-            IconButton(
-                onPressed: () {
-                  RouteUtil.materialTo(context, const CategoryIntroPage());
-                },
-                icon: const Icon(Icons.help_outline))
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await RouteUtil.materialTo(
+                    context, const AnimeCategoryListPage());
+              },
+              child: const Text('自定义'),
+            )
           ],
         ),
-        children: AnimeCategory.values
-            .map((e) => e.label)
+        children: CategoryController.to.categories
             .map((e) => RadioListTile(
                   title: Text(e),
                   value: e,
