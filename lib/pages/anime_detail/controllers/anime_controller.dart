@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
@@ -612,5 +613,53 @@ class AnimeController extends GetxController {
         },
       ),
     );
+  }
+
+  void autoUpdateRateIfNeed(BuildContext context) async {
+    bool? enable = await SettingService.to.getAutoCalcAnimeRateByEpisode();
+    if (enable == null) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('提示'),
+          content: const Text('是否根据集评分自动计算动漫评分？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                enable = false;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(false);
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                enable = true;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(true);
+                Navigator.pop(context);
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        ),
+      );
+    }
+    if (enable != true) return;
+
+    final descs = await EpisodeDescDao.queryAll(anime.animeId);
+    double totalRate = 0, rateEpisodeCnt = 0;
+    for (final desc in descs) {
+      if (desc.rate != null) {
+        rateEpisodeCnt++;
+        totalRate += desc.rate!;
+      }
+    }
+    if (rateEpisodeCnt == 0) return;
+
+    final newRate = ((totalRate / rateEpisodeCnt) * 2).round();
+
+    anime.rate = newRate;
+    updateAnimeInfo();
+    AnimeDao.updateAnimeRate(anime.animeId, newRate);
   }
 }
