@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
@@ -33,11 +35,12 @@ class NoteEditPage extends StatefulWidget {
 
 class _NoteEditPageState extends State<NoteEditPage> {
   bool _loadOk = false;
-  bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
-  var noteContentController = TextEditingController();
-  bool changeOrderIdx = false;
+  bool _updateNoteContent = false;
+  bool _changeOrderIdx = false;
 
+  final contentInputCtr = TextEditingController();
   final scrollController = ScrollController();
+  Timer? syncTimer;
 
   @override
   void initState() {
@@ -50,44 +53,25 @@ class _NoteEditPageState extends State<NoteEditPage> {
   void dispose() {
     super.dispose();
     scrollController.dispose();
+    syncTimer?.cancel();
   }
 
-  _loadData() async {
-    AppLog.info("note.id=${widget.note.id}");
-    // 已经能保证是最新的了，所以不需要重新获取
-    // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
-    //   if (value.id == 0) {
-    //     Navigator.of(context).pop(widget.note);
-    //     ToastUtil.showText("未找到该笔记");
-    //   } else {
-    //     widget.note.relativeLocalImages = value.relativeLocalImages;
-    //     noteContentController.text = widget.note.noteContent;
-    //     _loadOk = true;
-    //     setState(() {});
-    //   }
-    // });
+  void _loadData() async {
+    final existNoteId = await NoteDao.existNoteId(widget.note.id);
+    if (!existNoteId) {
+      // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
+      widget.note.id = 0;
+      Navigator.of(context).pop(widget.note);
+      ToastUtil.showText("未找到该笔记");
+      return;
+    }
 
-    Future(() {
-      return NoteDao.existNoteId(widget.note.id);
-    }).then((existNoteId) {
-      if (!existNoteId) {
-        // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
-        widget.note.id = 0;
-        Navigator.of(context).pop(widget.note);
-        ToastUtil.showText("未找到该笔记");
-      } else {
-        noteContentController.text = widget.note.noteContent;
-        _loadOk = true;
-        setState(() {});
-      }
-      // // 记录所有图片的初始下标
-      // for (int i = 0; i < widget.note.relativeLocalImages.length; ++i) {
-      //   initialOrderIdx[widget.note.relativeLocalImages[i].imageId] = i;
-      // }
-    });
+    contentInputCtr.text = widget.note.noteContent;
+    _loadOk = true;
+    setState(() {});
   }
 
-  _onWillpop() async {
+  void _onWillpop() async {
     if (widget.note.isEmpty) {
       NoteDao.deleteNoteById(widget.note.id);
       Navigator.pop(context, null);
@@ -96,9 +80,22 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
     Navigator.pop(context, widget.note);
 
+    _sync();
+  }
+
+  void _scheduleSync() {
+    AppLog.info('[NoteEditPage] schedule sync note');
+
+    syncTimer?.cancel();
+    syncTimer = Timer(const Duration(seconds: 1), _sync);
+  }
+
+  void _sync() {
+    AppLog.info('[NoteEditPage] sync note');
+
     // 后台更新数据库中的图片顺序
     // 全部更新。只要移动了，就更新所有图片的记录顺序
-    if (changeOrderIdx) {
+    if (_changeOrderIdx) {
       for (int newOrderIdx = 0;
           newOrderIdx < widget.note.relativeLocalImages.length;
           ++newOrderIdx) {
@@ -106,20 +103,14 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
       }
     }
-    // 局部更新
-    // for (int newOrderIdx = 0;
-    //     newOrderIdx < widget.note.relativeLocalImages.length;
-    //     ++newOrderIdx) {
-    //   int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
-    //   // 有缺陷，详细参考getRelativeLocalImgsByNoteId方法
-    //   if (initialOrderIdx[imageId] != newOrderIdx) {
-    //     ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
-    //   }
-    // }
+
     if (_updateNoteContent) {
       NoteDao.updateNoteContentByNoteId(
           widget.note.id, widget.note.noteContent);
     }
+
+    _changeOrderIdx = false;
+    _updateNoteContent = false;
   }
 
   @override
@@ -219,9 +210,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
   _showNoteContent() {
     return TextField(
-      // 不能放在这里，否则点击行尾时，光标会跑到行首
-      // controller: noteContentController..text = widget.note.noteContent,
-      controller: noteContentController..text,
+      controller: contentInputCtr,
       decoration: const InputDecoration(
         hintText: "描述",
         contentPadding: EdgeInsets.all(16),
@@ -236,6 +225,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
       onChanged: (value) {
         _updateNoteContent = true;
         widget.note.noteContent = value;
+        _scheduleSync();
       },
     );
   }
@@ -277,8 +267,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
           final element = widget.note.relativeLocalImages.removeAt(oldIndex);
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
-        changeOrderIdx = true;
-        AppLog.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
+        _changeOrderIdx = true;
+        _scheduleSync();
       },
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Material(
