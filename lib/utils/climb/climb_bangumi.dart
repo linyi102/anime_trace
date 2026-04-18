@@ -21,7 +21,7 @@ class ClimbBangumi with Climb {
   factory ClimbBangumi() => _instance;
   ClimbBangumi._();
 
-  final repository = BangumiRepository();
+  final repository = const BangumiRepository();
 
   @override
   String get idName => "bangumi";

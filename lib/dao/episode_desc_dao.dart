@@ -1,10 +1,11 @@
+import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class EpisodeDesc {
   int id; // 唯一id
   int animeId; // 动漫id
-  int number; // 集编号(最小为1)
+  int number; // 集编号(从1开始，和动漫起始集无关)
   String title; // 设置的标题
   bool hideDefault; // 是否隐藏原来的第number集
   double? rate; // 评分([0, 0.5, 1, ..., 5], null表示未评分)
@@ -22,7 +23,7 @@ class EpisodeDesc {
 
   @override
   String toString() {
-    return 'EpisodeDesc(id: $id, animeId: $animeId, number: $number, title: $title, showDefault: $hideDefault, rate: $rate)';
+    return 'EpisodeDesc(id: $id, animeId: $animeId, number: $number, title: $title, hideDefault: $hideDefault, rate: $rate)';
   }
 }
 
@@ -72,6 +73,7 @@ class EpisodeDescDao {
   }
 
   static Future<int> insert(EpisodeDesc episodeDesc) {
+    AppLog.info('[db] insert $episodeDesc');
     return db.insert(table, {
       columnAnimeId: episodeDesc.animeId,
       columnNumber: episodeDesc.number,
@@ -82,6 +84,7 @@ class EpisodeDescDao {
   }
 
   static Future<int> update(EpisodeDesc episodeDesc) {
+    AppLog.info('[db] update $episodeDesc');
     final rate = episodeDesc.rate;
     if (rate != null) {
       assert(0 <= rate && rate <= 5, 'invalid rate: $rate ([0, 5])');

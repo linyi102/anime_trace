@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:animetrace/pages/anime_detail/pages/episode_manage_page.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
+import 'package:animetrace/routes/get_route.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/common_image.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
@@ -206,11 +208,13 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
                   PopupMenuItem(
                     child: const ListTile(
                       leading: Icon(Icons.mode_edit_outline_outlined),
-                      title: Text("修改集数"),
+                      title: Text("集数管理"),
                     ),
                     onTap: () {
-                      widget.animeController
-                          .showDialogModEpisodeCntAndStartNumber(context);
+                      RouteUtil.materialTo(
+                          context,
+                          EpisodeManagePage(
+                              animeController: widget.animeController));
                     },
                   ),
                   PopupMenuItem(

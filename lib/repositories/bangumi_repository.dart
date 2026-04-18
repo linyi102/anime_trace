@@ -1,12 +1,13 @@
 import 'package:animetrace/models/bangumi/bangumi.dart';
 import 'package:animetrace/models/bangumi/character_graph.dart';
-import 'package:animetrace/models/bangumi/subject_type.dart';
 import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
 
 class BangumiRepository {
   final episodesLimit = 1000;
+
+  const BangumiRepository();
 
   Future<BgmSubject?> fetchSubject(String subjectId) async {
     final result = await DioUtil.get(BangumiApi.subject(subjectId),

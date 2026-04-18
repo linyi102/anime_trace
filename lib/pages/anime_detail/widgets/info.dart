@@ -1,3 +1,4 @@
+import 'package:animetrace/pages/anime_detail/pages/episode_manage_page.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
@@ -350,8 +351,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 ],
               ),
               onTap: () {
-                widget.animeController
-                    .showDialogModEpisodeCntAndStartNumber(context);
+                RouteUtil.materialTo(context,
+                    EpisodeManagePage(animeController: widget.animeController));
               },
             )
           ],

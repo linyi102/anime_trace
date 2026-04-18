@@ -1,5 +1,8 @@
+import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/image_util.dart';
 import 'package:animetrace/utils/time_util.dart';
 
@@ -190,4 +193,15 @@ class Anime {
   String reduceStr(String str) {
     return str.length > 15 ? str.substring(0, 15) : str;
   }
+}
+
+extension AnimeExt on Anime {
+  ClimbWebsite? get website =>
+      ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl);
+
+  bool get isFromBgm => website?.climb is ClimbBangumi;
+
+  String get bgmSubjectId => isFromBgm
+      ? RegExp(r'\/subject\/(\d+)').firstMatch(animeUrl)?.group(1) ?? ''
+      : '';
 }

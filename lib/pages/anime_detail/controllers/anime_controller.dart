@@ -11,10 +11,8 @@ import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/label.dart';
-import 'package:animetrace/pages/anime_detail/widgets/episode_form.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
@@ -388,30 +386,6 @@ class AnimeController extends GetxController {
         // 否则未完成的靠前
         return ac.compareTo(bc);
       }
-    });
-  }
-
-  void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
-    if (!isCollected) return;
-
-    AnimeEpisodeInfo? result = await showDialog(
-      context: context,
-      builder: (context) => EpisodeForm(anime: anime),
-    );
-
-    if (result == null) {
-      AppLog.info("未选择，直接返回");
-      return;
-    }
-
-    AnimeDao.updateEpisodeInfoByAnimeId(anime.animeId, result).then((value) {
-      // 修改数据
-      anime.animeEpisodeCnt = result.totalCnt;
-      anime.episodeStartNumber = result.startNumber;
-      anime.calEpisodeNumberFromOne = result.calNumberFromOne;
-      // 重绘
-      updateAnimeInfo(); // 重绘信息行中显示的集数
-      loadEpisode(); // 重绘集信息
     });
   }
 

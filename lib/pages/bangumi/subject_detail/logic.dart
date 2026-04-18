@@ -13,7 +13,7 @@ class BangumiSubjectDetailLogic extends GetxController {
   final Anime anime;
   BangumiSubjectDetailLogic(this.anime);
 
-  final repository = BangumiRepository();
+  final repository = const BangumiRepository();
   List<BgmCharacter> characters = [];
   late final loadStatusController = LoadStatusController(refresh: _loadData);
 
