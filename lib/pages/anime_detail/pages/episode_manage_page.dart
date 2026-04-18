@@ -84,6 +84,10 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
     diffs.clear();
 
     for (int i = 0; i < rangeEnd - rangeStart + 1; i++) {
+      if (episodes.length <= rangeStart - 1 + i) {
+        break;
+      }
+
       final ep = episodes[rangeStart - 1 + i];
       final input = inputTitles.length > i ? inputTitles[i] : null;
       final oldTitle = ep.caption;
