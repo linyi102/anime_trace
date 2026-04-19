@@ -105,7 +105,17 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
         diffs.add(_EpisodeTitleDiff(
           episode: ep,
           newTitle: '',
-          changed: false,
+          action: _DiffAction.same,
+          isSamePrefix: false,
+        ));
+        continue;
+      }
+
+      if (newTitle == '-') {
+        diffs.add(_EpisodeTitleDiff(
+          episode: ep,
+          newTitle: '',
+          action: _DiffAction.delete,
           isSamePrefix: false,
         ));
         continue;
@@ -120,7 +130,7 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
       diffs.add(_EpisodeTitleDiff(
         episode: ep,
         newTitle: newTitle,
-        changed: true,
+        action: _DiffAction.update,
         isSamePrefix: isSamePrefix,
       ));
     }
@@ -157,8 +167,6 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
         form.calNumberFromOne;
 
     for (final diff in diffs) {
-      if (!diff.changed) continue;
-
       final ep = diff.episode;
       final desc = ep.desc ??
           EpisodeDesc(
@@ -168,13 +176,28 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
             title: diff.newTitle,
             hideDefault: !diff.isSamePrefix,
           );
-      if (desc.notInsert) {
-        await EpisodeDescDao.insert(desc);
-      } else {
-        desc
-          ..title = diff.newTitle
-          ..hideDefault = !diff.isSamePrefix;
-        await EpisodeDescDao.update(desc);
+
+      switch (diff.action) {
+        case _DiffAction.same:
+          break;
+        case _DiffAction.delete:
+          if (!desc.notInsert) {
+            desc
+              ..title = ''
+              ..hideDefault = false;
+            await EpisodeDescDao.update(desc);
+          }
+          break;
+        case _DiffAction.update:
+          if (desc.notInsert) {
+            await EpisodeDescDao.insert(desc);
+          } else {
+            desc
+              ..title = diff.newTitle
+              ..hideDefault = !diff.isSamePrefix;
+            await EpisodeDescDao.update(desc);
+          }
+          break;
       }
     }
 
@@ -351,47 +374,59 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
                 itemCount: diffs.length,
                 itemBuilder: (_, index) {
                   final d = diffs[index];
+                  final oldTitle = d.oldTitleWithoutPrefix;
 
-                  if (!d.changed) {
-                    return ListTile(title: Text(d.oldTitle));
-                  }
-
-                  if (d.isSamePrefix) {
-                    final oldTitle = d.oldTitleWithoutPrefix;
-
-                    return ListTile(
-                      title: Text.rich(TextSpan(children: [
-                        TextSpan(text: d.prefix),
-                        if (oldTitle.isNotEmpty) ...[
-                          TextSpan(
-                            text: oldTitle,
-                            style: const TextStyle(
-                                decoration: TextDecoration.lineThrough),
+                  return switch (d.action) {
+                    _DiffAction.same => ListTile(title: Text(d.oldTitle)),
+                    _DiffAction.delete => ListTile(
+                        title: Text.rich(TextSpan(children: [
+                          TextSpan(text: d.prefix),
+                          if (oldTitle.isNotEmpty) ...[
+                            TextSpan(
+                              text: oldTitle,
+                              style: const TextStyle(
+                                  decoration: TextDecoration.lineThrough),
+                            ),
+                          ],
+                        ])),
+                      ),
+                    _DiffAction.update => d.isSamePrefix
+                        ? ListTile(
+                            title: Text.rich(TextSpan(children: [
+                              TextSpan(text: d.prefix),
+                              if (oldTitle.isNotEmpty) ...[
+                                TextSpan(
+                                  text: oldTitle,
+                                  style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough),
+                                ),
+                              ],
+                              TextSpan(
+                                text: d.newTitle,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                            ])),
+                          )
+                        : ListTile(
+                            title: Text.rich(TextSpan(children: [
+                              TextSpan(
+                                text: '${d.oldTitle}\n',
+                                style: const TextStyle(
+                                    decoration: TextDecoration.lineThrough),
+                              ),
+                              TextSpan(
+                                text: d.newTitle,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                            ])),
                           ),
-                        ],
-                        TextSpan(
-                          text: d.newTitle,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary),
-                        ),
-                      ])),
-                    );
-                  }
-
-                  return ListTile(
-                    title: Text.rich(TextSpan(children: [
-                      TextSpan(
-                        text: '${d.oldTitle}\n',
-                        style: const TextStyle(
-                            decoration: TextDecoration.lineThrough),
-                      ),
-                      TextSpan(
-                        text: d.newTitle,
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ])),
-                  );
+                  };
                 },
               ),
             )
@@ -478,15 +513,17 @@ class __EpisodeTitlesInputDialogState extends State<_EpisodeTitlesInputDialog> {
           .entries
           .map((entry) {
         final index = entry.key;
-        final e = entry.value;
+        final ep = entry.value;
+        final epName =
+            ep.nameCn?.isNotEmpty == true ? ep.nameCn! : (ep.name ?? '');
 
-        return e.sort == null || e.nameCn == null
+        return ep.sort == null
             ? ''
-            : e.type == BgmEpisodeType.main.value
+            : ep.type == BgmEpisodeType.main.value
                 ? widget.epStartNumber == null
-                    ? '第 ${e.sort} 集 ${e.nameCn}'
-                    : '第 ${widget.epStartNumber! + index} 集 ${e.nameCn}'
-                : 'SP${e.sort} ${e.nameCn}';
+                    ? '第 ${ep.sort} 集 $epName'
+                    : '第 ${widget.epStartNumber! + index} 集 $epName'
+                : 'SP${ep.sort} $epName';
       }).join('\n');
     } catch (e) {
       AppLog.error('获取bangumi集列表失败：$e');
@@ -528,7 +565,8 @@ class __EpisodeTitlesInputDialogState extends State<_EpisodeTitlesInputDialog> {
               minLines: 4,
               maxLines: 12,
               decoration: const InputDecoration(
-                hintText: '每行一集，空行表示跳过，示例：\n第 1 集 标题 1 \n\n第 3 集 标题 3',
+                hintText:
+                    '每行一集，示例：\n第 1 集 标题 1 \n第 2 集 标题 2\n\n提示：\n1. 空行表示跳过\n2. - 表示删除标题',
               ),
             ),
           ],
@@ -548,6 +586,8 @@ class __EpisodeTitlesInputDialogState extends State<_EpisodeTitlesInputDialog> {
   }
 }
 
+enum _DiffAction { same, delete, update }
+
 class _EpisodeTitleDiff {
   final Episode episode;
 
@@ -557,22 +597,23 @@ class _EpisodeTitleDiff {
 
   final String newTitle;
 
-  final bool changed;
+  final _DiffAction action;
 
   final bool isSamePrefix;
 
   _EpisodeTitleDiff({
     required this.episode,
     required this.newTitle,
-    required this.changed,
+    required this.action,
     required this.isSamePrefix,
   });
 
-  String get latestTitle => changed
-      ? isSamePrefix
-          ? '$prefix$newTitle'
-          : newTitle
-      : oldTitle;
+  String get latestTitle => switch (action) {
+        _DiffAction.same => oldTitle,
+        _DiffAction.update => isSamePrefix ? '$prefix$newTitle' : newTitle,
+        _DiffAction.delete => prefix,
+      }
+          .trim();
 
   String get prefix => '第 ${episode.numberWithStartNumber} 集 ';
 }
