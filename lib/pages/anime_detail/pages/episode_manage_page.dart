@@ -52,10 +52,18 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
 
   List<_EpisodeTitleDiff> diffs = [];
 
+  final scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     load();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   void load() async {
@@ -181,185 +189,12 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('集数管理')),
+      resizeToAvoidBottomInset: false,
       body: !loadOk
           ? const LoadingPage()
           : Stack(
               children: [
-                CustomScrollView(slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Text('总集数'),
-                              const SizedBox(width: 30),
-                              Expanded(
-                                child: NumberControlInputField(
-                                  minValue: episodeCntMinValue,
-                                  maxValue: episodeCntMaxValue,
-                                  initialValue: totalCnt,
-                                  showRangeHintText: false,
-                                  onChanged: (number) {
-                                    totalCnt = number.toInt();
-                                    loadEpisodes();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Text('起始集'),
-                              const SizedBox(width: 30),
-                              Expanded(
-                                child: NumberControlInputField(
-                                  minValue: episodeStartNumberMinValue,
-                                  maxValue: episodeStartNumberMaxValue,
-                                  initialValue: startNumber,
-                                  showRangeHintText: false,
-                                  onChanged: (number) {
-                                    startNumber = number.toInt();
-                                    loadEpisodes();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          SwitchListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: const Text('从第 1 集计数'),
-                              value: calEpisodeNumberFromOne,
-                              onChanged: (value) {
-                                calEpisodeNumberFromOne = value;
-                                loadEpisodes();
-                              }),
-                          const Divider(),
-                          ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: const Text(
-                              '预览',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    final lines = diffs
-                                        .map((d) => d.latestTitle)
-                                        .toList();
-                                    CommonUtil.copyContent(lines.join('\n'));
-                                  },
-                                  icon: const Icon(Icons.paste),
-                                  tooltip: '导出',
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    final r = await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          _EpisodeTitlesInputDialog(
-                                        anime: widget.animeController.anime,
-                                        initialValue: inputTitles.join('\n'),
-                                      ),
-                                    );
-                                    if (r is String) {
-                                      inputTitles = r
-                                          .split('\n')
-                                          // 清除回车 CR 键
-                                          .map((e) => e.trim())
-                                          .toList();
-                                      buildDiffs();
-                                    }
-                                  },
-                                  icon: const Icon(
-                                      Icons.document_scanner_outlined),
-                                  tooltip: '导入',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (totalCnt > 1)
-                    SliverToBoxAdapter(
-                      child: SliderTheme(
-                        data: const SliderThemeData(
-                          showValueIndicator: ShowValueIndicator.always,
-                        ),
-                        child: RangeSlider(
-                          // 最小值始终为 1，只对展示范围的 label 根据起始集调整
-                          min: 1,
-                          max: totalCnt.toDouble(),
-                          values: curRange,
-                          divisions: totalCnt - 1,
-                          labels: calEpisodeNumberFromOne
-                              ? RangeLabels('$rangeStart', '$rangeEnd')
-                              : RangeLabels('${rangeStart + startNumber - 1}',
-                                  '${rangeEnd + startNumber - 1}'),
-                          onChanged: (v) {
-                            curRange = v;
-                            buildDiffs();
-                          },
-                        ),
-                      ),
-                    ),
-                  if (totalCnt > 0)
-                    SliverPadding(
-                      padding: const EdgeInsets.only(bottom: 64),
-                      sliver: SliverList.builder(
-                        itemCount: diffs.length,
-                        itemBuilder: (_, index) {
-                          final d = diffs[index];
-
-                          if (!d.changed) {
-                            return ListTile(title: Text(d.oldTitle));
-                          }
-
-                          if (d.isSamePrefix) {
-                            return ListTile(
-                              title: Text.rich(TextSpan(children: [
-                                TextSpan(text: d.prefix),
-                                TextSpan(
-                                  text: d.newTitle,
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
-                                ),
-                              ])),
-                            );
-                          }
-
-                          return ListTile(
-                            title: Text.rich(TextSpan(children: [
-                              TextSpan(
-                                text: '${d.oldTitle}\n',
-                                style: const TextStyle(
-                                    decoration: TextDecoration.lineThrough),
-                              ),
-                              TextSpan(
-                                text: d.newTitle,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                              ),
-                            ])),
-                          );
-                        },
-                      ),
-                    )
-                ]),
+                _buildMainView(context),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -376,13 +211,210 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
             ),
     );
   }
+
+  Widget _buildMainView(BuildContext context) {
+    return Scrollbar(
+      controller: scrollController,
+      child: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Text('总集数'),
+                      const SizedBox(width: 30),
+                      Expanded(
+                        child: NumberControlInputField(
+                          minValue: episodeCntMinValue,
+                          maxValue: episodeCntMaxValue,
+                          initialValue: totalCnt,
+                          showRangeHintText: false,
+                          onChanged: (number) {
+                            totalCnt = number.toInt();
+                            loadEpisodes();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Text('起始集'),
+                      const SizedBox(width: 30),
+                      Expanded(
+                        child: NumberControlInputField(
+                          minValue: episodeStartNumberMinValue,
+                          maxValue: episodeStartNumberMaxValue,
+                          initialValue: startNumber,
+                          showRangeHintText: false,
+                          onChanged: (number) {
+                            startNumber = number.toInt();
+                            loadEpisodes();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('从第 1 集计数'),
+                      value: calEpisodeNumberFromOne,
+                      onChanged: (value) {
+                        calEpisodeNumberFromOne = value;
+                        loadEpisodes();
+                      }),
+                  const Divider(),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      '预览',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            final lines =
+                                diffs.map((d) => d.latestTitle).toList();
+                            CommonUtil.copyContent(lines.join('\n'));
+                          },
+                          icon: const Icon(Icons.paste),
+                          tooltip: '导出',
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            final r = await showDialog(
+                              context: context,
+                              builder: (context) => _EpisodeTitlesInputDialog(
+                                anime: widget.animeController.anime,
+                                initialValue: inputTitles.join('\n'),
+                                epStartNumber:
+                                    calEpisodeNumberFromOne ? 1 : null,
+                              ),
+                            );
+                            if (r is String) {
+                              inputTitles = r
+                                  .split('\n')
+                                  // 清除回车 CR 键
+                                  .map((e) => e.trim())
+                                  .toList();
+                              buildDiffs();
+                            }
+                          },
+                          icon: const Icon(Icons.document_scanner_outlined),
+                          tooltip: '导入',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (totalCnt > 1)
+            SliverToBoxAdapter(
+              child: SliderTheme(
+                data: const SliderThemeData(
+                  showValueIndicator: ShowValueIndicator.always,
+                ),
+                child: RangeSlider(
+                  // 最小值始终为 1，只对展示范围的 label 根据起始集调整
+                  min: 1,
+                  max: totalCnt.toDouble(),
+                  values: curRange,
+                  divisions: totalCnt - 1,
+                  labels: calEpisodeNumberFromOne
+                      ? RangeLabels('$rangeStart', '$rangeEnd')
+                      : RangeLabels('${rangeStart + startNumber - 1}',
+                          '${rangeEnd + startNumber - 1}'),
+                  onChanged: (v) {
+                    curRange = v;
+                    buildDiffs();
+                  },
+                ),
+              ),
+            ),
+          if (totalCnt > 0)
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 64),
+              sliver: SliverList.builder(
+                itemCount: diffs.length,
+                itemBuilder: (_, index) {
+                  final d = diffs[index];
+
+                  if (!d.changed) {
+                    return ListTile(title: Text(d.oldTitle));
+                  }
+
+                  if (d.isSamePrefix) {
+                    final oldTitle = d.oldTitleWithoutPrefix;
+
+                    return ListTile(
+                      title: Text.rich(TextSpan(children: [
+                        TextSpan(text: d.prefix),
+                        if (oldTitle.isNotEmpty) ...[
+                          TextSpan(
+                            text: oldTitle,
+                            style: const TextStyle(
+                                decoration: TextDecoration.lineThrough),
+                          ),
+                        ],
+                        TextSpan(
+                          text: d.newTitle,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                      ])),
+                    );
+                  }
+
+                  return ListTile(
+                    title: Text.rich(TextSpan(children: [
+                      TextSpan(
+                        text: '${d.oldTitle}\n',
+                        style: const TextStyle(
+                            decoration: TextDecoration.lineThrough),
+                      ),
+                      TextSpan(
+                        text: d.newTitle,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ])),
+                  );
+                },
+              ),
+            )
+        ],
+      ),
+    );
+  }
 }
 
 class _EpisodeTitlesInputDialog extends StatefulWidget {
-  const _EpisodeTitlesInputDialog(
-      {required this.anime, this.initialValue = ''});
+  const _EpisodeTitlesInputDialog({
+    required this.anime,
+    this.initialValue = '',
+    this.epStartNumber,
+  });
+
   final Anime anime;
   final String initialValue;
+
+  /// 用于生成第 n 集前缀
+  /// - null 时根据 bangumi 的 sort 生成
+  /// - 不为 null 时根据 `epStartNumber + index` 计算 n
+  final int? epStartNumber;
 
   @override
   State<_EpisodeTitlesInputDialog> createState() =>
@@ -440,14 +472,22 @@ class __EpisodeTitlesInputDialogState extends State<_EpisodeTitlesInputDialog> {
         BgmEpisodeType.sp.value
       ];
       inputCtr.text = eps
-          .where((episode) => destTypeValues.contains(episode.type))
-          .map((e) => e.sort == null || e.nameCn == null
-              ? ''
-              : e.type == BgmEpisodeType.main.value
-                  ? '第 ${e.sort} 集 ${e.nameCn}'
-                  : 'SP${e.sort} ${e.nameCn}')
+          .where((ep) => destTypeValues.contains(ep.type))
           .toList()
-          .join('\n');
+          .asMap()
+          .entries
+          .map((entry) {
+        final index = entry.key;
+        final e = entry.value;
+
+        return e.sort == null || e.nameCn == null
+            ? ''
+            : e.type == BgmEpisodeType.main.value
+                ? widget.epStartNumber == null
+                    ? '第 ${e.sort} 集 ${e.nameCn}'
+                    : '第 ${widget.epStartNumber! + index} 集 ${e.nameCn}'
+                : 'SP${e.sort} ${e.nameCn}';
+      }).join('\n');
     } catch (e) {
       AppLog.error('获取bangumi集列表失败：$e');
     } finally {
@@ -512,6 +552,8 @@ class _EpisodeTitleDiff {
   final Episode episode;
 
   String get oldTitle => episode.caption;
+
+  String get oldTitleWithoutPrefix => episode.desc?.title ?? '';
 
   final String newTitle;
 

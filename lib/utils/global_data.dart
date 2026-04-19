@@ -6,7 +6,7 @@ import 'package:animetrace/utils/climb/climb_aimii.dart';
 import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/climb/climb_cycdm.dart';
 import 'package:animetrace/utils/climb/climb_douban.dart';
-import 'package:animetrace/utils/climb/climb_dytl.dart';
+import 'package:animetrace/utils/climb/climb_dytt.dart';
 import 'package:animetrace/utils/climb/climb_girigirilove.dart';
 import 'package:animetrace/utils/climb/climb_gugu.dart';
 import 'package:animetrace/utils/climb/climb_nayfun.dart';
