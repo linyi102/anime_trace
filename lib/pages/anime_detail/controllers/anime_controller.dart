@@ -36,7 +36,7 @@ class AnimeController extends GetxController {
 
   /// 集、笔记
   List<Episode> episodes = [];
-  var loadEpisodeOk = false;
+  bool isLoadingEpisode = false;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -102,7 +102,7 @@ class AnimeController extends GetxController {
     anime.tagName = "";
 
     episodes.clear();
-    loadEpisodeOk = false;
+    isLoadingEpisode = false;
 
     labels.clear();
     mapSelected.clear();
@@ -202,8 +202,10 @@ class AnimeController extends GetxController {
   }
 
   Future<void> loadEpisode() async {
+    if (isLoadingEpisode) return;
+
     // 重置，然后重新渲染
-    loadEpisodeOk = false;
+    isLoadingEpisode = true;
     episodes.clear();
     update([episodeId]);
 
@@ -246,7 +248,7 @@ class AnimeController extends GetxController {
       }
     }
 
-    loadEpisodeOk = true;
+    isLoadingEpisode = false;
     // 收藏动漫后，需要显示集信息，因此还要更新detailPageId
     update([episodeId, detailPageId]);
   }
