@@ -27,7 +27,7 @@ dependencies:
   animations: ^2.0.7
   app_installer: ^1.1.0
   flutter_markdown: ^0.6.15
-  get_time_ago: ^1.1.6
+  get_time_ago: ^2.3.2
   bot_toast: ^4.0.3
   timer_count_down: ^2.2.2
   file_saver: ^0.2.14
