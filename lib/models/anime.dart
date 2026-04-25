@@ -1,6 +1,5 @@
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/enum/play_status.dart';
-import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
 import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/image_util.dart';

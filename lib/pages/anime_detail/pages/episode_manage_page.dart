@@ -226,7 +226,7 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
                     width: 300,
                     child: ActionButton(
                       onTap: submit,
-                      child: const Text('确定'),
+                      child: const Text('保存'),
                     ),
                   ),
                 ),
