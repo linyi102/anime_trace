@@ -9,6 +9,7 @@ import 'package:animetrace/utils/climb/climb_douban.dart';
 import 'package:animetrace/utils/climb/climb_dytt.dart';
 import 'package:animetrace/utils/climb/climb_girigirilove.dart';
 import 'package:animetrace/utils/climb/climb_gugu.dart';
+import 'package:animetrace/utils/climb/climb_hongguo.dart';
 import 'package:animetrace/utils/climb/climb_nayfun.dart';
 import 'package:animetrace/utils/climb/climb_omofun.dart';
 import 'package:animetrace/utils/climb/climb_qdm.dart';
@@ -27,6 +28,7 @@ List<ClimbWebsite> climbWebsites = [
   quClimbWebsite,
   doubanClimbWebsite,
   dyttWebsite,
+  hongguoWebsite,
   cycClimbWebsite,
   xifanWebsite,
   nyaFunWebsite,
@@ -195,12 +197,21 @@ final ggloveWebsite = ClimbWebsite(
 );
 
 final dyttWebsite = ClimbWebsite(
-  id: 13,
+  id: 14,
   defaultEnable: false,
   name: "电影天堂",
   iconUrl: "assets/images/website/dytt.png",
   regexp: "dytt",
   spkey: "enableWebSiteDytt",
   climb: ClimbDytt(),
-  desc: "",
+);
+
+final hongguoWebsite = ClimbWebsite(
+  id: 15,
+  defaultEnable: false,
+  name: "红果",
+  iconUrl: "assets/images/website/hongguo.png",
+  regexp: "hongguo",
+  spkey: "enableWebSiteHongguo",
+  climb: ClimbHongguo(),
 );

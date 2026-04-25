@@ -10,11 +10,10 @@ enum AnimeArea {
 
   const AnimeArea(this.label);
 
-  static AnimeArea parse(String text) {
+  static AnimeArea? parse(String text) {
     if (text.contains(RegExp(r'大陆|台湾|香港|澳门'))) {
       return AnimeArea.china;
     }
-    return AnimeArea.values.firstWhereOrNull((e) => text.contains(e.label)) ??
-        AnimeArea.unknown;
+    return AnimeArea.values.firstWhereOrNull((e) => text.contains(e.label));
   }
 }

@@ -46,7 +46,8 @@ class ClimbDytt with Climb {
     anime.premiereTime = extractTdValue('年代') ?? anime.premiereTime;
     anime.playStatus =
         PlayStatus.text2PlayStatus(extractTdValue('状态') ?? '').text;
-    anime.area = AnimeArea.parse(extractTdValue('地区') ?? '').label;
+    anime.area =
+        AnimeArea.parse(extractTdValue('地区') ?? '')?.label ?? anime.area;
     anime.animeEpisodeCnt = document
             .getElementsByClassName('playlist')
             .firstOrNull
