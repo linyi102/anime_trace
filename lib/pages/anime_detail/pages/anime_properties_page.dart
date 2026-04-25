@@ -186,8 +186,19 @@ class AnimePropertiesPage extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context);
+
+                final categorySelected =
+                    CategoryController.to.categories.contains(anime.category);
+
                 await RouteUtil.materialTo(
                     context, const AnimeCategoryListPage());
+
+                // 若原先已选择类别，但现在未选择，说明修改了类别的名字，此时重新加载动漫信息保证可以看到修改后的类别
+                if (categorySelected &&
+                    !CategoryController.to.categories
+                        .contains(anime.category)) {
+                  animeController.reloadAnime(anime);
+                }
               },
               child: const Text('自定义'),
             )

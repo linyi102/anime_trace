@@ -152,6 +152,7 @@ class AnimeController extends GetxController {
     // 重绘整个详情页
     loadingAnime = false;
     update([detailPageId]);
+    updateAnimeInfo();
   }
 
   void updateAnime(Anime newAnime) {
