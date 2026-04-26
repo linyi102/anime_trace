@@ -7,6 +7,7 @@ import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/week_record.dart';
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/dao/update_record_dao.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
@@ -74,8 +75,11 @@ class ClimbAnimeUtil {
     try {
       // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
       anime = await climb.climbAnimeInfo(anime);
-      anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
-          anime.animeEpisodeCnt, anime.episodeStartNumber);
+      // 根据 startNumber 调整网站获取到的集数 (能获取集列表的 Banugmi 出来)
+      if (climb is! ClimbBangumi) {
+        anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
+            anime.animeEpisodeCnt, anime.episodeStartNumber);
+      }
       if (showMessage) ToastUtil.showText("更新完毕");
     } catch (err, stack) {
       AppLog.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',

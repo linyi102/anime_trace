@@ -159,6 +159,9 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   Scaffold _buildDetailScreen() {
     return Scaffold(
       key: detailScreenKey,
+      // NOTE: 此处取消 resize 是因为用户复制文本后编辑集表单时，讯飞输入法展示的粘贴项会改变页面布局导致底部集不可见而销毁
+      // 在点击粘贴项后会重建刚才被销毁的集组件，所以在提交后修改的信息并没有变化 (因为集组件内部提交后 setState 无效)
+      resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: Stack(children: [

@@ -352,14 +352,27 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                     _dialogDeleteConfirm();
                   },
                 ),
-              ListTile(
-                title: const Text("评分"),
-                leading: const Icon(Icons.star_border_rounded),
-                onTap: () {
-                  Navigator.pop(dialogContext);
-                  showRatingDialog();
-                },
-              ),
+              _episode.desc?.rate == null
+                  ? ListTile(
+                      title: const Text("评分"),
+                      leading: const Icon(Icons.star_border_rounded),
+                      onTap: () {
+                        Navigator.pop(dialogContext);
+                        showRatingDialog();
+                      },
+                    )
+                  : ListTile(
+                      title: const Text('撤销评分'),
+                      leading: const Icon(Icons.star_border_rounded),
+                      onTap: () {
+                        Navigator.pop(dialogContext);
+                        setState(() {
+                          _episode.desc!.rate = null;
+                        });
+                        widget.animeController.autoUpdateRateIfNeed(context);
+                        EpisodeDescDao.update(_episode.desc!);
+                      },
+                    ),
             ],
           );
         });
@@ -381,10 +394,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
                 episode: _episode,
                 onChanged: (value) {
                   setState(() {});
-                },
-                animeRateOnChanged: (value) {
-                  _anime.rate = value;
-                  widget.animeController.updateAnimeInfo();
+                  widget.animeController.autoUpdateRateIfNeed(context);
                 },
               ),
             ),

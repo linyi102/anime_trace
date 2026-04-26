@@ -6,8 +6,10 @@ import 'package:animetrace/utils/climb/climb_aimii.dart';
 import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/climb/climb_cycdm.dart';
 import 'package:animetrace/utils/climb/climb_douban.dart';
+import 'package:animetrace/utils/climb/climb_dytt.dart';
 import 'package:animetrace/utils/climb/climb_girigirilove.dart';
 import 'package:animetrace/utils/climb/climb_gugu.dart';
+import 'package:animetrace/utils/climb/climb_hongguo.dart';
 import 'package:animetrace/utils/climb/climb_nayfun.dart';
 import 'package:animetrace/utils/climb/climb_omofun.dart';
 import 'package:animetrace/utils/climb/climb_qdm.dart';
@@ -25,6 +27,8 @@ List<ClimbWebsite> climbWebsites = [
   ggloveWebsite,
   quClimbWebsite,
   doubanClimbWebsite,
+  dyttWebsite,
+  hongguoWebsite,
   cycClimbWebsite,
   xifanWebsite,
   nyaFunWebsite,
@@ -190,4 +194,24 @@ final ggloveWebsite = ClimbWebsite(
   spkey: "enableWebSiteGirigirilove",
   climb: ClimbGGLove(),
   desc: "這是家彈幕視頻網站，這裡有各式各樣的動漫新番，友好的彈幕氛圍，有趣的評論，年輕人都在用。girigiri愛٩( >ω< )و 好耶~",
+);
+
+final dyttWebsite = ClimbWebsite(
+  id: 14,
+  defaultEnable: false,
+  name: "电影天堂",
+  iconUrl: "assets/images/website/dytt.png",
+  regexp: "dytt",
+  spkey: "enableWebSiteDytt",
+  climb: ClimbDytt(),
+);
+
+final hongguoWebsite = ClimbWebsite(
+  id: 15,
+  defaultEnable: false,
+  name: "红果",
+  iconUrl: "assets/images/website/hongguo.png",
+  regexp: "hongguo",
+  spkey: "enableWebSiteHongguo",
+  climb: ClimbHongguo(),
 );

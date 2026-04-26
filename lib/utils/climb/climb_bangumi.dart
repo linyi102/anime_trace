@@ -1,5 +1,6 @@
+import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:darty_json/darty_json.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/bangumi/bangumi.dart';
@@ -12,7 +13,6 @@ import 'package:animetrace/utils/climb/user_collection.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
 import 'package:animetrace/utils/time_util.dart';
-import 'package:animetrace/values/values.dart';
 import 'package:html/dom.dart';
 
 class ClimbBangumi with Climb {
@@ -21,7 +21,7 @@ class ClimbBangumi with Climb {
   factory ClimbBangumi() => _instance;
   ClimbBangumi._();
 
-  final repository = BangumiRepository();
+  final repository = const BangumiRepository();
 
   @override
   String get idName => "bangumi";
@@ -51,7 +51,7 @@ class ClimbBangumi with Climb {
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl +
-        "/subject_search/$keyword?cat=${Config.selectedBangumiSearchCategoryKey}";
+        "/subject_search/$keyword?cat=${SettingService.to.getBgmSearchCategory().value}";
     List<Anime> climbAnimes = [];
 
     final document = await dioGetAndParse(url, headers: BangumiApi.headers);
@@ -138,6 +138,7 @@ class ClimbBangumi with Climb {
 
     final r = await repository.fetchCollections(
         username: userId,
+        category: SettingService.to.getBgmSearchCategory(),
         type: siteCollectionTab.identity,
         pageNo: page - 1,
         pageSize: userCollPageSize);
@@ -167,9 +168,9 @@ class ClimbBangumi with Climb {
           break;
         }
       }
-      for (final category in AnimeCategory.values) {
-        if ((e.metaTags ?? []).contains(category.label)) {
-          anime.category = category.label;
+      for (final category in CategoryController.to.categories) {
+        if ((e.metaTags ?? []).contains(category)) {
+          anime.category = category;
           break;
         }
       }

@@ -12,7 +12,10 @@ enum PlayStatus {
   const PlayStatus(this.text, this.iconData);
 
   static PlayStatus text2PlayStatus(String text) {
-    if (text.contains("完结") || text.contains(RegExp(r"全\d+集"))) {
+    if (text.contains("完结") ||
+        text.contains(RegExp(r"全\d+集")) ||
+        // 电影天堂：HD国语、HD中字...
+        text.contains('HD')) {
       return PlayStatus.finished;
     } else if (text.contains("未知")) {
       return PlayStatus.unknown;

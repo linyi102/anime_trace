@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
+import 'package:animetrace/controllers/category_controller.dart';
 import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class Global {
     DioUtil.init();
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
-    // put常用的getController
+    // put常用的getController，部分init中访问到了表，因此需要放在ensureDBTable后
     await _putGetController();
     // 设置Windows窗口
     _handleWindowsManager();
@@ -71,11 +72,13 @@ class Global {
     Get.lazyPut(() => AnimeService());
     Get.lazyPut(() => SettingService());
 
-    Get.lazyPut(
-        () => UpdateRecordController()); // 放在ensureDBTable后，因为init中访问到了表
+    Get.lazyPut(() => UpdateRecordController());
     Get.lazyPut(() => AnimeDisplayController());
     Get.lazyPut(() => LabelsController());
     Get.lazyPut(() => RemoteController());
+    // NOTE: 部分操作需要可以直接获取到类别列表 (例如 Bangumi 根据标签列表过滤出类别)
+    // 因此不推荐使用懒加载，否则第一次获取的为默认类别数组
+    Get.put(CategoryController());
     Get.put(AppUpgradeController());
 
     final checklistController = ChecklistController();

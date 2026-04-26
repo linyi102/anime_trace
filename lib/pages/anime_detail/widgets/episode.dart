@@ -75,7 +75,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
 
           return SliverAnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child: !widget.animeController.loadEpisodeOk
+            child: widget.animeController.isLoadingEpisode
                 ? const SliverToBoxAdapter(child: LoadingWidget(height: 100))
                 : SliverList(
                     delegate:

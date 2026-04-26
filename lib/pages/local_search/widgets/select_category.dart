@@ -1,5 +1,5 @@
+import 'package:animetrace/controllers/category_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/pages/local_search/controllers/local_search_controller.dart';
 import 'package:animetrace/pages/local_search/models/local_select_filter.dart';
 import 'package:get/get.dart';
@@ -23,11 +23,11 @@ class _SelectCategoryViewState extends State<SelectCategoryView> {
       tag: widget.localSearchController.tag,
       builder: (_) => Scaffold(
         body: ListView.builder(
-          itemCount: AnimeCategory.values.length,
+          itemCount: CategoryController.to.categories.length,
           itemBuilder: (context, index) {
-            final category = AnimeCategory.values[index];
-            return RadioListTile<AnimeCategory>(
-                title: Text(category.label),
+            final category = CategoryController.to.categories[index];
+            return RadioListTile<String>(
+                title: Text(category),
                 toggleable: true,
                 value: category,
                 groupValue: localSelectFilter.category,

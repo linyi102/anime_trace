@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shell_executor/shell_executor.dart';
 
 bool flutterBuildVerbose = false;
-const flutterVersion = '3.27.0';
+const flutterVersion = '3.35.7';
 
 /// 打包脚本
 /// 环境变量：fvm, 7z, iscc

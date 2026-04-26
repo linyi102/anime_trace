@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_item_auto_load.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
@@ -79,14 +80,18 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           ),
           const ListTile(
             title: Text("这个可以做什么？"),
-            subtitle:
-                Text("如果你之前在Bangumi或豆瓣中收藏过很多电影或动漫，该功能可以帮忙把这些数据导入到漫迹中，而不需要手动添加"),
+            subtitle: Text("如果你之前在 Bangumi 中收藏过很多电影或动漫，该功能可以帮忙把这些数据导入到漫迹中"),
           ),
           const ListTile(
             title: Text("如何获取用户ID？"),
             subtitle: Text(
-                "在Bangumi中查看自己的信息时，访问的链接若为https://bangumi.tv/user/123456，那么该用户的ID就是123456"),
+                "在 Bangumi 中打开个人页面，若链接为 https://bangumi.tv/user/123456，那么该用户的 ID 就是 123456"),
           ),
+          if (climb is ClimbBangumi)
+            const ListTile(
+              title: Text("如何切换搜索类型？"),
+              subtitle: Text("返回上一页，找到搜索类型，点击切换。默认会搜索全部，包括动漫、书籍、音乐等"),
+            ),
         ],
       );
     }

@@ -207,7 +207,7 @@ class MyAppState extends State<MyApp> {
 
     return ThemeData(
       colorScheme: colorScheme,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

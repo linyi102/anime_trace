@@ -1,4 +1,5 @@
 import 'package:animetrace/dao/key_value_dao.dart';
+import 'package:animetrace/models/bangumi/subject_type.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:get/get.dart';
 
@@ -68,5 +69,26 @@ class SettingService extends GetxService {
   /// 设置标签是否反向排序
   Future<bool> setLabelSortReverse(bool isReverse) {
     return SPUtil.setBool('labelSortReverse', isReverse);
+  }
+
+  /// 获取 Banugmi 搜索类别
+  BgmSubjectType getBgmSearchCategory() {
+    final r = SPUtil.getString('selectedBangumiSearchCategoryKey',
+        defaultValue: BgmSubjectType.all.value);
+    return BgmSubjectType.fromValue(r) ?? BgmSubjectType.all;
+  }
+
+  /// 设置 Banugmi 搜索类别
+  void setBgmSearchCategory(BgmSubjectType category) {
+    SPUtil.setString('selectedBangumiSearchCategoryKey', category.value);
+  }
+
+  /// 自定义类别
+  Future<List<String>?> getAnimeCategories() async {
+    return KeyValueDao.getStringList('anime_categories');
+  }
+
+  Future<bool> setAnimeCategories(List<String> categries) async {
+    return (await KeyValueDao.setStringList('anime_categories', categries)) > 0;
   }
 }

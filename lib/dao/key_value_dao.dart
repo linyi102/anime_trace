@@ -87,21 +87,23 @@ class KeyValueDao {
     }
   }
 
-  static Future<List<String>>? getStringList(String key) async {
+  static Future<List<String>?> getStringList(String key) async {
     final rows = await db.query(
       tableName,
       columns: [columnValue],
       where: '$columnKey = ?',
       whereArgs: [key],
     );
-    if (rows.isEmpty) return [];
+    if (rows.isEmpty) return null;
+
     final String? value = rows.first[columnValue] as String? ?? '';
-    if (value == null || value.isEmpty) return [];
+    if (value == null || value.isEmpty) return null;
+
     try {
       return (jsonDecode(value) as List<dynamic>).cast<String>();
     } catch (exception) {
       AppLog.error(exception);
-      return [];
+      return null;
     }
   }
 }

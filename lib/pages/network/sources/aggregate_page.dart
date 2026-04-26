@@ -343,7 +343,7 @@ class _CommonCover extends StatefulWidget {
     this.coverUrl,
     this.title,
     this.subtitle,
-    // ignore: unused_element
+    // ignore: unused_element_parameter
     this.bottomRightText,
   });
 

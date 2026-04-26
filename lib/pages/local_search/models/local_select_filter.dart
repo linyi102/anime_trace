@@ -1,6 +1,5 @@
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/label.dart';
 
@@ -10,7 +9,7 @@ class LocalSelectFilter {
   late List<Label> labels;
   int? rate;
   AnimeArea? area;
-  AnimeCategory? category;
+  String? category;
   int? airDateYear;
   int? airDateMonth;
   PlayStatus? playStatus;
@@ -42,7 +41,7 @@ class LocalSelectFilter {
     List<Label>? labels,
     int? rate,
     AnimeArea? area,
-    AnimeCategory? category,
+    String? category,
     int? airDateYear,
     int? airDateMonth,
     PlayStatus? playStatus,

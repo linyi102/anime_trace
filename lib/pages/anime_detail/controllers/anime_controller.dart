@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
@@ -10,10 +11,8 @@ import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/label.dart';
-import 'package:animetrace/pages/anime_detail/widgets/episode_form.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
@@ -37,7 +36,7 @@ class AnimeController extends GetxController {
 
   /// 集、笔记
   List<Episode> episodes = [];
-  var loadEpisodeOk = false;
+  bool isLoadingEpisode = false;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -103,7 +102,7 @@ class AnimeController extends GetxController {
     anime.tagName = "";
 
     episodes.clear();
-    loadEpisodeOk = false;
+    isLoadingEpisode = false;
 
     labels.clear();
     mapSelected.clear();
@@ -153,6 +152,7 @@ class AnimeController extends GetxController {
     // 重绘整个详情页
     loadingAnime = false;
     update([detailPageId]);
+    updateAnimeInfo();
   }
 
   void updateAnime(Anime newAnime) {
@@ -203,8 +203,10 @@ class AnimeController extends GetxController {
   }
 
   Future<void> loadEpisode() async {
+    if (isLoadingEpisode) return;
+
     // 重置，然后重新渲染
-    loadEpisodeOk = false;
+    isLoadingEpisode = true;
     episodes.clear();
     update([episodeId]);
 
@@ -247,7 +249,7 @@ class AnimeController extends GetxController {
       }
     }
 
-    loadEpisodeOk = true;
+    isLoadingEpisode = false;
     // 收藏动漫后，需要显示集信息，因此还要更新detailPageId
     update([episodeId, detailPageId]);
   }
@@ -387,30 +389,6 @@ class AnimeController extends GetxController {
         // 否则未完成的靠前
         return ac.compareTo(bc);
       }
-    });
-  }
-
-  void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
-    if (!isCollected) return;
-
-    AnimeEpisodeInfo? result = await showDialog(
-      context: context,
-      builder: (context) => EpisodeForm(anime: anime),
-    );
-
-    if (result == null) {
-      AppLog.info("未选择，直接返回");
-      return;
-    }
-
-    AnimeDao.updateEpisodeInfoByAnimeId(anime.animeId, result).then((value) {
-      // 修改数据
-      anime.animeEpisodeCnt = result.totalCnt;
-      anime.episodeStartNumber = result.startNumber;
-      anime.calEpisodeNumberFromOne = result.calNumberFromOne;
-      // 重绘
-      updateAnimeInfo(); // 重绘信息行中显示的集数
-      loadEpisode(); // 重绘集信息
     });
   }
 
@@ -612,5 +590,53 @@ class AnimeController extends GetxController {
         },
       ),
     );
+  }
+
+  void autoUpdateRateIfNeed(BuildContext context) async {
+    bool? enable = await SettingService.to.getAutoCalcAnimeRateByEpisode();
+    if (enable == null) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('提示'),
+          content: const Text('是否根据集评分自动计算动漫评分？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                enable = false;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(false);
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                enable = true;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(true);
+                Navigator.pop(context);
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        ),
+      );
+    }
+    if (enable != true) return;
+
+    final descs = await EpisodeDescDao.queryAll(anime.animeId);
+    double totalRate = 0, rateEpisodeCnt = 0;
+    for (final desc in descs) {
+      if (desc.rate != null) {
+        rateEpisodeCnt++;
+        totalRate += desc.rate!;
+      }
+    }
+    if (rateEpisodeCnt == 0) return;
+
+    final newRate = ((totalRate / rateEpisodeCnt) * 2).round();
+
+    anime.rate = newRate;
+    updateAnimeInfo();
+    AnimeDao.updateAnimeRate(anime.animeId, newRate);
   }
 }
