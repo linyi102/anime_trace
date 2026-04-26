@@ -64,6 +64,12 @@ android {
         versionName flutterVersionName
     }
 
+    packaging {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
