@@ -1,7 +1,7 @@
 name: animetrace
 description: 漫迹
 publish_to: "none"
-version: 1.17.0
+version: 1.17.0+2026050201
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
