@@ -2,27 +2,39 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:animetrace/routes/route_log_observer.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/device_preview_screenshot_section.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter_logkit/logkit.dart';
 import 'package:animetrace/components/classic_refresh_style.dart';
 import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/global.dart';
-import 'package:animetrace/utils/extensions/color.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/pages/main_screen/view.dart';
 import 'package:animetrace/utils/sp_profile.dart';
-import 'package:animetrace/values/theme.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() {
-  runLogkitZonedGuarded(logger, () async {
+  runZonedGuardedWithLog(() async {
     await Global.init();
-    runApp(const MyApp());
+    runApp(
+      Global.enableDevicePreview
+          ? DevicePreview(
+              builder: (context) => const MyApp(),
+              tools: const [
+                DevicePreviewScreenshotSection(),
+                ...DevicePreview.defaultTools,
+              ],
+            )
+          : const MyApp(),
+    );
   });
 }
 
@@ -85,7 +97,7 @@ class _WindowWrapperState extends State<WindowWrapper> with WindowListener {
 
   @override
   void onWindowMaximize() async {
-    Log.info("全屏");
+    AppLog.info("全屏");
   }
 }
 
@@ -97,11 +109,8 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  final ThemeController themeController = Get.put(ThemeController());
-  TextStyle get textStyle =>
-      TextStyle(fontFamilyFallback: themeController.fontFamilyFallback);
-  ThemeColor get curLightThemeColor => themeController.lightThemeColor.value;
-  ThemeColor get curDarkThemeColor => themeController.darkThemeColor.value;
+  final themeController = Get.put(ThemeController());
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +120,9 @@ class MyAppState extends State<MyApp> {
       hideFooterWhenNotFull: true,
       child: Obx(() {
         return GetMaterialApp(
-          home: LogkitOverlayAttacher(
-            logger: logger,
-            child: const WindowWrapper(
-              child: MainScreen(),
-            ),
+          navigatorKey: navigatorKey,
+          home: const WindowWrapper(
+            child: MainScreen(),
           ),
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
@@ -131,88 +138,32 @@ class MyAppState extends State<MyApp> {
             child = BotToastInit()(context, child);
             // 全局点击空白处隐藏软键盘
             child = _buildScaffoldWithHideKeyboardByClickBlank(context, child);
-            return Obx(() => Theme(
-                  data: _getFixedTheme(context),
-                  child: child ?? const SizedBox(),
-                ));
+            // 桌面端监听鼠标侧键返回路由
+            if (PlatformUtil.isDesktop) {
+              child = _MouseEventWrapper(
+                child: child,
+                onBackMouseButtonUp: () {
+                  final c = navigatorKey.currentContext;
+                  if (c != null) Navigator.maybePop(c);
+                },
+              );
+            }
+            return child;
           },
-          navigatorObservers: [BotToastNavigatorObserver()],
+          navigatorObservers: [
+            BotToastNavigatorObserver(),
+            RouteLogObserver(),
+          ],
           // 后台应用显示名称
           title: '漫迹',
           // 自定义滚动行为(必须放在MaterialApp，放在GetMaterialApp无效)
-          scrollBehavior: MyCustomScrollBehavior(),
+          scrollBehavior: _MyCustomScrollBehavior(),
           // 主题
           themeMode: themeController.getThemeMode(),
-          theme: _getFlexThemeDataLight(),
-          darkTheme: _getFlexThemeDataDark(),
+          theme: _genThemeData(),
+          darkTheme: _genThemeData(isDark: true),
         );
       }),
-    );
-  }
-
-  ThemeData _getFixedTheme(BuildContext context) {
-    final isDark = Global.isDark(context);
-    final theme = Theme.of(context);
-    final iconColor = isDark
-        ? const Color.fromRGBO(169, 169, 169, 1)
-        : const Color.fromRGBO(60, 60, 60, 1);
-
-    return theme.copyWith(
-      listTileTheme: theme.listTileTheme.copyWith(
-        titleTextStyle: theme.textTheme.bodyMedium?.copyWith(fontSize: 15),
-        subtitleTextStyle: theme.textTheme.bodySmall
-            ?.copyWith(fontSize: 13, color: Theme.of(context).hintColor),
-        iconColor: iconColor,
-      ),
-      scrollbarTheme: _getScrollbarThemeData(context, isDark: isDark),
-      // 不在底部添加margin是为了避免相邻卡片向下间距变大
-      // 在顶部添加margin是为了保证不紧挨AppBar
-      cardTheme: theme.cardTheme.copyWith(
-        margin: themeController.useCardStyle.value
-            ? const EdgeInsets.fromLTRB(10, 10, 10, 0)
-            : const EdgeInsets.only(top: 10),
-        elevation: 0,
-      ),
-      pageTransitionsTheme: _getPageTransitionsTheme(),
-      appBarTheme: theme.appBarTheme.copyWith(
-        titleTextStyle:
-            Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
-      ),
-      switchTheme: SwitchThemeData(
-        thumbIcon:
-            WidgetStateProperty.resolveWith<Icon?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return Icon(Icons.check, color: theme.primaryColor);
-          }
-          return null;
-        }),
-      ),
-      textTheme: theme.textTheme.copyWith(
-        bodySmall: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
-      ),
-      bottomSheetTheme: theme.bottomSheetTheme.copyWith(
-        clipBehavior: Clip.antiAlias,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: theme.colorScheme.surfaceContainer,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-      ),
-      tooltipTheme: TooltipThemeData(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondaryFixed,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        textStyle: TextStyle(
-          color: theme.colorScheme.onSecondaryFixed,
-        ),
-      ),
     );
   }
 
@@ -240,8 +191,6 @@ class MyAppState extends State<MyApp> {
             themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
         TargetPlatform.iOS:
             themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
-        TargetPlatform.ohos:
-            themeController.pageSwitchAnimation.value.pageTransitionsBuilder,
         TargetPlatform.windows: const SharedAxisPageTransitionsBuilder(
           transitionType: SharedAxisTransitionType.horizontal,
         ),
@@ -249,52 +198,101 @@ class MyAppState extends State<MyApp> {
     );
   }
 
-  ThemeData _getFlexThemeDataLight() {
+  ThemeData _genThemeData({bool isDark = false}) {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: themeController.primaryColor.value,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+      dynamicSchemeVariant: themeController.dynamicSchemeVariant.value,
+    );
+
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blueAccent, brightness: Brightness.light),
-      useMaterial3: themeController.useM3.value,
-      cardTheme: CardTheme(
+      colorScheme: colorScheme,
+      cardTheme: CardThemeData(
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        elevation: 0,
       ),
-    );
-  }
-
-  ThemeData _getFlexThemeDataDark() {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blueAccent, brightness: Brightness.dark),
-      useMaterial3: themeController.useM3.value,
-      cardTheme: CardTheme(
+      listTileTheme: const ListTileThemeData(
+        visualDensity: VisualDensity.standard,
+      ),
+      pageTransitionsTheme: _getPageTransitionsTheme(),
+      bottomSheetTheme: const BottomSheetThemeData(
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
         ),
       ),
-    );
-  }
-
-  ScrollbarThemeData _getScrollbarThemeData(BuildContext context,
-      {bool isDark = false}) {
-    return ScrollbarThemeData(
-      trackVisibility: WidgetStateProperty.all(true),
-      // 粗细
-      thickness: WidgetStateProperty.all(5),
-      interactive: true,
-      radius: const Radius.circular(10),
-      thumbColor: WidgetStateProperty.all(
-        isDark ? Colors.white.withOpacityFactor(0.4) : Colors.black38,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainer,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryFixed,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        textStyle: TextStyle(
+          color: colorScheme.onSecondaryFixed,
+        ),
+      ),
+      fontFamilyFallback: themeController.fontFamilyFallback,
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: MenuStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: colorScheme.surfaceContainerHigh,
+        ),
       ),
     );
   }
 }
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
+class _MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Enable scrolling with mouse dragging
   @override
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
       };
+}
+
+class _MouseEventWrapper extends StatelessWidget {
+  const _MouseEventWrapper({
+    required this.child,
+    this.onBackMouseButtonUp,
+  });
+  final Widget child;
+  final void Function()? onBackMouseButtonUp;
+
+  @override
+  Widget build(BuildContext context) {
+    int? lastButton;
+
+    return Listener(
+      onPointerDown: (event) {
+        lastButton = event.buttons;
+      },
+      onPointerUp: (event) {
+        if (lastButton == kBackMouseButton) {
+          onBackMouseButtonUp?.call();
+        }
+        lastButton = null;
+      },
+      child: child,
+    );
+  }
 }

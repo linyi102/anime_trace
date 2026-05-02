@@ -56,7 +56,8 @@ class SPUtil {
   }
 
   /// 根据key获取字符串类型数组
-  static List<String> getStringList(String key, {List<String> defaultValue = const []}) {
+  static List<String> getStringList(String key,
+      {List<String> defaultValue = const []}) {
     return _sharedPreferences.getStringList(key) ?? defaultValue;
   }
 
@@ -66,18 +67,22 @@ class SPUtil {
   }
 
   /// 根据key获取Map类型
-  static Map getMap(String key) {
+  static Map? getMap(String key) {
     String jsonStr = _sharedPreferences.getString(key) ?? "";
-    return jsonStr.isEmpty ? Map : json.decode(jsonStr);
+    return jsonStr.isEmpty ? null : json.decode(jsonStr);
   }
 
   static Future<bool> clear() async {
-    Log.info("清空sharedPreferences");
+    AppLog.info("清空sharedPreferences");
     return await _sharedPreferences.clear();
   }
 
   static Future<bool> remove(String key) async {
-    Log.info("删除key：$key");
+    AppLog.info("删除key：$key");
     return await _sharedPreferences.remove(key);
+  }
+
+  static bool hasKey(String key) {
+    return _sharedPreferences.get(key) != null;
   }
 }

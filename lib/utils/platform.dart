@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class PlatformUtil {
-  static bool get isMobile => Platform.isAndroid || Platform.isIOS || Platform.isOhos;
+  static bool get isOhos => Platform.operatingSystem == 'ohos';
+
+  static bool get isMobile => Platform.isAndroid || Platform.isIOS || isOhos;
 
   /// Windows、Linux、macOS、fuchsia、Web
   static bool get isDesktop => !isMobile;

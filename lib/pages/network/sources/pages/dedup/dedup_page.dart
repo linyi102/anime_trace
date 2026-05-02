@@ -1,6 +1,6 @@
+import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
-import 'package:animetrace/components/anime_grid_cover.dart';
 import 'package:animetrace/components/operation_button.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/pages/anime_detail/anime_detail.dart';
@@ -159,13 +159,13 @@ class DedupPage extends StatelessWidget {
         return Column(
           children: [
             ListTile(
-              title: Text(name),
+              title: Text(name, style: Theme.of(context).textTheme.titleMedium),
             ),
             if (dedupController.animeMap.containsKey(name))
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: SizedBox(
-                  height: 160,
+                  height: 180,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: dedupController.animeMap[name]!.length,
@@ -181,12 +181,10 @@ class DedupPage extends StatelessWidget {
                               InkWell(
                                 onTap: () =>
                                     _enterAnimeDetailPage(context, name, index),
-                                child: AnimeGridCover(
-                                  anime,
-                                  coverWidth: 100,
-                                  showProgress: true,
-                                  showReviewNumber: false,
-                                  showName: false,
+                                child: CustomAnimeCover(
+                                  anime: anime,
+                                  width: 100,
+                                  style: AnimeCoverStyle.none(),
                                 ),
                               ),
                               _buildSelectIcon(anime, selected, context)

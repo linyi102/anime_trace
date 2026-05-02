@@ -106,7 +106,7 @@ class BackupUtil {
     }
     if (remoteBackupDirPath.isNotEmpty) {
       if (RemoteController.to.isOffline) {
-        Log.info("远程备份失败，请检查网络状态");
+        AppLog.info("远程备份失败，请检查网络状态");
         ToastUtil.showText("远程备份失败，请检查网络状态");
         tempZipFile.delete(); // 备份失败后需要删掉临时备份文件
         return "";
@@ -168,7 +168,7 @@ class BackupUtil {
           // "/animetrace/automatic/animetrace-backup") && // 以animetrace-backup开头
           // "/animetrace/automatic/$backupZipNamePrefix") && // 以$backupZipNamePrefix开头
           path.endsWith(".zip")) {
-        Log.info("删除文件：$path");
+        AppLog.info("删除文件：$path");
         WebDavUtil.client.remove(path);
       }
     }
@@ -188,6 +188,8 @@ class BackupUtil {
     bool delete = false,
     bool recordBeforeRestore = true,
   }) async {
+    bool restoreOk = false;
+
     // 1.还原前先备份当前数据库文件
     if (recordBeforeRestore) {
       String dirPath = await getRBRPath();
@@ -213,19 +215,7 @@ class BackupUtil {
       });
     }
 
-    // 2.关闭数据库连接，删除db、wal和shm等文件
-    try {
-      await SqliteUtil.database.close();
-      final dbDir = Directory(await SqliteUtil.getLocalRootDirPath());
-      Log.info('Delete:');
-      Log.info(dbDir.listSync(recursive: true).map((e) => e.path));
-      dbDir.deleteSync(recursive: true);
-    } catch (e) {
-      Log.warn('清理数据库失败：$e');
-      return Result.failure(500, '清理数据库失败');
-    }
-
-    // 3.然后进行还原
+    // 2.然后进行还原
     if (localBackupFilePath.endsWith(".db")) {
       // 对于手机：将该文件拷贝到新路径SqliteUtil.dbPath下，可以直接拷贝：await File(selectedFilePath).copy(SqliteUtil.dbPath);
       // 而window需要手动代码删除，否则：(OS Error: 当文件已存在时，无法创建该文件。
@@ -233,36 +223,40 @@ class BackupUtil {
       // 可以直接在里面写入即可，writeAsBytes会清空原先内容
       var content = await File(localBackupFilePath).readAsBytes();
       await File(SqliteUtil.dbPath).writeAsBytes(content);
+      await SqliteUtil.ensureDBTable();
+      restoreOk = true;
     } else if (localBackupFilePath.endsWith(".zip")) {
       await unzip(localBackupFilePath);
+      await SqliteUtil.ensureDBTable();
+      if (delete) File(localBackupFilePath).delete(); // Windows端还原本地备份时不删除
+      restoreOk = true;
+    }
+
+    if (restoreOk) {
+      // 重新获取更新记录、标签、清单
+      UpdateRecordController.to.updateData();
+      LabelsController.to.getAllLabels();
+      ChecklistController.to.restore();
+      // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
+      Get.delete<DedupController>();
+
+      return Result.success("", msg: "还原成功");
     } else {
       return Result.failure(404, "备份文件不正确，无法还原");
     }
-    await SqliteUtil.getInstance();
-    await SqliteUtil.ensureDBTable();
-    if (delete) File(localBackupFilePath).delete();
-
-    // 重新获取动漫更新记录
-    UpdateRecordController.to.updateData();
-    // 重新获取标签信息
-    LabelsController.to.getAllLabels();
-    // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
-    Get.delete<DedupController>();
-
-    return Result.success("", msg: "还原成功");
   }
 
   static Future<Result> restoreFromWebDav(dav_client.File file) async {
-    String localRootDirPath = (await getTemporaryDirectory()).path;
+    String localRootDirPath = await SqliteUtil.getLocalRootDirPath();
 
     if (file.path == null) {
       return Result.failure(404, "空文件路径，无法还原");
     }
-    Log.info("latestFilePath: ${file.path}");
+    AppLog.info("latestFilePath: ${file.path}");
     String localBackupFilePath = "$localRootDirPath/${file.name}";
     await WebDavUtil.client.read2File(file.path as String, localBackupFilePath);
 
-    Log.info(
+    AppLog.info(
         "localRootDirPath: $localRootDirPath\nlocalZipPath: $localBackupFilePath");
     // 下载到本地后，使用本地还原，还原结束后删除下载的文件
     return restoreFromLocal(localBackupFilePath, delete: true);
@@ -278,25 +272,25 @@ class BackupUtil {
     // Decode the Zip file
     final archive = ZipDecoder().decodeBytes(bytes);
 
-    Log.info("开始解压");
+    AppLog.info("开始解压");
     // Extract the contents of the Zip archive to disk.
     for (final file in archive) {
       final filename = file.name;
-      Log.info("filename: $filename");
+      AppLog.info("filename: $filename");
       if (file.isFile) {
         // 先判断该图片是否存在，如果不存在再解压出来。否则会闪退
         String filePath = "$localRootDirPath/$filename";
         if (filename.startsWith("images") && File(filePath).existsSync()) {
-          Log.info("已存在图片：$filePath");
+          AppLog.info("已存在图片：$filePath");
           continue;
         }
-        Log.info("解压文件：$localRootDirPath/$filename");
+        AppLog.info("解压文件：$localRootDirPath/$filename");
         final data = file.content as List<int>;
         File("$localRootDirPath/$filename")
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       } else {
-        Log.info("非文件：$localRootDirPath/$filename");
+        AppLog.info("非文件：$localRootDirPath/$filename");
         Directory("$localRootDirPath/$filename").createSync(recursive: true);
       }
     }
@@ -308,7 +302,7 @@ class BackupUtil {
 
     String backupDir = await WebDavUtil.getRemoteDirPath();
     if (backupDir.isEmpty) {
-      Log.info("远程备份路径为空");
+      AppLog.info("远程备份路径为空");
       return [];
     }
 
@@ -320,7 +314,7 @@ class BackupUtil {
     files.removeWhere(
         (element) => element.isDir ?? element.path?.endsWith("/") ?? false);
 
-    Log.info("获取完毕，共${files.length}个文件");
+    AppLog.info("获取完毕，共${files.length}个文件");
     files.sort((a, b) => b.mTime.toString().compareTo(a.mTime.toString()));
     return files;
   }

@@ -1,10 +1,9 @@
-
+import 'package:animetrace/global.dart';
 import 'package:flutter/material.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/controllers/theme_controller.dart';
 import 'package:animetrace/models/page_switch_animation.dart';
 import 'package:animetrace/pages/settings/widgets/main_tab_layout_setting.dart';
-import 'package:animetrace/utils/platform.dart';
-import 'package:animetrace/utils/settings.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/time_util.dart';
@@ -28,6 +27,8 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
   bool showModifyChecklistDialog =
       SPUtil.getBool("showModifyChecklistDialog", defaultValue: true);
 
+  final enableAutoCalcAnimeRateByEpisode = ValueNotifier(false);
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +43,10 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
     }
     curYearTimeExample = tmpDT.toString();
     todayTimeExample = now.toString();
+
+    SettingService.to.getAutoCalcAnimeRateByEpisode().then((value) {
+      enableAutoCalcAnimeRateByEpisode.value = value ?? false;
+    });
   }
 
   @override
@@ -60,7 +65,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
         SettingCard(
           title: '偏好',
           children: [
-            if (PlatformUtil.isMobile)
+            if (FeatureFlag.enableCustomPageTransition)
               ListTile(
                 title: const Text("选择页面切换动画"),
                 subtitle: Obx(() =>
@@ -86,18 +91,27 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                 ToastUtil.showText("重置成功");
               },
             ),
-            if (PlatformUtil.isMobile)
-              Obx(
-                () => SwitchListTile(
-                  title: const Text('隐藏底部栏文字'),
-                  value: ThemeController.to.hideMobileBottomLabel.value,
-                  onChanged: (value) {
-                    ThemeController.to.hideMobileBottomLabel.value = value;
-                    SettingsUtil.set(
-                        SettingsEnum.hideMobileBottomLabel, value);
-                  },
-                ),
+            Obx(
+              () => SwitchListTile(
+                title: const Text('隐藏底部栏文字'),
+                value: ThemeController.to.hideMobileBottomLabel.value,
+                onChanged: (value) {
+                  ThemeController.to.hideMobileBottomLabel.value = value;
+                  SettingService.to.setHideMobileBottomLabel(value);
+                },
               ),
+            ),
+            ValueListenableBuilder(
+              valueListenable: enableAutoCalcAnimeRateByEpisode,
+              builder: (context, value, child) => SwitchListTile(
+                title: const Text('根据集评分计算动漫评分'),
+                value: value,
+                onChanged: (to) {
+                  enableAutoCalcAnimeRateByEpisode.value = to;
+                  SettingService.to.setAutoCalcAnimeRateByEpisode(to);
+                },
+              ),
+            )
           ],
         ),
         SettingCard(

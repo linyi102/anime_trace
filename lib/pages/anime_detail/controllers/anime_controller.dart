@@ -1,4 +1,6 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/anime_detail/widgets/auto_move_checklist_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +11,8 @@ import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/episode.dart';
 import 'package:animetrace/models/label.dart';
-import 'package:animetrace/pages/anime_detail/widgets/episode_form.dart';
 import 'package:animetrace/pages/viewer/network_image/network_image_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
@@ -36,7 +36,7 @@ class AnimeController extends GetxController {
 
   /// 集、笔记
   List<Episode> episodes = [];
-  var loadEpisodeOk = false;
+  bool isLoadingEpisode = false;
 
   // 多选
   Map<int, bool> mapSelected = {};
@@ -102,7 +102,7 @@ class AnimeController extends GetxController {
     anime.tagName = "";
 
     episodes.clear();
-    loadEpisodeOk = false;
+    isLoadingEpisode = false;
 
     labels.clear();
     mapSelected.clear();
@@ -141,7 +141,7 @@ class AnimeController extends GetxController {
 
     // await Future.delayed(const Duration(seconds: 2));
     if (existDbAnime) {
-      Log.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
+      AppLog.info("数据库中存在动漫：${dbAnime.animeId}, ${dbAnime.animeName}");
       // 最新动漫指向数据库动漫
       newAnime = dbAnime;
     }
@@ -152,6 +152,7 @@ class AnimeController extends GetxController {
     // 重绘整个详情页
     loadingAnime = false;
     update([detailPageId]);
+    updateAnimeInfo();
   }
 
   void updateAnime(Anime newAnime) {
@@ -181,7 +182,7 @@ class AnimeController extends GetxController {
   void loadLabels() async {
     labels.clear();
     if (isCollected) {
-      Log.info("查询当前动漫(id=${anime.animeId})的所有标签");
+      AppLog.info("查询当前动漫(id=${anime.animeId})的所有标签");
       labels.addAll(await AnimeLabelDao.getLabelsByAnimeId(anime.animeId));
     }
   }
@@ -202,8 +203,10 @@ class AnimeController extends GetxController {
   }
 
   Future<void> loadEpisode() async {
+    if (isLoadingEpisode) return;
+
     // 重置，然后重新渲染
-    loadEpisodeOk = false;
+    isLoadingEpisode = true;
     episodes.clear();
     update([episodeId]);
 
@@ -246,7 +249,7 @@ class AnimeController extends GetxController {
       }
     }
 
-    loadEpisodeOk = true;
+    isLoadingEpisode = false;
     // 收藏动漫后，需要显示集信息，因此还要更新detailPageId
     update([episodeId, detailPageId]);
   }
@@ -331,7 +334,7 @@ class AnimeController extends GetxController {
                       color: Theme.of(context).colorScheme.primary)
                   : const Icon(Icons.radio_button_off_outlined),
               onTap: () {
-                Log.info("修改排序方式为${sortMethods[i]}");
+                AppLog.info("修改排序方式为${sortMethods[i]}");
                 _sortEpisodes(sortMethods[i]);
                 // 重绘
                 update([episodeId]);
@@ -389,30 +392,6 @@ class AnimeController extends GetxController {
     });
   }
 
-  void showDialogModEpisodeCntAndStartNumber(BuildContext context) async {
-    if (!isCollected) return;
-
-    AnimeEpisodeInfo? result = await showDialog(
-      context: context,
-      builder: (context) => EpisodeForm(anime: anime),
-    );
-
-    if (result == null) {
-      Log.info("未选择，直接返回");
-      return;
-    }
-
-    AnimeDao.updateEpisodeInfoByAnimeId(anime.animeId, result).then((value) {
-      // 修改数据
-      anime.animeEpisodeCnt = result.totalCnt;
-      anime.episodeStartNumber = result.startNumber;
-      anime.calEpisodeNumberFromOne = result.calNumberFromOne;
-      // 重绘
-      updateAnimeInfo(); // 重绘信息行中显示的集数
-      loadEpisode(); // 重绘集信息
-    });
-  }
-
   bool climbing = false;
 
   Future<bool> climbAnimeInfo(BuildContext context) async {
@@ -432,14 +411,14 @@ class AnimeController extends GetxController {
     // 因为更新时会用到oldAnime的id、tagName、animeEpisodeCnt，所以只深拷贝这些成员
     Anime oldAnime = anime.copyWith();
     // 需要传入_anime，然后会修改里面的值，newAnime也会引用该对象
-    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    AppLog.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
     Anime newAnime =
         await ClimbAnimeUtil.climbAnimeInfoByUrl(anime, showMessage: false);
     // 如果更新后动漫集数比原来的集数小，则不更新集数
     // 目的是解决一个bug：东京喰种PINTO手动设置集数为2后，更新动漫，获取的集数为0，集数更新为0后，此时再次手动修改集数，因为传入的初始值为0，即使按了取消，由于会返回初始值0，因此会导致集数变成了0
     // 因此，只要用户设置了集数，即使更新的集数小，也会显示用户设置的集数，只有当更新集数大时，才会更新。
     // 另一种解决方式：点击修改集数按钮时，传入此时_episodes的长度，而不是_anime.animeEpisodeCnt，这样就保证了传入给修改集数对话框的初始值为原来的集数，而不是更新的集数。
-    Log.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
+    AppLog.info("_anime.animeEpisodeCnt = ${anime.animeEpisodeCnt}");
     if (newAnime.animeEpisodeCnt < anime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = anime.animeEpisodeCnt;
     }
@@ -471,7 +450,7 @@ class AnimeController extends GetxController {
       }
 
       await AnimeDao.updateAnime(oldAnime, newAnime,
-              updateCover: shouldUpdateCover)
+              config: MigrateConfig(coverIsNew: shouldUpdateCover))
           .then((value) {
         // 如果集数变大，则重新加载页面。且插入到更新记录表中，然后重新获取所有更新记录，便于在更新记录页展示
         if (newAnime.animeEpisodeCnt > oldAnime.animeEpisodeCnt) {
@@ -593,7 +572,7 @@ class AnimeController extends GetxController {
         SPUtil.getBool("autoMoveToFinishedTag", defaultValue: false)) {
       anime.tagName = selectedFinishedTag;
       AnimeDao.updateTagByAnimeId(anime.animeId, anime.tagName);
-      Log.info("修改清单为${anime.tagName}");
+      AppLog.info("修改清单为${anime.tagName}");
       updateAnimeInfo();
       return;
     }
@@ -606,10 +585,58 @@ class AnimeController extends GetxController {
         onSelected: (String tag) {
           anime.tagName = tag;
           AnimeDao.updateTagByAnimeId(anime.animeId, tag);
-          Log.info("修改清单为${anime.tagName}");
+          AppLog.info("修改清单为${anime.tagName}");
           updateAnimeInfo();
         },
       ),
     );
+  }
+
+  void autoUpdateRateIfNeed(BuildContext context) async {
+    bool? enable = await SettingService.to.getAutoCalcAnimeRateByEpisode();
+    if (enable == null) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('提示'),
+          content: const Text('是否根据集评分自动计算动漫评分？'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                enable = false;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(false);
+                Navigator.pop(context);
+              },
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                enable = true;
+                SettingService.to.setAutoCalcAnimeRateByEpisode(true);
+                Navigator.pop(context);
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        ),
+      );
+    }
+    if (enable != true) return;
+
+    final descs = await EpisodeDescDao.queryAll(anime.animeId);
+    double totalRate = 0, rateEpisodeCnt = 0;
+    for (final desc in descs) {
+      if (desc.rate != null) {
+        rateEpisodeCnt++;
+        totalRate += desc.rate!;
+      }
+    }
+    if (rateEpisodeCnt == 0) return;
+
+    final newRate = ((totalRate / rateEpisodeCnt) * 2).round();
+
+    anime.rate = newRate;
+    updateAnimeInfo();
+    AnimeDao.updateAnimeRate(anime.animeId, newRate);
   }
 }

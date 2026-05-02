@@ -27,16 +27,14 @@ class _AutoMoveChecklistDialogState extends State<AutoMoveChecklistDialog> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("已观看最后一集，是否移动清单？"),
-            DropdownButton<String>(
-                value: selectedFinishedTag,
-                items: ChecklistController.to.tags
-                    .map((e) => DropdownMenuItem(
-                          child: Text(e),
-                          value: e,
-                        ))
+            const Text("已观看最后一集，是否移动清单？\n"),
+            DropdownMenu<String>(
+                requestFocusOnTap: false,
+                initialSelection: selectedFinishedTag,
+                dropdownMenuEntries: ChecklistController.to.tags
+                    .map((e) => DropdownMenuEntry(label: e, value: e))
                     .toList(),
-                onChanged: (value) {
+                onSelected: (value) {
                   selectedFinishedTag = value ?? selectedFinishedTag;
                   setState(() {});
                 })

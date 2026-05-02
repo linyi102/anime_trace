@@ -6,7 +6,6 @@ import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 class ChecklistManagePage extends StatefulWidget {
   const ChecklistManagePage({Key? key}) : super(key: key);
@@ -55,8 +54,6 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
         },
       )),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
         onPressed: () {
           showDialog(
               context: context,
@@ -98,7 +95,7 @@ class _ChecklistManagePageState extends State<ChecklistManagePage> {
                 );
               });
         },
-        child: const Icon(MingCuteIcons.mgc_add_line),
+        child: const Icon(Icons.add),
       ),
     );
   }

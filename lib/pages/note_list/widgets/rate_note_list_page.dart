@@ -56,7 +56,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
       rateNotes = value;
       loadRateNodeOk = true;
       setState(() {});
-      Log.info("共找到${rateNotes.length}条评价笔记");
+      AppLog.info("共找到${rateNotes.length}条评价笔记");
     });
   }
 
@@ -64,14 +64,14 @@ class _RateNoteListPageState extends State<RateNoteListPage>
     if (index + 5 ==
         rateNotePageParams.pageSize * rateNotePageParams.pageIndex) {
       rateNotePageParams.pageIndex++;
-      Log.info("再次请求${rateNotePageParams.pageSize}个数据");
+      AppLog.info("再次请求${rateNotePageParams.pageSize}个数据");
       Future(() {
         return NoteDao.getRateNotes(
             pageParams: rateNotePageParams, noteFilter: widget.noteFilter);
       }).then((value) {
-        Log.info("请求结束");
+        AppLog.info("请求结束");
         rateNotes.addAll(value);
-        Log.info("rateNotes.length=${rateNotes.length}");
+        AppLog.info("rateNotes.length=${rateNotes.length}");
         setState(() {});
       });
     }
@@ -100,7 +100,7 @@ class _RateNoteListPageState extends State<RateNoteListPage>
             controller: _rateScrollController,
             itemCount: rateNotes.length,
             itemBuilder: (BuildContext context, int index) {
-              // Log.info("$runtimeType: index=$index");
+              // AppLog.info("$runtimeType: index=$index");
               _loadMoreRateNoteData(index);
 
               Note note = rateNotes[index];

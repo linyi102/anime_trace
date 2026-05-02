@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:animetrace/global.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/app_upgrade_controller.dart';
@@ -45,7 +44,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 _buildWebsiteIconsRow(context),
               ],
             ),
-            if (!Platform.isOhos)
+            if (FeatureFlag.enableCheckUpgrade)
               GetBuilder<AppUpgradeController>(
                 init: AppUpgradeController.to,
                 initState: (_) {},
@@ -71,6 +70,7 @@ class _AboutVersionState extends State<AboutVersion> {
                       MaterialPageRoute(
                           builder: (context) => const ChangelogPage()));
                 }),
+            const ListTile(title: Text("导出日志"), onTap: AppLog.share),
             ListTile(
                 title: const Text("下载地址"),
                 subtitle: const Text("密码：eocv"),
@@ -81,7 +81,6 @@ class _AboutVersionState extends State<AboutVersion> {
                       uriStr: "https://wwc.lanzouw.com/b01uyqcrg?password=eocv",
                       inApp: false);
                 }),
-            ListTile(title: const Text("导出日志"), onTap: logger.shareLogs),
             ListTile(
                 title: const Text("QQ 交流群"),
                 subtitle: const Text("414226908"),

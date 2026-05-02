@@ -3,9 +3,11 @@ import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/models/anime_update_record.dart';
 import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/week_record.dart';
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/dao/update_record_dao.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
@@ -60,7 +62,7 @@ class ClimbAnimeUtil {
   static Future<Anime> climbAnimeInfoByUrl(Anime anime,
       {bool showMessage = true}) async {
     if (anime.animeUrl.isEmpty) {
-      Log.info("无来源，无法更新，返回旧动漫对象");
+      AppLog.info("无来源，无法更新，返回旧动漫对象");
       return anime;
     }
     Climb? climb = getClimbWebsiteByAnimeUrl(anime.animeUrl)?.climb;
@@ -73,11 +75,14 @@ class ClimbAnimeUtil {
     try {
       // 如果爬取时缺少element导致越界，此处会捕获到异常，保证正常进行
       anime = await climb.climbAnimeInfo(anime);
-      anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
-          anime.animeEpisodeCnt, anime.episodeStartNumber);
+      // 根据 startNumber 调整网站获取到的集数 (能获取集列表的 Banugmi 出来)
+      if (climb is! ClimbBangumi) {
+        anime.animeEpisodeCnt = _adjustEpisodeCntByEpisdoeStartNumber(
+            anime.animeEpisodeCnt, anime.episodeStartNumber);
+      }
       if (showMessage) ToastUtil.showText("更新完毕");
     } catch (err, stack) {
-      logger.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',
+      AppLog.error('获取动漫详情失败。动漫名：${anime.animeName}，网址：${anime.animeUrl}',
           error: err, stackTrace: stack);
     }
     return anime;
@@ -108,7 +113,7 @@ class ClimbAnimeUtil {
     // 异步更新所有动漫信息
     for (var anime in needUpdateAnimes) {
       needUpdateCnt++;
-      Log.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
+      AppLog.info("将要更新的第$needUpdateCnt个动漫：${anime.animeName}");
       // 要在爬取前赋值给oldAnime
       Anime oldAnime = anime.copyWith();
       // 爬取
@@ -120,18 +125,24 @@ class ClimbAnimeUtil {
 
           // 如果集数没变，仍然更新数据库中的动漫(可能封面等信息变化了)，只是不会添加到记录表中
           // 爬取完毕后，更新数据库中的动漫
-          AnimeDao.updateAnime(oldAnime, anime).then((value) {
+          AnimeDao.updateAnime(oldAnime, anime,
+              config: MigrateConfig(
+                defaultValue: false,
+                playStatusIsNew: true,
+                premiereTimeIsNew: true,
+                urlIsNew: true,
+              )).then((value) {
             // 之所以不采用批量插入，是担心因某个动漫爬取出错导致始终无法全部更新
             updateRecordController.incrementUpdateOkCnt();
             int updateOkCnt = updateRecordController.updateOkCnt.value;
-            Log.info("updateOkCnt=$updateOkCnt");
+            AppLog.info("updateOkCnt=$updateOkCnt");
           });
         }),
       );
     }
 
     updateRecordController.setNeedUpdateCnt(needUpdateCnt);
-    Log.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
+    AppLog.info("共需更新$needUpdateCnt个动漫，跳过了$skipUpdateCnt个动漫(完结)");
     if (needUpdateCnt > 0) await queue.onComplete;
     updateRecordController.updating.value = false;
     ToastUtil.showText("全局更新完毕");

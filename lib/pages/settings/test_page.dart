@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:animetrace/components/anime_custom_cover.dart';
+import 'package:animetrace/models/anime.dart';
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +16,13 @@ import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timer_count_down/timer_count_down.dart';
+import 'package:window_manager/window_manager.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -36,15 +42,15 @@ class _TestPageState extends State<TestPage> {
       percent = 0.5;
       if (mounted) setState(() {});
     });
-    super.initState();
-
     testDb();
+
+    super.initState();
   }
 
   void testDb() async {
     void printDir(String dirPath) {
       final dir = Directory(dirPath);
-      Log.info('$dir list: ');
+      AppLog.info('$dir list: ');
       if (dir.existsSync()) {
         final files = dir.listSync(recursive: true);
         for (var file in files) {
@@ -53,13 +59,13 @@ class _TestPageState extends State<TestPage> {
               "${stat.type}: ${file.path}, size: ${stat.size}, modified: ${stat.modified}");
         }
       } else {
-        Log.info("目录不存在: $dirPath");
+        AppLog.info("目录不存在: $dirPath");
       }
     }
 
     Future<void> printDbDirInfo() async {
       printDir(await SqliteUtil.getLocalRootDirPath());
-      Log.info(
+      AppLog.info(
           'db size: ${File(SqliteUtil.dbPath).statSync().size.toString()}');
     }
 
@@ -70,10 +76,9 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
+    AppLog.debug('build test page');
     return Scaffold(
-      appBar: AppBar(title: const Text("测试")),
+      appBar: AppBar(title: const Text('测试')),
       body: CommonScaffoldBody(child: _buildBody(context)),
     );
   }
@@ -81,6 +86,32 @@ class _TestPageState extends State<TestPage> {
   ListView _buildBody(BuildContext context) {
     return ListView(
       children: [
+        ListTile(
+          title: const Text('自定义封面'),
+          onTap: () async {
+            RouteUtil.materialTo(context, const CustomAnimeCoverPage());
+          },
+        ),
+        ListTile(
+          title: const Text('保存当前窗口大小'),
+          onTap: () async {
+            SpProfile.setWindowSize(await windowManager.getSize());
+          },
+        ),
+        ListTile(
+          title: const Text('loading mask'),
+          onTap: () {
+            ToastUtil.showLoading(
+              task: () async {
+                AppLog.info('do task');
+                await 3.delay();
+              },
+              onTaskComplete: () {
+                AppLog.info('task complete');
+              },
+            );
+          },
+        ),
         const LoadingWidget(),
         LottieBuilder.asset(
           Assets.lotties.playing,
@@ -115,7 +146,7 @@ class _TestPageState extends State<TestPage> {
                 appBar: AppBar(),
                 body: ListView.builder(
                   itemBuilder: (context, index) {
-                    Log.info('build $index');
+                    AppLog.info('build $index');
                     var realIndex = index % arr.length;
                     return ListTile(
                       title: Text(arr[realIndex]),
@@ -128,7 +159,7 @@ class _TestPageState extends State<TestPage> {
           },
         ),
         ListTile(
-          title: const Text("测试下拉刷新"),
+          title: const Text('测试下拉刷新'),
           onTap: () {
             var refreshController = RefreshController();
             int pageSize = 5;
@@ -150,7 +181,7 @@ class _TestPageState extends State<TestPage> {
                         setState(() {});
                       },
                       onLoading: () async {
-                        Log.info("加载更多");
+                        AppLog.info('加载更多');
                         list.addAll(List.generate(
                             pageSize, (index) => list.length + index));
                         await Future.delayed(const Duration(seconds: 1));
@@ -160,9 +191,9 @@ class _TestPageState extends State<TestPage> {
                       child: ListView.builder(
                         itemCount: list.length,
                         itemBuilder: (context, index) {
-                          Log.info("build $index");
+                          AppLog.info('build $index');
                           return ListTile(
-                            title: Text("$index"),
+                            title: Text('$index'),
                           );
                         },
                       ),
@@ -174,7 +205,7 @@ class _TestPageState extends State<TestPage> {
           },
         ),
         ListTile(
-          title: const Text("定时器"),
+          title: const Text('定时器'),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -184,20 +215,20 @@ class _TestPageState extends State<TestPage> {
                     timer?.cancel();
 
                     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                      Log.info("timer=${timer.tick}");
+                      AppLog.info('timer=${timer.tick}');
                     });
                   },
-                  child: const Text("开启")),
+                  child: const Text('开启')),
               TextButton(
                   onPressed: () {
                     timer?.cancel();
                   },
-                  child: const Text("关闭"))
+                  child: const Text('关闭'))
             ],
           ),
         ),
         ListTile(
-          title: const Text("倒计时"),
+          title: const Text('倒计时'),
           subtitle: Countdown(
             seconds: seconds,
             build: (context, value) => Text(
@@ -211,7 +242,7 @@ class _TestPageState extends State<TestPage> {
         ),
 
         ListTile(
-          title: const Text("测试图片失效"),
+          title: const Text('测试图片失效'),
           onTap: () async {
             // 模拟器测试时不管有无使用compute，大多数图片都会捕捉到连接超时错误
             // head改成get也是
@@ -220,24 +251,24 @@ class _TestPageState extends State<TestPage> {
             //     await compute(getAllLapseCoverAnimes, animes);
 
             // String url =
-            //     "https://proxy-tf-all-ws.bilivideo.com/?url=https://lain.bgm.tv/pic/cover/l/d6/4f/332261_szZEK.jpg";
+            //     'https://proxy-tf-all-ws.bilivideo.com/?url=https://lain.bgm.tv/pic/cover/l/d6/4f/332261_szZEK.jpg';
             // DioPackage.urlResponseOk(url).then((value) {
             //   if (value) {
-            //     Log.info("有效");
+            //     AppLog.info('有效');
             //   } else {
-            //     Log.info("失效");
+            //     AppLog.info('失效');
             //   }
             // });
           },
         ),
         ListTile(
-          title: const Text("不使用context来显示对话框"),
+          title: const Text('不使用context来显示对话框'),
           onTap: () {
             ToastUtil.showDialog(
               builder: (cancel) => AlertDialog(
-                title: const Text("还原失败"),
+                title: const Text('还原失败'),
                 actions: [
-                  TextButton(onPressed: () => cancel(), child: const Text("关闭"))
+                  TextButton(onPressed: () => cancel(), child: const Text('关闭'))
                 ],
               ),
             );
@@ -246,26 +277,26 @@ class _TestPageState extends State<TestPage> {
             //   animationReverseDuration: const Duration(milliseconds: 200),
             //   clickClose: true,
             //   toastBuilder: (cancelFunc) => AlertDialog(
-            //     title: const Text("还原失败"),
+            //     title: const Text('还原失败'),
             //     actions: [
             //       TextButton(
-            //           onPressed: () => cancelFunc(), child: const Text("关闭"))
+            //           onPressed: () => cancelFunc(), child: const Text('关闭'))
             //     ],
             //   ),
             // );
           },
         ),
         ListTile(
-          title: const Text("对话框中弹出消息"),
+          title: const Text('对话框中弹出消息'),
           onTap: () {
             showDialog(
                 context: context,
                 builder: (context) => SimpleDialog(
                       children: [
                         ListTile(
-                          title: const Text("弹出消息"),
+                          title: const Text('弹出消息'),
                           onTap: () {
-                            ToastUtil.showText("${DateTime.now()}");
+                            ToastUtil.showText('${DateTime.now()}');
                           },
                         ),
                       ],
@@ -273,28 +304,28 @@ class _TestPageState extends State<TestPage> {
           },
         ),
         ListTile(
-          title: const Text("弹出消息"),
+          title: const Text('弹出消息'),
           onTap: () {
-            // ToastUtil.showText("${DateTime.now()}");
-            ToastUtil.showText("正在更新书架");
+            // ToastUtil.showText('${DateTime.now()}');
+            ToastUtil.showText('正在更新书架');
           },
         ),
         ListTile(
-          title: const Text("加载框1"),
+          title: const Text('加载框1'),
           onTap: () async {
             BuildContext? loadingContext;
             showDialog(
                 context: context,
                 builder: (context) {
                   loadingContext = context;
-                  return const LoadingDialog("获取信息中...");
+                  return const LoadingDialog('获取信息中...');
                 });
             await Future.delayed(const Duration(seconds: 2));
             if (loadingContext != null) Navigator.pop(loadingContext!);
           },
         ),
         ListTile(
-          title: const Text("加载框2"),
+          title: const Text('加载框2'),
           onTap: () async {
             BotToast.showCustomLoading(
               toastBuilder: (void Function() cancelFunc) {
@@ -303,11 +334,11 @@ class _TestPageState extends State<TestPage> {
                   cancelFunc.call();
                 });
 
-                return const LoadingDialog("获取信息中...");
+                return const LoadingDialog('获取信息中...');
               },
               clickClose: true,
               onClose: () {
-                Log.info("close");
+                AppLog.info('close');
               },
             );
 
@@ -318,10 +349,10 @@ class _TestPageState extends State<TestPage> {
           },
         ),
         ListTile(
-          title: const Text("加载框3"),
+          title: const Text('加载框3'),
           onTap: () async {
             ToastUtil.showLoading(
-                msg: "获取信息中...",
+                msg: '获取信息中...',
                 task: () async {
                   await Future.delayed(const Duration(milliseconds: 200));
                 });
@@ -329,13 +360,87 @@ class _TestPageState extends State<TestPage> {
         ),
         // 不管用
         ListTile(
-          title: const Text("清除缓存"),
-          subtitle: Text("${imageCache.currentSizeBytes / 1024 / 1024}MB"),
+          title: const Text('清除缓存'),
+          subtitle: Text('${imageCache.currentSizeBytes / 1024 / 1024}MB'),
           onTap: () {
             // imageCache.clear();
           },
         )
       ],
+    );
+  }
+}
+
+class CustomAnimeCoverPage extends StatefulWidget {
+  const CustomAnimeCoverPage({super.key});
+
+  @override
+  State<CustomAnimeCoverPage> createState() => _CustomAnimeCoverPageState();
+}
+
+class _CustomAnimeCoverPageState extends State<CustomAnimeCoverPage> {
+  AnimeCoverStyle style = const AnimeCoverStyle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('自定义封面')),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 260,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 100,
+              itemBuilder: (context, index) {
+                AppLog.debug('listview horizontal build $index');
+                return Column(
+                  // 使用Column保证封面靠上
+                  children: [
+                    CustomAnimeCover(
+                      width: 120,
+                      anime: Anime(
+                        animeId: index,
+                        animeName: '示例名字' * (index + 1),
+                        checkedEpisodeCnt: index % 10,
+                        animeEpisodeCnt: 10,
+                        animeCoverUrl: 'https://picsum.photos/300/200',
+                        hasJoinedSeries: index % 3 == 0,
+                      ),
+                      style: style,
+                      onTap: () {},
+                      onLongPress: () {},
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: AlignedGridView.count(
+              crossAxisCount: 4,
+              itemCount: 100,
+              itemBuilder: (context, index) {
+                AppLog.debug('gridview build $index');
+                return CustomAnimeCover(
+                  anime: Anime(
+                    animeId: index,
+                    animeName: '示例名字' * (index + 1),
+                    checkedEpisodeCnt: index % 10,
+                    animeEpisodeCnt: 10,
+                    animeCoverUrl: 'https://picsum.photos/300/200',
+                    hasJoinedSeries: index % 3 == 0,
+                  ),
+                  style: style,
+                  onTap: () {},
+                  onLongPress: () {},
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

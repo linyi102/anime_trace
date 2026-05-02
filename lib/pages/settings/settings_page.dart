@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:animetrace/widgets/rotated_logo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -128,12 +126,10 @@ class _SettingPageState extends State<SettingPage> {
             _enterDetail(const GeneralSettingPage());
           },
         ),
-        if (FeatureFlag.enableSelectLocalImage)
+        if (FeatureFlag.enablePickLocalImage)
           ListTile(
             iconColor: Theme.of(context).colorScheme.primary,
-            leading: const Icon(
-              MingCuteIcons.mgc_pic_2_line,
-            ),
+            leading: const Icon(Icons.image_outlined),
             title: const Text("图片设置"),
             onTap: () {
               _enterDetail(const ImagePathSetting());
@@ -234,7 +230,7 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildImageTypeOption(
                   title: "默认图片", imageTypeIdx: 0, setDialogState: setState),
-              if (!Platform.isIOS && !Platform.isOhos)
+              if (FeatureFlag.enablePickLocalImage)
                 _buildImageTypeOption(
                   title: "本地图片",
                   imageTypeIdx: 1,

@@ -65,106 +65,94 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     });
   }
 
-  _pop() {
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     if (currentIndex >= imagePaths.length) currentIndex = imagePaths.length - 1;
     if (currentIndex < 0) currentIndex = 0;
 
-    return WillPopScope(
-        onWillPop: () async {
-          _pop();
-          return true;
-        },
-        child: Listener(
-          onPointerSignal: (pointerSignal) {
-            if (PlatformUtil.isDesktop && pointerSignal is PointerScrollEvent) {
-              if (pointerSignal.scrollDelta.dy > 0) {
-                _animatedToNextImage();
-              } else {
-                _animatedToPreviousImage();
-              }
-            }
-          },
-          child: imagePaths.isEmpty
-              ? const Scaffold(
-                  backgroundColor: Colors.black,
-                  body: Stack(
-                    children: [
-                      StackAppBar(),
-                      Align(
-                        alignment: Alignment.center,
-                        child:
-                            Text('没有图片', style: TextStyle(color: Colors.white)),
-                      )
-                    ],
-                  ),
-                )
-              : Scaffold(
-                  body: Stack(
-                    children: [
-                      _buildPhotoViewGallery(),
-                      // 都叠放在图片上面，否则无法显示
-                      if (!fullScreen) _buildStackAppBar(context),
-                      // 没有全屏时显示预览图片
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Offstage(
-                            offstage:
-                                imagePaths.length == 1 ? true : fullScreen,
-                            child: MultiPlatform(
-                                mobile: SizedBox(
-                                  height: 100,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: _buildScrollAxis(),
-                                ),
-                                desktop: Container(
-                                  height: 100,
-                                  padding: const EdgeInsets.all(6),
-                                  width:
-                                      MediaQuery.of(context).size.width * 2 / 3,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    color: Colors.black54,
-                                  ),
-                                  child: _buildScrollAxis(),
-                                )),
-                          ),
-                        ),
+    return Listener(
+      onPointerSignal: (pointerSignal) {
+        if (PlatformUtil.isDesktop && pointerSignal is PointerScrollEvent) {
+          if (pointerSignal.scrollDelta.dy > 0) {
+            _animatedToNextImage();
+          } else {
+            _animatedToPreviousImage();
+          }
+        }
+      },
+      child: imagePaths.isEmpty
+          ? const Scaffold(
+              backgroundColor: Colors.black,
+              body: Stack(
+                children: [
+                  StackAppBar(),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text('没有图片', style: TextStyle(color: Colors.white)),
+                  )
+                ],
+              ),
+            )
+          : Scaffold(
+              body: Stack(
+                children: [
+                  _buildPhotoViewGallery(),
+                  // 都叠放在图片上面，否则无法显示
+                  if (!fullScreen) _buildStackAppBar(context),
+                  // 没有全屏时显示预览图片
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Offstage(
+                        offstage: imagePaths.length == 1 ? true : fullScreen,
+                        child: MultiPlatform(
+                            mobile: SizedBox(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width,
+                              child: _buildScrollAxis(),
+                            ),
+                            desktop: Container(
+                              height: 100,
+                              padding: const EdgeInsets.all(6),
+                              width: MediaQuery.of(context).size.width * 2 / 3,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.black54,
+                              ),
+                              child: _buildScrollAxis(),
+                            )),
                       ),
-                      if (showSwitchImageButton &&
-                          PlatformUtil.isDesktop &&
-                          currentIndex > 0)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: _HoverButton(
-                            icon: Icons.arrow_back_rounded,
-                            onTap: () {
-                              _animatedToPreviousImage();
-                            },
-                          ),
-                        ),
-                      if (showSwitchImageButton &&
-                          PlatformUtil.isDesktop &&
-                          currentIndex < widget.imagePaths.length - 1)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: _HoverButton(
-                            icon: Icons.arrow_forward_rounded,
-                            onTap: () {
-                              _animatedToNextImage();
-                            },
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                ),
-        ));
+                  if (showSwitchImageButton &&
+                      PlatformUtil.isDesktop &&
+                      currentIndex > 0)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _HoverButton(
+                        icon: Icons.arrow_back_rounded,
+                        onTap: () {
+                          _animatedToPreviousImage();
+                        },
+                      ),
+                    ),
+                  if (showSwitchImageButton &&
+                      PlatformUtil.isDesktop &&
+                      currentIndex < widget.imagePaths.length - 1)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _HoverButton(
+                        icon: Icons.arrow_forward_rounded,
+                        onTap: () {
+                          _animatedToNextImage();
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+    );
   }
 
   Future<void> _animatedToPreviousImage() {
@@ -239,7 +227,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                         builder: (context) => const ImagePathSetting()))
                     .then((dirChanged) {
                   if (dirChanged) {
-                    Log.info("修改了图片目录，重新获取本地图片");
+                    AppLog.info("修改了图片目录，重新获取本地图片");
                     _getImageLocalPaths();
                     setState(() {});
                     // 用于图片浏览器的上级页面更新状态

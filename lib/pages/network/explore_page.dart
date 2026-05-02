@@ -17,7 +17,6 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [

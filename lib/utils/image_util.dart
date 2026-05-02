@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/global.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:path/path.dart';
 import 'package:animetrace/utils/log.dart';
@@ -22,7 +23,10 @@ class ImageUtil {
       "coverImageWindowsRootDirPath";
 
   static getInstance() async {
-    if (Platform.isAndroid) {
+    if (!FeatureFlag.enablePickLocalImage) {
+      noteImageRootDirPath = '';
+      coverImageRootDirPath = '';
+    } else if (Platform.isAndroid) {
       noteImageRootDirPath =
           SPUtil.getString(noteImageRootDirPathKeyInAndroid, defaultValue: "");
       coverImageRootDirPath =
@@ -32,9 +36,6 @@ class ImageUtil {
           SPUtil.getString(noteImageRootDirPathKeyInWindows, defaultValue: "");
       coverImageRootDirPath =
           SPUtil.getString(coverImageRootDirPathKeyInWindows, defaultValue: "");
-    } else if (Platform.isIOS || Platform.isOhos) {
-      noteImageRootDirPath = '';
-      coverImageRootDirPath = '';
     } else {
       throw ("未适配平台：${Platform.operatingSystem}");
     }
@@ -75,12 +76,12 @@ class ImageUtil {
 
   static String getRelativeCoverImagePath(String absoluteImagePath) {
     // 绝对路径去掉根路径的长度，就是相对路径
-    Log.info("绝对路径absoluteImagePath=$absoluteImagePath");
+    AppLog.info("绝对路径absoluteImagePath=$absoluteImagePath");
     String relativeImagePath =
         _removeRootDirPath(absoluteImagePath, ImageUtil.coverImageRootDirPath);
-    Log.info(
+    AppLog.info(
         "图片根路径ImageUtil.coverImageRootDirPath=${ImageUtil.coverImageRootDirPath}");
-    Log.info("去除图片根路径后，relativeImagePath: $relativeImagePath");
+    AppLog.info("去除图片根路径后，relativeImagePath: $relativeImagePath");
     return relativeImagePath;
   }
 
@@ -111,10 +112,10 @@ class ImageUtil {
   }
 
   static String _fixPathSeparator(String path) {
-    // Log.info("修复前，路径为$path");
+    // AppLog.info("修复前，路径为$path");
     path = path.replaceAll("/", separator);
     path = path.replaceAll("\\", separator);
-    // Log.info("修复后，路径为$path");
+    // AppLog.info("修复后，路径为$path");
     return path;
   }
 }

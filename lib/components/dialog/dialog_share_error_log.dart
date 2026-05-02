@@ -17,7 +17,7 @@ Future<void> showShareErrorLog({String content = ""}) async {
         TextButton(
           onPressed: () {
             close();
-            logger.shareLogs();
+            AppLog.share();
           },
           child: const Text("分享"),
         )

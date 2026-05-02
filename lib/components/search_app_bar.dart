@@ -10,7 +10,6 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.onTapClear,
       this.showCancelButton = false,
       this.onTapCancelButton,
-      this.useModernStyle = true,
       this.isAppBar = true,
       this.automaticallyImplyLeading = true,
       this.bottom,
@@ -23,7 +22,6 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   final void Function()? onTapClear;
   final String hintText;
 
-  final bool useModernStyle;
   final bool automaticallyImplyLeading;
   final bool showCancelButton;
   final bool isAppBar;
@@ -50,11 +48,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 自动弹出键盘
       autofocus: autofocus,
       controller: inputController,
-      decoration: InputDecoration(
-        hintText: hintText,
-        // border: InputBorder.none,
-        filled: false,
-      ),
+      decoration: _generateInputDecoration(context),
       onEditingComplete: () {
         if (onEditingComplete != null) {
           onEditingComplete!();
@@ -65,23 +59,30 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  _generateInputDecoration(BuildContext context) {
+    return InputDecoration(
+        filled: false,
+        hintText: hintText,
+        suffixIcon: inputController == null
+            ? null
+            : ValueListenableBuilder(
+                valueListenable: inputController!,
+                builder: (context, value, child) {
+                  if (value.text.isEmpty) return const SizedBox.shrink();
+                  return IconButton(
+                    onPressed: onTapClear,
+                    icon: const Icon(Icons.close, size: 18),
+                  );
+                },
+              ));
+  }
+
   Widget _buildCancelButton(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(6),
-          onTap: onTapCancelButton,
-          child: Container(
-              padding: const EdgeInsets.all(8),
-              child: const Center(child: Text("取消"))),
-        ),
-      ],
-    );
+    return TextButton(onPressed: onTapCancelButton, child: const Text('取消'));
   }
 
   // 取消键盘聚焦
-  void _cancelFocus(context) {
+  _cancelFocus(context) {
     FocusNode blankFocusNode = FocusNode(); // 空白焦点
     FocusScope.of(context).requestFocus(blankFocusNode); // 焦点传给空白焦点
   }

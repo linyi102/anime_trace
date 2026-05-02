@@ -37,7 +37,7 @@ class ClimbYhdm with Climb {
     String str = animeInfo.getElementsByTagName("p")[0].innerHtml;
     // str内容：
     // <label>别名:</label>古見さんは、コミ ュ症です。2期
-    // Log.info("str=$str");
+    // AppLog.info("str=$str");
     anime.nameAnother = str.substring(str.lastIndexOf(">") + 1); // +1跳过找的>
     // 获取封面
     String? coverUrl = document
@@ -102,7 +102,7 @@ class ClimbYhdm with Climb {
           episodeCnt = int.parse(episodeCntStr.substring(
               episodeCntStartIndex, episodeCntEndIndex));
         } catch (e) {
-          Log.info("解析出错：$episodeCntStr");
+          AppLog.info("解析出错：$episodeCntStr");
         }
       }
     } else if (episodeCntStr.contains("01-")) {

@@ -1,3 +1,5 @@
+import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
 import 'package:darty_json/darty_json.dart';
 import 'package:animetrace/models/anime.dart';
@@ -11,7 +13,6 @@ import 'package:animetrace/utils/climb/user_collection.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
 import 'package:animetrace/utils/time_util.dart';
-import 'package:animetrace/values/values.dart';
 import 'package:html/dom.dart';
 
 class ClimbBangumi with Climb {
@@ -20,7 +21,7 @@ class ClimbBangumi with Climb {
   factory ClimbBangumi() => _instance;
   ClimbBangumi._();
 
-  final repository = BangumiRepository();
+  final repository = const BangumiRepository();
 
   @override
   String get idName => "bangumi";
@@ -33,24 +34,24 @@ class ClimbBangumi with Climb {
 
   @override
   List<SiteCollectionTab> get siteCollectionTabs => [
-        SiteCollectionTab(title: "想看", word: "wish"),
-        SiteCollectionTab(title: "看过", word: "collect"),
-        SiteCollectionTab(title: "在看", word: "do"),
-        SiteCollectionTab(title: "搁置", word: "on_hold"),
-        SiteCollectionTab(title: "放弃", word: "dropped"),
+        SiteCollectionTab(title: "想看", identity: 1),
+        SiteCollectionTab(title: "看过", identity: 2),
+        SiteCollectionTab(title: "在看", identity: 3),
+        SiteCollectionTab(title: "搁置", identity: 4),
+        SiteCollectionTab(title: "放弃", identity: 5),
       ];
 
   @override
   String get userCollBaseUrl => "$baseUrl/anime/list";
 
   @override
-  int get userCollPageSize => 24;
+  int get userCollPageSize => 100;
 
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
     String url = baseUrl +
-        "/subject_search/$keyword?cat=${Config.selectedBangumiSearchCategoryKey}";
+        "/subject_search/$keyword?cat=${SettingService.to.getBgmSearchCategory().value}";
     List<Anime> climbAnimes = [];
 
     final document = await dioGetAndParse(url, headers: BangumiApi.headers);
@@ -92,19 +93,20 @@ class ClimbBangumi with Climb {
     ];
     final now = DateTime.now();
     final episodes = allEpisodes
-        .where((episode) => needEpisodeTypeValues.contains(episode.type));
+        .where((episode) => needEpisodeTypeValues.contains(episode.type))
+        // 去除 type=0 的 sort=*.5 的特殊集。type=1 (sp) 正常解析
+        // 例如：名侦探柯南 ep 762.5 sort 762.5 type 0
+        .where((episode) => !(episode.type == BgmEpisodeType.main.value &&
+            episode.sort.toString().endsWith('.5')));
     final playedEpisodes =
         episodes.where((episode) => episode.airdate?.isBefore(now) ?? false);
-    if (allEpisodes.length >= repository.episodesLimit) {
-      anime.playStatus = PlayStatus.unknown.text;
-    } else {
-      anime.animeEpisodeCnt = playedEpisodes.length;
-      anime.playStatus = playedEpisodes.isEmpty
-          ? PlayStatus.notStarted.text
-          : playedEpisodes.length < episodes.length
-              ? PlayStatus.playing.text
-              : PlayStatus.finished.text;
-    }
+
+    anime.animeEpisodeCnt = playedEpisodes.length;
+    anime.playStatus = playedEpisodes.isEmpty
+        ? PlayStatus.notStarted.text
+        : playedEpisodes.length < episodes.length
+            ? PlayStatus.playing.text
+            : PlayStatus.finished.text;
 
     return anime;
   }
@@ -128,32 +130,55 @@ class ClimbBangumi with Climb {
   /// 查询用户某个收藏下的列表
   @override
   Future<UserCollection> climbUserCollection(
-      String userId, SiteCollectionTab siteCollectionTab,
-      {int page = 1}) async {
-    String url =
-        "$userCollBaseUrl/$userId/${siteCollectionTab.word}?page=$page";
+    String userId,
+    SiteCollectionTab siteCollectionTab, {
+    int page = 1,
+  }) async {
+    final collection = UserCollection(totalCnt: 0, animes: []);
 
-    UserCollection userCollection = UserCollection(totalCnt: 0, animes: []);
-    var document = await dioGetAndParse(url);
-    if (document == null) {
-      return userCollection;
-    }
+    final r = await repository.fetchCollections(
+        username: userId,
+        category: SettingService.to.getBgmSearchCategory(),
+        type: siteCollectionTab.identity,
+        pageNo: page - 1,
+        pageSize: userCollPageSize);
+    collection.totalCnt = r.total;
+    collection.animes = r.list.map((e) {
+      String info = [
+        if (e.date != null) TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
+        if (e.eps != null) '${e.eps.toString()} 集',
+      ].join(' / ');
 
-    // 获取该tab动漫数量
-    // <li><a href="/anime/list/509755/wish" ><span>想看        (44)</span></a></li>                        <li><a href="/anime/list/509755/collect" class="focus"><span>看过        (138)</span></a></li>                        <li><a href="/anime/list/509755/do" ><span>在看        (56)</span></a></li>                        <li><a href="/anime/list/509755/on_hold" ><span>搁置        (6)</span></a></li>                        <li><a href="/anime/list/509755/dropped" ><span>抛弃        (1)</span></a></li>        </ul>
-    // 懒惰匹配 wish.*?\([0-9]*\)
-    // 可以匹配到 wish" ><span>想看        (44)
-    var navSubTabs = document.getElementsByClassName("navSubTabs")[0];
-    var str = RegExp("${siteCollectionTab.word}.*?\\([0-9]*\\)")
-        .firstMatch(navSubTabs.innerHtml)?[0];
-    if (str != null) {
-      str = str.substring(str.indexOf("(") + 1, str.indexOf(")"));
-      userCollection.totalCnt = int.tryParse(str) ?? 0;
-    }
+      final anime = Anime(
+        animeName: (e.nameCn ?? '').isNotEmpty ? e.nameCn! : (e.name ?? ''),
+        nameOri: e.name ?? '',
+        animeCoverUrl: e.images?.large ?? '',
+        animeUrl: '$baseUrl/subject/${e.id}',
+        premiereTime: e.date == null
+            ? ''
+            : TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
+        animeDesc: e.summary ?? '',
+        tempInfo: info,
+        animeEpisodeCnt: e.eps ?? 0,
+      );
 
-    // 在原来基础上添加(加载更多)，所以使用addAll，而非赋值
-    userCollection.animes.addAll(parseAnimeListByBrowserItemList(document));
-    return userCollection;
+      for (final area in AnimeArea.values) {
+        if ((e.metaTags ?? []).contains(area.label)) {
+          anime.area = area.label;
+          break;
+        }
+      }
+      for (final category in CategoryController.to.categories) {
+        if ((e.metaTags ?? []).contains(category)) {
+          anime.category = category;
+          break;
+        }
+      }
+
+      return anime;
+    }).toList();
+
+    return collection;
   }
 
   List<Anime> parseAnimeListByBrowserItemList(Document document) {

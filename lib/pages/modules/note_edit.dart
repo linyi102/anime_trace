@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:animetrace/global.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -35,16 +35,17 @@ class NoteEditPage extends StatefulWidget {
 
 class _NoteEditPageState extends State<NoteEditPage> {
   bool _loadOk = false;
-  bool _updateNoteContent = false; // 如果文本内容发生变化，返回时会更新数据库
-  var noteContentController = TextEditingController();
-  bool changeOrderIdx = false;
+  bool _updateNoteContent = false;
+  bool _changeOrderIdx = false;
 
+  final contentInputCtr = TextEditingController();
   final scrollController = ScrollController();
+  Timer? syncTimer;
 
   @override
   void initState() {
     super.initState();
-    Log.info("进入笔记${widget.note.id}");
+    AppLog.info("进入笔记${widget.note.id}");
     _loadData();
   }
 
@@ -52,44 +53,25 @@ class _NoteEditPageState extends State<NoteEditPage> {
   void dispose() {
     super.dispose();
     scrollController.dispose();
+    syncTimer?.cancel();
   }
 
-  _loadData() async {
-    Log.info("note.id=${widget.note.id}");
-    // 已经能保证是最新的了，所以不需要重新获取
-    // NoteDao.getNoteContentAndImagesByNoteId(widget.note.id).then((value) {
-    //   if (value.id == 0) {
-    //     Navigator.of(context).pop(widget.note);
-    //     ToastUtil.showText("未找到该笔记");
-    //   } else {
-    //     widget.note.relativeLocalImages = value.relativeLocalImages;
-    //     noteContentController.text = widget.note.noteContent;
-    //     _loadOk = true;
-    //     setState(() {});
-    //   }
-    // });
+  void _loadData() async {
+    final existNoteId = await NoteDao.existNoteId(widget.note.id);
+    if (!existNoteId) {
+      // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
+      widget.note.id = 0;
+      Navigator.of(context).pop(widget.note);
+      ToastUtil.showText("未找到该笔记");
+      return;
+    }
 
-    Future(() {
-      return NoteDao.existNoteId(widget.note.id);
-    }).then((existNoteId) {
-      if (!existNoteId) {
-        // 笔记id置0，从笔记编辑页返回到笔记列表页，接收到后根据动漫id删除所有相关笔记
-        widget.note.id = 0;
-        Navigator.of(context).pop(widget.note);
-        ToastUtil.showText("未找到该笔记");
-      } else {
-        noteContentController.text = widget.note.noteContent;
-        _loadOk = true;
-        setState(() {});
-      }
-      // // 记录所有图片的初始下标
-      // for (int i = 0; i < widget.note.relativeLocalImages.length; ++i) {
-      //   initialOrderIdx[widget.note.relativeLocalImages[i].imageId] = i;
-      // }
-    });
+    contentInputCtr.text = widget.note.noteContent;
+    _loadOk = true;
+    setState(() {});
   }
 
-  _onWillpop() async {
+  void _onWillpop() async {
     if (widget.note.isEmpty) {
       NoteDao.deleteNoteById(widget.note.id);
       Navigator.pop(context, null);
@@ -98,9 +80,22 @@ class _NoteEditPageState extends State<NoteEditPage> {
 
     Navigator.pop(context, widget.note);
 
+    _sync();
+  }
+
+  void _scheduleSync() {
+    AppLog.info('[NoteEditPage] schedule sync note');
+
+    syncTimer?.cancel();
+    syncTimer = Timer(const Duration(seconds: 1), _sync);
+  }
+
+  void _sync() {
+    AppLog.info('[NoteEditPage] sync note');
+
     // 后台更新数据库中的图片顺序
     // 全部更新。只要移动了，就更新所有图片的记录顺序
-    if (changeOrderIdx) {
+    if (_changeOrderIdx) {
       for (int newOrderIdx = 0;
           newOrderIdx < widget.note.relativeLocalImages.length;
           ++newOrderIdx) {
@@ -108,29 +103,24 @@ class _NoteEditPageState extends State<NoteEditPage> {
         ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
       }
     }
-    // 局部更新
-    // for (int newOrderIdx = 0;
-    //     newOrderIdx < widget.note.relativeLocalImages.length;
-    //     ++newOrderIdx) {
-    //   int imageId = widget.note.relativeLocalImages[newOrderIdx].imageId;
-    //   // 有缺陷，详细参考getRelativeLocalImgsByNoteId方法
-    //   if (initialOrderIdx[imageId] != newOrderIdx) {
-    //     ImageDao.updateImageOrderIdxById(imageId, newOrderIdx);
-    //   }
-    // }
+
     if (_updateNoteContent) {
       NoteDao.updateNoteContentByNoteId(
           widget.note.id, widget.note.noteContent);
     }
+
+    _changeOrderIdx = false;
+    _updateNoteContent = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
         // 返回键
         _onWillpop();
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -212,15 +202,15 @@ class _NoteEditPageState extends State<NoteEditPage> {
             ? TimeUtil.getHumanReadableDateTimeStr(widget.note.createTime)
             : "${widget.note.episode.caption} ${widget.note.episode.getDate()}",
         style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
   _showNoteContent() {
     return TextField(
-      // 不能放在这里，否则点击行尾时，光标会跑到行首
-      // controller: noteContentController..text = widget.note.noteContent,
-      controller: noteContentController..text,
+      controller: contentInputCtr,
       decoration: const InputDecoration(
         hintText: "描述",
         contentPadding: EdgeInsets.all(16),
@@ -235,12 +225,13 @@ class _NoteEditPageState extends State<NoteEditPage> {
       onChanged: (value) {
         _updateNoteContent = true;
         widget.note.noteContent = value;
+        _scheduleSync();
       },
     );
   }
 
   _buildReorderNoteImgGridView({required int crossAxisCount}) {
-    Log.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
+    AppLog.info("_buildReorderNoteImgGridView：开始构建笔记图标网格组件");
 
     return ReorderableGridView.count(
       padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -266,9 +257,9 @@ class _NoteEditPageState extends State<NoteEditPage> {
       dragStartDelay: const Duration(milliseconds: 200),
       onReorder: (oldIndex, newIndex) {
         // 下标没变直接返回
-        Log.info("oldIndex=$oldIndex, newIndex=$newIndex");
+        AppLog.info("oldIndex=$oldIndex, newIndex=$newIndex");
         if (oldIndex == newIndex) {
-          Log.info("拖拽了，但未改变顺序，直接返回");
+          AppLog.info("拖拽了，但未改变顺序，直接返回");
           return;
         }
 
@@ -276,8 +267,8 @@ class _NoteEditPageState extends State<NoteEditPage> {
           final element = widget.note.relativeLocalImages.removeAt(oldIndex);
           widget.note.relativeLocalImages.insert(newIndex, element);
         });
-        changeOrderIdx = true;
-        Log.info("改变了顺序，修改changeOrderIdx为$changeOrderIdx，将在返回后更新所有图片记录顺序");
+        _changeOrderIdx = true;
+        _scheduleSync();
       },
       // 拖拽时的组件
       dragWidgetBuilder: (int index, Widget child) => Material(
@@ -286,25 +277,22 @@ class _NoteEditPageState extends State<NoteEditPage> {
           child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
       footer: [
-        if (FeatureFlag.enableSelectLocalImage) _buildAddButton(),
+        if (FeatureFlag.enablePickLocalImage) _buildAddButton(),
       ],
     );
   }
 
-  Container _buildAddButton() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        color: Theme.of(context).hoverColor,
-        // border: Border.all(
-        //   style: BorderStyle.solid,
-        //   color: Theme.of(context).hintColor,
-        // ),
-      ),
+  Widget _buildAddButton() {
+    final radius = BorderRadius.circular(AppTheme.noteImgRadius);
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Material(
+      color: primary.withOpacityFactor(0.1),
+      borderRadius: radius,
       child: InkWell(
         onTap: () => _pickLocalImages(),
-        borderRadius: BorderRadius.circular(AppTheme.noteImgRadius),
-        child: Icon(Icons.add, color: Theme.of(context).hintColor),
+        borderRadius: radius,
+        child: Icon(Icons.add, color: primary.withOpacityFactor(0.5)),
       ),
     );
   }
@@ -353,23 +341,19 @@ class _NoteEditPageState extends State<NoteEditPage> {
       );
       return;
     }
-    if (Platform.isWindows || Platform.isAndroid) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
-        allowMultiple: true,
-      );
-      if (result == null) return;
-      List<PlatformFile> platformFiles = result.files;
-      for (var platformFile in platformFiles) {
-        String absoluteImagePath = platformFile.path ?? "";
-        await _addImage(absoluteImagePath);
-      }
-    } else if (Platform.isIOS || Platform.isOhos) {
-      ToastUtil.showText('暂不支持选择本地图片');
-    } else {
-      throw ("未适配平台：${Platform.operatingSystem}");
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+      allowMultiple: true,
+    );
+    if (result == null) return;
+    List<PlatformFile> platformFiles = result.files;
+    for (var platformFile in platformFiles) {
+      String absoluteImagePath = platformFile.path ?? "";
+      await _addImage(absoluteImagePath);
     }
+
     setState(() {});
   }
 

@@ -64,7 +64,7 @@ class LapseCoverController extends GetxController {
         queue.add<bool>(() => detectAnime(anime)).then((isOk) {
           detectProgressController.count++;
           if (!isOk) {
-            Log.info('失效封面: ${anime.animeName} (${anime.animeCoverUrl})');
+            AppLog.info('失效封面: ${anime.animeName} (${anime.animeCoverUrl})');
             coverAnimes.add(anime);
             update();
           }
@@ -73,11 +73,11 @@ class LapseCoverController extends GetxController {
       await queue.onComplete;
       page.pageIndex++;
     }
-    Log.info('检测结束，共发现${coverAnimes.length}个失效封面');
+    AppLog.info('检测结束，共发现${coverAnimes.length}个失效封面');
   }
 
   Future<bool> detectAnime(Anime anime) async {
-    Log.info('detect ${anime.animeName} (${anime.animeCoverUrl})');
+    AppLog.info('detect ${anime.animeName} (${anime.animeCoverUrl})');
     if (anime.animeCoverUrl.startsWith('http')) {
       if (mockDetect) {
         return DateTime.now().microsecondsSinceEpoch % 3 == 0;

@@ -24,7 +24,7 @@ class FadeTransitionsBuilder extends PageTransitionsBuilder {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    // Log.info("${animation.value}");
+    // AppLog.info("${animation.value}");
 
     return FadeTransition(
       opacity: animation,
@@ -36,7 +36,7 @@ class FadeTransitionsBuilder extends PageTransitionsBuilder {
     //   tween: Tween(begin: 0.0, end: 1.0),
     //   duration: const Duration(milliseconds: 400),
     //   builder: (BuildContext context, double value, Widget? child1) {
-    //     Log.info("value=$value");
+    //     AppLog.info("value=$value");
     //     return Opacity(opacity: value, child: child);
     //   },
     // );

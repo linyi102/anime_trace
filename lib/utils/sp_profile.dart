@@ -1,23 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:animetrace/global.dart';
 import 'package:animetrace/models/page_switch_animation.dart';
 import 'package:animetrace/utils/log.dart';
 
 import 'sp_util.dart';
 
 /// 记录和修改shared_preferences的值
+@Deprecated('use SettingService instead')
 class SpProfile {
-  // 导入数据页是否跳过同名动漫
-  static void setSkipDupNameAnime(bool value) {
-    SPUtil.setBool("skipDupNameAnime", value);
-  }
-
-  static bool getSkipDupNameAnime() {
-    return SPUtil.getBool("skipDupNameAnime", defaultValue: false);
-  }
-
   // 选择的路由动画
   static void savePageSwitchAnimationId(int id) {
     // 不能将其转为map后保存，因为后期可能会修改名称，所以保存不会变化的id
@@ -51,7 +42,7 @@ class SpProfile {
 
   // 窗口大小
   static Future<bool> setWindowSize(Size size) async {
-    Log.info("修改窗口大小：$size");
+    AppLog.info("修改窗口大小：$size");
     await SPUtil.setDouble("WindowWidth", size.width);
     await SPUtil.setDouble("WindowHeight", size.height);
     return true;
@@ -63,18 +54,12 @@ class SpProfile {
   // 900*600
   static double getWindowWidth() {
     double defaultValue = 1024.0;
-    if (Global.isRelease) {
-      return SPUtil.getDouble("WindowWidth", defaultValue: defaultValue);
-    }
-    return defaultValue;
+    return SPUtil.getDouble("WindowWidth", defaultValue: defaultValue);
   }
 
   static double getWindowHeight() {
     double defaultValue = 720.0;
-    if (Global.isRelease) {
-      return SPUtil.getDouble("WindowHeight", defaultValue: defaultValue);
-    }
-    return defaultValue;
+    return SPUtil.getDouble("WindowHeight", defaultValue: defaultValue);
   }
 
   //  Windows侧边栏展开或收缩

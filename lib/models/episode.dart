@@ -3,7 +3,9 @@ import 'package:animetrace/models/note.dart';
 import 'package:animetrace/utils/time_util.dart';
 
 class Episode {
-  final int _number; // 第几集
+  /// 集编号，从 1 开始
+  final int _number;
+
   String? dateTime; // 完成日期，若未完成，则是null
   int reviewNumber;
   int startNumber;

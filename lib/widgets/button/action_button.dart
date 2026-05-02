@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 enum ButtonLoaderStyle {
@@ -17,7 +19,7 @@ class ActionButton extends StatefulWidget {
     this.loader,
     this.height,
   }) : super(key: key);
-  final Future<void> Function()? onTap;
+  final FutureOr<void> Function()? onTap;
   final Widget? child;
   final Widget? loader;
   final double? height;

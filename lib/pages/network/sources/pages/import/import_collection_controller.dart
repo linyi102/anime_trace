@@ -1,3 +1,4 @@
+import 'package:animetrace/models/enum/play_status.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/anime.dart';
@@ -5,7 +6,6 @@ import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/utils/climb/site_collection_tab.dart';
 import 'package:animetrace/utils/climb/user_collection.dart';
 import 'package:animetrace/utils/log.dart';
-import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get.dart';
@@ -41,6 +41,10 @@ class ImportCollectionController extends GetxController {
       addOk = 0; // 添加成功
   bool stopQuickCollect = false;
   bool stopping = false;
+
+  /// 播放状态
+  /// 不是未知时，直接设置播放状态而不是通过请求详情信息来获取，加快收藏速度
+  final playStatusIsFinished = false.obs;
 
   ImportCollectionController(this.climbWebsite) {
     for (int i = 0; i < siteCollectionTab.length; ++i) {
@@ -142,12 +146,12 @@ class ImportCollectionController extends GetxController {
   quickCollect(BuildContext context, int collIdx, String tag) async {
     // 关闭底部面板
     Navigator.pop(context);
-    Log.info("collIdx=$collIdx");
 
     resetQuickCollectStatus();
     quickCollecting = true;
     int pageSize = climbWebsite.climb.userCollPageSize;
-    totalPage = _getPageCnt(userCollection[collIdx].totalCnt, pageSize);
+    final collection = userCollection[collIdx];
+    totalPage = _getPageCnt(collection.totalCnt, pageSize);
     update([bottomBarId]);
 
     // 收藏该tab下的所有动漫
@@ -155,66 +159,64 @@ class ImportCollectionController extends GetxController {
       // 记录是否已爬取过该页
       bool existPageAnimes = false;
       List<Anime> pageAnimes = [];
-      if (userCollection[collIdx].animes.length >= curPage * pageSize) {
+      if (collection.animes.length >= curPage * pageSize ||
+          collection.animes.length == collection.totalCnt) {
         // 如果列表中已查询该页，则不再查询，且本次添加到数据库后不再延时
         existPageAnimes = true;
-        pageAnimes = userCollection[collIdx]
-            .animes
-            .sublist((curPage - 1) * pageSize, curPage * pageSize);
-      } else if (userCollection[collIdx].animes.length ==
-          userCollection[collIdx].totalCnt) {
-        // 如果已手动查询所有页，那么对于最后1页，不满足>=curPage * pageSize，因此这里需要额外处理
-        if (curPage == totalPage) {
-          existPageAnimes = true;
-          pageAnimes =
-              userCollection[collIdx].animes.sublist((curPage - 1) * pageSize);
-        }
+        pageAnimes = collection.animes.sublist(
+          (curPage - 1) * pageSize,
+          curPage == totalPage &&
+                  collection.animes.length == collection.totalCnt
+              ? null
+              : curPage * pageSize,
+        );
       }
 
       if (existPageAnimes) {
-        Log.info("查询第$curPage页(已有，不再请求该页)");
+        AppLog.info("查询第$curPage页(已有，不再请求该页)");
       } else {
-        Log.info("查询第$curPage页");
+        AppLog.info("3s后查询第$curPage页");
+        await 3.delay();
         pageAnimes = (await climbWebsite.climb.climbUserCollection(
           userId,
           siteCollectionTab[collIdx],
           page: curPage,
         ))
             .animes;
+
+        collection.animes.addAll(pageAnimes);
       }
 
       if (pageAnimes.isEmpty) {
-        Log.info("查询数量为空，退出循环");
+        AppLog.info("查询数量为空，退出循环");
         break;
       }
       queryAnimeCnt += pageAnimes.length;
 
-      bool skipDupNameAnime = SpProfile.getSkipDupNameAnime();
       // 每加载1页，就插入到数据库
       for (var anime in pageAnimes) {
         if ((await SqliteUtil.getAnimeByAnimeUrl(anime)).isCollected()) {
           added++;
-        } else if (skipDupNameAnime &&
-            (await AnimeDao.existAnimeName(anime.animeName))) {
-          added++;
+          continue;
+        }
+
+        if (playStatusIsFinished.value) {
+          anime.playStatus = PlayStatus.finished.text;
+        }
+        anime.tagName = tag;
+        anime.animeId = await AnimeDao.insertAnime(anime);
+        if (anime.animeId > 0) {
+          addOk++;
         } else {
-          // 如果数据库不存在，则指定清单，然后添加到数据库
-          anime.tagName = tag;
-          anime.animeId = await AnimeDao.insertAnime(anime);
-          // 逐个添加到数据库
-          if (anime.animeId > 0) {
-            addOk++;
-          } else {
-            addFail++;
-            failedAnimes.add(anime);
-          }
+          addFail++;
+          failedAnimes.add(anime);
         }
       }
 
       update([bottomBarId]);
-      if (queryAnimeCnt >= userCollection[collIdx].totalCnt) {
-        Log.info(
-            "查询数量($queryAnimeCnt) >= 当前tab总数量(${userCollection[collIdx].totalCnt})，退出循环");
+      if (queryAnimeCnt >= collection.totalCnt) {
+        AppLog.info(
+            "查询数量($queryAnimeCnt) >= 当前tab总数量(${collection.totalCnt})，退出循环");
         break;
       }
 
@@ -223,7 +225,7 @@ class ImportCollectionController extends GetxController {
         curPage++;
         update([bottomBarId]);
       } else {
-        Log.info("要查询的页($curPage)>总页数($totalPage)，跳出循环");
+        AppLog.info("要查询的页($curPage)>总页数($totalPage)，跳出循环");
         break;
       }
       // 如果该页查询了，那么需要等待一段时间再查询，避免频繁查询导致受限访问
@@ -302,7 +304,7 @@ class ImportCollectionController extends GetxController {
     int page = (userCollection[collIdx].animes.length ~/
             climbWebsite.climb.userCollPageSize) +
         1;
-    Log.info("查询第$page页");
+    AppLog.info("查询第$page页");
     var newPageAnimes = (await climbWebsite.climb.climbUserCollection(
       userId,
       siteCollectionTab[collIdx],

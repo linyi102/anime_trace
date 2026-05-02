@@ -65,6 +65,7 @@ mixin Climb {
 
   List<SiteCollectionTab> siteCollectionTabs = [];
 
+  /// 用户收藏分页大小
   int userCollPageSize = 0;
 
   /// 查询是否存在该用户

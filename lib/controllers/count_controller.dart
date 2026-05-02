@@ -12,7 +12,7 @@ class CountController extends GetxController {
     // count.value = Random().nextInt(100); // 可以
     // count = (await getCount()).obs; // 无法实时看到变化
     count.value = await getCount(); // 可以
-    Log.info(count.toString());
+    AppLog.info(count.toString());
   }
 
   Future<int> getCount() async {

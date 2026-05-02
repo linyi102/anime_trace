@@ -66,7 +66,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   Future<void> _searchInitialFilter() async {
     if (widget.label != null) {
       autofocusSearchInput = false;
-      Log.info("动漫详细页点击了${widget.label}，进入搜索页");
+      AppLog.info("动漫详细页点击了${widget.label}，进入搜索页");
       await Future.delayed(const Duration(milliseconds: 200));
       localSearchController.setLabels([widget.label!]);
     } else if (widget.kw != null) {
@@ -102,7 +102,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    // Log.info("$runtimeType: index=$index");
+                    // AppLog.info("$runtimeType: index=$index");
                     var anime = _animes[index];
                     return _buildAnimeTile(anime, context, index);
                   },
@@ -161,7 +161,8 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   selected
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
-                  color: selected ? Theme.of(context).colorScheme.primary : null,
+                  color:
+                      selected ? Theme.of(context).colorScheme.primary : null,
                 )
           : null,
       onTap: () {
@@ -182,7 +183,6 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
   _buildSearchBar() {
     return SearchAppBar(
       hintText: "搜索已收藏动漫",
-      useModernStyle: false,
       autofocus: autofocusSearchInput,
       inputController: _inputController,
       onTapClear: () {

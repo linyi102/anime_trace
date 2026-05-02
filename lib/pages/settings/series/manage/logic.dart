@@ -1,6 +1,6 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/anime_dao.dart';
-import 'package:animetrace/dao/config_dao.dart';
 import 'package:animetrace/dao/series_dao.dart';
 import 'package:animetrace/models/series.dart';
 import 'package:animetrace/pages/settings/series/manage/style.dart';
@@ -40,7 +40,7 @@ class SeriesManageLogic extends GetxController {
   }
 
   Future<void> init() async {
-    ignoredSerieNames = await ConfigDao.getIgnoredRecommendSeries();
+    ignoredSerieNames = await SettingService.to.getIgnoredRecommendSeries();
 
     // 避免路由动画时查询数据库导致动画卡顿
     await Future.delayed(const Duration(milliseconds: 100));
@@ -189,7 +189,7 @@ class SeriesManageLogic extends GetxController {
     update();
 
     ignoredSerieNames.add(seriesName);
-    await ConfigDao.setIgnoredRecommendSeries(ignoredSerieNames);
+    await SettingService.to.setIgnoredRecommendSeries(ignoredSerieNames);
   }
 
   /// 取消忽略某个推荐系列
@@ -198,6 +198,6 @@ class SeriesManageLogic extends GetxController {
     update();
 
     ignoredSerieNames.remove(seriesName);
-    await ConfigDao.setIgnoredRecommendSeries(ignoredSerieNames);
+    await SettingService.to.setIgnoredRecommendSeries(ignoredSerieNames);
   }
 }

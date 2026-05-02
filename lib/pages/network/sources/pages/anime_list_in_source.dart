@@ -31,7 +31,7 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
     // 获取动漫总数
     AnimeDao.getAnimesCntInSource(widget.website.id).then((value) {
       cnt = value;
-      Log.info("该搜索源下的动漫总数：$cnt");
+      AppLog.info("该搜索源下的动漫总数：$cnt");
       setState(() {});
     });
     // 获取动漫列表
@@ -50,12 +50,12 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
 
   _loadMoreData() {
     pageParams.pageIndex++;
-    Log.info("加载更多数据中，当前数量：${animes.length})");
+    AppLog.info("加载更多数据中，当前数量：${animes.length})");
     AnimeDao.getAnimesInSource(
             sourceId: widget.website.id, pageParams: pageParams)
         .then((value) {
       animes.addAll(value);
-      Log.info("加载更多数据完毕，当前数量：${animes.length})");
+      AppLog.info("加载更多数据完毕，当前数量：${animes.length})");
       setState(() {});
     });
   }
@@ -101,9 +101,9 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
                 })).then((value) {
                   Anime retAnime = value as Anime;
                   String newUrl = retAnime.animeUrl;
-                  Log.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
+                  AppLog.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
                   if (anime.animeUrl != newUrl || !retAnime.isCollected()) {
-                    Log.info("已迁移或取消收藏，从列表中删除");
+                    AppLog.info("已迁移或取消收藏，从列表中删除");
                     setState(() {
                       animes.removeAt(index);
                       cnt = animes.length;

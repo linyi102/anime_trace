@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:animetrace/global.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/pages/settings/backup_restore/local.dart';
 import 'package:animetrace/pages/settings/backup_restore/remote.dart';
@@ -25,9 +24,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           child: ListView(
         padding: const EdgeInsets.only(bottom: 50),
         children: [
-          // 鸿蒙file_picker包选择文件未进行适配，暂时隐藏
-          // UnimplementedError: The current platform "ohos" is not supported by this plugin.
-          if (!Platform.isOhos) const LocalBackupPage(),
+          if (FeatureFlag.enablePickFile) const LocalBackupPage(),
           const RemoteBackupPage(),
           SettingCard(
             title: '撤销还原',

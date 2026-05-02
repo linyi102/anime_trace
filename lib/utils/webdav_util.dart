@@ -25,7 +25,7 @@ class WebDavUtil {
       debug: false,
     );
     if (!(await pingWebDav())) {
-      Log.info("WebDav初始化失败！");
+      AppLog.info("WebDav初始化失败！");
       return false;
     }
     // Set the public request headers
@@ -39,7 +39,7 @@ class WebDavUtil {
 
     // Set transfer data time in milliseconds.
     client.setReceiveTimeout(8000);
-    Log.info("WebDav初始化成功！");
+    AppLog.info("WebDav初始化成功！");
     return true;
   }
 
@@ -56,7 +56,7 @@ class WebDavUtil {
     }
     RemoteController.to.setOnline(true);
     SPUtil.setBool("login", true); // 表示用户想要登录，第一次登录后永远为true
-    Log.info("ping ok");
+    AppLog.info("ping ok");
     return true;
   }
 

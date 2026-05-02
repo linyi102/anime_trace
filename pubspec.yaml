@@ -1,35 +1,39 @@
 name: animetrace
 description: 漫迹
 publish_to: "none"
-version: 1.14.0+1
+version: 1.17.0
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
+  device_info_plus: ^11.3.0
+  permission_handler: ^12.0.1
+  flutter_staggered_grid_view: ^0.7.0
+  logger:
+  share_plus:
+  device_preview: ^1.2.0
   reorderables: ^0.6.0
   pinyin: ^3.3.0
-  flutter_logkit:
-    git:
-      url: https://github.com/linyi102/flutter_logkit.git
-      ref: 4c99a6e9
   super_sliver_list: ^0.4.1
   queue: ^3.1.0+2
   darty_json: ^1.0.5
+  hotkey_manager: ^0.1.8
+  flex_color_picker: ^3.3.0
+  emoji_picker_flutter: ^4.3.0
   version: ^3.0.2
   lottie: ^2.6.0
   desktop_drop: ^0.4.4
   flutter_svg: ^2.0.7
   animations: ^2.0.7
+  app_installer: ^1.1.0
   flutter_markdown: ^0.6.15
-  get_time_ago: ^1.1.6
+  get_time_ago: ^2.3.2
   bot_toast: ^4.0.3
   timer_count_down: ^2.2.2
+  file_saver: ^0.2.14
   sliver_tools: ^0.2.9
   pull_to_refresh: ^2.0.0
+  easy_refresh: ^3.4.0
   ming_cute_icons: ^0.0.2
   reorderable_grid_view: ^2.2.7
   photo_view: ^0.14.0
@@ -38,40 +42,24 @@ dependencies:
   percent_indicator: ^4.2.2
   expand_widget: ^3.1.1
   get: ^4.6.5
-  shared_preferences:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_packages.git
-      path: packages/shared_preferences/shared_preferences
-  sqflite:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
-      path: ./sqflite
-  file_picker:
-    git:
-      url: https://gitcode.com/openharmony-sig/fluttertpc_file_picker
+  shared_preferences: 2.5.2
+  sqflite: ^2.0.1
+  sqflite_common_ffi: ^2.1.0
+  path_provider: ^2.0.8
+  file_picker: ^9.0.0
   webdav_client: ^1.1.8
   dio: ^5.8.0+1
   html: ^0.15.0
-  extended_image: 9.1.0
+  cached_network_image: ^3.2.3
   archive: ^3.1.8
   path: ^1.8.0
-  package_info_plus:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
-      path: packages/package_info_plus/package_info_plus
-  url_launcher:
-    git:
-      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
-      path: packages/url_launcher/url_launcher
+  package_info_plus: ^4.0.2
+  url_launcher: ^6.1.0
   transparent_image: ^2.0.0
-
-dependency_overrides:
-  # 覆盖cached_network_image等其他包使用的path_provider
-  path_provider:
-    git:
-      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
-      ref: HEAD
-      path: packages/path_provider/path_provider
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +70,54 @@ dev_dependencies:
     git:
       url: https://github.com/linyi102/shell_executor
       ref: main
+
+dependency_overrides:
+  # 升级 file_picker 内部依赖的 win32
+  win32: 5.15.0
+  # 处理 flex_color_picker 内部平台枚举
+  flex_color_picker:
+    git:
+      url: https://github.com/linyi102/flex_color_picker
+      ref: fix/target-platform-default
+  device_info_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/device_info_plus/device_info_plus
+  package_info_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/package_info_plus/package_info_plus
+  share_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/share_plus/share_plus
+  path_provider:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/path_provider/path_provider
+  url_launcher:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/url_launcher/url_launcher
+  shared_preferences:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/shared_preferences/shared_preferences
+  file_picker:
+    git:
+      url: https://gitcode.com/openharmony-sig/fluttertpc_file_picker.git
+  sqflite:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: ./sqflite
+  sqflite_common_ffi:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: ./sqflite_common_ffi
+  permission_handler:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_permission_handler.git
+      path: ./permission_handler
 
 flutter:
   uses-material-design: true

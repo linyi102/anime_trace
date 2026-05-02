@@ -60,7 +60,6 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
       elevation: 0,
       children: [
         ExpansionPanel(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             isExpanded: isExpanded,
             canTapOnHeader: true,
             headerBuilder: (context, isExpanded) {
@@ -106,19 +105,16 @@ class _NoteSearchPageState extends State<NoteSearchPage> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           Row(
             children: [
-              const Text('搜索类型：'),
-              DropdownButton<NoteType>(
-                value: noteType,
-                items: NoteType.values
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e.title),
-                        ))
+              DropdownMenu<NoteType>(
+                requestFocusOnTap: false,
+                initialSelection: noteType,
+                dropdownMenuEntries: NoteType.values
+                    .map((e) => DropdownMenuEntry(value: e, label: e.title))
                     .toList(),
-                onChanged: (value) {
+                onSelected: (value) {
                   if (value == null) return;
                   setState(() {
                     noteType = value;

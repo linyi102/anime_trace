@@ -1,3 +1,4 @@
+import 'package:animetrace/pages/anime_detail/pages/episode_manage_page.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       init: widget.animeController,
       initState: (_) {},
       builder: (_) {
-        Log.info("build ${widget.animeController.infoId}");
+        AppLog.info("build ${widget.animeController.infoId}");
 
         return SliverPadding(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -118,7 +119,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         enableRate: widget.animeController.isCollected, // 未收藏时不能评分
         rate: _anime.rate,
         onRatingUpdate: (v) {
-          Log.info("评价分数：$v");
+          AppLog.info("评价分数：$v");
           setState(() {
             _anime.rate = v.toInt();
           });
@@ -267,29 +268,27 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
         // 而收藏后，三个按钮会撑高一些，导致收藏后信息行位置变了，所以在上下添加10高度box
         const SizedBox(height: 10),
         // 第一行信息
-        if (_anime.isCollected())
-          GestureDetector(
-            onTap: _toPropertiesPage,
-            child: Row(
-              children: [
-                Text(_anime.getAnimeInfoFirstLine()),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 2),
-                //   child: Icon(Icons.edit, size: smallIconSize),
-                //   // Icon(Icons.chevron_right_outlined,
-                //   //     size: 16, color: Theme.of(context).hintColor),
-                // ),
-                const Spacer(),
-                Text(
-                  '编辑',
-                  style: TextStyle(
-                      fontSize: 12, color: Theme.of(context).hintColor),
+        Row(
+          children: [
+            Text(_anime.getAnimeInfoFirstLine()),
+            const Spacer(),
+            if (_anime.isCollected())
+              GestureDetector(
+                onTap: _toPropertiesPage,
+                child: Row(
+                  children: [
+                    Text(
+                      '编辑',
+                      style: TextStyle(
+                          fontSize: 12, color: Theme.of(context).hintColor),
+                    ),
+                    Icon(Icons.chevron_right_outlined,
+                        size: 16, color: Theme.of(context).hintColor),
+                  ],
                 ),
-                Icon(Icons.chevron_right_outlined,
-                    size: 16, color: Theme.of(context).hintColor),
-              ],
-            ),
-          ),
+              )
+          ],
+        ),
         // 第二行信息
         Row(
           children: [
@@ -352,8 +351,8 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                 ],
               ),
               onTap: () {
-                widget.animeController
-                    .showDialogModEpisodeCntAndStartNumber(context);
+                RouteUtil.materialTo(context,
+                    EpisodeManagePage(animeController: widget.animeController));
               },
             )
           ],
@@ -404,7 +403,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
                       _anime.tagName = tags[index];
                       AnimeDao.updateTagByAnimeId(
                           _anime.animeId, _anime.tagName);
-                      Log.info("修改清单为${_anime.tagName}");
+                      AppLog.info("修改清单为${_anime.tagName}");
                       setState(() {});
                       Navigator.pop(context);
                     },

@@ -18,7 +18,7 @@ class WeeklyController extends ChangeNotifier {
 
   void clearWeeks() {
     // 清空每天对应的数组，只留下weeks的六个空数组
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < weeks.length; ++i) {
       weeks[i].clear();
     }
   }

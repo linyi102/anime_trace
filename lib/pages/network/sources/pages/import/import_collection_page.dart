@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_item_auto_load.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
@@ -12,7 +13,6 @@ import 'package:animetrace/pages/network/sources/pages/import/import_collection_
 import 'package:animetrace/utils/climb/climb.dart';
 import 'package:animetrace/utils/climb/site_collection_tab.dart';
 import 'package:animetrace/utils/extensions/color.dart';
-import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_divider.dart';
@@ -80,14 +80,18 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
           ),
           const ListTile(
             title: Text("这个可以做什么？"),
-            subtitle:
-                Text("如果你之前在Bangumi或豆瓣中收藏过很多电影或动漫，该功能可以帮忙把这些数据导入到漫迹中，而不需要手动添加"),
+            subtitle: Text("如果你之前在 Bangumi 中收藏过很多电影或动漫，该功能可以帮忙把这些数据导入到漫迹中"),
           ),
           const ListTile(
             title: Text("如何获取用户ID？"),
             subtitle: Text(
-                "在Bangumi中查看自己的信息时，访问的链接若为https://bangumi.tv/user/123456，那么该用户的ID就是123456"),
+                "在 Bangumi 中打开个人页面，若链接为 https://bangumi.tv/user/123456，那么该用户的 ID 就是 123456"),
           ),
+          if (climb is ClimbBangumi)
+            const ListTile(
+              title: Text("如何切换搜索类型？"),
+              subtitle: Text("返回上一页，找到搜索类型，点击切换。默认会搜索全部，包括动漫、书籍、音乐等"),
+            ),
         ],
       );
     }
@@ -151,7 +155,6 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
     return AppBar(
       title: SearchAppBar(
         inputController: icc.inputController,
-        useModernStyle: false,
         hintText: "用户ID",
         isAppBar: false,
         autofocus: icc.showTip, // 如果显示提示，则自动聚焦输入框
@@ -206,13 +209,13 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
                     ),
                   ),
                   const CommonDivider(),
-                  StatefulBuilder(
-                    builder: (context, setState) => SwitchListTile(
-                      title: const Text("若已收藏同名动漫，则跳过"),
-                      value: SpProfile.getSkipDupNameAnime(),
+                  Obx(
+                    () => SwitchListTile(
+                      title: const Text('是否已完结'),
+                      subtitle: const Text('建议在已完结列表中开启，以避免全局更新时不必要的检查'),
+                      value: icc.playStatusIsFinished.value,
                       onChanged: (value) {
-                        SpProfile.setSkipDupNameAnime(value);
-                        setState(() {});
+                        icc.playStatusIsFinished.value = value;
                       },
                     ),
                   ),
@@ -295,16 +298,18 @@ class _ImportCollectionPagrState extends State<ImportCollectionPage>
       width: size,
       child: Stack(
         children: [
-          // if (icc.quickCollecting)
-          SizedBox(
-            height: size,
-            width: size,
-            child: CircularProgressIndicator(
-              strokeWidth: 4,
-              backgroundColor:
-                  Theme.of(context).colorScheme.primary.withOpacityFactor(0.3),
+          if (icc.quickCollecting)
+            SizedBox(
+              height: size,
+              width: size,
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacityFactor(0.3),
+              ),
             ),
-          ),
           WebSiteLogo(url: climbWebsite.iconUrl, size: size)
         ],
       ),

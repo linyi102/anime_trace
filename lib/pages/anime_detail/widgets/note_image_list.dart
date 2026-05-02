@@ -49,7 +49,7 @@ class _NoteImageHorizontalListViewState
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.note.relativeLocalImages.length,
                   itemBuilder: (context, imgIdx) {
-                    // Log.info("横向图片imgIdx=$imgIdx");
+                    // AppLog.info("横向图片imgIdx=$imgIdx");
                     return _buildImageItem(context, imgIdx);
                   }),
               if (widget.note.relativeLocalImages.length > 2)
@@ -149,7 +149,7 @@ class _NoteImageHorizontalListViewState
             duration: Duration(milliseconds: ms), curve: Curves.linear)
         .then((value) {
       // 在自动滚动过程中手动滚动时会立即结束
-      Log.info('滚动结束');
+      AppLog.info('滚动结束');
       // 滚动结束后重绘为暂停状态
       if (mounted) {
         setState(() {

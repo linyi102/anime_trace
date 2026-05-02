@@ -1,12 +1,12 @@
+import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/pages/anime_detail/pages/category_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animetrace/components/dialog/dialog_select_play_status.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:animetrace/pages/common/category_intro_page.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:animetrace/widgets/picker/date_time_picker.dart';
@@ -51,7 +51,7 @@ class AnimePropertiesPage extends StatelessWidget {
                 ToastUtil.showText("动漫名不允许为空");
                 return;
               }
-              Log.info("更新名称：$newName");
+              AppLog.info("更新名称：$newName");
 
               animeController.anime.animeName = newName;
               animeController.updateAnimeInfo();
@@ -64,7 +64,7 @@ class AnimePropertiesPage extends StatelessWidget {
             _showDialogAboutEdit(context,
                 title: "别名",
                 initialValue: anime.nameAnother, confirm: (newNameAnother) {
-              Log.info("更新别名：$newNameAnother");
+              AppLog.info("更新别名：$newNameAnother");
 
               animeController.anime.nameAnother = newNameAnother;
               animeController.updateAnimeInfo();
@@ -110,7 +110,7 @@ class AnimePropertiesPage extends StatelessWidget {
                   title: "动漫链接",
                   initialValue: anime.animeUrl,
                   helperText: "修改可能导致下拉刷新失效", confirm: (value) {
-                Log.info("更新封面：$value");
+                AppLog.info("更新封面：$value");
 
                 animeController.anime.animeUrl = value;
                 animeController.updateAnimeInfo();
@@ -126,7 +126,7 @@ class AnimePropertiesPage extends StatelessWidget {
               _showDialogAboutEdit(context,
                   title: "封面链接",
                   initialValue: anime.animeCoverUrl, confirm: (value) {
-                Log.info("更新封面：$value");
+                AppLog.info("更新封面：$value");
 
                 animeController.anime.animeCoverUrl = value;
                 animeController.updateAnimeInfo();
@@ -143,7 +143,7 @@ class AnimePropertiesPage extends StatelessWidget {
               _showDialogAboutEdit(context,
                   title: "简介",
                   initialValue: anime.animeDesc, confirm: (newDesc) {
-                Log.info("更新简介：$newDesc");
+                AppLog.info("更新简介：$newDesc");
 
                 animeController.anime.animeDesc = newDesc;
                 animeController.updateAnimeInfo();
@@ -183,15 +183,28 @@ class AnimePropertiesPage extends StatelessWidget {
           children: [
             const Text("类别"),
             const Spacer(),
-            IconButton(
-                onPressed: () {
-                  RouteUtil.materialTo(context, const CategoryIntroPage());
-                },
-                icon: const Icon(Icons.help_outline))
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+
+                final categorySelected =
+                    CategoryController.to.categories.contains(anime.category);
+
+                await RouteUtil.materialTo(
+                    context, const AnimeCategoryListPage());
+
+                // 若原先已选择类别，但现在未选择，说明修改了类别的名字，此时重新加载动漫信息保证可以看到修改后的类别
+                if (categorySelected &&
+                    !CategoryController.to.categories
+                        .contains(anime.category)) {
+                  animeController.reloadAnime(anime);
+                }
+              },
+              child: const Text('自定义'),
+            )
           ],
         ),
-        children: AnimeCategory.values
-            .map((e) => e.label)
+        children: CategoryController.to.categories
             .map((e) => RadioListTile(
                   title: Text(e),
                   value: e,

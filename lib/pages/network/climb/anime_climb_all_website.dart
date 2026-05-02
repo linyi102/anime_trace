@@ -2,10 +2,9 @@ import 'package:animetrace/pages/network/climb/widgets/search_history_view.dart'
 import 'package:animetrace/utils/launch_uri_util.dart';
 import 'package:flutter/material.dart';
 
-import 'package:animetrace/components/anime_horizontal_cover.dart';
+import 'package:animetrace/components/anime_list_view.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/components/search_app_bar.dart';
-import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/climb_website.dart';
 import 'package:animetrace/components/website_logo.dart';
@@ -20,10 +19,10 @@ import 'package:animetrace/widgets/common_scaffold_body.dart';
 import '../../../dao/anime_dao.dart';
 
 class AnimeClimbAllWebsite extends StatefulWidget {
-  final int animeId; // 需要迁移的动漫id
+  final Anime? oldAnime; // 需要迁移的动漫
   final String keyword; // 搜索关键字
 
-  const AnimeClimbAllWebsite({this.animeId = 0, this.keyword = "", Key? key})
+  const AnimeClimbAllWebsite({this.oldAnime, this.keyword = "", Key? key})
       : super(key: key);
 
   @override
@@ -50,7 +49,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   void initState() {
     super.initState();
     addDefaultTag = tags[0];
-    ismigrate = widget.animeId > 0 ? true : false;
+    ismigrate = widget.oldAnime?.isCollected() == true;
     lastInputKeyword = widget.keyword;
     inputKeywordController.text = lastInputKeyword;
 
@@ -64,6 +63,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
       // 迁移或者网络搜索更多
       if (ismigrate || widget.keyword.isNotEmpty) {
         _climbAnime(keyword: widget.keyword);
+        _generateCustomAnimes();
       }
     });
   }
@@ -79,10 +79,10 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
 
     // _generateCustomAnimes();
 
-    Log.info("开始爬取动漫封面");
+    AppLog.info("开始爬取动漫封面");
     // 遍历所有搜索源
     for (var climbWebsite in climbWebsites) {
-      Log.info(climbWebsite.toString());
+      AppLog.info(climbWebsite.toString());
       // 如果关闭了，则直接跳过该搜索源
       if (!climbWebsite.enable || climbWebsite.discard) continue; // 不是break啊...
 
@@ -146,7 +146,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     if (lastInputKeyword.isEmpty) return true;
     _generateCustomAnimes(); // 也可能会迁移自定义动漫
 
-    Log.info("mixing...");
+    AppLog.info("mixing...");
     mixedAnimes = websiteClimbAnimes;
 
     for (var climbWebsite in climbWebsites) {
@@ -201,17 +201,19 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   }
 
   Widget _buildLocalAnimes() {
-    if (ismigrate || lastInputKeyword.isEmpty) return const SizedBox.shrink();
+    if (ismigrate || lastInputKeyword.isEmpty || localAnimes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
         const ListTile(title: Text("已收藏")),
-        if (localAnimes.isNotEmpty)
-          AnimeHorizontalCover(
-            animes: localAnimes,
-            callback: () async {
-              return true;
-            },
-          ),
+        AnimeHorizontalListView(
+          animes: localAnimes,
+          callback: () async {
+            return true;
+          },
+        ),
       ],
     );
   }
@@ -248,9 +250,9 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
             // 搜索结果
             websiteClimbSearchOk[webstie.name] ?? false
                 // 查询好后显示结果
-                ? AnimeHorizontalCover(
+                ? AnimeHorizontalListView(
                     animes: mixedAnimes[webstie.name] ?? [],
-                    animeId: widget.animeId,
+                    oldAnime: widget.oldAnime,
                     callback: _generateMixedAnimesAllWebsite,
                     onLongPressItem: (anime) {
                       LaunchUrlUtil.launch(
@@ -260,7 +262,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
                 : websiteClimbSearching[webstie.name] ?? false
                     ?
                     // 搜索时显示加载圈
-                    _buildLoadingWidget()
+                    const LoadingWidget(height: 120)
                     // 还没搜索时，什么都不显示
                     : Container(),
           ],
@@ -273,7 +275,7 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
     // 进入详细搜索页
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return AnimeClimbOneWebsite(
-        animeId: widget.animeId, // 进入详细搜索页迁移动漫，也需要传入动漫id
+        oldAnime: widget.oldAnime, // 进入详细搜索页迁移动漫，也需要传入动漫id
         keyword: lastInputKeyword,
         climbWebStie: climbWebsites[websiteIndex],
       );
@@ -297,7 +299,6 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
   SearchAppBar _buildSearchAppBar() {
     return SearchAppBar(
       hintText: ismigrate ? "迁移动漫" : "搜索动漫",
-      useModernStyle: false,
       inputController: inputKeywordController..text,
       onTapClear: () {
         inputKeywordController.clear();
@@ -370,32 +371,12 @@ class _AnimeClimbAllWebsiteState extends State<AnimeClimbAllWebsite> {
           ],
         )),
         if (customAnimes.isNotEmpty)
-          AnimeHorizontalCover(
+          AnimeHorizontalListView(
             animes: customAnimes,
-            animeId: widget.animeId,
+            oldAnime: widget.oldAnime,
             callback: _generateMixedAnimesAllWebsite,
           )
       ],
-    );
-  }
-
-  _buildLoadingWidget() {
-    final AnimeDisplayController adc = AnimeDisplayController.to;
-    double height = 137.0;
-    bool nameBelowCover = false; // 名字在封面下面，就增加高度
-    if (adc.showGridAnimeName.value && !adc.showNameInCover.value) {
-      nameBelowCover = true;
-    }
-    if (nameBelowCover) {
-      if (adc.nameMaxLines.value == 2) {
-        height += 60;
-      } else {
-        height += 30;
-      }
-    }
-
-    return LoadingWidget(
-      height: height,
     );
   }
 }

@@ -5,16 +5,16 @@ import 'package:animetrace/utils/toast_util.dart';
 
 Future<int?> dialogSelectUint(context, String title,
     {int initialValue = 0, int minValue = 0, int maxValue = 1 << 32}) async {
-  final editingController = TextEditingController();
+  var number = initialValue;
   return showDialog(
       context: context,
       builder: (context) => AlertDialog(
               title: Text(title),
               content: NumberControlInputField(
-                controller: editingController,
                 minValue: minValue,
                 maxValue: maxValue,
                 initialValue: initialValue,
+                onChanged: (v) => number = v,
               ),
               actions: [
                 TextButton(
@@ -24,12 +24,6 @@ Future<int?> dialogSelectUint(context, String title,
                     child: const Text("取消")),
                 TextButton(
                     onPressed: () {
-                      String content = editingController.text;
-                      if (content.isEmpty) {
-                        ToastUtil.showText("不能为空！");
-                        return;
-                      }
-                      int number = int.parse(content);
                       if (number < minValue || number > maxValue) {
                         ToastUtil.showText("设置范围：[$minValue, $maxValue]");
                         return;
@@ -43,17 +37,15 @@ Future<int?> dialogSelectUint(context, String title,
 class NumberControlInputField extends StatefulWidget {
   const NumberControlInputField({
     super.key,
-    required this.controller,
     this.minValue = 0,
     this.maxValue = 1 << 32,
     required this.initialValue,
     this.onChanged,
     this.showRangeHintText = true,
   });
-  final TextEditingController controller;
   final int minValue, maxValue;
   final int initialValue;
-  final void Function(int? number)? onChanged;
+  final void Function(int number)? onChanged;
   final bool showRangeHintText;
 
   @override
@@ -62,6 +54,7 @@ class NumberControlInputField extends StatefulWidget {
 }
 
 class _NumberControlInputFieldState extends State<NumberControlInputField> {
+  final controller = TextEditingController();
   late int tmpValue = widget.initialValue;
   get minValue => widget.minValue;
   get maxValue => widget.maxValue;
@@ -72,7 +65,23 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
   @override
   void initState() {
     super.initState();
-    widget.controller.text = '${widget.initialValue}';
+    controller.text = '${widget.initialValue}';
+  }
+
+  @override
+  void didUpdateWidget(covariant NumberControlInputField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      controller.text = '${widget.initialValue}';
+      controller.selection = TextSelection.collapsed(
+          offset: widget.initialValue.toString().length);
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -86,7 +95,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
           ],
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
-          controller: widget.controller,
+          controller: controller,
           onChanged: (value) {
             int? willValue = int.tryParse(value);
             if (willValue == null) return;
@@ -95,6 +104,11 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
             if (tmpValue < minValue) tmpValue = minValue;
             if (tmpValue > maxValue) tmpValue = maxValue;
             widget.onChanged?.call(tmpValue);
+            if (willValue != tmpValue) {
+              controller.text = tmpValue.toString();
+              controller.selection =
+                  TextSelection.collapsed(offset: tmpValue.toString().length);
+            }
           },
           decoration: InputDecoration(
             prefixIcon: _buildControlButton(
@@ -135,7 +149,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
     if (tmpValue < minValue) tmpValue = minValue;
     if (tmpValue > maxValue) tmpValue = maxValue;
 
-    widget.controller.text = '$tmpValue';
+    controller.text = '$tmpValue';
     widget.onChanged?.call(tmpValue);
     setState(() {});
   }
@@ -147,7 +161,7 @@ class _NumberControlInputFieldState extends State<NumberControlInputField> {
     if (tmpValue < minValue) tmpValue = minValue;
     if (tmpValue > maxValue) tmpValue = maxValue;
 
-    widget.controller.text = '$tmpValue';
+    controller.text = '$tmpValue';
     widget.onChanged?.call(tmpValue);
     setState(() {});
   }

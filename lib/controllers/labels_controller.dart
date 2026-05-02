@@ -1,6 +1,6 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:animetrace/utils/extensions/list.dart';
-import 'package:animetrace/utils/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/dao/label_dao.dart';
 import 'package:animetrace/utils/log.dart';
@@ -31,14 +31,14 @@ class LabelsController extends GetxController {
       SortMode(label: '名称', storeIndex: 1, sort: _sortByName),
       customSortMode,
     ],
-    defaultModeIndex: SettingsUtil.get(SettingsEnum.labelSortMode),
-    defaultReverse: SettingsUtil.get(SettingsEnum.labelSortReverse),
+    defaultModeIndex: SettingService.to.getLabelSortMode(),
+    defaultReverse: SettingService.to.getLabelSortReverse(),
     getOriList: () => labels,
     onSorted: (sortedList) => labels.value = sortedList,
     onModeChanged: (mode) =>
-        SettingsUtil.set(SettingsEnum.labelSortMode, mode.storeIndex),
+        SettingService.to.setLabelSortMode(mode.storeIndex),
     onReverseChanged: (isReverse) =>
-        SettingsUtil.set(SettingsEnum.labelSortReverse, isReverse),
+        SettingService.to.setLabelSortReverse(isReverse),
   );
 
   List<String> get recommendedLabels => [
@@ -127,7 +127,7 @@ class LabelsController extends GetxController {
     Label newLabel = Label(0, labelName, order: labels.length);
     int newId = await LabelDao.insert(newLabel);
     if (newId > 0) {
-      Log.info("添加标签成功，新插入的id=$newId");
+      AppLog.info("添加标签成功，新插入的id=$newId");
       // 指定新id，并添加到controller中
       newLabel.id = newId;
       if (searchKeyword.isEmpty) {
@@ -149,7 +149,7 @@ class LabelsController extends GetxController {
   Future<bool> updateLabel(Label label, String newLabelName) async {
     int updateCnt = await LabelDao.update(label.id, newLabelName);
     if (updateCnt > 0) {
-      Log.info("修改标签成功");
+      AppLog.info("修改标签成功");
       _sortLabels([
         for (final e in labels)
           e == label ? label.copyWith(name: newLabelName) : e

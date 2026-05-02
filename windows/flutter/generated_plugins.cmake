@@ -4,6 +4,10 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
+  emoji_picker_flutter
+  file_saver
+  hotkey_manager
+  permission_handler_windows
   screen_retriever
   share_plus
   url_launcher_windows

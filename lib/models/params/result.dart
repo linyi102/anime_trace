@@ -111,7 +111,7 @@ extension ResponseDataTransformer on Result {
       try {
         list.add(transform(item));
       } catch (err, stack) {
-        logger.error('transfrom异常：$err', stackTrace: stack);
+        AppLog.error('transfrom异常：$err', stackTrace: stack);
       }
     }
     return list;

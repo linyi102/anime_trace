@@ -78,16 +78,14 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    Log.build(runtimeType);
-
-    return WillPopScope(
-      onWillPop: () async {
-        Log.info("按返回键，返回anime");
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        AppLog.info("按返回键，返回anime");
         _popPage();
         // 返回的_anime用到了id(列表页面和搜索页面)和name(爬取页面)
         // 完成集数因为切换到小的回顾号会导致不是最大回顾号完成的集数，所以那些页面会通过传回的id来获取最新动漫信息
-        Log.info("返回true");
-        return true;
       },
       child: MultiPlatform(
         mobile: _buildMobileDetailPage(),
@@ -161,6 +159,9 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   Scaffold _buildDetailScreen() {
     return Scaffold(
       key: detailScreenKey,
+      // NOTE: 此处取消 resize 是因为用户复制文本后编辑集表单时，讯飞输入法展示的粘贴项会改变页面布局导致底部集不可见而销毁
+      // 在点击粘贴项后会重建刚才被销毁的集组件，所以在提交后修改的信息并没有变化 (因为集组件内部提交后 setState 无效)
+      resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: Stack(children: [
@@ -170,7 +171,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               init: animeController,
               initState: (_) {},
               builder: (_) {
-                Log.info("build ${animeController.detailPageId}");
+                AppLog.info("build ${animeController.detailPageId}");
 
                 if (animeController.loadingAnime) {
                   return Scaffold(

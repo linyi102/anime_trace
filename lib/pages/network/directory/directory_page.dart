@@ -79,7 +79,7 @@ class _DirectoryPageState extends State<DirectoryPage>
 
     pageParams.resetPageIndex(); // 更改条件后，需要重置页号
     directory = await curWebsite.climb.climbDirectory(filter, pageParams);
-    Log.info("目录页：数据获取完毕");
+    AppLog.info("目录页：数据获取完毕");
     // 根据动漫名和来源查询动漫，如果存在
     // 则获取到id(用于进入详细页)和tagName(用于修改tag)
     // 下面两种方式修改了anime，都不能修改数组中的值
@@ -101,16 +101,16 @@ class _DirectoryPageState extends State<DirectoryPage>
   }
 
   _loadMoreData() async {
-    Log.info("目录页：加载更多数据中，当前动漫数量：${directory.length}");
+    AppLog.info("目录页：加载更多数据中，当前动漫数量：${directory.length}");
     pageParams.pageIndex++;
     int startIdx = directory.length;
 
     var moreAnimes = await curWebsite.climb.climbDirectory(filter, pageParams);
     if (moreAnimes.isEmpty) {
-      Log.info("目录页：没有更多数据了");
+      AppLog.info("目录页：没有更多数据了");
       _refreshController.loadNoData();
     } else {
-      Log.info("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
+      AppLog.info("目录页：加载更多数据完毕，当前动漫数量：${directory.length}");
       directory.addAll(moreAnimes);
       for (int i = startIdx; i < directory.length; ++i) {
         directory[i] = await SqliteUtil.getAnimeByAnimeUrl(directory[i]);
@@ -204,19 +204,10 @@ class _DirectoryPageState extends State<DirectoryPage>
         delegate: SliverChildBuilderDelegate((context, index) {
       Anime anime = directory[index];
       return AnimeItemAutoLoad(
-        // 需要指定key，否则看不出来变化
-        key: UniqueKey(),
         anime: anime,
         onChanged: (newAnime) => anime = newAnime,
-        style: AnimeItemStyle.list,
-        // 不会实时变化
-        // subtitles: [
-        //   anime.getAnimeInfoFirstLine(),
-        //   anime.getAnimeInfoSecondLine()
-        // ],
         showAnimeInfo: true,
         showProgress: true,
-        showReviewNumber: true,
         climbDetail: false,
       );
     }, childCount: directory.length));
@@ -259,10 +250,10 @@ class _DirectoryPageState extends State<DirectoryPage>
             initialValue: defaultYear)
         .then((value) {
       if (value == null || value == 0 || value == defaultYear) {
-        Log.info("未选择，直接返回");
+        AppLog.info("未选择，直接返回");
         return;
       }
-      Log.info("选择了$value");
+      AppLog.info("选择了$value");
       filter.year = value.toString();
       refresh();
     });
@@ -316,6 +307,7 @@ class _DirectoryPageState extends State<DirectoryPage>
           animationDuration: kThemeAnimationDuration,
           children: <ExpansionPanel>[
             ExpansionPanel(
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
               headerBuilder: (context, isExpanded) {
                 return _buildSourceTile();
               },
@@ -345,7 +337,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.year,
               onChanged: (value) {
                 filter.year = value.toString();
-                // Log.info(filter.year);
+                // AppLog.info(filter.year);
                 refresh();
               }),
           Text(i == 0 ? "全部" : (i == years.length - 1 ? "2000以前" : years[i]))
@@ -367,7 +359,7 @@ class _DirectoryPageState extends State<DirectoryPage>
               groupValue: filter.season,
               onChanged: (value) {
                 filter.season = value.toString();
-                // Log.info(filter.season);
+                // AppLog.info(filter.season);
                 refresh();
               }),
           Text(i == 0 ? "全部" : "${seasons[i]} 月")

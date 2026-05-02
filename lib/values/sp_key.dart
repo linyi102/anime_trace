@@ -1,3 +1,5 @@
+import 'package:animetrace/models/migrate_config.dart';
+import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sp_util.dart';
 
 /// 收藏页开启下拉还原最新备份
@@ -33,30 +35,39 @@ class SPKey {
   static get showRecommendedAnimesInSeriesPage =>
       "showRecommendedAnimesInSeriesPage";
 
-  // bangumi搜索类型
-  static get selectedBangumiSearchCategoryKey =>
-      "selectedBangumiSearchCategoryKey";
-
   // 开启热键恢复最新备份文件
   static get enableRestoreLatestHotkey => "enableRestoreLatestHotkey";
 
   /// 手机底部导航栏隐藏文字
   static get hideMobileBottomBarLabel => "hideMobileBottomLabel";
+
+  /// 上次迁移使用的配置
+  static get migrageConfig => 'migrateConfig';
 }
 
+@Deprecated('use SettingService instead')
 class Config {
-  static String get selectedBangumiSearchCategoryKey =>
-      SPUtil.getString(SPKey.selectedBangumiSearchCategoryKey,
-          defaultValue: 'all');
-
-  static void setSelectedBangumiSearchCategoryKey(String value) {
-    SPUtil.setString(SPKey.selectedBangumiSearchCategoryKey, value);
-  }
-
   static bool get enableRestoreLatestHotkey =>
       SPUtil.getBool(SPKey.enableRestoreLatestHotkey);
 
   static void toggleEnableRestoreLatestHotkey(bool value) {
     SPUtil.setBool(SPKey.enableRestoreLatestHotkey, value);
+  }
+
+  static MigrateConfig get migrateConfig {
+    final configMap = SPUtil.getMap(SPKey.migrageConfig);
+    final defaultConfig = MigrateConfig();
+    try {
+      return configMap == null
+          ? defaultConfig
+          : MigrateConfig.fromMap(configMap as Map<String, dynamic>);
+    } catch (e, st) {
+      AppLog.error('解析 MigrageConfig 错误', error: e, stackTrace: st);
+      return defaultConfig;
+    }
+  }
+
+  static void setMigrateConfig(MigrateConfig config) {
+    SPUtil.setMap(SPKey.migrageConfig, config.toMap());
   }
 }

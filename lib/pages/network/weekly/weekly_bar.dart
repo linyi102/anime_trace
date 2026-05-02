@@ -28,7 +28,7 @@ class _WeeklyBarState extends State<WeeklyBar> {
     super.initState();
 
     DateTime monday = now.subtract(Duration(days: now.weekday - 1));
-    Log.info("now: $now, monday: $monday");
+    AppLog.info("now: $now, monday: $monday");
 
     weekDateTimes =
         List.generate(7, (index) => monday.add(Duration(days: index)));
@@ -54,7 +54,7 @@ class _WeeklyBarState extends State<WeeklyBar> {
                 highlightColor: Colors.transparent,
                 splashColor: Colors.transparent,
                 onTap: () {
-                  Log.info("点击weekday: $weekday");
+                  AppLog.info("点击weekday: $weekday");
                   widget.controller.selectedWeekday = weekday;
                   widget.onChanged?.call(weekday);
                 },

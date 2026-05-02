@@ -1,54 +1,41 @@
+import 'package:animetrace/utils/log.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_logkit/logkit.dart';
 
 class DioLogInterceptor extends Interceptor {
-  final LogkitLogger logger;
-  final logTag = 'DioInterceptor';
-
-  DioLogInterceptor(this.logger);
+  DioLogInterceptor();
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    logger.logTyped(
-      HttpRequestLogRecord.generate(
-        method: options.method,
-        url: options.uri.toString(),
-        headers: options.headers,
-        body: options.data,
-      ),
-      settings: const LogSettings(printToConsole: false),
-    );
+    String msg = '[REQ] ${options.method.toUpperCase()} ${options.uri}';
+    AppLog.info(msg);
+
     handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
-    logger.logTyped(
-      HttpResponseLogRecord.generate(
-        method: response.requestOptions.method,
-        url: response.requestOptions.uri.toString(),
-        statusCode: response.statusCode,
-        statusMessage: response.statusMessage,
-        headers: response.headers,
-        body: response.data,
-      ),
-      settings: const LogSettings(printToConsole: false),
-    );
+    String msg =
+        '[RESP] ${response.requestOptions.method.toUpperCase()} ${response.requestOptions.uri}';
+    if (response.statusCode != null || response.statusMessage != null) {
+      msg += '\nStatusCode: ${response.statusCode} ${response.statusMessage}';
+    }
+    AppLog.info(msg);
+
     handler.next(response);
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logger.logTyped(
-      HttpResponseLogRecord.generate(
-        method: err.requestOptions.method,
-        url: err.requestOptions.uri.toString(),
-        statusCode: err.response?.statusCode,
-        statusMessage: err.response?.statusMessage,
-        headers: err.response?.headers,
-        body: err.response?.data,
-      ),
-    );
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    String msg =
+        '[RESP ERR] ${err.requestOptions.method.toUpperCase()} ${err.requestOptions.uri}';
+    if (err.response?.statusCode != null) {
+      msg += '\nStatusCode: ${err.response?.statusCode}';
+    }
+    if (err.response?.statusMessage != null) {
+      msg += '\nStatusMessage: ${err.response?.statusMessage}';
+    }
+    AppLog.info(msg);
+
     handler.next(err);
   }
 }

@@ -3,8 +3,8 @@ import 'package:animetrace/dao/anime_series_dao.dart';
 import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/models/enum/anime_area.dart';
-import 'package:animetrace/models/enum/anime_category.dart';
 import 'package:animetrace/models/enum/play_status.dart';
+import 'package:animetrace/models/migrate_config.dart';
 import 'package:animetrace/models/params/page_params.dart';
 import 'package:animetrace/pages/local_search/models/local_select_filter.dart';
 import 'package:animetrace/utils/climb/climb_anime_util.dart';
@@ -12,7 +12,7 @@ import 'package:animetrace/utils/escape_util.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/utils/log.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/anime.dart';
 
@@ -30,7 +30,7 @@ class AnimeDao {
     List<String>? columns,
     PageParams? page,
   }) async {
-    Log.info("sql: getAnimes");
+    AppLog.info("sql: getAnimes");
 
     final rows = await db.query(
       table,
@@ -102,7 +102,7 @@ class AnimeDao {
       order by anime_id desc ${pageParams != null ? 'limit ${pageParams.pageSize} offset ${pageParams.getOffset()}' : ''};
     ''');
     if (pageParams != null) {
-      Log.info(
+      AppLog.info(
           "分页(limit ${pageParams.pageSize} offset ${pageParams.getOffset()})查询$sourceId下的动漫");
     }
     for (Map row in list) {
@@ -152,7 +152,7 @@ class AnimeDao {
   }
 
   static Future<bool> deleteAnimeByAnimeId(int animeId) async {
-    Log.info("sql: deleteAnimeByAnimeId(animeId=$animeId)");
+    AppLog.info("sql: deleteAnimeByAnimeId(animeId=$animeId)");
     // 由于history表引用了anime表的anime_id，首先删除历史记录，再删除动漫
     await db.rawDelete('''
       delete from history
@@ -205,7 +205,7 @@ class AnimeDao {
 
   /// 添加动漫
   static Future<int> insertAnime(Anime anime) async {
-    Log.info("sql: insertAnime(anime:$anime)");
+    AppLog.info("sql: insertAnime(anime:$anime)");
     final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(anime.animeUrl);
 
     String datetime = DateTime.now().toString();
@@ -233,7 +233,7 @@ class AnimeDao {
 
   /// 根据关键字搜索动漫
   static Future<List<Anime>> getAnimesBySearch(String keyword) async {
-    Log.info("sql: getAnimesBySearch");
+    AppLog.info("sql: getAnimesBySearch");
     keyword = EscapeUtil.escapeStr(keyword);
 
     var list = await db.rawQuery('''
@@ -279,7 +279,7 @@ class AnimeDao {
         : 'area = "${filter.area == AnimeArea.unknown ? '' : filter.area!.label}"';
     final categorySql = filter.category == null
         ? ''
-        : 'category = "${filter.category == AnimeCategory.unknown ? '' : filter.category!.label}"';
+        : 'category = "${filter.category == '未知' ? '' : filter.category}"';
     final airDateSql = filter.airDate == null
         ? ''
         : 'premiere_time like "%${filter.airDate}%"';
@@ -362,14 +362,16 @@ class AnimeDao {
   }
 
   /// 迁移动漫、全局更新动漫
-  static Future<int> updateAnime(Anime oldAnime, Anime newAnime,
-      {bool updateCover = false,
-      bool updateName = true,
-      bool updateInfo = true,
-      bool updateAnimeUrl = true}) async {
-    Log.info("sql: updateAnime");
+  static Future<int> updateAnime(
+    Anime oldAnime,
+    Anime newAnime, {
+    MigrateConfig? config,
+  }) async {
+    config ??= MigrateConfig();
+
+    AppLog.info("sql: updateAnime");
     String datetime = DateTime.now().toString();
-    Log.info("oldAnime=$oldAnime, newAnime=$newAnime");
+    AppLog.info("oldAnime=$oldAnime, newAnime=$newAnime");
 
     // 如果标签不一样，需要更新最后修改标签的时间
     if (newAnime.tagName.isNotEmpty && oldAnime.tagName != newAnime.tagName) {
@@ -378,54 +380,55 @@ class AnimeDao {
         set last_mode_tag_time = '$datetime' -- 更新最后修改标签的时间
         where anime_id = ${oldAnime.animeId};
       ''');
-      Log.info("last_mode_tag_time: $datetime");
+      AppLog.info("last_mode_tag_time: $datetime");
     }
     // 改基础信息
     // 如果爬取的集数量大于旧数量，则改变，否则不变(旧的大集数赋值上去)
     if (newAnime.animeEpisodeCnt < oldAnime.animeEpisodeCnt) {
       newAnime.animeEpisodeCnt = oldAnime.animeEpisodeCnt;
     }
-
-    if (!updateName) {
-      newAnime.animeName = oldAnime.animeName;
-    }
-
-    // 如果新动漫某些属性为空字符串，则把旧的赋值上去
-    if (newAnime.animeDesc.isEmpty) newAnime.animeDesc = oldAnime.animeDesc;
     if (newAnime.tagName.isEmpty) newAnime.tagName = oldAnime.tagName;
 
-    // 如果没有新封面，或者不迁移封面，就使用旧的
-    if (newAnime.animeCoverUrl.isEmpty || !updateCover) {
+    // 如果新信息为空，或者不迁移信息，就使用旧的
+    if (newAnime.animeName.isEmpty || !config.nameIsNew) {
+      newAnime.animeName = oldAnime.animeName;
+    }
+    if (newAnime.animeDesc.isEmpty || !config.descIsNew) {
+      newAnime.animeDesc = oldAnime.animeDesc;
+    }
+    if (newAnime.animeCoverUrl.isEmpty || !config.coverIsNew) {
       newAnime.animeCoverUrl = oldAnime.animeCoverUrl;
     }
-    // 如果新信息为空，或者不迁移信息，就使用旧的
-    if (newAnime.premiereTime.isEmpty | !updateInfo) {
+    if (newAnime.premiereTime.isEmpty || !config.premiereTimeIsNew) {
       newAnime.premiereTime = oldAnime.premiereTime;
     }
-    if (newAnime.nameAnother.isEmpty | !updateInfo) {
+    if (newAnime.nameAnother.isEmpty || !config.anotherNameIsNew) {
       newAnime.nameAnother = oldAnime.nameAnother;
     }
-    if (newAnime.nameOri.isEmpty | !updateInfo) {
-      newAnime.nameOri = oldAnime.nameOri;
+    if (newAnime.area.isEmpty || !config.areaIsNew) {
+      newAnime.area = oldAnime.area;
     }
-    if (newAnime.authorOri.isEmpty | !updateInfo) {
-      newAnime.authorOri = oldAnime.authorOri;
-    }
-    if (newAnime.area.isEmpty | !updateInfo) newAnime.area = oldAnime.area;
-    if (newAnime.playStatus.isEmpty | !updateInfo) {
+    if (newAnime.playStatus.isEmpty || !config.playStatusIsNew) {
       newAnime.playStatus = oldAnime.playStatus;
     }
-    if (newAnime.productionCompany.isEmpty | !updateInfo) {
-      newAnime.productionCompany = oldAnime.productionCompany;
-    }
-    if (newAnime.officialSite.isEmpty | !updateInfo) {
-      newAnime.officialSite = oldAnime.officialSite;
-    }
-    if (newAnime.category.isEmpty | !updateInfo) {
+    if (newAnime.category.isEmpty || !config.categoryIsNew) {
       newAnime.category = oldAnime.category;
     }
-    if (newAnime.animeUrl.isEmpty | !updateAnimeUrl) {
+    if (newAnime.animeUrl.isEmpty || !config.urlIsNew) {
       newAnime.animeUrl = oldAnime.animeUrl;
+    }
+
+    if (newAnime.nameOri.isEmpty) {
+      newAnime.nameOri = oldAnime.nameOri;
+    }
+    if (newAnime.authorOri.isEmpty) {
+      newAnime.authorOri = oldAnime.authorOri;
+    }
+    if (newAnime.productionCompany.isEmpty) {
+      newAnime.productionCompany = oldAnime.productionCompany;
+    }
+    if (newAnime.officialSite.isEmpty) {
+      newAnime.officialSite = oldAnime.officialSite;
     }
     final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(newAnime.animeUrl);
 
@@ -484,6 +487,15 @@ class AnimeDao {
     ''');
   }
 
+  static void batchUpdateCategory(String oldCategory, String newCategory) {
+    db.update(
+      table,
+      {'category': newCategory},
+      where: 'category = ?',
+      whereArgs: [oldCategory],
+    );
+  }
+
   static void updatePremiereTime(int animeId, String value) {
     db.rawUpdate('''
     update anime
@@ -493,7 +505,9 @@ class AnimeDao {
   }
 
   static void updateAnimeRate(int animeId, int rate) async {
-    Log.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
+    assert(0 <= rate && rate <= 10, 'invalid rate: $rate ([0, 10])');
+
+    AppLog.info("sql: updateAnimeRate(animeId=$animeId, rate=$rate)");
     db.rawUpdate('''
     update anime
     set rate = $rate
@@ -502,7 +516,7 @@ class AnimeDao {
   }
 
   static Future<void> updateAnimeUrl(int animeId, String animeUrl) async {
-    Log.info("sql: updateAnimeUrl");
+    AppLog.info("sql: updateAnimeUrl");
     animeUrl = EscapeUtil.escapeStr(animeUrl);
     final website = ClimbAnimeUtil.getClimbWebsiteByAnimeUrl(animeUrl);
 
@@ -519,7 +533,7 @@ class AnimeDao {
 
   static Future<void> updateAnimeCoverUrl(
       int animeId, String animeCoverUrl) async {
-    Log.info("sql: updateAnimeCoverUrl");
+    AppLog.info("sql: updateAnimeCoverUrl");
     animeCoverUrl = EscapeUtil.escapeStr(animeCoverUrl);
     db.rawUpdate('''
     update anime
@@ -529,7 +543,7 @@ class AnimeDao {
   }
 
   static void updateAnimeNameByAnimeId(int animeId, String newAnimeName) async {
-    Log.info("sql: updateAnimeNameByAnimeId");
+    AppLog.info("sql: updateAnimeNameByAnimeId");
     newAnimeName = EscapeUtil.escapeStr(newAnimeName);
     db.rawUpdate('''
     update anime
@@ -540,7 +554,7 @@ class AnimeDao {
 
   static void updateAnimeNameAnotherByAnimeId(
       int animeId, String newNameAnother) async {
-    Log.info("sql: updateAnimeNameAnotherByAnimeId");
+    AppLog.info("sql: updateAnimeNameAnotherByAnimeId");
     newNameAnother = EscapeUtil.escapeStr(newNameAnother);
     db.rawUpdate('''
     update anime
@@ -550,7 +564,7 @@ class AnimeDao {
   }
 
   static void updateAnimeDescByAnimeId(int animeId, String newDesc) async {
-    Log.info("sql: updateAnimeDescByAnimeId");
+    AppLog.info("sql: updateAnimeDescByAnimeId");
     newDesc = EscapeUtil.escapeStr(newDesc);
     db.rawUpdate('''
     update anime
@@ -561,7 +575,7 @@ class AnimeDao {
 
   static void updateAnimePlayStatusByAnimeId(
       int animeId, String newPlayStatus) async {
-    Log.info("sql: updateAnimePlayStatusByAnimeId");
+    AppLog.info("sql: updateAnimePlayStatusByAnimeId");
     db.rawUpdate('''
     update anime
     set play_status = '$newPlayStatus'
@@ -570,7 +584,7 @@ class AnimeDao {
   }
 
   static void updateTagByAnimeId(int animeId, String newTagName) async {
-    Log.info("sql: updateTagNameByAnimeId");
+    AppLog.info("sql: updateTagNameByAnimeId");
     // 同时修改最后一次修改标签的时间
     db.rawUpdate('''
     update anime
@@ -580,7 +594,7 @@ class AnimeDao {
   }
 
   static void updateDescByAnimeId(int animeId, String desc) async {
-    Log.info("sql: updateDescByAnimeId");
+    AppLog.info("sql: updateDescByAnimeId");
     db.rawUpdate('''
     update anime
     set anime_desc = '$desc'
@@ -590,7 +604,7 @@ class AnimeDao {
 
   static Future<bool> updateEpisodeInfoByAnimeId(
       int animeId, AnimeEpisodeInfo episodeInfo) async {
-    Log.info("sql: updateEpisodeCntAndStartNumberByAnimeId");
+    AppLog.info("sql: updateEpisodeCntAndStartNumberByAnimeId");
 
     return await db.rawUpdate('''
       update anime
@@ -601,7 +615,7 @@ class AnimeDao {
 
   /// 最早收藏动漫
   static Future<Anime?> getFirstCollectedAnime() async {
-    Log.info("sql: getFirstCollectedAnime");
+    AppLog.info("sql: getFirstCollectedAnime");
 
     var cols = await db.rawQuery('''
       select anime_id from anime order by anime_id limit 1;
@@ -615,7 +629,7 @@ class AnimeDao {
 
   /// 最早开播动漫
   static Future<Anime?> getFirstPremieredAnime() async {
-    Log.info("sql: getFirstPremieredAnime");
+    AppLog.info("sql: getFirstPremieredAnime");
 
     var cols = await db.rawQuery('''
       select * from anime order by case when length(premiere_time) = 0 then '9' else premiere_time end limit 1;
@@ -626,7 +640,7 @@ class AnimeDao {
 
   /// 历史表中回顾数最大的动漫
   static Future<Map<String, dynamic>?> getMaxReviewCntAnime() async {
-    Log.info("sql: getMaxReviewCntAnime");
+    AppLog.info("sql: getMaxReviewCntAnime");
 
     var cols = await db.rawQuery('''
       select anime_id, review_number from history order by review_number desc limit 1;
@@ -643,7 +657,7 @@ class AnimeDao {
 
   /// 收藏的动漫数量
   static Future<int> getTotal() async {
-    Log.info('sql: anime getTotal');
+    AppLog.info('sql: anime getTotal');
 
     var cols = await db.rawQuery('''
       select count(anime_id) total from anime;
@@ -653,7 +667,7 @@ class AnimeDao {
 
   /// 前n年今天开播的动漫
   static Future<List<Anime>> getAnimesNYearAgoToday() async {
-    Log.info('sql: getAnimesNYearAgoToday');
+    AppLog.info('sql: getAnimesNYearAgoToday');
 
     var now = DateTime.now();
     var month = now.toString().substring(5, 7);
@@ -807,7 +821,7 @@ class AnimeDao {
         await KeyValueDao.getBool('supportHalfStar') ?? false;
     if (supportHalfStar) return;
 
-    logger.info('[table $table] double rate');
+    AppLog.info('[table $table] double rate');
     await db.rawUpdate('''
       UPDATE $table SET $columnRate = $columnRate * 2
       WHERE $columnRate IS NOT NULL and $columnRate != 0;

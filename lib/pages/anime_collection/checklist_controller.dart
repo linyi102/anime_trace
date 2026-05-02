@@ -1,12 +1,17 @@
+import 'dart:io';
 
+import 'package:animetrace/utils/event.dart';
 import 'package:flutter/material.dart';
+import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/params/anime_sort_cond.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 class ChecklistController extends GetxController
     with GetTickerProviderStateMixin {
@@ -32,7 +37,7 @@ class ChecklistController extends GetxController
 
   // 多选
   List<Anime> selectedAnimes = [];
-  bool multi = false;
+  bool get multi => selectedAnimes.isNotEmpty;
 
   init() async {
     // 不要放在loadData中，因为要保证收藏页在initState中loadData执行完毕
@@ -88,9 +93,7 @@ class ChecklistController extends GetxController
       // lastTopTabIndex = tabController.index;
       SPUtil.setInt("last_top_tab_index", tabController!.index);
       // 取消多选
-      if (multi) {
-        quitMulti();
-      }
+      quitMulti();
     }
   }
 
@@ -101,30 +104,35 @@ class ChecklistController extends GetxController
   }
 
   void loadAnimes() async {
-    // 首次或重新渲染时，重置页号，就能保证之后也能加载更多数据了
-    for (int i = 0; i < pageIndexList.length; ++i) {
-      pageIndexList[i] = 1;
-    }
-
-    Log.info("开始加载数据");
+    AppLog.info("开始加载数据");
     animeCntPerTag = await SqliteUtil.getAnimeCntPerTag();
     for (int i = 0; i < tags.length; ++i) {
       animesInTag[i] = await SqliteUtil.getAllAnimeBytagName(
           tags[i], 0, pageSize,
           animeSortCond: animeSortCond);
-      // Log.info("animesInTag[$i].length=${animesInTag[i].length}");
+      // AppLog.info("animesInTag[$i].length=${animesInTag[i].length}");
     }
-    Log.info("数据加载完毕");
+    AppLog.info("数据加载完毕");
+
+    // 获取首页数据后重置页号，避免同时加载更多时覆盖页号
+    for (int i = 0; i < pageIndexList.length; ++i) {
+      pageIndexList[i] = 1;
+    }
+
     loadOk = true;
     update();
     // 数据加载完毕后，再刷新页面。注意下面数据未加载完毕时，由于loadOk为false，显示的是其他页面
   }
 
   void quitMulti() {
+    if (selectedAnimes.isEmpty) return;
+
+    AppLog.debug('退出多选');
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    multi = false;
     selectedAnimes.clear();
     update();
+    Event(EventName.setNavigator).send(true);
+    Event(EventName.takeOverHomePop).send(false);
   }
 
   /// 生成描述
@@ -136,5 +144,29 @@ class ChecklistController extends GetxController
       if (i + 1 < tags.length) res += " ";
     }
     return res;
+  }
+
+  /// 恢复最新备份热键 ///
+  final HotKey restoreLatestHotKey = HotKey(
+    KeyCode.keyR,
+    modifiers: [KeyModifier.control],
+    scope: HotKeyScope.inapp,
+  );
+
+  bool hasRegisteredRestoreLatestHotkey = false;
+
+  tryRegisterRestoreLatestHotkey() {
+    if (Platform.isWindows && Config.enableRestoreLatestHotkey) {
+      hotKeyManager.register(restoreLatestHotKey, keyDownHandler: (hotKey) {
+        BackupService.to.tryRestoreRemoteFile();
+      });
+      hasRegisteredRestoreLatestHotkey = true;
+    }
+  }
+
+  unregisterRestoreLatestHotkey() {
+    if (hasRegisteredRestoreLatestHotkey) {
+      hotKeyManager.unregister(restoreLatestHotKey);
+    }
   }
 }

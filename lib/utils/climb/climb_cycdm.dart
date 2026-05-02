@@ -55,7 +55,7 @@ class ClimbCycdm with Climb {
         .getElementsByTagName("li");
     String dateLiInnerHtml =
         lis[8].innerHtml; // <em class="cor4">上映：</em>2021-01-09
-    Log.info("dateLiInnerHtml=$dateLiInnerHtml");
+    AppLog.info("dateLiInnerHtml=$dateLiInnerHtml");
     RegExp exp = RegExp("[0-9]{4}-[0-9]{2}-[0-9]{2}");
     anime.premiereTime =
         exp.stringMatch(dateLiInnerHtml).toString(); // 2021-01-09

@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:animetrace/components/dialog/dialog_share_error_log.dart';
+import 'package:animetrace/global.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_picker_util.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/widgets/setting_card.dart';
@@ -25,7 +28,21 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
     return SettingCard(
       title: '本地备份',
       children: [
-        if (Platform.isWindows)
+        if (PlatformUtil.isMobile && FeatureFlag.enableSaveFile)
+          ListTile(
+            title: const Text("立即备份"),
+            onTap: () async {
+              String zipName = await BackupUtil.generateZipName();
+              File tmpZipFile = await BackupUtil.createTempBackUpFile(zipName);
+              await FileSaver.instance.saveAs(
+                  name: zipName,
+                  ext: '',
+                  bytes: tmpZipFile.readAsBytesSync(),
+                  mimeType: MimeType.zip);
+              tmpZipFile.delete();
+            },
+          ),
+        if (Platform.isWindows && FeatureFlag.enableSaveFile) ...[
           ListTile(
             title: const Text("立即备份"),
             subtitle: const Text("单击进行备份，备份目录为设置的本地目录"),
@@ -38,7 +55,6 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
                       defaultValue: "unset"));
             },
           ),
-        if (Platform.isWindows)
           ListTile(
             title: const Text("本地备份目录"),
             subtitle: Text(SPUtil.getString("backup_local_dir")),
@@ -50,7 +66,6 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
               }
             },
           ),
-        if (Platform.isWindows)
           SwitchListTile(
             title: const Text("自动备份"),
             subtitle: const Text("每次进入应用后会自动备份"),
@@ -74,6 +89,7 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
               setState(() {});
             },
           ),
+        ],
         ListTile(
           title: const Text("还原本地备份"),
           subtitle: const Text("还原动漫记录"),

@@ -1,13 +1,16 @@
 /// 网站收藏的标签页(想看、看过...)
-class SiteCollectionTab {
-  String title; // 标题，例如「想看」
-  String word; // url尾部单词，例如「wish」
+class SiteCollectionTab<T> {
+  /// 标题
+  String title;
+
+  /// 标签标识
+  T identity;
 
   SiteCollectionTab({
     required this.title,
-    required this.word,
+    required this.identity,
   });
 
   @override
-  String toString() => 'SiteCollectionTab(title: $title, word: $word)';
+  String toString() => 'SiteCollectionTab(title: $title, identity: $identity)';
 }

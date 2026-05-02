@@ -8,6 +8,9 @@ class MigrateController extends GetxController {
   /// 迁移到该搜索源
   ClimbWebsite? destWebsite;
 
+  /// 迁移配置
+  MigrateConfig? config;
+
   /// 在迁移过程中，每次迁移的间隔时间(单位秒)
   int spacingSeconds = 3;
 
@@ -61,6 +64,11 @@ class MigrateController extends GetxController {
     update();
   }
 
+  void updateConfig(MigrateConfig value) {
+    config = value;
+    update();
+  }
+
   Future<void> onTapPrimary(BuildContext context) async {
     if (migrating) {
       showDialog(
@@ -91,7 +99,8 @@ class MigrateController extends GetxController {
     if (destWebsite == null) {
       await _showSelectWebsite(context);
     }
-    showDialog(context: context, builder: (context) => const _MigrateFormView());
+    showDialog(
+        context: context, builder: (context) => const _MigrateFormView());
   }
 
   Future<void> startMigrate() async {
@@ -126,7 +135,7 @@ class MigrateController extends GetxController {
 
     for (int i = 0; i < animes.length; i++) {
       if (completer?.isCompleted == true) {
-        logger.info('迁移任务已取消');
+        AppLog.info('迁移任务已取消');
         break;
       }
       final anime = animes[i];
@@ -143,12 +152,8 @@ class MigrateController extends GetxController {
           if (newAnime == null) {
             states[anime.animeId] = DataState.data('未搜索到动漫');
           } else {
-            await AnimeDao.updateAnime(anime, newAnime,
-                updateCover: true,
-                updateInfo: true,
-                updateAnimeUrl: true,
-                updateName: true);
-            logger.info(
+            await AnimeDao.updateAnime(anime, newAnime, config: config);
+            AppLog.info(
                 '迁移动漫[${anime.animeId}]${anime.animeName}：${anime.animeUrl} -> ${newAnime.animeUrl}');
             animes[i] = newAnime.copyWith(
               animeId: anime.animeId, // 保持原有的animeId

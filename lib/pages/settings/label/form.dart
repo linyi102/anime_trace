@@ -1,3 +1,7 @@
+import 'package:animetrace/routes/get_route.dart';
+import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/widgets/anchor_scroll.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/dao/label_dao.dart';
@@ -46,9 +50,8 @@ class _LabelFormState extends State<LabelForm> {
           InkWell(
             borderRadius: BorderRadius.circular(6),
             child: EmojiLeading(emoji: emoji),
-            onLongPress: () {
-              _cancelEmoji();
-            },
+            onLongPress: _cancelEmoji,
+            onTap: _showEmojiPicker,
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -109,5 +112,159 @@ class _LabelFormState extends State<LabelForm> {
     setState(() {
       emoji = null;
     });
+  }
+
+  void _showEmojiPicker() {
+    RouteUtil.materialTo(
+      context,
+      EmojiPicker(
+        onEmojiSelected: (Category? category, Emoji emoji) {
+          Navigator.pop(context);
+          this.emoji = emoji.emoji;
+          setState(() {});
+        },
+        customWidget: (config, state, showSearchBar) =>
+            _EmojiPickerView(config, state, showSearchBar),
+      ),
+    );
+  }
+}
+
+class _EmojiPickerView extends EmojiPickerView {
+  const _EmojiPickerView(super.config, super.state, super.showSearchBar);
+
+  @override
+  _CustomViewState createState() => _CustomViewState();
+}
+
+class _CustomViewState extends State<_EmojiPickerView> {
+  final anchorScrollController = AnchorScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // 渲染完毕后重绘展示所有分类锚点，便于切换
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    anchorScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final double paddingHorizontal =
+            maxWidth > 500 ? (maxWidth - 500) / 2 : 0;
+
+        Iterable<Widget> _genCategories() sync* {
+          for (final section in widget.state.categoryEmoji) {
+            if (section.emoji.isEmpty) continue;
+
+            AppLog.debug('build category ${section.category.zhName}');
+            yield SliverToBoxAdapter(
+              child: AnchorWidget(
+                controller: anchorScrollController,
+                anchorValue: section.category.zhName,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 24,
+                    bottom: 12,
+                    left: paddingHorizontal + 12,
+                  ),
+                  child: Text(
+                    section.category.zhName,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ),
+            );
+
+            yield SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
+              sliver: SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 60,
+                  ),
+                  itemCount: section.emoji.length,
+                  itemBuilder: (context, index) {
+                    // AppLog.debug('build emoji $index');
+                    final e = section.emoji[index];
+
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          widget.state.onEmojiSelected(null, e);
+                        },
+                        child: FittedBox(child: Text(e.emoji)),
+                      ),
+                    );
+                  }),
+            );
+          }
+        }
+
+        return AnchorCustomScrollView(
+          controller: anchorScrollController,
+          slivers: [
+            SliverAppBar(
+              title: const Text('选择表情'),
+              pinned: true,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(40),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ...anchorScrollController.anchorValues.map(
+                        (e) => TextButton(
+                          onPressed: () =>
+                              anchorScrollController.jumpToAnchor(e),
+                          child: Text(e),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            ..._genCategories(),
+          ],
+        );
+      },
+    ));
+  }
+}
+
+extension _CategoryExtension on Category {
+  String get zhName {
+    switch (this) {
+      case Category.RECENT:
+        return '最近';
+      case Category.SMILEYS:
+        return '表情';
+      case Category.ANIMALS:
+        return '动物';
+      case Category.FOODS:
+        return '食物';
+      case Category.ACTIVITIES:
+        return '活动';
+      case Category.TRAVEL:
+        return '旅行';
+      case Category.OBJECTS:
+        return '物品';
+      case Category.SYMBOLS:
+        return '符号';
+      case Category.FLAGS:
+        return '旗帜';
+    }
   }
 }

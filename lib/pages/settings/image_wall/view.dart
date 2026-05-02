@@ -80,10 +80,12 @@ class _ImageWallPageState extends State<ImageWallPage> {
             (Global.isPortrait(context) ? 200 : 100)) /
         (groupCnt + 1);
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
         await _restoreDeviceUI();
-        return true;
+        Navigator.pop(context);
       },
       child: Theme(
         data: ThemeData.dark(useMaterial3: true)
@@ -528,7 +530,8 @@ class SelectNumberPage extends StatelessWidget {
                         child: Text(
                       '$number',
                       style: isCur
-                          ? TextStyle(color: Theme.of(context).colorScheme.primary)
+                          ? TextStyle(
+                              color: Theme.of(context).colorScheme.primary)
                           : null,
                     )),
                   ),

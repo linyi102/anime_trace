@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class KeyValueDao {
   static Database get db => SqliteUtil.database;
@@ -12,7 +12,7 @@ class KeyValueDao {
   static const columnValue = 'value';
 
   static Future<void> createTable() async {
-    Log.info('sql: create table $tableName');
+    AppLog.info('sql: create table $tableName');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS $tableName (
         $columnKey      TEXT PRIMARY KEY,
@@ -21,11 +21,33 @@ class KeyValueDao {
     ''');
   }
 
-  static Future<void> setString(String key, String? value) {
-    return db.insert(tableName, {
-      columnKey: key,
-      columnValue: value,
-    });
+  static Future<bool> hasKey(String key) async {
+    return await SqliteUtil.count(
+          tableName: tableName,
+          columnName: columnKey,
+          where: '$columnKey = ?',
+          whereArgs: [key],
+        ) >
+        0;
+  }
+
+  static Future<int> setString(String key, String? value) async {
+    if (!await hasKey(key)) {
+      return db.insert(tableName, {
+        columnKey: key,
+        columnValue: value,
+      });
+    } else {
+      return db.update(
+        tableName,
+        {
+          columnKey: key,
+          columnValue: value,
+        },
+        where: '$columnKey = ?',
+        whereArgs: [key],
+      );
+    }
   }
 
   static Future<String?>? getString(String key) async {
@@ -47,13 +69,7 @@ class KeyValueDao {
   }
 
   static Future<int> setStringList(String key, List<String>? value) async {
-    if (await SqliteUtil.count(
-          tableName: tableName,
-          columnName: columnKey,
-          where: '$columnKey = ?',
-          whereArgs: [key],
-        ) ==
-        0) {
+    if (!await hasKey(key)) {
       return db.insert(tableName, {
         columnKey: key,
         columnValue: jsonEncode(value),
@@ -71,21 +87,23 @@ class KeyValueDao {
     }
   }
 
-  static Future<List<String>>? getStringList(String key) async {
+  static Future<List<String>?> getStringList(String key) async {
     final rows = await db.query(
       tableName,
       columns: [columnValue],
       where: '$columnKey = ?',
       whereArgs: [key],
     );
-    if (rows.isEmpty) return [];
+    if (rows.isEmpty) return null;
+
     final String? value = rows.first[columnValue] as String? ?? '';
-    if (value == null || value.isEmpty) return [];
+    if (value == null || value.isEmpty) return null;
+
     try {
       return (jsonDecode(value) as List<dynamic>).cast<String>();
     } catch (exception) {
-      Log.error(exception);
-      return [];
+      AppLog.error(exception);
+      return null;
     }
   }
 }

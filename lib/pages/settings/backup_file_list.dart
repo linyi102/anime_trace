@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
 import 'package:animetrace/components/empty_data_hint.dart';
 import 'package:animetrace/components/loading_widget.dart';
-import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/backup_util.dart';
 import 'package:animetrace/utils/file_util.dart';
 import 'package:animetrace/utils/time_util.dart';
@@ -36,7 +35,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   void _initData() async {
-    Log.info("获取备份文件中");
+    AppLog.info("获取备份文件中");
     files = await BackupUtil.getAllBackupFiles();
     _loadOk = true;
     if (mounted) setState(() {});
@@ -70,7 +69,7 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
   }
 
   _buildFileItem(BuildContext context, int index) {
-    // Log.info("index=$index");
+    // AppLog.info("index=$index");
     String fileName = "";
     File file = files[index];
     // 获取文件名
@@ -176,8 +175,6 @@ class _BackUpFileListPageState extends State<BackUpFileListPage> {
                       ToastUtil.showText(taskValue.msg);
                       if (taskValue.isFailure) {
                         showShareErrorLog();
-                      } else {
-                        ChecklistController.to.restore();
                       }
                     },
                     onTaskError: (_) {

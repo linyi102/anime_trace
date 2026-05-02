@@ -29,14 +29,14 @@ class UpdateRecordController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    Log.info("UpdateRecordController: init");
+    AppLog.info("UpdateRecordController: init");
     updateData();
   }
 
   // 更新记录页全局更新
   Future<void> updateData() async {
     // await Future.delayed(const Duration(seconds: 3));
-    Log.info("重新获取数据库内容并覆盖");
+    AppLog.info("重新获取数据库内容并覆盖");
     pageParams.resetPageIndex();
     updateRecordVos.value = await UpdateRecordDao.findAll(pageParams);
 
@@ -49,7 +49,7 @@ class UpdateRecordController extends GetxController {
 
   // 加载更多，追加而非直接赋值
   loadMore() async {
-    Log.info("加载更多更新记录中...");
+    AppLog.info("加载更多更新记录中...");
     pageParams.pageIndex++;
     updateRecordVos.value =
         updateRecordVos.toList() + await UpdateRecordDao.findAll(pageParams);
@@ -69,7 +69,7 @@ class UpdateRecordController extends GetxController {
     // 要么重新获取所有数据，要么直接转Vo添加
     UpdateRecordVo updateRecordVo = updateRecord.toVo(newAnime);
     updateRecordVos.add(updateRecordVo);
-    Log.info("添加$updateRecordVo，长度=${updateRecordVos.length}");
+    AppLog.info("添加$updateRecordVo，长度=${updateRecordVos.length}");
     // 排序
     updateRecordVos
         .sort((a, b) => b.manualUpdateTime.compareTo(a.manualUpdateTime));
@@ -86,7 +86,7 @@ class UpdateRecordController extends GetxController {
 
   // 强制更新完成
   forceUpdateOk() {
-    Log.info("强制更新完成");
+    AppLog.info("强制更新完成");
     updateOkCnt.value = needUpdateCnt.value;
   }
 
@@ -98,10 +98,10 @@ class UpdateRecordController extends GetxController {
   void addUpdateRecord(UpdateRecordVo updateRecordVo) {
     // 第二次刷新时，如果已经添加了(old、new、anime、time都一样)，则不进行添加
     if (updateRecordVos.contains(updateRecordVo)) {
-      Log.info("已有updateRecordVo=$updateRecordVo，跳过");
+      AppLog.info("已有updateRecordVo=$updateRecordVo，跳过");
       return;
     }
-    Log.info("添加$updateRecordVo，长度=${updateRecordVos.length}");
+    AppLog.info("添加$updateRecordVo，长度=${updateRecordVos.length}");
 
     // 直接插入到开头
     updateRecordVos.insert(0, updateRecordVo);

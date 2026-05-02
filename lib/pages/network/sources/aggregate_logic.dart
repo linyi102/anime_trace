@@ -73,7 +73,7 @@ class AggregateLogic extends GetxController {
         futures.add(DioUtil.ping(website.climb.baseUrl).then((value) {
           website.pingStatus = value;
           update();
-          Log.info("${website.name}:pingStatus=${website.pingStatus}");
+          AppLog.info("${website.name}:pingStatus=${website.pingStatus}");
         }));
       }
     }
