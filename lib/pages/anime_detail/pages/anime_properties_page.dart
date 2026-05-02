@@ -1,4 +1,5 @@
 import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/global.dart';
 import 'package:animetrace/pages/anime_detail/pages/category_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -311,15 +312,16 @@ class AnimePropertiesPage extends StatelessWidget {
                       TextButton(
                           onPressed: () => textController.clear(),
                           child: const Text("清空")),
-                      TextButton(
-                          onPressed: () async {
-                            ClipboardData? data =
-                                await Clipboard.getData(Clipboard.kTextPlain);
-                            if (data != null) {
-                              textController.text = data.text ?? "";
-                            }
-                          },
-                          child: const Text("粘贴")),
+                      if (FeatureFlag.enablePaste)
+                        TextButton(
+                            onPressed: () async {
+                              ClipboardData? data =
+                                  await Clipboard.getData(Clipboard.kTextPlain);
+                              if (data != null) {
+                                textController.text = data.text ?? "";
+                              }
+                            },
+                            child: const Text("粘贴")),
                     ],
                   ),
                   Expanded(child: Container()),

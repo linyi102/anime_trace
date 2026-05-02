@@ -312,15 +312,16 @@ class _SettingPageState extends State<SettingPage> {
                   TextButton(
                       onPressed: () => textController.clear(),
                       child: const Text("清空")),
-                  TextButton(
-                      onPressed: () async {
-                        ClipboardData? data =
-                            await Clipboard.getData(Clipboard.kTextPlain);
-                        if (data != null) {
-                          textController.text = data.text ?? "";
-                        }
-                      },
-                      child: const Text("粘贴")),
+                  if (FeatureFlag.enablePaste)
+                    TextButton(
+                        onPressed: () async {
+                          ClipboardData? data =
+                              await Clipboard.getData(Clipboard.kTextPlain);
+                          if (data != null) {
+                            textController.text = data.text ?? "";
+                          }
+                        },
+                        child: const Text("粘贴")),
                 ],
               ),
               const Spacer(),

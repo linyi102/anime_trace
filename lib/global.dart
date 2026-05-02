@@ -229,4 +229,14 @@ class FeatureFlag {
   /// PageTransitionsTheme 需要手动传入 TargetPlatform，为保证代码统一鸿蒙平台暂时禁用
   static bool get enableCustomPageTransition =>
       PlatformUtil.isMobile && !PlatformUtil.isOhos;
+
+  /// 从剪切板粘贴
+  ///
+  /// 鸿蒙平台需要权限，暂时禁用
+  static bool get enablePaste => !PlatformUtil.isOhos;
+
+  /// 复制到剪切板
+  ///
+  /// 鸿蒙平台需要权限，暂时禁用
+  static bool get enableCopy => !PlatformUtil.isOhos;
 }
