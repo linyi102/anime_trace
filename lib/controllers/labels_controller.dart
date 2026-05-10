@@ -123,6 +123,12 @@ class LabelsController extends GetxController {
     sortController.sort();
   }
 
+  void quitSearch() {
+    inputKeywordController.clear();
+    kw = "";
+    getAllLabels();
+  }
+
   Future<bool> addLabel(String labelName) async {
     Label newLabel = Label(0, labelName, order: labels.length);
     int newId = await LabelDao.insert(newLabel);

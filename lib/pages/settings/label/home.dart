@@ -34,11 +34,13 @@ class _LabelManagePageState extends State<LabelManagePage> {
   LabelsController labelsController = LabelsController.to;
 
   @override
-  Widget build(BuildContext context) {
-    if (labelsController.kw.isNotEmpty) {
-      _enterSearchModeIfHasKeyword();
-    }
+  void dispose() {
+    labelsController.quitSearch();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: searchAction
@@ -177,15 +179,11 @@ class _LabelManagePageState extends State<LabelManagePage> {
       onChanged: (kw) async {
         _search(kw);
       },
-      onTapClear: () async {
-        labelsController.inputKeywordController.clear();
-        labelsController.kw = "";
-        labelsController.getAllLabels();
+      onTapClear: () {
+        labelsController.quitSearch();
       },
       onTapCancelButton: () {
-        labelsController.inputKeywordController.clear();
-        labelsController.kw = "";
-        labelsController.getAllLabels();
+        labelsController.quitSearch();
         setState(() {
           searchAction = false;
         });
@@ -309,14 +307,6 @@ class _LabelManagePageState extends State<LabelManagePage> {
                 }
               });
         });
-  }
-
-  void _enterSearchModeIfHasKeyword() async {
-    if (labelsController.kw.isNotEmpty) {
-      setState(() {
-        searchAction = true;
-      });
-    }
   }
 
   void _showLayoutBottomSheet() {
