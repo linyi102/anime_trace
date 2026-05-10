@@ -103,6 +103,7 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
                   onRefresh: localSearchController.search,
                   child: CustomScrollView(
                     controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
                       if (searchOk)
                         SliverList(

@@ -5,8 +5,9 @@ class Label {
   int id;
   String name;
   int order;
+  int count;
 
-  Label(this.id, this.name, {this.order = -1});
+  Label(this.id, this.name, {this.order = -1, this.count = 0});
 
   factory Label.fromMap(Map<String, Object?> map) => LabelDao.row2Bean(map);
 
@@ -40,11 +41,13 @@ class Label {
     int? id,
     String? name,
     int? order,
+    int? count,
   }) {
     return Label(
       id ?? this.id,
       name ?? this.name,
       order: order ?? this.order,
+      count: count ?? this.count,
     );
   }
 }

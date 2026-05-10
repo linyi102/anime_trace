@@ -1,7 +1,7 @@
 import 'package:animetrace/controllers/setting_service.dart';
+import 'package:animetrace/dao/anime_label_dao.dart';
 import 'package:animetrace/modules/sortable/sortable.dart';
 import 'package:animetrace/utils/extensions/list.dart';
-import 'package:flutter/material.dart';
 import 'package:animetrace/dao/label_dao.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/toast_util.dart';
@@ -16,20 +16,15 @@ class LabelsController extends GetxController {
   // 所有标签
   RxList<Label> labels = RxList.empty();
 
-  // 文本输入控制器，放在这里是为了避免重绘时丢失
-  var inputKeywordController = TextEditingController();
-  String get searchKeyword => inputKeywordController.text;
-
   // 搜索输入关键字(因为搜索后退出标签管理界面时，labels不再是数据库全部标签，所以再进入时要显示当前关键字)
   String kw = "";
 
-  final customSortMode =
-      SortMode(label: '自定义', storeIndex: 2, sort: _sortByCustom);
   late final sortController = SortController<Label>(
     modes: [
       SortMode(label: '创建时间', storeIndex: 0, sort: _sortByCreated),
+      SortMode(label: '动漫数量', storeIndex: 3, sort: _sortByCount),
       SortMode(label: '名称', storeIndex: 1, sort: _sortByName),
-      customSortMode,
+      SortMode(label: '自定义', storeIndex: 2, sort: _sortByCustom),
     ],
     defaultModeIndex: SettingService.to.getLabelSortMode(),
     defaultReverse: SettingService.to.getLabelSortReverse(),
@@ -40,6 +35,8 @@ class LabelsController extends GetxController {
     onReverseChanged: (isReverse) =>
         SettingService.to.setLabelSortReverse(isReverse),
   );
+
+  bool get enableReorder => sortController.curMode.storeIndex == 2;
 
   List<String> get recommendedLabels => [
         "🔮魔法",
@@ -102,19 +99,26 @@ class LabelsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllLabels();
+    loadLabels();
   }
 
   @override
   void dispose() {
-    inputKeywordController.dispose();
     sortController.dispose();
     super.dispose();
   }
 
-  // 还原数据后，需要重新获取所有标签
-  void getAllLabels() async {
-    final allLabels = await LabelDao.getAllLabels();
+  void loadLabels({String? kw}) async {
+    this.kw = kw ?? '';
+
+    final allLabels = this.kw.isNotEmpty
+        ? await LabelDao.searchLabel(this.kw)
+        : await LabelDao.getAllLabels();
+    // 每次获取所有标签后获取数量，保证按数量排序正确
+    final labelId2Count = await AnimeLabelDao.getAllLabelCount();
+    for (final label in allLabels) {
+      label.count = labelId2Count[label.id] ?? 0;
+    }
     _sortLabels(allLabels);
   }
 
@@ -124,9 +128,10 @@ class LabelsController extends GetxController {
   }
 
   void quitSearch() {
-    inputKeywordController.clear();
-    kw = "";
-    getAllLabels();
+    if (kw.isEmpty) return;
+
+    kw = '';
+    loadLabels();
   }
 
   Future<bool> addLabel(String labelName) async {
@@ -134,17 +139,7 @@ class LabelsController extends GetxController {
     int newId = await LabelDao.insert(newLabel);
     if (newId > 0) {
       AppLog.info("添加标签成功，新插入的id=$newId");
-      // 指定新id，并添加到controller中
-      newLabel.id = newId;
-      if (searchKeyword.isEmpty) {
-        // 没在搜索，直接添加
-        _sortLabels([...labels, newLabel]);
-      } else {
-        // 如果在搜索后添加，则看是否存在关键字，如果有，则添加到labels里(此时controller里的labels存放的是搜索结果)
-        if (newLabel.name.contains(searchKeyword)) {
-          _sortLabels([...labels, newLabel]);
-        }
-      }
+      loadLabels();
       return true;
     } else {
       ToastUtil.showText('添加失败');
@@ -191,6 +186,11 @@ List<Label> _sortByName(List<Label> labels, bool isReverse) {
     (a, b) => coverPinyin(a.nameWithoutEmoji.toLowerCase())
         .compareTo(coverPinyin(b.nameWithoutEmoji.toLowerCase())),
   );
+  return isReverse ? sorted.reversed.toList() : sorted;
+}
+
+List<Label> _sortByCount(List<Label> labels, bool isReverse) {
+  final sorted = labels.sorted((a, b) => a.count.compareTo(b.count));
   return isReverse ? sorted.reversed.toList() : sorted;
 }
 

@@ -32,10 +32,18 @@ class LabelManagePage extends StatefulWidget {
 class _LabelManagePageState extends State<LabelManagePage> {
   bool searchAction = false;
   LabelsController labelsController = LabelsController.to;
+  final inputKwCtr = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    labelsController.loadLabels();
+  }
 
   @override
   void dispose() {
     labelsController.quitSearch();
+    inputKwCtr.dispose();
     super.dispose();
   }
 
@@ -97,8 +105,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
     return ReorderableWrap(
         spacing: AppTheme.wrapSacing,
         runSpacing: AppTheme.wrapRunSpacing,
-        enableReorder: labelsController.sortController.curMode ==
-            labelsController.customSortMode,
+        enableReorder: labelsController.enableReorder,
         onReorder: labelsController.reorder,
         buildDraggableFeedback: _buildDraggableLabel,
         children: labelsController.labels.map((label) {
@@ -112,7 +119,14 @@ class _LabelManagePageState extends State<LabelManagePage> {
           return FilterChip(
             showCheckmark: false,
             selected: widget.enableSelectLabelForAnime && selected,
-            label: Text(label.name),
+            label: Text.rich(TextSpan(children: [
+              TextSpan(text: label.name),
+              if (label.count > 0)
+                TextSpan(
+                  text: ' ${label.count}',
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ),
+            ])),
             onSelected: (_) async {
               if (widget.enableSelectLabelForAnime) {
                 if (selected) {
@@ -139,6 +153,8 @@ class _LabelManagePageState extends State<LabelManagePage> {
                     AppLog.info("添加新动漫标签纪录失败");
                   }
                 }
+
+                labelsController.loadLabels();
               } else {
                 // 弹出对话框，提供重命名和删除操作
                 _showOpMenuDialog(label);
@@ -172,7 +188,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
       isAppBar: true,
       autofocus: true,
       showCancelButton: true,
-      inputController: labelsController.inputKeywordController,
+      inputController: inputKwCtr,
       automaticallyImplyLeading:
           widget.enableSelectLabelForAnime ? false : true,
       hintText: "搜索标签",
@@ -181,14 +197,20 @@ class _LabelManagePageState extends State<LabelManagePage> {
       },
       onTapClear: () {
         labelsController.quitSearch();
+        inputKwCtr.clear();
       },
       onTapCancelButton: () {
-        labelsController.quitSearch();
-        setState(() {
-          searchAction = false;
-        });
+        _quitSearch();
       },
     );
+  }
+
+  void _quitSearch() {
+    labelsController.quitSearch();
+    inputKwCtr.clear();
+    setState(() {
+      searchAction = false;
+    });
   }
 
   void _search(String kw) {
@@ -196,8 +218,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
 
     // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
     DelayUtil.delaySearch(() async {
-      labelsController.labels.value = await LabelDao.searchLabel(kw);
-      labelsController.kw = kw; // 记录关键字
+      labelsController.loadLabels(kw: kw);
     });
   }
 
@@ -270,6 +291,8 @@ class _LabelManagePageState extends State<LabelManagePage> {
   _buildFloatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
+        _quitSearch();
+
         showDialog(
             context: context,
             builder: (context) {

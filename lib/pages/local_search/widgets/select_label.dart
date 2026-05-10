@@ -22,6 +22,12 @@ class _SelectLabelViewState extends State<SelectLabelView> {
       widget.localSearchController;
 
   @override
+  void initState() {
+    super.initState();
+    labelsController.loadLabels();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10),
@@ -84,14 +90,22 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           spacing: AppTheme.wrapSacing,
           runSpacing: AppTheme.wrapRunSpacing,
           children: labelsController.labels.map((label) {
-            bool selected =
-                localSearchController.localSelectFilter.labels.contains(label);
+            bool selected = localSearchController.localSelectFilter.labels
+                    .indexWhere((e) => e.id == label.id) >=
+                0;
 
             return FilterChip(
               showCheckmark: false,
               pressElevation: 0,
               selected: selected,
-              label: Text(label.name),
+              label: Text.rich(TextSpan(children: [
+                TextSpan(text: label.name),
+                if (label.count > 0)
+                  TextSpan(
+                    text: ' ${label.count}',
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+              ])),
               onSelected: (_) => _onTapLabelChip(selected, label),
             );
           }).toList(),
