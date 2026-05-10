@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_list_tile.dart';
 import 'package:animetrace/components/search_app_bar.dart';
@@ -243,8 +244,12 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           return AnimeDetailPage(anime);
         },
       ),
-    ).then((popAnime) {
+    ).then((popAnime) async {
       _animes[index] = popAnime;
+      _animes[index].checkedEpisodeCnt =
+          await SqliteUtil.getCheckedEpisodeCntByAnimeId(_animes[index].animeId,
+              reviewNumber: _animes[index].reviewNumber);
+      if (mounted) setState(() {});
     });
   }
 }
