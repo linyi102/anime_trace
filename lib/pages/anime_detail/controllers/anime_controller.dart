@@ -45,7 +45,7 @@ class AnimeController extends GetxController {
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
-  final int episodeRangeSize = 50;
+  final int episodeRangeSize = 100;
 
   // 显示简介
   var showDescInAnimeDetailPage = SpProfile.getShowDescInAnimeDetailPage().obs;
