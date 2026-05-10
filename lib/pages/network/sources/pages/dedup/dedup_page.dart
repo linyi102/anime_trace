@@ -37,28 +37,6 @@ class DedupPage extends StatelessWidget {
                     ? _buildEmptyWidget()
                     : Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Card(
-                              clipBehavior: Clip.antiAlias,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6)),
-                              child: SwitchListTile(
-                                title: const Text("选中没有看过的动漫"),
-                                value: dedupController
-                                    .enableRetainAnimeHasProgress,
-                                onChanged: (value) {
-                                  dedupController.enableRetainAnimeHasProgress =
-                                      value;
-                                  if (value == true) {
-                                    dedupController.retainAnimeHasProgress();
-                                  } else {
-                                    dedupController.clearSelected();
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
                           Expanded(
                             child: Scrollbar(
                                 controller: scrollController,
@@ -228,8 +206,8 @@ class DedupPage extends StatelessWidget {
 
   _buildSelectIcon(Anime anime, bool selected, BuildContext context) {
     return Positioned(
-      right: 0,
-      bottom: 0,
+      right: 2,
+      bottom: 2,
       child: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -259,7 +237,7 @@ class DedupPage extends StatelessWidget {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           // 添加白色边框，并为内部添加不透明度，避免白色封面导致看不见
-                          color: Colors.black.withOpacityFactor(0.1),
+                          color: Colors.black.withOpacityFactor(0.3),
                           border: Border.all(width: 1, color: Colors.white)))),
         ),
       ),
