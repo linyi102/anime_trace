@@ -126,9 +126,10 @@ class LocalSearchController extends GetxController {
     update();
 
     final token = ++_requestToken;
-    animes = await AnimeDao.complexSearch(localSelectFilter);
+    final r = await AnimeDao.complexSearch(localSelectFilter);
     if (token != _requestToken) return;
 
+    animes = r;
     searchOk = true;
     update();
   }
