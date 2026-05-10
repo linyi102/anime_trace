@@ -15,6 +15,7 @@ import 'package:animetrace/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
   const AnimeDetailEpisodeInfo({required this.animeController, super.key});
@@ -77,7 +78,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             duration: const Duration(milliseconds: 200),
             child: widget.animeController.isLoadingEpisode
                 ? const SliverToBoxAdapter(child: LoadingWidget(height: 100))
-                : SliverList(
+                : SuperSliverList(
                     delegate:
                         SliverChildBuilderDelegate((context, episodeIndex) {
                       var episode = _episodes[episodeIndex];

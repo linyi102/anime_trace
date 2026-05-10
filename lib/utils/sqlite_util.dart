@@ -346,14 +346,35 @@ class SqliteUtil {
     }
   }
 
+  static Future<void> _insertHistoryItem(DatabaseExecutor executor, int animeId,
+      int episodeNumber, String date, int reviewNumber) async {
+    await executor.rawInsert('''
+    insert into history(date, anime_id, episode_number, review_number)
+    values('$date', $animeId, $episodeNumber, $reviewNumber);
+    ''');
+  }
+
   static void insertHistoryItem(
       int animeId, int episodeNumber, String date, int reviewNumber) async {
     AppLog.info(
         "sql: insertHistoryItem(animeId=$animeId, episodeNumber=$episodeNumber, date=$date, reviewNumber=$reviewNumber)");
-    await database.rawInsert('''
-    insert into history(date, anime_id, episode_number, review_number)
-    values('$date', $animeId, $episodeNumber, $reviewNumber);
-    ''');
+    _insertHistoryItem(database, animeId, episodeNumber, date, reviewNumber);
+  }
+
+  static void batchInsertHistoryItem(
+      Iterable<
+              ({int animeId, int episodeNumber, String date, int reviewNumber})>
+          items) {
+    AppLog.info(
+        "sql: batchInsertHistoryItem(items.length=${items.length}, first=${items.firstOrNull})");
+    database.transaction(
+      (txn) async {
+        for (final item in items) {
+          await _insertHistoryItem(txn, item.animeId, item.episodeNumber,
+              item.date, item.reviewNumber);
+        }
+      },
+    );
   }
 
   static void updateHistoryItem(

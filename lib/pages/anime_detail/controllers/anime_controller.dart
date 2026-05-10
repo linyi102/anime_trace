@@ -45,7 +45,7 @@ class AnimeController extends GetxController {
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
-  final int episodeRangeSize = 100;
+  final int episodeRangeSize = 60000;
 
   // 显示简介
   var showDescInAnimeDetailPage = SpProfile.getShowDescInAnimeDetailPage().obs;
@@ -283,18 +283,28 @@ class AnimeController extends GetxController {
     final dateTimeStr = selectedDateTime.toString();
 
     // 遍历选中的下标
+    final insertEpisodeNumbers = <int>[];
     mapSelected.forEach((episodeIndex, value) {
       final episode = episodes[episodeIndex];
       if (episode.isChecked()) {
+        // TODO 使用事务批量修改
         SqliteUtil.updateHistoryItem(
             anime.animeId, episode.number, dateTimeStr, anime.reviewNumber);
       } else {
-        SqliteUtil.insertHistoryItem(
-            anime.animeId, episode.number, dateTimeStr, anime.reviewNumber);
+        insertEpisodeNumbers.add(episode.number);
       }
       episode.dateTime = dateTimeStr;
       tryShowDialogMoveChecklist(context, episode);
     });
+
+    if (insertEpisodeNumbers.isNotEmpty) {
+      SqliteUtil.batchInsertHistoryItem(insertEpisodeNumbers.map((e) => (
+            animeId: anime.animeId,
+            episodeNumber: e,
+            date: dateTimeStr,
+            reviewNumber: anime.reviewNumber
+          )));
+    }
   }
 
   //  其他页面(例如详情页修改了动漫封面)更新动漫时，动漫详细页可以收到通知并重新渲染
