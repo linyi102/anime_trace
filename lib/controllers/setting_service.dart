@@ -1,5 +1,6 @@
 import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/models/bangumi/subject_type.dart';
+import 'package:animetrace/models/enum/proxy_type.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:get/get.dart';
 
@@ -99,5 +100,24 @@ class SettingService extends GetxService {
 
   Future<bool> setHosts(String value) async {
     return (await KeyValueDao.setString('hosts', value)) > 0;
+  }
+
+  /// 代理类型
+  ProxyType getProxyType() {
+    return ProxyType.fromValue(SPUtil.getString('proxy_type')) ??
+        ProxyType.direct;
+  }
+
+  Future<bool> setProxyType(ProxyType type) {
+    return SPUtil.setString('proxy_type', type.value);
+  }
+
+  /// 代理地址
+  String getProxy() {
+    return SPUtil.getString('proxy');
+  }
+
+  Future<bool> setProxy(String value) {
+    return SPUtil.setString('proxy', value);
   }
 }

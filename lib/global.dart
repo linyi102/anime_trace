@@ -54,10 +54,15 @@ class Global {
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化
     sqfliteFfiInit();
-    // 网络
-    DioUtil.init();
+
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
+    // Dio 内部访问代理配置
+    Get.put(SettingService());
+    // Dio 内部拦截器访问 host 配置
+    Get.put(HostService());
+    // 网络
+    DioUtil.init();
     // put常用的getController，部分init中访问到了表，因此需要放在ensureDBTable后
     await _putGetController();
     // 设置Windows窗口
@@ -71,8 +76,6 @@ class Global {
   static _putGetController() async {
     Get.lazyPut(() => BackupService());
     Get.lazyPut(() => AnimeService());
-    Get.lazyPut(() => SettingService());
-    Get.put(HostService());
 
     Get.lazyPut(() => UpdateRecordController());
     Get.lazyPut(() => AnimeDisplayController());

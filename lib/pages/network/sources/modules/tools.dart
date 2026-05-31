@@ -81,7 +81,7 @@ class ToolsPage extends StatelessWidget {
             },
             child: const Chip(
               avatar: Icon(Icons.dns_outlined),
-              label: Text('转发规则'),
+              label: Text('代理转发'),
             ),
           ),
         ],
