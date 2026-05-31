@@ -129,7 +129,7 @@ Positioned _buildBottomGradientLayer(BuildContext context) {
       ignoring: true,
       child: Container(
         height: _fadeHeight,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.widthOf(context),
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -151,7 +151,7 @@ Positioned _buildTopGradientLayer(BuildContext context) {
       ignoring: true,
       child: Container(
         height: _fadeHeight,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.widthOf(context),
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -176,7 +176,7 @@ IgnorePointer _buildSelectedIndicator(BuildContext context) {
         borderRadius: BorderRadius.circular(8),
       ),
       height: _selectedItemHeight,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.widthOf(context),
     ),
   );
 }

@@ -24,7 +24,7 @@ class StackAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: kToolbarHeight + MediaQuery.of(context).padding.top,
+      height: kToolbarHeight + MediaQuery.paddingOf(context).top,
       decoration: hideShadow
           ? null
           : BoxDecoration(

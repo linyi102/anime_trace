@@ -24,14 +24,14 @@ class Responsive extends StatelessWidget {
 
   // 获取平台，用于显示或隐藏某些组件
   static bool isMobile(BuildContext context) =>
-      MediaQuery.of(context).size.width <= _mobileMaxWidth;
+      MediaQuery.widthOf(context) <= _mobileMaxWidth;
 
   static bool isTablet(BuildContext context) =>
-      600 <= MediaQuery.of(context).size.width &&
-      MediaQuery.of(context).size.width <= _tabletMaxWidth;
+      600 <= MediaQuery.widthOf(context) &&
+      MediaQuery.widthOf(context) <= _tabletMaxWidth;
 
   static bool isDesktop(BuildContext context) =>
-      MediaQuery.of(context).size.width > _tabletMaxWidth;
+      MediaQuery.widthOf(context) > _tabletMaxWidth;
 
   // 根据不同的平台，为组件传入不同的比例
   @override
@@ -61,7 +61,7 @@ class Responsive extends StatelessWidget {
   }
 
   _buildByMediaQuery(BuildContext context) {
-    final Size _size = MediaQuery.of(context).size;
+    final Size _size = MediaQuery.sizeOf(context);
     if (_size.width > _tabletMaxWidth) {
       return desktop;
     } else if (_size.width > _mobileMaxWidth) {

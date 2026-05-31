@@ -41,8 +41,7 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    double expandedHeight =
-        MediaQuery.of(context).size.height * coverBgHeightRatio;
+    double expandedHeight = MediaQuery.heightOf(context) * coverBgHeightRatio;
 
     return GetBuilder<AnimeController>(
       id: widget.animeController.appbarId,
@@ -153,8 +152,8 @@ class _AnimeDetailAppBarState extends State<AnimeDetailAppBar> {
   /// 底层背景
   _buildBg() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.widthOf(context),
+      height: MediaQuery.heightOf(context),
       // 模糊
       child: ImageFiltered(
         imageFilter: ImageFilter.blur(

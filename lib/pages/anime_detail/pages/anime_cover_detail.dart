@@ -42,15 +42,6 @@ class AnimeCoverDetail extends StatelessWidget {
                     return _buildAnimeCover(
                         animeController.anime.animeCoverUrl, context);
                   })),
-          // Positioned(
-          //   // bottom: 0,
-          //   top: 0,
-          //   child: SizedBox(
-          //     height: MediaQuery.of(context).padding.top + kToolbarHeight,
-          //     width: MediaQuery.of(context).size.width,
-          //     child: _buildAppbar(context, enableOpacity: true),
-          //   ),
-          // ),
         ],
       ),
     );

@@ -521,7 +521,7 @@ class PickerWidgetState<T> extends State<_PickerWidget> {
           onPressed: onPressed,
           child: Text(_txt,
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaleFactor: MediaQuery.textScalerOf(context).textScaleFactor,
               style: textStyle));
     } else {
       return textStyle == null

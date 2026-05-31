@@ -109,13 +109,13 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                         child: MultiPlatform(
                             mobile: SizedBox(
                               height: 100,
-                              width: MediaQuery.of(context).size.width,
+                              width: MediaQuery.widthOf(context),
                               child: _buildScrollAxis(),
                             ),
                             desktop: Container(
                               height: 100,
                               padding: const EdgeInsets.all(6),
-                              width: MediaQuery.of(context).size.width * 2 / 3,
+                              width: MediaQuery.widthOf(context) * 2 / 3,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(6),
                                 color: Colors.black54,

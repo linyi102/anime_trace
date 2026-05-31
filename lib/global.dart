@@ -166,17 +166,17 @@ class Global {
 
   /// 是否为横屏
   static bool isLandscape(BuildContext context) {
-    return MediaQuery.of(context).orientation == Orientation.landscape;
+    return MediaQuery.orientationOf(context) == Orientation.landscape;
   }
 
   /// 是否为竖屏
   static bool isPortrait(BuildContext context) {
-    return MediaQuery.of(context).orientation == Orientation.portrait;
+    return MediaQuery.orientationOf(context) == Orientation.portrait;
   }
 
   /// 获取AppBar高度
   static getAppBarHeight(BuildContext context) {
-    return kToolbarHeight + MediaQuery.of(context).padding.top;
+    return kToolbarHeight + MediaQuery.paddingOf(context).top;
   }
 
   /// 恢复系统顶部栏和底部栏，用于退出全屏
