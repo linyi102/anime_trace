@@ -1,6 +1,7 @@
 // 本地笔记图片、本地封面、网络封面
 import 'dart:io';
 
+import 'package:animetrace/utils/network/image_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/global.dart';
@@ -45,6 +46,7 @@ class CommonImage extends StatelessWidget {
         placeholder: (_, __) => _buildDefaultImage(context),
         fit: fit,
         alignment: alignment,
+        cacheManager: CustomImageCacheManager(),
       );
     }
 

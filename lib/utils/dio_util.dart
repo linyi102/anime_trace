@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:animetrace/utils/network/dio_proxy_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:animetrace/utils/error_format_util.dart';
 import 'package:animetrace/models/ping_result.dart';
@@ -21,7 +22,10 @@ class DioUtil {
 
   static void init() {
     dio = Dio(_baseOptions);
-    dio.interceptors.add(DioLogInterceptor());
+    dio.interceptors.addAll([
+      DioLogInterceptor(),
+      DioForwardInterceptor(),
+    ]);
     dio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
       final HttpClient client =
           HttpClient(context: SecurityContext(withTrustedRoots: false));

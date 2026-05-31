@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/network/image_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -157,6 +158,7 @@ class AnimeCoverDetail extends StatelessWidget {
         headers: coverUrl.contains("douban")
             ? Global.getHeadersToGetDoubanPic()
             : null,
+        cacheManager: CustomImageCacheManager(),
         errorListener: (e) {
           AppLog.error("缓存网络图片错误：$coverUrl");
         },

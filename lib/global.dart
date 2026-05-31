@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/controllers/category_controller.dart';
+import 'package:animetrace/controllers/host_service.dart';
 import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,7 @@ class Global {
     Get.lazyPut(() => BackupService());
     Get.lazyPut(() => AnimeService());
     Get.lazyPut(() => SettingService());
+    Get.put(HostService());
 
     Get.lazyPut(() => UpdateRecordController());
     Get.lazyPut(() => AnimeDisplayController());

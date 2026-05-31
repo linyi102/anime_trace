@@ -91,4 +91,13 @@ class SettingService extends GetxService {
   Future<bool> setAnimeCategories(List<String> categries) async {
     return (await KeyValueDao.setStringList('anime_categories', categries)) > 0;
   }
+
+  /// 转发规则
+  Future<String> getHosts() async {
+    return await KeyValueDao.getString('hosts') ?? '';
+  }
+
+  Future<bool> setHosts(String value) async {
+    return (await KeyValueDao.setString('hosts', value)) > 0;
+  }
 }
