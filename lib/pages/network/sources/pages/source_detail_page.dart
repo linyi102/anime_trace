@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/pages/network/sources/pages/migrate/migrate_page.dart';
-import 'package:expand_widget/expand_widget.dart';
+import 'package:animetrace/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animetrace/models/climb_website.dart';
@@ -154,8 +154,12 @@ class _SourceDetailState extends State<SourceDetail> {
               _buildUrl(),
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                child: ExpandText(curClimbWebsite.desc,
-                    maxLines: 2, textAlign: TextAlign.center),
+                child: ExpandableText(
+                  curClimbWebsite.desc,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  expandOnTap: true,
+                ),
               ),
               ListTile(
                 enabled: !curClimbWebsite.discard,

@@ -1,6 +1,6 @@
 import 'package:animetrace/pages/anime_detail/pages/episode_manage_page.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
-import 'package:expand_widget/expand_widget.dart';
+import 'package:animetrace/utils/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_rating_bar.dart';
 import 'package:animetrace/components/dialog/dialog_select_checklist.dart';
@@ -93,7 +93,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
       var textStyle = Theme.of(context).textTheme.bodySmall;
 
       return widget.animeController.isCollected
-          ? ExpandText(
+          ? ExpandableText(
               desc,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -105,6 +105,7 @@ class _AnimeDetailInfoState extends State<AnimeDetailInfo> {
               indicatorIconSize: 20,
               indicatorCollapsedHint: "展开",
               indicatorExpandedHint: "收缩",
+              expandOnTap: true,
             )
           // 如果没有收藏，这不折叠简介
           : Text(desc, style: textStyle);
