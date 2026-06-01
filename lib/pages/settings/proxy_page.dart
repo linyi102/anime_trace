@@ -1,5 +1,9 @@
 import 'package:animetrace/controllers/host_service.dart';
 import 'package:animetrace/controllers/proxy_service.dart';
+import 'package:animetrace/models/ping_result.dart';
+import 'package:animetrace/utils/climb/climb_bangumi.dart';
+import 'package:animetrace/utils/dio_util.dart';
+import 'package:animetrace/utils/network/bangumi_api.dart';
 import 'package:animetrace/widgets/setting_card.dart';
 import 'package:flutter/material.dart';
 
@@ -28,12 +32,20 @@ api.bgm.mirror api.bgm.tv
 lain.bgm.mirror lain.bgm.tv
 ''';
 
+  final pingDests = [
+    _PingDest('Bangumi 网站', ClimbBangumi().baseUrl, const PingStatus()),
+    _PingDest('Bangumi 接口', BangumiApi.baseUrl, const PingStatus()),
+    _PingDest('Bangumi 封面', 'https://lain.bgm.tv', const PingStatus()),
+  ];
+  int _pingToken = 0;
+
   @override
   void initState() {
     super.initState();
     proxyType = ProxyService.to.type;
     proxyInputController.text = ProxyService.to.proxy;
     hostsInputController.text = HostService.to.content;
+    _ping();
   }
 
   @override
@@ -42,11 +54,38 @@ lain.bgm.mirror lain.bgm.tv
     super.dispose();
   }
 
-  void _onWillPop() async {
+  void _onWillPop() {
+    _saveConfig();
+    Navigator.pop(context);
+  }
+
+  Future<void> _saveConfig() async {
     ProxyService.to
         .loadProxy(type: proxyType, proxy: proxyInputController.text);
-    HostService.to.updateHosts(hostsInputController.text);
-    Navigator.pop(context);
+    await HostService.to.updateHosts(hostsInputController.text);
+  }
+
+  void _ping() async {
+    List<Future> futures = [];
+
+    for (final dest in pingDests) {
+      dest.status = const PingStatus.pinging();
+    }
+    setState(() {});
+
+    final token = ++_pingToken;
+    for (final dest in pingDests) {
+      futures.add(DioUtil.ping(
+        dest.url,
+        checkCode: (statusCode) => const {200, 404}.contains(statusCode),
+      ).then((r) {
+        if (token != _pingToken) return;
+
+        dest.status = r;
+        if (mounted) setState(() {});
+      }));
+    }
+    await futures.wait;
   }
 
   @override
@@ -63,6 +102,7 @@ lain.bgm.mirror lain.bgm.tv
           leading: BackButton(onPressed: _onWillPop),
         ),
         body: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 64),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -94,8 +134,8 @@ lain.bgm.mirror lain.bgm.tv
                         child: TextField(
                           controller: proxyInputController,
                           enabled: proxyType != ProxyType.direct,
-                          decoration: const InputDecoration(
-                              helperText: 'username:password@host:port'),
+                          decoration:
+                              const InputDecoration(hintText: 'host:port'),
                         ),
                       ),
                     ],
@@ -113,10 +153,46 @@ lain.bgm.mirror lain.bgm.tv
                   )
                 ],
               ),
+              SettingCard(
+                title: '测试',
+                trailing: FilledButton(
+                    onPressed: () async {
+                      await _saveConfig();
+                      _ping();
+                    },
+                    child: const Text('检测')),
+                children: [
+                  for (final dest in pingDests)
+                    ListTile(
+                      title: Text(dest.title),
+                      subtitle: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 12,
+                            color: dest.status.color,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(dest.status.label),
+                        ],
+                      ),
+                    )
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class _PingDest {
+  final String title;
+  final String url;
+  PingStatus status;
+
+  _PingDest(this.title, this.url, this.status);
 }

@@ -9,30 +9,18 @@ buildPingStatusRow(BuildContext context, ClimbWebsite climbWebsite,
     mainAxisAlignment:
         gridStyle ? MainAxisAlignment.center : MainAxisAlignment.start,
     children: [
-      climbWebsite.discard
-          ? _getPingStatusIcon(PingStatus())
-          : _getPingStatusIcon(climbWebsite.pingStatus),
+      Icon(
+        Icons.circle,
+        size: 12,
+        color: (climbWebsite.discard
+                ? const PingStatus()
+                : climbWebsite.pingStatus)
+            .color,
+      ),
       const SizedBox(width: 4),
       climbWebsite.discard
           ? Text("无法使用", style: textStyle)
-          : Text(_getPingTimeStr(climbWebsite), style: textStyle),
+          : Text(climbWebsite.pingStatus.label, style: textStyle),
     ],
   );
-}
-
-String _getPingTimeStr(ClimbWebsite e) {
-  if (e.pingStatus.pinging) {
-    return "测试中...";
-  }
-  if (e.pingStatus.needPing) {
-    return "未知";
-  }
-  if (e.pingStatus.connectable) {
-    return "${e.pingStatus.time}ms";
-  }
-  return "超时";
-}
-
-_getPingStatusIcon(PingStatus pingStatus) {
-  return Icon(Icons.circle, size: 12, color: pingStatus.color);
 }

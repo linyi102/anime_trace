@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:animetrace/controllers/setting_service.dart';
-import 'package:flutter_socks_proxy/socks_proxy.dart';
 import 'package:get/get.dart';
 
 class ProxyService extends GetxService {
@@ -34,12 +33,12 @@ class ProxyService extends GetxService {
     }
 
     final fullProxy = switch (_type) {
-      ProxyType.direct => _type.value,
-      _ => '${_type.value} $_proxy'
+      ProxyType.direct => 'DIRECT',
+      _ => '${_type.value} $_proxy; DIRECT'
     };
 
     if (!_proxyInitialized) {
-      SocksProxy.initProxy(
+      HttpOverrides.global = _ProxyOverrides(
         proxy: fullProxy,
         onCreate: (client) {
           client.badCertificateCallback =
@@ -52,16 +51,37 @@ class ProxyService extends GetxService {
       );
       _proxyInitialized = true;
     } else {
-      SocksProxy.setProxy(fullProxy);
+      final overrides = HttpOverrides.current;
+      if (overrides is _ProxyOverrides) {
+        overrides.proxy = fullProxy;
+      }
     }
+  }
+}
+
+class _ProxyOverrides extends HttpOverrides {
+  final Function(HttpClient)? onCreate;
+  String? proxy;
+
+  _ProxyOverrides({this.onCreate, this.proxy});
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    final httpClient = super.createHttpClient(context);
+    if (onCreate != null) onCreate!(httpClient);
+
+    return httpClient
+      ..findProxy = (url) {
+        return proxy ?? 'DIRECT';
+      };
   }
 }
 
 enum ProxyType {
   direct('DIRECT'),
   http('PROXY'),
-  socks5('SOCKS5'),
-  socks4('SOCKS4'),
+  // socks5('SOCKS5'),
+  // socks4('SOCKS4'),
   ;
 
   final String value;
@@ -77,7 +97,7 @@ extension ProxyTypeExt on ProxyType {
   String get label => switch (this) {
         ProxyType.direct => '不代理',
         ProxyType.http => 'HTTP',
-        ProxyType.socks5 => 'Socks5',
-        ProxyType.socks4 => 'Socks4',
+        // ProxyType.socks5 => 'Socks5',
+        // ProxyType.socks4 => 'Socks4',
       };
 }

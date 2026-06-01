@@ -54,10 +54,10 @@ class HostService extends GetxService {
     return result;
   }
 
-  void updateHosts(String _content) {
+  Future<void> updateHosts(String _content) async {
     this._content = _content;
     _hosts = parseHosts(_content);
-    SettingService.to.setHosts(_content);
+    await SettingService.to.setHosts(_content);
   }
 
   String tryForwardUrl(String url) {

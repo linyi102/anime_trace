@@ -50,7 +50,6 @@ dependencies:
   webdav_client: ^1.1.8
   dio: ^5.8.0+1
   html: ^0.15.0
-  flutter_socks_proxy: ^0.0.3
   cached_network_image: ^3.2.3
   archive: ^3.1.8
   path: ^1.8.0

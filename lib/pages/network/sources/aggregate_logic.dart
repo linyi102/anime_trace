@@ -1,6 +1,7 @@
 import 'package:animetrace/controllers/update_record_controller.dart';
 import 'package:animetrace/dao/history_dao.dart';
 import 'package:animetrace/models/climb_website.dart';
+import 'package:animetrace/models/ping_result.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/global_data.dart';
 import 'package:animetrace/utils/log.dart';
@@ -57,19 +58,15 @@ class AggregateLogic extends GetxController {
     update();
 
     for (var website in climbWebsites) {
-      website.pingStatus.needPing = true;
-    }
-    for (var website in climbWebsites) {
-      if (!website.discard && website.pingStatus.needPing) {
-        website.pingStatus.connectable = false; // 表示不能连接(ping时显示灰色)
-        website.pingStatus.pinging = true; // 表示正在ping
+      if (!website.discard) {
+        website.pingStatus = const PingStatus.pinging();
       }
     }
     update();
 
     List<Future> futures = [];
     for (var website in climbWebsites) {
-      if (!website.discard && website.pingStatus.needPing) {
+      if (!website.discard) {
         futures.add(DioUtil.ping(website.climb.baseUrl).then((value) {
           website.pingStatus = value;
           update();
