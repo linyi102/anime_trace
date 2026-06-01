@@ -40,11 +40,14 @@ class SettingCard extends StatelessWidget {
         _buildTitleTile(
           context,
           margin: const EdgeInsets.only(top: 20, bottom: 5),
-          padding: EdgeInsets.symmetric(horizontal: useCard ? 20 : 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
         ),
         useCard
             ? Card(child: Column(children: children))
-            : Column(children: children),
+            : Padding(
+                padding: Theme.of(context).cardTheme.margin ?? EdgeInsets.zero,
+                child: Column(children: children),
+              ),
       ],
     );
   }

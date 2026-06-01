@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:animetrace/controllers/setting_service.dart';
-import 'package:animetrace/models/enum/proxy_type.dart';
-import 'package:animetrace/utils/network/dio_proxy_interceptor.dart';
+import 'package:animetrace/utils/network/dio_forward_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:animetrace/utils/error_format_util.dart';
 import 'package:animetrace/models/ping_result.dart';
@@ -11,7 +9,6 @@ import 'package:animetrace/models/params/result.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/utils/network/dio_log_interceptor.dart';
 import 'package:dio/io.dart';
-import 'package:flutter_socks_proxy/socks_proxy.dart';
 
 class DioUtil {
   static final BaseOptions _baseOptions = BaseOptions(
@@ -23,8 +20,6 @@ class DioUtil {
   );
   static late Dio dio;
 
-  static bool _proxyInitialized = false;
-
   static void init() {
     dio = Dio(_baseOptions);
     dio.interceptors.addAll([
@@ -35,29 +30,8 @@ class DioUtil {
       final HttpClient client =
           HttpClient(context: SecurityContext(withTrustedRoots: false));
       client.badCertificateCallback = (cert, host, port) => true;
-      // TODO cache getter
-      // TODO cache image use proxy
-      client.findProxy = (_) => proxy;
       return client;
     });
-    loadProxy();
-  }
-
-  static void loadProxy() async {
-    if (!_proxyInitialized) {
-      SocksProxy.initProxy(proxy: proxy);
-      _proxyInitialized = true;
-    } else {
-      SocksProxy.setProxy(proxy);
-    }
-  }
-
-  static String get proxy {
-    final type = SettingService.to.getProxyType();
-    return switch (type) {
-      ProxyType.direct => type.value,
-      _ => '${type.value} ${SettingService.to.getProxy()}'
-    };
   }
 
   static Future<Result> get<T>(

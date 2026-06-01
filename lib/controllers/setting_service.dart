@@ -1,6 +1,6 @@
+import 'package:animetrace/controllers/proxy_service.dart';
 import 'package:animetrace/dao/key_value_dao.dart';
 import 'package:animetrace/models/bangumi/subject_type.dart';
-import 'package:animetrace/models/enum/proxy_type.dart';
 import 'package:animetrace/utils/sp_util.dart';
 import 'package:get/get.dart';
 
