@@ -196,17 +196,7 @@ class _SourceDetailState extends State<SourceDetail> {
                   }));
                 },
               ),
-              if (curClimbWebsite == bangumiClimbWebsite)
-                ListTile(
-                  leading: Icon(
-                    Icons.filter_alt_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('搜索类型'),
-                  subtitle:
-                      Text(SettingService.to.getBgmSearchCategory().label),
-                  onTap: _showDialogSelectBangumiCategory,
-                ),
+
               ListTile(
                 title: const Text("收藏列表"),
                 leading: Icon(
@@ -220,8 +210,6 @@ class _SourceDetailState extends State<SourceDetail> {
                   }));
                 },
               ),
-              // NOTE: 暂时隐藏导入功能，等后续支持 Bangumi 后放开
-              if (curClimbWebsite.supportImport) _buildImportDataTile(),
               ListTile(
                 title: const Text("迁移动漫"),
                 leading: Icon(
@@ -235,6 +223,33 @@ class _SourceDetailState extends State<SourceDetail> {
                   }));
                 },
               ),
+              if (curClimbWebsite.supportImport) _buildImportDataTile(),
+              if (curClimbWebsite == bangumiClimbWebsite) ...[
+                const Divider(),
+                ListTile(
+                  leading: Icon(
+                    Icons.filter_alt_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: const Text('搜索类型'),
+                  subtitle:
+                      Text(SettingService.to.getBgmSearchCategory().label),
+                  onTap: _showDialogSelectBangumiCategory,
+                ),
+                SwitchListTile(
+                  secondary: Icon(
+                    Icons.format_list_numbered,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: const Text('获取全部集'),
+                  subtitle: const Text('未开启时仅获取已放送集数'),
+                  value: SettingService.to.getBgmFetchAllEpisodes(),
+                  onChanged: (value) {
+                    SettingService.to.setBgmFetchAllEpisodes(value);
+                    setState(() {});
+                  },
+                ),
+              ]
             ],
           ),
         ),

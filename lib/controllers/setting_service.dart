@@ -52,18 +52,6 @@ class SettingService extends GetxService {
     return SPUtil.setBool('hideMobileBottomNavigationBarLabel', value);
   }
 
-  /// 获取 Banugmi 搜索类别
-  BgmSubjectType getBgmSearchCategory() {
-    final r = SPUtil.getString('selectedBangumiSearchCategoryKey',
-        defaultValue: BgmSubjectType.all.value);
-    return BgmSubjectType.fromValue(r) ?? BgmSubjectType.all;
-  }
-
-  /// 设置 Banugmi 搜索类别
-  void setBgmSearchCategory(BgmSubjectType category) {
-    SPUtil.setString('selectedBangumiSearchCategoryKey', category.value);
-  }
-
   /// 自定义类别
   Future<List<String>?> getAnimeCategories() async {
     return KeyValueDao.getStringList('anime_categories');
@@ -99,6 +87,30 @@ class SettingService extends GetxService {
 
   Future<bool> setProxy(String value) {
     return SPUtil.setString('proxy', value);
+  }
+}
+
+extension BanugmiSection on SettingService {
+  /// 获取 Banugmi 搜索类别
+  BgmSubjectType getBgmSearchCategory() {
+    final r = SPUtil.getString('selectedBangumiSearchCategoryKey',
+        defaultValue: BgmSubjectType.all.value);
+    return BgmSubjectType.fromValue(r) ?? BgmSubjectType.all;
+  }
+
+  /// 设置 Banugmi 搜索类别
+  void setBgmSearchCategory(BgmSubjectType category) {
+    SPUtil.setString('selectedBangumiSearchCategoryKey', category.value);
+  }
+
+  /// 获取 Bangumi 是否获取全部集
+  bool getBgmFetchAllEpisodes() {
+    return SPUtil.getBool('bgmFetchAllEpisodes', defaultValue: false);
+  }
+
+  /// 设置 Bangumi 是否获取全部集
+  Future<bool> setBgmFetchAllEpisodes(bool value) {
+    return SPUtil.setBool('bgmFetchAllEpisodes', value);
   }
 }
 

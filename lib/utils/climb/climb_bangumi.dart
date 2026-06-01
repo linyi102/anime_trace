@@ -101,7 +101,9 @@ class ClimbBangumi with Climb {
     final playedEpisodes =
         episodes.where((episode) => episode.airdate?.isBefore(now) ?? false);
 
-    anime.animeEpisodeCnt = playedEpisodes.length;
+    anime.animeEpisodeCnt = SettingService.to.getBgmFetchAllEpisodes()
+        ? episodes.length
+        : playedEpisodes.length;
     anime.playStatus = playedEpisodes.isEmpty
         ? PlayStatus.notStarted.text
         : playedEpisodes.length < episodes.length
