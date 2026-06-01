@@ -24,17 +24,17 @@ class _AnimesDisplaySettingState extends State<AnimesDisplaySetting>
     with SingleTickerProviderStateMixin {
   final AnimeDisplayController animeDisplayController = Get.find();
 
-  final List<String> tabStr = ["排序", "界面"];
-
+  final List<String> tabStr = ['排序', '界面'];
   late final TabController tabController;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(
-        length: tabStr.length,
-        vsync: this,
-        animationDuration: PlatformUtil.tabControllerAnimationDuration);
+      length: tabStr.length,
+      vsync: this,
+      animationDuration: PlatformUtil.tabControllerAnimationDuration,
+    );
   }
 
   @override

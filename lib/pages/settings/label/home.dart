@@ -363,17 +363,17 @@ class _LabelLayoutSettingSheet extends StatefulWidget {
 
 class _LabelLayoutSettingSheetState extends State<_LabelLayoutSettingSheet>
     with SingleTickerProviderStateMixin {
-  final List<String> tabStr = ["排序", "界面"];
-
+  final List<String> tabs = ['排序', '界面'];
   late final TabController tabController;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(
-        length: tabStr.length,
-        vsync: this,
-        animationDuration: PlatformUtil.tabControllerAnimationDuration);
+      length: tabs.length,
+      vsync: this,
+      animationDuration: PlatformUtil.tabControllerAnimationDuration,
+    );
   }
 
   @override
@@ -387,7 +387,7 @@ class _LabelLayoutSettingSheetState extends State<_LabelLayoutSettingSheet>
     return Scaffold(
       appBar: CommonBottomTabBar(
         tabController: tabController,
-        tabs: tabStr.map((e) => Tab(text: e)).toList(),
+        tabs: tabs.map((e) => Tab(text: e)).toList(),
       ),
       body: CommonTabBarView(
         controller: tabController,
