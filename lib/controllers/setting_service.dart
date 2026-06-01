@@ -52,26 +52,6 @@ class SettingService extends GetxService {
     return SPUtil.setBool('hideMobileBottomNavigationBarLabel', value);
   }
 
-  /// 获取标签排序模式
-  int getLabelSortMode() {
-    return SPUtil.getInt('labelSortMode', defaultValue: 0);
-  }
-
-  /// 设置标签排序模式
-  Future<bool> setLabelSortMode(int mode) {
-    return SPUtil.setInt('labelSortMode', mode);
-  }
-
-  /// 获取标签是否反向排序
-  bool getLabelSortReverse() {
-    return SPUtil.getBool('labelSortReverse', defaultValue: false);
-  }
-
-  /// 设置标签是否反向排序
-  Future<bool> setLabelSortReverse(bool isReverse) {
-    return SPUtil.setBool('labelSortReverse', isReverse);
-  }
-
   /// 获取 Banugmi 搜索类别
   BgmSubjectType getBgmSearchCategory() {
     final r = SPUtil.getString('selectedBangumiSearchCategoryKey',
@@ -119,5 +99,37 @@ class SettingService extends GetxService {
 
   Future<bool> setProxy(String value) {
     return SPUtil.setString('proxy', value);
+  }
+}
+
+extension LabelSection on SettingService {
+  /// 获取标签排序模式
+  int getLabelSortMode() {
+    return SPUtil.getInt('labelSortMode', defaultValue: 0);
+  }
+
+  /// 设置标签排序模式
+  Future<bool> setLabelSortMode(int mode) {
+    return SPUtil.setInt('labelSortMode', mode);
+  }
+
+  /// 获取标签是否反向排序
+  bool getLabelSortReverse() {
+    return SPUtil.getBool('labelSortReverse', defaultValue: false);
+  }
+
+  /// 设置标签是否反向排序
+  Future<bool> setLabelSortReverse(bool isReverse) {
+    return SPUtil.setBool('labelSortReverse', isReverse);
+  }
+
+  /// 获取标签是否展示数量
+  bool getLabelCountVisible() {
+    return SPUtil.getBool('labelCountVisible', defaultValue: true);
+  }
+
+  /// 设置标签是否展示数量
+  Future<bool> setLabelCountVisible(bool to) {
+    return SPUtil.setBool('labelCountVisible', to);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/models/label.dart';
@@ -100,7 +101,7 @@ class _SelectLabelViewState extends State<SelectLabelView> {
               selected: selected,
               label: Text.rich(TextSpan(children: [
                 TextSpan(text: label.name),
-                if (label.count > 0)
+                if (label.count > 0 && SettingService.to.getLabelCountVisible())
                   TextSpan(
                     text: ' ${label.count}',
                     style: TextStyle(color: Theme.of(context).hintColor),
