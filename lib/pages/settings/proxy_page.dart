@@ -19,19 +19,6 @@ class _ProxyPageState extends State<ProxyPage> {
   final proxyInputController = TextEditingController();
   final hostsInputController = TextEditingController();
 
-  String get forwardHint => '''
-Bangumi 示例：
-
-# 网站：bangumi.tv 和 bgm.tv 请求转发到 bgm.mirror
-bgm.mirror bangumi.tv bgm.tv
-
-# 接口：api.bgm.tv 请求转发到 api.bgm.mirror
-api.bgm.mirror api.bgm.tv
-
-# 封面：lain.bgm.tv 请求转发到 lain.bgm.mirror
-lain.bgm.mirror lain.bgm.tv
-''';
-
   final pingDests = [
     _PingDest('Bangumi 网站', ClimbBangumi().baseUrl, const PingStatus()),
     _PingDest('Bangumi 接口', BangumiApi.baseUrl, const PingStatus()),
@@ -86,6 +73,33 @@ lain.bgm.mirror lain.bgm.tv
       }));
     }
     await futures.wait;
+  }
+
+  void _showProxyHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('帮助'),
+        content: const SelectableText('''
+假设 Banugmi 存在 bgm.mirror 镜像，可进行以下配置：
+
+# 网站
+bgm.mirror bangumi.tv bgm.tv
+
+# 接口
+api.bgm.mirror api.bgm.tv
+
+# 封面
+lain.bgm.mirror lain.bgm.tv
+'''),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('确定'),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -145,11 +159,17 @@ lain.bgm.mirror lain.bgm.tv
               SettingCard(
                 title: '转发',
                 useCard: false,
+                trailing: IconButton(
+                  onPressed: _showProxyHelpDialog,
+                  icon: const Icon(Icons.help_outline),
+                ),
                 children: [
                   TextField(
                     controller: hostsInputController,
-                    maxLines: null,
-                    decoration: InputDecoration(hintText: forwardHint),
+                    minLines: 3,
+                    maxLines: 10,
+                    decoration:
+                        const InputDecoration(hintText: '<host-mirror> <host>'),
                   )
                 ],
               ),
