@@ -2,8 +2,10 @@ import 'package:get/get_utils/get_utils.dart';
 
 enum AnimeArea {
   unknown('未知'),
-  japan('日本'),
   china('中国'),
+  japan('日本'),
+  korea('韩国'),
+  italy('意大利'),
   western('欧美');
 
   final String label;
