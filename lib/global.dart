@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/controllers/category_controller.dart';
 import 'package:animetrace/controllers/host_service.dart';
+import 'package:animetrace/controllers/proxy_service.dart';
 import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -54,16 +55,15 @@ class Global {
     await SPUtil.getInstance();
     // 桌面应用的sqflite初始化
     sqfliteFfiInit();
-    // 网络
-    DioUtil.init();
+
     // 确保数据库表最新结构
     await SqliteUtil.ensureDBTable();
+    // 网络
+    DioUtil.init();
     // put常用的getController，部分init中访问到了表，因此需要放在ensureDBTable后
     await _putGetController();
     // 设置Windows窗口
     _handleWindowsManager();
-    // 解决访问部分网络图片时报错CERTIFICATE_VERIFY_FAILED: unable to get local issuer certificate
-    HttpOverrides.global = MyHttpOverrides();
     // 热键
     if (Platform.isWindows) await hotKeyManager.unregisterAll();
   }
@@ -72,7 +72,12 @@ class Global {
     Get.lazyPut(() => BackupService());
     Get.lazyPut(() => AnimeService());
     Get.lazyPut(() => SettingService());
+
+    // 非懒加载服务：
+    // 1. 异步获取转发配置
     Get.put(HostService());
+    // 2. 设置全局代理
+    Get.put(ProxyService());
 
     Get.lazyPut(() => UpdateRecordController());
     Get.lazyPut(() => AnimeDisplayController());
@@ -194,15 +199,6 @@ class Global {
   /// 是否为夜间模式
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
-  }
-}
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
   }
 }
 

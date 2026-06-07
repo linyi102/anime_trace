@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:animetrace/utils/network/dio_proxy_interceptor.dart';
+import 'package:animetrace/utils/network/dio_forward_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:animetrace/utils/error_format_util.dart';
 import 'package:animetrace/models/ping_result.dart';
@@ -91,54 +91,46 @@ class DioUtil {
   }
 
   // 查询链接状态
-  static Future<bool> urlResponseOk(String url) async {
+  static Future<bool> urlResponseOk(
+    String url, {
+    bool Function(int? statusCode)? checkCode,
+  }) async {
     try {
-      int? statusCode = (await dio.head(url))
-          .statusCode; // 使用head而非request、get会更有效率，因为它不会下载内容
-      if (statusCode == 200) {
+      int? statusCode = (await dio.head(
+        url,
+        options: Options(
+          validateStatus: (status) => const {200, 404}.contains(status),
+        ),
+      ))
+          .statusCode;
+      if (checkCode != null) {
+        return checkCode(statusCode);
+      } else if (statusCode == 200) {
         return true;
       } else {
-        AppLog.info("$url返回码：$statusCode");
         return false;
       }
     } catch (e) {
-      // AppLog.error(e.toString());
-      // 400会报异常，这里捕捉到后返回false
+      AppLog.error('head $url error: $e');
+      // 400、500...
       return false;
     }
   }
 
   // 查看网站状态
-  static Future<PingStatus> ping(String path) async {
-    PingStatus pingStatus = PingStatus();
-    pingStatus.needPing = false; // 先设置为false，这样在ping的过程中来回切换页面后，不会再次ping
+  static Future<PingStatus> ping(
+    String path, {
+    bool Function(int? statusCode)? checkCode,
+  }) async {
+    final sw = Stopwatch()..start();
+    bool responseOk = await urlResponseOk(path, checkCode: checkCode);
+    sw.stop();
 
-    // 使用dio方法
-    bool connectable = false;
-    try {
-      var start = DateTime.now();
-      bool responseOk = await urlResponseOk(path);
-      var end = DateTime.now();
-      pingStatus.time = end.difference(start).inMilliseconds;
-      if (responseOk) {
-        connectable = true; // 只有不抛出异常且状态码为200时才说明可以连接
-      }
-    } catch (e) {
-      String msg = ErrorFormatUtil.formatError(e);
-      AppLog.info(msg);
-    }
+    AppLog.info("ping ${responseOk ? 'ok' : 'error'}: $path");
 
-    if (connectable) {
-      pingStatus.connectable = true;
-      AppLog.info("ping ok: $path");
-    } else {
-      pingStatus.connectable = false;
-      AppLog.info("ping false: $path");
-    }
-
-    // 更新状态并返回
-    pingStatus.pinging = false; // ping结束
-    return pingStatus;
+    return responseOk
+        ? PingStatus.success(sw.elapsedMilliseconds)
+        : PingStatus.timeout(sw.elapsedMilliseconds);
   }
 
   static Future<Result> download({

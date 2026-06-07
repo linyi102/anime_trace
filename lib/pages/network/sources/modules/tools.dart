@@ -1,5 +1,4 @@
 import 'package:animetrace/global.dart';
-import 'package:animetrace/pages/network/sources/pages/proxy_page.dart';
 import 'package:animetrace/values/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/pages/anime_air_date_list/anime_air_date_list_page.dart';
@@ -73,15 +72,6 @@ class ToolsPage extends StatelessWidget {
             child: const Chip(
               avatar: Icon(Icons.format_list_bulleted),
               label: Text('目录'),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              RouteUtil.materialTo(context, const HostsPage());
-            },
-            child: const Chip(
-              avatar: Icon(Icons.dns_outlined),
-              label: Text('转发规则'),
             ),
           ),
         ],

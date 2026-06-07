@@ -439,6 +439,10 @@ class AnimeController extends GetxController {
     if (oldAnime.animeDesc.isNotEmpty) {
       newAnime.animeDesc = oldAnime.animeDesc;
     }
+    // 已完结动漫不再调整状态
+    if (oldAnime.getPlayStatus() == PlayStatus.finished) {
+      newAnime.playStatus = PlayStatus.finished.text;
+    }
 
     Future<void> updateDbAnime() async {
       // 如果收藏了，才去更新

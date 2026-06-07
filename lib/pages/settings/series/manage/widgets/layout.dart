@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/pages/settings/series/manage/logic.dart';
 import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 
-import '../../../../../widgets/setting_title.dart';
 import '../style.dart';
 
 class SeriesManageLayoutSettingPage extends StatefulWidget {
@@ -15,47 +17,81 @@ class SeriesManageLayoutSettingPage extends StatefulWidget {
 }
 
 class _SeriesManageLayoutStateSettingPage
-    extends State<SeriesManageLayoutSettingPage> {
+    extends State<SeriesManageLayoutSettingPage>
+    with SingleTickerProviderStateMixin {
   SeriesManageLogic get logic => widget.logic;
 
+  final List<String> tabs = ['排序', '界面'];
+  late final TabController tabController;
   double coverHeight = SeriesStyle.getItemCoverHeight();
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(
+      length: tabs.length,
+      vsync: this,
+      animationDuration: PlatformUtil.tabControllerAnimationDuration,
+    );
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SettingTitle(title: '显示'),
-            ListTile(
-              onTap: () {
-                if (SeriesStyle.useList) {
-                  SeriesStyle.enableGrid();
-                } else {
-                  SeriesStyle.enableList();
-                }
-                setState(() {});
-                logic.update();
-              },
-              title: Text("${SeriesStyle.useList ? '列表' : '网格'}样式"),
-              subtitle: const Text('点击切换列表/网格样式'),
-            ),
-            if (SeriesStyle.useGrid)
-              SwitchListTile(
-                title: const Text('仅显示 1 张封面'),
-                value: SeriesStyle.useSingleCover,
-                onChanged: (value) {
-                  SeriesStyle.toggleUseSingleCover();
-                  setState(() {});
-                  logic.update();
-                },
-              ),
-            if (SeriesStyle.useGrid) _buildSetCoverHeightTile(),
-            const SettingTitle(title: '排序'),
-            for (var cond in SeriesListSortCond.values) _buildSortTile(cond)
-          ],
+      appBar: CommonBottomTabBar(
+          tabController: tabController,
+          tabs: tabs.map((e) => Tab(text: e)).toList()),
+      body: CommonTabBarView(controller: tabController, children: [
+        _buildSortPage(),
+        _buildLayoutPage(),
+      ]),
+    );
+  }
+
+  Widget _buildSortPage() {
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 40),
+      children: [
+        for (var cond in SeriesListSortCond.values) _buildSortTile(cond),
+      ],
+    );
+  }
+
+  Widget _buildLayoutPage() {
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 40),
+      children: [
+        ListTile(
+          onTap: () {
+            if (SeriesStyle.useList) {
+              SeriesStyle.enableGrid();
+            } else {
+              SeriesStyle.enableList();
+            }
+            setState(() {});
+            logic.update();
+          },
+          title: Text("${SeriesStyle.useList ? '列表' : '网格'}样式"),
+          subtitle: const Text('点击切换列表/网格样式'),
         ),
-      ),
+        if (SeriesStyle.useGrid)
+          SwitchListTile(
+            title: const Text('仅显示 1 张封面'),
+            value: SeriesStyle.useSingleCover,
+            onChanged: (value) {
+              SeriesStyle.toggleUseSingleCover();
+              setState(() {});
+              logic.update();
+            },
+          ),
+        if (SeriesStyle.useGrid) _buildSetCoverHeightTile(),
+      ],
     );
   }
 
