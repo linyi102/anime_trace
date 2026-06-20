@@ -11,7 +11,20 @@ class CommonTabBarView extends StatelessWidget {
     return TabBarView(
       children: children,
       controller: controller,
-      physics: PlatformUtil.tabBarViewPhysics,
+      physics: PlatformUtil.pageViewPhysics,
     );
   }
+}
+
+class FastPageScrollPhysics extends ScrollPhysics {
+  const FastPageScrollPhysics({super.parent});
+
+  @override
+  FastPageScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return FastPageScrollPhysics(parent: buildParent(ancestor));
+  }
+
+  @override
+  SpringDescription get spring =>
+      SpringDescription.withDampingRatio(mass: 0.5, stiffness: 500, ratio: 1.1);
 }

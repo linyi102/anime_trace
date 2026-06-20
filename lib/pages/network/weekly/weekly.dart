@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_item_auto_load.dart';
 import 'package:animetrace/components/loading_widget.dart';
@@ -104,7 +105,9 @@ class _WeeklyPageState extends State<WeeklyPage> {
   Expanded _buildPageView() {
     return Expanded(
       child: PageView.builder(
-        physics: enableSlide ? null : const NeverScrollableScrollPhysics(),
+        physics: enableSlide
+            ? PlatformUtil.pageViewPhysics
+            : const NeverScrollableScrollPhysics(),
         controller: pageController,
         itemCount: weeklyController.weeks.length,
         onPageChanged: (changedPage) {
