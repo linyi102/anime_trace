@@ -1,4 +1,7 @@
+import 'package:animetrace/controllers/setting_service.dart';
+import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/modules/sortable/sortable.dart';
+import 'package:animetrace/utils/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/search_app_bar.dart';
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
@@ -13,6 +16,7 @@ import 'package:animetrace/utils/log.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -32,13 +36,23 @@ class LabelManagePage extends StatefulWidget {
 class _LabelManagePageState extends State<LabelManagePage> {
   bool searchAction = false;
   LabelsController labelsController = LabelsController.to;
+  final inputKwCtr = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    labelsController.loadLabels();
+  }
+
+  @override
+  void dispose() {
+    labelsController.quitSearch();
+    inputKwCtr.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (labelsController.kw.isNotEmpty) {
-      _enterSearchModeIfHasKeyword();
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: searchAction
@@ -95,8 +109,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
     return ReorderableWrap(
         spacing: AppTheme.wrapSacing,
         runSpacing: AppTheme.wrapRunSpacing,
-        enableReorder: labelsController.sortController.curMode ==
-            labelsController.customSortMode,
+        enableReorder: labelsController.enableReorder,
         onReorder: labelsController.reorder,
         buildDraggableFeedback: _buildDraggableLabel,
         children: labelsController.labels.map((label) {
@@ -110,7 +123,14 @@ class _LabelManagePageState extends State<LabelManagePage> {
           return FilterChip(
             showCheckmark: false,
             selected: widget.enableSelectLabelForAnime && selected,
-            label: Text(label.name),
+            label: Text.rich(TextSpan(children: [
+              TextSpan(text: label.name),
+              if (label.count > 0 && SettingService.to.getLabelCountVisible())
+                TextSpan(
+                  text: ' ${label.count}',
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ),
+            ])),
             onSelected: (_) async {
               if (widget.enableSelectLabelForAnime) {
                 if (selected) {
@@ -137,6 +157,8 @@ class _LabelManagePageState extends State<LabelManagePage> {
                     AppLog.info("添加新动漫标签纪录失败");
                   }
                 }
+
+                labelsController.loadLabels();
               } else {
                 // 弹出对话框，提供重命名和删除操作
                 _showOpMenuDialog(label);
@@ -170,27 +192,29 @@ class _LabelManagePageState extends State<LabelManagePage> {
       isAppBar: true,
       autofocus: true,
       showCancelButton: true,
-      inputController: labelsController.inputKeywordController,
+      inputController: inputKwCtr,
       automaticallyImplyLeading:
           widget.enableSelectLabelForAnime ? false : true,
       hintText: "搜索标签",
       onChanged: (kw) async {
         _search(kw);
       },
-      onTapClear: () async {
-        labelsController.inputKeywordController.clear();
-        labelsController.kw = "";
-        labelsController.getAllLabels();
+      onTapClear: () {
+        labelsController.quitSearch();
+        inputKwCtr.clear();
       },
       onTapCancelButton: () {
-        labelsController.inputKeywordController.clear();
-        labelsController.kw = "";
-        labelsController.getAllLabels();
-        setState(() {
-          searchAction = false;
-        });
+        _quitSearch();
       },
     );
+  }
+
+  void _quitSearch() {
+    labelsController.quitSearch();
+    inputKwCtr.clear();
+    setState(() {
+      searchAction = false;
+    });
   }
 
   void _search(String kw) {
@@ -198,8 +222,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
 
     // 必须要查询数据库，而不是从已查询的全部数据中删除不含关键字的记录，否则会越删越少
     DelayUtil.delaySearch(() async {
-      labelsController.labels.value = await LabelDao.searchLabel(kw);
-      labelsController.kw = kw; // 记录关键字
+      labelsController.loadLabels(kw: kw);
     });
   }
 
@@ -272,6 +295,8 @@ class _LabelManagePageState extends State<LabelManagePage> {
   _buildFloatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
+        _quitSearch();
+
         showDialog(
             context: context,
             builder: (context) {
@@ -311,21 +336,78 @@ class _LabelManagePageState extends State<LabelManagePage> {
         });
   }
 
-  void _enterSearchModeIfHasKeyword() async {
-    if (labelsController.kw.isNotEmpty) {
-      setState(() {
-        searchAction = true;
-      });
-    }
-  }
-
   void _showLayoutBottomSheet() {
     showCommonModalBottomSheet(
       context: context,
-      builder: (context) => Scaffold(
-        appBar:
-            AppBar(title: const Text('排序'), automaticallyImplyLeading: false),
-        body: SortOptionView(controller: labelsController.sortController),
+      builder: (context) => _LabelLayoutSettingSheet(
+        labelsController: labelsController,
+        onDisplaySettingChanged: () => setState(() {}),
+      ),
+    );
+  }
+}
+
+class _LabelLayoutSettingSheet extends StatefulWidget {
+  const _LabelLayoutSettingSheet({
+    required this.labelsController,
+    required this.onDisplaySettingChanged,
+  });
+
+  final LabelsController labelsController;
+  final VoidCallback onDisplaySettingChanged;
+
+  @override
+  State<_LabelLayoutSettingSheet> createState() =>
+      _LabelLayoutSettingSheetState();
+}
+
+class _LabelLayoutSettingSheetState extends State<_LabelLayoutSettingSheet>
+    with SingleTickerProviderStateMixin {
+  final List<String> tabs = ['排序', '界面'];
+  late final TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(
+      length: tabs.length,
+      vsync: this,
+      animationDuration: PlatformUtil.tabControllerAnimationDuration,
+    );
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CommonBottomTabBar(
+        tabController: tabController,
+        tabs: tabs.map((e) => Tab(text: e)).toList(),
+      ),
+      body: CommonTabBarView(
+        controller: tabController,
+        children: [
+          SortOptionView(controller: widget.labelsController.sortController),
+          ListView(
+            padding: const EdgeInsets.only(bottom: 40),
+            children: [
+              SwitchListTile(
+                title: const Text('显示标签数量'),
+                value: SettingService.to.getLabelCountVisible(),
+                onChanged: (value) {
+                  SettingService.to.setLabelCountVisible(value);
+                  widget.onDisplaySettingChanged();
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

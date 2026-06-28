@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animetrace/utils/log.dart';
+import 'package:animetrace/utils/network/image_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -41,15 +42,6 @@ class AnimeCoverDetail extends StatelessWidget {
                     return _buildAnimeCover(
                         animeController.anime.animeCoverUrl, context);
                   })),
-          // Positioned(
-          //   // bottom: 0,
-          //   top: 0,
-          //   child: SizedBox(
-          //     height: MediaQuery.of(context).padding.top + kToolbarHeight,
-          //     width: MediaQuery.of(context).size.width,
-          //     child: _buildAppbar(context, enableOpacity: true),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -157,6 +149,7 @@ class AnimeCoverDetail extends StatelessWidget {
         headers: coverUrl.contains("douban")
             ? Global.getHeadersToGetDoubanPic()
             : null,
+        cacheManager: CustomImageCacheManager(),
         errorListener: (e) {
           AppLog.error("缓存网络图片错误：$coverUrl");
         },

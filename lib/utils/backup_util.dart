@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/controllers/category_controller.dart';
 import 'package:archive/archive_io.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/controllers/remote_controller.dart';
@@ -233,10 +234,11 @@ class BackupUtil {
     }
 
     if (restoreOk) {
-      // 重新获取更新记录、标签、清单
+      // 重新获取更新记录、标签、清单、类别
       UpdateRecordController.to.updateData();
-      LabelsController.to.getAllLabels();
+      LabelsController.to.loadLabels();
       ChecklistController.to.restore();
+      CategoryController.to.load();
       // 直接删除相关控制器(注意有些控制器不能删除，因为是在Global.init里put的，不过应该可以再次调用它就好，待测试)
       Get.delete<DedupController>();
 

@@ -22,7 +22,7 @@ class _FloatingCardState extends State<FloatingCard> {
           children: [
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-              width: MediaQuery.of(context).size.width - 100,
+              width: MediaQuery.widthOf(context) - 100,
               // height: 200,
               decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,

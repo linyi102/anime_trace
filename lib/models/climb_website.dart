@@ -9,7 +9,7 @@ class ClimbWebsite {
   bool enable = false;
   String regexp; // 用于根据animeUrl获取对应网站
   String spkey; // shared_preferencens存储的key，用于获取是否开启
-  PingStatus pingStatus = PingStatus();
+  PingStatus pingStatus = const PingStatus();
   String comment; // 注释
   String desc; // 描述
   Climb climb; // 爬取工具

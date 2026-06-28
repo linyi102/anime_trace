@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:animetrace/components/empty_data_hint.dart';
 import 'package:animetrace/animation/fade_animated_switcher.dart';
-import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/dao/note_dao.dart';
 import 'package:animetrace/models/note.dart';
 import 'package:animetrace/models/note_filter.dart';
@@ -53,12 +52,6 @@ class _EpisodeNoteListPageState extends State<EpisodeNoteListPage>
     // 获取集笔记
     episodeNotes = await NoteDao.getAllNotesByTableNoteAndKeyword(
         0, episodeNotePageParams.pageSize, widget.noteFilter);
-
-    // 修正集编号
-    for (var note in episodeNotes) {
-      note.episode.desc =
-          await EpisodeDescDao.query(note.anime.animeId, note.episode.number);
-    }
 
     loadEpisodeNoteOk = true;
     AppLog.info("note_list_page: 数据加载完成");

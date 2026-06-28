@@ -45,7 +45,7 @@ class AnimeController extends GetxController {
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
-  final int episodeRangeSize = 50;
+  final int episodeRangeSize = 100;
 
   // 显示简介
   var showDescInAnimeDetailPage = SpProfile.getShowDescInAnimeDetailPage().obs;
@@ -438,6 +438,10 @@ class AnimeController extends GetxController {
     }
     if (oldAnime.animeDesc.isNotEmpty) {
       newAnime.animeDesc = oldAnime.animeDesc;
+    }
+    // 已完结动漫不再调整状态
+    if (oldAnime.getPlayStatus() == PlayStatus.finished) {
+      newAnime.playStatus = PlayStatus.finished.text;
     }
 
     Future<void> updateDbAnime() async {

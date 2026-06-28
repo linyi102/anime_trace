@@ -74,13 +74,14 @@ class _AnimeDetailLabelsState extends State<AnimeDetailLabels> {
       ),
       onTap: () {
         AppLog.info("添加标签");
-        showCommonModalBottomSheet(
-          context: context,
-          builder: (context) => LabelManagePage(
-            enableSelectLabelForAnime: true,
-            animeController: widget.animeController,
-          ),
+
+        final page = LabelManagePage(
+          enableSelectLabelForAnime: true,
+          animeController: widget.animeController,
         );
+        // NOTE: 避免频繁构建 page 导致卡顿
+        showCommonModalBottomSheet(
+            context: context, builder: (context) => page);
       },
     ));
 

@@ -45,6 +45,20 @@ class AnimeLabelDao {
     return labels;
   }
 
+  /// 获取每个标签的动漫数量 (id -> count)
+  static Future<Map<int, int>> getAllLabelCount() async {
+    final result = await db.rawQuery('''
+    SELECT $columnLabelId, COUNT(*) AS count
+    FROM $table
+    GROUP BY $columnLabelId
+    ''');
+
+    return {
+      for (final row in result)
+        (row[columnLabelId] as int): (row['count'] as int),
+    };
+  }
+
   // 查询含有指定多个标签的所有动漫
   static Future<List<Anime>> getAnimesByLabelIds(List<int> labelIds) async {
     AppLog.info("sql:getAnimesByLabelId(labelIds=$labelIds)");

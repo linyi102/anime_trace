@@ -1,24 +1,59 @@
-import 'package:flutter/material.dart';
 import 'package:animetrace/values/values.dart';
+import 'package:flutter/material.dart';
 
-class PingStatus {
-  bool pinging; // 正在ping
-  bool needPing; // 需要ping
-  bool connectable; // 可以连接
-  int time;
+sealed class PingStatus {
+  const factory PingStatus() = PingStatusUnknown;
 
-  PingStatus(
-      {this.connectable = false,
-      this.time = -1,
-      this.pinging = false,
-      this.needPing = true});
+  const factory PingStatus.pinging() = PingStatusPinging;
 
-  Color get color => (needPing || pinging)
-      ? Colors.grey // 需要ping，或者正在ping
-      : (connectable ? AppTheme.connectableColor : Colors.red);
+  const factory PingStatus.success(int time) = PingStatusSuccess;
+
+  const factory PingStatus.timeout(int time) = PingStatusTimeout;
+}
+
+class PingStatusUnknown implements PingStatus {
+  const PingStatusUnknown();
 
   @override
-  String toString() {
-    return "PingStatus[ok=$connectable, time=$time]";
-  }
+  String toString() => 'PingStatus[unknown]';
+}
+
+class PingStatusPinging implements PingStatus {
+  const PingStatusPinging();
+
+  @override
+  String toString() => 'PingStatus[pinging]';
+}
+
+class PingStatusSuccess implements PingStatus {
+  const PingStatusSuccess(this.time);
+
+  final int time;
+
+  @override
+  String toString() => 'PingStatus[ok=true, time=$time]';
+}
+
+class PingStatusTimeout implements PingStatus {
+  const PingStatusTimeout(this.time);
+
+  final int time;
+
+  @override
+  String toString() => 'PingStatus[ok=false, time=$time]';
+}
+
+extension PingStatusExt on PingStatus {
+  String get label => switch (this) {
+        PingStatusPinging() => '测试中...',
+        PingStatusUnknown() => '未知',
+        PingStatusSuccess(:final time) => '${time}ms',
+        PingStatusTimeout() => '超时',
+      };
+
+  Color get color => switch (this) {
+        PingStatusUnknown() || PingStatusPinging() => Colors.grey,
+        PingStatusSuccess() => AppTheme.connectableColor,
+        PingStatusTimeout() => Colors.red,
+      };
 }

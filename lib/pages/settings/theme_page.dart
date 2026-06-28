@@ -108,10 +108,7 @@ class _ThemePageState extends State<ThemePage> {
       title: '主题模式',
       useCard: false,
       children: [
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: _buildThemeSelector(),
-        ),
+        _buildThemeSelector(),
       ],
     );
   }

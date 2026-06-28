@@ -1,3 +1,4 @@
+import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_list_tile.dart';
 import 'package:animetrace/components/search_app_bar.dart';
@@ -94,27 +95,41 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
         appBar: _buildSearchBar(),
         floatingActionButton: _buildFAB(),
         body: CommonScaffoldBody(
-            child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverToBoxAdapter(child: _buildFilterChips()),
-            if (searchOk)
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    // AppLog.info("$runtimeType: index=$index");
-                    var anime = _animes[index];
-                    return _buildAnimeTile(anime, context, index);
-                  },
-                  childCount: _animes.length,
+          child: Column(
+            children: [
+              _buildFilterChips(),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: localSearchController.search,
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      if (searchOk)
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              // AppLog.info("$runtimeType: index=$index");
+                              var anime = _animes[index];
+                              return _buildAnimeTile(anime, context, index);
+                            },
+                            childCount: _animes.length,
+                          ),
+                        ),
+                      // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
+                      if (searchOk &&
+                          _inputController.text.isNotEmpty &&
+                          !selectAction)
+                        SliverToBoxAdapter(
+                            child: _buildNetworkSearchHint(context)),
+                      const SliverToBoxAdapter(child: SizedBox(height: 60))
+                    ],
+                  ),
                 ),
               ),
-            // 搜索关键字后，显示网络搜索更多，点击后会进入聚合搜索页搜索关键字
-            if (searchOk && _inputController.text.isNotEmpty && !selectAction)
-              SliverToBoxAdapter(child: _buildNetworkSearchHint(context)),
-            const SliverToBoxAdapter(child: SizedBox(height: 60))
-          ],
-        )),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -230,8 +245,12 @@ class _DbAnimeSearchPageState extends State<DbAnimeSearchPage> {
           return AnimeDetailPage(anime);
         },
       ),
-    ).then((popAnime) {
+    ).then((popAnime) async {
       _animes[index] = popAnime;
+      _animes[index].checkedEpisodeCnt =
+          await SqliteUtil.getCheckedEpisodeCntByAnimeId(_animes[index].animeId,
+              reviewNumber: _animes[index].reviewNumber);
+      if (mounted) setState(() {});
     });
   }
 }

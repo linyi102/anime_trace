@@ -1,4 +1,5 @@
 import 'package:animetrace/dao/anime_dao.dart';
+import 'package:animetrace/dao/episode_desc_dao.dart';
 import 'package:animetrace/models/note.dart';
 import 'package:animetrace/models/params/page_params.dart';
 import 'package:animetrace/utils/episode.dart';
@@ -332,6 +333,12 @@ class NoteDao {
       // if (episodeNote.relativeLocalImages.isEmpty &&
       //     episodeNote.noteContent.isEmpty) continue;
       episodeNotes.add(restoreEscapeEpisodeNote(episodeNote));
+    }
+
+    // 修正集编号
+    for (var note in episodeNotes) {
+      note.episode.desc =
+          await EpisodeDescDao.query(note.anime.animeId, note.episode.number);
     }
     return episodeNotes;
   }

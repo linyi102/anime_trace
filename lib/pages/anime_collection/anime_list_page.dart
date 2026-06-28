@@ -93,6 +93,7 @@ class _AnimeListPageState extends State<AnimeListPage>
         child: !loadOk && animeCntPerTag.isEmpty
             ? _waitDataScaffold()
             : Scaffold(
+                resizeToAvoidBottomInset: false,
                 backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
                 // key: UniqueKey(), // 加载这里会导致多选每次点击都会有动画，所以值需要在_waitDataScaffold中加就可以了
                 appBar: AppBar(

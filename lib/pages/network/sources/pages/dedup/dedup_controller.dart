@@ -60,19 +60,6 @@ class DedupController extends GetxController {
     update([bodyId, appBarId]);
   }
 
-  /// 保留有进度的动漫
-  retainAnimeHasProgress() {
-    animeMap.forEach((key, value) {
-      for (var anime in value) {
-        if (anime.checkedEpisodeCnt == 0) {
-          selectedIds.add(anime.animeId);
-        }
-      }
-    });
-
-    update([bodyId, appBarId]);
-  }
-
   /// 清空选择
   clearSelected() {
     selectedIds.clear();

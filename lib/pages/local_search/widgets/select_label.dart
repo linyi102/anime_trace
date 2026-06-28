@@ -1,3 +1,4 @@
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/models/label.dart';
@@ -20,6 +21,12 @@ class _SelectLabelViewState extends State<SelectLabelView> {
 
   late LocalSearchController localSearchController =
       widget.localSearchController;
+
+  @override
+  void initState() {
+    super.initState();
+    labelsController.loadLabels();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,14 +91,22 @@ class _SelectLabelViewState extends State<SelectLabelView> {
           spacing: AppTheme.wrapSacing,
           runSpacing: AppTheme.wrapRunSpacing,
           children: labelsController.labels.map((label) {
-            bool selected =
-                localSearchController.localSelectFilter.labels.contains(label);
+            bool selected = localSearchController.localSelectFilter.labels
+                    .indexWhere((e) => e.id == label.id) >=
+                0;
 
             return FilterChip(
               showCheckmark: false,
               pressElevation: 0,
               selected: selected,
-              label: Text(label.name),
+              label: Text.rich(TextSpan(children: [
+                TextSpan(text: label.name),
+                if (label.count > 0 && SettingService.to.getLabelCountVisible())
+                  TextSpan(
+                    text: ' ${label.count}',
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+              ])),
               onSelected: (_) => _onTapLabelChip(selected, label),
             );
           }).toList(),

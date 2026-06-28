@@ -104,13 +104,13 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                   child: MultiPlatform(
                       mobile: SizedBox(
                         height: 100,
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery.widthOf(context),
                         child: _buildScrollAxis(),
                       ),
                       desktop: Container(
                         height: 100,
                         padding: const EdgeInsets.all(6),
-                        width: MediaQuery.of(context).size.width * 2 / 3,
+                        width: MediaQuery.widthOf(context) * 2 / 3,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(6),
                           color: Colors.black54,
@@ -163,8 +163,8 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
   _buildStackAppBar(BuildContext context) {
     return SizedBox(
       // 高度为手机状态栏高度+AppBar高度
-      height: kToolbarHeight + MediaQuery.of(context).padding.top,
-      width: MediaQuery.of(context).size.width,
+      height: kToolbarHeight + MediaQuery.paddingOf(context).top,
+      width: MediaQuery.widthOf(context),
       child: AppBar(
         backgroundColor: Colors.transparent,
         // 隐藏自带的返回按钮

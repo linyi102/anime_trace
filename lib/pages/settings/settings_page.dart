@@ -1,3 +1,4 @@
+import 'package:animetrace/pages/settings/proxy_page.dart';
 import 'package:animetrace/widgets/rotated_logo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +125,17 @@ class _SettingPageState extends State<SettingPage> {
           title: const Text("常规设置"),
           onTap: () {
             _enterDetail(const GeneralSettingPage());
+          },
+        ),
+        ListTile(
+          iconColor: Theme.of(context).colorScheme.primary,
+          leading: const Icon(
+            // Icons.settings,
+            MingCuteIcons.mgc_key_2_line,
+          ),
+          title: const Text("代理设置"),
+          onTap: () {
+            _enterDetail(const ProxyPage());
           },
         ),
         if (FeatureFlag.enablePickLocalImage)

@@ -16,6 +16,7 @@ import 'package:animetrace/components/dialog/dialog_select_uint.dart';
 import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:get/get_utils/get_utils.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class EpisodeManagePage extends StatefulWidget {
   const EpisodeManagePage({super.key, required this.animeController});
@@ -26,8 +27,8 @@ class EpisodeManagePage extends StatefulWidget {
 }
 
 class _EpisodeManagePageState extends State<EpisodeManagePage> {
-  int episodeCntMinValue = 0, episodeCntMaxValue = 2000;
-  int episodeStartNumberMinValue = 0, episodeStartNumberMaxValue = 2000;
+  int episodeCntMinValue = 0, episodeCntMaxValue = 1 << 16;
+  int episodeStartNumberMinValue = 0, episodeStartNumberMaxValue = 1 << 16;
 
   late int totalCnt = widget.animeController.anime.animeEpisodeCnt;
   late int startNumber = widget.animeController.anime.episodeStartNumber;
@@ -370,7 +371,7 @@ class _EpisodeManagePageState extends State<EpisodeManagePage> {
           if (totalCnt > 0)
             SliverPadding(
               padding: const EdgeInsets.only(bottom: 64),
-              sliver: SliverList.builder(
+              sliver: SuperSliverList.builder(
                 itemCount: diffs.length,
                 itemBuilder: (_, index) {
                   final d = diffs[index];

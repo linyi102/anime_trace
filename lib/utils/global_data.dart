@@ -123,7 +123,7 @@ final bangumiClimbWebsite = ClimbWebsite(
   defaultEnable: true,
   name: "Bangumi",
   iconUrl: "assets/images/website/bangumi.png",
-  regexp: "bangumi\\.tv", // 因为次元城的动漫详细页链接包含bangumi，所以要添加.tv
+  regexp: "(bgm\\.tv)|(bangumi\\.tv)|(chii\\.in)", // 因为次元城的动漫详细页链接包含bangumi，所以要添加.tv
   spkey: "enableWebSiteBangumi",
   climb: ClimbBangumi(),
   supportImport: true,

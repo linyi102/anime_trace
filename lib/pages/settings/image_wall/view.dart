@@ -76,7 +76,7 @@ class _ImageWallPageState extends State<ImageWallPage> {
 
   @override
   Widget build(BuildContext context) {
-    imageHeight = (MediaQuery.of(context).size.height -
+    imageHeight = (MediaQuery.heightOf(context) -
             (Global.isPortrait(context) ? 200 : 100)) /
         (groupCnt + 1);
 

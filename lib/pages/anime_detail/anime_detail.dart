@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_widget.dart';
 import 'package:animetrace/global.dart';
-
 import 'package:animetrace/pages/anime_detail/controllers/anime_controller.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/models/anime.dart';
@@ -65,11 +64,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   }
 
   // 用于传回到动漫列表页
-  void _popPage() {
-    _anime.checkedEpisodeCnt = 0;
-    for (var episode in animeController.episodes) {
-      if (episode.isChecked()) _anime.checkedEpisodeCnt++;
-    }
+  void _popPage() async {
     Navigator.pop(context, _anime);
 
     // 清空标签和集信息

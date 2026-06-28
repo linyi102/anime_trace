@@ -102,11 +102,12 @@ class _AnimeListInSourceState extends State<AnimeListInSource> {
                   Anime retAnime = value as Anime;
                   String newUrl = retAnime.animeUrl;
                   AppLog.info("旧地址：${anime.animeUrl}，新地址：$newUrl");
-                  if (anime.animeUrl != newUrl || !retAnime.isCollected()) {
+                  if (anime.getAnimeSource() != retAnime.getAnimeSource() ||
+                      !retAnime.isCollected()) {
                     AppLog.info("已迁移或取消收藏，从列表中删除");
                     setState(() {
                       animes.removeAt(index);
-                      cnt = animes.length;
+                      cnt--;
                     });
                   } else {
                     // 更新动漫(封面可能发生变化)

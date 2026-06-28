@@ -50,7 +50,7 @@ class BaseEmptyPage extends StatelessWidget {
     Color color = Colors.grey;
 
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.widthOf(context),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

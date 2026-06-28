@@ -17,6 +17,10 @@ class CategoryController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    load();
+  }
+
+  void load() async {
     categories = await SettingService.to.getAnimeCategories() ??
         [...readonlyCategories, 'TV', 'WEB', '剧场版', 'OVA', 'OAD'];
     update();
