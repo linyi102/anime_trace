@@ -9,6 +9,39 @@ class BangumiRepository {
 
   const BangumiRepository();
 
+  Future<({List<BgmSubject> list, int total})> fetchSubjects({
+    required String keyword,
+    BgmSubjectType subjectType = BgmSubjectType.all,
+    int pageSize = 20,
+    int offset = 0,
+  }) async {
+    final r = await DioUtil.post(BangumiApi.subjects(pageSize, offset),
+        headers: BangumiApi.headers,
+        data: {
+          'keyword': keyword,
+          'filter': {
+            if (subjectType != BgmSubjectType.all)
+              'type': [subjectType.intValue],
+          },
+          'limit': 20,
+          'offset': 0,
+        });
+    if (r.isFailure) return (list: <BgmSubject>[], total: 0);
+
+    return (
+      list: r.toModelList<BgmSubject>(
+        transform: (json) {
+          final subject = BgmSubject.fromMap(json);
+          _recoverImageUrl(subject);
+          return subject;
+        },
+        dataType: ResultDataType.responseBodyData,
+        onError: () => [],
+      ),
+      total: r.data.data['total'] as int? ?? 0,
+    );
+  }
+
   Future<BgmSubject?> fetchSubject(String subjectId) async {
     final result = await DioUtil.get(BangumiApi.subject(subjectId),
         headers: BangumiApi.headers);
