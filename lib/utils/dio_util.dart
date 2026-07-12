@@ -61,12 +61,17 @@ class DioUtil {
     }
   }
 
-  static Future<Result> post<T>(String path,
-      {Map<String, dynamic> data = const {}}) async {
+  static Future<Result> post<T>(
+    String path, {
+    Map<String, dynamic> data = const {},
+    Map<String, dynamic>? headers,
+    bool isFromData = false,
+  }) async {
     try {
       Response response = await dio.post(
         path,
-        data: FormData.fromMap(data),
+        data: isFromData ? FormData.fromMap(data) : data,
+        options: Options(headers: headers),
       );
 
       return Result.success(response);
