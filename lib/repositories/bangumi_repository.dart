@@ -12,11 +12,13 @@ class BangumiRepository {
   Future<BgmSubject?> fetchSubject(String subjectId) async {
     final result = await DioUtil.get(BangumiApi.subject(subjectId),
         headers: BangumiApi.headers);
-    return result.toModel(
+    final subject = result.toModel(
       transform: BgmSubject.fromMap,
       dataType: ResultDataType.responseBody,
       onError: () => null,
     );
+    if (subject != null) _recoverImageUrl(subject);
+    return subject;
   }
 
   Future<List<BgmEpisode>> fetchEpisodes(String subjectId) async {
@@ -116,11 +118,28 @@ class BangumiRepository {
 
     return (
       list: r.toModelList<BgmSubject>(
-        transform: (json) => BgmSubject.fromMap(json['subject']),
+        transform: (json) {
+          final subject = BgmSubject.fromMap(json['subject']);
+          _recoverImageUrl(subject);
+          return subject;
+        },
         dataType: ResultDataType.responseBodyData,
         onError: () => [],
       ),
       total: r.data.data['total'] as int? ?? 0,
     );
+  }
+
+  void _recoverImageUrl(BgmSubject subject) {
+    String? _recover(String? url) {
+      if (url == null) return null;
+      final uri = Uri.tryParse(url);
+      return uri == null ? url : uri.replace(host: 'lain.bgm.tv').toString();
+    }
+
+    subject.images?.small = _recover(subject.images?.small);
+    subject.images?.grid = _recover(subject.images?.grid);
+    subject.images?.large = _recover(subject.images?.large);
+    subject.images?.medium = _recover(subject.images?.medium);
   }
 }
