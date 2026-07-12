@@ -31,7 +31,7 @@ if (flutterVersionName == null) {
 android {
     // TODO com.badworld.animetrace
     namespace 'com.example.flutter_test_future'
-    compileSdkVersion 35
+    compileSdkVersion 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
