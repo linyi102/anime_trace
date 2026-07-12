@@ -1,7 +1,7 @@
 import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/utils/platform.dart';
-import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:animetrace/widgets/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:get/get.dart';
@@ -99,18 +99,16 @@ class _AnimeGridViewState extends State<AnimeGridView>
       // Note: AlignedGridView可以在固定列数时不用指定比例
       return LayoutBuilder(
         builder: (context, constraints) {
-          return Padding(
+          return DynamicHeightGridView(
             padding: padding,
-            child: DynamicHeightGridView(
-              controller: widget.scrollController,
-              crossAxisCount: calCrossAxisCount(constraints.maxWidth),
-              itemCount: widget.animes.length,
-              builder: (context, index) {
-                widget.loadMore?.call(index);
+            controller: widget.scrollController,
+            crossAxisCount: calCrossAxisCount(constraints.maxWidth),
+            itemCount: widget.animes.length,
+            builder: (context, index) {
+              widget.loadMore?.call(index);
 
-                return buildItem(index);
-              },
-            ),
+              return buildItem(index);
+            },
           );
         },
       );
