@@ -17,7 +17,11 @@ class BangumiApi {
   /// 每日放送
   static String calendar = '$baseUrl/calendar';
 
-  /// 条目
+  /// 条目搜索
+  static String subjects(int limit, int offset) =>
+      '$baseUrl/v0/search/subjects?limit=$limit&offset=$offset';
+
+  /// 条目详情
   static String subject(String subjectId) => '$baseUrl/v0/subjects/$subjectId';
 
   /// 章节

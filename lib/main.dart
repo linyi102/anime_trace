@@ -148,6 +148,12 @@ class MyAppState extends State<MyApp> {
                 },
               );
             }
+            // 移除桌面端自带的滚动条
+            child = ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: child,
+            );
             return child;
           },
           navigatorObservers: [

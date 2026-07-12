@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animetrace/widgets/common_tab_bar_view.dart';
 import 'package:flutter/material.dart';
 
 class PlatformUtil {
@@ -12,6 +13,7 @@ class PlatformUtil {
   static Duration get tabControllerAnimationDuration => kTabScrollDuration;
 
   /// 左右滑动切换tab栏
-  static ScrollPhysics? get tabBarViewPhysics =>
-      isMobile ? null : const NeverScrollableScrollPhysics();
+  static ScrollPhysics? get pageViewPhysics => isMobile
+      ? const FastPageScrollPhysics()
+      : const NeverScrollableScrollPhysics();
 }
