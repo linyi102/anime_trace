@@ -158,7 +158,7 @@ class _LabelManagePageState extends State<LabelManagePage> {
                   }
                 }
 
-                labelsController.loadLabels();
+                labelsController.loadLabelsWithKeepKeyword();
               } else {
                 // 弹出对话框，提供重命名和删除操作
                 _showOpMenuDialog(label);
@@ -295,8 +295,6 @@ class _LabelManagePageState extends State<LabelManagePage> {
   _buildFloatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
-        _quitSearch();
-
         showDialog(
             context: context,
             builder: (context) {

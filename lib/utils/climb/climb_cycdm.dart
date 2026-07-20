@@ -166,6 +166,7 @@ class ClimbCycdm with Climb {
     var configMap = jsonDecode(configString);
     var result = await DioUtil.post(
         '${baseUrl.replaceFirst('www', 'player')}/api_config.php',
+        isFromData: true,
         data: {
           'url': configMap['url'],
           'time': configMap['time'],

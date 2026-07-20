@@ -1,9 +1,9 @@
 import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:animetrace/controllers/anime_display_controller.dart';
 import 'package:animetrace/utils/platform.dart';
+import 'package:animetrace/widgets/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/models/anime.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 
 class AnimeGridView extends StatefulWidget {
@@ -82,10 +82,10 @@ class _AnimeGridViewState extends State<AnimeGridView>
           padding: padding,
           sliver: SliverLayoutBuilder(
             builder: (context, constraints) {
-              return SliverAlignedGrid.count(
+              return SliverDynamicHeightGridView(
                 crossAxisCount: calCrossAxisCount(constraints.crossAxisExtent),
                 itemCount: widget.animes.length,
-                itemBuilder: (context, index) {
+                builder: (context, index) {
                   widget.loadMore?.call(index);
 
                   return buildItem(index);
@@ -99,12 +99,12 @@ class _AnimeGridViewState extends State<AnimeGridView>
       // Note: AlignedGridView可以在固定列数时不用指定比例
       return LayoutBuilder(
         builder: (context, constraints) {
-          return AlignedGridView.count(
-            controller: widget.scrollController,
+          return DynamicHeightGridView(
             padding: padding,
+            controller: widget.scrollController,
             crossAxisCount: calCrossAxisCount(constraints.maxWidth),
             itemCount: widget.animes.length,
-            itemBuilder: (context, index) {
+            builder: (context, index) {
               widget.loadMore?.call(index);
 
               return buildItem(index);

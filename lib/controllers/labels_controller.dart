@@ -108,6 +108,10 @@ class LabelsController extends GetxController {
     super.dispose();
   }
 
+  void loadLabelsWithKeepKeyword() {
+    loadLabels(kw: kw);
+  }
+
   void loadLabels({String? kw}) async {
     this.kw = kw ?? '';
 
@@ -139,7 +143,7 @@ class LabelsController extends GetxController {
     int newId = await LabelDao.insert(newLabel);
     if (newId > 0) {
       AppLog.info("添加标签成功，新插入的id=$newId");
-      loadLabels();
+      loadLabelsWithKeepKeyword();
       return true;
     } else {
       ToastUtil.showText('添加失败');

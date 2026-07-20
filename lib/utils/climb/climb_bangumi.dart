@@ -13,7 +13,6 @@ import 'package:animetrace/utils/climb/user_collection.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/network/bangumi_api.dart';
 import 'package:animetrace/utils/time_util.dart';
-import 'package:html/dom.dart';
 
 class ClimbBangumi with Climb {
   // 单例
@@ -50,15 +49,23 @@ class ClimbBangumi with Climb {
   /// 根据关键字搜索相关动漫(只需获取名字、封面链接、详细网址，之后会通过详细网址来获取其他信息)
   @override
   Future<List<Anime>> searchAnimeByKeyword(String keyword) async {
-    String url = baseUrl +
-        "/subject_search/$keyword?cat=${SettingService.to.getBgmSearchCategory().value}";
-    List<Anime> climbAnimes = [];
+    final r = await repository.fetchSubjects(
+      keyword: keyword,
+      subjectType: SettingService.to.getBgmSearchCategory(),
+    );
 
-    final document = await dioGetAndParse(url, headers: BangumiApi.headers);
-    if (document == null) return [];
-
-    climbAnimes = parseAnimeListByBrowserItemList(document);
-    return climbAnimes;
+    return r.list
+        .map((e) => Anime(
+              animeName:
+                  (e.nameCn ?? '').isNotEmpty ? e.nameCn! : (e.name ?? ''),
+              animeCoverUrl: e.images?.large ?? '',
+              animeUrl: '$baseUrl/subject/${e.id}',
+              premiereTime: e.date == null
+                  ? ''
+                  : TimeUtil.getYMDByDateTime(e.date!, delimiter: '-'),
+              animeEpisodeCnt: e.eps ?? 0,
+            ))
+        .toList();
   }
 
   String _parseBangumiSubjectId(String url) {
@@ -183,65 +190,9 @@ class ClimbBangumi with Climb {
     return collection;
   }
 
-  List<Anime> parseAnimeListByBrowserItemList(Document document) {
-    var lis =
-        document.getElementById("browserItemList")?.getElementsByTagName("li");
-    if (lis == null || lis.isEmpty) {
-      return [];
-    }
-
-    List<Anime> animes = [];
-    // 获取该页动漫列表
-    for (var li in lis) {
-      String detailUrl =
-          li.getElementsByTagName("a")[0].attributes["href"] ?? "";
-      String animeUrl = "$baseUrl$detailUrl";
-
-      var imgElements = li.getElementsByTagName("img");
-      String img = "";
-      // 有些没有封面，例如魔法科高校的劣等生 续篇
-      if (imgElements.isNotEmpty) img = imgElements[0].attributes["src"] ?? "";
-      if (!img.startsWith("https:")) img = "https:$img";
-
-      var inner = li.getElementsByClassName("inner")[0];
-      String name = inner.getElementsByTagName("a")[0].innerHtml;
-      String nameAnother = inner
-              .getElementsByTagName("h3")
-              .elementAtOrNull(0)
-              ?.getElementsByTagName("small")
-              .elementAtOrNull(0)
-              ?.innerHtml ??
-          '';
-
-      String tempInfo =
-          inner.getElementsByClassName("info tip")[0].innerHtml.trim();
-      String premiereTime = (RegExp(r'(\d{4}[年\-]\d{1,2}[月\-]\d{1,2}[日]?)')
-                  .firstMatch(tempInfo)
-                  ?.group(0) ??
-              '')
-          .replaceAll('年', '-')
-          .replaceAll('月', '-')
-          .replaceAll('日', '')
-          .split('-')
-          .map((e) => e.padLeft(2, '0'))
-          .join('-');
-
-      Anime anime = Anime(
-        animeName: name,
-        nameAnother: nameAnother,
-        animeCoverUrl: img,
-        animeUrl: animeUrl,
-        tempInfo: tempInfo,
-        premiereTime: premiereTime,
-      );
-      animes.add(anime);
-    }
-
-    return animes;
-  }
-
   @override
   Future<List<List<WeekRecord>>> climbWeeklyTable() async {
+    // TODO move to repository
     final resp = await DioUtil.get(
       BangumiApi.calendar,
       headers: BangumiApi.headers,

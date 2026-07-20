@@ -7,6 +7,7 @@ import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/routes/get_route.dart';
 import 'package:animetrace/utils/sp_profile.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
+import 'package:animetrace/widgets/dynamic_height_grid_view.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/loading_dialog.dart';
@@ -16,7 +17,6 @@ import 'package:animetrace/utils/time_util.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/common_scaffold_body.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -418,10 +418,10 @@ class _CustomAnimeCoverPageState extends State<CustomAnimeCoverPage> {
           ),
           const Divider(),
           Expanded(
-            child: AlignedGridView.count(
+            child: DynamicHeightGridView(
               crossAxisCount: 4,
               itemCount: 100,
-              itemBuilder: (context, index) {
+              builder: (context, index) {
                 AppLog.debug('gridview build $index');
                 return CustomAnimeCover(
                   anime: Anime(
