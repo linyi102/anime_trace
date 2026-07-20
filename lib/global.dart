@@ -29,9 +29,6 @@ import 'values/values.dart';
 
 export 'feature_flags.dart';
 
-/// Feature capabilities for the app host configured by [runManjiApp].
-///
-/// The initializer is lazy because the platform is configured during startup.
 late final IFeatureFlag $featureFlag = ManjiPlatform.instance.featureFlag;
 
 class Global {

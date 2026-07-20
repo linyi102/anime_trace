@@ -1,4 +1,3 @@
-/// Capabilities supplied by an app host.
 abstract interface class IFeatureFlag {
   /// 修复封面
   bool get enableFixCover;
@@ -34,14 +33,10 @@ abstract interface class IFeatureFlag {
   bool get enableCopy;
 }
 
-/// Platform adaptation supplied by an app host.
 abstract interface class IManjiPlatform {
   IFeatureFlag get featureFlag;
 }
 
-/// Platform adaptation for the current app host.
-///
-/// [runManjiApp] configures this before any UI is built.
 class ManjiPlatform {
   ManjiPlatform._();
 
