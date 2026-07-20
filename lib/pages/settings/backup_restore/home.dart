@@ -24,7 +24,7 @@ class _BackupAndRestorePageState extends State<BackupAndRestorePage> {
           child: ListView(
         padding: const EdgeInsets.only(bottom: 50),
         children: [
-          if (FeatureFlag.enablePickFile) const LocalBackupPage(),
+          if ($featureFlag.enablePickFile) const LocalBackupPage(),
           const RemoteBackupPage(),
           SettingCard(
             title: '撤销还原',

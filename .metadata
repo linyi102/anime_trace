@@ -7,17 +7,11 @@ version:
   revision: "c4a66f77d0e5047ddf5a1bd353fd3ee9cbfeafcd"
   channel: "[user-branch]"
 
-project_type: app
+project_type: package
 
 # Tracks metadata for the flutter migrate command
 migration:
   platforms:
-    - platform: root
-      create_revision: c4a66f77d0e5047ddf5a1bd353fd3ee9cbfeafcd
-      base_revision: c4a66f77d0e5047ddf5a1bd353fd3ee9cbfeafcd
-    - platform: ohos
-      create_revision: c4a66f77d0e5047ddf5a1bd353fd3ee9cbfeafcd
-      base_revision: c4a66f77d0e5047ddf5a1bd353fd3ee9cbfeafcd
 
   # User provided section
 
@@ -26,5 +20,3 @@ migration:
   #
   # Files that are not part of the templates will be ignored by default.
   unmanaged_files:
-    - 'lib/main.dart'
-    - 'ios/Runner.xcodeproj/project.pbxproj'

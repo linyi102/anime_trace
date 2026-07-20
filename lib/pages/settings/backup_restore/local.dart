@@ -28,7 +28,7 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
     return SettingCard(
       title: '本地备份',
       children: [
-        if (PlatformUtil.isMobile && FeatureFlag.enableSaveFile)
+        if (PlatformUtil.isMobile && $featureFlag.enableSaveFile)
           ListTile(
             title: const Text("立即备份"),
             onTap: () async {
@@ -42,7 +42,7 @@ class _LocalBackupPageState extends State<LocalBackupPage> {
               tmpZipFile.delete();
             },
           ),
-        if (Platform.isWindows && FeatureFlag.enableSaveFile) ...[
+        if (Platform.isWindows && $featureFlag.enableSaveFile) ...[
           ListTile(
             title: const Text("立即备份"),
             subtitle: const Text("单击进行备份，备份目录为设置的本地目录"),

@@ -137,7 +137,7 @@ class _MainScreenState extends State<MainScreen> with MultiEventsStateMixin {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Image.asset(Assets.images.logoRound.path, height: 40, width: 40),
+          Assets.images.logoRound.image(height: 40, width: 40),
         ],
       ),
     ));

@@ -65,7 +65,7 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
         SettingCard(
           title: '偏好',
           children: [
-            if (FeatureFlag.enableCustomPageTransition)
+            if ($featureFlag.enableCustomPageTransition)
               ListTile(
                 title: const Text("选择页面切换动画"),
                 subtitle: Obx(() =>

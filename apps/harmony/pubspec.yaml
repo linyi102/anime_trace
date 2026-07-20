@@ -1,0 +1,64 @@
+name: animetrace_harmony
+description: 漫迹鸿蒙版
+publish_to: "none"
+version: 1.17.0+2026050201
+
+environment:
+  sdk: ">=3.3.4 <4.0.0"
+
+dependencies:
+  animetrace:
+    path: ../..
+  flutter:
+    sdk: flutter
+
+dependency_overrides:
+  # 升级 file_picker 内部依赖的 win32
+  win32: 5.15.0
+  # 处理 flex_color_picker 内部平台枚举
+  flex_color_picker:
+    git:
+      url: https://github.com/linyi102/flex_color_picker
+      ref: fix/target-platform-default
+  device_info_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/device_info_plus/device_info_plus
+  file_picker:
+    git:
+      url: https://gitcode.com/openharmony-sig/fluttertpc_file_picker.git
+  package_info_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/package_info_plus/package_info_plus
+  path_provider:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/path_provider/path_provider
+  permission_handler:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_permission_handler.git
+      path: ./permission_handler
+  share_plus:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/share_plus/share_plus
+  shared_preferences:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/shared_preferences/shared_preferences
+  sqflite:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: ./sqflite
+  sqflite_common_ffi:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: ./sqflite_common_ffi
+  url_launcher:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/url_launcher/url_launcher
+
+flutter:
+  uses-material-design: true

@@ -23,7 +23,7 @@ class ImageUtil {
       "coverImageWindowsRootDirPath";
 
   static getInstance() async {
-    if (!FeatureFlag.enablePickLocalImage) {
+    if (!$featureFlag.enablePickLocalImage) {
       noteImageRootDirPath = '';
       coverImageRootDirPath = '';
     } else if (Platform.isAndroid) {

@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/components/dialog/dialog_select_uint.dart';
 import 'package:animetrace/models/anime_episode_info.dart';
 import 'package:animetrace/utils/toast_util.dart';
+import 'package:animetrace/values/assets.gen.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -545,10 +546,7 @@ class __EpisodeTitlesInputDialogState extends State<_EpisodeTitlesInputDialog> {
             tooltip: '从 Bangumi 中导入',
             icon: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              child: Image.asset(
-                'assets/images/website/bangumi.png',
-                width: 24,
-              ),
+              child: Assets.images.website.bangumi.image(width: 24),
             ),
           )
         ],

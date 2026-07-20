@@ -29,10 +29,12 @@ jobs:
       - name: Get dependencies
         run: |
           flutter --version
+          cd apps/default
           flutter pub get
 
       - name: Building IPA
         run: |
+          cd apps/default
           flutter build ios --release --no-codesign
           cd build/ios/iphoneos
           mkdir -p Payload
@@ -45,4 +47,4 @@ jobs:
         with:
           name: animetrace-ipa
           # Path to the release files
-          path: build/ios/iphoneos/*.ipa
+          path: apps/default/build/ios/iphoneos/*.ipa

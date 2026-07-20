@@ -21,7 +21,8 @@ import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:window_manager/window_manager.dart';
 
-void main() {
+void runManjiApp({required IManjiPlatform platform}) {
+  ManjiPlatform.configure(platform);
   runZonedGuardedWithLog(() async {
     await Global.init();
     runApp(

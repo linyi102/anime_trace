@@ -2,15 +2,22 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   animations:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: animations
       sha256: "9cb469212ea51be27097f23b519d594c01171721347b55df9334fff653659e7f"
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.0"
-  app_installer:
+  animetrace:
     dependency: "direct main"
+    description:
+      path: "../.."
+      relative: true
+    source: path
+    version: "0.0.0"
+  app_installer:
+    dependency: transitive
     description:
       name: app_installer
       sha256: "4c3a9268b53ead9a915ef79cd3988e28c72719fb78143867f9fed4bd4d8c1cfd"
@@ -18,7 +25,7 @@ packages:
     source: hosted
     version: "1.3.1"
   archive:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: archive
       sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
@@ -50,7 +57,7 @@ packages:
     source: hosted
     version: "2.1.2"
   bot_toast:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: bot_toast
       sha256: "6b93030a99a98335b8827ecd83021e92e885ffc61d261d3825ffdecdd17f3bdf"
@@ -58,7 +65,7 @@ packages:
     source: hosted
     version: "4.1.3"
   cached_network_image:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: cached_network_image
       sha256: "28ea9690a8207179c319965c13cd8df184d5ee721ae2ce60f398ced1219cea1f"
@@ -89,6 +96,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.0"
+  checked_yaml:
+    dependency: transitive
+    description:
+      name: checked_yaml
+      sha256: "959525d3162f249993882720d52b7e0c833978df229be20702b33d48d91de70f"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.4"
+  cli_util:
+    dependency: transitive
+    description:
+      name: cli_util
+      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -138,7 +161,7 @@ packages:
     source: hosted
     version: "1.0.2"
   darty_json:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: darty_json
       sha256: "35fed955e22ad27c0033aa61da3c1dead79ee3cdafd177f62aa83c7ab1dea2d9"
@@ -146,7 +169,7 @@ packages:
     source: hosted
     version: "1.0.5"
   desktop_drop:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: desktop_drop
       sha256: d55a010fe46c8e8fcff4ea4b451a9ff84a162217bdb3b2a0aa1479776205e15d
@@ -162,7 +185,7 @@ packages:
     source: hosted
     version: "1.4.0"
   device_info_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: device_info_plus
       sha256: "98f28b42168cc509abc92f88518882fd58061ea372d7999aecc424345c7bff6a"
@@ -178,7 +201,7 @@ packages:
     source: hosted
     version: "7.0.3"
   device_preview:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: device_preview
       sha256: "88aa1cc73ee9a8ec771b309dcbc4000cc66b5d8456b825980997640ab1195bf5"
@@ -186,7 +209,7 @@ packages:
     source: hosted
     version: "1.3.1"
   dio:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: dio
       sha256: ea2bad3c89a27635ce2d85cce4d6b199da49a5a48ec77b03e45b65a3b90922b0
@@ -202,7 +225,7 @@ packages:
     source: hosted
     version: "2.2.0"
   easy_refresh:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: easy_refresh
       sha256: "513a5dc82c044f8a9c9a3d600b3d5d3256070575bfd8761940533d8e209ba79b"
@@ -210,7 +233,7 @@ packages:
     source: hosted
     version: "3.5.1"
   emoji_picker_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: emoji_picker_flutter
       sha256: "984d3e9b9cf3175df9a868ce4a2d9611491e80e5d3b8e2b1e8991a4998972885"
@@ -218,7 +241,7 @@ packages:
     source: hosted
     version: "4.4.0"
   expand_widget:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: expand_widget
       sha256: "5634e34d796cfad75fb75489ccfba4c1db2536cce61d3626914eed23aecf6939"
@@ -250,7 +273,7 @@ packages:
     source: hosted
     version: "7.0.1"
   file_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: file_picker
       sha256: "09b474c0c8117484b80cbebc043801ff91e05cfbd2874d512825c899e1754694"
@@ -258,7 +281,7 @@ packages:
     source: hosted
     version: "9.2.3"
   file_saver:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: file_saver
       sha256: "017a127de686af2d2fbbd64afea97052d95f2a0f87d19d25b87e097407bf9c1e"
@@ -266,7 +289,7 @@ packages:
     source: hosted
     version: "0.2.14"
   flex_color_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flex_color_picker
       sha256: f5b0b53d4ae0d59b1e28dfc21d5398e5028cf8e764518e491a52fd050aa23881
@@ -294,6 +317,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.3.1"
+  flutter_launcher_icons:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_icons
+      sha256: "10f13781741a2e3972126fae08393d3c4e01fa4cd7473326b94b72cf594195e7"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.14.4"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -303,12 +334,12 @@ packages:
     source: hosted
     version: "1.0.4"
   flutter_localizations:
-    dependency: "direct main"
+    dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_markdown:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_markdown
       sha256: "04c4722cc36ec5af38acc38ece70d22d3c2123c61305d555750a091517bbe504"
@@ -324,7 +355,7 @@ packages:
     source: hosted
     version: "2.0.34"
   flutter_rating_bar:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_rating_bar
       sha256: d2af03469eac832c591a1eba47c91ecc871fe5708e69967073c043b2d775ed93
@@ -332,7 +363,7 @@ packages:
     source: hosted
     version: "4.0.1"
   flutter_svg:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_svg
       sha256: "35882981abcbfb8c15b286f0cd690ff25bac12d95eff3e25ee207f37d4c42e7f"
@@ -358,7 +389,7 @@ packages:
     source: hosted
     version: "3.1.0"
   get:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: get
       sha256: "5ed34a7925b85336e15d472cc4cfe7d9ebf4ab8e8b9f688585bf6b50f4c3d79a"
@@ -366,7 +397,7 @@ packages:
     source: hosted
     version: "4.7.3"
   get_time_ago:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: get_time_ago
       sha256: "883e14a3d47471779582b2681734e494748f97301b35e5f6a5b50185788e042a"
@@ -374,7 +405,7 @@ packages:
     source: hosted
     version: "2.4.0"
   hotkey_manager:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hotkey_manager
       sha256: "8aaa0aeaca7015b8c561a58d02eb7ebba95e93357fc9540398c5751ee24afd7c"
@@ -382,7 +413,7 @@ packages:
     source: hosted
     version: "0.1.8"
   html:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: html
       sha256: "6d1264f2dffa1b1101c25a91dff0dc2daee4c18e87cd8538729773c073dbf602"
@@ -405,6 +436,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.2"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.3.0"
   intl:
     dependency: transitive
     description:
@@ -470,7 +509,7 @@ packages:
     source: hosted
     version: "1.0.1"
   logger:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logger
       sha256: "25aee487596a6257655a1e091ec2ae66bc30e7af663592cc3a27e6591e05035c"
@@ -486,7 +525,7 @@ packages:
     source: hosted
     version: "1.3.0"
   lottie:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: lottie
       sha256: a93542cc2d60a7057255405f62252533f8e8956e7e06754955669fd32fb4b216
@@ -534,7 +573,7 @@ packages:
     source: hosted
     version: "2.0.0"
   ming_cute_icons:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: ming_cute_icons
       sha256: "64228564392667ddd43549995cd49fdce343866ec372661be9ca728b27be29bc"
@@ -566,7 +605,7 @@ packages:
     source: hosted
     version: "2.2.0"
   package_info_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: package_info_plus
       sha256: "7e76fad405b3e4016cd39d08f455a4eb5199723cf594cd1b8916d47140d93017"
@@ -582,7 +621,7 @@ packages:
     source: hosted
     version: "2.0.1"
   path:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -606,7 +645,7 @@ packages:
     source: hosted
     version: "1.1.0"
   path_provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -654,7 +693,7 @@ packages:
     source: hosted
     version: "2.3.0"
   percent_indicator:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: percent_indicator
       sha256: "157d29133bbc6ecb11f923d36e7960a96a3f28837549a20b65e5135729f0f9fd"
@@ -662,7 +701,7 @@ packages:
     source: hosted
     version: "4.2.5"
   permission_handler:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: permission_handler
       sha256: fe54465bcc62a4564c6e4db337bbaded6c0c0fa6e10487414436d163114784f6
@@ -718,7 +757,7 @@ packages:
     source: hosted
     version: "7.0.2"
   photo_view:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: photo_view
       sha256: "8036802a00bae2a78fc197af8a158e3e2f7b500561ed23b4c458107685e645bb"
@@ -726,7 +765,7 @@ packages:
     source: hosted
     version: "0.14.0"
   pinyin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pinyin
       sha256: "240f271a3c71af20c8d2757756b5ee8e9d79a955d37abad4b3568fd406b22411"
@@ -758,7 +797,7 @@ packages:
     source: hosted
     version: "6.1.5+1"
   pull_to_refresh:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pull_to_refresh
       sha256: bbadd5a931837b57739cf08736bea63167e284e71fb23b218c8c9a6e042aad12
@@ -766,7 +805,7 @@ packages:
     source: hosted
     version: "2.0.0"
   queue:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: queue
       sha256: "9bc29632072f4dac6cd0056acbb63361f654e2def9ceb4b08cfe0f9cf5618409"
@@ -774,7 +813,7 @@ packages:
     source: hosted
     version: "3.4.0"
   reorderable_grid_view:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: reorderable_grid_view
       sha256: e36c6229a97105a10c79e15ab4b9b14ee9f6c488574ff2be9e858c82af47cda6
@@ -782,7 +821,7 @@ packages:
     source: hosted
     version: "2.2.8"
   reorderables:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: reorderables
       sha256: "004a886e4878df1ee27321831c838bc1c976311f4ca6a74ce7d561e506540a77"
@@ -806,7 +845,7 @@ packages:
     source: hosted
     version: "0.1.9"
   share_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: share_plus
       sha256: "223873d106614442ea6f20db5a038685cc5b32a2fba81cdecaefbbae0523f7fa"
@@ -822,7 +861,7 @@ packages:
     source: hosted
     version: "6.1.0"
   shared_preferences:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: shared_preferences
       sha256: "846849e3e9b68f3ef4b60c60cf4b3e02e9321bc7f4d8c4692cf87ffa82fc8a3a"
@@ -883,7 +922,7 @@ packages:
     source: sdk
     version: "0.0.0"
   sliver_tools:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sliver_tools
       sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
@@ -899,7 +938,7 @@ packages:
     source: hosted
     version: "1.10.2"
   sqflite:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqflite
       sha256: e2297b1da52f127bc7a3da11439985d9b536f75070f3325e62ada69a5c585d03
@@ -923,7 +962,7 @@ packages:
     source: hosted
     version: "2.5.6"
   sqflite_common_ffi:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqflite_common_ffi
       sha256: "8d7b8749a516cbf6e9057f9b480b716ad14fc4f3d3873ca6938919cc626d9025"
@@ -979,7 +1018,7 @@ packages:
     source: hosted
     version: "1.4.1"
   super_sliver_list:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: super_sliver_list
       sha256: b1e1e64d08ce40e459b9bb5d9f8e361617c26b8c9f3bb967760b0f436b6e3f56
@@ -1011,7 +1050,7 @@ packages:
     source: hosted
     version: "0.7.6"
   timer_count_down:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: timer_count_down
       sha256: d025d408c2654e497ca0bd4bde014bd7509d4c6397af4ed23a0f9b692bbcf337
@@ -1019,7 +1058,7 @@ packages:
     source: hosted
     version: "2.2.2"
   transparent_image:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: transparent_image
       sha256: e8991d955a2094e197ca24c645efec2faf4285772a4746126ca12875e54ca02f
@@ -1035,7 +1074,7 @@ packages:
     source: hosted
     version: "1.4.0"
   url_launcher:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: url_launcher
       sha256: f6a7e5c4835bb4e3026a04793a4199ca2d14c739ec378fdfe23fc8075d0439f8
@@ -1139,7 +1178,7 @@ packages:
     source: hosted
     version: "2.2.0"
   version:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: version
       sha256: "3d4140128e6ea10d83da32fef2fa4003fccbf6852217bb854845802f04191f94"
@@ -1163,7 +1202,7 @@ packages:
     source: hosted
     version: "1.1.1"
   webdav_client:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: webdav_client
       sha256: "682fffc50b61dc0e8f46717171db03bf9caaa17347be41c0c91e297553bf86b2"
@@ -1187,7 +1226,7 @@ packages:
     source: hosted
     version: "2.1.0"
   window_manager:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: window_manager
       sha256: d812d3189d23465d2e94baa2505a4462b46dde4939012ff370711c6897d747ae
@@ -1210,6 +1249,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.6.1"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.3"
 sdks:
   dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.35.6"
