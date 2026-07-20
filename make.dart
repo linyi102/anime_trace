@@ -141,16 +141,13 @@ Future<void> _buildHarmony(String buildDir) async {
   await _runFlutter(
     _harmonyAppDir,
     _harmonyFlutterVersion,
-    ['build', 'hap'],
+    ['build', 'app'],
   );
 
-  final hapFile =
-      File('$_harmonyAppDir/build/ohos/hap/entry-default-signed.hap');
-  if (!await hapFile.exists()) {
-    throw StateError('Harmony build completed but no .hap artifact was found.');
-  }
+  final appFile =
+      File('$_harmonyAppDir/build/ohos/app/ohos-default-signed.app');
   final version = _versionFor(_harmonyAppDir);
-  await hapFile.copy('$buildDir/manji-$version-harmony.hap');
+  await appFile.copy('$buildDir/manji-$version-harmony.app');
 }
 
 Future<void> _runFlutter(
