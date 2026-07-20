@@ -31,7 +31,7 @@ class ToolsPage extends StatelessWidget {
               onTap: () => _toDedupPage(context),
               child: const Chip(
                   avatar: Icon(Icons.filter_alt), label: Text('动漫去重'))),
-          if (FeatureFlag.enableFixCover)
+          if ($featureFlag.enableFixCover)
             GestureDetector(
               onTap: () {
                 RouteUtil.materialTo(context, const LapseCoverAnimesPage());
@@ -45,7 +45,7 @@ class ToolsPage extends StatelessWidget {
               onTap: () => _toTracePage(context),
               child:
                   const Chip(avatar: Icon(Icons.timeline), label: Text('总览'))),
-          if (FeatureFlag.enablePickLocalImage)
+          if ($featureFlag.enablePickLocalImage)
             GestureDetector(
                 onTap: () => _toNoteImageWallPage(context),
                 child: const Chip(

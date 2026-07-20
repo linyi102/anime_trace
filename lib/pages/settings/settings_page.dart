@@ -138,7 +138,7 @@ class _SettingPageState extends State<SettingPage> {
             _enterDetail(const ProxyPage());
           },
         ),
-        if (FeatureFlag.enablePickLocalImage)
+        if ($featureFlag.enablePickLocalImage)
           ListTile(
             iconColor: Theme.of(context).colorScheme.primary,
             leading: const Icon(Icons.image_outlined),
@@ -242,7 +242,7 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildImageTypeOption(
                   title: "默认图片", imageTypeIdx: 0, setDialogState: setState),
-              if (FeatureFlag.enablePickLocalImage)
+              if ($featureFlag.enablePickLocalImage)
                 _buildImageTypeOption(
                   title: "本地图片",
                   imageTypeIdx: 1,
@@ -324,7 +324,7 @@ class _SettingPageState extends State<SettingPage> {
                   TextButton(
                       onPressed: () => textController.clear(),
                       child: const Text("清空")),
-                  if (FeatureFlag.enablePaste)
+                  if ($featureFlag.enablePaste)
                     TextButton(
                         onPressed: () async {
                           ClipboardData? data =

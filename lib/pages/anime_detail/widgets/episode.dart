@@ -187,7 +187,7 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
                   },
                   tooltip: hideNoteInAnimeDetail ? "显示笔记" : "隐藏笔记",
                   icon: SvgAssetIcon(
-                      assetPath: hideNoteInAnimeDetail
+                      asset: hideNoteInAnimeDetail
                           ? Assets.icons.evaExpandOutline
                           : Assets.icons.evaCollapseOutline)),
             ],

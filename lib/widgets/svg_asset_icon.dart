@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:animetrace/values/assets.gen.dart';
 
 class SvgAssetIcon extends StatelessWidget {
-  final String assetPath;
+  final SvgGenImage asset;
   final double size;
   final Color? color;
   final bool useUnselectedItemColor;
@@ -10,7 +10,7 @@ class SvgAssetIcon extends StatelessWidget {
 
   const SvgAssetIcon({
     super.key,
-    required this.assetPath,
+    required this.asset,
     this.size = 24,
     this.color,
     this.useUnselectedItemColor = false,
@@ -35,8 +35,7 @@ class SvgAssetIcon extends StatelessWidget {
               destColor;
     }
 
-    return SvgPicture.asset(
-      assetPath,
+    return asset.svg(
       height: size,
       width: size,
       // 夜间模式若不指定colorFilter，则看不清图标，因此color默认是iconTheme中的color

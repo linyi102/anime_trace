@@ -52,7 +52,7 @@ class _ImagePathSettingState extends State<ImagePathSetting> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (!FeatureFlag.enablePickLocalImage) {
+    if (!$featureFlag.enablePickLocalImage) {
       return const Center(
         child: Text('暂不支持进行图片设置'),
       );

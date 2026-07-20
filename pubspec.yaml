@@ -1,7 +1,6 @@
 name: animetrace
 description: 漫迹
 publish_to: "none"
-version: 1.17.0+2026050201
 environment:
   sdk: ">=3.3.4 <4.0.0"
 
@@ -64,59 +63,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  flutter_launcher_icons: "^0.14.3"
-  shell_executor:
-    git:
-      url: https://github.com/linyi102/shell_executor
-      ref: main
-
-dependency_overrides:
-  # 升级 file_picker 内部依赖的 win32
-  win32: 5.15.0
-  # 处理 flex_color_picker 内部平台枚举
-  flex_color_picker:
-    git:
-      url: https://github.com/linyi102/flex_color_picker
-      ref: fix/target-platform-default
-  device_info_plus:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
-      path: packages/device_info_plus/device_info_plus
-  package_info_plus:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
-      path: packages/package_info_plus/package_info_plus
-  share_plus:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_plus_plugins.git
-      path: packages/share_plus/share_plus
-  path_provider:
-    git:
-      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
-      path: packages/path_provider/path_provider
-  url_launcher:
-    git:
-      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
-      path: packages/url_launcher/url_launcher
-  shared_preferences:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_packages.git
-      path: packages/shared_preferences/shared_preferences
-  file_picker:
-    git:
-      url: https://gitcode.com/openharmony-sig/fluttertpc_file_picker.git
-  sqflite:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
-      path: ./sqflite
-  sqflite_common_ffi:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
-      path: ./sqflite_common_ffi
-  permission_handler:
-    git:
-      url: https://gitcode.com/openharmony-sig/flutter_permission_handler.git
-      path: ./permission_handler
 
 flutter:
   uses-material-design: true
@@ -134,7 +80,8 @@ flutter_assets:
 
 flutter_gen:
   output: lib/values/
-
-flutter_launcher_icons:
-  ios: true
-  image_path: "assets/images/logo.png"
+  integrations:
+    flutter_svg: true
+  assets:
+    outputs:
+      package_parameter_enabled: true

@@ -14,6 +14,7 @@ import 'package:animetrace/controllers/backup_service.dart';
 import 'package:animetrace/controllers/labels_controller.dart';
 import 'package:animetrace/controllers/remote_controller.dart';
 import 'package:animetrace/controllers/update_record_controller.dart';
+import 'package:animetrace/feature_flags.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/utils/dio_util.dart';
 import 'package:animetrace/utils/platform.dart';
@@ -25,6 +26,13 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 import 'values/values.dart';
+
+export 'feature_flags.dart';
+
+/// Feature capabilities for the app host configured by [runManjiApp].
+///
+/// The initializer is lazy because the platform is configured during startup.
+late final IFeatureFlag $featureFlag = ManjiPlatform.instance.featureFlag;
 
 class Global {
   // 私有构造器，避免外部错误使用(也就是创建Global对象)
@@ -200,41 +208,4 @@ class Global {
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }
-}
-
-class FeatureFlag {
-  /// 修复封面
-  static bool get enableFixCover => false;
-
-  /// 检测更新
-  static bool get enableCheckUpgrade => !PlatformUtil.isOhos;
-
-  /// 选择本地图片
-  static bool get enablePickLocalImage =>
-      Platform.isWindows || Platform.isAndroid;
-
-  /// 选择文件
-  ///
-  /// 鸿蒙file_picker包选择文件未进行适配，暂时隐藏
-  /// UnimplementedError: The current platform "ohos" is not supported by this plugin.
-  static bool get enablePickFile => !PlatformUtil.isOhos;
-
-  /// 保存文件
-  static bool get enableSaveFile => !PlatformUtil.isOhos;
-
-  /// 路由动画
-  ///
-  /// PageTransitionsTheme 需要手动传入 TargetPlatform，为保证代码统一鸿蒙平台暂时禁用
-  static bool get enableCustomPageTransition =>
-      PlatformUtil.isMobile && !PlatformUtil.isOhos;
-
-  /// 从剪切板粘贴
-  ///
-  /// 鸿蒙平台需要权限，暂时禁用
-  static bool get enablePaste => !PlatformUtil.isOhos;
-
-  /// 复制到剪切板
-  ///
-  /// 鸿蒙平台需要权限，暂时禁用
-  static bool get enableCopy => !PlatformUtil.isOhos;
 }

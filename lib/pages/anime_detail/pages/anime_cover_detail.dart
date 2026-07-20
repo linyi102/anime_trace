@@ -218,7 +218,7 @@ class AnimeCoverDetail extends StatelessWidget {
         builder: (howToEditCoverUrlDialogContext) {
           return SimpleDialog(
             children: [
-              if (FeatureFlag.enablePickLocalImage) ...[
+              if ($featureFlag.enablePickLocalImage) ...[
                 ListTile(
                   leading: const Icon(Icons.image),
                   title: const Text("从本地图库中选择"),
@@ -279,7 +279,7 @@ class AnimeCoverDetail extends StatelessWidget {
                       TextButton(
                           onPressed: () => textController.clear(),
                           child: const Text("清空")),
-                      if (FeatureFlag.enablePaste)
+                      if ($featureFlag.enablePaste)
                         TextButton(
                             onPressed: () async {
                               ClipboardData? data =

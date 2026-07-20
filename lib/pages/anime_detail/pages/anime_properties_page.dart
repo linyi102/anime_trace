@@ -312,7 +312,7 @@ class AnimePropertiesPage extends StatelessWidget {
                       TextButton(
                           onPressed: () => textController.clear(),
                           child: const Text("清空")),
-                      if (FeatureFlag.enablePaste)
+                      if ($featureFlag.enablePaste)
                         TextButton(
                             onPressed: () async {
                               ClipboardData? data =

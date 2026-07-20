@@ -58,7 +58,7 @@ class AppUpgradeController extends GetxController {
     packageInfo = await PackageInfo.fromPlatform();
 
     // TODO 检查鸿蒙应用商店
-    if (FeatureFlag.enableCheckUpgrade) {
+    if ($featureFlag.enableCheckUpgrade) {
       getLatestVersion(autoCheck: true);
     }
     super.onInit();

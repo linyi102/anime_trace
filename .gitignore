@@ -29,7 +29,7 @@
 .packages
 .pub-cache/
 .pub/
-/build/
+**/build/
 /dist/
 
 # Web related
@@ -42,9 +42,9 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
 
 # FVM Version Cache
 .fvm/

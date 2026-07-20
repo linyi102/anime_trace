@@ -1,162 +1,209 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
-import 'package:intl/intl.dart';
-import 'package:shell_executor/shell_executor.dart';
 
-bool flutterBuildVerbose = false;
-const flutterVersion = '3.35.7';
+const _defaultAppDir = 'apps/default';
+const _harmonyAppDir = 'apps/harmony';
+const _defaultFlutterVersion = '3.35.7';
+const _harmonyFlutterVersion = 'custom_3.35.8';
+
+bool _verbose = false;
 
 /// 打包脚本
 /// 环境变量：fvm, 7z, iscc
+///
+/// 每个构建通过 `fvm spawn <Flutter版本>` 执行：
+/// 默认版为 3.35.7，鸿蒙版为 custom_3.35.8。
 void main(List<String> arguments) async {
-  parseArguments(arguments);
+  _verbose = arguments.contains('-v') || arguments.contains('--verbose');
 
   print('Select the platform to build:');
   print('[1]: Android');
   print('[2]: Windows');
-  print('[3]: All');
-  stdout.write('Please choose one (or "q" to quit): ');
+  print('[3]: Harmony');
+  print('[4]: All');
+  stdout.write('Please choose (for example "12", or "q" to quit): ');
 
-  String choice = stdin.readLineSync()!.trim();
-  String timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-  String buildDir = 'dist/manji_$timestamp';
+  final choice = stdin.readLineSync()?.trim();
+  if (choice == 'q') return;
+  final targets = _parseTargets(choice ?? '');
+  if (targets == null) {
+    stderr.writeln('Invalid choice');
+    exitCode = 64;
+    return;
+  }
 
-  switch (choice) {
-    case '1':
-      print('Building Android...');
-      await prepareBuildDir(buildDir);
-      await buildAndroid(buildDir);
-      break;
-    case '2':
-      print('Building Windows...');
-      await prepareBuildDir(buildDir);
-      await buildWindows(buildDir);
-      break;
-    case '3':
-      print('Building All...');
-      await prepareBuildDir(buildDir);
-      await buildAll(buildDir);
-      break;
-    case 'q':
-      exit(0);
-    default:
-      print('Invalid choice');
-      exit(-1);
+  final buildDir = 'dist/manji_${_timestamp()}';
+  await _prepareBuildDir(buildDir);
+  for (final target in targets) {
+    switch (target) {
+      case _BuildTarget.android:
+        await _buildAndroid(buildDir);
+      case _BuildTarget.windows:
+        await _buildWindows(buildDir);
+      case _BuildTarget.harmony:
+        await _buildHarmony(buildDir);
+    }
   }
   print('\nBuild success: $buildDir');
 }
 
-void parseArguments(List<String> arguments) {
-  if (arguments.contains('-v') || arguments.contains('--verbose')) {
-    flutterBuildVerbose = true;
+enum _BuildTarget { android, windows, harmony }
+
+List<_BuildTarget>? _parseTargets(String choice) {
+  if (choice == '4') return _BuildTarget.values;
+  if (choice.isEmpty || choice.contains('4')) return null;
+
+  final targets = <_BuildTarget>[];
+  for (final character in choice.split('')) {
+    final target = switch (character) {
+      '1' => _BuildTarget.android,
+      '2' => _BuildTarget.windows,
+      '3' => _BuildTarget.harmony,
+      _ => null,
+    };
+    if (target == null) return null;
+    if (!targets.contains(target)) targets.add(target);
   }
+  return targets;
 }
 
-Future<void> buildAndroid(String buildDir) async {
-  await runFlutter([
-    'build',
-    'apk',
-    '--split-per-abi',
-    if (flutterBuildVerbose) '--verbose',
-  ]);
-
-  String androidVersion = getVersionFromPubspec();
-  Directory('$buildDir/qq').createSync(recursive: true);
-
-  void copyApk(String fileName, String destFileName) {
-    File('build/app/outputs/flutter-apk/$fileName.apk')
-      ..copySync('$buildDir/$destFileName.apk')
-      ..copySync('$buildDir/qq/$destFileName.APK');
-  }
-
-  copyApk('app-armeabi-v7a-release', 'manji-$androidVersion-android');
-  copyApk('app-arm64-v8a-release', 'manji-$androidVersion-arm64-v8a');
-  copyApk('app-x86_64-release', 'manji-$androidVersion-x86_64');
-}
-
-Future<void> buildWindows(String buildDir) async {
-  await runFlutter([
-    'build',
-    'windows',
-    if (flutterBuildVerbose) '--verbose',
-  ]);
-
-  String windowsVersion = getVersionFromRunner();
-  String windowsOutputDirName = '漫迹 $windowsVersion for Windows';
-  String windowsOutputDirPath = '$buildDir/$windowsOutputDirName';
-  Directory(windowsOutputDirPath).createSync(recursive: true);
-  copyDirectory(Directory('build/windows/x64/runner/Release'),
-      Directory(windowsOutputDirPath));
-  await runCommand(
-    '7z',
-    [
-      'a',
-      '-tzip',
-      'manji-$windowsVersion-windows.zip',
-      windowsOutputDirName,
-    ],
-    workingDirectory: buildDir,
+Future<void> _buildAndroid(String buildDir) async {
+  print('Building Android...');
+  await _runFlutter(
+    _defaultAppDir,
+    _defaultFlutterVersion,
+    ['build', 'apk', '--split-per-abi'],
   );
-  await runCommand('iscc', [
-    'setup.iss',
-    '/Qp',
-    '/DMyAppVersion=$windowsVersion',
-    '/DOutputDir=$buildDir'
-  ]);
+
+  final version = _versionFor(_defaultAppDir);
+  final qqDir = Directory('$buildDir/qq')..createSync(recursive: true);
+  final sourceDir = Directory('$_defaultAppDir/build/app/outputs/flutter-apk');
+  final apkNames = {
+    'app-armeabi-v7a-release.apk': 'manji-$version-android.apk',
+    'app-arm64-v8a-release.apk': 'manji-$version-arm64-v8a.apk',
+    'app-x86_64-release.apk': 'manji-$version-x86_64.apk',
+  };
+  for (final entry in apkNames.entries) {
+    final source = File('${sourceDir.path}/${entry.key}');
+    await source.copy('$buildDir/${entry.value}');
+    await source.copy('${qqDir.path}/${entry.value.toUpperCase()}');
+  }
 }
 
-Future<void> buildAll(String buildDir) async {
-  await buildAndroid(buildDir);
-  await buildWindows(buildDir);
+Future<void> _buildWindows(String buildDir) async {
+  print('Building Windows...');
+  await _runFlutter(
+    _defaultAppDir,
+    _defaultFlutterVersion,
+    ['build', 'windows'],
+  );
+
+  final version = _windowsVersion();
+  final outputName = '漫迹 $version for Windows';
+  final outputDir = Directory('$buildDir/$outputName')
+    ..createSync(recursive: true);
+  await _copyDirectory(
+    Directory('$_defaultAppDir/build/windows/x64/runner/Release'),
+    outputDir,
+  );
+  await _runCommand(
+      '7z', ['a', '-tzip', 'manji-$version-windows.zip', outputName],
+      workingDirectory: buildDir);
+  await _runCommand(
+    'iscc',
+    [
+      'setup.iss',
+      '/Qp',
+      '/DMyAppVersion=$version',
+      '/DOutputDir=${Directory(buildDir).absolute.path}',
+    ],
+    workingDirectory: _defaultAppDir,
+  );
 }
 
-Future<void> runFlutter(List<String> arguments) {
-  return runCommand('fvm', ['spawn', flutterVersion, ...arguments]);
+Future<void> _buildHarmony(String buildDir) async {
+  print('Building Harmony...');
+  await _runFlutter(
+    _harmonyAppDir,
+    _harmonyFlutterVersion,
+    ['build', 'hap'],
+  );
+
+  final hapFiles = Directory('$_harmonyAppDir/build')
+      .listSync(recursive: true)
+      .whereType<File>()
+      .where((file) => file.path.endsWith('.hap'))
+      .toList();
+  if (hapFiles.isEmpty) {
+    throw StateError('Harmony build completed but no .hap artifact was found.');
+  }
+  final version = _versionFor(_harmonyAppDir);
+  for (var index = 0; index < hapFiles.length; index++) {
+    final suffix = hapFiles.length == 1 ? '' : '-${index + 1}';
+    await hapFiles[index].copy('$buildDir/manji-$version-harmony$suffix.hap');
+  }
 }
 
-Future<void> runCommand(
+Future<void> _runFlutter(
+  String appDir,
+  String flutterVersion,
+  List<String> arguments,
+) {
+  return _runCommand(
+      'fvm', ['spawn', flutterVersion, ...arguments, if (_verbose) '--verbose'],
+      workingDirectory: appDir);
+}
+
+Future<void> _runCommand(
   String command,
-  List<String> args, {
+  List<String> arguments, {
   String? workingDirectory,
 }) async {
-  await $(command, args, workingDirectory: workingDirectory);
-}
-
-String getVersionFromPubspec() {
-  String content = File('pubspec.yaml').readAsStringSync();
-  RegExp versionRegex = RegExp(r'version:\s*(\S+)');
-  String version = versionRegex.firstMatch(content)?.group(1) ?? 'unknown';
-  return 'v$version';
-}
-
-String getVersionFromRunner() {
-  String content = File('windows/runner/Runner.rc').readAsStringSync();
-  RegExp versionRegex = RegExp(r'#define VERSION_AS_STRING "([^"]+)"');
-  String version = versionRegex.firstMatch(content)?.group(1) ?? 'unknown';
-  return 'v$version';
-}
-
-void copyDirectory(Directory source, Directory destination) {
-  for (var entity in source.listSync(recursive: true)) {
-    if (entity is Directory) {
-      Directory(
-              '${destination.path}/${entity.path.substring(source.path.length)}')
-          .createSync(recursive: true);
-    } else if (entity is File) {
-      entity.copySync(
-          '${destination.path}/${entity.path.substring(source.path.length)}');
-    }
+  final process = await Process.start(
+    command,
+    arguments,
+    workingDirectory: workingDirectory,
+    mode: ProcessStartMode.inheritStdio,
+  );
+  final code = await process.exitCode;
+  if (code != 0) {
+    throw ProcessException(command, arguments, 'Exit code $code', code);
   }
 }
 
-Future<void> prepareBuildDir(String dir) async {
-  Directory(dir).createSync(recursive: true);
-  await generateCommitLog(dir);
+Future<void> _prepareBuildDir(String path) async {
+  final dir = Directory(path)..createSync(recursive: true);
+  final result =
+      await Process.run('git', ['log', '-3', '--pretty=format:%h %s']);
+  await File('${dir.path}/commit.txt').writeAsString(result.stdout as String);
 }
 
-Future<void> generateCommitLog(String dir) async {
-  ProcessResult result = await $('git', ['log', '-3', '--pretty=format:%h %s']);
-  File('$dir/commit.txt').writeAsStringSync(result.stdout);
-  print('');
+String _versionFor(String appDir) {
+  final content = File('$appDir/pubspec.yaml').readAsStringSync();
+  return 'v${RegExp(r'version:\s*(\S+)').firstMatch(content)?.group(1) ?? 'unknown'}';
+}
+
+String _windowsVersion() {
+  final content =
+      File('$_defaultAppDir/windows/runner/Runner.rc').readAsStringSync();
+  return 'v${RegExp(r'#define VERSION_AS_STRING "([^"]+)"').firstMatch(content)?.group(1) ?? 'unknown'}';
+}
+
+String _timestamp() {
+  final now = DateTime.now();
+  String twoDigits(int value) => value.toString().padLeft(2, '0');
+  return '${now.year}${twoDigits(now.month)}${twoDigits(now.day)}_${twoDigits(now.hour)}${twoDigits(now.minute)}${twoDigits(now.second)}';
+}
+
+Future<void> _copyDirectory(Directory source, Directory destination) async {
+  for (final entity in source.listSync(recursive: true)) {
+    final relativePath = entity.path.substring(source.path.length + 1);
+    final targetPath = '${destination.path}/$relativePath';
+    if (entity is Directory) {
+      Directory(targetPath).createSync(recursive: true);
+    } else if (entity is File) {
+      await entity.copy(targetPath);
+    }
+  }
 }

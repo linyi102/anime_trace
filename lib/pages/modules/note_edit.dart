@@ -219,7 +219,6 @@ class _NoteEditPageState extends State<NoteEditPage> {
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.transparent)),
       ),
-
       style: AppTheme.noteStyle,
       maxLines: null,
       onChanged: (value) {
@@ -277,7 +276,7 @@ class _NoteEditPageState extends State<NoteEditPage> {
           child: _buildNoteItem(index, showDelButton: false)),
       // 添加图片按钮
       footer: [
-        if (FeatureFlag.enablePickLocalImage) _buildAddButton(),
+        if ($featureFlag.enablePickLocalImage) _buildAddButton(),
       ],
     );
   }

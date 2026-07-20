@@ -44,7 +44,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 _buildWebsiteIconsRow(context),
               ],
             ),
-            if (FeatureFlag.enableCheckUpgrade)
+            if ($featureFlag.enableCheckUpgrade)
               GetBuilder<AppUpgradeController>(
                 init: AppUpgradeController.to,
                 initState: (_) {},
@@ -109,7 +109,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 uriStr: "https://github.com/linyi102/anime_trace");
           },
           icon: SvgAssetIcon(
-            assetPath: Assets.icons.github,
+            asset: Assets.icons.github,
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
                 : Colors.black,
@@ -124,7 +124,7 @@ class _AboutVersionState extends State<AboutVersion> {
                 inApp: false);
           },
           icon: SvgAssetIcon(
-            assetPath: Assets.icons.gitee,
+            asset: Assets.icons.gitee,
             color: const Color.fromRGBO(187, 33, 36, 1),
           ),
         )

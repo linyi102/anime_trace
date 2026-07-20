@@ -1,7 +1,8 @@
-import 'package:animetrace/utils/network/image_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'package:animetrace/values/assets.gen.dart';
 
 class WebSiteLogo extends StatelessWidget {
   final String url;
@@ -28,7 +29,7 @@ class WebSiteLogo extends StatelessWidget {
                   // 获取不到图片时，显示空Container
                   errorWidget: (context, str, dynamic) => Container(),
                 )
-              : Image.asset(url, fit: BoxFit.cover),
+              : Image.asset(url, package: Assets.package, fit: BoxFit.cover),
         ),
         decoration: addShadow
             ? BoxDecoration(

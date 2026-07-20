@@ -525,9 +525,9 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       },
       icon: _episode.isChecked()
           ? SvgAssetIcon(
-              assetPath: Assets.icons.evaCheckmarkSquareOutline,
+              asset: Assets.icons.evaCheckmarkSquareOutline,
               color: checkedColor)
-          : SvgAssetIcon(assetPath: Assets.icons.evaSquareOutline),
+          : SvgAssetIcon(asset: Assets.icons.evaSquareOutline),
     );
   }
 
