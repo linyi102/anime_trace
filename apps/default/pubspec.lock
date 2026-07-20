@@ -15,7 +15,7 @@ packages:
       path: "../.."
       relative: true
     source: path
-    version: "1.17.0+2026050201"
+    version: "0.0.0"
   app_installer:
     dependency: transitive
     description:

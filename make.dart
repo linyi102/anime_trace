@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
 
 const _defaultAppDir = 'apps/default';
@@ -17,11 +15,11 @@ bool _verbose = false;
 void main(List<String> arguments) async {
   _verbose = arguments.contains('-v') || arguments.contains('--verbose');
 
-  print('Select the platform to build:');
-  print('[1]: Android');
-  print('[2]: Windows');
-  print('[3]: Harmony');
-  print('[4]: All');
+  stdout.writeln('Select the platform to build:');
+  stdout.writeln('[1]: Android');
+  stdout.writeln('[2]: Windows');
+  stdout.writeln('[3]: Harmony');
+  stdout.writeln('[4]: All');
   stdout.write('Please choose (for example "12", or "q" to quit): ');
 
   final choice = stdin.readLineSync()?.trim();
@@ -45,7 +43,7 @@ void main(List<String> arguments) async {
         await _buildHarmony(buildDir);
     }
   }
-  print('\nBuild success: $buildDir');
+  stdout.writeln('\nBuild success: $buildDir');
 }
 
 enum _BuildTarget { android, windows, harmony }
@@ -69,7 +67,12 @@ List<_BuildTarget>? _parseTargets(String choice) {
 }
 
 Future<void> _buildAndroid(String buildDir) async {
-  print('Building Android...');
+  stdout.writeln('Building Android...');
+  await _runFlutter(
+    _defaultAppDir,
+    _defaultFlutterVersion,
+    ['pub', 'get'],
+  );
   await _runFlutter(
     _defaultAppDir,
     _defaultFlutterVersion,
@@ -87,12 +90,18 @@ Future<void> _buildAndroid(String buildDir) async {
   for (final entry in apkNames.entries) {
     final source = File('${sourceDir.path}/${entry.key}');
     await source.copy('$buildDir/${entry.value}');
-    await source.copy('${qqDir.path}/${entry.value.toUpperCase()}');
+    await source
+        .copy('${qqDir.path}/${entry.value.replaceFirst('.apk', '.APK')}');
   }
 }
 
 Future<void> _buildWindows(String buildDir) async {
-  print('Building Windows...');
+  stdout.writeln('Building Windows...');
+  await _runFlutter(
+    _defaultAppDir,
+    _defaultFlutterVersion,
+    ['pub', 'get'],
+  );
   await _runFlutter(
     _defaultAppDir,
     _defaultFlutterVersion,
@@ -123,26 +132,25 @@ Future<void> _buildWindows(String buildDir) async {
 }
 
 Future<void> _buildHarmony(String buildDir) async {
-  print('Building Harmony...');
+  stdout.writeln('Building Harmony...');
+  await _runFlutter(
+    _harmonyAppDir,
+    _harmonyFlutterVersion,
+    ['pub', 'get'],
+  );
   await _runFlutter(
     _harmonyAppDir,
     _harmonyFlutterVersion,
     ['build', 'hap'],
   );
 
-  final hapFiles = Directory('$_harmonyAppDir/build')
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => file.path.endsWith('.hap'))
-      .toList();
-  if (hapFiles.isEmpty) {
+  final hapFile =
+      File('$_harmonyAppDir/build/ohos/hap/entry-default-signed.hap');
+  if (!await hapFile.exists()) {
     throw StateError('Harmony build completed but no .hap artifact was found.');
   }
   final version = _versionFor(_harmonyAppDir);
-  for (var index = 0; index < hapFiles.length; index++) {
-    final suffix = hapFiles.length == 1 ? '' : '-${index + 1}';
-    await hapFiles[index].copy('$buildDir/manji-$version-harmony$suffix.hap');
-  }
+  await hapFile.copy('$buildDir/manji-$version-harmony.hap');
 }
 
 Future<void> _runFlutter(
@@ -160,11 +168,14 @@ Future<void> _runCommand(
   List<String> arguments, {
   String? workingDirectory,
 }) async {
+  stdout.writeln(workingDirectory ?? Directory.current.path);
+  stdout.writeln('> $command ${arguments.join(' ')}');
   final process = await Process.start(
     command,
     arguments,
     workingDirectory: workingDirectory,
     mode: ProcessStartMode.inheritStdio,
+    runInShell: true,
   );
   final code = await process.exitCode;
   if (code != 0) {
@@ -181,7 +192,7 @@ Future<void> _prepareBuildDir(String path) async {
 
 String _versionFor(String appDir) {
   final content = File('$appDir/pubspec.yaml').readAsStringSync();
-  return 'v${RegExp(r'version:\s*(\S+)').firstMatch(content)?.group(1) ?? 'unknown'}';
+  return 'v${RegExp(r'version: ([0-9]+(?:\.[0-9]+)*)').firstMatch(content)?.group(1) ?? 'unknown'}';
 }
 
 String _windowsVersion() {
