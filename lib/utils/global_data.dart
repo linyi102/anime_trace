@@ -23,12 +23,12 @@ AnimeFilter filter = AnimeFilter(); // 目录页中的过滤条件
 List<ClimbWebsite> climbWebsites = [
   ageClimbWebsite,
   bangumiClimbWebsite,
-  guguWebsite,
   ggloveWebsite,
   quClimbWebsite,
   doubanClimbWebsite,
   dyttWebsite,
   hongguoWebsite,
+  guguWebsite,
   cycClimbWebsite,
   xifanWebsite,
   nyaFunWebsite,
@@ -167,7 +167,7 @@ final nyaFunWebsite = ClimbWebsite(
 
 final guguWebsite = ClimbWebsite(
   id: 11,
-  defaultEnable: true,
+  defaultEnable: false,
   name: "咕咕番",
   iconUrl: "assets/images/website/gugu.png",
   regexp: "gugu",

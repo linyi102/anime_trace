@@ -8,7 +8,7 @@ class ClimbGugu with Climb {
   String get idName => "gugu";
 
   @override
-  String get defaultBaseUrl => "https://www.gugu3.com";
+  String get defaultBaseUrl => "https://www.gugu.com";
 
   @override
   String get sourceName => "咕咕番";

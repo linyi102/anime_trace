@@ -15,7 +15,7 @@ class ClimbYhdm with Climb {
   String get idName => "yhdm";
 
   @override
-  String get defaultBaseUrl => "https://www.iyhdmm.com";
+  String get defaultBaseUrl => "https://www.yhdm.com";
 
   @override
   String get sourceName => "樱花动漫";
