@@ -123,6 +123,16 @@ extension BanugmiSection on SettingService {
   Future<bool> setBgmFetchAllEpisodes(bool value) {
     return SPUtil.setBool('bgmFetchAllEpisodes', value);
   }
+
+  /// 获取 Bangumi 是否忽略特殊集
+  bool getBgmIgnoreSpecialEpisodes() {
+    return SPUtil.getBool('bgmIgnoreSpecialEpisodes', defaultValue: false);
+  }
+
+  /// 设置 Bangumi 是否忽略特殊集
+  Future<bool> setBgmIgnoreSpecialEpisodes(bool value) {
+    return SPUtil.setBool('bgmIgnoreSpecialEpisodes', value);
+  }
 }
 
 extension LabelSection on SettingService {

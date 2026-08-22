@@ -249,6 +249,19 @@ class _SourceDetailState extends State<SourceDetail> {
                     setState(() {});
                   },
                 ),
+                SwitchListTile(
+                  secondary: Icon(
+                    Icons.format_list_numbered,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: const Text('忽略特殊集'),
+                  subtitle: const Text('开启后集数不包含 SP'),
+                  value: SettingService.to.getBgmIgnoreSpecialEpisodes(),
+                  onChanged: (value) {
+                    SettingService.to.setBgmIgnoreSpecialEpisodes(value);
+                    setState(() {});
+                  },
+                ),
               ]
             ],
           ),

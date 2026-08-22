@@ -96,7 +96,8 @@ class ClimbBangumi with Climb {
     final allEpisodes = await repository.fetchEpisodes(subjectId);
     final needEpisodeTypeValues = [
       BgmEpisodeType.main.value,
-      BgmEpisodeType.sp.value
+      if (!SettingService.to.getBgmIgnoreSpecialEpisodes())
+        BgmEpisodeType.sp.value,
     ];
     final now = DateTime.now();
     final episodes = allEpisodes
