@@ -52,6 +52,17 @@ class SettingService extends GetxService {
     return SPUtil.setBool('hideMobileBottomNavigationBarLabel', value);
   }
 
+  /// 获取未完结动漫列表是否只显示连载中动漫
+  bool getNeedUpdateAnimeOnlyShowPlaying() {
+    return SPUtil.getBool('needUpdateAnimeOnlyShowPlaying',
+        defaultValue: false);
+  }
+
+  /// 设置未完结动漫列表是否只显示连载中动漫
+  Future<bool> setNeedUpdateAnimeOnlyShowPlaying(bool value) {
+    return SPUtil.setBool('needUpdateAnimeOnlyShowPlaying', value);
+  }
+
   /// 自定义类别
   Future<List<String>?> getAnimeCategories() async {
     return KeyValueDao.getStringList('anime_categories');
