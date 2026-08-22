@@ -15,6 +15,7 @@ import 'package:animetrace/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/toast_util.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:multi_select/multi_select.dart';
 
 class AnimeDetailEpisodeInfo extends StatefulWidget {
   const AnimeDetailEpisodeInfo({required this.animeController, super.key});
@@ -73,35 +74,43 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
             return const SliverToBoxAdapter(child: SizedBox());
           }
 
-          return SliverAnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: widget.animeController.isLoadingEpisode
-                ? const SliverToBoxAdapter(child: LoadingWidget(height: 100))
-                : SliverList(
-                    delegate:
-                        SliverChildBuilderDelegate((context, episodeIndex) {
-                      var episode = _episodes[episodeIndex];
-                      AppLog.info(
-                          "episodeIndex=$episodeIndex, episode.noteLoaded=${episode.noteLoaded}");
+          return MultiSelectView<Episode>(
+            items: _episodes,
+            controller: widget.animeController.multiSelectController,
+            builder: (context, buildItem) => SliverAnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: widget.animeController.isLoadingEpisode
+                  ? const SliverToBoxAdapter(child: LoadingWidget(height: 100))
+                  : SliverList(
+                      delegate:
+                          SliverChildBuilderDelegate((context, episodeIndex) {
+                        var episode = _episodes[episodeIndex];
+                        AppLog.info(
+                            "episodeIndex=$episodeIndex, episode.noteLoaded=${episode.noteLoaded}");
 
-                      List<Widget> episodeInfo = [];
-                      if (episodeIndex == 0) {
-                        episodeInfo.add(_buildButtonsAboutEpisode());
-                      }
-                      episodeInfo.add(
-                        _buildEpisodeTile(episodeIndex),
-                      );
+                        List<Widget> episodeInfo = [];
+                        if (episodeIndex == 0) {
+                          episodeInfo.add(_buildButtonsAboutEpisode());
+                        }
+                        episodeInfo.add(
+                          buildItem(context, episode),
+                        );
 
-                      // 在最后一集下面添加空白
-                      if (episodeIndex == _episodes.length - 1) {
-                        episodeInfo.add(const ListTile());
-                      }
+                        // 在最后一集下面添加空白
+                        if (episodeIndex == _episodes.length - 1) {
+                          episodeInfo.add(const ListTile());
+                        }
 
-                      return Column(
-                        children: episodeInfo,
-                      );
-                    }, childCount: _episodes.length),
-                  ),
+                        return Column(
+                          children: episodeInfo,
+                        );
+                      }, childCount: _episodes.length),
+                    ),
+            ),
+            itemBuilder: (context, episode, selection) {
+              final episodeIndex = _episodes.indexOf(episode);
+              return _buildEpisodeTile(episodeIndex, selection);
+            },
           );
         },
       ),
@@ -243,13 +252,14 @@ class _AnimeDetailEpisodeInfoState extends State<AnimeDetailEpisodeInfo> {
     );
   }
 
-  _buildEpisodeTile(int episodeIndex) {
+  Widget _buildEpisodeTile(int episodeIndex, MultiSelectItemContext selection) {
     var episode = _episodes[episodeIndex];
     return EpisodeItemAutoLoadNote(
       animeController: widget.animeController,
       episode: episode,
       episodeIndex: episodeIndex,
       hideNote: hideNoteInAnimeDetail,
+      selection: selection,
     );
   }
 

@@ -22,6 +22,7 @@ import 'package:animetrace/widgets/svg_asset_icon.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:multi_select/multi_select.dart';
 
 /// 集+自动获取笔记
 
@@ -30,12 +31,14 @@ class EpisodeItemAutoLoadNote extends StatefulWidget {
       {required this.animeController,
       required this.episode,
       required this.episodeIndex,
+      required this.selection,
       this.trailing,
       required this.hideNote,
       super.key});
   final AnimeController animeController;
   final Episode episode;
   final int episodeIndex;
+  final MultiSelectItemContext selection;
   final Widget? trailing;
   final bool hideNote;
 
@@ -155,8 +158,7 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
     return ListTile(
       selectedTileColor:
           Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
-      selected:
-          widget.animeController.mapSelected.containsKey(widget.episodeIndex),
+      selected: widget.selection.isSelected,
       title: Align(
         alignment: Alignment.centerLeft,
         child: InkWell(
@@ -173,8 +175,10 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       ),
       // 没有完成时不显示subtitle
       subtitle: _buildSubtitle(),
-      onTap: () => onpressEpisode(),
-      onLongPress: () => onLongPressEpisode(),
+      onTap: () => widget.selection.handleTap(
+        onNormalTap: _openEpisodeNote,
+      ),
+      onLongPress: widget.selection.handleLongPress,
       leading: _buildLeading(),
       trailing: _buildEpisodeTileTrailing(),
     );
@@ -410,14 +414,14 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       widget.animeController.quitMultiSelectionMode();
     }
     // 添加到多选中，保证只有这一个
-    widget.animeController.mapSelected[widget.episodeIndex] = true;
+    widget.animeController.multiSelectController.select(_episode);
     await widget.animeController.pickDateForEpisodes(
       context: context,
       dateTime: dateTime,
       initialDateTime: DateTime.tryParse(_episode.dateTime ?? ''),
     );
     // 清空多选
-    widget.animeController.mapSelected.clear();
+    widget.animeController.multiSelectController.clear();
     // 更新设置的时间
     setState(() {});
   }
@@ -532,51 +536,32 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
   }
 
   /// 单击某集
-  void onpressEpisode() async {
-    if (widget.animeController.multiSelected.value) {
-      // 多选状态下
-      if (widget.animeController.mapSelected.containsKey(widget.episodeIndex)) {
-        widget.animeController.mapSelected
-            .remove(widget.episodeIndex); // 选过，再选就会取消
-        // 如果取消后一个都没选，就自动退出多选状态
-        if (widget.animeController.mapSelected.isEmpty) {
-          widget.animeController.multiSelected.value = false;
-        }
-      } else {
-        widget.animeController.mapSelected[widget.episodeIndex] = true;
-        // 选择后，更新最后一次多选时选择的集下标(不管是选择还是又取消了，因为如果是取消，无法获取上一次短按的集下标)
-        widget.animeController.lastMultiSelectedIndex = widget.episodeIndex;
-      }
-      setState(() {});
+  void _openEpisodeNote() async {
+    if (_episode.note == null && !_episode.isChecked()) {
+      // 如果没有设置观看时间，且没有笔记，则提示创建
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("没有找到笔记"),
+            content: const Text("需要立即创建吗？"),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("取消")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _enterNoteEditPage(needCreate: true);
+                  },
+                  child: const Text("创建")),
+            ],
+          );
+        },
+      );
     } else {
-      // 没有多选时，进入笔记编辑页
-
-      if (_episode.note == null && !_episode.isChecked()) {
-        // 如果没有设置观看时间，且没有笔记，则提示创建
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("没有找到笔记"),
-              content: const Text("需要立即创建吗？"),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("取消")),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _enterNoteEditPage(needCreate: true);
-                    },
-                    child: const Text("创建")),
-              ],
-            );
-          },
-        );
-      } else {
-        // 如果已设置时间，那么自动创建笔记并进入编辑页
-        _enterNoteEditPage();
-      }
+      // 如果已设置时间，那么自动创建笔记并进入编辑页
+      _enterNoteEditPage();
     }
   }
 
@@ -603,38 +588,6 @@ class _EpisodeItemAutoLoadNoteState extends State<EpisodeItemAutoLoadNote> {
       if (newNote == null || newNote is Note) {
         _episode.note = newNote;
         setState(() {});
-      }
-    }
-  }
-
-  void onLongPressEpisode() {
-    final int lastMultiSelectedIndex =
-        widget.animeController.lastMultiSelectedIndex;
-
-    // 非多选状态下才需要进入多选状态
-    if (widget.animeController.multiSelected.value == false) {
-      widget.animeController.multiSelected.value = true;
-      widget.animeController.mapSelected[widget.episodeIndex] = true;
-      widget.animeController.lastMultiSelectedIndex =
-          widget.episodeIndex; // 第一次也要设置最后一次多选的集下标
-      setState(() {}); // 添加操作按钮
-    } else {
-      // 如果存在上一次多选集的下标，则将中间的所有集选择
-      if (lastMultiSelectedIndex >= 0) {
-        // 注意大小关系[lastMultiSelectedIndex, index]和[index, lastMultiSelectedIndex]
-        int begin = lastMultiSelectedIndex < widget.episodeIndex
-            ? lastMultiSelectedIndex
-            : widget.episodeIndex;
-        int end = lastMultiSelectedIndex > widget.episodeIndex
-            ? lastMultiSelectedIndex
-            : widget.episodeIndex;
-        for (var i = begin; i <= end; i++) {
-          widget.animeController.mapSelected[i] = true;
-        }
-        // 不能只重绘这一个
-        // setState(() {});
-        // 只要重回集页面
-        widget.animeController.update([widget.animeController.episodeId]);
       }
     }
   }

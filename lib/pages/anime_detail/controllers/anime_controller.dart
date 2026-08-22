@@ -24,6 +24,7 @@ import 'package:animetrace/utils/toast_util.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:animetrace/widgets/picker/date_time_picker.dart';
 import 'package:get/get.dart';
+import 'package:multi_select/multi_select.dart';
 
 class AnimeController extends GetxController {
   /////////////////////////////// 数据 ///////////////////////////////
@@ -32,16 +33,23 @@ class AnimeController extends GetxController {
   bool loadingAnime = false;
 
   String tag;
-  AnimeController(this.tag);
+  AnimeController(this.tag) {
+    multiSelectController.addListener(_syncMultiSelectionState);
+  }
 
   /// 集、笔记
   List<Episode> episodes = [];
   bool isLoadingEpisode = false;
 
   // 多选
-  Map<int, bool> mapSelected = {};
-  var multiSelected = false.obs; // 集长按，修改该值为true，详细页监测要为true，显示底部操作栏。所以使用obs
-  int lastMultiSelectedIndex = -1; // 记住最后一次多选的集下标
+  final multiSelectController = MultiSelectController<Episode>(
+    itemKey: (episode) => episode.number,
+  );
+  final multiSelected = false.obs;
+
+  void _syncMultiSelectionState() {
+    multiSelected.value = multiSelectController.isSelecting;
+  }
 
   // 选择显示的集范围
   int currentStartEpisodeNumber = 1;
@@ -80,6 +88,7 @@ class AnimeController extends GetxController {
 
   @override
   void dispose() {
+    multiSelectController.removeListener(_syncMultiSelectionState);
     anime = Anime(animeName: "", animeEpisodeCnt: 0);
     popPage();
     super.dispose();
@@ -88,8 +97,7 @@ class AnimeController extends GetxController {
   void popPage() {
     episodes.clear();
     labels.clear();
-    mapSelected.clear();
-    multiSelected.value = false;
+    multiSelectController.exitSelection();
     rateNoteCount = 0;
   }
 
@@ -105,7 +113,7 @@ class AnimeController extends GetxController {
     isLoadingEpisode = false;
 
     labels.clear();
-    mapSelected.clear();
+    multiSelectController.exitSelection();
 
     // 重绘appbar(隐藏更多按钮)、重绘信息行(右侧显示收藏按钮)、重绘集(不显示集信息)
     update([appbarId, infoId, episodeId]);
@@ -190,9 +198,7 @@ class AnimeController extends GetxController {
   // 退出多选模式
   void quitMultiSelectionMode() {
     // 清空选中
-    mapSelected.clear();
-    // 隐藏多选操作栏
-    multiSelected.value = false;
+    multiSelectController.exitSelection();
     // 重绘集页面
     update([episodeId]);
   }
@@ -208,6 +214,7 @@ class AnimeController extends GetxController {
     // 重置，然后重新渲染
     isLoadingEpisode = true;
     episodes.clear();
+    multiSelectController.exitSelection();
     update([episodeId]);
 
     // 加载集信息
@@ -283,8 +290,7 @@ class AnimeController extends GetxController {
     final dateTimeStr = selectedDateTime.toString();
 
     // 遍历选中的下标
-    mapSelected.forEach((episodeIndex, value) {
-      final episode = episodes[episodeIndex];
+    for (final episode in multiSelectController.selectedItems) {
       if (episode.isChecked()) {
         SqliteUtil.updateHistoryItem(
             anime.animeId, episode.number, dateTimeStr, anime.reviewNumber);
@@ -294,7 +300,7 @@ class AnimeController extends GetxController {
       }
       episode.dateTime = dateTimeStr;
       tryShowDialogMoveChecklist(context, episode);
-    });
+    }
   }
 
   //  其他页面(例如详情页修改了动漫封面)更新动漫时，动漫详细页可以收到通知并重新渲染

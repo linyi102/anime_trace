@@ -2,6 +2,7 @@ import 'package:animetrace/controllers/anime_service.dart';
 import 'package:animetrace/utils/event.dart';
 import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_grid_view.dart';
+import 'package:animetrace/components/anime_custom_cover.dart';
 import 'package:animetrace/components/anime_list_cover.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/loading_widget.dart';
@@ -26,6 +27,7 @@ import 'package:animetrace/widgets/common_tab_bar_view.dart';
 import 'package:get/get.dart';
 import 'package:animetrace/utils/log.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:multi_select/multi_select.dart';
 
 import '../../widgets/empty_default_page.dart';
 
@@ -71,12 +73,15 @@ class _AnimeListPageState extends State<AnimeListPage>
   @override
   void initState() {
     super.initState();
+    checklistController.multiSelectController.addListener(_onSelectionChanged);
     checklistController.loadData();
     checklistController.tryRegisterRestoreLatestHotkey();
   }
 
   @override
   void dispose() {
+    checklistController.multiSelectController
+        .removeListener(_onSelectionChanged);
     super.dispose();
     checklistController.quitMulti();
     checklistController.unregisterRestoreLatestHotkey();
@@ -256,55 +261,69 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   _buildAnimeGridView(int checklistIdx) {
-    return AnimeGridView(
+    final animes = animesInTag[checklistIdx];
+    return MultiSelectView<Anime>(
+      items: animes,
+      controller: checklistController.multiSelectController,
+      builder: (context, buildItem) => AnimeGridView(
         scrollController: _scrollControllers[checklistIdx],
-        animes: animesInTag[checklistIdx],
+        animes: animes,
         loadMore: (int animeIdx) {
           _loadExtraData(checklistIdx, animeIdx);
         },
-        onTap: (Anime anime) {
-          onPress(anime);
-        },
-        onLongPress: (Anime anime) {
-          onLongPress(anime);
-        },
-        isSelected: (int animeIdx) {
-          return selectedAnimes.contains(animesInTag[checklistIdx][animeIdx]);
-        });
+        itemBuilder: buildItem,
+      ),
+      itemBuilder: (context, anime, selection) => CustomAnimeCover(
+        anime: anime,
+        style: _animeDisplayController.coverStyle.value,
+        onTap: () => selection.handleTap(
+          onNormalTap: () => _enterPageAnimeDetail(anime),
+        ),
+        onLongPress: selection.handleLongPress,
+        selected: selection.isSelected,
+      ),
+    );
   }
 
   Widget _buildAnimeListView(int tagIdx) {
-    return SuperListView.builder(
-      controller: _scrollControllers[tagIdx],
-      itemCount: animesInTag[tagIdx].length,
-      // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
-      itemBuilder: (BuildContext context, int animeIdx) {
-        _loadExtraData(tagIdx, animeIdx);
+    final animes = animesInTag[tagIdx];
+    return MultiSelectView<Anime>(
+      items: animes,
+      controller: checklistController.multiSelectController,
+      builder: (context, buildItem) => SuperListView.builder(
+          controller: _scrollControllers[tagIdx],
+          itemCount: animes.length,
+          // itemCount: _animeCntPerTag[i], // 假装先有这么多，容易导致越界(虽然没啥影响)，但还是不用了吧
+          itemBuilder: (BuildContext context, int animeIdx) {
+            _loadExtraData(tagIdx, animeIdx);
 
-        // AppLog.info("$index");
-        // return AnimeItem(animesInTag[i][index]);
-        Anime anime = animesInTag[tagIdx][animeIdx];
-        return ListTile(
-          selectedTileColor:
-              Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
-          selected: selectedAnimes.contains(anime),
-          title: Text(
-            anime.animeName,
-            overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
-          ),
-          leading: AnimeListCover(
-            anime,
-            reviewNumber: anime.reviewNumber,
-            showReviewNumber: true,
-          ),
-          trailing: Text(
-            "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          onTap: () => onPress(anime),
-          onLongPress: () => onLongPress(anime),
-        );
-      },
+            // AppLog.info("$index");
+            // return AnimeItem(animesInTag[i][index]);
+            Anime anime = animes[animeIdx];
+            return buildItem(context, anime);
+          }),
+      itemBuilder: (context, anime, selection) => ListTile(
+        selectedTileColor:
+            Theme.of(context).colorScheme.primary.withOpacityFactor(0.25),
+        selected: selection.isSelected,
+        title: Text(
+          anime.animeName,
+          overflow: TextOverflow.ellipsis, // 避免名字过长，导致显示多行
+        ),
+        leading: AnimeListCover(
+          anime,
+          reviewNumber: anime.reviewNumber,
+          showReviewNumber: true,
+        ),
+        trailing: Text(
+          "${anime.checkedEpisodeCnt}/${anime.animeEpisodeCnt}",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        onTap: () => selection.handleTap(
+          onNormalTap: () => _enterPageAnimeDetail(anime),
+        ),
+        onLongPress: selection.handleLongPress,
+      ),
     );
   }
 
@@ -329,27 +348,7 @@ class _AnimeListPageState extends State<AnimeListPage>
     }
   }
 
-  void onPress(Anime anime) {
-    if (multiSelected) {
-      _toggleSelect(anime);
-    } else {
-      _enterPageAnimeDetail(anime);
-    }
-  }
-
-  void onLongPress(Anime anime) {
-    _toggleSelect(anime);
-    Event(EventName.setNavigator).send(selectedAnimes.isEmpty);
-  }
-
-  void _toggleSelect(Anime anime) {
-    if (selectedAnimes.contains(anime)) {
-      AppLog.info("[多选模式]移除anime=${anime.animeName}");
-      selectedAnimes.remove(anime); // 选过，再选就会取消
-    } else {
-      AppLog.info("[多选模式]添加anime=${anime.animeName}");
-      selectedAnimes.add(anime);
-    }
+  void _onSelectionChanged() {
     setState(() {});
     if (selectedAnimes.length == 1) {
       Event(EventName.setNavigator).send(false);
@@ -554,9 +553,8 @@ class _AnimeListPageState extends State<AnimeListPage>
           if (checklistController.tabController == null) return;
 
           int checklistIdx = checklistController.tabController!.index;
-          checklistController.selectedAnimes.clear();
-          checklistController.selectedAnimes.addAll(animesInTag[checklistIdx]);
-          setState(() {});
+          checklistController.multiSelectController
+              .selectAll(animesInTag[checklistIdx]);
           // 缺点：全选后修改菜单，会导致无法加载下一页，如果重新加载也会丢失分页状态
         },
         icon: const Icon(Icons.select_all),
