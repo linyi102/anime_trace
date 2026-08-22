@@ -48,6 +48,12 @@ class AnimeController extends GetxController {
   final multiSelected = false.obs;
 
   void _syncMultiSelectionState() {
+    if (multiSelectController.isSelecting &&
+        multiSelectController.selectedCount == 0) {
+      multiSelectController.exitSelection();
+      return;
+    }
+
     multiSelected.value = multiSelectController.isSelecting;
   }
 

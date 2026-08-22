@@ -349,6 +349,11 @@ class _AnimeListPageState extends State<AnimeListPage>
   }
 
   void _onSelectionChanged() {
+    if (selectedAnimes.isEmpty && multiSelected) {
+      checklistController.multiSelectController.exitSelection();
+      return;
+    }
+
     setState(() {});
     if (selectedAnimes.length == 1) {
       Event(EventName.setNavigator).send(false);
@@ -553,8 +558,13 @@ class _AnimeListPageState extends State<AnimeListPage>
           if (checklistController.tabController == null) return;
 
           int checklistIdx = checklistController.tabController!.index;
-          checklistController.multiSelectController
-              .selectAll(animesInTag[checklistIdx]);
+          final animes = animesInTag[checklistIdx];
+          if (animes.length ==
+              checklistController.multiSelectController.selectedCount) {
+            checklistController.multiSelectController.deselectAll(animes);
+          } else {
+            checklistController.multiSelectController.selectAll(animes);
+          }
           // 缺点：全选后修改菜单，会导致无法加载下一页，如果重新加载也会丢失分页状态
         },
         icon: const Icon(Icons.select_all),
