@@ -12,14 +12,26 @@ import 'package:animetrace/utils/toast_util.dart';
 
 /// 展示网络封面失效的所有动漫
 class LapseCoverAnimesPage extends StatefulWidget {
-  const LapseCoverAnimesPage({Key? key}) : super(key: key);
+  const LapseCoverAnimesPage({
+    super.key,
+    this.enableDetection = true,
+  });
+
+  final bool enableDetection;
 
   @override
   State<LapseCoverAnimesPage> createState() => _LapseCoverAnimesPageState();
 }
 
 class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
-  final controller = Get.put(LapseCoverController());
+  late final LapseCoverController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = LapseCoverController.obtain();
+    if (widget.enableDetection) controller.enableDetection();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +47,12 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
                     ? _buildDetecting()
                     : controller.coverAnimes.isEmpty
                         ? _buildEmptyHint()
-                        : RefreshIndicator(
-                            onRefresh: controller.detectAnimes,
-                            child: _buildAnimeListView(),
-                          ),
+                        : widget.enableDetection
+                            ? RefreshIndicator(
+                                onRefresh: controller.detectAnimes,
+                                child: _buildAnimeListView(),
+                              )
+                            : _buildAnimeListView(),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -67,6 +81,7 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
 
   Widget _buildBottomButton() {
     if (!controller.hasDetected) {
+      if (!widget.enableDetection) return const SizedBox();
       return ActionButton(
         loaderStyle: ButtonLoaderStyle.none,
         onTap: controller.detectAnimes,
@@ -127,9 +142,11 @@ class _LapseCoverAnimesPageState extends State<LapseCoverAnimesPage> {
       children: [
         emptyDataHint(msg: "没有找到失效封面。"),
         const SizedBox(height: 20),
-        TextButton(
-            onPressed: () => controller.detectAnimes(),
-            child: const Text("再次检测", style: TextStyle(color: Colors.white)))
+        if (widget.enableDetection)
+          TextButton(
+              onPressed: controller.detectAnimes,
+              child:
+                  const Text("再次检测", style: TextStyle(color: Colors.white)))
       ],
     ));
   }

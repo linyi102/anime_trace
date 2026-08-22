@@ -13,6 +13,8 @@ import 'package:animetrace/models/params/anime_sort_cond.dart';
 import 'package:animetrace/pages/anime_collection/checklist_controller.dart';
 import 'package:animetrace/pages/anime_collection/widgets/remote_status_icon_button.dart';
 import 'package:animetrace/pages/anime_detail/anime_detail.dart';
+import 'package:animetrace/pages/network/sources/pages/lapse_cover_fix/lapse_cover_animes_page.dart';
+import 'package:animetrace/pages/network/sources/pages/lapse_cover_fix/lapse_cover_controller.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/pages/local_search/views/local_search_page.dart';
 import 'package:animetrace/pages/main_screen/logic.dart';
@@ -568,6 +570,12 @@ class _AnimeListPageState extends State<AnimeListPage>
           // 缺点：全选后修改菜单，会导致无法加载下一页，如果重新加载也会丢失分页状态
         },
         icon: const Icon(Icons.select_all),
+        tooltip: '全选',
+      ),
+      IconButton(
+        onPressed: _openLapseCoverPage,
+        icon: const Icon(Icons.broken_image_outlined),
+        tooltip: '修复封面',
       ),
       IconButton(
         onPressed: () {
@@ -583,5 +591,18 @@ class _AnimeListPageState extends State<AnimeListPage>
       ),
     ];
     return actions;
+  }
+
+  void _openLapseCoverPage() async {
+    final controller = LapseCoverController.obtain();
+    if (!controller.addAnimes(selectedAnimes)) return;
+
+    checklistController.multiSelectController.exitSelection();
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const LapseCoverAnimesPage(
+        enableDetection: false,
+      ),
+    ));
+    setState(() {});
   }
 }
