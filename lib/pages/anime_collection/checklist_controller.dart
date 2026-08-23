@@ -11,6 +11,7 @@ import 'package:animetrace/utils/sp_util.dart';
 import 'package:animetrace/utils/sqlite_util.dart';
 import 'package:animetrace/values/values.dart';
 import 'package:get/get.dart';
+import 'package:multi_select/multi_select.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 
 class ChecklistController extends GetxController
@@ -36,8 +37,11 @@ class ChecklistController extends GetxController
   int get pageSize => 50;
 
   // 多选
-  List<Anime> selectedAnimes = [];
-  bool get multi => selectedAnimes.isNotEmpty;
+  final multiSelectController = MultiSelectController<Anime>(
+    itemKey: (anime) => anime.animeId,
+  );
+  List<Anime> get selectedAnimes => multiSelectController.selectedItems;
+  bool get multi => multiSelectController.isSelecting;
 
   init() async {
     // 不要放在loadData中，因为要保证收藏页在initState中loadData执行完毕
@@ -125,11 +129,11 @@ class ChecklistController extends GetxController
   }
 
   void quitMulti() {
-    if (selectedAnimes.isEmpty) return;
+    if (!multi) return;
 
     AppLog.debug('退出多选');
     // 清空选择的动漫(注意在修改数量之后)，并消除多选状态
-    selectedAnimes.clear();
+    multiSelectController.exitSelection();
     update();
     Event(EventName.setNavigator).send(true);
     Event(EventName.takeOverHomePop).send(false);

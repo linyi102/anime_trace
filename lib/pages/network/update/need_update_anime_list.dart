@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:animetrace/components/anime_item_auto_load.dart';
 import 'package:animetrace/components/common_tab_bar.dart';
 import 'package:animetrace/components/loading_widget.dart';
+import 'package:animetrace/controllers/setting_service.dart';
 import 'package:animetrace/dao/anime_dao.dart';
 import 'package:animetrace/models/anime.dart';
 import 'package:animetrace/models/enum/play_status.dart';
 import 'package:animetrace/utils/time_util.dart';
+import 'package:animetrace/widgets/bottom_sheet.dart';
 import 'package:animetrace/widgets/common_tab_bar_view.dart';
 
 class NeedUpdateAnimeList extends StatefulWidget {
@@ -67,7 +69,13 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${animes.length} 个未完结"),
+        title: Text("${_displayAnimes.length} 个$_displayAnimeStatusText"),
+        actions: [
+          IconButton(
+            onPressed: _showDisplaySettingBottomSheet,
+            icon: const Icon(Icons.layers_outlined),
+          ),
+        ],
         bottom: CommonBottomTabBar(
           isScrollable: true,
           tabController: tabController,
@@ -144,16 +152,78 @@ class _NeedUpdateAnimeListState extends State<NeedUpdateAnimeList>
     List<Anime> filteredAnimes = [];
 
     if (weekday == allWeeklyItem.weekday) {
-      filteredAnimes = animes;
+      filteredAnimes = _displayAnimes;
     } else if (weekday == unknownWeeklyItem.weekday) {
-      filteredAnimes =
-          animes.where((anime) => anime.premiereDateTime == null).toList();
+      filteredAnimes = _displayAnimes
+          .where((anime) => anime.premiereDateTime == null)
+          .toList();
     } else if (1 <= weekday && weekday <= 7) {
-      filteredAnimes = animes
+      filteredAnimes = _displayAnimes
           .where((anime) => anime.premiereDateTime?.weekday == weekday)
           .toList();
     }
     return filteredAnimes;
+  }
+
+  List<Anime> get _displayAnimes {
+    if (!SettingService.to.getNeedUpdateAnimeOnlyShowPlaying()) {
+      return animes;
+    }
+    return animes
+        .where((anime) => anime.getPlayStatus() == PlayStatus.playing)
+        .toList();
+  }
+
+  String get _displayAnimeStatusText {
+    return SettingService.to.getNeedUpdateAnimeOnlyShowPlaying()
+        ? '连载中'
+        : '未完结';
+  }
+
+  void _showDisplaySettingBottomSheet() {
+    showCommonModalBottomSheet(
+      context: context,
+      builder: (context) => _NeedUpdateAnimeDisplaySettingSheet(
+        onChanged: () => setState(() {}),
+      ),
+    );
+  }
+}
+
+class _NeedUpdateAnimeDisplaySettingSheet extends StatefulWidget {
+  const _NeedUpdateAnimeDisplaySettingSheet({required this.onChanged});
+
+  final VoidCallback onChanged;
+
+  @override
+  State<_NeedUpdateAnimeDisplaySettingSheet> createState() =>
+      _NeedUpdateAnimeDisplaySettingSheetState();
+}
+
+class _NeedUpdateAnimeDisplaySettingSheetState
+    extends State<_NeedUpdateAnimeDisplaySettingSheet> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('界面'),
+        automaticallyImplyLeading: false,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 40),
+        children: [
+          SwitchListTile(
+            title: const Text('只显示连载中动漫'),
+            value: SettingService.to.getNeedUpdateAnimeOnlyShowPlaying(),
+            onChanged: (value) {
+              SettingService.to.setNeedUpdateAnimeOnlyShowPlaying(value);
+              widget.onChanged();
+              setState(() {});
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 

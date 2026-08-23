@@ -15,6 +15,7 @@ class AnimeGridView extends StatefulWidget {
     this.onTap,
     this.onLongPress,
     this.isSelected,
+    this.itemBuilder,
     this.sliver = false,
     this.styleBuilder,
   })  : assert(
@@ -28,6 +29,7 @@ class AnimeGridView extends StatefulWidget {
   final void Function(Anime anime)? onLongPress;
   final void Function(int animeIdx)? loadMore;
   final bool Function(int animeIdx)? isSelected;
+  final Widget Function(BuildContext context, Anime anime)? itemBuilder;
   final ScrollController? scrollController;
   final bool sliver;
   final AnimeCoverStyle Function(AnimeCoverStyle style)? styleBuilder;
@@ -58,16 +60,17 @@ class _AnimeGridViewState extends State<AnimeGridView>
         // AppLog.debug('build anime $index');
         final anime = widget.animes[index];
 
-        return CustomAnimeCover(
-          anime: anime,
-          style: widget.styleBuilder?.call(style) ?? style,
-          onTap: widget.onTap != null ? () => widget.onTap!(anime) : null,
-          onLongPress: widget.onLongPress != null
-              ? () => widget.onLongPress!(anime)
-              : null,
-          selected:
-              widget.isSelected == null ? false : widget.isSelected!(index),
-        );
+        return widget.itemBuilder?.call(context, anime) ??
+            CustomAnimeCover(
+              anime: anime,
+              style: widget.styleBuilder?.call(style) ?? style,
+              onTap: widget.onTap != null ? () => widget.onTap!(anime) : null,
+              onLongPress: widget.onLongPress != null
+                  ? () => widget.onLongPress!(anime)
+                  : null,
+              selected:
+                  widget.isSelected == null ? false : widget.isSelected!(index),
+            );
       }
 
       int calCrossAxisCount(double maxWidth) {

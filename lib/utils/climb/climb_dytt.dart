@@ -8,7 +8,7 @@ class ClimbDytt with Climb {
   String get idName => "dytt";
 
   @override
-  String get defaultBaseUrl => "https://dyttzyw.com";
+  String get defaultBaseUrl => "https://dyttzyw.tv";
 
   @override
   String get sourceName => "电影天堂";

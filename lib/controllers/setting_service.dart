@@ -52,6 +52,17 @@ class SettingService extends GetxService {
     return SPUtil.setBool('hideMobileBottomNavigationBarLabel', value);
   }
 
+  /// 获取未完结动漫列表是否只显示连载中动漫
+  bool getNeedUpdateAnimeOnlyShowPlaying() {
+    return SPUtil.getBool('needUpdateAnimeOnlyShowPlaying',
+        defaultValue: false);
+  }
+
+  /// 设置未完结动漫列表是否只显示连载中动漫
+  Future<bool> setNeedUpdateAnimeOnlyShowPlaying(bool value) {
+    return SPUtil.setBool('needUpdateAnimeOnlyShowPlaying', value);
+  }
+
   /// 自定义类别
   Future<List<String>?> getAnimeCategories() async {
     return KeyValueDao.getStringList('anime_categories');
@@ -111,6 +122,16 @@ extension BanugmiSection on SettingService {
   /// 设置 Bangumi 是否获取全部集
   Future<bool> setBgmFetchAllEpisodes(bool value) {
     return SPUtil.setBool('bgmFetchAllEpisodes', value);
+  }
+
+  /// 获取 Bangumi 是否忽略特殊集
+  bool getBgmIgnoreSpecialEpisodes() {
+    return SPUtil.getBool('bgmIgnoreSpecialEpisodes', defaultValue: false);
+  }
+
+  /// 设置 Bangumi 是否忽略特殊集
+  Future<bool> setBgmIgnoreSpecialEpisodes(bool value) {
+    return SPUtil.setBool('bgmIgnoreSpecialEpisodes', value);
   }
 }
 

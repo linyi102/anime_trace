@@ -250,15 +250,15 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       children: [
         IconButton(
           onPressed: () {
-            if (animeController.mapSelected.length ==
+            if (animeController.multiSelectController.selectedCount ==
                 animeController.episodes.length) {
               // 全选了，点击则会取消全选
-              animeController.mapSelected.clear();
+              animeController.multiSelectController
+                  .deselectAll(animeController.episodes);
             } else {
               // 其他情况下，全选
-              for (int j = 0; j < animeController.episodes.length; ++j) {
-                animeController.mapSelected[j] = true;
-              }
+              animeController.multiSelectController
+                  .selectAll(animeController.episodes);
             }
             // 不重绘整个详情页面
             // setState(() {});

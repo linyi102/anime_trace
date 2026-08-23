@@ -12,12 +12,20 @@ import 'package:get/get.dart';
 import 'package:queue/queue.dart';
 
 class LapseCoverController extends GetxController {
+  static LapseCoverController obtain() {
+    if (Get.isRegistered<LapseCoverController>()) {
+      return Get.find<LapseCoverController>();
+    }
+    return Get.put(LapseCoverController(), permanent: true);
+  }
+
   List<Anime> coverAnimes = []; // 失效封面的动漫
   final detectProgressController = ProgressController(total: 0);
   bool hasDetected = false;
   bool loadOk = false;
 
   bool fixing = false; // 修复封面中
+  bool allowDetection = true;
   Map<int, DataState<String>> states = {};
   final fixProgressController = ProgressController(total: 0);
 
@@ -31,7 +39,36 @@ class LapseCoverController extends GetxController {
     );
   }
 
+  /// 使用用户手动选择的动漫替换修复队列。手动添加模式不允许重新检测封面。
+  bool addAnimes(Iterable<Anime> animes) {
+    if (fixing) {
+      ToastUtil.showText('正在修复中，请稍后再添加');
+      return false;
+    }
+
+    allowDetection = false;
+    final animeIds = <int>{};
+    coverAnimes
+      ..clear()
+      ..addAll(animes.where((anime) => animeIds.add(anime.animeId)));
+    states.clear();
+    fixProgressController.count = 0;
+    fixProgressController.total = coverAnimes.length;
+    hasDetected = true;
+    loadOk = true;
+    update();
+    return true;
+  }
+
+  void enableDetection() {
+    allowDetection = true;
+  }
+
   Future<void> detectAnimes() async {
+    if (!allowDetection) {
+      ToastUtil.showText('手动添加的动漫不支持重新检测');
+      return;
+    }
     if (fixing) {
       ToastUtil.showText('正在修复封面');
       return;
@@ -118,7 +155,7 @@ class LapseCoverController extends GetxController {
         } else {
           final newAnime = await ClimbAnimeUtil.climbAnimeInfoByUrl(anime,
               showMessage: false);
-          coverAnimes[i] = newAnime;
+          coverAnimes[i].animeCoverUrl = newAnime.animeCoverUrl;
           AnimeDao.updateAnimeCoverUrl(anime.animeId, anime.animeCoverUrl);
         }
         states[anime.animeId] = DataState.data('');
